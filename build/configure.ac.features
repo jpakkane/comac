@@ -371,7 +371,6 @@ AC_DEFUN([CAIRO_REPORT],
 	echo "  Quartz-image:  $use_quartz_image"
 	echo "  XCB:           $use_xcb"
 	echo "  Win32:         $use_win32"
-	echo "  OS2:           $use_os2"
 	echo "  CairoScript:   $use_script"
 	echo "  PostScript:    $use_ps"
 	echo "  PDF:           $use_pdf"

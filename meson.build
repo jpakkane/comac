@@ -990,7 +990,6 @@ summary({
         'Quartz-image': feature_conf.get('CAIRO_HAS_QUARTZ_IMAGE_SURFACE', 0) == 1,
         'XCB': feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1,
         'Win32': feature_conf.get('CAIRO_HAS_WIN32_SURFACE', 0) == 1,
-        'OS2': false,
         'CairoScript': feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1,
         'PostScript':  feature_conf.get('CAIRO_HAS_PS_SURFACE', 0) == 1,
         'PDF':  feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1,

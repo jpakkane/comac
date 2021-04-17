@@ -361,10 +361,6 @@ cairo_win32_font_sources = \
 	win32/cairo-win32-font.c \
 	$(NULL)
 
-cairo_os2_headers = cairo-os2.h
-cairo_os2_private = cairo-os2-private.h
-cairo_os2_sources = cairo-os2-surface.c
-
 cairo_gl_headers = cairo-gl.h
 cairo_gl_private = cairo-gl-private.h \
 		   cairo-gl-dispatch-private.h \

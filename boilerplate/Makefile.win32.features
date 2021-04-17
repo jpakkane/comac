@@ -117,16 +117,6 @@ enabled_cairo_boilerplate_private += $(cairo_boilerplate_win32_font_private)
 enabled_cairo_boilerplate_sources += $(cairo_boilerplate_win32_font_sources)
 endif
 
-unsupported_cairo_boilerplate_headers += $(cairo_boilerplate_os2_headers)
-all_cairo_boilerplate_headers += $(cairo_boilerplate_os2_headers)
-all_cairo_boilerplate_private += $(cairo_boilerplate_os2_private)
-all_cairo_boilerplate_sources += $(cairo_boilerplate_os2_sources)
-ifeq ($(CAIRO_HAS_OS2_SURFACE),1)
-enabled_cairo_boilerplate_headers += $(cairo_boilerplate_os2_headers)
-enabled_cairo_boilerplate_private += $(cairo_boilerplate_os2_private)
-enabled_cairo_boilerplate_sources += $(cairo_boilerplate_os2_sources)
-endif
-
 unsupported_cairo_boilerplate_headers += $(cairo_boilerplate_drm_headers)
 all_cairo_boilerplate_headers += $(cairo_boilerplate_drm_headers)
 all_cairo_boilerplate_private += $(cairo_boilerplate_drm_private)

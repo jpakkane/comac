@@ -66,9 +66,6 @@
 #if CAIRO_HAS_GL_SURFACE
 #include <cairo-gl.h>
 #endif
-#if CAIRO_HAS_OS2_SURFACE
-#include <cairo-os2.h>
-#endif
 #if CAIRO_HAS_PDF_SURFACE
 #include <cairo-pdf.h>
 #endif

@@ -239,19 +239,6 @@ AM_CONDITIONAL(CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE, test "x$test_win32_printin
 
 dnl ===========================================================================
 
-CAIRO_ENABLE_SURFACE_BACKEND(os2, OS/2, no, [
-  case "$host" in
-    *-*-os2*)
-      :
-      ;;
-    *)
-      use_os2="no (requires an OS/2 platform)"
-      ;;
-  esac
-])
-
-dnl ===========================================================================
-
 CAIRO_ENABLE_SURFACE_BACKEND(drm, DRM, no, [
   dnl Keep in sync with meson.build!
   drm_REQUIRES="libudev >= 136, libdrm >= 2.4"

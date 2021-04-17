@@ -36,10 +36,7 @@
 #include <unistd.h>
 #endif
 
-#if defined(__OS2__)
-#define INCL_BASE
-#include <os2.h>
-#elif defined(_WIN32)
+#if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #elif defined(_POSIX_PRIORITY_SCHEDULING)
@@ -86,9 +83,7 @@ cairo_perf_yield (void)
 {
     /* try to deactivate this thread until the scheduler calls it again */
 
-#if defined(__OS2__)
-    DosSleep (0);
-#elif defined(_WIN32)
+#if defined(_WIN32)
     SleepEx(0, TRUE);
 #elif defined(_POSIX_PRIORITY_SCHEDULING)
     sched_yield ();
