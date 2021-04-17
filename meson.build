@@ -577,19 +577,6 @@ if feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 0 and feature_conf.get('CAIRO_
 endif
 
 # Untested
-directfb_dep = dependency('directfb', required: get_option('directfb'))
-if directfb_dep.found()
-  deps += [directfb_dep]
-
-  feature_conf.set('CAIRO_HAS_DIRECTFB_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-directfb',
-    'description': 'directfb surface backend',
-    'deps': [directfb_dep],
-  }]
-endif
-
-# Untested
 openvg_dep = cc.find_library('OpenVG', has_headers: 'VG/openvg.h', required: get_option('openvg'))
 if openvg_dep.found()
   deps += [openvg_dep]
@@ -963,7 +950,6 @@ summary({
         'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
         'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
         'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
-        'DirectFB': feature_conf.get('CAIRO_HAS_DIRECTFB_SURFACE', 0) == 1,
         'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
         }, section: 'Surface Backends', bool_yn: true)
 

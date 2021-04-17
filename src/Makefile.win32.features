@@ -215,20 +215,6 @@ ifeq ($(CAIRO_HAS_GLESV3_SURFACE),1)
 enabled_cairo_pkgconf += cairo-glesv3.pc
 endif
 
-unsupported_cairo_headers += $(cairo_directfb_headers)
-all_cairo_headers += $(cairo_directfb_headers)
-all_cairo_private += $(cairo_directfb_private)
-all_cairo_sources += $(cairo_directfb_sources)
-ifeq ($(CAIRO_HAS_DIRECTFB_SURFACE),1)
-enabled_cairo_headers += $(cairo_directfb_headers)
-enabled_cairo_private += $(cairo_directfb_private)
-enabled_cairo_sources += $(cairo_directfb_sources)
-endif
-all_cairo_pkgconf += cairo-directfb.pc
-ifeq ($(CAIRO_HAS_DIRECTFB_SURFACE),1)
-enabled_cairo_pkgconf += cairo-directfb.pc
-endif
-
 unsupported_cairo_headers += $(cairo_vg_headers)
 all_cairo_headers += $(cairo_vg_headers)
 all_cairo_private += $(cairo_vg_private)

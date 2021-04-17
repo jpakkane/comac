@@ -393,9 +393,6 @@ cairo_egl_sources += cairo-egl-context.c
 cairo_glx_sources += cairo-glx-context.c
 cairo_wgl_sources += cairo-wgl-context.c
 
-cairo_directfb_headers = cairo-directfb.h
-cairo_directfb_sources = cairo-directfb-surface.c
-
 cairo_script_headers = cairo-script.h
 cairo_script_private = cairo-script-private.h
 cairo_script_sources = cairo-script-surface.c

@@ -192,12 +192,6 @@ cairo_feature_sources = {
     'cairo-gl-surface.c',
     'cairo-gl-traps-compositor.c',
   ],
-  'cairo-directfb': [
-    'cairo-directfb-surface.c',
-  ],
-  'cairo-vg': [
-    'cairo-vg-surface.c',
-  ],
   'cairo-script': [
     'cairo-script-surface.c',
   ],
@@ -240,7 +234,6 @@ cairo_feature_headers = {
   'cairo-quartz-image': ['cairo-quartz-image.h'],
   'cairo-win32': ['cairo-win32.h'],
   'cairo-gl': ['cairo-gl.h'],
-  'cairo-directfb': ['cairo-directfb.h'],
   'cairo-script': ['cairo-script.h'],
   'cairo-tee': ['cairo-tee.h'],
   'cairo-xml': ['cairo-xml.h'],

@@ -332,14 +332,6 @@ CAIRO_ENABLE_SURFACE_BACKEND(glesv3, OpenGLESv3, no, [
 
 dnl ===========================================================================
 
-CAIRO_ENABLE_SURFACE_BACKEND(directfb, directfb, no, [
-  directfb_REQUIRES=directfb
-  PKG_CHECK_MODULES(directfb, $directfb_REQUIRES, ,
-		    [use_directfb="no (requires $directfb_REQUIRES http://www.directfb.org)"])
-])
-
-dnl ===========================================================================
-
 CAIRO_ENABLE_SURFACE_BACKEND(vg, OpenVG, no, [
   dnl There is no pkgconfig for OpenVG; lets do a header check
   AC_CHECK_HEADER(VG/openvg.h,, [use_vg="no (OpenVG headers not found)"])

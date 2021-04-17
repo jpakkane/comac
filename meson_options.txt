@@ -3,7 +3,6 @@ option('fontconfig', type : 'feature', value : 'auto')
 option('freetype', type : 'feature', value : 'auto')
 
 # Cairo surface backends
-option('directfb', type : 'feature', value : 'disabled')
 option('gl-backend', type : 'combo', value : 'disabled',
        # FIXME: https://github.com/mesonbuild/meson/issues/4566
        choices : ['auto', 'gl', 'glesv2', 'glesv3', 'disabled'])
