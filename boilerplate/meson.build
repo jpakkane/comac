@@ -12,7 +12,6 @@ cairo_boilerplate_feature_sources = {
   'cairo-pdf': ['cairo-boilerplate-pdf.c'],
   'cairo-ps': ['cairo-boilerplate-ps.c'],
   'cairo-svg': ['cairo-boilerplate-svg.c'],
-  'cairo-vg': ['cairo-boilerplate-vg.c'],
   'cairo-script': ['cairo-boilerplate-script.c'],
   # All tests crash with FPE
   # 'cairo-egl': ['cairo-boilerplate-egl.c'],

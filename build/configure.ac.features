@@ -378,7 +378,6 @@ AC_DEFUN([CAIRO_REPORT],
 	echo "  OpenGL:        $use_gl"
 	echo "  OpenGL ES 2.0: $use_glesv2"
 	echo "  OpenGL ES 3.0: $use_glesv3"
-	echo "  OpenVG:        $use_vg"
 	echo ""
 	echo "The following font backends:"
 	echo "  User:          yes (always builtin)"

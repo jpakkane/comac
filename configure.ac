@@ -332,17 +332,6 @@ CAIRO_ENABLE_SURFACE_BACKEND(glesv3, OpenGLESv3, no, [
 
 dnl ===========================================================================
 
-CAIRO_ENABLE_SURFACE_BACKEND(vg, OpenVG, no, [
-  dnl There is no pkgconfig for OpenVG; lets do a header check
-  AC_CHECK_HEADER(VG/openvg.h,, [use_vg="no (OpenVG headers not found)"])
-  if test "x$use_vg" = "xyes"; then
-      vg_NONPKGCONFIG_CFLAGS=
-      vg_NONPKGCONFIG_LIBS="-lOpenVG"
-      need_egl_functions=yes
-      need_glx_functions=yes
-  fi
-])
-
 CAIRO_ENABLE_FUNCTIONS(egl, EGL, auto, [
   if test "x$need_egl_functions" = "xyes"; then
       egl_REQUIRES="egl"

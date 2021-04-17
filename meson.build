@@ -576,22 +576,6 @@ if feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 0 and feature_conf.get('CAIRO_
   endif
 endif
 
-# Untested
-openvg_dep = cc.find_library('OpenVG', has_headers: 'VG/openvg.h', required: get_option('openvg'))
-if openvg_dep.found()
-  deps += [openvg_dep]
-
-  need_egl_functions = true
-  need_glx_functions = true
-
-  feature_conf.set('CAIRO_HAS_VG_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-vg',
-    'description': 'OpenVG surface backend',
-    'deps': [openvg_dep],
-  }]
-endif
-
 if need_egl_functions
   # FIXME: automagic
   egl_extra_deps = []
@@ -950,7 +934,6 @@ summary({
         'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
         'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
         'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
-        'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
         }, section: 'Surface Backends', bool_yn: true)
 
 summary({

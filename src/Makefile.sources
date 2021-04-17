@@ -403,6 +403,3 @@ cairo_tee_sources = cairo-tee-surface.c
 
 cairo_xml_headers = cairo-xml.h
 cairo_xml_sources = cairo-xml-surface.c
-
-cairo_vg_headers = cairo-vg.h
-cairo_vg_sources = cairo-vg-surface.c
