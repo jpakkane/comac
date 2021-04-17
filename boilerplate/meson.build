@@ -9,7 +9,6 @@ cairo_boilerplate_feature_sources = {
   'cairo-quartz': ['cairo-boilerplate-quartz.c'],
   'cairo-xcb': ['cairo-boilerplate-xcb.c'],
   'cairo-win32': ['cairo-boilerplate-win32.c', 'cairo-boilerplate-win32-printing.c'],
-  'cairo-cogl': ['cairo-boilerplate-cogl.c'],
   'cairo-directfb': ['cairo-boilerplate-directfb.c'],
   'cairo-pdf': ['cairo-boilerplate-pdf.c'],
   'cairo-ps': ['cairo-boilerplate-ps.c'],

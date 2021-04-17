@@ -74,7 +74,6 @@ fedora image:
       gtk2-devel
       poppler-glib-devel
       pixman-devel
-      cogl-devel
       systemd-devel
       systemd-udev
       mesa-libEGL

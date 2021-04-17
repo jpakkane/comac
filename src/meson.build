@@ -192,10 +192,6 @@ cairo_feature_sources = {
     'cairo-gl-surface.c',
     'cairo-gl-traps-compositor.c',
   ],
-  'cairo-cogl': [
-    'cairo-cogl-surface.c',
-    'cairo-cogl-gradient.c',
-  ],
   'cairo-directfb': [
     'cairo-directfb-surface.c',
   ],
@@ -249,7 +245,6 @@ cairo_feature_headers = {
   'cairo-tee': ['cairo-tee.h'],
   'cairo-xml': ['cairo-xml.h'],
   'cairo-vg': ['cairo-vg.h'],
-  'cairo-cogl': ['cairo-cogl.h'],
 }
 
 cairo_no_warn_c_args = cc.get_supported_arguments([

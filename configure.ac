@@ -331,12 +331,6 @@ CAIRO_ENABLE_SURFACE_BACKEND(glesv3, OpenGLESv3, no, [
 ])
 
 dnl ===========================================================================
-CAIRO_ENABLE_SURFACE_BACKEND(cogl, Cogl, no, [
-  cogl_REQUIRES="cogl-2.0-experimental >= 1.17.2"
-  PKG_CHECK_MODULES(cogl, $cogl_REQUIRES,, [use_cogl="no"])
-])
-
-dnl ===========================================================================
 
 CAIRO_ENABLE_SURFACE_BACKEND(directfb, directfb, no, [
   directfb_REQUIRES=directfb

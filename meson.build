@@ -576,21 +576,6 @@ if feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 0 and feature_conf.get('CAIRO_
   endif
 endif
 
-cogl_dep = dependency('cogl-2.0-experimental',
-  version: '>= 1.17.2',
-  required: get_option('cogl'),
-)
-if cogl_dep.found()
-  deps += [cogl_dep]
-
-  feature_conf.set('CAIRO_HAS_COGL_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-cogl',
-    'description': 'Cogl surface backend',
-    'deps': [cogl_dep],
-  }]
-endif
-
 # Untested
 directfb_dep = dependency('directfb', required: get_option('directfb'))
 if directfb_dep.found()
@@ -980,7 +965,6 @@ summary({
         'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
         'DirectFB': feature_conf.get('CAIRO_HAS_DIRECTFB_SURFACE', 0) == 1,
         'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
-        'Cogl': feature_conf.get('CAIRO_HAS_COGL_SURFACE', 0) == 1,
         }, section: 'Surface Backends', bool_yn: true)
 
 summary({
