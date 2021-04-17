@@ -11,7 +11,6 @@ xrender_required_version = '>= 0.6'
 xcb_required_version = '>= 1.6'
 xcb_render_required_version = '>= 1.6'
 libudev_required_version = '>= 136'
-libdrm_required_version = '>= 2.4'
 glib_required_version = '>= 2.14'
 
 # library versioning
@@ -504,24 +503,6 @@ if host_machine.system() == 'windows'
   ]
 endif
 
-# FIXME: Doesn't build since at least 2011
-libudev_dep = dependency('libudev', required: get_option('drm'),
-                         version: libudev_required_version)
-libdrm_dep = dependency('libdrm', required: get_option('drm'),
-                        version: libdrm_required_version)
-if libudev_dep.found() and libdrm_dep.found() and false
-  deps += [libudev_dep, libdrm_dep]
-
-  feature_conf.set('CAIRO_HAS_DRM_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-drm',
-    'description': 'DRM surface backend',
-    'deps': [libudev_dep, libdrm_dep],
-  }]
-endif
-
-# Not even trying to port gallium as it depends on drm
-
 # GL / GLESV2 / GLESV3 are mutually exclusive
 gl_backend = get_option('gl-backend')
 need_egl_functions = false
@@ -999,7 +980,6 @@ summary({
         'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
         'DirectFB': feature_conf.get('CAIRO_HAS_DIRECTFB_SURFACE', 0) == 1,
         'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
-        'DRM': feature_conf.get('CAIRO_HAS_DRM_SURFACE', 0) == 1,
         'Cogl': feature_conf.get('CAIRO_HAS_COGL_SURFACE', 0) == 1,
         }, section: 'Surface Backends', bool_yn: true)
 

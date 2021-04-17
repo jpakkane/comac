@@ -1895,13 +1895,6 @@ _cairo_trapezoid_array_translate_and_scale (cairo_trapezoid_t *offset_traps,
 					    double tx, double ty,
 					    double sx, double sy);
 
-#if CAIRO_HAS_DRM_SURFACE
-
-cairo_private void
-_cairo_drm_device_reset_static_data (void);
-
-#endif
-
 cairo_private void
 _cairo_clip_reset_static_data (void);
 

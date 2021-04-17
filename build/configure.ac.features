@@ -380,7 +380,6 @@ AC_DEFUN([CAIRO_REPORT],
 	echo "  OpenGL ES 3.0: $use_glesv3"
 	echo "  DirectFB:      $use_directfb"
 	echo "  OpenVG:        $use_vg"
-	echo "  DRM:           $use_drm"
 	echo "  Cogl:          $use_cogl"
 	echo ""
 	echo "The following font backends:"

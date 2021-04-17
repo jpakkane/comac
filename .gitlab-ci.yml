@@ -72,7 +72,6 @@ fedora image:
       glib2-devel
       librsvg2-devel
       gtk2-devel
-      libdrm-devel
       poppler-glib-devel
       pixman-devel
       cogl-devel
