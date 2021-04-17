@@ -6,7 +6,6 @@ cairo_boilerplate_sources = [
 
 cairo_boilerplate_feature_sources = {
   'cairo-xlib': ['cairo-boilerplate-xlib.c'],
-  'cairo-qt': ['cairo-boilerplate-qt.cpp'],
   'cairo-quartz': ['cairo-boilerplate-quartz.c'],
   'cairo-xcb': ['cairo-boilerplate-xcb.c'],
   'cairo-win32': ['cairo-boilerplate-win32.c', 'cairo-boilerplate-win32-printing.c'],

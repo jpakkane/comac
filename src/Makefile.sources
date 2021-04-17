@@ -337,9 +337,6 @@ cairo_xcb_sources = \
 		    cairo-xcb-resources.c \
 		    $(NULL)
 
-cairo_qt_headers = cairo-qt.h
-cairo_qt_cxx_sources = cairo-qt-surface.cpp
-
 cairo_quartz_headers = cairo-quartz.h
 cairo_quartz_private = cairo-quartz-private.h
 cairo_quartz_sources = cairo-quartz-surface.c

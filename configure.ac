@@ -190,18 +190,6 @@ CAIRO_ENABLE_FUNCTIONS(xcb_shm, XCB/SHM, auto, [
 
 dnl ===========================================================================
 
-CAIRO_ENABLE_SURFACE_BACKEND(qt, Qt, no, [
-  dnl Keep in sync with meson.build!
-  qt_REQUIRES="QtGui >= 4.4.0"
-  PKG_CHECK_MODULES(qt, $qt_REQUIRES, ,
-		    [qt_REQUIRES=""
-		     use_qt="no (requires Qt4 development libraries)"
-		     ])
-  qt_NONPKGCONFIG_LIBS="-lstdc++"
-])
-
-dnl ===========================================================================
-
 CAIRO_ENABLE_SURFACE_BACKEND(quartz, Quartz, auto, [
   dnl There is no pkgconfig for quartz; lets do a header check
   AC_CHECK_HEADER(ApplicationServices/ApplicationServices.h, , [use_quartz="no (requires ApplicationServices framework)"])
@@ -882,7 +870,6 @@ dnl ===========================================================================
 
 dnl Extra stuff we need to do when building C++ code
 need_cxx="no"
-AS_IF([test "x$use_qt" = "xyes"], [need_cxx="yes"])
 AS_IF([test "x$use_beos" = "xyes"], [need_cxx="yes"])
 
 AM_CONDITIONAL(BUILD_CXX, test "x$need_cxx" = "xyes")

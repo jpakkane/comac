@@ -10,7 +10,6 @@ fontconfig_required_version = '>= 2.2.95'
 xrender_required_version = '>= 0.6'
 xcb_required_version = '>= 1.6'
 xcb_render_required_version = '>= 1.6'
-qtgui_required_version = '>= 4.4.0'
 libudev_required_version = '>= 136'
 libdrm_required_version = '>= 2.4'
 glib_required_version = '>= 2.14'
@@ -448,20 +447,6 @@ if feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1
       'deps': [xcbshm_dep],
     }]
   endif
-endif
-
-# Tests crash and burn
-qtgui_dep = dependency('QtGui', required: get_option('qt'),
-                       version: qtgui_required_version)
-if qtgui_dep.found() and false
-  feature_conf.set('CAIRO_HAS_QT_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-qt',
-    'description': 'Qt surface backend',
-    'deps': [qtgui_dep],
-  }]
-
-  deps += [qtgui_dep]
 endif
 
 if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
@@ -1003,7 +988,6 @@ summary({
         'XML': feature_conf.get('CAIRO_HAS_XML_SURFACE', 0) == 1,
         'Xlib': feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1,
         'Xlib Xrender': feature_conf.get('CAIRO_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
-        'Qt': feature_conf.get('CAIRO_HAS_QT_SURFACE', 0) == 1,
         'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_SURFACE', 0) == 1,
         'Quartz-image': feature_conf.get('CAIRO_HAS_QUARTZ_IMAGE_SURFACE', 0) == 1,
         'XCB': feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1,

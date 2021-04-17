@@ -156,9 +156,6 @@ cairo_feature_sources = {
     'cairo-xcb-surface-render.c',
     'cairo-xcb-resources.c',
   ],
-  'cairo-qt': [
-    'cairo-qt-surface.cpp',
-  ],
   'cairo-quartz': [
     'cairo-quartz-surface.c',
   ],
@@ -264,7 +261,6 @@ cairo_feature_headers = {
   'cairo-xlib': ['cairo-xlib.h'],
   'cairo-xlib-xrender': ['cairo-xlib-xrender.h'],
   'cairo-xcb': ['cairo-xcb.h'],
-  'cairo-qt': ['cairo-qt.h'],
   'cairo-quartz': ['cairo-quartz.h'],
   'cairo-quartz-image': ['cairo-quartz-image.h'],
   'cairo-win32': ['cairo-win32.h'],
