@@ -210,17 +210,6 @@
 # define CAIRO_MUTEX_IMPL_FINI(mutex) DosCloseMutexSem (mutex)
 # define CAIRO_MUTEX_IMPL_NIL_INITIALIZER 0
 
-#elif CAIRO_HAS_BEOS_SURFACE /***********************************************/
-
-  typedef BLocker* cairo_mutex_impl_t;
-
-# define CAIRO_MUTEX_IMPL_BEOS 1
-# define CAIRO_MUTEX_IMPL_LOCK(mutex) (mutex)->Lock()
-# define CAIRO_MUTEX_IMPL_UNLOCK(mutex) (mutex)->Unlock()
-# define CAIRO_MUTEX_IMPL_INIT(mutex) (mutex) = new BLocker()
-# define CAIRO_MUTEX_IMPL_FINI(mutex) delete (mutex)
-# define CAIRO_MUTEX_IMPL_NIL_INITIALIZER NULL
-
 #elif CAIRO_HAS_PTHREAD /* and finally if there are no native mutexes ********/
 
 # include <pthread.h>

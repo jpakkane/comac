@@ -19,7 +19,6 @@ cairo_boilerplate_private = \
 	cairo-boilerplate-private.h \
 	$(NULL)
 
-cairo_boilerplate_beos_cxx_sources = cairo-boilerplate-beos.cpp
 cairo_boilerplate_directfb_sources = cairo-boilerplate-directfb.c
 cairo_boilerplate_drm_sources = cairo-boilerplate-drm.c
 cairo_boilerplate_glx_sources = cairo-boilerplate-glx.c

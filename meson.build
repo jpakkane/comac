@@ -1,4 +1,4 @@
-project('cairo', 'c', 'cpp',
+project('cairo', 'c',
   meson_version: '>= 0.56.0',
   version: run_command(find_program('version.py'), check: true).stdout().strip(),
   default_options: ['warning_level=2'],
@@ -522,8 +522,6 @@ endif
 
 # Not even trying to port gallium as it depends on drm
 
-# Not porting BEOS or OS/2 backends either, meson doesn't support those
-
 # GL / GLESV2 / GLESV3 are mutually exclusive
 gl_backend = get_option('gl-backend')
 need_egl_functions = false
@@ -1000,7 +998,6 @@ summary({
         'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
         'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
         'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
-        'BeOS': false,
         'DirectFB': feature_conf.get('CAIRO_HAS_DIRECTFB_SURFACE', 0) == 1,
         'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
         'DRM': feature_conf.get('CAIRO_HAS_DRM_SURFACE', 0) == 1,

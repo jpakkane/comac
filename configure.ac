@@ -252,22 +252,6 @@ CAIRO_ENABLE_SURFACE_BACKEND(os2, OS/2, no, [
 
 dnl ===========================================================================
 
-CAIRO_ENABLE_SURFACE_BACKEND(beos, BeOS/Zeta, no, [
-  case "$host" in
-    *-*-beos)
-      beos_LIBS=""
-      dnl Add libbe and libzeta if available
-      AC_CHECK_LIB(be,main,beos_LIBS="$beos_LIBS -lbe")
-      AC_CHECK_LIB(zeta,main,beos_LIBS="$beos_LIBS -lzeta")
-      ;;
-    *)
-      use_beos="no (requires a BeOS platform)"
-      ;;
-  esac
-])
-
-dnl ===========================================================================
-
 CAIRO_ENABLE_SURFACE_BACKEND(drm, DRM, no, [
   dnl Keep in sync with meson.build!
   drm_REQUIRES="libudev >= 136, libdrm >= 2.4"
@@ -865,14 +849,6 @@ if test "x$disable_some_floating_point" = "xyes"; then
             [Define to 1 to disable certain code paths that rely heavily on
              double precision floating-point calculation])
 fi
-
-dnl ===========================================================================
-
-dnl Extra stuff we need to do when building C++ code
-need_cxx="no"
-AS_IF([test "x$use_beos" = "xyes"], [need_cxx="yes"])
-
-AM_CONDITIONAL(BUILD_CXX, test "x$need_cxx" = "xyes")
 
 dnl ===========================================================================
 

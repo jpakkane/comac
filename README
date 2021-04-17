@@ -7,7 +7,7 @@ Cairo is a 2D graphics library with support for multiple output
 devices. Currently supported output targets include the X Window
 System (via both Xlib and XCB), quartz, win32, and image buffers,
 as well as PDF, PostScript, and SVG file output. Experimental backends
-include OpenGL, BeOS, OS/2, and DirectFB.
+include OpenGL, OS/2, and DirectFB.
 
 Cairo is designed to produce consistent output on all output media
 while taking advantage of display hardware acceleration when available
@@ -169,11 +169,6 @@ Font backends (required to have at least one)
 
 Experimental surface backends
 -----------------------------
-	beos backend
-	------------
-	No dependencies in itself other than an installed BeOS system, but cairo
-	requires a font backend. See the freetype dependency list.
-
 	os2 backend
 	-----------
 	Cairo should run on any recent version of OS/2 or eComStation, but it
