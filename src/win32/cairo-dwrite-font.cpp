@@ -134,7 +134,7 @@ int DWriteFactory::mRenderingMode = -1;
 ID2D1Factory *D2DFactory::mFactoryInstance = NULL;
 ID2D1DCRenderTarget *D2DFactory::mRenderTarget = NULL;
 
-/* Functions cairo_font_face_backend_t */
+/* Functions #cairo_font_face_backend_t */
 static cairo_status_t
 _cairo_dwrite_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
 					cairo_font_face_t      **font_face);
@@ -155,7 +155,7 @@ const cairo_font_face_backend_t _cairo_dwrite_font_face_backend = {
     _cairo_dwrite_font_face_scaled_font_create
 };
 
-/* Functions cairo_scaled_font_backend_t */
+/* Functions #cairo_scaled_font_backend_t */
 
 void _cairo_dwrite_scaled_font_fini(void *scaled_font);
 
@@ -194,12 +194,13 @@ const cairo_scaled_font_backend_t _cairo_dwrite_scaled_font_backend = {
 
 
 /**
+ * _cairo_dwrite_matrix_from_matrix:
  * Get a DirectWrite matrix from a cairo matrix. Note that DirectWrite uses row
  * vectors where cairo uses column vectors. Hence the transposition.
  *
  * \param Cairo matrix
  * \return DirectWrite matrix
- */
+ **/
 DWRITE_MATRIX
 _cairo_dwrite_matrix_from_matrix(const cairo_matrix_t *matrix)
 {
@@ -213,7 +214,7 @@ _cairo_dwrite_matrix_from_matrix(const cairo_matrix_t *matrix)
     return dwmat;
 }
 
-/* Helper functions for cairo_dwrite_scaled_glyph_init */
+/* Helper functions for cairo_dwrite_scaled_glyph_init() */
 cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_metrics
     (cairo_dwrite_scaled_font_t *scaled_font, cairo_scaled_glyph_t *scaled_glyph);
@@ -487,7 +488,7 @@ _cairo_dwrite_font_face_scaled_font_create (void			*abstract_face,
     return _cairo_scaled_font_set_metrics (*font, &extents);
 }
 
-/* Implementation cairo_dwrite_scaled_font_backend_t */
+/* Implementation #cairo_dwrite_scaled_font_backend_t */
 void
 _cairo_dwrite_scaled_font_fini(void *scaled_font)
 {
@@ -535,7 +536,7 @@ _cairo_dwrite_ucs4_to_index(void			     *scaled_font,
     return index;
 }
 
-/* cairo_dwrite_scaled_glyph_init helper function bodies */
+/* cairo_dwrite_scaled_glyph_init() helper function bodies */
 cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_metrics(cairo_dwrite_scaled_font_t *scaled_font,
 					     cairo_scaled_glyph_t *scaled_glyph)
@@ -578,7 +579,7 @@ _cairo_dwrite_scaled_font_init_glyph_metrics(cairo_dwrite_scaled_font_t *scaled_
     return CAIRO_INT_STATUS_SUCCESS;
 }
 
-/**
+/*
  * Stack-based helper implementing IDWriteGeometrySink.
  * Used to determine the path of the glyphs.
  */

@@ -43,7 +43,7 @@ typedef HRESULT (WINAPI*DWriteCreateFactoryFunc)(
   IUnknown **factory
 );
 
-/* cairo_scaled_font_t implementation */
+/* #cairo_scaled_font_t implementation */
 struct _cairo_dwrite_scaled_font {
     cairo_scaled_font_t base;
     cairo_matrix_t mat;
@@ -210,7 +210,7 @@ private:
     UINT16              mAutoIndices[kNumAutoGlyphs];
 };
 
-/* cairo_font_face_t implementation */
+/* #cairo_font_face_t implementation */
 struct _cairo_dwrite_font_face {
     cairo_font_face_t base;
     IDWriteFont *font;

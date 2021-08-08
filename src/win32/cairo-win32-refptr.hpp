@@ -38,7 +38,7 @@
 
 template<typename T> class TemporaryRef;
 
-/**
+/*
  * RefPtr points to a refcounted thing that has AddRef and Release
  * methods to increase/decrease the refcount, respectively.  After a
  * RefPtr<T> is assigned a T*, the T* can be used through the RefPtr
@@ -137,7 +137,7 @@ private:
     }
 };
 
-/**
+/*
  * TemporaryRef<T> represents an object that holds a temporary
  * reference to a T.  TemporaryRef objects can't be manually ref'd or
  * unref'd (being temporaries, not lvalues), so can only relinquish
