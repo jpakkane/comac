@@ -1545,6 +1545,7 @@ cairo_font_face_status (cairo_font_face_t *font_face);
  * @CAIRO_FONT_TYPE_QUARTZ: The font is of type Quartz (Since: 1.6, in 1.2 and
  * 1.4 it was named CAIRO_FONT_TYPE_ATSUI)
  * @CAIRO_FONT_TYPE_USER: The font was create using cairo's user font api (Since: 1.8)
+ * @CAIRO_FONT_TYPE_DWRITE: The font is of type Win32 DWrite (Since: 1.18)
  *
  * #cairo_font_type_t is used to describe the type of a given font
  * face or scaled font. The font types are also known as "font
@@ -1581,7 +1582,8 @@ typedef enum _cairo_font_type {
     CAIRO_FONT_TYPE_FT,
     CAIRO_FONT_TYPE_WIN32,
     CAIRO_FONT_TYPE_QUARTZ,
-    CAIRO_FONT_TYPE_USER
+    CAIRO_FONT_TYPE_USER,
+    CAIRO_FONT_TYPE_DWRITE
 } cairo_font_type_t;
 
 cairo_public cairo_font_type_t
