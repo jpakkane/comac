@@ -276,17 +276,20 @@ _cairo_dwrite_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
 	break;
     }
 
-    cairo_dwrite_font_face_t *face = (cairo_dwrite_font_face_t*)malloc(sizeof(cairo_dwrite_font_face_t));
-    HRESULT hr = family->GetFirstMatchingFont(weight, DWRITE_FONT_STRETCH_NORMAL, style, &face->font);
+    // Cannot use C++ style new since cairo deallocates this.
+    cairo_dwrite_font_face_t *face = (cairo_dwrite_font_face_t*)_cairo_malloc(sizeof(cairo_dwrite_font_face_t));
+    IDWriteFont *font;
+    HRESULT hr = family->GetFirstMatchingFont(weight, DWRITE_FONT_STRETCH_NORMAL, style, &font);
     if (SUCCEEDED(hr)) {
-	// Cannot use C++ style new since cairo deallocates this.
-	*font_face = (cairo_font_face_t*)face;
-	_cairo_font_face_init (&(*(_cairo_dwrite_font_face**)font_face)->base, &_cairo_dwrite_font_face_backend);
-    } else {
-	free(face);
+	hr = font->CreateFontFace(&face->dwriteface);
+	if (SUCCEEDED(hr)) {
+	    *font_face = (cairo_font_face_t*)face;
+	    _cairo_font_face_init (&(*(_cairo_dwrite_font_face**)font_face)->base, &_cairo_dwrite_font_face_backend);
+	    return CAIRO_STATUS_SUCCESS;
+	}
     }
-
-    return CAIRO_STATUS_SUCCESS;
+    free(face);
+    return (cairo_status_t)CAIRO_INT_STATUS_UNSUPPORTED;
 }
 
 static cairo_bool_t
