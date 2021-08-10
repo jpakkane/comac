@@ -426,7 +426,8 @@ _cairo_dwrite_font_face_scaled_font_create (void			*abstract_face,
     cairo_dwrite_font_face_t *font_face = static_cast<cairo_dwrite_font_face_t*>(abstract_face);
 
     // Must do malloc and not C++ new, since Cairo frees this.
-    cairo_dwrite_scaled_font_t *dwriteFont = (cairo_dwrite_scaled_font_t*)malloc(sizeof(cairo_dwrite_scaled_font_t));
+    cairo_dwrite_scaled_font_t *dwriteFont = (cairo_dwrite_scaled_font_t*)_cairo_malloc(
+	sizeof(cairo_dwrite_scaled_font_t));
     *font = reinterpret_cast<cairo_scaled_font_t*>(dwriteFont);
     _cairo_scaled_font_init(&dwriteFont->base, &font_face->base, font_matrix, ctm, options, &_cairo_dwrite_scaled_font_backend);
 
@@ -645,18 +646,18 @@ public:
 	D2D1_FIGURE_BEGIN figureBegin)
     {
 	mStartPoint = startPoint;
-	cairo_status_t status = _cairo_path_fixed_move_to(mCairoPath,
-							  GetFixedX(startPoint),
-							  GetFixedY(startPoint));
+	_cairo_path_fixed_move_to(mCairoPath,
+				  GetFixedX(startPoint),
+				  GetFixedY(startPoint));
     }
 
     IFACEMETHODIMP_(void) EndFigure(
 	D2D1_FIGURE_END figureEnd)
     {
 	if (figureEnd == D2D1_FIGURE_END_CLOSED) {
-	    cairo_status_t status = _cairo_path_fixed_line_to(mCairoPath,
-							      GetFixedX(mStartPoint),
-							      GetFixedY(mStartPoint));
+	    _cairo_path_fixed_line_to(mCairoPath,
+				      GetFixedX(mStartPoint),
+				      GetFixedY(mStartPoint));
 	}
     }
 
@@ -665,13 +666,13 @@ public:
 	UINT beziersCount)
     {
 	for (unsigned int i = 0; i < beziersCount; i++) {
-	    cairo_status_t status = _cairo_path_fixed_curve_to(mCairoPath,
-							       GetFixedX(beziers[i].point1),
-							       GetFixedY(beziers[i].point1),
-							       GetFixedX(beziers[i].point2),
-							       GetFixedY(beziers[i].point2),
-							       GetFixedX(beziers[i].point3),
-							       GetFixedY(beziers[i].point3));
+	    _cairo_path_fixed_curve_to(mCairoPath,
+				       GetFixedX(beziers[i].point1),
+				       GetFixedY(beziers[i].point1),
+				       GetFixedX(beziers[i].point2),
+				       GetFixedY(beziers[i].point2),
+				       GetFixedX(beziers[i].point3),
+				       GetFixedY(beziers[i].point3));
 	}
     }
 
@@ -680,9 +681,9 @@ public:
 	UINT pointsCount)
     {
 	for (unsigned int i = 0; i < pointsCount; i++) {
-	    cairo_status_t status = _cairo_path_fixed_line_to(mCairoPath,
-		GetFixedX(points[i]),
-		GetFixedY(points[i]));
+	    _cairo_path_fixed_line_to(mCairoPath,
+				      GetFixedX(points[i]),
+				      GetFixedY(points[i]));
 	}
     }
 
@@ -896,7 +897,8 @@ cairo_dwrite_font_face_create_for_dwrite_fontface(void* dwrite_font, void* dwrit
 {
     IDWriteFont *dwritefont = static_cast<IDWriteFont*>(dwrite_font);
     IDWriteFontFace *dwriteface = static_cast<IDWriteFontFace*>(dwrite_font_face);
-    cairo_dwrite_font_face_t *face = new cairo_dwrite_font_face_t;
+    // Must do malloc and not C++ new, since Cairo frees this.
+    cairo_dwrite_font_face_t *face = (cairo_dwrite_font_face_t *)_cairo_malloc(sizeof(cairo_dwrite_font_face_t));
     cairo_font_face_t *font_face;
 
     dwriteface->AddRef();
@@ -1014,7 +1016,7 @@ _dwrite_draw_glyphs_to_gdi_surface_gdi(cairo_win32_surface_t *surface,
         measureMode = DWRITE_MEASURING_MODE_NATURAL;
         break;
     }
-    HRESULT hr = rt->DrawGlyphRun(0, 0, measureMode, run, params, color);
+    rt->DrawGlyphRun(0, 0, measureMode, run, params, color);
     BitBlt(surface->dc,
 	   area.left, area.top,
 	   area.right - area.left, area.bottom - area.top,
