@@ -122,7 +122,7 @@ cairo_win32_get_system_text_quality (void);
  * Win32 DirectWrite font support
  */
 cairo_public cairo_font_face_t *
-cairo_dwrite_font_face_create_for_dwrite_fontface (void *dwrite_font, void *dwrite_font_face);
+cairo_dwrite_font_face_create_for_dwrite_fontface (void *dwrite_font_face);
 
 cairo_public void
 cairo_dwrite_scaled_font_set_force_GDI_classic (cairo_scaled_font_t *dwrite_scaled_font, cairo_bool_t allowed);

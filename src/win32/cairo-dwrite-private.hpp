@@ -213,7 +213,6 @@ private:
 /* #cairo_font_face_t implementation */
 struct _cairo_dwrite_font_face {
     cairo_font_face_t base;
-    IDWriteFont *font;
     IDWriteFontFace *dwriteface;
 };
 typedef struct _cairo_dwrite_font_face cairo_dwrite_font_face_t;

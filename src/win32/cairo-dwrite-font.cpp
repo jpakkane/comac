@@ -298,8 +298,6 @@ _cairo_dwrite_font_face_destroy (void *font_face)
     cairo_dwrite_font_face_t *dwrite_font_face = static_cast<cairo_dwrite_font_face_t*>(font_face);
     if (dwrite_font_face->dwriteface)
 	dwrite_font_face->dwriteface->Release();
-    if (dwrite_font_face->font)
-	dwrite_font_face->font->Release();
     return TRUE;
 }
 
@@ -896,9 +894,8 @@ _cairo_dwrite_load_truetype_table(void                 *scaled_font,
 
 // WIN32 Helper Functions
 cairo_font_face_t*
-cairo_dwrite_font_face_create_for_dwrite_fontface(void* dwrite_font, void* dwrite_font_face)
+cairo_dwrite_font_face_create_for_dwrite_fontface(void* dwrite_font_face)
 {
-    IDWriteFont *dwritefont = static_cast<IDWriteFont*>(dwrite_font);
     IDWriteFontFace *dwriteface = static_cast<IDWriteFontFace*>(dwrite_font_face);
     // Must do malloc and not C++ new, since Cairo frees this.
     cairo_dwrite_font_face_t *face = (cairo_dwrite_font_face_t *)_cairo_malloc(sizeof(cairo_dwrite_font_face_t));
@@ -907,7 +904,6 @@ cairo_dwrite_font_face_create_for_dwrite_fontface(void* dwrite_font, void* dwrit
     dwriteface->AddRef();
 
     face->dwriteface = dwriteface;
-    face->font = NULL;
 
     font_face = (cairo_font_face_t*)face;
 
