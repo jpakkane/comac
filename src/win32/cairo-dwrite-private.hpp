@@ -33,8 +33,27 @@
  * Contributor(s):
  *	Bas Schouten <bschouten@mozilla.com>
  */
-#include <dwrite_1.h>
+
+#include "cairoint.h"
+#include <dwrite.h>
 #include <d2d1.h>
+
+/* If either of the dwrite_2.h or d2d1_3.h headers required for color fonts
+ * is not available, include our own version containing just the functions we need.
+ */
+
+#if HAVE_DWRITE_3_H
+#include <dwrite_3.h>
+#else
+#include "dw-extra.h"
+#endif
+
+#if HAVE_D2D1_3_H
+#include <d2d1_3.h>
+#else
+#include "d2d1-extra.h"
+#endif
+
 
 // DirectWrite is not available on all platforms.
 typedef HRESULT (WINAPI*DWriteCreateFactoryFunc)(
@@ -66,8 +85,15 @@ public:
     static IDWriteFactory *Instance()
     {
 	if (!mFactoryInstance) {
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
 	    DWriteCreateFactoryFunc createDWriteFactory = (DWriteCreateFactoryFunc)
 		GetProcAddress(LoadLibraryW(L"dwrite.dll"), "DWriteCreateFactory");
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 	    if (createDWriteFactory) {
 		HRESULT hr = createDWriteFactory(
 		    DWRITE_FACTORY_TYPE_SHARED,
@@ -77,6 +103,16 @@ public:
 	    }
 	}
 	return mFactoryInstance;
+    }
+
+    static IDWriteFactory4 *Instance4()
+    {
+	if (!mFactoryInstance4) {
+	    if (Instance()) {
+		Instance()->QueryInterface(&mFactoryInstance4);
+	    }
+	}
+	return mFactoryInstance4;
     }
 
     static IDWriteFontCollection *SystemCollection()
@@ -163,6 +199,7 @@ private:
     static void CreateRenderingParams();
 
     static IDWriteFactory *mFactoryInstance;
+    static IDWriteFactory4 *mFactoryInstance4;
     static IDWriteFontCollection *mSystemCollection;
     static IDWriteRenderingParams *mDefaultRenderingParams;
     static IDWriteRenderingParams *mCustomClearTypeRenderingParams;
@@ -214,6 +251,7 @@ private:
 struct _cairo_dwrite_font_face {
     cairo_font_face_t base;
     IDWriteFontFace *dwriteface;
+    cairo_bool_t have_color;
 };
 typedef struct _cairo_dwrite_font_face cairo_dwrite_font_face_t;
 

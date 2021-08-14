@@ -296,6 +296,7 @@ typedef struct _cairo_user_data_key {
  * @CAIRO_STATUS_FREETYPE_ERROR: error occurred in libfreetype (Since 1.16)
  * @CAIRO_STATUS_WIN32_GDI_ERROR: error occurred in the Windows Graphics Device Interface (Since 1.16)
  * @CAIRO_STATUS_TAG_ERROR: invalid tag name, attributes, or nesting (Since 1.16)
+ * @CAIRO_STATUS_DWRITE_ERROR: error occurred in the Windows Direct Write API (Since 1.18)
  * @CAIRO_STATUS_LAST_STATUS: this is a special value indicating the number of
  *   status values defined in this enumeration.  When using this value, note
  *   that the version of cairo at run-time may have additional status values
@@ -356,6 +357,7 @@ typedef enum _cairo_status {
     CAIRO_STATUS_FREETYPE_ERROR,
     CAIRO_STATUS_WIN32_GDI_ERROR,
     CAIRO_STATUS_TAG_ERROR,
+    CAIRO_STATUS_DWRITE_ERROR,
 
     CAIRO_STATUS_LAST_STATUS
 } cairo_status_t;
