@@ -1169,6 +1169,9 @@ cairo_pdf_interchange_write_docinfo (cairo_pdf_surface_t *surface)
 {
     cairo_pdf_interchange_t *ic = &surface->interchange;
     cairo_int_status_t status;
+    unsigned int i, num_elems;
+    struct metadata *data;
+    unsigned char *p;
 
     surface->docinfo_res = _cairo_pdf_surface_new_object (surface);
     if (surface->docinfo_res.id == 0)
@@ -1202,6 +1205,26 @@ cairo_pdf_interchange_write_docinfo (cairo_pdf_surface_t *surface)
 
     if (ic->docinfo.mod_date)
 	_cairo_output_stream_printf (surface->object_stream.stream, "   /ModDate %s\n", ic->docinfo.mod_date);
+
+    num_elems = _cairo_array_num_elements (&ic->custom_metadata);
+    for (i = 0; i < num_elems; i++) {
+	data = _cairo_array_index (&ic->custom_metadata, i);
+	if (data->value) {
+	    _cairo_output_stream_printf (surface->object_stream.stream, "   /");
+	    /* The name can be any utf8 string. Use hex codes as
+	     * specified in section 7.3.5 of PDF reference
+	     */
+	    p = (unsigned char *)data->name;
+	    while (*p) {
+		if (*p < 0x21 || *p > 0x7e || *p == '#' || *p == '/')
+		    _cairo_output_stream_printf (surface->object_stream.stream, "#%02x", *p);
+		else
+		    _cairo_output_stream_printf (surface->object_stream.stream, "%c", *p);
+		p++;
+	    }
+	    _cairo_output_stream_printf (surface->object_stream.stream, " %s\n", data->value);
+	}
+    }
 
     _cairo_output_stream_printf (surface->object_stream.stream,
 				 ">>\n");
@@ -1624,6 +1647,7 @@ _cairo_pdf_interchange_init (cairo_pdf_surface_t *surface)
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
     memset (&ic->docinfo, 0, sizeof (ic->docinfo));
+    _cairo_array_init (&ic->custom_metadata, sizeof(struct metadata));
     _cairo_pdf_interchange_set_create_date (surface);
     status = _cairo_array_append (&ic->outline, &outline_root);
 
@@ -1654,6 +1678,8 @@ void
 _cairo_pdf_interchange_fini (cairo_pdf_surface_t *surface)
 {
     cairo_pdf_interchange_t *ic = &surface->interchange;
+    unsigned int i, num_elems;
+    struct metadata *data;
 
     _cairo_tag_stack_fini (&ic->analysis_tag_stack);
     _cairo_tag_stack_fini (&ic->render_tag_stack);
@@ -1674,6 +1700,14 @@ _cairo_pdf_interchange_fini (cairo_pdf_surface_t *surface)
     free (ic->docinfo.creator);
     free (ic->docinfo.create_date);
     free (ic->docinfo.mod_date);
+
+    num_elems = _cairo_array_num_elements (&ic->custom_metadata);
+    for (i = 0; i < num_elems; i++) {
+	data = _cairo_array_index (&ic->custom_metadata, i);
+	free (data->name);
+	free (data->value);
+    }
+    _cairo_array_fini (&ic->custom_metadata);
 }
 
 cairo_int_status_t
@@ -1867,4 +1901,70 @@ _cairo_pdf_interchange_set_metadata (cairo_pdf_surface_t  *surface,
     }
 
     return CAIRO_STATUS_SUCCESS;
+}
+
+static const char *reserved_metadata_names[] = {
+    "",
+    "Title",
+    "Author",
+    "Subject",
+    "Keywords",
+    "Creator",
+    "Producer",
+    "CreationDate",
+    "ModDate",
+    "Trapped",
+};
+
+cairo_int_status_t
+_cairo_pdf_interchange_set_custom_metadata (cairo_pdf_surface_t  *surface,
+					    const char           *name,
+					    const char           *value)
+{
+    cairo_pdf_interchange_t *ic = &surface->interchange;
+    struct metadata *data;
+    struct metadata new_data;
+    int i, num_elems;
+    cairo_int_status_t status;
+    char *s = NULL;
+
+    if (name == NULL)
+	return CAIRO_STATUS_NULL_POINTER;
+
+    for (i = 0; i < ARRAY_LENGTH (reserved_metadata_names); i++) {
+	if (strcmp(name, reserved_metadata_names[i]) == 0)
+	    return CAIRO_STATUS_INVALID_STRING;
+    }
+
+    /* First check if we already have an entry for this name. If so,
+     * update the value. A NULL value means the entry has been removed
+     * and will not be emitted. */
+    num_elems = _cairo_array_num_elements (&ic->custom_metadata);
+    for (i = 0; i < num_elems; i++) {
+	data = _cairo_array_index (&ic->custom_metadata, i);
+	if (strcmp(name, data->name) == 0) {
+	    free (data->value);
+	    data->value = NULL;
+	    if (value && strlen(value)) {
+		status = _cairo_utf8_to_pdf_string (value, &s);
+		if (unlikely (status))
+		    return status;
+		data->value = s;
+	    }
+	    return CAIRO_STATUS_SUCCESS;
+	}
+    }
+
+    /* Add new entry */
+    status = CAIRO_STATUS_SUCCESS;
+    if (value && strlen(value)) {
+	new_data.name = strdup (name);
+	status = _cairo_utf8_to_pdf_string (value, &s);
+	if (unlikely (status))
+	    return status;
+	new_data.value = s;
+	status = _cairo_array_append (&ic->custom_metadata, &new_data);
+    }
+
+    return status;
 }

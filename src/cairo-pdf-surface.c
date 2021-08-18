@@ -908,6 +908,42 @@ cairo_pdf_surface_set_metadata (cairo_surface_t      *surface,
 }
 
 /**
+ * cairo_pdf_surface_set_custom_metadata:
+ * @surface: a PDF #cairo_surface_t
+ * @name: The name of the custom metadata item to set (utf8).
+ * @value: The value of the metadata (utf8).
+ *
+ * Set custom document metadata. @name may be any string except for
+ * the following names reserved by PDF: "Title", "Author", "Subject",
+ * "Keywords", "Creator", "Producer", "CreationDate", "ModDate",
+ * "Trapped".
+ *
+ * If @value is NULL or an empty string, the @name metadata will not be set.
+ *
+ * For example:
+ * <informalexample><programlisting>
+ * cairo_pdf_surface_set_custom_metadata (surface, "ISBN", "978-0123456789");
+ * </programlisting></informalexample>
+ *
+ * Since: 1.18
+ **/
+void
+cairo_pdf_surface_set_custom_metadata (cairo_surface_t	    *surface,
+                                       const char           *name,
+                                       const char           *value)
+{
+    cairo_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
+    cairo_status_t status;
+
+    if (! _extract_pdf_surface (surface, &pdf_surface))
+	return;
+
+    status = _cairo_pdf_interchange_set_custom_metadata (pdf_surface, name, value);
+    if (status)
+	status = _cairo_surface_set_error (surface, status);
+}
+
+/**
  * cairo_pdf_surface_set_page_label:
  * @surface: a PDF #cairo_surface_t
  * @utf8: The page label.
