@@ -1,9 +1,15 @@
 a1-bug
+a1-clip-fill-rule
 a1-tiger
 aliasing
+alpha-similar
 arc-direction
 arc-looping-dash
+big-empty-box
+big-empty-triangle
 big-line
+big-little-box
+bitmap-font
 bug-84115
 bug-bo-ricotz
 bug-extents
@@ -19,11 +25,13 @@ caps-joins-alpha
 caps-joins-curve
 caps-tails-curve
 clear-source
+clip-device-offset
 clip-disjoint
 clip-disjoint-quad
 clip-fill
 clip-fill-eo-unbounded
 clip-fill-nz-unbounded
+clip-fill-rule-pixel-aligned
 clip-image
 clip-intersect
 clip-operator
@@ -33,6 +41,7 @@ clip-stroke
 clip-stroke-unbounded
 clip-text
 clip-twice
+clip-unbounded
 close-path-current-point
 copy-path
 coverage-abutting
@@ -54,6 +63,8 @@ degenerate-curve-to
 degenerate-path
 degenerate-pen
 degenerate-rel-curve-to
+device-offset
+device-offset-positive
 drunkard-tails
 extended-blend
 extended-blend-alpha
@@ -69,6 +80,7 @@ fill-and-stroke
 fill-and-stroke-alpha
 fill-and-stroke-alpha-add
 fill-degenerate-sort-order
+fill-empty
 fill-image
 fill-missed-stop
 fill-rule
@@ -82,6 +94,8 @@ ft-text-vertical-layout-type3
 glyph-cache-pressure
 gradient-alpha
 gradient-constant-alpha
+gradient-zero-stops
+gradient-zero-stops-mask
 group-unaligned
 halo
 halo-transform
@@ -97,6 +111,7 @@ large-font
 large-twin-antialias-mixed
 leaky-dashed-stroke
 linear-gradient
+linear-gradient-one-stop
 linear-gradient-reflect
 linear-gradient-subset
 line-width-overlap-offset
@@ -115,6 +130,7 @@ mesh-pattern-fold
 mesh-pattern-overlap
 mesh-pattern-transformed
 new-sub-path
+nil-surface
 operator-source
 over-around-source
 overlapping-boxes
@@ -193,6 +209,7 @@ record-neg-extents-unbounded
 record-paint-alpha
 record-paint-alpha-clip
 record-paint-alpha-clip-mask
+record-replay-extend-none
 record-replay-extend-pad
 record-replay-extend-reflect
 record-replay-extend-repeat
@@ -207,6 +224,7 @@ rounded-rectangle-fill
 rounded-rectangle-stroke
 scale-offset-image
 scale-offset-similar
+scale-source-surface-paint
 select-font-face
 set-source
 shape-general-convex
@@ -221,11 +239,13 @@ smask-mask
 smask-paint
 smask-stroke
 smask-text
+source-surface-scale-paint
 spline-decomposition
 stroke-ctm-caps
 stroke-image
 stroke-pattern
 subsurface
+subsurface-outside-target
 subsurface-scale
 surface-pattern
 surface-pattern-operator
@@ -242,6 +262,7 @@ text-pattern
 text-rotate
 text-transform
 text-unhinted-metrics
+thin-lines
 tiger
 tighten-bounds
 transforms

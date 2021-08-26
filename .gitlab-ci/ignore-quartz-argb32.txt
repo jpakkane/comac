@@ -14,6 +14,7 @@ ft-text-vertical-layout-type1
 ft-text-vertical-layout-type3
 negative-stride-image
 operator-www
+pdf-operators-text
 radial-gradient
 radial-gradient-mask
 radial-gradient-mask-source
