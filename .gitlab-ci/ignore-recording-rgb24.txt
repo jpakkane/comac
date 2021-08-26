@@ -3,12 +3,19 @@ clear-source
 clip-text
 coverage-rectangles
 culled-glyphs
+dash-zero-length
+degenerate-path
 extended-blend-alpha-mask
+fill-and-stroke
+fill-missed-stop
 finer-grained-fallbacks
 ft-show-glyphs-positioning
 ft-text-vertical-layout-type1
 ft-text-vertical-layout-type3
+gradient-alpha
+gradient-constant-alpha
 halo-transform
+new-sub-path
 overlapping-glyphs
 pthread-same-source
 record1414x-fill-alpha
@@ -22,6 +29,7 @@ recording-surface-extend-reflect
 recording-surface-extend-repeat
 recording-surface-over
 recording-surface-source
+rel-path
 scale-offset-similar
 show-glyphs-advance
 subsurface

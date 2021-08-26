@@ -4,7 +4,6 @@ bug-51910
 bug-84115
 bug-extents
 bug-image-compositor
-bug-source-cu
 bug-spline
 caps-joins-05
 caps-joins-curve
@@ -76,8 +75,6 @@ partial-coverage-reference
 partial-coverage-three-quarter-reference
 path-stroke-twice
 pthread-show-text
-push-group
-push-group-color
 radial-gradient
 radial-gradient-mask
 radial-gradient-mask-source

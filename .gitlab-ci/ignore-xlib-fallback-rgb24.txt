@@ -28,10 +28,12 @@ dash-infinite-loop
 dash-scale
 dash-zero-length
 degenerate-curve-to
+degenerate-path
 degenerate-pen
 degenerate-rel-curve-to
 extended-blend-alpha-mask
 fallback
+fill-missed-stop
 filter-bilinear-extents
 finer-grained-fallbacks
 font-matrix-translation
@@ -52,6 +54,7 @@ line-width-tolerance
 long-dashed-lines
 mask-transformed-image
 mask-transformed-similar
+new-sub-path
 operator-alpha-alpha
 over-above-source
 over-around-source
@@ -71,6 +74,7 @@ recording-surface-extend-none
 recording-surface-over
 rectilinear-miter-limit
 reflected-stroke
+rel-path
 select-font-face
 self-copy
 shifted-operator

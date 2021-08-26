@@ -8,11 +8,15 @@ clip-stroke-unbounded
 clip-twice
 coverage-intersecting-triangles
 culled-glyphs
+dash-zero-length
+degenerate-path
 extended-blend-alpha-mask
 fallback
+fill-missed-stop
 ft-text-vertical-layout-type1
 hatchings
 mask
+new-sub-path
 operator-source
 radial-gradient
 radial-gradient-mask
@@ -25,8 +29,10 @@ recording-surface-extend-none
 recording-surface-over
 record-neg-extents-bounded
 record-paint-alpha-solid-clip
+record-replay-extend-pad
 record-replay-extend-reflect
 record-replay-extend-repeat
+rel-path
 rotated-clip
 text-antialias-subpixel
 text-antialias-subpixel-bgr

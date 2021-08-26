@@ -3,7 +3,6 @@ arc-looping-dash
 bug-51910
 bug-84115
 bug-image-compositor
-bug-source-cu
 bug-spline
 caps-05
 caps-1
@@ -54,8 +53,6 @@ partial-clip-text-bottom
 partial-clip-text-left
 partial-coverage-reference
 partial-coverage-three-quarter-reference
-push-group
-push-group-color
 radial-gradient
 radial-gradient-mask
 radial-gradient-mask-source
@@ -115,6 +112,7 @@ text-antialias-subpixel-rgb
 text-antialias-subpixel-vbgr
 text-antialias-subpixel-vrgb
 text-glyph-range
+text-pattern
 text-rotate
 text-transform
 tighten-bounds

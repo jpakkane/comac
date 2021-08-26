@@ -102,6 +102,7 @@ text-antialias-subpixel-rgb
 text-antialias-subpixel-vbgr
 text-antialias-subpixel-vrgb
 text-glyph-range
+text-pattern
 text-rotate
 text-transform
 tighten-bounds

@@ -73,8 +73,6 @@ partial-coverage-reference
 partial-coverage-three-quarter-reference
 path-stroke-twice
 pthread-show-text
-push-group
-push-group-color
 radial-outer-focus
 record1414x-fill-alpha
 record1414x-select-font-face

@@ -18,3 +18,4 @@ text-antialias-subpixel-vrgb
 text-pattern
 text-rotate
 text-unhinted-metrics
+user-font-mask

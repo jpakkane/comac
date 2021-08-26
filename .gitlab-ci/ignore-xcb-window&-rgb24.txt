@@ -46,8 +46,6 @@ partial-clip-text-bottom
 partial-clip-text-left
 partial-coverage-reference
 partial-coverage-three-quarter-reference
-push-group
-push-group-color
 radial-outer-focus
 record1414x-fill-alpha
 record1414x-self-intersecting
@@ -102,6 +100,7 @@ text-antialias-subpixel-rgb
 text-antialias-subpixel-vbgr
 text-antialias-subpixel-vrgb
 text-glyph-range
+text-pattern
 text-rotate
 text-transform
 tighten-bounds

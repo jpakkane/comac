@@ -7,11 +7,14 @@ clip-text
 coverage-intersecting-triangles
 culled-glyphs
 curve-to-as-line-to
+dash-zero-length
+degenerate-path
 extended-blend-alpha-mask
 fallback
 fill-and-stroke
 fill-and-stroke-alpha
 fill-and-stroke-alpha-add
+fill-missed-stop
 finer-grained-fallbacks
 ft-show-glyphs-positioning
 ft-text-vertical-layout-type1
@@ -22,6 +25,7 @@ infinite-join
 large-twin-antialias-mixed
 leaky-polygon
 mask
+new-sub-path
 operator-clear
 operator-source
 overlapping-glyphs
