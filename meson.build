@@ -330,6 +330,7 @@ if freetype_dep.found()
     'FT_Library_SetLcdFilter',
     'FT_Get_Var_Design_Coordinates',
     'FT_Done_MM_Var',
+    'FT_Palette_Set_Foreground_Color',
   ]
 
   if freetype_dep.type_name() == 'internal'

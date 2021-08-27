@@ -1865,6 +1865,7 @@ _cairo_win32_printing_surface_show_glyphs (void                 *abstract_surfac
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 glyphs[i].index,
 						 CAIRO_SCALED_GLYPH_INFO_PATH,
+						 NULL, /* foreground color */
 						 &scaled_glyph);
 	    if (status)
                 break;
@@ -1919,6 +1920,7 @@ _cairo_win32_printing_surface_show_glyphs (void                 *abstract_surfac
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[i].index,
 					     CAIRO_SCALED_GLYPH_INFO_PATH,
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (status)
 	    break;

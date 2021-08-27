@@ -1611,6 +1611,7 @@ cairo_scaled_font_glyph_extents (cairo_scaled_font_t   *scaled_font,
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[i].index,
 					     CAIRO_SCALED_GLYPH_INFO_METRICS,
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (unlikely (status)) {
 	    status = _cairo_scaled_font_set_error (scaled_font, status);
@@ -1732,6 +1733,7 @@ cairo_scaled_font_text_to_glyphs_internal_cached (cairo_scaled_font_t		 *scaled_
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 g,
 						 CAIRO_SCALED_GLYPH_INFO_METRICS,
+						 NULL, /* foreground color */
 						 &scaled_glyph);
 	    if (unlikely (status))
 		return status;
@@ -1792,6 +1794,7 @@ cairo_scaled_font_text_to_glyphs_internal_uncached (cairo_scaled_font_t	 *scaled
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 					     g,
 					     CAIRO_SCALED_GLYPH_INFO_METRICS,
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	    if (unlikely (status))
 		return status;
@@ -2176,6 +2179,7 @@ _cairo_scaled_font_single_glyph_device_extents (cairo_scaled_font_t	 *scaled_fon
     status = _cairo_scaled_glyph_lookup (scaled_font,
 					 glyph->index,
 					 CAIRO_SCALED_GLYPH_INFO_METRICS,
+					 NULL, /* foreground color */
 					 &scaled_glyph);
     if (likely (status == CAIRO_STATUS_SUCCESS)) {
 	cairo_bool_t round_xy = _cairo_font_options_get_round_glyph_positions (&scaled_font->options) == CAIRO_ROUND_GLYPH_POS_ON;
@@ -2246,6 +2250,7 @@ _cairo_scaled_font_glyph_device_extents (cairo_scaled_font_t	 *scaled_font,
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 glyphs[i].index,
 						 CAIRO_SCALED_GLYPH_INFO_METRICS,
+						 NULL, /* foreground color */
 						 &scaled_glyph);
 	    if (unlikely (status))
 		break;
@@ -2402,6 +2407,7 @@ _cairo_scaled_font_show_glyphs (cairo_scaled_font_t	*scaled_font,
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[i].index,
 					     CAIRO_SCALED_GLYPH_INFO_SURFACE,
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 
 	if (unlikely (status))
@@ -2656,6 +2662,7 @@ _cairo_scaled_font_glyph_path (cairo_scaled_font_t *scaled_font,
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[i].index,
 					     CAIRO_SCALED_GLYPH_INFO_PATH,
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (status == CAIRO_INT_STATUS_SUCCESS) {
 	    status = _cairo_path_fixed_append (path,
@@ -2670,6 +2677,7 @@ _cairo_scaled_font_glyph_path (cairo_scaled_font_t *scaled_font,
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 glyphs[i].index,
 						 CAIRO_SCALED_GLYPH_INFO_SURFACE,
+						 NULL, /* foreground color */
 						 &scaled_glyph);
 	    if (unlikely (status))
 		goto BAIL;
@@ -2830,7 +2838,8 @@ _cairo_scaled_glyph_set_recording_surface (cairo_scaled_glyph_t *scaled_glyph,
 void
 _cairo_scaled_glyph_set_color_surface (cairo_scaled_glyph_t *scaled_glyph,
 	                               cairo_scaled_font_t *scaled_font,
-	                               cairo_image_surface_t *surface)
+	                               cairo_image_surface_t *surface,
+				       cairo_bool_t uses_foreground_color)
 {
     if (scaled_glyph->color_surface != NULL)
 	cairo_surface_destroy (&scaled_glyph->color_surface->base);
@@ -2838,6 +2847,7 @@ _cairo_scaled_glyph_set_color_surface (cairo_scaled_glyph_t *scaled_glyph,
     /* sanity check the backend glyph contents */
     _cairo_debug_check_image_surface_is_defined (&surface->base);
     scaled_glyph->color_surface = surface;
+    scaled_glyph->uses_foreground_color = uses_foreground_color;
 
     if (surface != NULL)
 	scaled_glyph->has_info |= CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE;
@@ -2956,6 +2966,8 @@ _cairo_scaled_font_free_last_glyph (cairo_scaled_font_t *scaled_font,
  * @index: the glyph to create
  * @info: a #cairo_scaled_glyph_info_t marking which portions of
  * the glyph should be filled in.
+ * @foreground_color - foreground color to use when rendering color fonts. Use NULL
+ * if not requesting CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE or foreground color is unknown.
  * @scaled_glyph_ret: a #cairo_scaled_glyph_t where the glyph
  * is returned.
  *
@@ -2976,11 +2988,14 @@ _cairo_scaled_font_free_last_glyph (cairo_scaled_font_t *scaled_font,
  *  %CAIRO_SCALED_GLYPH_INFO_METRICS - glyph metrics and bounding box
  *  %CAIRO_SCALED_GLYPH_INFO_SURFACE - surface holding glyph image
  *  %CAIRO_SCALED_GLYPH_INFO_PATH - path holding glyph outline in device space
+ *  %CAIRO_SCALED_GLYPH_INFO_RECORDING_SURFACE - surface holding recording of glyph
+ *  %CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE - surface holding color glyph image
  **/
 cairo_int_status_t
 _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
 			    unsigned long index,
 			    cairo_scaled_glyph_info_t info,
+			    const cairo_color_t   *foreground_color,
 			    cairo_scaled_glyph_t **scaled_glyph_ret)
 {
     cairo_int_status_t		 status = CAIRO_INT_STATUS_SUCCESS;
@@ -2997,6 +3012,9 @@ _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
 
     if (CAIRO_INJECT_FAULT ())
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+
+    if (foreground_color == NULL)
+	foreground_color = CAIRO_COLOR_BLACK;
 
     /*
      * Check cache for glyph
@@ -3016,7 +3034,8 @@ _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
 	status =
 	    scaled_font->backend->scaled_glyph_init (scaled_font,
 						     scaled_glyph,
-						     info | CAIRO_SCALED_GLYPH_INFO_METRICS);
+						     info | CAIRO_SCALED_GLYPH_INFO_METRICS,
+						     foreground_color);
 	if (unlikely (status)) {
 	    _cairo_scaled_font_free_last_glyph (scaled_font, scaled_glyph);
 	    goto err;
@@ -3035,10 +3054,26 @@ _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
      * already has the requested data and amend it if not
      */
     need_info = info & ~scaled_glyph->has_info;
+
+    /* If this is not a color glyph, don't try loading the color surface again. */
+    if ((need_info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) && scaled_glyph->not_color_glyph)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+
+    /* If requesting a color surface for a glyph that has used the
+     * foreground color to render the color_surface, and the
+     * foreground color has changed, request a new image. */
+    if ((info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) &&
+	scaled_glyph->uses_foreground_color &&
+	!_cairo_color_equal (foreground_color, &scaled_glyph->foreground_color))
+    {
+	need_info |= CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE;
+    }
+
     if (need_info) {
 	status = scaled_font->backend->scaled_glyph_init (scaled_font,
 							  scaled_glyph,
-							  need_info);
+							  need_info,
+							  foreground_color);
 	if (unlikely (status))
 	    goto err;
 

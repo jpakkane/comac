@@ -1,3 +1,4 @@
+/* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* Cairo - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
@@ -269,6 +270,7 @@ render_glyphs (cairo_gl_surface_t *dst,
 	status = _cairo_scaled_glyph_lookup (info->font,
 					     info->glyphs[i].index,
 					     CAIRO_SCALED_GLYPH_INFO_SURFACE,
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (unlikely (status))
 	    goto FINISH;

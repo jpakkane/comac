@@ -144,7 +144,8 @@ _cairo_user_scaled_font_create_recording_context (const cairo_user_scaled_font_t
 static cairo_int_status_t
 _cairo_user_scaled_glyph_init (void			 *abstract_font,
 			       cairo_scaled_glyph_t	 *scaled_glyph,
-			       cairo_scaled_glyph_info_t  info)
+			       cairo_scaled_glyph_info_t  info,
+			       const cairo_color_t       *foreground_color)
 {
     cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
     cairo_user_scaled_font_t *scaled_font = abstract_font;
@@ -300,7 +301,8 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
         if (scaled_glyph->has_color && (info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE)) {
             _cairo_scaled_glyph_set_color_surface (scaled_glyph,
                                                    &scaled_font->base,
-                                                   (cairo_image_surface_t *)surface);
+                                                   (cairo_image_surface_t *)surface,
+						   FALSE);
         }
     }
 

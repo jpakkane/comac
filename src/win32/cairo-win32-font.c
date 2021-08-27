@@ -715,6 +715,7 @@ _cairo_win32_scaled_font_type1_text_to_glyphs (cairo_win32_scaled_font_t *scaled
 	status = _cairo_scaled_glyph_lookup (&scaled_font->base,
 					     glyph_indices[i],
 					     CAIRO_SCALED_GLYPH_INFO_METRICS,
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (status) {
 	    free (*glyphs);
@@ -1319,7 +1320,8 @@ _draw_glyphs_on_surface (cairo_win32_surface_t     *surface,
 static cairo_int_status_t
 _cairo_win32_scaled_font_glyph_init (void		       *abstract_font,
 				     cairo_scaled_glyph_t      *scaled_glyph,
-				     cairo_scaled_glyph_info_t  info)
+				     cairo_scaled_glyph_info_t  info,
+				     const cairo_color_t       *foreground_color)
 {
     cairo_win32_scaled_font_t *scaled_font = abstract_font;
     cairo_status_t status;

@@ -3994,6 +3994,7 @@ _can_composite_glyphs (cairo_xcb_surface_t *dst,
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 glyphs->index,
 						 CAIRO_SCALED_GLYPH_INFO_METRICS,
+                                                 NULL, /* foreground color */
 						 &glyph);
 	    if (unlikely (status))
 		break;
@@ -4399,6 +4400,7 @@ _cairo_xcb_surface_add_glyph (cairo_xcb_connection_t *connection,
 					     glyph_index,
 					     CAIRO_SCALED_GLYPH_INFO_METRICS |
 					     CAIRO_SCALED_GLYPH_INFO_SURFACE,
+                                             NULL, /* foreground color */
 					     scaled_glyph_out);
 	if (unlikely (status))
 	    return status;
@@ -4692,6 +4694,7 @@ _composite_glyphs (void				*closure,
 	    status = _cairo_scaled_glyph_lookup (info->font,
 						 glyph_index,
 						 CAIRO_SCALED_GLYPH_INFO_METRICS,
+                                                 NULL, /* foreground color */
 						 &glyph);
 	    if (unlikely (status)) {
 		cairo_surface_destroy (&src->base);
