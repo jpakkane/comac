@@ -3,6 +3,9 @@ coverage-intersecting-triangles
 culled-glyphs
 extended-blend-alpha-mask
 fallback
+ft-show-glyphs-positioning
+ft-text-vertical-layout-type1
+ft-text-vertical-layout-type3
 halo-transform
 overlapping-glyphs
 record1414x-select-font-face
@@ -11,13 +14,10 @@ show-glyphs-advance
 subsurface
 subsurface-scale
 text-antialias-subpixel
-text-antialias-subpixel-rgb
 text-antialias-subpixel-bgr
-text-antialias-subpixel-vrgb
+text-antialias-subpixel-rgb
 text-antialias-subpixel-vbgr
+text-antialias-subpixel-vrgb
 text-pattern
 text-rotate
 text-unhinted-metrics
-ft-show-glyphs-positioning
-ft-text-vertical-layout-type1
-ft-text-vertical-layout-type3
