@@ -57,13 +57,15 @@ test_scaled_font_init (cairo_scaled_font_t  *scaled_font,
 static void
 render_glyph_solid (cairo_t *cr, double width, double height, cairo_bool_t color)
 {
+    cairo_pattern_t *pattern = cairo_pattern_reference(cairo_get_source (cr));
+
     if (color)
         cairo_set_source_rgba (cr, 0, 1, 1, 0.5);
     cairo_rectangle (cr, 0, 0, width/2, height/2);
     cairo_fill (cr);
 
     if (color)
-        cairo_set_source_rgba (cr, 1, 0, 1, 0.5);
+        cairo_set_source (cr, pattern);
     cairo_rectangle (cr, width/4, height/4, width/2, height/2);
     cairo_fill (cr);
 
@@ -71,6 +73,8 @@ render_glyph_solid (cairo_t *cr, double width, double height, cairo_bool_t color
         cairo_set_source_rgba (cr, 1, 1, 0, 0.5);
     cairo_rectangle (cr, width/2, height/2, width/2, height/2);
     cairo_fill (cr);
+
+    cairo_pattern_destroy (pattern);
 }
 
 static void
@@ -236,7 +240,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_stroke (cr);
 
     /* text in color */
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    cairo_set_source_rgb (cr, 0, 0.3, 0);
     cairo_move_to (cr, BORDER, BORDER + font_extents.ascent);
     cairo_show_text (cr, text);
 

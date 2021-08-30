@@ -72,6 +72,7 @@ struct _cairo_pattern {
     cairo_filter_t		filter;
     cairo_extend_t		extend;
     cairo_bool_t		has_component_alpha;
+    cairo_bool_t		is_userfont_foreground;
 
     cairo_matrix_t		matrix;
     double			opacity;

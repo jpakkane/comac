@@ -1763,6 +1763,22 @@ typedef cairo_status_t (*cairo_user_scaled_font_init_func_t) (cairo_scaled_font_
  * cairo_user_font_face_set_render_color_glyph_func(), setting the
  * source is a valid operation.
  *
+ * When this callback is set with
+ * cairo_user_font_face_set_render_color_glyph_func(), the default
+ * source is the current source color of the context that is rendering
+ * the user font. That is, the same color a non-color user font will
+ * be rendered in. In most cases the callback will want to set a
+ * specific color. If the callback wishes to use the current context
+ * color after using another source, it should retain a reference to
+ * the source or use cairo_save()/cairo_restore() prior to changing
+ * the source. Note that the default source contains an internal
+ * marker to indicate that it is to be substituted with the current
+ * context source color when rendered to a surface. Querying the
+ * default source pattern will reveal a solid black color, however
+ * this is not representative of the color that will actually be
+ * used. Similarly, setting a solid black color will render black, not
+ * the current context source when the glyph is painted to a surface.
+ *
  * Other non-default settings on @cr include a font size of 1.0 (given that
  * it is set up to be in font space), and font options corresponding to
  * @scaled_font.
