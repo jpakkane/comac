@@ -302,7 +302,7 @@ struct _cairo_pdf_surface {
 	cairo_bool_t active;
 	cairo_pdf_resource_t self;
 	cairo_pdf_resource_t length;
-	long start_offset;
+	long long start_offset;
 	cairo_bool_t compressed;
 	cairo_output_stream_t *old_output;
     } pdf_stream;
