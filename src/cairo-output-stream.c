@@ -1,3 +1,4 @@
+/* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* cairo-output-stream.c: Output stream abstraction
  *
  * Copyright © 2005 Red Hat, Inc
@@ -382,7 +383,8 @@ _cairo_dtostr (char *buffer, size_t size, double d, cairo_bool_t limited_precisi
 }
 
 enum {
-    LENGTH_MODIFIER_LONG = 0x100
+    LENGTH_MODIFIER_LONG = 0x100,
+    LENGTH_MODIFIER_LONG_LONG = 0x200
 };
 
 /* Here's a limited reimplementation of printf.  The reason for doing
@@ -440,6 +442,10 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
 	if (*f == 'l') {
 	    length_modifier = LENGTH_MODIFIER_LONG;
 	    f++;
+	    if (*f == 'l') {
+		length_modifier = LENGTH_MODIFIER_LONG_LONG;
+		f++;
+	    }
 	}
 
 	/* The only format strings exist in the cairo implementation
@@ -489,6 +495,20 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
                 snprintf (buffer, sizeof buffer,
                           single_fmt, va_arg (ap, long int));
             }
+	    break;
+	case 'd' | LENGTH_MODIFIER_LONG_LONG:
+	case 'u' | LENGTH_MODIFIER_LONG_LONG:
+	case 'o' | LENGTH_MODIFIER_LONG_LONG:
+	case 'x' | LENGTH_MODIFIER_LONG_LONG:
+	case 'X' | LENGTH_MODIFIER_LONG_LONG:
+	    if (var_width) {
+		width = va_arg (ap, int);
+		snprintf (buffer, sizeof buffer,
+			  single_fmt, width, va_arg (ap, long long int));
+	    } else {
+		snprintf (buffer, sizeof buffer,
+			  single_fmt, va_arg (ap, long long int));
+	    }
 	    break;
 	case 's': {
 	    /* Write out strings as they may be larger than the buffer. */
@@ -570,7 +590,7 @@ _cairo_output_stream_print_matrix (cairo_output_stream_t *stream,
 				 m.xx, m.yx, m.xy, m.yy, m.x0, m.y0);
 }
 
-long
+long long
 _cairo_output_stream_get_position (cairo_output_stream_t *stream)
 {
     return stream->position;

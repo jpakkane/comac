@@ -243,7 +243,7 @@ typedef enum {
 typedef struct _cairo_pdf_object {
     cairo_pdf_object_type_t type;
     union {
-	long offset; /* type == PDF_OBJECT_UNCOMPRESSED */
+	long long offset; /* type == PDF_OBJECT_UNCOMPRESSED */
 	struct compressed_obj {  /* type == PDF_OBJECT_COMPRESSED */
 	    cairo_pdf_resource_t xref_stream;
 	    int index;
@@ -253,7 +253,7 @@ typedef struct _cairo_pdf_object {
 
 typedef struct _cairo_xref_stream_object {
     cairo_pdf_resource_t resource;
-    long offset;
+    long long offset;
 } cairo_xref_stream_object_t;
 
 typedef struct _cairo_pdf_font {
@@ -313,7 +313,7 @@ static cairo_int_status_t
 _cairo_pdf_surface_write_catalog (cairo_pdf_surface_t *surface,
 				  cairo_pdf_resource_t catalog);
 
-static long
+static long long
 _cairo_pdf_surface_write_xref (cairo_pdf_surface_t *surface);
 
 static cairo_int_status_t
@@ -321,7 +321,7 @@ _cairo_pdf_surface_write_xref_stream (cairo_pdf_surface_t  *surface,
 				      cairo_pdf_resource_t  xref_res,
 				      cairo_pdf_resource_t  root_res,
 				      cairo_pdf_resource_t  info_res,
-				      long                 *xref_offset);
+				      long long            *xref_offset);
 
 static cairo_int_status_t
 _cairo_pdf_surface_write_patterns_and_smask_groups (cairo_pdf_surface_t *surface,
@@ -903,6 +903,42 @@ cairo_pdf_surface_set_metadata (cairo_surface_t      *surface,
 	return;
 
     status = _cairo_pdf_interchange_set_metadata (pdf_surface, metadata, utf8);
+    if (status)
+	status = _cairo_surface_set_error (surface, status);
+}
+
+/**
+ * cairo_pdf_surface_set_custom_metadata:
+ * @surface: a PDF #cairo_surface_t
+ * @name: The name of the custom metadata item to set (utf8).
+ * @value: The value of the metadata (utf8).
+ *
+ * Set custom document metadata. @name may be any string except for
+ * the following names reserved by PDF: "Title", "Author", "Subject",
+ * "Keywords", "Creator", "Producer", "CreationDate", "ModDate",
+ * "Trapped".
+ *
+ * If @value is NULL or an empty string, the @name metadata will not be set.
+ *
+ * For example:
+ * <informalexample><programlisting>
+ * cairo_pdf_surface_set_custom_metadata (surface, "ISBN", "978-0123456789");
+ * </programlisting></informalexample>
+ *
+ * Since: 1.18
+ **/
+void
+cairo_pdf_surface_set_custom_metadata (cairo_surface_t	    *surface,
+                                       const char           *name,
+                                       const char           *value)
+{
+    cairo_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
+    cairo_status_t status;
+
+    if (! _extract_pdf_surface (surface, &pdf_surface))
+	return;
+
+    status = _cairo_pdf_interchange_set_custom_metadata (pdf_surface, name, value);
     if (status)
 	status = _cairo_surface_set_error (surface, status);
 }
@@ -1936,7 +1972,7 @@ static cairo_int_status_t
 _cairo_pdf_surface_close_stream (cairo_pdf_surface_t *surface)
 {
     cairo_int_status_t status;
-    long length;
+    long long length;
 
     if (! surface->pdf_stream.active)
 	return CAIRO_INT_STATUS_SUCCESS;
@@ -1966,7 +2002,7 @@ _cairo_pdf_surface_close_stream (cairo_pdf_surface_t *surface)
 				      surface->pdf_stream.length);
     _cairo_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
-				 "   %ld\n"
+				 "   %lld\n"
 				 "endobj\n",
 				 surface->pdf_stream.length.id,
 				 length);
@@ -2205,7 +2241,7 @@ _cairo_pdf_surface_close_object_stream (cairo_pdf_surface_t *surface)
 {
     int i, num_objects;
     cairo_xref_stream_object_t *xref_obj;
-    long start_pos, length;
+    long long start_pos, length;
     cairo_output_stream_t *index_stream;
     cairo_output_stream_t *deflate_stream;
     cairo_pdf_resource_t length_res;
@@ -2230,7 +2266,7 @@ _cairo_pdf_surface_close_object_stream (cairo_pdf_surface_t *surface)
     for (i = 0; i < num_objects; i++) {
 	xref_obj = _cairo_array_index (&surface->object_stream.objects, i);
 	_cairo_output_stream_printf (index_stream,
-				     "%d %ld\n",
+				     "%d %lld\n",
 				     xref_obj->resource.id,
 				     xref_obj->offset);
     }
@@ -2285,7 +2321,7 @@ _cairo_pdf_surface_close_object_stream (cairo_pdf_surface_t *surface)
 				      length_res);
     _cairo_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
-				 "   %ld\n"
+				 "   %lld\n"
 				 "endobj\n",
 				 length_res.id,
 				 length);
@@ -2423,7 +2459,7 @@ static cairo_status_t
 _cairo_pdf_surface_finish (void *abstract_surface)
 {
     cairo_pdf_surface_t *surface = abstract_surface;
-    long offset;
+    long long offset;
     cairo_pdf_resource_t catalog;
     cairo_status_t status, status2;
     int size, i;
@@ -2491,7 +2527,7 @@ _cairo_pdf_surface_finish (void *abstract_surface)
     }
     _cairo_output_stream_printf (surface->output,
 				 "startxref\n"
-				 "%ld\n"
+				 "%lld\n"
 				 "%%%%EOF\n",
 				 offset);
 
@@ -6738,12 +6774,12 @@ _cairo_pdf_surface_write_catalog (cairo_pdf_surface_t *surface,
     return status;
 }
 
-static long
+static long long
 _cairo_pdf_surface_write_xref (cairo_pdf_surface_t *surface)
 {
     cairo_pdf_object_t *object;
     int num_objects, i;
-    long offset;
+    long long offset;
     char buffer[11];
 
     num_objects = _cairo_array_num_elements (&surface->objects);
@@ -6758,7 +6794,7 @@ _cairo_pdf_surface_write_xref (cairo_pdf_surface_t *surface)
 				 "0000000000 65535 f \n");
     for (i = 0; i < num_objects; i++) {
 	object = _cairo_array_index (&surface->objects, i);
-	snprintf (buffer, sizeof buffer, "%010ld", object->u.offset);
+	snprintf (buffer, sizeof buffer, "%010lld", object->u.offset);
 	_cairo_output_stream_printf (surface->output,
 				     "%s 00000 n \n", buffer);
     }
@@ -6771,7 +6807,7 @@ _cairo_write_xref_stream_entry (cairo_output_stream_t *stream,
 				int                    id,
 				int                    type,
 				int                    field2_size,
-				long                   field2,
+				long long              field2,
 				int                    field3,
 				cairo_bool_t           write_as_comments)
 {
@@ -6779,7 +6815,7 @@ _cairo_write_xref_stream_entry (cairo_output_stream_t *stream,
     int i;
 
     if (write_as_comments) {
-	_cairo_output_stream_printf (stream, "%% %5d %2d %10ld  %d\n", id, type, field2, field3);
+	_cairo_output_stream_printf (stream, "%% %5d %2d %10lld  %d\n", id, type, field2, field3);
     } else {
 	/* Each field is big endian */
 	buf[0] = type; /* field 1 */
@@ -6794,10 +6830,10 @@ _cairo_write_xref_stream_entry (cairo_output_stream_t *stream,
 }
 
 static void
-_cairo_write_xref_stream_entrys (cairo_pdf_surface_t   *surface,
-				 cairo_output_stream_t *stream,
-				 int                    field2_size,
-				 cairo_bool_t           write_as_comments)
+_cairo_write_xref_stream_entries (cairo_pdf_surface_t   *surface,
+				  cairo_output_stream_t *stream,
+				  int                    field2_size,
+				  cairo_bool_t           write_as_comments)
 {
     cairo_pdf_object_t *object;
     int num_objects, i;
@@ -6847,11 +6883,11 @@ _cairo_pdf_surface_write_xref_stream (cairo_pdf_surface_t  *surface,
 				      cairo_pdf_resource_t  xref_res,
 				      cairo_pdf_resource_t  root_res,
 				      cairo_pdf_resource_t  info_res,
-				      long                 *xref_offset)
+				      long long            *xref_offset)
 {
     cairo_output_stream_t *mem_stream;
     cairo_output_stream_t *xref_stream;
-    long offset;
+    long long offset;
     int offset_bytes;
     cairo_status_t status;
 
@@ -6867,7 +6903,7 @@ _cairo_pdf_surface_write_xref_stream (cairo_pdf_surface_t  *surface,
 
     mem_stream = _cairo_memory_stream_create ();
     xref_stream = _cairo_deflate_stream_create (mem_stream);
-    _cairo_write_xref_stream_entrys (surface, xref_stream, offset_bytes, FALSE);
+    _cairo_write_xref_stream_entries (surface, xref_stream, offset_bytes, FALSE);
 
     status = _cairo_output_stream_destroy (xref_stream);
     if (unlikely (status))
@@ -6900,7 +6936,7 @@ _cairo_pdf_surface_write_xref_stream (cairo_pdf_surface_t  *surface,
 	 */
 	_cairo_output_stream_printf (surface->output,
 				     "%%   id   type  offset/obj  gen/index\n");
-	_cairo_write_xref_stream_entrys (surface, surface->output, offset_bytes, TRUE);
+	_cairo_write_xref_stream_entries (surface, surface->output, offset_bytes, TRUE);
     }
 
     _cairo_output_stream_printf (surface->output,

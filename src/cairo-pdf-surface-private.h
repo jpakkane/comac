@@ -227,6 +227,11 @@ struct docinfo {
     char *mod_date;
 };
 
+struct metadata {
+    char *name;
+    char *value;
+};
+
 typedef struct _cairo_pdf_interchange {
     cairo_tag_stack_t analysis_tag_stack;
     cairo_tag_stack_t render_tag_stack;
@@ -248,6 +253,7 @@ typedef struct _cairo_pdf_interchange {
     int annot_page;
     cairo_array_t outline; /* array of pointers to cairo_pdf_outline_entry_t; */
     struct docinfo docinfo;
+    cairo_array_t custom_metadata; /* array of struct metadata */
 
 } cairo_pdf_interchange_t;
 
@@ -302,7 +308,7 @@ struct _cairo_pdf_surface {
 	cairo_bool_t active;
 	cairo_pdf_resource_t self;
 	cairo_pdf_resource_t length;
-	long start_offset;
+	long long start_offset;
 	cairo_bool_t compressed;
 	cairo_output_stream_t *old_output;
     } pdf_stream;
@@ -419,5 +425,10 @@ cairo_private cairo_int_status_t
 _cairo_pdf_interchange_set_metadata (cairo_pdf_surface_t  *surface,
 				     cairo_pdf_metadata_t  metadata,
 				     const char           *utf8);
+
+cairo_private cairo_int_status_t
+_cairo_pdf_interchange_set_custom_metadata (cairo_pdf_surface_t  *surface,
+					const char           *name,
+					const char           *value);
 
 #endif /* CAIRO_PDF_SURFACE_PRIVATE_H */
