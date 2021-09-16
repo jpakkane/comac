@@ -1,3 +1,4 @@
+/* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* cairo - a vector graphics library with display and print output
  *
  * Copyright © 2009 Intel Corporation
@@ -447,6 +448,7 @@ i915_surface_glyphs (void			*abstract_surface,
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 glyphs[i].index,
 						 CAIRO_SCALED_GLYPH_INFO_METRICS,
+						 NULL, /* foreground color */
 						 &scaled_glyph);
 	    if (unlikely (status))
 		goto FINISH;

@@ -743,7 +743,8 @@ _cairo_quartz_init_glyph_surface (cairo_quartz_scaled_font_t *font,
 static cairo_int_status_t
 _cairo_quartz_scaled_glyph_init (void *abstract_font,
 				 cairo_scaled_glyph_t *scaled_glyph,
-				 cairo_scaled_glyph_info_t info)
+				 cairo_scaled_glyph_info_t info,
+				 const cairo_color_t *foreground_color)
 {
     cairo_quartz_scaled_font_t *font = (cairo_quartz_scaled_font_t *) abstract_font;
     cairo_int_status_t status = CAIRO_STATUS_SUCCESS;

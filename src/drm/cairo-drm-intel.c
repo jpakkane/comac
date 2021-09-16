@@ -994,7 +994,8 @@ intel_get_glyph (intel_device_t *device,
 	status =
 	    scaled_font->backend->scaled_glyph_init (scaled_font,
 						     scaled_glyph,
-						     CAIRO_SCALED_GLYPH_INFO_SURFACE);
+						     CAIRO_SCALED_GLYPH_INFO_SURFACE,
+                                                     NULL);
 	if (unlikely (status))
 	    return status;
 

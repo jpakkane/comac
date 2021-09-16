@@ -561,7 +561,7 @@ if test "x$use_ft" = "xyes"; then
   LIBS="$LIBS $ft_LIBS"
   CFLAGS="$CFLAGS $ft_CFLAGS"
 
-  AC_CHECK_FUNCS(FT_Get_X11_Font_Format FT_GlyphSlot_Embolden FT_GlyphSlot_Oblique FT_Load_Sfnt_Table FT_Library_SetLcdFilter FT_Get_Var_Design_Coordinates FT_Done_MM_Var)
+  AC_CHECK_FUNCS(FT_Get_X11_Font_Format FT_GlyphSlot_Embolden FT_GlyphSlot_Oblique FT_Load_Sfnt_Table FT_Library_SetLcdFilter FT_Get_Var_Design_Coordinates FT_Done_MM_Var FT_Palette_Set_Foreground_Color)
 
   AC_MSG_CHECKING(for FT_HAS_COLOR)
   AC_LINK_IFELSE([AC_LANG_PROGRAM([

@@ -1326,6 +1326,7 @@ _cairo_svg_document_emit_outline_glyph_data (cairo_svg_document_t *document,
     status = _cairo_scaled_glyph_lookup (scaled_font,
 					 glyph_index,
 					 CAIRO_SCALED_GLYPH_INFO_METRICS | CAIRO_SCALED_GLYPH_INFO_PATH,
+					 NULL, /* foreground color */
 					 &scaled_glyph);
     if (unlikely (status)) {
 	return status;
@@ -1357,6 +1358,7 @@ _cairo_svg_document_emit_bitmap_glyph_data (cairo_svg_document_t *document,
     status = _cairo_scaled_glyph_lookup (scaled_font,
 					 glyph_index,
 					 CAIRO_SCALED_GLYPH_INFO_METRICS | CAIRO_SCALED_GLYPH_INFO_SURFACE,
+					 NULL, /* foreground color */
 					 &scaled_glyph);
     if (unlikely (status)) {
 	return status;

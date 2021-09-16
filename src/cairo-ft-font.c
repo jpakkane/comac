@@ -2490,6 +2490,7 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 				     cairo_scaled_glyph_t	*scaled_glyph,
 				     cairo_scaled_glyph_info_t	 info,
 				     FT_Face face,
+				     const cairo_color_t        *foreground_color,
 				     cairo_bool_t vertical_layout,
 				     int load_flags)
 {
@@ -2497,10 +2498,39 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
     FT_GlyphSlot glyph;
     cairo_status_t status;
     cairo_image_surface_t	*surface;
+    cairo_bool_t uses_foreground_color = FALSE;
 
     if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
 	if (!unscaled->have_color)
 	    return CAIRO_INT_STATUS_UNSUPPORTED;
+
+#ifdef HAVE_FT_PALETTE_SET_FOREGROUND_COLOR
+	FT_LayerIterator  iterator;
+	FT_UInt layer_glyph_index;
+	FT_UInt layer_color_index;
+	FT_Color color;
+
+	/* Check if there is a layer that uses the foreground color */
+	iterator.p  = NULL;
+	while (FT_Get_Color_Glyph_Layer(face,
+					_cairo_scaled_glyph_index(scaled_glyph),
+					&layer_glyph_index,
+					&layer_color_index,
+					&iterator)) {
+	    if (layer_color_index == 0xFFFF) {
+		uses_foreground_color = TRUE;
+		break;
+	    }
+	}
+
+	if (uses_foreground_color) {
+	    color.red = (FT_Byte)(foreground_color->red * 0xFF);
+	    color.green = (FT_Byte)(foreground_color->green * 0xFF);
+	    color.blue = (FT_Byte)(foreground_color->blue * 0xFF);
+	    color.alpha = (FT_Byte)(foreground_color->alpha * 0xFF);
+	    FT_Palette_Set_Foreground_Color (face, color);
+	}
+#endif
 
         load_flags &= ~FT_LOAD_MONOCHROME;
 	/* clear load target mode */
@@ -2545,11 +2575,14 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 	!pixman_image_get_component_alpha (surface->pixman_image)) {
 	_cairo_scaled_glyph_set_color_surface (scaled_glyph,
 					       &scaled_font->base,
-					       surface);
+					       surface,
+					       uses_foreground_color);
     } else {
 	_cairo_scaled_glyph_set_surface (scaled_glyph,
 					 &scaled_font->base,
 					 surface);
+	if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE)
+	    scaled_glyph->not_color_glyph = TRUE;
     }
 
     return status;
@@ -2558,7 +2591,8 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 static cairo_int_status_t
 _cairo_ft_scaled_glyph_init (void			*abstract_font,
 			     cairo_scaled_glyph_t	*scaled_glyph,
-			     cairo_scaled_glyph_info_t	 info)
+			     cairo_scaled_glyph_info_t	 info,
+			     const cairo_color_t        *foreground_color)
 {
     cairo_text_extents_t    fs_metrics;
     cairo_ft_scaled_font_t *scaled_font = abstract_font;
@@ -2709,6 +2743,7 @@ _cairo_ft_scaled_glyph_init (void			*abstract_font,
 						      scaled_glyph,
 						      CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE,
 						      face,
+						      foreground_color,
 						      vertical_layout,
 						      load_flags);
 	if (unlikely (status))
@@ -2720,6 +2755,7 @@ _cairo_ft_scaled_glyph_init (void			*abstract_font,
 						      scaled_glyph,
 						      CAIRO_SCALED_GLYPH_INFO_SURFACE,
 						      face,
+						      NULL, /* foreground color */
 						      vertical_layout,
 						      load_flags);
 	if (unlikely (status))

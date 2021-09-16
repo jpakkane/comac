@@ -2602,6 +2602,7 @@ slim_hidden_def (cairo_surface_has_show_text_glyphs);
 
 static inline cairo_int_status_t
 ensure_scaled_glyph (cairo_scaled_font_t   *scaled_font,
+		     cairo_color_t         *foreground_color,
                      cairo_scaled_glyph_t **glyph_cache,
                      cairo_glyph_t         *glyph,
                      cairo_scaled_glyph_t **scaled_glyph)
@@ -2615,12 +2616,14 @@ ensure_scaled_glyph (cairo_scaled_font_t   *scaled_font,
         status = _cairo_scaled_glyph_lookup (scaled_font,
                                              glyph->index,
                                              CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE,
+					     foreground_color,
                                              scaled_glyph);
 	if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
 	    /* If the color surface not available, ensure scaled_glyph is not NULL. */
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 glyph->index,
 						 CAIRO_SCALED_GLYPH_INFO_METRICS,
+						 NULL, /* foreground color */
 						 scaled_glyph);
 	}
         if (unlikely (status))
@@ -2693,6 +2696,10 @@ composite_color_glyphs (cairo_surface_t             *surface,
     int byte_pos = 0;
     int gp;
     cairo_scaled_glyph_t *glyph_cache[GLYPH_CACHE_SIZE];
+    cairo_color_t *foreground_color = NULL;
+
+    if (source->type == CAIRO_PATTERN_TYPE_SOLID)
+	foreground_color = &((cairo_solid_pattern_t *) source)->color;
 
     memset (glyph_cache, 0, sizeof (glyph_cache));
 
@@ -2714,7 +2721,7 @@ composite_color_glyphs (cairo_surface_t             *surface,
                 else
                     gp = glyph_pos + j;
 
-                status = ensure_scaled_glyph (scaled_font, glyph_cache,
+                status = ensure_scaled_glyph (scaled_font, foreground_color, glyph_cache,
                                               &glyphs[gp], &scaled_glyph);
                 if (unlikely (status))
                     goto UNLOCK;
@@ -2745,7 +2752,7 @@ composite_color_glyphs (cairo_surface_t             *surface,
                 else
                     gp = glyph_pos + j;
 
-                status = ensure_scaled_glyph (scaled_font, glyph_cache,
+                status = ensure_scaled_glyph (scaled_font, foreground_color, glyph_cache,
                                               &glyphs[gp], &scaled_glyph);
                 if (unlikely (status))
                     goto UNLOCK;
@@ -2774,7 +2781,7 @@ composite_color_glyphs (cairo_surface_t             *surface,
     } else {
 
        for (glyph_pos = 0; glyph_pos < *num_glyphs; glyph_pos++) {
-           status = ensure_scaled_glyph (scaled_font, glyph_cache,
+           status = ensure_scaled_glyph (scaled_font, foreground_color, glyph_cache,
                                          &glyphs[glyph_pos], &scaled_glyph);
            if (unlikely (status))
                goto UNLOCK;

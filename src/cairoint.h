@@ -519,10 +519,24 @@ struct _cairo_scaled_font_backend {
     void
     (*fini)		(void			*scaled_font);
 
+/**
+ * Get the requested glyph info.
+ * @scaled_font: a #cairo_scaled_font_t
+ * @scaled_glyph: a #cairo_scaled_glyph_t the glyph
+ * @info: a #cairo_scaled_glyph_info_t which information to retreive
+ *  %CAIRO_SCALED_GLYPH_INFO_METRICS - glyph metrics and bounding box
+ *  %CAIRO_SCALED_GLYPH_INFO_SURFACE - surface holding glyph image
+ *  %CAIRO_SCALED_GLYPH_INFO_PATH - path holding glyph outline in device space
+ *  %CAIRO_SCALED_GLYPH_INFO_RECORDING_SURFACE - surface holding recording of glyph
+ *  %CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE - surface holding color glyph image
+ * @foreground_color - foreground color to use when rendering color fonts. Use NULL
+ * if not requesting CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE or foreground color is unknown.
+ */
     cairo_warn cairo_int_status_t
     (*scaled_glyph_init)	(void			     *scaled_font,
 				 cairo_scaled_glyph_t	     *scaled_glyph,
-				 cairo_scaled_glyph_info_t    info);
+				 cairo_scaled_glyph_info_t    info,
+                                 const cairo_color_t         *foreground_color);
 
     /* A backend only needs to implement this or ucs4_to_index(), not
      * both. This allows the backend to do something more sophisticated
@@ -1284,12 +1298,14 @@ _cairo_scaled_glyph_set_recording_surface (cairo_scaled_glyph_t *scaled_glyph,
 cairo_private void
 _cairo_scaled_glyph_set_color_surface (cairo_scaled_glyph_t *scaled_glyph,
 		                       cairo_scaled_font_t *scaled_font,
-		                       cairo_image_surface_t *surface);
+		                       cairo_image_surface_t *surface,
+                                       cairo_bool_t uses_foreground_color);
 
 cairo_private cairo_int_status_t
 _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
 			    unsigned long index,
 			    cairo_scaled_glyph_info_t info,
+                            const cairo_color_t   *foreground_color,
 			    cairo_scaled_glyph_t **scaled_glyph_ret);
 
 cairo_private double

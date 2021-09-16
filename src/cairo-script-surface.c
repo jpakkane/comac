@@ -3194,6 +3194,7 @@ _emit_scaled_glyphs (cairo_script_surface_t *surface,
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[n].index,
 					     CAIRO_SCALED_GLYPH_INFO_METRICS,
+                                             NULL, /* foreground color */
 					     &scaled_glyph);
 	if (unlikely (status))
 	    break;
@@ -3204,6 +3205,7 @@ _emit_scaled_glyphs (cairo_script_surface_t *surface,
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[n].index,
 					     CAIRO_SCALED_GLYPH_INFO_RECORDING_SURFACE,
+                                             NULL, /* foreground color */
 					     &scaled_glyph);
 	if (_cairo_status_is_error (status))
 	    break;
@@ -3229,6 +3231,7 @@ _emit_scaled_glyphs (cairo_script_surface_t *surface,
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[n].index,
 					     CAIRO_SCALED_GLYPH_INFO_SURFACE,
+                                             NULL, /* foreground color */
 					     &scaled_glyph);
 	if (_cairo_status_is_error (status))
 	    break;
@@ -3411,6 +3414,7 @@ _cairo_script_surface_show_text_glyphs (void			    *abstract_surface,
 	    status = _cairo_scaled_glyph_lookup (scaled_font,
 						 glyphs[n].index,
 						 CAIRO_SCALED_GLYPH_INFO_METRICS,
+						 NULL, /* foreground color */
 						 &scaled_glyph);
 	    if (unlikely (status)) {
 		_cairo_scaled_font_thaw_cache (scaled_font);
@@ -3434,6 +3438,7 @@ _cairo_script_surface_show_text_glyphs (void			    *abstract_surface,
 	status = _cairo_scaled_glyph_lookup (scaled_font,
 					     glyphs[n].index,
 					     CAIRO_SCALED_GLYPH_INFO_METRICS,
+                                             NULL, /* foreground color */
 					     &scaled_glyph);
 	if (unlikely (status)) {
 	    _cairo_scaled_font_thaw_cache (scaled_font);
