@@ -377,6 +377,12 @@ create_document (cairo_surface_t *surface, cairo_t *cr)
     cairo_pdf_surface_set_metadata (surface, CAIRO_PDF_METADATA_CREATE_DATE, "2016-01-01T12:34:56+10:30");
     cairo_pdf_surface_set_metadata (surface, CAIRO_PDF_METADATA_MOD_DATE, "2016-06-21T05:43:21Z");
 
+    cairo_pdf_surface_set_custom_metadata (surface, "DocumentNumber", "12345");
+    /* Include some non ASCII characters */
+    cairo_pdf_surface_set_custom_metadata (surface, "Document Name", "\xc2\xab""cairo test\xc2\xbb");
+    /* Test unsetting custom metadata. "DocumentNumber" should not be emitted. */
+    cairo_pdf_surface_set_custom_metadata (surface, "DocumentNumber", "");
+
     cairo_tag_begin (cr, "Document", NULL);
 
     draw_cover (surface, cr);
