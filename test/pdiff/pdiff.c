@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include "lpyramid.h"
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -171,18 +172,21 @@ XYZToLAB (float x, float y, float z, float *L, float *A, float *B)
 }
 
 static uint32_t
-_get_pixel (const uint32_t *data, int i)
+_get_pixel (const uint32_t *data, int i, cairo_format_t format)
 {
-    return data[i];
+    if (format == CAIRO_FORMAT_ARGB32)
+	return data[i];
+    else
+	return data[i] | 0xff000000;
 }
 
 static unsigned char
-_get_red (const uint32_t *data, int i)
+_get_red (const uint32_t *data, int i, cairo_format_t format)
 {
     uint32_t pixel;
     uint8_t alpha;
 
-    pixel = _get_pixel (data, i);
+    pixel = _get_pixel (data, i, format);
     alpha = (pixel & 0xff000000) >> 24;
     if (alpha == 0)
 	return 0;
@@ -191,12 +195,12 @@ _get_red (const uint32_t *data, int i)
 }
 
 static unsigned char
-_get_green (const uint32_t *data, int i)
+_get_green (const uint32_t *data, int i, cairo_format_t format)
 {
     uint32_t pixel;
     uint8_t alpha;
 
-    pixel = _get_pixel (data, i);
+    pixel = _get_pixel (data, i, format);
     alpha = (pixel & 0xff000000) >> 24;
     if (alpha == 0)
 	return 0;
@@ -205,12 +209,12 @@ _get_green (const uint32_t *data, int i)
 }
 
 static unsigned char
-_get_blue (const uint32_t *data, int i)
+_get_blue (const uint32_t *data, int i, cairo_format_t format)
 {
     uint32_t pixel;
     uint8_t alpha;
 
-    pixel = _get_pixel (data, i);
+    pixel = _get_pixel (data, i, format);
     alpha = (pixel & 0xff000000) >> 24;
     if (alpha == 0)
 	return 0;
@@ -269,6 +273,7 @@ pdiff_compare (cairo_surface_t *surface_a,
     float F_freq[MAX_PYR_LEVELS - 2];
     float csf_max;
     const uint32_t *data_a, *data_b;
+    cairo_format_t format_a, format_b;
 
     unsigned int pixels_failed;
 
@@ -276,6 +281,11 @@ pdiff_compare (cairo_surface_t *surface_a,
     h = cairo_image_surface_get_height (surface_a);
     if (w < 3 || h < 3) /* too small for the Laplacian convolution */
 	return -1;
+
+    format_a = cairo_image_surface_get_format (surface_a);
+    format_b = cairo_image_surface_get_format (surface_b);
+    assert (format_a == CAIRO_FORMAT_RGB24 || format_a == CAIRO_FORMAT_ARGB32);
+    assert (format_b == CAIRO_FORMAT_RGB24 || format_b == CAIRO_FORMAT_ARGB32);
 
     aX = xmalloc (dim * sizeof (float));
     aY = xmalloc (dim * sizeof (float));
@@ -297,15 +307,15 @@ pdiff_compare (cairo_surface_t *surface_a,
 	for (x = 0; x < w; x++) {
 	    float r, g, b, l;
 	    i = x + y * w;
-	    r = powf(_get_red (data_a, i) / 255.0f, gamma);
-	    g = powf(_get_green (data_a, i) / 255.0f, gamma);
-	    b = powf(_get_blue (data_a, i) / 255.0f, gamma);
+	    r = powf(_get_red (data_a, i, format_a) / 255.0f, gamma);
+	    g = powf(_get_green (data_a, i, format_a) / 255.0f, gamma);
+	    b = powf(_get_blue (data_a, i, format_a) / 255.0f, gamma);
 
 	    AdobeRGBToXYZ(r,g,b,&aX[i],&aY[i],&aZ[i]);
 	    XYZToLAB(aX[i], aY[i], aZ[i], &l, &aA[i], &aB[i]);
-	    r = powf(_get_red (data_b, i) / 255.0f, gamma);
-	    g = powf(_get_green (data_b, i) / 255.0f, gamma);
-	    b = powf(_get_blue (data_b, i) / 255.0f, gamma);
+	    r = powf(_get_red (data_b, i, format_b) / 255.0f, gamma);
+	    g = powf(_get_green (data_b, i, format_b) / 255.0f, gamma);
+	    b = powf(_get_blue (data_b, i, format_b) / 255.0f, gamma);
 
 	    AdobeRGBToXYZ(r,g,b,&bX[i],&bY[i],&bZ[i]);
 	    XYZToLAB(bX[i], bY[i], bZ[i], &l, &bA[i], &bB[i]);

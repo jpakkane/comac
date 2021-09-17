@@ -25,6 +25,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
@@ -48,15 +49,14 @@
  * result_ret.
  *
  * This function should be rewritten to compare all formats supported by
- * cairo_format_t instead of taking a mask as a parameter.
+ * cairo_format_t.
  */
 static void
-buffer_diff_core (const unsigned char *_buf_a, int stride_a,
-		  const unsigned char *_buf_b, int stride_b,
-		  unsigned char *_buf_diff, int stride_diff,
+buffer_diff_core (const unsigned char *_buf_a, int stride_a, cairo_format_t format_a,
+		  const unsigned char *_buf_b, int stride_b, cairo_format_t format_b,
+		  unsigned char *_buf_diff, int stride_diff, cairo_format_t format_diff,
 		  int		width,
 		  int		height,
-		  uint32_t mask,
 		  buffer_diff_result_t *result_ret)
 {
     const uint32_t *buf_a = (const uint32_t*) _buf_a;
@@ -64,6 +64,10 @@ buffer_diff_core (const unsigned char *_buf_a, int stride_a,
     uint32_t *buf_diff = (uint32_t*) _buf_diff;
     int x, y;
     buffer_diff_result_t result = {0, 0};
+
+    assert (format_a == CAIRO_FORMAT_RGB24 || format_a == CAIRO_FORMAT_ARGB32);
+    assert (format_b == CAIRO_FORMAT_RGB24 || format_b == CAIRO_FORMAT_ARGB32);
+    assert (format_diff == CAIRO_FORMAT_RGB24 || format_diff == CAIRO_FORMAT_ARGB32);
 
     stride_a /= sizeof (uint32_t);
     stride_b /= sizeof (uint32_t);
@@ -74,24 +78,32 @@ buffer_diff_core (const unsigned char *_buf_a, int stride_a,
 	uint32_t *row = buf_diff + y * stride_diff;
 
 	for (x = 0; x < width; x++) {
+	    uint32_t pixel_a = row_a[x];
+	    uint32_t pixel_b = row_b[x];
+	    /* convert pixel data to ARGB32 if necessary */
+	    if (format_a == CAIRO_FORMAT_RGB24)
+		pixel_a |= 0xff000000;
+	    if (format_b == CAIRO_FORMAT_RGB24)
+		pixel_b |= 0xff000000;
+
 	    /* check if the pixels are the same */
-	    if ((row_a[x] & mask) != (row_b[x] & mask)) {
+	    if (pixel_a != pixel_b) {
 		int channel;
 		uint32_t diff_pixel = 0;
 
 		/* calculate a difference value for all 4 channels */
 		for (channel = 0; channel < 4; channel++) {
-		    int value_a = (row_a[x] >> (channel*8)) & 0xff;
-		    int value_b = (row_b[x] >> (channel*8)) & 0xff;
+		    int value_a = (pixel_a >> (channel*8)) & 0xff;
+		    int value_b = (pixel_b >> (channel*8)) & 0xff;
 		    unsigned int diff;
 		    diff = abs (value_a - value_b);
 		    if (diff > result.max_diff)
 			result.max_diff = diff;
 		    diff *= 4;  /* emphasize */
 		    if (diff)
-		        diff += 128; /* make sure it's visible */
+			diff += 128; /* make sure it's visible */
 		    if (diff > 255)
-		        diff = 255;
+			diff = 255;
 		    diff_pixel |= diff << (channel*8);
 		}
 
@@ -141,13 +153,15 @@ compare_surfaces (const cairo_test_context_t  *ctx,
      */
     buffer_diff_core (cairo_image_surface_get_data (surface_a),
 		      cairo_image_surface_get_stride (surface_a),
+		      cairo_image_surface_get_format (surface_a),
 		      cairo_image_surface_get_data (surface_b),
 		      cairo_image_surface_get_stride (surface_b),
+		      cairo_image_surface_get_format (surface_b),
 		      cairo_image_surface_get_data (surface_diff),
 		      cairo_image_surface_get_stride (surface_diff),
+		      cairo_image_surface_get_format (surface_diff),
 		      cairo_image_surface_get_width (surface_a),
 		      cairo_image_surface_get_height (surface_a),
-		      cairo_surface_get_content (surface_a) & CAIRO_CONTENT_ALPHA ?  0xffffffff : 0x00ffffff,
 		      result);
     if (result->pixels_changed == 0)
 	return;
@@ -185,11 +199,10 @@ buffer_diff_noalpha (const unsigned char *buf_a,
 		     int	   stride,
 		     buffer_diff_result_t *result)
 {
-    buffer_diff_core(buf_a, stride,
-		     buf_b, stride,
-		     buf_diff, stride,
+    buffer_diff_core(buf_a, stride, CAIRO_FORMAT_RGB24,
+		     buf_b, stride, CAIRO_FORMAT_RGB24,
+		     buf_diff, stride, CAIRO_FORMAT_RGB24,
 		     width, height,
-		     0x00ffffff,
 		     result);
 }
 
