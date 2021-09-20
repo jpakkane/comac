@@ -12,7 +12,6 @@ clip-fill-rule-pixel-aligned
 clip-operator
 clipped-group
 clip-text
-clip-unbounded
 coverage-intersecting-triangles
 culled-glyphs
 curve-to-as-line-to

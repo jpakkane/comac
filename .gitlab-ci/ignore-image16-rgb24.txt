@@ -41,7 +41,6 @@ clip-stroke
 clip-stroke-unbounded
 clip-text
 clip-twice
-clip-unbounded
 close-path-current-point
 copy-path
 coverage-abutting

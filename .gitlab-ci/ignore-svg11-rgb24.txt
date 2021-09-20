@@ -13,7 +13,6 @@ clip-fill-rule-pixel-aligned
 clip-operator
 clip-stroke-unbounded
 clip-text
-clip-unbounded
 culled-glyphs
 dash-zero-length
 degenerate-path

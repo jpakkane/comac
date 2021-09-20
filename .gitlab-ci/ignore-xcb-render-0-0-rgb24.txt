@@ -16,7 +16,6 @@ clip-operator
 clip-polygons
 clip-shape
 clip-stroke-unbounded
-clip-unbounded
 coverage-intersecting-triangles
 culled-glyphs
 dash-zero-length
