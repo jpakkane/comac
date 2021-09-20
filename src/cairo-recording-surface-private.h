@@ -173,6 +173,11 @@ _cairo_recording_surface_replay (cairo_surface_t *surface,
 				 cairo_surface_t *target);
 
 cairo_private cairo_status_t
+_cairo_recording_surface_replay_with_foreground_color (cairo_surface_t *surface,
+                                                       cairo_surface_t *target,
+                                                       const cairo_color_t *color);
+
+cairo_private cairo_status_t
 _cairo_recording_surface_replay_with_clip (cairo_surface_t *surface,
 					   const cairo_matrix_t *surface_transform,
 					   cairo_surface_t *target,

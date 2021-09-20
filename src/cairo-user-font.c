@@ -171,15 +171,21 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
 	    status = CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
 
 	    if (face->scaled_font_methods.render_color_glyph) {
+		cairo_pattern_t *pattern;
+
 		recording_surface = _cairo_user_scaled_font_create_recording_surface (scaled_font, TRUE);
 
 		cr = _cairo_user_scaled_font_create_recording_context (scaled_font, recording_surface, TRUE);
+		pattern = cairo_pattern_create_rgb (0, 0, 0);
+		pattern->is_userfont_foreground = TRUE;
+		cairo_set_source (cr, pattern);
+		cairo_pattern_destroy (pattern);
 		status = face->scaled_font_methods.render_color_glyph ((cairo_scaled_font_t *)scaled_font,
 								       _cairo_scaled_glyph_index(scaled_glyph),
 								       cr, &extents);
 		if (status == CAIRO_INT_STATUS_SUCCESS) {
 		    status = cairo_status (cr);
-		    scaled_glyph->has_color = TRUE;
+		    scaled_glyph->recording_is_color = TRUE;
 		}
 	    }
 
@@ -260,7 +266,7 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
 	height = _cairo_fixed_integer_ceil (scaled_glyph->bbox.p2.y) -
 	  _cairo_fixed_integer_floor (scaled_glyph->bbox.p1.y);
 
-	if (scaled_glyph->has_color) {
+	if (scaled_glyph->recording_is_color) {
             format = CAIRO_FORMAT_ARGB32;
         } else {
             switch (scaled_font->base.options.antialias) {
@@ -285,20 +291,27 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
 	cairo_surface_set_device_offset (surface,
 	                                 - _cairo_fixed_integer_floor (scaled_glyph->bbox.p1.x),
 	                                 - _cairo_fixed_integer_floor (scaled_glyph->bbox.p1.y));
-	status = _cairo_recording_surface_replay (recording_surface, surface);
+
+	if (scaled_glyph->recording_is_color) {
+	    status = _cairo_recording_surface_replay_with_foreground_color (recording_surface,
+									    surface,
+									    foreground_color);
+	} else {
+	    status = _cairo_recording_surface_replay (recording_surface, surface);
+	}
 
 	if (unlikely (status)) {
 	    cairo_surface_destroy(surface);
 	    return status;
 	}
 
-	if (!scaled_glyph->has_color && (info & CAIRO_SCALED_GLYPH_INFO_SURFACE)) {
+	if (!scaled_glyph->recording_is_color && (info & CAIRO_SCALED_GLYPH_INFO_SURFACE)) {
             _cairo_scaled_glyph_set_surface (scaled_glyph,
                                              &scaled_font->base,
                                              (cairo_image_surface_t *) surface);
         }
 
-        if (scaled_glyph->has_color && (info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE)) {
+        if (scaled_glyph->recording_is_color && (info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE)) {
             _cairo_scaled_glyph_set_color_surface (scaled_glyph,
                                                    &scaled_font->base,
                                                    (cairo_image_surface_t *)surface,

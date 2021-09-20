@@ -76,6 +76,7 @@ static const cairo_solid_pattern_t _cairo_pattern_nil = {
       CAIRO_FILTER_DEFAULT,		/* filter */
       CAIRO_EXTEND_GRADIENT_DEFAULT,	/* extend */
       FALSE,				/* has component alpha */
+      FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
       1.0                               /* opacity */
     }
@@ -92,6 +93,7 @@ static const cairo_solid_pattern_t _cairo_pattern_nil_null_pointer = {
       CAIRO_FILTER_DEFAULT,		/* filter */
       CAIRO_EXTEND_GRADIENT_DEFAULT,	/* extend */
       FALSE,				/* has component alpha */
+      FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
       1.0                               /* opacity */
     }
@@ -108,6 +110,7 @@ const cairo_solid_pattern_t _cairo_pattern_black = {
       CAIRO_FILTER_NEAREST,		/* filter */
       CAIRO_EXTEND_REPEAT,		/* extend */
       FALSE,				/* has component alpha */
+      FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
       1.0                               /* opacity */
     },
@@ -125,6 +128,7 @@ const cairo_solid_pattern_t _cairo_pattern_clear = {
       CAIRO_FILTER_NEAREST,		/* filter */
       CAIRO_EXTEND_REPEAT,		/* extend */
       FALSE,				/* has component alpha */
+      FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
       1.0                               /* opacity */
     },
@@ -142,6 +146,7 @@ const cairo_solid_pattern_t _cairo_pattern_white = {
       CAIRO_FILTER_NEAREST,		/* filter */
       CAIRO_EXTEND_REPEAT,		/* extend */
       FALSE,				/* has component alpha */
+      FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
       1.0                               /* opacity */
     },
@@ -233,6 +238,7 @@ _cairo_pattern_init (cairo_pattern_t *pattern, cairo_pattern_type_t type)
     pattern->opacity   = 1.0;
 
     pattern->has_component_alpha = FALSE;
+    pattern->is_userfont_foreground = FALSE;
 
     cairo_matrix_init_identity (&pattern->matrix);
 

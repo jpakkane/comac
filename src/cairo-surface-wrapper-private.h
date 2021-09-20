@@ -53,6 +53,7 @@ struct _cairo_surface_wrapper {
     cairo_bool_t has_extents;
     cairo_rectangle_int_t extents;
     const cairo_clip_t *clip;
+    cairo_pattern_t *foreground_source;
 
     cairo_bool_t needs_transform;
 };
@@ -72,6 +73,10 @@ _cairo_surface_wrapper_set_inverse_transform (cairo_surface_wrapper_t *wrapper,
 cairo_private void
 _cairo_surface_wrapper_set_clip (cairo_surface_wrapper_t *wrapper,
 				 const cairo_clip_t *clip);
+
+cairo_private void
+_cairo_surface_wrapper_set_foreground_color (cairo_surface_wrapper_t *wrapper,
+                                             const cairo_color_t *color);
 
 cairo_private void
 _cairo_surface_wrapper_fini (cairo_surface_wrapper_t *wrapper);
