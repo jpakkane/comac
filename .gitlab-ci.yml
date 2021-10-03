@@ -311,7 +311,7 @@ meson android arm64 fedora:
       ar          = toolchain + '-ar'
       strip       = toolchain + '-strip'
       EOF
-    - meson setup --cross-file android-cross-file.txt build
+    - meson setup --cross-file android-cross-file.txt -Dpixman:a64-neon=disabled build
     - meson compile --verbose -C build
 
 meson macOS:
