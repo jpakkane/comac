@@ -417,6 +417,7 @@ _cairo_pdf_surface_clipper_intersect_clip_path (cairo_surface_clipper_t *clipper
 	_cairo_output_stream_printf (surface->output, "Q q\n");
 
 	surface->current_pattern_is_solid_color = FALSE;
+	surface->current_operator = CAIRO_OPERATOR_OVER;
 	_cairo_pdf_operators_reset (&surface->pdf_operators);
 
 	return CAIRO_STATUS_SUCCESS;
