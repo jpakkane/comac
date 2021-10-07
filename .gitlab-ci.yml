@@ -10,8 +10,9 @@ variables:
   FDO_DISTRIBUTION_VERSION: '34'
   FDO_DISTRIBUTION_TAG: '2021-08-26.0'
 
-  # TODO: should probably get its own image at some point instead of reusing the GStreamer one.
-  WINDOWS_IMAGE: "registry.freedesktop.org/gstreamer/gstreamer/amd64/windows:2021-10-01.0-master"
+  # TODO: should probably get its own image at some point instead of reusing the GStreamer one
+  # See https://gitlab.freedesktop.org/gstreamer/gstreamer/container_registry/18035 for latest
+  WINDOWS_IMAGE: "registry.freedesktop.org/gstreamer/gstreamer/amd64/windows:2021-10-04.1-main"
 
   DEFAULT_MESON_ARGS: >
     --default-library=both
@@ -246,9 +247,7 @@ fedora meson build:
 
     # Copy GLib from existing subproject cache to avoid downloading it
     - cd $env:CI_PROJECT_DIR
-    # FIXME: current windows image is missing the subproject cache,
-    # re-add this once the image has been fixed to include it again
-    # - cp -r C:/subprojects/glib subprojects/
+    - cp -r C:/subprojects/glib subprojects/
 
     # For some reason, options are separated by newline instead of space, so we
     # have to replace them first.
