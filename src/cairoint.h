@@ -519,7 +519,7 @@ struct _cairo_scaled_font_backend {
     void
     (*fini)		(void			*scaled_font);
 
-/**
+/*
  * Get the requested glyph info.
  * @scaled_font: a #cairo_scaled_font_t
  * @scaled_glyph: a #cairo_scaled_glyph_t the glyph
