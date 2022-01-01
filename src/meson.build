@@ -307,9 +307,15 @@ libcairo = library('cairo', cairo_sources,
 
 cairo_headers += [configure_file(output: 'cairo-features.h', configuration: feature_conf)]
 
+cairo_static_args = []
+if get_option('default_library') == 'static' and host_machine.system() == 'windows'
+  cairo_static_args += ['-DCAIRO_WIN32_STATIC_BUILD']
+endif
+
 libcairo_dep = declare_dependency(link_with: libcairo,
   dependencies: deps,
-  include_directories: incsrc
+  include_directories: incsrc,
+  compile_args: cairo_static_args,
 )
 
 pkgmod.generate(libcairo,
