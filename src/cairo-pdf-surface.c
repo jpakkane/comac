@@ -209,7 +209,9 @@ _cairo_pdf_surface_get_extents (void		        *abstract_surface,
 static const cairo_pdf_version_t _cairo_pdf_versions[] =
 {
     CAIRO_PDF_VERSION_1_4,
-    CAIRO_PDF_VERSION_1_5
+    CAIRO_PDF_VERSION_1_5,
+    CAIRO_PDF_VERSION_1_6,
+    CAIRO_PDF_VERSION_1_7
 };
 
 #define CAIRO_PDF_VERSION_LAST ARRAY_LENGTH (_cairo_pdf_versions)
@@ -218,6 +220,8 @@ static const char * _cairo_pdf_version_strings[CAIRO_PDF_VERSION_LAST] =
 {
     "PDF 1.4",
     "PDF 1.5"
+    "PDF 1.6"
+    "PDF 1.7"
 };
 
 static const char *_cairo_pdf_supported_mime_types[] =
@@ -497,7 +501,7 @@ _cairo_pdf_surface_create_for_stream_internal (cairo_output_stream_t	*output,
     }
 
     surface->struct_tree_root.id = 0;
-    surface->pdf_version = CAIRO_PDF_VERSION_1_5;
+    surface->pdf_version = CAIRO_PDF_VERSION_1_7;
     surface->compress_streams = TRUE;
     surface->pdf_stream.active = FALSE;
     surface->pdf_stream.old_output = NULL;
@@ -2635,9 +2639,15 @@ _cairo_pdf_surface_start_page (void *abstract_surface)
 	case CAIRO_PDF_VERSION_1_4:
 	    version = "1.4";
 	    break;
-	default:
 	case CAIRO_PDF_VERSION_1_5:
 	    version = "1.5";
+	    break;
+	case CAIRO_PDF_VERSION_1_6:
+	    version = "1.6";
+	    break;
+	default:
+	case CAIRO_PDF_VERSION_1_7:
+	    version = "1.7";
 	    break;
 	}
 

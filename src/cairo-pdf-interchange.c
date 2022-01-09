@@ -438,6 +438,71 @@ cairo_pdf_interchange_write_dest (cairo_pdf_surface_t *surface,
 }
 
 static cairo_int_status_t
+_cairo_utf8_to_pdf_utf8_hexstring (const char *utf8, char **str_out)
+{
+    int i;
+    int len;
+    unsigned char *p;
+    cairo_bool_t ascii;
+    char *str;
+    cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
+
+    ascii = TRUE;
+    p = (unsigned char *)utf8;
+    len = 0;
+    while (*p) {
+	if (*p < 32 || *p > 126) {
+	    ascii = FALSE;
+	}
+	if (*p == '(' || *p == ')' || *p == '\\')
+	    len += 2;
+	else
+	    len++;
+	p++;
+    }
+
+    if (ascii) {
+	str = _cairo_malloc (len + 3);
+	if (str == NULL)
+	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+
+	str[0] = '(';
+	p = (unsigned char *)utf8;
+	i = 1;
+	while (*p) {
+	    if (*p == '(' || *p == ')' || *p == '\\')
+		str[i++] = '\\';
+	    str[i++] = *p;
+	    p++;
+	}
+	str[i++] = ')';
+	str[i++] = 0;
+    } else {
+	str = _cairo_malloc (len*2 + 3);
+	if (str == NULL)
+	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+
+	str[0] = '<';
+	p = (unsigned char *)utf8;
+	i = 1;
+	while (*p) {
+	    if (*p == '\\') {
+		snprintf(str + i, 3, "%02x", '\\');
+		i += 2;
+	    }
+	    snprintf(str + i, 3, "%02x", *p);
+	    i += 2;
+	    p++;
+	}
+	str[i++] = '>';
+	str[i++] = 0;
+    }
+    *str_out = str;
+
+    return status;
+}
+
+static cairo_int_status_t
 cairo_pdf_interchange_write_link_action (cairo_pdf_surface_t   *surface,
 					 cairo_link_attrs_t    *link_attrs)
 {
@@ -469,12 +534,42 @@ cairo_pdf_interchange_write_link_action (cairo_pdf_surface_t   *surface,
 				     dest);
 	free (dest);
     } else if (link_attrs->link_type == TAG_LINK_FILE) {
+	/* According to "Developing with PDF", Leonard Rosenthol, 2013,
+	 * The F key is encoded in the "standard encoding for the
+	 * platform on which the document is being viewed. For most
+	 * modern operating systems, that's UTF-8"
+	 *
+	 * As we don't know the target platform, we assume UTF-8. The
+	 * F key may contain multi-byte encodings using the hex
+	 * encoding.
+	 *
+	 * For PDF 1.7 we also include the UF key which uses the
+	 * standard PDF UTF-16BE strings.
+	 */
+	status = _cairo_utf8_to_pdf_utf8_hexstring (link_attrs->file, &dest);
+	if (unlikely (status))
+	    return status;
+
 	_cairo_output_stream_printf (surface->object_stream.stream,
 				     "   /A <<\n"
 				     "      /Type /Action\n"
 				     "      /S /GoToR\n"
-				     "      /F (%s)\n",
-				     link_attrs->file);
+				     "      /F %s\n",
+				     dest);
+	free (dest);
+
+	if (surface->pdf_version >= CAIRO_PDF_VERSION_1_7)
+	{
+	    status = _cairo_utf8_to_pdf_string (link_attrs->file, &dest);
+	    if (unlikely (status))
+		return status;
+
+	    _cairo_output_stream_printf (surface->object_stream.stream,
+				     "      /UF %s\n",
+				     dest);
+	    free (dest);
+	}
+
 	if (link_attrs->dest) {
 	    status = _cairo_utf8_to_pdf_string (link_attrs->dest, &dest);
 	    if (unlikely (status))
@@ -487,13 +582,13 @@ cairo_pdf_interchange_write_link_action (cairo_pdf_surface_t   *surface,
 	} else {
 	    if (link_attrs->has_pos) {
 		_cairo_output_stream_printf (surface->object_stream.stream,
-					     "      /D [%d %f %f 0]\n",
+					     "      /D [%d /XYZ %f %f 0]\n",
 					     link_attrs->page,
 					     link_attrs->pos.x,
 					     link_attrs->pos.y);
 	    } else {
 		_cairo_output_stream_printf (surface->object_stream.stream,
-					     "      /D [%d null null 0]\n",
+					     "      /D [%d /XYZ null null 0]\n",
 					     link_attrs->page);
 	    }
 	}
