@@ -5448,18 +5448,24 @@ _cairo_utf8_to_pdf_string (const char *utf8, char **str_out)
 {
     int i;
     int len;
+    unsigned char *p;
     cairo_bool_t ascii;
     char *str;
     cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
 
     ascii = TRUE;
-    len = strlen (utf8);
-    for (i = 0; i < len; i++) {
-	unsigned c = utf8[i];
-	if (c < 32 || c > 126 || c == '(' || c == ')' || c == '\\') {
+    p = (unsigned char *)utf8;
+    len = 0;
+    while (*p) {
+	if (*p < 32 || *p > 126) {
 	    ascii = FALSE;
 	    break;
 	}
+	if (*p == '(' || *p == ')' || *p == '\\')
+	    len += 2;
+	else
+	    len++;
+	p++;
     }
 
     if (ascii) {
@@ -5468,10 +5474,16 @@ _cairo_utf8_to_pdf_string (const char *utf8, char **str_out)
 	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
 	str[0] = '(';
-	for (i = 0; i < len; i++)
-	    str[i+1] = utf8[i];
-	str[i+1] = ')';
-	str[i+2] = 0;
+	p = (unsigned char *)utf8;
+	i = 1;
+	while (*p) {
+	    if (*p == '(' || *p == ')' || *p == '\\')
+		str[i++] = '\\';
+	    str[i++] = *p;
+	    p++;
+	}
+	str[i++] = ')';
+	str[i++] = 0;
     } else {
 	uint16_t *utf16 = NULL;
 	int utf16_len = 0;
