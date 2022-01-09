@@ -103,15 +103,13 @@ add_project_arguments('-D_GNU_SOURCE', language: 'c')
 add_project_arguments('-DHAVE_CONFIG_H', language: 'c')
 
 # Make sure source directory hasn't been configured with autotools
-if meson.version().version_compare('>= 0.53')
-  fs = import('fs')
-  if fs.exists('config.h') or fs.exists('src/cairo-features.h') or fs.exists('src/cairo-supported-features.h')
-    error('''
-          The source directory '@0@' appears to contain
-          autotools configuration artifacts. This can cause difficult to
-          debug build problems. Please clean it up and then re-run meson.
-          '''.format(meson.source_root()))
-  endif
+fs = import('fs')
+if fs.exists('config.h') or fs.exists('src/cairo-features.h') or fs.exists('src/cairo-supported-features.h')
+  error('''
+        The source directory '@0@' appears to contain
+        autotools configuration artifacts. This can cause difficult to
+        debug build problems. Please clean it up and then re-run meson.
+        '''.format(meson.source_root()))
 endif
 
 pkgmod = import('pkgconfig')
@@ -975,9 +973,6 @@ if not get_option('tests').disabled() and feature_conf.get('CAIRO_HAS_PNG_FUNCTI
 endif
 
 if get_option('gtk_doc')
-  if not meson.version().version_compare('>=0.52.0')
-    error('Building documentation requires Meson >= 0.52.0.')
-  endif
   doc_srcdir = include_directories('src')
   subdir('doc/public')
 endif
@@ -1000,56 +995,54 @@ foreach feature: built_features
 endforeach
 
 # summary
-if meson.version().version_compare('>= 0.53')
-  summary({
-          'Image': true,
-          'Recording': true,
-          'Observer': true,
-          'Mime': true,
-          'Tee': feature_conf.get('CAIRO_HAS_TEE_SURFACE', 0) == 1,
-          'XML': feature_conf.get('CAIRO_HAS_XML_SURFACE', 0) == 1,
-          'Xlib': feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1,
-          'Xlib Xrender': feature_conf.get('CAIRO_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
-          'Qt': feature_conf.get('CAIRO_HAS_QT_SURFACE', 0) == 1,
-          'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_SURFACE', 0) == 1,
-          'Quartz-image': feature_conf.get('CAIRO_HAS_QUARTZ_IMAGE_SURFACE', 0) == 1,
-          'XCB': feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1,
-          'Win32': feature_conf.get('CAIRO_HAS_WIN32_SURFACE', 0) == 1,
-          'OS2': false,
-          'CairoScript': feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1,
-          'PostScript':  feature_conf.get('CAIRO_HAS_PS_SURFACE', 0) == 1,
-          'PDF':  feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1,
-          'SVG':  feature_conf.get('CAIRO_HAS_SVG_SURFACE', 0) == 1,
-          'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
-          'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
-          'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
-          'BeOS': false,
-          'DirectFB': feature_conf.get('CAIRO_HAS_DIRECTFB_SURFACE', 0) == 1,
-          'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
-          'DRM': feature_conf.get('CAIRO_HAS_DRM_SURFACE', 0) == 1,
-          'Cogl': feature_conf.get('CAIRO_HAS_COGL_SURFACE', 0) == 1,
-          }, section: 'Surface Backends', bool_yn: true)
+summary({
+        'Image': true,
+        'Recording': true,
+        'Observer': true,
+        'Mime': true,
+        'Tee': feature_conf.get('CAIRO_HAS_TEE_SURFACE', 0) == 1,
+        'XML': feature_conf.get('CAIRO_HAS_XML_SURFACE', 0) == 1,
+        'Xlib': feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1,
+        'Xlib Xrender': feature_conf.get('CAIRO_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
+        'Qt': feature_conf.get('CAIRO_HAS_QT_SURFACE', 0) == 1,
+        'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_SURFACE', 0) == 1,
+        'Quartz-image': feature_conf.get('CAIRO_HAS_QUARTZ_IMAGE_SURFACE', 0) == 1,
+        'XCB': feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1,
+        'Win32': feature_conf.get('CAIRO_HAS_WIN32_SURFACE', 0) == 1,
+        'OS2': false,
+        'CairoScript': feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1,
+        'PostScript':  feature_conf.get('CAIRO_HAS_PS_SURFACE', 0) == 1,
+        'PDF':  feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1,
+        'SVG':  feature_conf.get('CAIRO_HAS_SVG_SURFACE', 0) == 1,
+        'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
+        'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
+        'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
+        'BeOS': false,
+        'DirectFB': feature_conf.get('CAIRO_HAS_DIRECTFB_SURFACE', 0) == 1,
+        'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
+        'DRM': feature_conf.get('CAIRO_HAS_DRM_SURFACE', 0) == 1,
+        'Cogl': feature_conf.get('CAIRO_HAS_COGL_SURFACE', 0) == 1,
+        }, section: 'Surface Backends', bool_yn: true)
 
-  summary({
-          'User': true,
-          'FreeType': feature_conf.get('CAIRO_HAS_FT_FONT', 0) == 1,
-          'Fontconfig': feature_conf.get('CAIRO_HAS_FC_FONT', 0) == 1,
-          'Win32': feature_conf.get('CAIRO_HAS_WIN32_FONT', 0) == 1,
-          'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_FONT', 0) == 1,
-          }, section: 'Font Backends', bool_yn: true)
+summary({
+        'User': true,
+        'FreeType': feature_conf.get('CAIRO_HAS_FT_FONT', 0) == 1,
+        'Fontconfig': feature_conf.get('CAIRO_HAS_FC_FONT', 0) == 1,
+        'Win32': feature_conf.get('CAIRO_HAS_WIN32_FONT', 0) == 1,
+        'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_FONT', 0) == 1,
+        }, section: 'Font Backends', bool_yn: true)
 
-  summary({
-          'PNG functions': feature_conf.get('CAIRO_HAS_PNG_FUNCTIONS', 0) == 1,
-          'GLX functions': feature_conf.get('CAIRO_HAS_GLX_FUNCTIONS', 0) == 1,
-          'WGL functions': feature_conf.get('CAIRO_HAS_WGL_FUNCTIONS', 0) == 1,
-          'EGL functions': feature_conf.get('CAIRO_HAS_EGL_FUNCTIONS', 0) == 1,
-          'X11-xcb': feature_conf.get('CAIRO_HAS_XLIB_XCB_FUNCTIONS', 0) == 1,
-          'XCB-shm': feature_conf.get('CAIRO_HAS_XCB_SHM_FUNCTIONS', 0) == 1,
-          }, section: 'Functions', bool_yn: true)
+summary({
+        'PNG functions': feature_conf.get('CAIRO_HAS_PNG_FUNCTIONS', 0) == 1,
+        'GLX functions': feature_conf.get('CAIRO_HAS_GLX_FUNCTIONS', 0) == 1,
+        'WGL functions': feature_conf.get('CAIRO_HAS_WGL_FUNCTIONS', 0) == 1,
+        'EGL functions': feature_conf.get('CAIRO_HAS_EGL_FUNCTIONS', 0) == 1,
+        'X11-xcb': feature_conf.get('CAIRO_HAS_XLIB_XCB_FUNCTIONS', 0) == 1,
+        'XCB-shm': feature_conf.get('CAIRO_HAS_XCB_SHM_FUNCTIONS', 0) == 1,
+        }, section: 'Functions', bool_yn: true)
 
-  summary({
-          'cairo-trace:': conf.get('CAIRO_HAS_TRACE', 0) == 1,
-          'cairo-script-interpreter': conf.get('CAIRO_HAS_INTERPRETER', 0) == 1,
-          'API reference': get_option('gtk_doc'),
-          }, section: 'Features and Utilities', bool_yn: true)
-endif
+summary({
+        'cairo-trace:': conf.get('CAIRO_HAS_TRACE', 0) == 1,
+        'cairo-script-interpreter': conf.get('CAIRO_HAS_INTERPRETER', 0) == 1,
+        'API reference': get_option('gtk_doc'),
+        }, section: 'Features and Utilities', bool_yn: true)
