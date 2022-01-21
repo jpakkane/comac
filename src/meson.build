@@ -114,6 +114,7 @@ cairo_sources = [
   'cairo-pdf-operators.c',
   'cairo-pdf-shading.c',
   'cairo-tag-attributes.c',
+  'cairo-tag-stack.c',
   'cairo-deflate-stream.c',
 ]
 
@@ -234,7 +235,6 @@ cairo_feature_sources = {
   'cairo-pdf': [
     'cairo-pdf-surface.c',
     'cairo-pdf-interchange.c',
-    'cairo-tag-stack.c',
   ],
   'cairo-svg': [
     'cairo-svg-surface.c',
