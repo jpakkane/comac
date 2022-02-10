@@ -133,6 +133,21 @@ static void quartz_surface_to_png (cairo_quartz_surface_t *nq, char *dest);
 static void quartz_image_to_png (CGImageRef, char *dest);
 #endif
 
+typedef struct
+{
+    cairo_surface_t base;
+    CGImageRef image;
+} cairo_quartz_snapshot_t;
+
+static cairo_surface_t* _cairo_quartz_snapshot_create (cairo_quartz_surface_t *surface);
+static cairo_status_t _cairo_quartz_snapshot_finish (void* surface);
+static CGImageRef _cairo_quartz_surface_snapshot_get_image (cairo_quartz_surface_t *surface);
+
+static const cairo_surface_backend_t cairo_quartz_snapshot_backend = {
+    CAIRO_INTERNAL_SURFACE_TYPE_QUARTZ_SNAPSHOT,
+    _cairo_quartz_snapshot_finish,
+};
+
 static cairo_quartz_surface_t *
 _cairo_quartz_surface_create_internal (CGContextRef cgContext,
 				       cairo_content_t content,
@@ -202,6 +217,8 @@ CairoQuartzCreateCGImage (cairo_format_t format,
 
 	case CAIRO_FORMAT_RGB30:
 	case CAIRO_FORMAT_RGB16_565:
+        case CAIRO_FORMAT_RGB96F:
+        case CAIRO_FORMAT_RGBA128F:
 	case CAIRO_FORMAT_INVALID:
 	default:
 	    return NULL;
@@ -810,10 +827,12 @@ _cairo_surface_to_cgimage (cairo_surface_t       *source,
 	}
 
 	if (_cairo_quartz_is_cgcontext_bitmap_context (surface->cgContext)) {
-	    *image_out = CGBitmapContextCreateImage (surface->cgContext);
-	    if (*image_out)
-		return CAIRO_STATUS_SUCCESS;
+	    *image_out = _cairo_quartz_surface_snapshot_get_image (surface);
+	    return CAIRO_STATUS_SUCCESS;
 	}
+
+	*image_out = NULL;
+	return CAIRO_STATUS_SURFACE_TYPE_MISMATCH;
     }
 
     if (source->type == CAIRO_SURFACE_TYPE_RECORDING) {
@@ -2207,7 +2226,7 @@ _cairo_quartz_surface_clipper_intersect_clip_path (cairo_surface_clipper_t *clip
 
 // XXXtodo implement show_page; need to figure out how to handle begin/end
 
-static const struct _cairo_surface_backend cairo_quartz_surface_backend = {
+static const cairo_surface_backend_t cairo_quartz_surface_backend = {
     CAIRO_SURFACE_TYPE_QUARTZ,
     _cairo_quartz_surface_finish,
 
@@ -2238,6 +2257,10 @@ static const struct _cairo_surface_backend cairo_quartz_surface_backend = {
     _cairo_quartz_surface_fill,
     NULL,  /* fill-stroke */
     _cairo_quartz_surface_glyphs,
+    NULL, /* has_show_text_glyphs */
+    NULL, /* show_text_glyphs */
+    NULL, /* get_supported_mime_types */
+    NULL, /* tag */
 };
 
 cairo_quartz_surface_t *
@@ -2487,6 +2510,55 @@ cairo_bool_t
 _cairo_surface_is_quartz (const cairo_surface_t *surface)
 {
     return surface->backend == &cairo_quartz_surface_backend;
+}
+
+cairo_surface_t*
+_cairo_quartz_snapshot_create (cairo_quartz_surface_t *surface)
+{
+    cairo_quartz_snapshot_t *snapshot = NULL;
+
+    if (!surface || !_cairo_surface_is_quartz (&surface->base) || IS_EMPTY (surface) ||
+	! _cairo_quartz_is_cgcontext_bitmap_context (surface->cgContext))
+	return NULL;
+
+    snapshot = _cairo_malloc (sizeof (cairo_quartz_snapshot_t));
+
+    if (unlikely (surface == NULL))
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+
+    memset (snapshot, 0, sizeof (cairo_quartz_snapshot_t));
+    _cairo_surface_init (&snapshot->base,
+			 &cairo_quartz_snapshot_backend,
+			 NULL, CAIRO_CONTENT_COLOR_ALPHA, FALSE);
+    snapshot->image = CGBitmapContextCreateImage (surface->cgContext);
+
+    return &snapshot->base;
+}
+
+cairo_status_t
+_cairo_quartz_snapshot_finish (void *surface)
+{
+    cairo_quartz_snapshot_t *snapshot = (cairo_quartz_snapshot_t *)surface;
+   if (snapshot->image)
+	CGImageRelease (snapshot->image);
+    return CAIRO_STATUS_SUCCESS;
+}
+
+CGImageRef
+_cairo_quartz_surface_snapshot_get_image (cairo_quartz_surface_t *surface)
+{
+    cairo_surface_t *snapshot =
+	_cairo_surface_has_snapshot (&surface->base, &cairo_quartz_snapshot_backend);
+
+    if (unlikely (!snapshot))
+    {
+	snapshot = _cairo_quartz_snapshot_create (surface);
+	if (unlikely (!snapshot || cairo_surface_status (snapshot)))
+	    return NULL;
+	_cairo_surface_attach_snapshot (&surface->base, snapshot, NULL);
+    }
+
+    return CGImageRetain (((cairo_quartz_snapshot_t*)snapshot)->image);
 }
 
 /* Debug stuff */
