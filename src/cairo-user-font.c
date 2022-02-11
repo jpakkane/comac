@@ -312,6 +312,7 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
             _cairo_scaled_glyph_set_surface (scaled_glyph,
                                              &scaled_font->base,
                                              (cairo_image_surface_t *) surface);
+            surface = NULL;
         }
 
         if (scaled_glyph->recording_is_color && (info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE)) {
@@ -319,7 +320,11 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
                                                    &scaled_font->base,
                                                    (cairo_image_surface_t *)surface,
 						   FALSE);
+            surface = NULL;
         }
+
+        if (surface)
+            cairo_surface_destroy(surface);
     }
 
     if (info & CAIRO_SCALED_GLYPH_INFO_PATH) {
