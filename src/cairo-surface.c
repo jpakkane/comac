@@ -2771,8 +2771,10 @@ composite_color_glyphs (cairo_surface_t             *surface,
             byte_pos += clusters[i].num_bytes;
         }
 
-        if (cluster_flags & CAIRO_TEXT_CLUSTER_FLAG_BACKWARD)
+        if (cluster_flags & CAIRO_TEXT_CLUSTER_FLAG_BACKWARD) {
             memmove (utf8, utf8 + *utf8_len - remaining_bytes, remaining_bytes);
+            memmove (glyphs, glyphs + (*num_glyphs - remaining_glyphs), sizeof (cairo_glyph_t) * remaining_glyphs);
+        }
 
         *utf8_len = remaining_bytes;
         *num_glyphs = remaining_glyphs;
