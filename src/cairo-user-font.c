@@ -187,10 +187,13 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
 		    status = cairo_status (cr);
 		    scaled_glyph->recording_is_color = TRUE;
 		}
+		cairo_destroy (cr);
 	    }
 
 	    if (status == (cairo_int_status_t)CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED &&
 		face->scaled_font_methods.render_glyph) {
+                if (recording_surface)
+                    cairo_surface_destroy (recording_surface);
 		recording_surface = _cairo_user_scaled_font_create_recording_surface (scaled_font, FALSE);
 
 		cr = _cairo_user_scaled_font_create_recording_context (scaled_font, recording_surface, FALSE);
