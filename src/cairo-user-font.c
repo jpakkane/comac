@@ -187,10 +187,13 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
 		    status = cairo_status (cr);
 		    scaled_glyph->recording_is_color = TRUE;
 		}
+		cairo_destroy (cr);
 	    }
 
 	    if (status == (cairo_int_status_t)CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED &&
 		face->scaled_font_methods.render_glyph) {
+                if (recording_surface)
+                    cairo_surface_destroy (recording_surface);
 		recording_surface = _cairo_user_scaled_font_create_recording_surface (scaled_font, FALSE);
 
 		cr = _cairo_user_scaled_font_create_recording_context (scaled_font, recording_surface, FALSE);
@@ -309,6 +312,7 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
             _cairo_scaled_glyph_set_surface (scaled_glyph,
                                              &scaled_font->base,
                                              (cairo_image_surface_t *) surface);
+            surface = NULL;
         }
 
         if (scaled_glyph->recording_is_color && (info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE)) {
@@ -316,7 +320,11 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
                                                    &scaled_font->base,
                                                    (cairo_image_surface_t *)surface,
 						   FALSE);
+            surface = NULL;
         }
+
+        if (surface)
+            cairo_surface_destroy (surface);
     }
 
     if (info & CAIRO_SCALED_GLYPH_INFO_PATH) {
