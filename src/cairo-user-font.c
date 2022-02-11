@@ -324,7 +324,7 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
         }
 
         if (surface)
-            cairo_surface_destroy(surface);
+            cairo_surface_destroy (surface);
     }
 
     if (info & CAIRO_SCALED_GLYPH_INFO_PATH) {
