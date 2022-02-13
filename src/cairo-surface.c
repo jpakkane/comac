@@ -2616,16 +2616,16 @@ ensure_scaled_glyph (cairo_scaled_font_t   *scaled_font,
         status = _cairo_scaled_glyph_lookup (scaled_font,
                                              glyph->index,
                                              CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE,
-					     foreground_color,
+                                             foreground_color,
                                              scaled_glyph);
-	if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
-	    /* If the color surface not available, ensure scaled_glyph is not NULL. */
-	    status = _cairo_scaled_glyph_lookup (scaled_font,
-						 glyph->index,
-						 CAIRO_SCALED_GLYPH_INFO_METRICS,
-						 NULL, /* foreground color */
-						 scaled_glyph);
-	}
+        if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
+            /* If the color surface not available, ensure scaled_glyph is not NULL. */
+            status = _cairo_scaled_glyph_lookup (scaled_font,
+                                                 glyph->index,
+                                                 CAIRO_SCALED_GLYPH_INFO_SURFACE,
+                                                 NULL, /* foreground color */
+                                                 scaled_glyph);
+        }
         if (unlikely (status))
             status = _cairo_scaled_font_set_error (scaled_font, status);
 
@@ -2647,10 +2647,15 @@ composite_one_color_glyph (cairo_surface_t       *surface,
     cairo_image_surface_t *glyph_surface;
     cairo_pattern_t *pattern;
     cairo_matrix_t matrix;
+    int has_color;
 
     status = CAIRO_INT_STATUS_SUCCESS;
 
-    glyph_surface = scaled_glyph->color_surface;
+    has_color = scaled_glyph->has_info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE;
+    if (has_color)
+        glyph_surface = scaled_glyph->color_surface;
+    else
+        glyph_surface = scaled_glyph->surface;
 
     if (glyph_surface->width && glyph_surface->height) {
         int x, y;
@@ -2662,7 +2667,7 @@ composite_one_color_glyph (cairo_surface_t       *surface,
         pattern = cairo_pattern_create_for_surface ((cairo_surface_t *)glyph_surface);
         cairo_matrix_init_translate (&matrix, - x, - y);
         cairo_pattern_set_matrix (pattern, &matrix);
-	if (op == CAIRO_OPERATOR_SOURCE || op == CAIRO_OPERATOR_CLEAR)
+	if (op == CAIRO_OPERATOR_SOURCE || op == CAIRO_OPERATOR_CLEAR || !has_color)
 	  status = surface->backend->mask (surface, op, pattern, pattern, clip);
 	else
 	  status = surface->backend->paint (surface, op, pattern, clip);
@@ -2713,7 +2718,7 @@ composite_color_glyphs (cairo_surface_t             *surface,
             glyph_pos = *num_glyphs - 1;
 
         for (i = 0; i < *num_clusters; i++) {
-            cairo_bool_t skip_cluster = FALSE;
+            cairo_bool_t skip_cluster = TRUE;
 
             for (j = 0; j < clusters[i].num_glyphs; j++) {
                 if (cluster_flags & CAIRO_TEXT_CLUSTER_FLAG_BACKWARD)
@@ -2726,8 +2731,8 @@ composite_color_glyphs (cairo_surface_t             *surface,
                 if (unlikely (status))
                     goto UNLOCK;
 
-                if ((scaled_glyph->has_info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) == 0) {
-                    skip_cluster = TRUE;
+                if ((scaled_glyph->has_info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) != 0) {
+                    skip_cluster = FALSE;
                     break;
                 }
             }
