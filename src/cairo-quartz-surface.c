@@ -1466,19 +1466,17 @@ _cairo_quartz_surface_map_to_image (void *abstract_surface,
 				    const cairo_rectangle_int_t *extents)
 {
     cairo_quartz_surface_t *surface = (cairo_quartz_surface_t *) abstract_surface;
+    cairo_surface_t *return_surface = NULL;
     unsigned int stride, bitinfo, bpp, color_comps;
     CGColorSpaceRef colorspace;
     void *imageData;
     cairo_format_t format;
 
-    if (surface->imageSurfaceEquiv)
-	return _cairo_surface_map_to_image (surface->imageSurfaceEquiv, extents);
-
     if (IS_EMPTY (surface))
 	return (cairo_image_surface_t *) cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 0, 0);
 
     if (! _cairo_quartz_is_cgcontext_bitmap_context (surface->cgContext))
-	return _cairo_image_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _cairo_image_surface_create_in_error (_cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH));
 
     bitinfo = CGBitmapContextGetBitmapInfo (surface->cgContext);
     bpp = CGBitmapContextGetBitsPerPixel (surface->cgContext);
@@ -1502,23 +1500,26 @@ _cairo_quartz_surface_map_to_image (void *abstract_surface,
     {
 	format = CAIRO_FORMAT_RGB24;
     }
-    else if (bpp == 8 && color_comps == 1)
+    else if (bpp == 8 && color_comps == 0)
     {
-	format = CAIRO_FORMAT_A1;
+	format = CAIRO_FORMAT_A8;
     }
     else
     {
-	return _cairo_image_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _cairo_image_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
     }
 
     imageData = CGBitmapContextGetData (surface->cgContext);
     stride = CGBitmapContextGetBytesPerRow (surface->cgContext);
 
-    return (cairo_image_surface_t *) cairo_image_surface_create_for_data (imageData,
-									  format,
-									  extents->width,
-									  extents->height,
-									  stride);
+    imageData += extents->y * stride + extents->x * bpp / 8;
+    return_surface = cairo_image_surface_create_for_data (imageData,
+							  format,
+							  extents->width,
+							  extents->height,
+							  stride);
+
+    return (cairo_image_surface_t *) return_surface;
 }
 
 static cairo_int_status_t
@@ -1526,9 +1527,6 @@ _cairo_quartz_surface_unmap_image (void *abstract_surface,
 				   cairo_image_surface_t *image)
 {
     cairo_quartz_surface_t *surface = (cairo_quartz_surface_t *) abstract_surface;
-
-    if (surface->imageSurfaceEquiv)
-	return _cairo_surface_unmap_image (surface->imageSurfaceEquiv, image);
 
     cairo_surface_finish (&image->base);
     cairo_surface_destroy (&image->base);
@@ -1559,13 +1557,12 @@ _cairo_quartz_surface_finish (void *abstract_surface)
 
     surface->cgContext = NULL;
 
-    if (surface->imageSurfaceEquiv) {
-	cairo_surface_destroy (surface->imageSurfaceEquiv);
-	surface->imageSurfaceEquiv = NULL;
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
+    if (surface->imageData) {
+	free (surface->imageData);
+	surface->imageData = NULL;
     }
-
-    free (surface->imageData);
-    surface->imageData = NULL;
+#endif
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -2294,9 +2291,9 @@ _cairo_quartz_surface_create_internal (CGContextRef cgContext,
     surface->extents.width = width;
     surface->extents.height = height;
     surface->virtual_extents = surface->extents;
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
     surface->imageData = NULL;
-    surface->imageSurfaceEquiv = NULL;
-
+#endif
 
     if (IS_EMPTY (surface)) {
 	surface->cgContext = NULL;
@@ -2382,7 +2379,7 @@ cairo_quartz_surface_create (cairo_format_t format,
     CGContextRef cgc;
     CGColorSpaceRef cgColorspace;
     CGBitmapInfo bitinfo;
-    void *imageData;
+    void *imageData = NULL;
     int stride;
     int bitsPerComponent;
 
@@ -2425,16 +2422,16 @@ cairo_quartz_surface_create (cairo_format_t format,
      * so we don't have to anything special on allocation.
      */
     stride = (stride + 15) & ~15;
-
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
     imageData = _cairo_malloc_ab (height, stride);
     if (unlikely (!imageData)) {
 	CGColorSpaceRelease (cgColorspace);
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
     }
 
-    /* zero the memory to match the image surface behaviour */
+    /* zero the memory to match the image surface behavior */
     memset (imageData, 0, height * stride);
-
+#endif /* For newer macOS versions let Core Graphics manage the buffer. */
     cgc = CGBitmapContextCreate (imageData,
 				 width,
 				 height,
@@ -2445,7 +2442,9 @@ cairo_quartz_surface_create (cairo_format_t format,
     CGColorSpaceRelease (cgColorspace);
 
     if (!cgc) {
-	free (imageData);
+	if (imageData)
+	    free (imageData);
+
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
     }
 
@@ -2457,15 +2456,18 @@ cairo_quartz_surface_create (cairo_format_t format,
 						  width, height);
     if (surf->base.status) {
 	CGContextRelease (cgc);
-	free (imageData);
+
+	if (imageData)
+	    free (imageData);
+
 	// create_internal will have set an error
 	return &surf->base;
     }
 
-    surf->base.is_clear = TRUE;
-
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
     surf->imageData = imageData;
-    surf->imageSurfaceEquiv = cairo_image_surface_create_for_data (imageData, format, width, height, stride);
+#endif
+    surf->base.is_clear = TRUE;
 
     return &surf->base;
 }

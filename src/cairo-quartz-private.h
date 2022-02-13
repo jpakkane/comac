@@ -67,8 +67,9 @@ typedef struct cairo_quartz_surface {
     CGContextRef cgContext;
     CGAffineTransform cgContextBaseCTM;
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
     void *imageData;
-    cairo_surface_t *imageSurfaceEquiv;
+#endif
 
     cairo_surface_clipper_t clipper;
     cairo_rectangle_int_t extents;
