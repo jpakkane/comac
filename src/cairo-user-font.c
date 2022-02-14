@@ -195,8 +195,11 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
                 if (recording_surface)
                     cairo_surface_destroy (recording_surface);
 		recording_surface = _cairo_user_scaled_font_create_recording_surface (scaled_font, FALSE);
+		recording_surface->device_transform.x0 = .25 * _cairo_scaled_glyph_xphase (scaled_glyph);
+		recording_surface->device_transform.y0 = .25 * _cairo_scaled_glyph_yphase (scaled_glyph);
 
 		cr = _cairo_user_scaled_font_create_recording_context (scaled_font, recording_surface, FALSE);
+
 		status = face->scaled_font_methods.render_glyph ((cairo_scaled_font_t *)scaled_font,
 								 _cairo_scaled_glyph_index(scaled_glyph),
 								 cr, &extents);

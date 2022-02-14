@@ -392,6 +392,7 @@ test_sources = [
   'user-font-mask.c',
   'user-font-proxy.c',
   'user-font-rescale.c',
+  'user-font-subpixel.c',
   'world-map.c',
   'white-in-noop.c',
   'xcb-huge-image-shm.c',
