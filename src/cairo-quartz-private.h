@@ -55,7 +55,8 @@ typedef enum {
     DO_DIRECT,
     DO_SHADING,
     DO_IMAGE,
-    DO_TILED_IMAGE
+    DO_TILED_IMAGE,
+    DO_LAYER
 } cairo_quartz_action_t;
 
 /* define CTFontRef for pre-10.5 SDKs */
@@ -74,6 +75,7 @@ typedef struct cairo_quartz_surface {
     cairo_surface_clipper_t clipper;
     cairo_rectangle_int_t extents;
     cairo_rectangle_int_t virtual_extents;
+    CGLayerRef cgLayer;
 } cairo_quartz_surface_t;
 
 typedef struct cairo_quartz_image_surface {
