@@ -412,7 +412,7 @@ void *
 _cairo_user_data_array_get_data (cairo_user_data_array_t     *array,
 				 const cairo_user_data_key_t *key)
 {
-    int i, num_slots;
+    unsigned int i, num_slots;
     cairo_user_data_slot_t *slots;
 
     /* We allow this to support degenerate objects such as cairo_surface_nil. */
@@ -452,7 +452,7 @@ _cairo_user_data_array_set_data (cairo_user_data_array_t     *array,
 				 cairo_destroy_func_t	      destroy)
 {
     cairo_status_t status;
-    int i, num_slots;
+    unsigned int i, num_slots;
     cairo_user_data_slot_t *slots, *slot, new_slot;
 
     if (user_data) {
@@ -523,7 +523,7 @@ _cairo_user_data_array_foreach (cairo_user_data_array_t     *array,
 				void *closure)
 {
     cairo_user_data_slot_t *slots;
-    int i, num_slots;
+    unsigned int i, num_slots;
 
     num_slots = array->num_elements;
     slots = _cairo_array_index (array, 0);
