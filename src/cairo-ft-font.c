@@ -1194,7 +1194,7 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 #ifdef FT_LOAD_COLOR
     case FT_PIXEL_MODE_BGRA:
 	for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch)
-	    memcpy (dstLine, srcLine, width * 4);
+	    memcpy (dstLine, srcLine, (size_t)width * 4);
 	break;
 #endif
 
@@ -1241,7 +1241,7 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
 		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
 	    if (stride == bitmap->pitch) {
-		memcpy (data, bitmap->buffer, stride * height);
+		memcpy (data, bitmap->buffer, (size_t)stride * height);
 	    } else {
 		int i;
 		unsigned char *source, *dest;
@@ -1294,7 +1294,7 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
 		if (!data)
 		    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
-		memcpy (data, bitmap->buffer, stride * height);
+		memcpy (data, bitmap->buffer, (size_t)stride * height);
 	    }
 
 	    format = CAIRO_FORMAT_A8;
@@ -1315,7 +1315,7 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
 	    if (!data)
 		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
-	    memcpy (data, bitmap->buffer, stride * height);
+	    memcpy (data, bitmap->buffer, (size_t)stride * height);
 	}
 
 	if (!_cairo_is_little_endian ())
@@ -1371,7 +1371,7 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
 	      }
 	    }
 
-	    memcpy (data, bitmap->buffer, stride * height);
+	    memcpy (data, bitmap->buffer, (size_t)stride * height);
 	    break;
 	}
 	/* fall through */

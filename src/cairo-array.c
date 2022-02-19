@@ -181,7 +181,7 @@ _cairo_array_index (cairo_array_t *array, unsigned int index)
 
     assert (index < array->num_elements);
 
-    return array->elements + index * array->element_size;
+    return array->elements + (size_t)index * array->element_size;
 }
 
 /**
@@ -225,7 +225,7 @@ _cairo_array_index_const (const cairo_array_t *array, unsigned int index)
 
     assert (index < array->num_elements);
 
-    return array->elements + index * array->element_size;
+    return array->elements + (size_t)index * array->element_size;
 }
 
 /**
@@ -289,7 +289,7 @@ _cairo_array_append_multiple (cairo_array_t	*array,
     if (unlikely (status))
 	return status;
 
-    memcpy (dest, elements, num_elements * array->element_size);
+    memcpy (dest, elements, (size_t)num_elements * array->element_size);
 
     return CAIRO_STATUS_SUCCESS;
 }
@@ -320,7 +320,7 @@ _cairo_array_allocate (cairo_array_t	 *array,
 
     assert (array->num_elements + num_elements <= array->size);
 
-    *elements = array->elements + array->num_elements * array->element_size;
+    *elements = array->elements + (size_t)array->num_elements * array->element_size;
 
     array->num_elements += num_elements;
 
