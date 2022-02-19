@@ -186,7 +186,8 @@ cairo_font_options_destroy (cairo_font_options_t *options)
  * Checks whether an error has previously occurred for this
  * font options object
  *
- * Return value: %CAIRO_STATUS_SUCCESS or %CAIRO_STATUS_NO_MEMORY
+ * Return value: %CAIRO_STATUS_SUCCESS, %CAIRO_STATUS_NO_MEMORY, or
+ *	%CAIRO_STATUS_NULL_POINTER.
  *
  * Since: 1.0
  **/
