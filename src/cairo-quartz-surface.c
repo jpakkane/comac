@@ -129,8 +129,8 @@ static cairo_bool_t _cairo_quartz_symbol_lookup_done = FALSE;
  */
 
 #ifdef QUARTZ_DEBUG
-static void quartz_surface_to_png (cairo_quartz_surface_t *nq, char *dest);
-static void quartz_image_to_png (CGImageRef, char *dest);
+static void quartz_surface_to_png (cairo_quartz_surface_t *nq, const char *dest);
+static void quartz_image_to_png (CGImageRef, const char *dest);
 #endif
 
 typedef struct
@@ -2646,95 +2646,47 @@ _cairo_quartz_surface_snapshot_get_image (cairo_quartz_surface_t *surface)
 
 #ifdef QUARTZ_DEBUG
 
-#include <Movies.h>
-
-void ExportCGImageToPNGFile (CGImageRef inImageRef, char* dest)
-{
-    Handle  dataRef = NULL;
-    OSType  dataRefType;
-    CFStringRef inPath = CFStringCreateWithCString (NULL, dest, kCFStringEncodingASCII);
-
-    GraphicsExportComponent grex = 0;
-    unsigned long sizeWritten;
-
-    ComponentResult result;
-
-    // create the data reference
-    result = QTNewDataReferenceFromFullPathCFString (inPath, kQTNativeDefaultPathStyle,
-						     0, &dataRef, &dataRefType);
-
-    if (NULL != dataRef && noErr == result) {
-	// get the PNG exporter
-	result = OpenADefaultComponent (GraphicsExporterComponentType, kQTFileTypePNG,
-					&grex);
-
-	if (grex) {
-	    // tell the exporter where to find its source image
-	    result = GraphicsExportSetInputCGImage (grex, inImageRef);
-
-	    if (noErr == result) {
-		// tell the exporter where to save the exporter image
-		result = GraphicsExportSetOutputDataReference (grex, dataRef,
-							       dataRefType);
-
-		if (noErr == result) {
-		    // write the PNG file
-		    result = GraphicsExportDoExport (grex, &sizeWritten);
-		}
-	    }
-
-	    // remember to close the component
-	    CloseComponent (grex);
-	}
-
-	// remember to dispose of the data reference handle
-	DisposeHandle (dataRef);
-    }
-}
-
 void
-quartz_image_to_png (CGImageRef imgref, char *dest)
+quartz_image_to_png (CGImageRef image, const char *dest)
 {
     static int sctr = 0;
-    char sptr[] = "/Users/vladimir/Desktop/barXXXXX.png";
+    const char* image_name = "quartz-image";
+    char pathbuf[100];
 
-    if (dest == NULL) {
-	fprintf (stderr, "** Writing %p to bar%d\n", imgref, sctr);
-	sprintf (sptr, "/Users/vladimir/Desktop/bar%d.png", sctr);
-	sctr++;
-	dest = sptr;
-    }
+    CFStringRef png_utti = CFSTR("public.png");
+    CFStringRef path;
+    CFURLRef url;
+    CGImageDestinationRef image_dest;
 
-    ExportCGImageToPNGFile (imgref, dest);
-}
+    memset (pathbuf, 0, sizeof (pathbuf));
+    dest = dest ? dest : image_name;
+    snprintf (pathbuf, sizeof (pathbuf), "%s/Desktop/%s%d.png",getenv ("HOME"), dest, sctr++, ext);
+    path = CFStringCreateWithCString (NULL, pathbuf, kCFStringEncodingUTF8);
+    url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, FALSE);
+    image_dest = CGImageDestinationCreateWithURL (url, png_utti, 1, NULL);
+
+    CGImageDestinationAddImage (image_dest, image, NULL);
+    CGImageDestinationFinalize (image_dest);
+
+    CFRelease (url);
+    CFRelease (path);
+ }
 
 void
-quartz_surface_to_png (cairo_quartz_surface_t *nq, char *dest)
+quartz_surface_to_png (cairo_quartz_surface_t *nq, const char *dest)
 {
     static int sctr = 0;
-    char sptr[] = "/Users/vladimir/Desktop/fooXXXXX.png";
+    CGImageRef image;
 
     if (nq->base.type != CAIRO_SURFACE_TYPE_QUARTZ) {
 	fprintf (stderr, "** quartz_surface_to_png: surface %p isn't quartz!\n", nq);
 	return;
     }
 
-    if (dest == NULL) {
-	fprintf (stderr, "** Writing %p to foo%d\n", nq, sctr);
-	sprintf (sptr, "/Users/vladimir/Desktop/foo%d.png", sctr);
-	sctr++;
-	dest = sptr;
-    }
+    image = CGBitmapContextCreateImage (nq->cgContext);
+    quartz_image_to_png (image, dest);
 
-    CGImageRef imgref = CGBitmapContextCreateImage (nq->cgContext);
-    if (imgref == NULL) {
-	fprintf (stderr, "quartz surface at %p is not a bitmap context!\n", nq);
-	return;
-    }
-
-    ExportCGImageToPNGFile (imgref, dest);
-
-    CGImageRelease (imgref);
+    CGImageRelease (image);
 }
 
 #endif /* QUARTZ_DEBUG */
