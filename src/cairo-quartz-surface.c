@@ -1077,6 +1077,150 @@ typedef struct {
     CGRect clipRect;
 } cairo_quartz_drawing_state_t;
 
+static cairo_int_status_t
+_cairo_quartz_setup_pattern_source (cairo_quartz_drawing_state_t *state,
+				    const cairo_pattern_t *source,
+				    cairo_quartz_surface_t *surface,
+				    const cairo_clip_t *clip,
+				    cairo_operator_t op)
+{
+    const cairo_surface_pattern_t *spat = (const cairo_surface_pattern_t *) source;
+    cairo_surface_t *pat_surf = spat->surface;
+    cairo_matrix_t m = spat->base.matrix;
+    cairo_format_t format = _cairo_format_from_content (surface->base.content);
+    cairo_rectangle_int_t extents;
+    CGRect srcRect;
+    CGImageRef img;
+
+    cairo_quartz_float_t patternAlpha = 1.0f;
+    CGColorSpaceRef patternSpace;
+    CGPatternRef pattern = NULL;
+    cairo_int_status_t status;
+
+    _cairo_surface_get_extents (&surface->base, &extents);
+
+    if (pat_surf->backend->type == CAIRO_SURFACE_TYPE_QUARTZ) {
+	cairo_quartz_surface_t *quartz_surf = (cairo_quartz_surface_t *) pat_surf;
+
+	if (quartz_surf->cgLayer && source->extend == CAIRO_EXTEND_NONE) {
+	    cairo_matrix_invert (&m);
+	    _cairo_quartz_cairo_matrix_to_quartz (&m, &state->transform);
+	    state->rect = CGRectMake (0, 0, quartz_surf->extents.width, quartz_surf->extents.height);
+	    state->layer = quartz_surf->cgLayer;
+	    state->action = DO_LAYER;
+	    return CAIRO_STATUS_SUCCESS;
+	}
+    }
+
+    status = _cairo_surface_to_cgimage (pat_surf, &extents, format,
+					&m, clip, &img); // Note that only pat_surf will get used!
+    if (unlikely (status))
+	return status;
+
+    state->image = img;
+
+    if (state->filter == kCGInterpolationNone && _cairo_matrix_is_translation (&m)) {
+	m.x0 = -ceil (m.x0 - 0.5);
+	m.y0 = -ceil (m.y0 - 0.5);
+    } else {
+	cairo_matrix_invert (&m);
+    }
+
+    _cairo_quartz_cairo_matrix_to_quartz (&m, &state->transform);
+
+    if (pat_surf->type != CAIRO_SURFACE_TYPE_RECORDING) {
+	cairo_bool_t is_bounded = _cairo_surface_get_extents (pat_surf, &extents);
+	assert (is_bounded);
+    }
+
+    srcRect = CGRectMake (0, 0, extents.width, extents.height);
+
+    if (source->extend == CAIRO_EXTEND_NONE) {
+	int x, y;
+	if (op == CAIRO_OPERATOR_SOURCE &&
+	    (pat_surf->content == CAIRO_CONTENT_ALPHA ||
+	     ! _cairo_matrix_is_integer_translation (&m, &x, &y)))
+	{
+	    state->layer = CGLayerCreateWithContext (surface->cgContext,
+						     state->clipRect.size,
+						     NULL);
+	    state->cgDrawContext = CGLayerGetContext (state->layer);
+	    CGContextTranslateCTM (state->cgDrawContext,
+				   -state->clipRect.origin.x,
+				   -state->clipRect.origin.y);
+	}
+
+	CGContextSetRGBFillColor (state->cgDrawContext, 0, 0, 0, 1);
+
+	state->rect = srcRect;
+	state->action = DO_IMAGE;
+	return CAIRO_STATUS_SUCCESS;
+    }
+
+    if (CGContextDrawTiledImagePtr && source->extend == CAIRO_EXTEND_REPEAT) {
+	int fh, fw;
+	CGAffineTransform xform;
+
+	CGContextSetRGBFillColor (state->cgDrawContext, 0, 0, 0, 1);
+
+	/* Quartz seems to tile images at pixel-aligned regions only -- this
+	 * leads to seams if the image doesn't end up scaling to fill the
+	 * space exactly.  The CGPattern tiling approach doesn't have this
+	 * problem.  Check if we're going to fill up the space (within some
+	 * epsilon), and if not, fall back to the CGPattern type.
+	 */
+
+	xform = CGAffineTransformConcat (CGContextGetCTM (state->cgDrawContext),
+					 state->transform);
+
+	srcRect = CGRectApplyAffineTransform (srcRect, xform);
+
+	fw = _cairo_fixed_from_double (srcRect.size.width);
+	fh = _cairo_fixed_from_double (srcRect.size.height);
+
+	if ((fw & CAIRO_FIXED_FRAC_MASK) <= CAIRO_FIXED_EPSILON &&
+	    (fh & CAIRO_FIXED_FRAC_MASK) <= CAIRO_FIXED_EPSILON)
+	{
+	    /* We're good to use DrawTiledImage, but ensure that
+	     * the math works out */
+
+	    srcRect.size.width = round (srcRect.size.width);
+	    srcRect.size.height = round (srcRect.size.height);
+
+	    xform = CGAffineTransformInvert (xform);
+
+	    srcRect = CGRectApplyAffineTransform (srcRect, xform);
+
+	    state->rect = srcRect;
+	    state->action = DO_TILED_IMAGE;
+	    return CAIRO_STATUS_SUCCESS;
+	}
+    }
+    /* Fall through to generic SURFACE case */
+    status = _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (surface, source, clip, &pattern);
+    if (unlikely (status))
+	return status;
+
+    patternSpace = CGColorSpaceCreatePattern (NULL);
+    CGContextSetFillColorSpace (state->cgDrawContext, patternSpace);
+    CGContextSetFillPattern (state->cgDrawContext, pattern, &patternAlpha);
+    CGContextSetStrokeColorSpace (state->cgDrawContext, patternSpace);
+    CGContextSetStrokePattern (state->cgDrawContext, pattern, &patternAlpha);
+    CGColorSpaceRelease (patternSpace);
+
+    /* Quartz likes to munge the pattern phase (as yet unexplained
+     * why); force it to 0,0 as we've already baked in the correct
+     * pattern translation into the pattern matrix
+     */
+    CGContextSetPatternPhase (state->cgDrawContext, CGSizeMake (0, 0));
+
+    CGPatternRelease (pattern);
+
+    state->action = DO_DIRECT;
+    return CAIRO_STATUS_SUCCESS;
+}
+
+
 /*
 Quartz does not support repeating gradients. We handle repeating gradients
 by manually extending the gradient and repeating color stops. We need to
@@ -1149,7 +1293,6 @@ _cairo_quartz_setup_state (cairo_quartz_drawing_state_t *state,
     const cairo_clip_t           *clip = composite->clip;
     cairo_bool_t needs_temp;
     cairo_status_t status;
-    cairo_format_t format = _cairo_format_from_content (composite->surface->content);
 
     state->layer = NULL;
     state->image = NULL;
@@ -1251,143 +1394,9 @@ _cairo_quartz_setup_state (cairo_quartz_drawing_state_t *state,
 	return _cairo_quartz_setup_gradient_source (state, gpat, &extents);
     }
 
-    if (source->type == CAIRO_PATTERN_TYPE_SURFACE &&
-	(source->extend == CAIRO_EXTEND_NONE || (CGContextDrawTiledImagePtr && source->extend == CAIRO_EXTEND_REPEAT)))
-    {
-	const cairo_surface_pattern_t *spat = (const cairo_surface_pattern_t *) source;
-	cairo_surface_t *pat_surf = spat->surface;
-	CGImageRef img;
-	cairo_matrix_t m = spat->base.matrix;
-	cairo_rectangle_int_t extents;
-	CGAffineTransform xform;
-	CGRect srcRect;
-	cairo_fixed_t fw, fh;
-	cairo_bool_t is_bounded;
 
-	if (pat_surf->backend->type == CAIRO_SURFACE_TYPE_QUARTZ) {
-            cairo_quartz_surface_t *quartz_surf = (cairo_quartz_surface_t *) pat_surf;
-            if (quartz_surf->cgLayer && source->extend == CAIRO_EXTEND_NONE) {
-		cairo_matrix_invert (&m);
-		_cairo_quartz_cairo_matrix_to_quartz (&m, &state->transform);
-                state->rect = CGRectMake (0, 0, quartz_surf->extents.width, quartz_surf->extents.height);
-                state->layer = quartz_surf->cgLayer;
-                state->action = DO_LAYER;
-                return CAIRO_STATUS_SUCCESS;
-            }
-        }
-
-	_cairo_surface_get_extents (composite->surface, &extents);
-	status = _cairo_surface_to_cgimage (pat_surf, &extents, format,
-					    &m, clip, &img);
-	if (unlikely (status))
-	    return status;
-
-	state->image = img;
-
-	if (state->filter == kCGInterpolationNone && _cairo_matrix_is_translation (&m)) {
-	    m.x0 = -ceil (m.x0 - 0.5);
-	    m.y0 = -ceil (m.y0 - 0.5);
-	} else {
-	    cairo_matrix_invert (&m);
-	}
-
-	_cairo_quartz_cairo_matrix_to_quartz (&m, &state->transform);
-
-	if (pat_surf->type != CAIRO_SURFACE_TYPE_RECORDING) {
-	    is_bounded = _cairo_surface_get_extents (pat_surf, &extents);
-	    assert (is_bounded);
-	}
-
-	srcRect = CGRectMake (0, 0, extents.width, extents.height);
-
-	if (source->extend == CAIRO_EXTEND_NONE) {
-	    int x, y;
-	    if (op == CAIRO_OPERATOR_SOURCE &&
-		(pat_surf->content == CAIRO_CONTENT_ALPHA ||
-		 ! _cairo_matrix_is_integer_translation (&m, &x, &y)))
-	    {
-		state->layer = CGLayerCreateWithContext (surface->cgContext,
-							 state->clipRect.size,
-							 NULL);
-		state->cgDrawContext = CGLayerGetContext (state->layer);
-		CGContextTranslateCTM (state->cgDrawContext,
-				       -state->clipRect.origin.x,
-				       -state->clipRect.origin.y);
-	    }
-
-	    CGContextSetRGBFillColor (state->cgDrawContext, 0, 0, 0, 1);
-
-	    state->rect = srcRect;
-	    state->action = DO_IMAGE;
-	    return CAIRO_STATUS_SUCCESS;
-	}
-
-	CGContextSetRGBFillColor (state->cgDrawContext, 0, 0, 0, 1);
-
-	/* Quartz seems to tile images at pixel-aligned regions only -- this
-	 * leads to seams if the image doesn't end up scaling to fill the
-	 * space exactly.  The CGPattern tiling approach doesn't have this
-	 * problem.  Check if we're going to fill up the space (within some
-	 * epsilon), and if not, fall back to the CGPattern type.
-	 */
-
-	xform = CGAffineTransformConcat (CGContextGetCTM (state->cgDrawContext),
-					 state->transform);
-
-	srcRect = CGRectApplyAffineTransform (srcRect, xform);
-
-	fw = _cairo_fixed_from_double (srcRect.size.width);
-	fh = _cairo_fixed_from_double (srcRect.size.height);
-
-	if ((fw & CAIRO_FIXED_FRAC_MASK) <= CAIRO_FIXED_EPSILON &&
-	    (fh & CAIRO_FIXED_FRAC_MASK) <= CAIRO_FIXED_EPSILON)
-	{
-	    /* We're good to use DrawTiledImage, but ensure that
-	     * the math works out */
-
-	    srcRect.size.width = round (srcRect.size.width);
-	    srcRect.size.height = round (srcRect.size.height);
-
-	    xform = CGAffineTransformInvert (xform);
-
-	    srcRect = CGRectApplyAffineTransform (srcRect, xform);
-
-	    state->rect = srcRect;
-	    state->action = DO_TILED_IMAGE;
-	    return CAIRO_STATUS_SUCCESS;
-	}
-
-	/* Fall through to generic SURFACE case */
-    }
-
-    if (source->type == CAIRO_PATTERN_TYPE_SURFACE) {
-	cairo_quartz_float_t patternAlpha = 1.0f;
-	CGColorSpaceRef patternSpace;
-	CGPatternRef pattern = NULL;
-	cairo_int_status_t status;
-
-	status = _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (surface, source, clip, &pattern);
-	if (unlikely (status))
-	    return status;
-
-	patternSpace = CGColorSpaceCreatePattern (NULL);
-	CGContextSetFillColorSpace (state->cgDrawContext, patternSpace);
-	CGContextSetFillPattern (state->cgDrawContext, pattern, &patternAlpha);
-	CGContextSetStrokeColorSpace (state->cgDrawContext, patternSpace);
-	CGContextSetStrokePattern (state->cgDrawContext, pattern, &patternAlpha);
-	CGColorSpaceRelease (patternSpace);
-
-	/* Quartz likes to munge the pattern phase (as yet unexplained
-	 * why); force it to 0,0 as we've already baked in the correct
-	 * pattern translation into the pattern matrix
-	 */
-	CGContextSetPatternPhase (state->cgDrawContext, CGSizeMake (0, 0));
-
-	CGPatternRelease (pattern);
-
-	state->action = DO_DIRECT;
-	return CAIRO_STATUS_SUCCESS;
-    }
+    if (source->type == CAIRO_PATTERN_TYPE_SURFACE)
+	return _cairo_quartz_setup_pattern_source (state, source, surface, clip, op);
 
     return CAIRO_INT_STATUS_UNSUPPORTED;
 }
