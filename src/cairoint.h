@@ -351,10 +351,10 @@ static inline cairo_bool_t
 _cairo_rectangle_intersects (const cairo_rectangle_int_t *dst,
 			     const cairo_rectangle_int_t *src)
 {
-    return !(src->x >= dst->x + (int) dst->width ||
-	     src->x + (int) src->width <= dst->x ||
-	     src->y >= dst->y + (int) dst->height ||
-	     src->y + (int) src->height <= dst->y);
+    return !(src->x >= dst->x + dst->width  ||
+	     src->x + src->width <= dst->x  ||
+	     src->y >= dst->y + dst->height ||
+	     src->y + src->height <= dst->y);
 }
 
 static inline cairo_bool_t
@@ -362,9 +362,9 @@ _cairo_rectangle_contains_rectangle (const cairo_rectangle_int_t *a,
 				     const cairo_rectangle_int_t *b)
 {
     return (a->x <= b->x &&
-	    a->x + (int) a->width >= b->x + (int) b->width &&
+	    a->x + a->width >= b->x + b->width &&
 	    a->y <= b->y &&
-	    a->y + (int) a->height >= b->y + (int) b->height);
+	    a->y + a->height >= b->y + b->height);
 }
 
 cairo_private void
