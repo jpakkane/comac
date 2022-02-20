@@ -964,8 +964,8 @@ _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t 
 							 const cairo_clip_t *clip,
 							 CGPatternRef *cgpat)
 {
-    cairo_surface_pattern_t *spattern;
-    cairo_surface_t *pat_surf;
+    cairo_surface_pattern_t *spattern = (cairo_surface_pattern_t *) apattern;
+    cairo_surface_t *pat_surf = spattern->surface;
     cairo_rectangle_int_t extents;
     cairo_format_t format = _cairo_format_from_content (dest->base.content);
 
@@ -978,42 +978,28 @@ _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t 
     SurfacePatternDrawInfo *info;
     cairo_quartz_float_t rw, rh;
     cairo_status_t status;
-    cairo_bool_t is_bounded;
-
-    cairo_matrix_t m;
+    cairo_bool_t is_bounded = _cairo_surface_get_extents (pat_surf, &extents);
+    cairo_matrix_t m = spattern->base.matrix;
 
     /* SURFACE is the only type we'll handle here */
     assert (apattern->type == CAIRO_PATTERN_TYPE_SURFACE);
 
-    spattern = (cairo_surface_pattern_t *) apattern;
-    pat_surf = spattern->surface;
-
-    if (pat_surf->type != CAIRO_SURFACE_TYPE_RECORDING) {
-	is_bounded = _cairo_surface_get_extents (pat_surf, &extents);
+    if (pat_surf->type != CAIRO_SURFACE_TYPE_RECORDING)
 	assert (is_bounded);
-    }
-    else
-	_cairo_surface_get_extents (&dest->base, &extents);
 
-    m = spattern->base.matrix;
     status = _cairo_surface_to_cgimage (pat_surf, &extents, format,
 					&m, clip, &image);
+
     if (unlikely (status))
 	return status;
 
     info = _cairo_malloc (sizeof (SurfacePatternDrawInfo));
     if (unlikely (!info))
+    {
+	CGImageRelease (image);
 	return CAIRO_STATUS_NO_MEMORY;
+    }
 
-    /* XXX -- if we're printing, we may need to call CGImageCreateCopy to make sure
-     * that the data will stick around for this image when the printer gets to it.
-     * Otherwise, the underlying data store may disappear from under us!
-     *
-     * _cairo_surface_to_cgimage will copy when it converts non-Quartz surfaces,
-     * since the Quartz surfaces have a higher chance of sticking around.  If the
-     * source is a quartz image surface, then it's set up to retain a ref to the
-     * image surface that it's backed by.
-     */
     info->image = image;
     info->imageBounds = CGRectMake (0, 0, extents.width, extents.height);
     info->do_reflect = FALSE;
