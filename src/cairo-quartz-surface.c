@@ -1073,7 +1073,7 @@ typedef struct {
 } cairo_quartz_drawing_state_t;
 
 /*
-Quartz does not support repeating radients. We handle repeating gradients
+Quartz does not support repeating gradients. We handle repeating gradients
 by manually extending the gradient and repeating color stops. We need to
 minimize the number of repetitions since Quartz seems to sample our color
 function across the entire range, even if part of that range is not needed
