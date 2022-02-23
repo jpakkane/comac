@@ -2667,10 +2667,10 @@ composite_one_color_glyph (cairo_surface_t       *surface,
         pattern = cairo_pattern_create_for_surface ((cairo_surface_t *)glyph_surface);
         cairo_matrix_init_translate (&matrix, - x, - y);
         cairo_pattern_set_matrix (pattern, &matrix);
-	if (op == CAIRO_OPERATOR_SOURCE || op == CAIRO_OPERATOR_CLEAR || !has_color)
-	  status = surface->backend->mask (surface, op, pattern, pattern, clip);
-	else
-	  status = surface->backend->paint (surface, op, pattern, clip);
+        if (op == CAIRO_OPERATOR_SOURCE || op == CAIRO_OPERATOR_CLEAR || !has_color)
+          status = _cairo_surface_mask (surface, op, pattern, pattern, clip);
+        else
+          status = _cairo_surface_paint (surface, op, pattern, clip);
         cairo_pattern_destroy (pattern);
     }
 
