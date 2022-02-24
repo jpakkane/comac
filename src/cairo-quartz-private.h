@@ -55,7 +55,6 @@ typedef enum {
     DO_DIRECT,
     DO_SHADING,
     DO_IMAGE,
-    DO_TILED_IMAGE,
     DO_LAYER
 } cairo_quartz_action_t;
 

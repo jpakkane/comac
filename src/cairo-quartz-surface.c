@@ -111,8 +111,6 @@ CG_EXTERN void CGContextSetCompositeOperation (CGContextRef, PrivateCGCompositeM
 /* Some of these are present in earlier versions of the OS than where
  * they are public; other are not public at all
  */
-/* public since 10.5 */
-static void (*CGContextDrawTiledImagePtr) (CGContextRef, CGRect, CGImageRef) = NULL;
 
 /* public since 10.6 */
 static CGPathRef (*CGContextCopyPathPtr) (CGContextRef) = NULL;
@@ -160,7 +158,6 @@ static void quartz_ensure_symbols (void)
     if (likely (_cairo_quartz_symbol_lookup_done))
 	return;
 
-    CGContextDrawTiledImagePtr = dlsym (RTLD_DEFAULT, "CGContextDrawTiledImage");
     CGContextGetTypePtr = dlsym (RTLD_DEFAULT, "CGContextGetType");
     CGContextCopyPathPtr = dlsym (RTLD_DEFAULT, "CGContextCopyPath");
     CGContextGetAllowsFontSmoothingPtr = dlsym (RTLD_DEFAULT, "CGContextGetAllowsFontSmoothing");
@@ -959,15 +956,15 @@ SurfacePatternReleaseInfoFunc (void *ainfo)
 }
 
 static cairo_int_status_t
-_cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t *dest,
-							 const cairo_pattern_t *apattern,
+_cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t *surface,
+							 const cairo_pattern_t *source,
 							 const cairo_clip_t *clip,
 							 CGPatternRef *cgpat)
 {
-    cairo_surface_pattern_t *spattern = (cairo_surface_pattern_t *) apattern;
+    cairo_surface_pattern_t *spattern = (cairo_surface_pattern_t *) source;
     cairo_surface_t *pat_surf = spattern->surface;
     cairo_rectangle_int_t extents;
-    cairo_format_t format = _cairo_format_from_content (dest->base.content);
+    cairo_format_t format = _cairo_format_from_content (surface->base.content);
 
     CGImageRef image;
     CGRect pbounds;
@@ -982,7 +979,7 @@ _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t 
     cairo_matrix_t m = spattern->base.matrix;
 
     /* SURFACE is the only type we'll handle here */
-    assert (apattern->type == CAIRO_PATTERN_TYPE_SURFACE);
+    assert (source->type == CAIRO_PATTERN_TYPE_SURFACE);
 
     if (pat_surf->type != CAIRO_SURFACE_TYPE_RECORDING)
 	assert (is_bounded);
@@ -1007,13 +1004,22 @@ _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t 
     pbounds.origin.x = 0;
     pbounds.origin.y = 0;
 
-    if (spattern->base.extend == CAIRO_EXTEND_REFLECT) {
+    switch (spattern->base.extend) {
+    case CAIRO_EXTEND_NONE:
+	break;
+    case CAIRO_EXTEND_REPEAT:
+	pbounds.size.width = extents.width;
+	pbounds.size.height = extents.height;
+	break;
+    case CAIRO_EXTEND_REFLECT:
 	pbounds.size.width = 2.0 * extents.width;
 	pbounds.size.height = 2.0 * extents.height;
 	info->do_reflect = TRUE;
-    } else {
+	break;
+    case CAIRO_EXTEND_PAD:
 	pbounds.size.width = extents.width;
 	pbounds.size.height = extents.height;
+	break;
     }
     rw = pbounds.size.width;
     rh = pbounds.size.height;
@@ -1026,12 +1032,12 @@ _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t 
      * So we take the pattern matrix and the original context matrix,
      * which gives us the correct base translation/y flip.
      */
-    ptransform = CGAffineTransformConcat (stransform, dest->cgContextBaseCTM);
+    ptransform = CGAffineTransformConcat (stransform, surface->cgContextBaseCTM);
 
 #ifdef QUARTZ_DEBUG
     ND ((stderr, "  pbounds: %f %f %f %f\n", pbounds.origin.x, pbounds.origin.y, pbounds.size.width, pbounds.size.height));
     ND ((stderr, "  pattern xform: t: %f %f xx: %f xy: %f yx: %f yy: %f\n", ptransform.tx, ptransform.ty, ptransform.a, ptransform.b, ptransform.c, ptransform.d));
-    CGAffineTransform xform = CGContextGetCTM (dest->cgContext);
+    CGAffineTransform xform = CGContextGetCTM (surface->cgContext);
     ND ((stderr, "  context xform: t: %f %f xx: %f xy: %f yx: %f yy: %f\n", xform.tx, xform.ty, xform.a, xform.b, xform.c, xform.d));
 #endif
 
@@ -1063,10 +1069,10 @@ typedef struct {
     /* Destination rect */
     CGRect rect;
 
-    /* Used with DO_SHADING, DO_IMAGE and DO_TILED_IMAGE */
+    /* Used with DO_SHADING, DO_IMAGE */
     CGAffineTransform transform;
 
-    /* Used with DO_IMAGE and DO_TILED_IMAGE */
+    /* Used with DO_IMAGE */
     CGImageRef image;
 
     /* Used with DO_SHADING */
@@ -1088,13 +1094,12 @@ _cairo_quartz_setup_pattern_source (cairo_quartz_drawing_state_t *state,
     cairo_surface_t *pat_surf = spat->surface;
     cairo_matrix_t m = spat->base.matrix;
     cairo_format_t format = _cairo_format_from_content (surface->base.content);
-    cairo_rectangle_int_t extents;
-    CGRect srcRect;
+    cairo_rectangle_int_t extents, pattern_extents;
     CGImageRef img;
 
     cairo_quartz_float_t patternAlpha = 1.0f;
     CGColorSpaceRef patternSpace;
-    CGPatternRef pattern = NULL;
+    CGPatternRef cgpat = NULL;
     cairo_int_status_t status;
 
     _cairo_surface_get_extents (&surface->base, &extents);
@@ -1119,7 +1124,7 @@ _cairo_quartz_setup_pattern_source (cairo_quartz_drawing_state_t *state,
 
     state->image = img;
 
-    if (state->filter == kCGInterpolationNone && _cairo_matrix_is_translation (&m)) {
+   if (state->filter == kCGInterpolationNone && _cairo_matrix_is_translation (&m)) {
 	m.x0 = -ceil (m.x0 - 0.5);
 	m.y0 = -ceil (m.y0 - 0.5);
     } else {
@@ -1129,14 +1134,15 @@ _cairo_quartz_setup_pattern_source (cairo_quartz_drawing_state_t *state,
     _cairo_quartz_cairo_matrix_to_quartz (&m, &state->transform);
 
     if (pat_surf->type != CAIRO_SURFACE_TYPE_RECORDING) {
-	cairo_bool_t is_bounded = _cairo_surface_get_extents (pat_surf, &extents);
+	cairo_bool_t is_bounded = _cairo_surface_get_extents (pat_surf, &pattern_extents);
 	assert (is_bounded);
+    } else {
+	_cairo_surface_get_extents (&surface->base, &pattern_extents);
     }
-
-    srcRect = CGRectMake (0, 0, extents.width, extents.height);
 
     if (source->extend == CAIRO_EXTEND_NONE) {
 	int x, y;
+
 	if (op == CAIRO_OPERATOR_SOURCE &&
 	    (pat_surf->content == CAIRO_CONTENT_ALPHA ||
 	     ! _cairo_matrix_is_integer_translation (&m, &x, &y)))
@@ -1152,60 +1158,34 @@ _cairo_quartz_setup_pattern_source (cairo_quartz_drawing_state_t *state,
 
 	CGContextSetRGBFillColor (state->cgDrawContext, 0, 0, 0, 1);
 
-	state->rect = srcRect;
+	state->rect = CGRectMake (0, 0, pattern_extents.width, pattern_extents.height);
 	state->action = DO_IMAGE;
 	return CAIRO_STATUS_SUCCESS;
     }
 
-    if (CGContextDrawTiledImagePtr && source->extend == CAIRO_EXTEND_REPEAT) {
-	int fh, fw;
-	CGAffineTransform xform;
-
-	CGContextSetRGBFillColor (state->cgDrawContext, 0, 0, 0, 1);
-
-	/* Quartz seems to tile images at pixel-aligned regions only -- this
-	 * leads to seams if the image doesn't end up scaling to fill the
-	 * space exactly.  The CGPattern tiling approach doesn't have this
-	 * problem.  Check if we're going to fill up the space (within some
-	 * epsilon), and if not, fall back to the CGPattern type.
-	 */
-
-	xform = CGAffineTransformConcat (CGContextGetCTM (state->cgDrawContext),
-					 state->transform);
-
+    if (source->extend == CAIRO_EXTEND_REPEAT)
+    {
+	CGAffineTransform xform = CGAffineTransformConcat (CGContextGetCTM (state->cgDrawContext),
+							   state->transform);
+	CGRect srcRect = CGRectMake (0, 0, extents.width, extents.height);
 	srcRect = CGRectApplyAffineTransform (srcRect, xform);
-
-	fw = _cairo_fixed_from_double (srcRect.size.width);
-	fh = _cairo_fixed_from_double (srcRect.size.height);
-
-	if ((fw & CAIRO_FIXED_FRAC_MASK) <= CAIRO_FIXED_EPSILON &&
-	    (fh & CAIRO_FIXED_FRAC_MASK) <= CAIRO_FIXED_EPSILON)
-	{
-	    /* We're good to use DrawTiledImage, but ensure that
-	     * the math works out */
-
-	    srcRect.size.width = round (srcRect.size.width);
-	    srcRect.size.height = round (srcRect.size.height);
-
-	    xform = CGAffineTransformInvert (xform);
-
-	    srcRect = CGRectApplyAffineTransform (srcRect, xform);
-
-	    state->rect = srcRect;
-	    state->action = DO_TILED_IMAGE;
-	    return CAIRO_STATUS_SUCCESS;
-	}
+	xform = CGAffineTransformInvert (xform);
+	srcRect = CGRectApplyAffineTransform (srcRect, xform);
+	state->rect = srcRect;
     }
-    /* Fall through to generic SURFACE case */
-    status = _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (surface, source, clip, &pattern);
+
+    status = _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (surface, source, clip, &cgpat);
     if (unlikely (status))
 	return status;
 
     patternSpace = CGColorSpaceCreatePattern (NULL);
+    /* To pass pthread-same-source. */
+    if (source->extend == CAIRO_EXTEND_REPEAT)
+	CGContextSetInterpolationQuality(state->cgDrawContext, state->filter);
     CGContextSetFillColorSpace (state->cgDrawContext, patternSpace);
-    CGContextSetFillPattern (state->cgDrawContext, pattern, &patternAlpha);
+    CGContextSetFillPattern (state->cgDrawContext, cgpat, &patternAlpha);
     CGContextSetStrokeColorSpace (state->cgDrawContext, patternSpace);
-    CGContextSetStrokePattern (state->cgDrawContext, pattern, &patternAlpha);
+    CGContextSetStrokePattern (state->cgDrawContext, cgpat, &patternAlpha);
     CGColorSpaceRelease (patternSpace);
 
     /* Quartz likes to munge the pattern phase (as yet unexplained
@@ -1214,7 +1194,7 @@ _cairo_quartz_setup_pattern_source (cairo_quartz_drawing_state_t *state,
      */
     CGContextSetPatternPhase (state->cgDrawContext, CGSizeMake (0, 0));
 
-    CGPatternRelease (pattern);
+    CGPatternRelease (cgpat);
 
     state->action = DO_DIRECT;
     return CAIRO_STATUS_SUCCESS;
@@ -1475,10 +1455,7 @@ _cairo_quartz_draw_source (cairo_quartz_drawing_state_t *state,
 	_cairo_quartz_draw_cgcontext (state, op);
 	return;
     }
-    if (state->action == DO_TILED_IMAGE) {
-	CGContextDrawTiledImagePtr (state->cgDrawContext, state->rect, state->image);
-	return;
-    }
+
     if (state->action == DO_LAYER) {
 	CGContextDrawLayerInRect (state->cgDrawContext, state->rect, state->layer);
 	_cairo_quartz_draw_cgcontext (state, op);
