@@ -156,9 +156,6 @@ cairo_feature_sources = {
     'cairo-xcb-surface-render.c',
     'cairo-xcb-resources.c',
   ],
-  'cairo-qt': [
-    'cairo-qt-surface.cpp',
-  ],
   'cairo-quartz': [
     'cairo-quartz-surface.c',
   ],
@@ -180,27 +177,6 @@ cairo_feature_sources = {
   'cairo-win32-font': [
     'win32/cairo-win32-font.c',
   ],
-  'cairo-drm': [
-    'drm/cairo-drm.c',
-    'drm/cairo-drm-bo.c',
-    'drm/cairo-drm-surface.c',
-    'drm/cairo-drm-intel.c',
-    'drm/cairo-drm-intel-debug.c',
-    'drm/cairo-drm-intel-surface.c',
-    'drm/cairo-drm-i915-surface.c',
-    'drm/cairo-drm-i915-glyphs.c',
-    'drm/cairo-drm-i915-shader.c',
-    'drm/cairo-drm-i915-spans.c',
-    'drm/cairo-drm-i965-surface.c',
-    'drm/cairo-drm-i965-glyphs.c',
-    'drm/cairo-drm-i965-shader.c',
-    'drm/cairo-drm-i965-spans.c',
-    'drm/cairo-drm-intel-brw-eu.c',
-    'drm/cairo-drm-intel-brw-eu-emit.c',
-    'drm/cairo-drm-intel-brw-eu-util.c',
-    'drm/cairo-drm-radeon.c',
-    'drm/cairo-drm-radeon-surface.c',
-  ],
   'cairo-gl': [
     'cairo-gl-composite.c',
     'cairo-gl-device.c',
@@ -215,16 +191,6 @@ cairo_feature_sources = {
     'cairo-gl-spans-compositor.c',
     'cairo-gl-surface.c',
     'cairo-gl-traps-compositor.c',
-  ],
-  'cairo-cogl': [
-    'cairo-cogl-surface.c',
-    'cairo-cogl-gradient.c',
-  ],
-  'cairo-directfb': [
-    'cairo-directfb-surface.c',
-  ],
-  'cairo-vg': [
-    'cairo-vg-surface.c',
   ],
   'cairo-script': [
     'cairo-script-surface.c',
@@ -264,18 +230,14 @@ cairo_feature_headers = {
   'cairo-xlib': ['cairo-xlib.h'],
   'cairo-xlib-xrender': ['cairo-xlib-xrender.h'],
   'cairo-xcb': ['cairo-xcb.h'],
-  'cairo-qt': ['cairo-qt.h'],
   'cairo-quartz': ['cairo-quartz.h'],
   'cairo-quartz-image': ['cairo-quartz-image.h'],
   'cairo-win32': ['cairo-win32.h'],
   'cairo-gl': ['cairo-gl.h'],
-  'cairo-directfb': ['cairo-directfb.h'],
-  'cairo-drm': ['cairo-drm.h'],
   'cairo-script': ['cairo-script.h'],
   'cairo-tee': ['cairo-tee.h'],
   'cairo-xml': ['cairo-xml.h'],
   'cairo-vg': ['cairo-vg.h'],
-  'cairo-cogl': ['cairo-cogl.h'],
 }
 
 cairo_no_warn_c_args = cc.get_supported_arguments([

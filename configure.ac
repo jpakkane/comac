@@ -190,18 +190,6 @@ CAIRO_ENABLE_FUNCTIONS(xcb_shm, XCB/SHM, auto, [
 
 dnl ===========================================================================
 
-CAIRO_ENABLE_SURFACE_BACKEND(qt, Qt, no, [
-  dnl Keep in sync with meson.build!
-  qt_REQUIRES="QtGui >= 4.4.0"
-  PKG_CHECK_MODULES(qt, $qt_REQUIRES, ,
-		    [qt_REQUIRES=""
-		     use_qt="no (requires Qt4 development libraries)"
-		     ])
-  qt_NONPKGCONFIG_LIBS="-lstdc++"
-])
-
-dnl ===========================================================================
-
 CAIRO_ENABLE_SURFACE_BACKEND(quartz, Quartz, auto, [
   dnl There is no pkgconfig for quartz; lets do a header check
   AC_CHECK_HEADER(ApplicationServices/ApplicationServices.h, , [use_quartz="no (requires ApplicationServices framework)"])
@@ -248,61 +236,6 @@ if test "x$use_win32" = "xyes"; then
 fi
 
 AM_CONDITIONAL(CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE, test "x$test_win32_printing" = "xyes")
-
-dnl ===========================================================================
-
-CAIRO_ENABLE_SURFACE_BACKEND(os2, OS/2, no, [
-  case "$host" in
-    *-*-os2*)
-      :
-      ;;
-    *)
-      use_os2="no (requires an OS/2 platform)"
-      ;;
-  esac
-])
-
-dnl ===========================================================================
-
-CAIRO_ENABLE_SURFACE_BACKEND(beos, BeOS/Zeta, no, [
-  case "$host" in
-    *-*-beos)
-      beos_LIBS=""
-      dnl Add libbe and libzeta if available
-      AC_CHECK_LIB(be,main,beos_LIBS="$beos_LIBS -lbe")
-      AC_CHECK_LIB(zeta,main,beos_LIBS="$beos_LIBS -lzeta")
-      ;;
-    *)
-      use_beos="no (requires a BeOS platform)"
-      ;;
-  esac
-])
-
-dnl ===========================================================================
-
-CAIRO_ENABLE_SURFACE_BACKEND(drm, DRM, no, [
-  dnl Keep in sync with meson.build!
-  drm_REQUIRES="libudev >= 136, libdrm >= 2.4"
-  PKG_CHECK_MODULES(drm, $drm_REQUIRES, ,
-   [use_drm="no (requires $drm_REQUIRES, udev is available from git://git.kernel.org/pub/scm/linux/hotplug/udev.git)"])
-])
-
-CAIRO_ENABLE_SURFACE_BACKEND(gallium, Gallium3D, no, [
-  if test "x$use_drm" = "xyes"; then
-      AC_ARG_WITH([gallium],
-		  [AS_HELP_STRING([--with-gallium=/path/to/mesa],
-				  [directory to find gallium enabled mesa])],
-		  [mesa_DIR="$withval"],
-		  [mesa_DIR="`pwd`/../mesa"])
-      gallium_DIR="$mesa_DIR/src/gallium"
-      gallium_NONPKGCONFIG_CFLAGS="-I$mesa_DIR/include -I$mesa_DIR/src/mesa -I$gallium_DIR/include -I$gallium_DIR/auxiliary"
-      gallium_NONPKGCONFIG_LIBS="-lGL"
-      AC_SUBST(mesa_DIR)
-      AC_SUBST(gallium_DIR)
-  else
-    use_gallium="no (requires --enable-drm)"
-  fi
-])
 
 dnl ===========================================================================
 
@@ -398,31 +331,6 @@ CAIRO_ENABLE_SURFACE_BACKEND(glesv3, OpenGLESv3, no, [
 ])
 
 dnl ===========================================================================
-CAIRO_ENABLE_SURFACE_BACKEND(cogl, Cogl, no, [
-  cogl_REQUIRES="cogl-2.0-experimental >= 1.17.2"
-  PKG_CHECK_MODULES(cogl, $cogl_REQUIRES,, [use_cogl="no"])
-])
-
-dnl ===========================================================================
-
-CAIRO_ENABLE_SURFACE_BACKEND(directfb, directfb, no, [
-  directfb_REQUIRES=directfb
-  PKG_CHECK_MODULES(directfb, $directfb_REQUIRES, ,
-		    [use_directfb="no (requires $directfb_REQUIRES http://www.directfb.org)"])
-])
-
-dnl ===========================================================================
-
-CAIRO_ENABLE_SURFACE_BACKEND(vg, OpenVG, no, [
-  dnl There is no pkgconfig for OpenVG; lets do a header check
-  AC_CHECK_HEADER(VG/openvg.h,, [use_vg="no (OpenVG headers not found)"])
-  if test "x$use_vg" = "xyes"; then
-      vg_NONPKGCONFIG_CFLAGS=
-      vg_NONPKGCONFIG_LIBS="-lOpenVG"
-      need_egl_functions=yes
-      need_glx_functions=yes
-  fi
-])
 
 CAIRO_ENABLE_FUNCTIONS(egl, EGL, auto, [
   if test "x$need_egl_functions" = "xyes"; then
@@ -877,15 +785,6 @@ if test "x$disable_some_floating_point" = "xyes"; then
             [Define to 1 to disable certain code paths that rely heavily on
              double precision floating-point calculation])
 fi
-
-dnl ===========================================================================
-
-dnl Extra stuff we need to do when building C++ code
-need_cxx="no"
-AS_IF([test "x$use_qt" = "xyes"], [need_cxx="yes"])
-AS_IF([test "x$use_beos" = "xyes"], [need_cxx="yes"])
-
-AM_CONDITIONAL(BUILD_CXX, test "x$need_cxx" = "xyes")
 
 dnl ===========================================================================
 

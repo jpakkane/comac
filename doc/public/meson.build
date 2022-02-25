@@ -2,7 +2,6 @@ gnome = import('gnome')
 
 ignore_headers = [
   # Sub-directories
-  'drm',
   'win32',
 
   # Internal headers

@@ -32,9 +32,6 @@
 #if CAIRO_HAS_GL_SURFACE
 #include <cairo-gl.h>
 #endif
-#if CAIRO_HAS_OS2_SURFACE
-#include <cairo-os2.h>
-#endif
 #if CAIRO_HAS_PDF_SURFACE
 #include <cairo-pdf.h>
 #endif
@@ -59,12 +56,6 @@ preamble (cairo_test_context_t *ctx)
 #if CAIRO_HAS_GL_SURFACE
     cairo_gl_surface_set_size (surface, 0, 0);
     cairo_gl_surface_swapbuffers (surface);
-#endif
-
-#if CAIRO_HAS_OS2_SURFACE
-    cairo_os2_surface_set_hwnd (surface, 0);
-    cairo_os2_surface_set_size (surface, 0, 0, 0);
-    cairo_os2_surface_set_manual_window_refresh (surface, FALSE);
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE

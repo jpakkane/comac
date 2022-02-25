@@ -1,4 +1,4 @@
-project('cairo', 'c', 'cpp',
+project('cairo', 'c',
   meson_version: '>= 0.56.0',
   version: run_command(find_program('version.py'), check: true).stdout().strip(),
   default_options: ['warning_level=2'],
@@ -10,9 +10,7 @@ fontconfig_required_version = '>= 2.2.95'
 xrender_required_version = '>= 0.6'
 xcb_required_version = '>= 1.6'
 xcb_render_required_version = '>= 1.6'
-qtgui_required_version = '>= 4.4.0'
 libudev_required_version = '>= 136'
-libdrm_required_version = '>= 2.4'
 glib_required_version = '>= 2.14'
 
 # library versioning
@@ -450,20 +448,6 @@ if feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1
   endif
 endif
 
-# Tests crash and burn
-qtgui_dep = dependency('QtGui', required: get_option('qt'),
-                       version: qtgui_required_version)
-if qtgui_dep.found() and false
-  feature_conf.set('CAIRO_HAS_QT_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-qt',
-    'description': 'Qt surface backend',
-    'deps': [qtgui_dep],
-  }]
-
-  deps += [qtgui_dep]
-endif
-
 if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
   quartz_deps = dependency('appleframeworks', modules : ['CoreFoundation', 'ApplicationServices'], required: get_option('quartz'))
 
@@ -518,26 +502,6 @@ if host_machine.system() == 'windows'
     }
   ]
 endif
-
-# FIXME: Doesn't build since at least 2011
-libudev_dep = dependency('libudev', required: get_option('drm'),
-                         version: libudev_required_version)
-libdrm_dep = dependency('libdrm', required: get_option('drm'),
-                        version: libdrm_required_version)
-if libudev_dep.found() and libdrm_dep.found() and false
-  deps += [libudev_dep, libdrm_dep]
-
-  feature_conf.set('CAIRO_HAS_DRM_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-drm',
-    'description': 'DRM surface backend',
-    'deps': [libudev_dep, libdrm_dep],
-  }]
-endif
-
-# Not even trying to port gallium as it depends on drm
-
-# Not porting BEOS or OS/2 backends either, meson doesn't support those
 
 # GL / GLESV2 / GLESV3 are mutually exclusive
 gl_backend = get_option('gl-backend')
@@ -610,50 +574,6 @@ if feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 0 and feature_conf.get('CAIRO_
       'deps': [glesv3_dep],
     }]
   endif
-endif
-
-cogl_dep = dependency('cogl-2.0-experimental',
-  version: '>= 1.17.2',
-  required: get_option('cogl'),
-)
-if cogl_dep.found()
-  deps += [cogl_dep]
-
-  feature_conf.set('CAIRO_HAS_COGL_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-cogl',
-    'description': 'Cogl surface backend',
-    'deps': [cogl_dep],
-  }]
-endif
-
-# Untested
-directfb_dep = dependency('directfb', required: get_option('directfb'))
-if directfb_dep.found()
-  deps += [directfb_dep]
-
-  feature_conf.set('CAIRO_HAS_DIRECTFB_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-directfb',
-    'description': 'directfb surface backend',
-    'deps': [directfb_dep],
-  }]
-endif
-
-# Untested
-openvg_dep = cc.find_library('OpenVG', has_headers: 'VG/openvg.h', required: get_option('openvg'))
-if openvg_dep.found()
-  deps += [openvg_dep]
-
-  need_egl_functions = true
-  need_glx_functions = true
-
-  feature_conf.set('CAIRO_HAS_VG_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-vg',
-    'description': 'OpenVG surface backend',
-    'deps': [openvg_dep],
-  }]
 endif
 
 if need_egl_functions
@@ -1003,12 +923,10 @@ summary({
         'XML': feature_conf.get('CAIRO_HAS_XML_SURFACE', 0) == 1,
         'Xlib': feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1,
         'Xlib Xrender': feature_conf.get('CAIRO_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
-        'Qt': feature_conf.get('CAIRO_HAS_QT_SURFACE', 0) == 1,
         'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_SURFACE', 0) == 1,
         'Quartz-image': feature_conf.get('CAIRO_HAS_QUARTZ_IMAGE_SURFACE', 0) == 1,
         'XCB': feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1,
         'Win32': feature_conf.get('CAIRO_HAS_WIN32_SURFACE', 0) == 1,
-        'OS2': false,
         'CairoScript': feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1,
         'PostScript':  feature_conf.get('CAIRO_HAS_PS_SURFACE', 0) == 1,
         'PDF':  feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1,
@@ -1016,11 +934,6 @@ summary({
         'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
         'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
         'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
-        'BeOS': false,
-        'DirectFB': feature_conf.get('CAIRO_HAS_DIRECTFB_SURFACE', 0) == 1,
-        'OpenVG': feature_conf.get('CAIRO_HAS_VG_SURFACE', 0) == 1,
-        'DRM': feature_conf.get('CAIRO_HAS_DRM_SURFACE', 0) == 1,
-        'Cogl': feature_conf.get('CAIRO_HAS_COGL_SURFACE', 0) == 1,
         }, section: 'Surface Backends', bool_yn: true)
 
 summary({

@@ -85,14 +85,12 @@ CAIRO_MAKEFILE_ACCUMULATE(*,
 [dnl
 all_$1_headers = $($1_headers)
 all_$1_private = $($1_private)
-all_$1_cxx_sources = $($1_cxx_sources)
 all_$1_sources = $($1_sources)
 ])dnl
 CAIRO_MAKEFILE_ACCUMULATE_FEATURE(*,*,*,!,
 [dnl
 all_$1_headers += $($1_$2_headers)
 all_$1_private += $($1_$2_private)
-all_$1_cxx_sources += $($1_$2_cxx_sources)
 all_$1_sources += $($1_$2_sources)]dnl
 )dnl
 
@@ -101,14 +99,12 @@ CAIRO_MAKEFILE_ACCUMULATE(*,
 [dnl
 enabled_$1_headers = $($1_headers)
 enabled_$1_private = $($1_private)
-enabled_$1_cxx_sources = $($1_cxx_sources)
 enabled_$1_sources = $($1_sources)
 ])dnl
 CAIRO_MAKEFILE_ACCUMULATE_FEATURE(*,yes,*,!,
 [dnl
 enabled_$1_headers += $($1_$2_headers)
 enabled_$1_private += $($1_$2_private)
-enabled_$1_cxx_sources += $($1_$2_cxx_sources)
 enabled_$1_sources += $($1_$2_sources)]dnl
 )dnl
 
@@ -118,7 +114,6 @@ dnl Collect list of source files for all private features
 CAIRO_MAKEFILE_ACCUMULATE_FEATURE(*,*,*,,
 [dnl
 all_$1_private += $($1_$2_private) $($1_$2_headers)
-all_$1_cxx_sources += $($1_$2_cxx_sources)
 all_$1_sources += $($1_$2_sources)]dnl
 )dnl
 
@@ -126,7 +121,6 @@ dnl Collect list of source files for enabled private features
 CAIRO_MAKEFILE_ACCUMULATE_FEATURE(*,yes,*,,
 [dnl
 enabled_$1_private += $($1_$2_private) $($1_$2_headers)
-enabled_$1_cxx_sources += $($1_$2_cxx_sources)
 enabled_$1_sources += $($1_$2_sources)]dnl
 )dnl
 
@@ -371,15 +365,12 @@ AC_DEFUN([CAIRO_REPORT],
 	echo "  Mime:          yes (always builtin)"
 	echo "  Tee:           $use_tee"
 	echo "  XML:           $use_xml"
-	#echo "  Skia:          $use_skia"
 	echo "  Xlib:          $use_xlib"
 	echo "  Xlib Xrender:  $use_xlib_xrender"
-	echo "  Qt:            $use_qt"
 	echo "  Quartz:        $use_quartz"
 	echo "  Quartz-image:  $use_quartz_image"
 	echo "  XCB:           $use_xcb"
 	echo "  Win32:         $use_win32"
-	echo "  OS2:           $use_os2"
 	echo "  CairoScript:   $use_script"
 	echo "  PostScript:    $use_ps"
 	echo "  PDF:           $use_pdf"
@@ -387,11 +378,6 @@ AC_DEFUN([CAIRO_REPORT],
 	echo "  OpenGL:        $use_gl"
 	echo "  OpenGL ES 2.0: $use_glesv2"
 	echo "  OpenGL ES 3.0: $use_glesv3"
-	echo "  BeOS:          $use_beos"
-	echo "  DirectFB:      $use_directfb"
-	echo "  OpenVG:        $use_vg"
-	echo "  DRM:           $use_drm"
-	echo "  Cogl:          $use_cogl"
 	echo ""
 	echo "The following font backends:"
 	echo "  User:          yes (always builtin)"

@@ -72,10 +72,8 @@ fedora image:
       glib2-devel
       librsvg2-devel
       gtk2-devel
-      libdrm-devel
       poppler-glib-devel
       pixman-devel
-      cogl-devel
       systemd-devel
       systemd-udev
       mesa-libEGL
@@ -265,11 +263,13 @@ meson vs2017 amd64:
   extends: '.build meson windows'
   variables:
     ARCH: 'amd64'
+  when: 'manual'
 
 meson vs2017 x86:
   extends: '.build meson windows'
   variables:
     ARCH: 'x86'
+  when: 'manual'
 
 meson android arm64 fedora:
   # TODO: should probably build our own image here some day
