@@ -1820,7 +1820,7 @@ _cairo_quartz_cg_mask (const cairo_compositor_t *compositor,
 	mask_surf = extents->mask_pattern.surface.surface;
 
 	/* When an opaque surface used as a mask in Quartz, its
-	 * luminosity is used as the alpha value, so we con only use
+	 * luminosity is used as the alpha value, so we can only use
 	 * surfaces with alpha without creating a temporary mask. */
 	need_temp = ! (mask_surf->content & CAIRO_CONTENT_ALPHA);
     }
