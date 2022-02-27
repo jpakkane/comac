@@ -209,7 +209,9 @@ _cairo_pdf_surface_get_extents (void		        *abstract_surface,
 static const cairo_pdf_version_t _cairo_pdf_versions[] =
 {
     CAIRO_PDF_VERSION_1_4,
-    CAIRO_PDF_VERSION_1_5
+    CAIRO_PDF_VERSION_1_5,
+    CAIRO_PDF_VERSION_1_6,
+    CAIRO_PDF_VERSION_1_7
 };
 
 #define CAIRO_PDF_VERSION_LAST ARRAY_LENGTH (_cairo_pdf_versions)
@@ -218,6 +220,8 @@ static const char * _cairo_pdf_version_strings[CAIRO_PDF_VERSION_LAST] =
 {
     "PDF 1.4",
     "PDF 1.5"
+    "PDF 1.6"
+    "PDF 1.7"
 };
 
 static const char *_cairo_pdf_supported_mime_types[] =
@@ -497,7 +501,7 @@ _cairo_pdf_surface_create_for_stream_internal (cairo_output_stream_t	*output,
     }
 
     surface->struct_tree_root.id = 0;
-    surface->pdf_version = CAIRO_PDF_VERSION_1_5;
+    surface->pdf_version = CAIRO_PDF_VERSION_1_7;
     surface->compress_streams = TRUE;
     surface->pdf_stream.active = FALSE;
     surface->pdf_stream.old_output = NULL;
@@ -2635,9 +2639,15 @@ _cairo_pdf_surface_start_page (void *abstract_surface)
 	case CAIRO_PDF_VERSION_1_4:
 	    version = "1.4";
 	    break;
-	default:
 	case CAIRO_PDF_VERSION_1_5:
 	    version = "1.5";
+	    break;
+	case CAIRO_PDF_VERSION_1_6:
+	    version = "1.6";
+	    break;
+	default:
+	case CAIRO_PDF_VERSION_1_7:
+	    version = "1.7";
 	    break;
 	}
 
@@ -5448,18 +5458,24 @@ _cairo_utf8_to_pdf_string (const char *utf8, char **str_out)
 {
     int i;
     int len;
+    unsigned char *p;
     cairo_bool_t ascii;
     char *str;
     cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
 
     ascii = TRUE;
-    len = strlen (utf8);
-    for (i = 0; i < len; i++) {
-	unsigned c = utf8[i];
-	if (c < 32 || c > 126 || c == '(' || c == ')' || c == '\\') {
+    p = (unsigned char *)utf8;
+    len = 0;
+    while (*p) {
+	if (*p < 32 || *p > 126) {
 	    ascii = FALSE;
 	    break;
 	}
+	if (*p == '(' || *p == ')' || *p == '\\')
+	    len += 2;
+	else
+	    len++;
+	p++;
     }
 
     if (ascii) {
@@ -5468,10 +5484,16 @@ _cairo_utf8_to_pdf_string (const char *utf8, char **str_out)
 	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
 	str[0] = '(';
-	for (i = 0; i < len; i++)
-	    str[i+1] = utf8[i];
-	str[i+1] = ')';
-	str[i+2] = 0;
+	p = (unsigned char *)utf8;
+	i = 1;
+	while (*p) {
+	    if (*p == '(' || *p == ')' || *p == '\\')
+		str[i++] = '\\';
+	    str[i++] = *p;
+	    p++;
+	}
+	str[i++] = ')';
+	str[i++] = 0;
     } else {
 	uint16_t *utf16 = NULL;
 	int utf16_len = 0;

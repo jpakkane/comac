@@ -358,6 +358,12 @@ draw_cover (cairo_surface_t *surface, cairo_t *cr)
     cairo_show_text (cr, "link to page section 3.3");
     cairo_tag_end (cr, CAIRO_TAG_LINK);
 
+    /* Create link to external file */
+    cairo_tag_begin (cr, CAIRO_TAG_LINK, "file='foo.pdf' page=1");
+    cairo_move_to (cr, PAGE_WIDTH/3, 4.4*PAGE_HEIGHT/5);
+    cairo_show_text (cr, "link file 'foo.pdf'");
+    cairo_tag_end (cr, CAIRO_TAG_LINK);
+
     draw_page_num (surface, cr, "cover", 0);
 }
 
