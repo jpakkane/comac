@@ -2641,7 +2641,9 @@ composite_one_color_glyph (cairo_surface_t       *surface,
                            const cairo_pattern_t *source,
                            const cairo_clip_t    *clip,
                            cairo_glyph_t         *glyph,
-                           cairo_scaled_glyph_t  *scaled_glyph)
+                           cairo_scaled_glyph_t  *scaled_glyph,
+			   double                 x_scale,
+			   double                 y_scale)
 {
     cairo_int_status_t status;
     cairo_image_surface_t *glyph_surface;
@@ -2661,11 +2663,12 @@ composite_one_color_glyph (cairo_surface_t       *surface,
         int x, y;
         /* round glyph locations to the nearest pixels */
         /* XXX: FRAGILE: We're ignoring device_transform scaling here. A bug? */
-	x = _cairo_lround (glyph->x - glyph_surface->base.device_transform.x0);
-	y = _cairo_lround (glyph->y - glyph_surface->base.device_transform.y0);
+	x = _cairo_lround (glyph->x * x_scale - glyph_surface->base.device_transform.x0);
+	y = _cairo_lround (glyph->y * y_scale - glyph_surface->base.device_transform.y0);
 
         pattern = cairo_pattern_create_for_surface ((cairo_surface_t *)glyph_surface);
         cairo_matrix_init_translate (&matrix, - x, - y);
+	cairo_matrix_scale (&matrix, x_scale, y_scale);
         cairo_pattern_set_matrix (pattern, &matrix);
 	if (op == CAIRO_OPERATOR_SOURCE || op == CAIRO_OPERATOR_CLEAR || !has_color)
 	  status = surface->backend->mask (surface, op, pattern, pattern, clip);
@@ -2702,6 +2705,27 @@ composite_color_glyphs (cairo_surface_t             *surface,
     int gp;
     cairo_scaled_glyph_t *glyph_cache[GLYPH_CACHE_SIZE];
     cairo_color_t *foreground_color = NULL;
+    double x_scale = 1.0;
+    double y_scale = 1.0;
+
+    if (surface->is_vector) {
+	cairo_font_face_t *font_face;
+	cairo_matrix_t font_matrix;
+	cairo_matrix_t ctm;
+	cairo_font_options_t font_options;
+
+	x_scale = surface->x_fallback_resolution / surface->x_resolution;
+	y_scale = surface->y_fallback_resolution / surface->y_resolution;
+	font_face = cairo_scaled_font_get_font_face (scaled_font);
+	cairo_scaled_font_get_font_matrix (scaled_font, &font_matrix);
+	cairo_scaled_font_get_ctm (scaled_font, &ctm);
+	cairo_scaled_font_get_font_options (scaled_font, &font_options);
+	cairo_matrix_scale (&ctm, x_scale, y_scale);
+	scaled_font = cairo_scaled_font_create (font_face,
+						&font_matrix,
+						&ctm,
+						&font_options);
+    }
 
     if (source->type == CAIRO_PATTERN_TYPE_SOLID)
 	foreground_color = &((cairo_solid_pattern_t *) source)->color;
@@ -2763,7 +2787,8 @@ composite_color_glyphs (cairo_surface_t             *surface,
                     goto UNLOCK;
 
                 status = composite_one_color_glyph (surface, op, source, clip,
-                                                    &glyphs[gp], scaled_glyph);
+						    &glyphs[gp], scaled_glyph,
+						    x_scale, y_scale);
                 if (unlikely (status && status != CAIRO_INT_STATUS_NOTHING_TO_DO))
                     goto UNLOCK;
             }
@@ -2799,7 +2824,8 @@ composite_color_glyphs (cairo_surface_t             *surface,
            }
 
            status = composite_one_color_glyph (surface, op, source, clip,
-                                               &glyphs[glyph_pos], scaled_glyph);
+					       &glyphs[glyph_pos], scaled_glyph,
+					       x_scale, y_scale);
            if (unlikely (status && status != CAIRO_INT_STATUS_NOTHING_TO_DO))
                goto UNLOCK;
         }
@@ -2809,6 +2835,9 @@ composite_color_glyphs (cairo_surface_t             *surface,
 
 UNLOCK:
     _cairo_scaled_font_thaw_cache (scaled_font);
+
+    if (surface->is_vector)
+	cairo_scaled_font_destroy (scaled_font);
 
     return status;
 }
