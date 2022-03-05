@@ -27,6 +27,12 @@ cairo_win32_scaled_font_get_device_to_logical
 </SECTION>
 
 <SECTION>
+<FILE>cairo-dwrite-fonts</FILE>
+CAIRO_HAS_DWRITE_FONT
+cairo_dwrite_font_face_create_for_dwrite_fontface
+</SECTION>
+
+<SECTION>
 <FILE>cairo-quartz-fonts</FILE>
 CAIRO_HAS_QUARTZ_FONT
 cairo_quartz_font_face_create_for_cgfont

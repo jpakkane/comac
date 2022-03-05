@@ -1214,9 +1214,8 @@ _cairo_dwrite_has_color_glyphs(void *scaled_font)
     return ((cairo_dwrite_font_face_t *)dwritesf->base.font_face)->have_color;
 }
 
-// WIN32 Helper Functions
 cairo_font_face_t*
-cairo_dwrite_font_face_create_for_dwrite_fontface(void* dwrite_font_face)
+cairo_dwrite_font_face_create_for_dwrite_fontface_internal(void* dwrite_font_face)
 {
     IDWriteFontFace *dwriteface = static_cast<IDWriteFontFace*>(dwrite_font_face);
     // Must do malloc and not C++ new, since Cairo frees this.
