@@ -177,6 +177,9 @@ cairo_feature_sources = {
   'cairo-win32-font': [
     'win32/cairo-win32-font.c',
   ],
+  'cairo-win32-dwrite-font': [
+    'win32/cairo-dwrite-font.cpp',
+  ],
   'cairo-gl': [
     'cairo-gl-composite.c',
     'cairo-gl-device.c',

@@ -313,7 +313,7 @@ _cairo_atomic_int_cmpxchg (cairo_atomic_int_t *x,
                            cairo_atomic_int_t oldv,
                            cairo_atomic_int_t newv)
 {
-    return InterlockedCompareExchange (x, newv, oldv) == oldv;
+    return InterlockedCompareExchange ((unsigned int*)x, (unsigned int)newv, (unsigned int)oldv) == oldv;
 }
 
 static cairo_always_inline void *

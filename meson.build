@@ -1,4 +1,4 @@
-project('cairo', 'c',
+project('cairo', 'c', 'cpp',
   meson_version: '>= 0.56.0',
   version: run_command(find_program('version.py'), check: true).stdout().strip(),
   default_options: ['warning_level=2'],
@@ -501,6 +501,35 @@ if host_machine.system() == 'windows'
       'deps': win32_extra_deps,
     }
   ]
+
+  cpp_compiler = meson.get_compiler('cpp')
+  d2d_dep = cpp_compiler.find_library('d2d1', required: false)
+  dwrite_dep = cpp_compiler.find_library('dwrite', required: false)
+  d2d_header = cpp_compiler.has_header('d2d1.h')
+  d2d_3_header = cpp_compiler.has_header('d2d1_3.h')
+  dwrite_header = cpp_compiler.has_header('dwrite.h')
+  dwrite_3_header = cpp_compiler.has_header('dwrite_3.h')
+  wincodec_dep = cpp_compiler.find_library('windowscodecs', required: false)
+  wincodec_header = cpp_compiler.has_header('wincodec.h')
+
+  if d2d_dep.found() and dwrite_dep.found() and d2d_header and dwrite_header and wincodec_dep.found() and wincodec_header
+    feature_conf.set('CAIRO_HAS_DWRITE_FONT', 1)
+    built_features += [{
+      'name': 'cairo-win32-dwrite-font',
+      'description': 'Microsoft Windows DWrite font backend',
+      'deps': [dwrite_dep, d2d_dep, wincodec_dep],
+    }]
+    deps += [dwrite_dep, d2d_dep, wincodec_dep]
+
+    if cpp_compiler.has_header('d2d1_3.h')
+      conf.set('HAVE_D2D1_3_H', 1)
+    endif
+
+    # Exclude MinGW dwrite_3.h because it has a broken definition of DWRITE_COLOR_GLYPH_RUN1.
+    if cpp_compiler.has_header('dwrite_3.h') and cpp_compiler.get_define('__MINGW32__') == ''
+      conf.set('HAVE_DWRITE_3_H', 1)
+    endif
+  endif
 endif
 
 # GL / GLESV2 / GLESV3 are mutually exclusive
@@ -941,6 +970,7 @@ summary({
         'FreeType': feature_conf.get('CAIRO_HAS_FT_FONT', 0) == 1,
         'Fontconfig': feature_conf.get('CAIRO_HAS_FC_FONT', 0) == 1,
         'Win32': feature_conf.get('CAIRO_HAS_WIN32_FONT', 0) == 1,
+        'Win32 DWrite': feature_conf.get('CAIRO_HAS_DWRITE_FONT', 0) == 1,
         'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_FONT', 0) == 1,
         }, section: 'Font Backends', bool_yn: true)
 
