@@ -271,6 +271,9 @@ cairo_int_status_t
 _cairo_dwrite_scaled_font_create_win32_scaled_font (cairo_scaled_font_t *scaled_font,
                                                     cairo_scaled_font_t **new_font);
 
+cairo_font_face_t*
+cairo_dwrite_font_face_create_for_dwrite_fontface_internal(void* dwrite_font_face);
+
 #endif /* CAIRO_HAS_DWRITE_FONT */
 
 CAIRO_END_DECLS

@@ -71,12 +71,16 @@
 
 /**
  * SECTION:cairo-win32-fonts
- * @Title: Win32 Fonts
+ * @Title: Win32 GDI Fonts
  * @Short_Description: Font support for Microsoft Windows
  * @See_Also: #cairo_font_face_t
  *
  * The Microsoft Windows font backend is primarily used to render text on
  * Microsoft Windows systems.
+ *
+ * Note: Win32 GDI fonts do not support color fonts. Use DWrite fonts
+ * if color font support is required.
+
  **/
 
 /**
