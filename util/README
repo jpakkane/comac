@@ -17,7 +17,7 @@ Build by:
 
 and use by:
 
-	LD_PRELOAD=$PWD/malloc-stats.so app-to-run
+	LD_PRELOAD=$(blddir)/util/libmalloc-stats.so app-to-run
 
 cairo-trace
 -----------
