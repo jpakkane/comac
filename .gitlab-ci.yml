@@ -213,6 +213,19 @@ fedora meson build:
     - meson builddir ${MESON_ARGS}
     - ninja -C builddir
     # - ninja -C builddir test
+
+    # Run test scripts
+    #- (cd builddir/src && srcdir=../../src bash "$srcdir/check-def.sh")   This script calls "make cairo.def" and thus does not work with meson
+    - mkdir builddir/src/.libs
+    - touch builddir/src/.libs/libfoo.so
+    - MAKE=echo CAIRO_HAS_HIDDEN_SYMBOLS=1 bash src/check-plt.sh builddir/src/libcairo.so
+    - (cd src && bash "check-headers.sh")
+    - (cd src && bash "check-preprocessor-syntax.sh")
+    - (cd src && bash "check-doc-syntax.sh")
+    - (cd doc/public && bash "check-doc-syntax.sh")
+    # FIXME: The following line really needs gtk-doc to run first
+    - (cd doc/public && DOC_MODULE=cairo bash "check-doc-coverage.sh")
+
     - ninja -C builddir install
   artifacts:
     expire_in: "7 days"
