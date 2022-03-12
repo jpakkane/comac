@@ -291,7 +291,7 @@ merge_similar_entries (struct func_stat_t *func_stats, int num)
 }
 
 __attribute__ ((destructor))
-void
+static void
 malloc_stats (void)
 {
 	unsigned int i, j;
