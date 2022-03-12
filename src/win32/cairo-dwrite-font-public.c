@@ -39,6 +39,7 @@
  * with this .c wrapper containing the gtkdocs for cairo-dwrite-font.cpp.
  */
 
+#include "cairoint.h"
 #include "cairo-win32-private.h"
 
 /**
