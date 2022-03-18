@@ -1,3 +1,43 @@
+Release 1.17.6 (2022-03-18 Emmanuele Bassi <ebassi@gnome.org>)
+==============================================================
+
+I spy with my little eye… a Cairo snapshot!
+
+First of all, many, many thanks to everyone who contributed to Cairo
+during this development cycle. A special thank you goes to:
+
+- Adrian Johnson
+- Uli Schlachter
+
+for their tireless efforts in ensuring that the lights are still on
+in the Cairo project.
+
+This snapshot sees the removal of the following backends and platform
+support:
+
+- Qt4
+- BeOS
+- OS/2
+- DirectFB
+- DRM
+- Cogl
+- OpenVG
+
+Thanks to all past contributors for their work on them. If you were using
+any of these backends then you will need to stick to Cairo 1.16.
+
+To offset the removal of the backends above, Adrian Johnson landed the
+DWrite font rendering backend on Windows.
+
+There have been multiple improvements in the Quartz backend, courtesy of
+John Ralls.
+
+Tim-Philipp Müller has kept the Meson build in top shape.
+
+This snapshot is going to be the **last** release of Cairo with the
+Autotools build system. The Meson build has seen many improvements and
+it is considerably easier to maintain and faster to build.
+
 Release 1.17.4 (2020-11-27 Bryce Harrington <bryce@bryceharrington.org>)
 ========================================================================
 
