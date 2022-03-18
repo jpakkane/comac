@@ -71,11 +71,11 @@ release-verify-even-micro:
 
 release-verify-newer:
 	@echo -n "Checking that no $(VERSION) release already exists..."
-	@ssh $(RELEASE_UPLOAD_HOST) test ! -e $(RELEASE_UPLOAD_DIR)/$(tar_file) \
-		|| (echo "Ouch." && echo "Found: $(RELEASE_UPLOAD_HOST):$(RELEASE_UPLOAD_DIR)/$(tar_file)" \
+	@if curl --head --fail --silent "$(RELEASE_URL_BASE)/LATEST-$(PACKAGE)-$(VERSION)" >/dev/null; then \
+		(echo "Ouch." && echo "Found: $(RELEASE_URL_BASE)/LATEST-$(PACKAGE)-$(VERSION)" \
 		&& echo "Are you sure you have an updated checkout?" \
 		&& echo "This should never happen." \
-		&& false)
+		&& false); else :; fi
 	@echo "Good."
 
 release-remove-old:
