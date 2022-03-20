@@ -59,6 +59,8 @@ EXTRA_DIST += \
 	version.py \
 	boilerplate/make-cairo-boilerplate-constructors.py \
 	boilerplate/meson.build \
+	doc/public/meson.build \
+	doc/public/version.xml.in \
 	src/meson.build \
 	test/make-cairo-test-constructors.py \
 	test/meson.build \
@@ -71,13 +73,14 @@ EXTRA_DIST += \
 	util/cairo-trace/meson.build \
 	util/meson.build \
 	meson-cc-tests/atomic-ops-cxx11.c \
-	meson-cc-tests/bfd-section-flags.c \
-	meson-cc-tests/ipc_rmid_deferred_release.c \
-	meson-cc-tests/ft_has_color.c \
-	meson-cc-tests/mkdir-variant-1.c \
-	meson-cc-tests/pthread.c \
 	meson-cc-tests/atomic-ops-gcc-legacy.c \
+	meson-cc-tests/bfd-section-flags.c \
+	meson-cc-tests/check-unused-result.c \
+	meson-cc-tests/ft_has_color.c \
+	meson-cc-tests/ipc_rmid_deferred_release.c \
+	meson-cc-tests/mkdir-variant-1.c \
 	meson-cc-tests/mkdir-variant-2.c \
+	meson-cc-tests/pthread.c \
 	subprojects/expat.wrap \
 	subprojects/fontconfig.wrap \
 	subprojects/freetype2.wrap \
