@@ -518,7 +518,7 @@ struct _cairo_scaled_font_backend {
  * Get the requested glyph info.
  * @scaled_font: a #cairo_scaled_font_t
  * @scaled_glyph: a #cairo_scaled_glyph_t the glyph
- * @info: a #cairo_scaled_glyph_info_t which information to retreive
+ * @info: a #cairo_scaled_glyph_info_t which information to retrieve
  *  %CAIRO_SCALED_GLYPH_INFO_METRICS - glyph metrics and bounding box
  *  %CAIRO_SCALED_GLYPH_INFO_SURFACE - surface holding glyph image
  *  %CAIRO_SCALED_GLYPH_INFO_PATH - path holding glyph outline in device space
