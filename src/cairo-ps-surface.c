@@ -4409,7 +4409,7 @@ _cairo_ps_surface_emit_pattern_stops (cairo_ps_surface_t       *surface,
 	/* no need for stitched function */
 	_cairo_ps_surface_emit_linear_colorgradient (surface, &stops[0], &stops[1]);
     } else {
-	/* multiple stops: stitch. XXX possible optimization: regulary spaced
+	/* multiple stops: stitch. XXX possible optimization: regularly spaced
 	 * stops do not require stitching. XXX */
 	_cairo_ps_surface_emit_stitched_colorgradient (surface, n_stops, stops);
     }

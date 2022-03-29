@@ -366,7 +366,7 @@ if x11_dep.found() and xext_dep.found()
   prop = meson.get_external_property('ipc_rmid_deferred_release', 'auto')
   # We don't know the type of prop (bool, string) but need to differentiate
   # between a set value (bool) or the fallback value (string), so convert to
-  # a string and chec the string value.
+  # a string and check the string value.
   prop_str = '@0@'.format(prop)
   if prop_str in ['true', 'false']
     ipc_rmid_deferred_release = (prop_str == 'true')
