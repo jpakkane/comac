@@ -2840,7 +2840,7 @@ _cairo_surface_show_text_glyphs (cairo_surface_t	    *surface,
 				 int			     num_clusters,
 				 cairo_text_cluster_flags_t  cluster_flags,
 				 cairo_scaled_font_t	    *scaled_font,
-				 const cairo_clip_t		*clip)
+				 const cairo_clip_t	    *clip)
 {
     cairo_int_status_t status;
     char *utf8_copy = NULL;
@@ -2858,6 +2858,10 @@ _cairo_surface_show_text_glyphs (cairo_surface_t	    *surface,
 	return CAIRO_STATUS_SUCCESS;
 
     status = _pattern_has_error (source);
+    if (unlikely (status))
+	return status;
+
+    status = cairo_scaled_font_status (scaled_font);
     if (unlikely (status))
 	return status;
 
