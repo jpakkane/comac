@@ -316,17 +316,21 @@ _cairo_ps_surface_emit_header (cairo_ps_surface_t *surface)
 
     _cairo_output_stream_printf (surface->final_stream,
 				 "%%!PS-Adobe-3.0%s\n"
-				 "%%%%Creator: cairo %s (https://cairographics.org)\n"
-				 "%%%%CreationDate: %s"
-				 "%%%%Pages: %d\n",
+				 "%%%%Creator: cairo %s (https://cairographics.org)\n",
 				 eps_header,
-				 cairo_version_string (),
-				 ctime_r (&now, ctime_buf),
-				 surface->num_pages);
+				 cairo_version_string ());
+
+    if (!getenv ("CAIRO_DEBUG_PS_NO_DATE")) {
+	_cairo_output_stream_printf (surface->final_stream,
+				     "%%%%CreationDate: %s",
+				     ctime_r (&now, ctime_buf));
+    }
 
     _cairo_output_stream_printf (surface->final_stream,
+				 "%%%%Pages: %d\n"
 				 "%%%%DocumentData: Clean7Bit\n"
 				 "%%%%LanguageLevel: %d\n",
+				 surface->num_pages,
 				 level);
 
     if (!cairo_list_is_empty (&surface->document_media)) {
