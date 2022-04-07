@@ -193,11 +193,8 @@ dnl ===========================================================================
 CAIRO_ENABLE_SURFACE_BACKEND(quartz, Quartz, auto, [
   dnl There is no pkgconfig for quartz; lets do a header check
   AC_CHECK_HEADER(ApplicationServices/ApplicationServices.h, , [use_quartz="no (requires ApplicationServices framework)"])
-  if test "x$use_quartz" != "xyes" ; then
-    dnl check for CoreGraphics as a separate framework
-    AC_CHECK_HEADER(CoreGraphics/CoreGraphics.h, , [use_quartz="no (requires CoreGraphics framework)"])
-    quartz_LIBS="-Xlinker -framework -Xlinker CoreGraphics"
-  else
+  AC_CHECK_FUNC([CTFontDrawGlyphs],,[use_quartz_fonts="no (requires Mac OS X 10.7 or later)"])
+  if test "x$use_quartz" = "xyes" ; then
     quartz_LIBS="-Xlinker -framework -Xlinker ApplicationServices"
   fi
 ])

@@ -85,46 +85,22 @@
  * Since: 1.6
  **/
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < 1050
-/* This method is private, but it exists.  Its params are are exposed
- * as args to the NS* method, but not as CG.
- */
-enum PrivateCGCompositeMode {
-    kPrivateCGCompositeClear		= 0,
-    kPrivateCGCompositeCopy		= 1,
-    kPrivateCGCompositeSourceOver	= 2,
-    kPrivateCGCompositeSourceIn		= 3,
-    kPrivateCGCompositeSourceOut	= 4,
-    kPrivateCGCompositeSourceAtop	= 5,
-    kPrivateCGCompositeDestinationOver	= 6,
-    kPrivateCGCompositeDestinationIn	= 7,
-    kPrivateCGCompositeDestinationOut	= 8,
-    kPrivateCGCompositeDestinationAtop	= 9,
-    kPrivateCGCompositeXOR		= 10,
-    kPrivateCGCompositePlusDarker	= 11, // (max (0, (1-d) + (1-s)))
-    kPrivateCGCompositePlusLighter	= 12, // (min (1, s + d))
-};
-typedef enum PrivateCGCompositeMode PrivateCGCompositeMode;
-CG_EXTERN void CGContextSetCompositeOperation (CGContextRef, PrivateCGCompositeMode);
-#endif
-
-/* Some of these are present in earlier versions of the OS than where
- * they are public; other are not public at all
- */
-
-/* public since 10.6 */
-static CGPathRef (*CGContextCopyPathPtr) (CGContextRef) = NULL;
-static void (*CGContextSetAllowsFontSmoothingPtr) (CGContextRef, bool) = NULL;
-
-/* not yet public */
-static unsigned int (*CGContextGetTypePtr) (CGContextRef) = NULL;
-static bool (*CGContextGetAllowsFontSmoothingPtr) (CGContextRef) = NULL;
-
-static cairo_bool_t _cairo_quartz_symbol_lookup_done = FALSE;
-
 /*
- * Utility functions
+ * macOS Private functions
  */
+static bool (*CGContextGetAllowsFontSmoothingPtr) (CGContextRef) = NULL;
+static unsigned int (*CGContextGetTypePtr) (CGContextRef) = NULL;
+static void
+quartz_ensure_symbols()
+{
+    static cairo_bool_t symbol_lookup_done = FALSE;
+    if (!symbol_lookup_done) {
+	CGContextGetTypePtr = dlsym (RTLD_DEFAULT, "CGContextGetType");
+	CGContextGetAllowsFontSmoothingPtr =
+	    dlsym (RTLD_DEFAULT, "CGContextGetAllowsFontSmoothing");
+	symbol_lookup_done = TRUE;
+    }
+}
 
 #ifdef QUARTZ_DEBUG
 static void quartz_surface_to_png (cairo_quartz_surface_t *nq, const char *dest);
@@ -151,20 +127,6 @@ _cairo_quartz_surface_create_internal (CGContextRef cgContext,
 				       cairo_content_t content,
 				       unsigned int width,
 				       unsigned int height);
-
-/* Load all extra symbols */
-static void quartz_ensure_symbols (void)
-{
-    if (likely (_cairo_quartz_symbol_lookup_done))
-	return;
-
-    CGContextGetTypePtr = dlsym (RTLD_DEFAULT, "CGContextGetType");
-    CGContextCopyPathPtr = dlsym (RTLD_DEFAULT, "CGContextCopyPath");
-    CGContextGetAllowsFontSmoothingPtr = dlsym (RTLD_DEFAULT, "CGContextGetAllowsFontSmoothing");
-    CGContextSetAllowsFontSmoothingPtr = dlsym (RTLD_DEFAULT, "CGContextSetAllowsFontSmoothing");
-
-    _cairo_quartz_symbol_lookup_done = TRUE;
-}
 
 CGImageRef
 CairoQuartzCreateCGImage (cairo_format_t format,
@@ -270,6 +232,7 @@ _cairo_quartz_is_cgcontext_bitmap_context (CGContextRef cgc)
     if (unlikely (cgc == NULL))
 	return FALSE;
 
+    quartz_ensure_symbols ();
     if (likely (CGContextGetTypePtr)) {
 	/* 4 is the type value of a bitmap context */
 	return CGContextGetTypePtr (cgc) == 4;
@@ -377,58 +340,6 @@ _cairo_quartz_cairo_path_to_quartz_context (const cairo_path_fixed_t *path,
  * Misc helpers/callbacks
  */
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < 1050
-static PrivateCGCompositeMode
-_cairo_quartz_cairo_operator_to_quartz_composite (cairo_operator_t op)
-{
-    switch (op) {
-	case CAIRO_OPERATOR_CLEAR:
-	    return kPrivateCGCompositeClear;
-	case CAIRO_OPERATOR_SOURCE:
-	    return kPrivateCGCompositeCopy;
-	case CAIRO_OPERATOR_OVER:
-	    return kPrivateCGCompositeSourceOver;
-	case CAIRO_OPERATOR_IN:
-	    return kPrivateCGCompositeSourceIn;
-	case CAIRO_OPERATOR_OUT:
-	    return kPrivateCGCompositeSourceOut;
-	case CAIRO_OPERATOR_ATOP:
-	    return kPrivateCGCompositeSourceAtop;
-	case CAIRO_OPERATOR_DEST_OVER:
-	    return kPrivateCGCompositeDestinationOver;
-	case CAIRO_OPERATOR_DEST_IN:
-	    return kPrivateCGCompositeDestinationIn;
-	case CAIRO_OPERATOR_DEST_OUT:
-	    return kPrivateCGCompositeDestinationOut;
-	case CAIRO_OPERATOR_DEST_ATOP:
-	    return kPrivateCGCompositeDestinationAtop;
-	case CAIRO_OPERATOR_XOR:
-	    return kPrivateCGCompositeXOR;
-	case CAIRO_OPERATOR_ADD:
-	    return kPrivateCGCompositePlusLighter;
-
-	case CAIRO_OPERATOR_DEST:
-	case CAIRO_OPERATOR_SATURATE:
-	case CAIRO_OPERATOR_MULTIPLY:
-	case CAIRO_OPERATOR_SCREEN:
-	case CAIRO_OPERATOR_OVERLAY:
-	case CAIRO_OPERATOR_DARKEN:
-	case CAIRO_OPERATOR_LIGHTEN:
-	case CAIRO_OPERATOR_COLOR_DODGE:
-	case CAIRO_OPERATOR_COLOR_BURN:
-	case CAIRO_OPERATOR_HARD_LIGHT:
-	case CAIRO_OPERATOR_SOFT_LIGHT:
-	case CAIRO_OPERATOR_DIFFERENCE:
-	case CAIRO_OPERATOR_EXCLUSION:
-	case CAIRO_OPERATOR_HSL_HUE:
-	case CAIRO_OPERATOR_HSL_SATURATION:
-	case CAIRO_OPERATOR_HSL_COLOR:
-	case CAIRO_OPERATOR_HSL_LUMINOSITY:
-        default:
-	    ASSERT_NOT_REACHED;
-    }
-}
-#endif
 
 static CGBlendMode
 _cairo_quartz_cairo_operator_to_quartz_blend (cairo_operator_t op)
@@ -465,7 +376,6 @@ _cairo_quartz_cairo_operator_to_quartz_blend (cairo_operator_t op)
 	case CAIRO_OPERATOR_HSL_LUMINOSITY:
 	    return kCGBlendModeLuminosity;
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1050
 	case CAIRO_OPERATOR_CLEAR:
 	    return kCGBlendModeClear;
 	case CAIRO_OPERATOR_SOURCE:
@@ -490,21 +400,6 @@ _cairo_quartz_cairo_operator_to_quartz_blend (cairo_operator_t op)
 	    return kCGBlendModeXOR;
 	case CAIRO_OPERATOR_ADD:
 	    return kCGBlendModePlusLighter;
-#else
-	case CAIRO_OPERATOR_CLEAR:
-	case CAIRO_OPERATOR_SOURCE:
-	case CAIRO_OPERATOR_OVER:
-	case CAIRO_OPERATOR_IN:
-	case CAIRO_OPERATOR_OUT:
-	case CAIRO_OPERATOR_ATOP:
-	case CAIRO_OPERATOR_DEST_OVER:
-	case CAIRO_OPERATOR_DEST_IN:
-	case CAIRO_OPERATOR_DEST_OUT:
-	case CAIRO_OPERATOR_DEST_ATOP:
-	case CAIRO_OPERATOR_XOR:
-	case CAIRO_OPERATOR_ADD:
-#endif
-
 	case CAIRO_OPERATOR_DEST:
 	case CAIRO_OPERATOR_SATURATE:
         default:
@@ -533,16 +428,6 @@ _cairo_cgcontext_set_cairo_operator (CGContextRef context, cairo_operator_t op)
     {
 	return CAIRO_INT_STATUS_UNSUPPORTED;
     }
-
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < 1050
-    if (op <= CAIRO_OPERATOR_ADD) {
-	PrivateCGCompositeMode compmode;
-
-	compmode = _cairo_quartz_cairo_operator_to_quartz_composite (op);
-	CGContextSetCompositeOperation (context, compmode);
-	return CAIRO_STATUS_SUCCESS;
-    }
-#endif
 
     blendmode = _cairo_quartz_cairo_operator_to_quartz_blend (op);
     CGContextSetBlendMode (context, blendmode);
@@ -1558,13 +1443,6 @@ _cairo_quartz_surface_finish (void *abstract_surface)
 
     surface->cgContext = NULL;
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
-    if (surface->imageData) {
-	free (surface->imageData);
-	surface->imageData = NULL;
-    }
-#endif
-
     if (surface->cgLayer)
     {
 	CGLayerRelease (surface->cgLayer);
@@ -2054,11 +1932,12 @@ _cairo_quartz_cg_glyphs (const cairo_compositor_t *compositor,
 	case CAIRO_ANTIALIAS_BEST:
 	    CGContextSetShouldAntialias (state.cgMaskContext, TRUE);
 	    CGContextSetShouldSmoothFonts (state.cgMaskContext, TRUE);
-	    if (CGContextSetAllowsFontSmoothingPtr &&
+	    quartz_ensure_symbols();
+	    if (CGContextGetAllowsFontSmoothingPtr &&
 		!CGContextGetAllowsFontSmoothingPtr (state.cgMaskContext))
 	    {
 		didForceFontSmoothing = TRUE;
-		CGContextSetAllowsFontSmoothingPtr (state.cgMaskContext, TRUE);
+		CGContextSetAllowsFontSmoothing (state.cgMaskContext, TRUE);
 	    }
 	    break;
 	case CAIRO_ANTIALIAS_NONE:
@@ -2135,7 +2014,7 @@ _cairo_quartz_cg_glyphs (const cairo_compositor_t *compositor,
 
 BAIL:
     if (didForceFontSmoothing)
-	CGContextSetAllowsFontSmoothingPtr (state.cgMaskContext, FALSE);
+	CGContextSetAllowsFontSmoothing (state.cgMaskContext, FALSE);
 
     _cairo_quartz_teardown_state (&state, extents);
 
@@ -2319,8 +2198,6 @@ _cairo_quartz_surface_create_internal (CGContextRef cgContext,
 {
     cairo_quartz_surface_t *surface;
 
-    quartz_ensure_symbols ();
-
     /* Init the base surface */
     surface = _cairo_malloc (sizeof (cairo_quartz_surface_t));
     if (unlikely (surface == NULL))
@@ -2342,9 +2219,6 @@ _cairo_quartz_surface_create_internal (CGContextRef cgContext,
     surface->extents.width = width;
     surface->extents.height = height;
     surface->virtual_extents = surface->extents;
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
-    surface->imageData = NULL;
-#endif
 
     if (IS_EMPTY (surface)) {
 	surface->cgContext = NULL;
@@ -2473,16 +2347,6 @@ cairo_quartz_surface_create (cairo_format_t format,
      * so we don't have to anything special on allocation.
      */
     stride = (stride + 15) & ~15;
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
-    imageData = _cairo_malloc_ab (height, stride);
-    if (unlikely (!imageData)) {
-	CGColorSpaceRelease (cgColorspace);
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
-    }
-
-    /* zero the memory to match the image surface behavior */
-    memset (imageData, 0, height * stride);
-#endif /* For newer macOS versions let Core Graphics manage the buffer. */
     cgc = CGBitmapContextCreate (imageData,
 				 width,
 				 height,
@@ -2515,9 +2379,6 @@ cairo_quartz_surface_create (cairo_format_t format,
 	return &surf->base;
     }
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 10600
-    surf->imageData = imageData;
-#endif
     surf->base.is_clear = TRUE;
 
     return &surf->base;
