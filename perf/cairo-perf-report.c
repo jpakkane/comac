@@ -32,6 +32,7 @@
 #include "cairo-perf.h"
 #include "cairo-missing.h"
 #include "cairo-stats.h"
+#include "cairo-ctype-inline.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,7 +101,7 @@ do {									\
 #define parse_string(result)						\
 do {									\
     for (end = s; *end; end++)						\
-	if (isspace (*end))						\
+	if (_cairo_isspace (*end))					\
 	    break;							\
     (result) = strndup (s, end - s);					\
     if ((result) == NULL) {						\

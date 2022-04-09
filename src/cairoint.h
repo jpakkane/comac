@@ -271,33 +271,7 @@ static inline void put_unaligned_be32 (uint32_t v, unsigned char *p)
     p[3] = v & 0xff;
 }
 
-/* The glibc versions of ispace() and isdigit() are slow in UTF-8 locales.
- */
-
-static inline int cairo_const
-_cairo_isspace (int c)
-{
-    return (c == 0x20 || (c >= 0x09 && c <= 0x0d));
-}
-
-static inline int cairo_const
-_cairo_isdigit (int c)
-{
-    return (c >= '0' && c <= '9');
-}
-
-static inline int cairo_const
-_cairo_isxdigit (int c)
-{
-    return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
-}
-
-static inline int cairo_const
-_cairo_isalpha (int c)
-{
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-}
-
+#include "cairo-ctype-inline.h"
 #include "cairo-types-private.h"
 #include "cairo-cache-private.h"
 #include "cairo-reference-count-private.h"

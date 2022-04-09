@@ -47,6 +47,8 @@
 # include <cairo-ft.h>
 #endif
 
+#include "cairo-ctype-inline.h"
+
 #ifndef TRUE
 #define TRUE 1
 #define FALSE 0
@@ -565,7 +567,7 @@ _trace_dtostr (char *buffer, size_t size, double d)
 	if (*p == '+' || *p == '-')
 	    p++;
 
-	while (isdigit (*p))
+	while (_cairo_isdigit (*p))
 	    p++;
 
 	if (strncmp (p, decimal_point, decimal_point_len) == 0)
@@ -585,7 +587,7 @@ _trace_dtostr (char *buffer, size_t size, double d)
     if (*p == '+' || *p == '-')
 	p++;
 
-    while (isdigit (*p))
+    while (_cairo_isdigit (*p))
 	p++;
 
     if (strncmp (p, decimal_point, decimal_point_len) == 0) {
@@ -651,7 +653,7 @@ _trace_vprintf (const char *fmt, va_list ap)
 	    f++;
         }
 
-	while (isdigit (*f))
+	while (_cairo_isdigit (*f))
 	    f++;
 
 	length_modifier = 0;
@@ -1850,7 +1852,7 @@ _encode_string_literal (char *out, int max,
 	    max -= 2;
 	    break;
 	default:
-	    if (isprint (c) || isspace (c)) {
+	    if (_cairo_isprint (c)) {
 		*out++ = c;
 	    } else {
 		int octal = 0;
@@ -1920,7 +1922,7 @@ ESCAPED_CHAR:
 	    _trace_printf ("\\%c", c);
 	    break;
 	default:
-	    if (isprint (c) || isspace (c)) {
+	    if (_cairo_isprint (c)) {
 		_trace_printf ("%c", c);
 	    } else {
 		char buf[4] = { '\\' };
