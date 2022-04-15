@@ -3315,7 +3315,7 @@ ESCAPED_CHAR:
 	    _cairo_output_stream_printf (ctx->stream, "\\%c", c);
 	    break;
 	default:
-	    if (isprint (c) || isspace (c)) {
+	    if (_cairo_isprint(c)) {
 		_cairo_output_stream_printf (ctx->stream, "%c", c);
 	    } else {
 		char buf[4] = { '\\' };
