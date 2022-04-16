@@ -245,8 +245,12 @@ _cairo_dwrite_load_truetype_table(void		       *scaled_font,
 				  unsigned long        *length);
 
 unsigned long
-_cairo_dwrite_ucs4_to_index(void			     *scaled_font,
-			    uint32_t			ucs4);
+_cairo_dwrite_ucs4_to_index(void		       *scaled_font,
+			    uint32_t                    ucs4);
+
+cairo_int_status_t
+static _cairo_dwrite_is_synthetic(void                *scaled_font,
+			   cairo_bool_t               *is_synthetic);
 
 static cairo_bool_t
 _cairo_dwrite_has_color_glyphs(void *scaled_font);
@@ -259,7 +263,7 @@ const cairo_scaled_font_backend_t _cairo_dwrite_scaled_font_backend = {
     _cairo_dwrite_ucs4_to_index,
     _cairo_dwrite_load_truetype_table,
     NULL, /* index_to_ucs4 */
-    NULL, /* is_synthetic */
+    _cairo_dwrite_is_synthetic,
     NULL, /* index_to_glyph_name */
     NULL, /* load_type1_data */
     _cairo_dwrite_has_color_glyphs
@@ -1213,6 +1217,79 @@ _cairo_dwrite_load_truetype_table(void                 *scaled_font,
 	face->dwriteface->ReleaseFontTable(tableContext);
     }
     return (cairo_int_status_t)CAIRO_STATUS_SUCCESS;
+}
+
+static cairo_int_status_t
+_cairo_dwrite_is_synthetic(void                      *scaled_font,
+			   cairo_bool_t              *is_synthetic)
+{
+    cairo_dwrite_scaled_font_t *dwritesf = static_cast<cairo_dwrite_scaled_font_t*>(scaled_font);
+    cairo_dwrite_font_face_t *face = reinterpret_cast<cairo_dwrite_font_face_t*>(dwritesf->base.font_face);
+    HRESULT hr;
+    cairo_int_status_t status;
+
+    if (face->dwriteface->GetSimulations() != DWRITE_FONT_SIMULATIONS_NONE) {
+	*is_synthetic = FALSE;
+	return CAIRO_INT_STATUS_SUCCESS;
+    }
+
+    IDWriteFontFace5 *fontFace5 = NULL;
+    if (!SUCCEEDED(face->dwriteface->QueryInterface(&fontFace5))) {
+	/* If IDWriteFontFace5 is not available, assume this version of
+	 * DirectWrite does not support variations.
+	 */
+	*is_synthetic = FALSE;
+	return CAIRO_INT_STATUS_SUCCESS;
+    }
+
+    if (!fontFace5->HasVariations()) {
+	*is_synthetic = FALSE;
+	return CAIRO_INT_STATUS_SUCCESS;
+    }
+
+    IDWriteFontResource *fontResource = NULL;
+    hr = fontFace5->GetFontResource(&fontResource);
+    if (!SUCCEEDED(hr))
+	return _cairo_dwrite_error (hr, "GetFontResource failed");
+
+    UINT32 axis_count = fontResource->GetFontAxisCount();
+    DWRITE_FONT_AXIS_VALUE *axis_defaults = new DWRITE_FONT_AXIS_VALUE[axis_count];
+    DWRITE_FONT_AXIS_VALUE *axis_values = new DWRITE_FONT_AXIS_VALUE[axis_count];
+
+    hr = fontResource->GetDefaultFontAxisValues(axis_defaults, axis_count);
+    if (!SUCCEEDED(hr)) {
+	status = _cairo_dwrite_error (hr, "GetDefaultFontAxisValues failed");
+	goto cleanup;
+    }
+
+    hr = fontFace5->GetFontAxisValues(axis_values, axis_count);
+    if (!SUCCEEDED(hr)) {
+	status = _cairo_dwrite_error (hr, "GetFontAxisValues failed");
+	goto cleanup;
+    }
+
+    /* The DirectWrite documentation does not state if the tags of the returned
+     * defaults and values arrays are in the same order. So assume they are not.
+     */
+    *is_synthetic = FALSE;
+    status = CAIRO_INT_STATUS_SUCCESS;
+    for (UINT32 i = 0; i< axis_count; i++) {
+	for (UINT32 j = 0; j < axis_count; j++) {
+	    if (axis_values[i].axisTag == axis_defaults[j].axisTag) {
+		if (axis_values[i].value != axis_defaults[j].value) {
+		    *is_synthetic = TRUE;
+		    goto cleanup;
+		}
+		break;
+	    }
+	}
+    }
+
+  cleanup:
+    delete[] axis_defaults;
+    delete[] axis_values;
+    
+    return status;
 }
 
 static cairo_bool_t

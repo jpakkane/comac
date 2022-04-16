@@ -38,8 +38,8 @@
 #include <dwrite.h>
 #include <d2d1.h>
 
-/* If either of the dwrite_2.h or d2d1_3.h headers required for color fonts
- * is not available, include our own version containing just the functions we need.
+/* If either of the dwrite_3.h or d2d1_3.h headers required for color fonts
+ * are not available, include our own version containing just the functions we need.
  */
 
 #if HAVE_DWRITE_3_H
