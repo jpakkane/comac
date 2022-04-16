@@ -488,19 +488,19 @@ struct _cairo_scaled_font_backend {
     void
     (*fini)		(void			*scaled_font);
 
-/*
- * Get the requested glyph info.
- * @scaled_font: a #cairo_scaled_font_t
- * @scaled_glyph: a #cairo_scaled_glyph_t the glyph
- * @info: a #cairo_scaled_glyph_info_t which information to retrieve
- *  %CAIRO_SCALED_GLYPH_INFO_METRICS - glyph metrics and bounding box
- *  %CAIRO_SCALED_GLYPH_INFO_SURFACE - surface holding glyph image
- *  %CAIRO_SCALED_GLYPH_INFO_PATH - path holding glyph outline in device space
- *  %CAIRO_SCALED_GLYPH_INFO_RECORDING_SURFACE - surface holding recording of glyph
- *  %CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE - surface holding color glyph image
- * @foreground_color - foreground color to use when rendering color fonts. Use NULL
- * if not requesting CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE or foreground color is unknown.
- */
+    /*
+     * Get the requested glyph info.
+     * @scaled_font: a #cairo_scaled_font_t
+     * @scaled_glyph: a #cairo_scaled_glyph_t the glyph
+     * @info: a #cairo_scaled_glyph_info_t which information to retrieve
+     *  %CAIRO_SCALED_GLYPH_INFO_METRICS - glyph metrics and bounding box
+     *  %CAIRO_SCALED_GLYPH_INFO_SURFACE - surface holding glyph image
+     *  %CAIRO_SCALED_GLYPH_INFO_PATH - path holding glyph outline in device space
+     *  %CAIRO_SCALED_GLYPH_INFO_RECORDING_SURFACE - surface holding recording of glyph
+     *  %CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE - surface holding color glyph image
+     * @foreground_color - foreground color to use when rendering color fonts. Use NULL
+     * if not requesting CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE or foreground color is unknown.
+     */
     cairo_warn cairo_int_status_t
     (*scaled_glyph_init)	(void			     *scaled_font,
 				 cairo_scaled_glyph_t	     *scaled_glyph,
@@ -523,6 +523,11 @@ struct _cairo_scaled_font_backend {
 		       int		          *num_clusters,
 		       cairo_text_cluster_flags_t *cluster_flags);
 
+    /* Get the glyph index for the given unicode code point.
+     * @scaled_font: a #cairo_scaled_font_t
+     * @ucs4: unicode code point
+     * Returns glyph index or 0 if not found.
+     */
     unsigned long
     (*ucs4_to_index)		(void			     *scaled_font,
 				 uint32_t		      ucs4);
@@ -561,6 +566,9 @@ struct _cairo_scaled_font_backend {
 
     /* Determine if this scaled font differs from the outlines in the font tables.
      * eg synthesized bold/italic or a non default variant of a variable font.
+     * @scaled_font: font
+     * @is_sythetic: returns TRUE if scaled font is synthetic
+     * Returns cairo status
      */
     cairo_warn cairo_int_status_t
     (*is_synthetic)(void                       *scaled_font,
@@ -577,7 +585,6 @@ struct _cairo_scaled_font_backend {
      * @glyph_array_index: (index into glyph_names) the glyph name corresponding
      *  to the glyph_index
      */
-
     cairo_warn cairo_int_status_t
     (*index_to_glyph_name)(void                 *scaled_font,
 			   char                **glyph_names,
@@ -605,6 +612,10 @@ struct _cairo_scaled_font_backend {
                            unsigned char        *buffer,
                            unsigned long        *length);
 
+    /* Check if font has any color glyphs.
+     * @scaled_font: font
+     * Returns TRUE if font contains any color glyphs
+     */
     cairo_bool_t
     (*has_color_glyphs)   (void                 *scaled_font);
 };
