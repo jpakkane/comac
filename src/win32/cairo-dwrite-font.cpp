@@ -65,7 +65,7 @@ _dwrite_draw_glyphs_to_gdi_surface_d2d(cairo_win32_surface_t *surface,
 				       COLORREF color,
 				       const RECT &area);
 
-cairo_int_status_t
+static cairo_int_status_t
 _dwrite_draw_glyphs_to_gdi_surface_gdi(cairo_win32_surface_t *surface,
 				       DWRITE_MATRIX *transform,
 				       DWRITE_GLYPH_RUN *run,
@@ -82,7 +82,7 @@ _dwrite_draw_glyphs_to_gdi_surface_gdi(cairo_win32_surface_t *surface,
  *
  * Return value: A cairo status code for the error code
  **/
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_error (HRESULT hr, const char *context)
 {
     void *lpMsgBuf;
@@ -229,7 +229,7 @@ const cairo_font_face_backend_t _cairo_dwrite_font_face_backend = {
 
 /* Functions #cairo_scaled_font_backend_t */
 
-void _cairo_dwrite_scaled_font_fini(void *scaled_font);
+static void _cairo_dwrite_scaled_font_fini(void *scaled_font);
 
 static cairo_warn cairo_int_status_t
 _cairo_dwrite_scaled_glyph_init(void			     *scaled_font,
@@ -237,25 +237,25 @@ _cairo_dwrite_scaled_glyph_init(void			     *scaled_font,
 				cairo_scaled_glyph_info_t     info,
 				const cairo_color_t          *foreground_color);
 
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_load_truetype_table(void		       *scaled_font,
 				  unsigned long         tag,
 				  long                  offset,
 				  unsigned char        *buffer,
 				  unsigned long        *length);
 
-unsigned long
+static unsigned long
 _cairo_dwrite_ucs4_to_index(void		       *scaled_font,
 			    uint32_t                    ucs4);
 
-cairo_int_status_t
-static _cairo_dwrite_is_synthetic(void                *scaled_font,
+static cairo_int_status_t
+_cairo_dwrite_is_synthetic(void                       *scaled_font,
 			   cairo_bool_t               *is_synthetic);
 
 static cairo_bool_t
 _cairo_dwrite_has_color_glyphs(void *scaled_font);
 
-const cairo_scaled_font_backend_t _cairo_dwrite_scaled_font_backend = {
+static const cairo_scaled_font_backend_t _cairo_dwrite_scaled_font_backend = {
     CAIRO_FONT_TYPE_DWRITE,
     _cairo_dwrite_scaled_font_fini,
     _cairo_dwrite_scaled_glyph_init,
@@ -280,7 +280,7 @@ const cairo_scaled_font_backend_t _cairo_dwrite_scaled_font_backend = {
  * \param Cairo matrix
  * \return DirectWrite matrix
  **/
-DWRITE_MATRIX
+static DWRITE_MATRIX
 _cairo_dwrite_matrix_from_matrix(const cairo_matrix_t *matrix)
 {
     DWRITE_MATRIX dwmat;
@@ -294,7 +294,7 @@ _cairo_dwrite_matrix_from_matrix(const cairo_matrix_t *matrix)
 }
 
 /* Helper functions for cairo_dwrite_scaled_glyph_init() */
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_metrics
     (cairo_dwrite_scaled_font_t *scaled_font, cairo_scaled_glyph_t *scaled_glyph);
 
@@ -303,11 +303,11 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 						   cairo_scaled_glyph_t	      *scaled_glyph,
 						   const cairo_color_t        *foreground_color);
 
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_surface
     (cairo_dwrite_scaled_font_t *scaled_font, cairo_scaled_glyph_t *scaled_glyph);
 
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_path
     (cairo_dwrite_scaled_font_t *scaled_font, cairo_scaled_glyph_t *scaled_glyph);
 
@@ -587,7 +587,7 @@ _cairo_dwrite_font_face_scaled_font_create (void			*abstract_face,
 }
 
 /* Implementation #cairo_dwrite_scaled_font_backend_t */
-void
+static void
 _cairo_dwrite_scaled_font_fini(void *scaled_font)
 {
 }
@@ -628,7 +628,7 @@ _cairo_dwrite_scaled_glyph_init(void			     *scaled_font,
     return CAIRO_INT_STATUS_SUCCESS;
 }
 
-unsigned long
+static unsigned long
 _cairo_dwrite_ucs4_to_index(void			     *scaled_font,
 			    uint32_t		      ucs4)
 {
@@ -641,7 +641,7 @@ _cairo_dwrite_ucs4_to_index(void			     *scaled_font,
 }
 
 /* cairo_dwrite_scaled_glyph_init() helper function bodies */
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_metrics(cairo_dwrite_scaled_font_t *scaled_font,
 					     cairo_scaled_glyph_t *scaled_glyph)
 {
@@ -799,7 +799,7 @@ private:
     D2D1_POINT_2F mStartPoint;
 };
 
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_path(cairo_dwrite_scaled_font_t *scaled_font,
 					  cairo_scaled_glyph_t *scaled_glyph)
 {
@@ -845,7 +845,7 @@ _cairo_dwrite_scaled_font_init_glyph_path(cairo_dwrite_scaled_font_t *scaled_fon
     return status;
 }
 
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *scaled_font,
 						   cairo_scaled_glyph_t	      *scaled_glyph,
 						   const cairo_color_t        *foreground_color)
@@ -1104,7 +1104,7 @@ _compute_a8_mask (cairo_surface_t *surface)
     return &mask->base;
 }
 
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_scaled_font_init_glyph_surface(cairo_dwrite_scaled_font_t *scaled_font,
 					     cairo_scaled_glyph_t	*scaled_glyph)
 {
@@ -1198,7 +1198,7 @@ _cairo_dwrite_scaled_font_init_glyph_surface(cairo_dwrite_scaled_font_t *scaled_
     return status;
 }
 
-cairo_int_status_t
+static cairo_int_status_t
 _cairo_dwrite_load_truetype_table(void                 *scaled_font,
 				  unsigned long         tag,
 				  long                  offset,
@@ -1378,7 +1378,7 @@ cairo_dwrite_get_cleartype_rendering_mode()
     return DWriteFactory::GetClearTypeRenderingMode();
 }
 
-cairo_int_status_t
+static cairo_int_status_t
 _dwrite_draw_glyphs_to_gdi_surface_gdi(cairo_win32_surface_t *surface,
 				       DWRITE_MATRIX *transform,
 				       DWRITE_GLYPH_RUN *run,

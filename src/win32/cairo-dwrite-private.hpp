@@ -254,13 +254,3 @@ struct _cairo_dwrite_font_face {
     cairo_bool_t have_color;
 };
 typedef struct _cairo_dwrite_font_face cairo_dwrite_font_face_t;
-
-DWRITE_MATRIX _cairo_dwrite_matrix_from_matrix(const cairo_matrix_t *matrix);
-
-// This will initialize a DWrite glyph run from cairo glyphs and a scaled_font.
-void
-_cairo_dwrite_glyph_run_from_glyphs(cairo_glyph_t *glyphs,
-				    int num_glyphs,
-				    cairo_dwrite_scaled_font_t *scaled_font,
-				    AutoDWriteGlyphRun *run,
-				    cairo_bool_t *transformed);
