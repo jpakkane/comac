@@ -814,18 +814,30 @@ _cairo_dwrite_scaled_font_init_glyph_path(cairo_dwrite_scaled_font_t *scaled_fon
     UINT16 glyphId = (UINT16)_cairo_scaled_glyph_index(scaled_glyph);
     FLOAT advance = 0.0;
     cairo_dwrite_font_face_t *dwriteff = (cairo_dwrite_font_face_t*)scaled_font->base.font_face;
-    dwriteff->dwriteface->GetGlyphRunOutline((FLOAT)scaled_font->base.font_matrix.yy,
-					     &glyphId,
-					     &advance,
-					     &offset,
-					     1,
-					     FALSE,
-					     FALSE,
-					     &recorder);
+
+    /* GetGlyphRunOutline seems to ignore hinting so just use the em size to get the outline
+     * to avoid rounding errors when converting to cairo_path_fixed_t.
+     */
+    DWRITE_FONT_METRICS metrics;
+    dwriteff->dwriteface->GetMetrics(&metrics);
+    HRESULT hr = dwriteff->dwriteface->GetGlyphRunOutline(metrics.designUnitsPerEm,
+							  &glyphId,
+							  &advance,
+							  &offset,
+							  1,
+							  FALSE,
+							  FALSE,
+							  &recorder);
+    if (!SUCCEEDED(hr))
+	return _cairo_dwrite_error (hr, "GetGlyphRunOutline failed");
+
     status = (cairo_int_status_t)_cairo_path_fixed_close_path(path);
 
-    /* Now apply our transformation to the drawn path. */
-    _cairo_path_fixed_transform(path, &scaled_font->base.ctm);
+    /* Now scale the em size down to 1.0 and apply the font matrix and font ctm. */
+    cairo_matrix_t mat = scaled_font->base.ctm;
+    cairo_matrix_multiply(&mat, &scaled_font->base.font_matrix, &mat);
+    cairo_matrix_scale (&mat, 1.0/metrics.designUnitsPerEm, 1.0/metrics.designUnitsPerEm);
+    _cairo_path_fixed_transform(path, &mat);
 
     _cairo_scaled_glyph_set_path (scaled_glyph,
 				  &scaled_font->base,
