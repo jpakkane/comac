@@ -1472,7 +1472,7 @@ _cairo_quartz_surface_map_to_image (void *abstract_surface,
     cairo_surface_t *return_surface = NULL;
     unsigned int stride, bitinfo, bpp, color_comps;
     CGColorSpaceRef colorspace;
-    void *imageData;
+    unsigned char *imageData;
     cairo_format_t format;
 
     if (IS_EMPTY (surface))
@@ -2632,7 +2632,7 @@ quartz_image_to_png (CGImageRef image, const char *dest)
 
     memset (pathbuf, 0, sizeof (pathbuf));
     dest = dest ? dest : image_name;
-    snprintf (pathbuf, sizeof (pathbuf), "%s/Desktop/%s%d.png",getenv ("HOME"), dest, sctr++, ext);
+    snprintf (pathbuf, sizeof (pathbuf), "%s/Desktop/%s%d.png",getenv ("HOME"), dest, sctr++);
     path = CFStringCreateWithCString (NULL, pathbuf, kCFStringEncodingUTF8);
     url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, FALSE);
     image_dest = CGImageDestinationCreateWithURL (url, png_utti, 1, NULL);
@@ -2647,7 +2647,6 @@ quartz_image_to_png (CGImageRef image, const char *dest)
 void
 quartz_surface_to_png (cairo_quartz_surface_t *nq, const char *dest)
 {
-    static int sctr = 0;
     CGImageRef image;
 
     if (nq->base.type != CAIRO_SURFACE_TYPE_QUARTZ) {
