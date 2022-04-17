@@ -2109,7 +2109,6 @@ slim_hidden_proto (cairo_surface_write_to_png_stream);
 
 #endif
 
-CAIRO_END_DECLS
 
 #include "cairo-mutex-private.h"
 #include "cairo-fixed-private.h"
@@ -2151,5 +2150,7 @@ _cairo_debug_print_clip (FILE *stream, const cairo_clip_t *clip);
 #define TRACE(x)
 #define TRACE_(x)
 #endif
+
+CAIRO_END_DECLS
 
 #endif
