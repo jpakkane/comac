@@ -340,7 +340,7 @@ _cairo_dwrite_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
 	delete face_name;
 	if (!family) {
 	    *font_face = (cairo_font_face_t*)&_cairo_font_face_nil;
-	    return CAIRO_STATUS_FONT_TYPE_MISMATCH;
+	    return (cairo_status_t)CAIRO_INT_STATUS_UNSUPPORTED;
 	}
     }
 
