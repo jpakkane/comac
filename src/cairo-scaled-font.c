@@ -3001,6 +3001,7 @@ _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
     cairo_int_status_t		 status = CAIRO_INT_STATUS_SUCCESS;
     cairo_scaled_glyph_t	*scaled_glyph;
     cairo_scaled_glyph_info_t	 need_info;
+    cairo_hash_entry_t           key;
 
     *scaled_glyph_ret = NULL;
 
@@ -3019,8 +3020,8 @@ _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
     /*
      * Check cache for glyph
      */
-    scaled_glyph = _cairo_hash_table_lookup (scaled_font->glyphs,
-					     (cairo_hash_entry_t *) &index);
+    key.hash = index;
+    scaled_glyph = _cairo_hash_table_lookup (scaled_font->glyphs, &key);
     if (scaled_glyph == NULL) {
 	status = _cairo_scaled_font_allocate_glyph (scaled_font, &scaled_glyph);
 	if (unlikely (status))
