@@ -407,7 +407,7 @@ _cairo_hash_bytes (uintptr_t hash,
 		   unsigned int length);
 
 /* We use bits 24-27 to store phases for subpixel positions */
-#define _cairo_scaled_glyph_index(g) ((g)->hash_entry.hash & 0xffffff)
+#define _cairo_scaled_glyph_index(g) ((unsigned long)((g)->hash_entry.hash & 0xffffff))
 #define _cairo_scaled_glyph_xphase(g) (int)(((g)->hash_entry.hash >> 24) & 3)
 #define _cairo_scaled_glyph_yphase(g) (int)(((g)->hash_entry.hash >> 26) & 3)
 #define _cairo_scaled_glyph_set_index(g, i)  ((g)->hash_entry.hash = (i))
