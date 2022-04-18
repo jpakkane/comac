@@ -35,6 +35,7 @@
  */
 
 #include "cairoint.h"
+#include "cairo-win32-refptr.hpp"
 #include <dwrite.h>
 #include <d2d1.h>
 
@@ -82,7 +83,7 @@ typedef struct _cairo_dwrite_scaled_font cairo_dwrite_scaled_font_t;
 class DWriteFactory
 {
 public:
-    static IDWriteFactory *Instance()
+    static RefPtr<IDWriteFactory> Instance()
     {
 	if (!mFactoryInstance) {
 #ifdef __GNUC__
@@ -105,7 +106,7 @@ public:
 	return mFactoryInstance;
     }
 
-    static IDWriteFactory4 *Instance4()
+    static RefPtr<IDWriteFactory4> Instance4()
     {
 	if (!mFactoryInstance4) {
 	    if (Instance()) {
@@ -115,7 +116,7 @@ public:
 	return mFactoryInstance4;
     }
 
-    static IDWriteFontCollection *SystemCollection()
+    static RefPtr<IDWriteFontCollection> SystemCollection()
     {
 	if (!mSystemCollection) {
 	    if (Instance()) {
@@ -126,7 +127,7 @@ public:
 	return mSystemCollection;
     }
 
-    static IDWriteFontFamily *FindSystemFontFamily(const WCHAR *aFamilyName)
+    static RefPtr<IDWriteFontFamily> FindSystemFontFamily(const WCHAR *aFamilyName)
     {
 	UINT32 idx;
 	BOOL found;
@@ -138,12 +139,12 @@ public:
 	    return NULL;
 	}
 
-	IDWriteFontFamily *family;
+	RefPtr<IDWriteFontFamily> family;
 	SystemCollection()->GetFontFamily(idx, &family);
 	return family;
     }
 
-    static IDWriteRenderingParams *RenderingParams(cairo_dwrite_scaled_font_t::TextRenderingState mode)
+    static RefPtr<IDWriteRenderingParams> RenderingParams(cairo_dwrite_scaled_font_t::TextRenderingState mode)
     {
 	if (!mDefaultRenderingParams ||
             !mForceGDIClassicRenderingParams ||
@@ -151,7 +152,7 @@ public:
         {
 	    CreateRenderingParams();
 	}
-	IDWriteRenderingParams *params;
+	RefPtr<IDWriteRenderingParams> params;
         if (mode == cairo_dwrite_scaled_font_t::TEXT_RENDERING_NO_CLEARTYPE) {
             params = mDefaultRenderingParams;
         } else if (mode == cairo_dwrite_scaled_font_t::TEXT_RENDERING_GDI_CLASSIC && mRenderingMode < 0) {
@@ -159,9 +160,6 @@ public:
         } else {
             params = mCustomClearTypeRenderingParams;
         }
-	if (params) {
-	    params->AddRef();
-	}
 	return params;
     }
 
@@ -198,12 +196,12 @@ public:
 private:
     static void CreateRenderingParams();
 
-    static IDWriteFactory *mFactoryInstance;
-    static IDWriteFactory4 *mFactoryInstance4;
-    static IDWriteFontCollection *mSystemCollection;
-    static IDWriteRenderingParams *mDefaultRenderingParams;
-    static IDWriteRenderingParams *mCustomClearTypeRenderingParams;
-    static IDWriteRenderingParams *mForceGDIClassicRenderingParams;
+    static RefPtr<IDWriteFactory> mFactoryInstance;
+    static RefPtr<IDWriteFactory4> mFactoryInstance4;
+    static RefPtr<IDWriteFontCollection> mSystemCollection;
+    static RefPtr<IDWriteRenderingParams> mDefaultRenderingParams;
+    static RefPtr<IDWriteRenderingParams> mCustomClearTypeRenderingParams;
+    static RefPtr<IDWriteRenderingParams> mForceGDIClassicRenderingParams;
     static FLOAT mGamma;
     static FLOAT mEnhancedContrast;
     static FLOAT mClearTypeLevel;
@@ -250,7 +248,7 @@ private:
 /* #cairo_font_face_t implementation */
 struct _cairo_dwrite_font_face {
     cairo_font_face_t base;
-    IDWriteFontFace *dwriteface;
+    IDWriteFontFace *dwriteface; /* Can't use RefPtr because this struct is malloc'd.  */
     cairo_bool_t have_color;
 };
 typedef struct _cairo_dwrite_font_face cairo_dwrite_font_face_t;
