@@ -44,6 +44,7 @@
 #include "cairo-win32-refptr.hpp"
 #include "cairo-dwrite-private.hpp"
 #include "cairo-truetype-subset-private.h"
+#include "cairo-scaled-font-subsets-private.h"
 #include <float.h>
 
 #include <wincodec.h>
@@ -1752,53 +1753,100 @@ DWriteFactory::CreateRenderingParams()
         &mForceGDIClassicRenderingParams);
 }
 
-static cairo_bool_t
-_name_tables_match (cairo_scaled_font_t *font1,
-                    cairo_scaled_font_t *font2)
+/* Check if a specific font table in a DWrite font and a scaled font is identical */
+static cairo_int_status_t
+compare_font_tables (cairo_dwrite_font_face_t *dwface,
+		     cairo_scaled_font_t      *scaled_font,
+		     unsigned long             tag,
+		     cairo_bool_t             *match)
 {
-    unsigned long size1;
-    unsigned long size2;
-    cairo_int_status_t status1;
-    cairo_int_status_t status2;
-    unsigned char *buffer1;
-    unsigned char *buffer2;
-    cairo_bool_t result = false;
+    unsigned long size;
+    cairo_int_status_t status;
+    unsigned char *buffer = NULL;
+    const void *dw_data;
+    UINT32 dw_size;
+    void *dw_tableContext = NULL;
+    BOOL dw_exists = FALSE;
+    HRESULT hr;
 
-    if (!font1->backend || !font2->backend ||
-        !font1->backend->load_truetype_table ||
-        !font2->backend->load_truetype_table)
-        return false;
+    hr = dwface->dwriteface->TryGetFontTable(be32_to_cpu (tag),
+					     &dw_data,
+					     &dw_size,
+					     &dw_tableContext,
+					     &dw_exists);
+    if (FAILED(hr))
+	return _cairo_dwrite_error (hr, "TryGetFontTable failed");
 
-    status1 = font1->backend->load_truetype_table (font1,
-                                                   TT_TAG_name, 0, NULL, &size1);
-    status2 = font2->backend->load_truetype_table (font2,
-                                                   TT_TAG_name, 0, NULL, &size2);
-    if (status1 || status2)
-        return false;
-    if (size1 != size2)
-        return false;
-
-    buffer1 = (unsigned char*)malloc (size1);
-    buffer2 = (unsigned char*)malloc (size2);
-
-    if (buffer1 && buffer2) {
-        status1 = font1->backend->load_truetype_table (font1,
-                                                       TT_TAG_name, 0, buffer1, &size1);
-        status2 = font2->backend->load_truetype_table (font2,
-                                                       TT_TAG_name, 0, buffer2, &size2);
-        if (!status1 && !status2) {
-            result = memcmp (buffer1, buffer2, size1) == 0;
-        }
+    if (!dw_exists) {
+	*match = FALSE;
+	status = CAIRO_INT_STATUS_SUCCESS;
+	goto cleanup;
     }
 
-    free (buffer1);
-    free (buffer2);
-    return result;
+    status = scaled_font->backend->load_truetype_table (scaled_font, tag, 0, NULL, &size);
+    if (unlikely(status))
+	goto cleanup;
+
+    if (size != dw_size) {
+	*match = FALSE;
+	status = CAIRO_INT_STATUS_SUCCESS;
+	goto cleanup;
+    }
+
+    buffer = (unsigned char *) _cairo_malloc (size);
+    if (unlikely (buffer == NULL)) {
+	status = (cairo_int_status_t) _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	goto cleanup;
+    }
+
+    status = scaled_font->backend->load_truetype_table (scaled_font, tag, 0, buffer, &size);
+    if (unlikely(status))
+	goto cleanup;
+
+    *match = memcmp (dw_data, buffer, size) == 0;
+    status = CAIRO_INT_STATUS_SUCCESS;
+
+cleanup:
+    free (buffer);
+    if (dw_tableContext)
+	dwface->dwriteface->ReleaseFontTable(dw_tableContext);
+
+    return status;
 }
 
-// Helper for _cairo_win32_printing_surface_show_glyphs to create a win32 equivalent
-// of a dwrite scaled_font so that we can print using ExtTextOut instead of drawing
-// paths or blitting glyph bitmaps.
+/* Check if a DWrite font and a scaled font areis identical
+ *
+ * DWrite does not allow accessing the entire font data using tag=0 so we compare
+ * two of the font tables:
+ * - 'name' table
+ * - 'head' table since this contains the checksum for the entire font
+ */
+static cairo_int_status_t
+font_tables_match (cairo_dwrite_font_face_t *dwface,
+		   cairo_scaled_font_t      *scaled_font,
+		   cairo_bool_t             *match)
+{
+    cairo_int_status_t status;
+
+    status = compare_font_tables (dwface, scaled_font, TT_TAG_name, match);
+    if (unlikely(status))
+	return status;
+
+    if (!*match)
+	return CAIRO_INT_STATUS_SUCCESS;
+
+    status = compare_font_tables (dwface, scaled_font, TT_TAG_head, match);
+    if (unlikely(status))
+	return status;
+
+    return CAIRO_INT_STATUS_SUCCESS;
+}
+
+/*
+ * Helper for _cairo_win32_printing_surface_show_glyphs to create a win32 equivalent
+ * of a dwrite scaled_font so that we can print using ExtTextOut instead of drawing
+ * paths or blitting glyph bitmaps.
+ */
 cairo_int_status_t
 _cairo_dwrite_scaled_font_create_win32_scaled_font (cairo_scaled_font_t *scaled_font,
                                                     cairo_scaled_font_t **new_font)
@@ -1820,12 +1868,15 @@ _cairo_dwrite_scaled_font_create_win32_scaled_font (cairo_scaled_font_t *scaled_
     if (FAILED(gdiInterop->ConvertFontFaceToLOGFONT (dwface->dwriteface, &logfont))) {
 	return CAIRO_INT_STATUS_UNSUPPORTED;
     }
-    // DW must have been using an outline font, so we want GDI to use the same,
-    // even if there's also a bitmap face available
+
+    /* DWrite must have been using an outline font, so we want GDI to use the same,
+     * even if there's also a bitmap face available
+     */
     logfont.lfOutPrecision = OUT_OUTLINE_PRECIS;
 
     cairo_font_face_t *win32_face = cairo_win32_font_face_create_for_logfontw (&logfont);
-    if (!win32_face) {
+    if (cairo_font_face_status (win32_face)) {
+	cairo_font_face_destroy (win32_face);
         return CAIRO_INT_STATUS_UNSUPPORTED;
     }
 
@@ -1844,14 +1895,36 @@ _cairo_dwrite_scaled_font_create_win32_scaled_font (cairo_scaled_font_t *scaled_
 			                                  &options);
     cairo_font_face_destroy (win32_face);
 
-    if (!font) {
+    if (cairo_scaled_font_status(font)) {
+	cairo_scaled_font_destroy (font);
         return CAIRO_INT_STATUS_UNSUPPORTED;
     }
 
-    if (!_name_tables_match (font, scaled_font)) {
-        // If the font name tables aren't equal, then GDI may have failed to
-        // find the right font and substituted a different font.
-        cairo_scaled_font_destroy (font);
+    cairo_bool_t match;
+    cairo_int_status_t status;
+    status = font_tables_match (dwface, font, &match);
+    if (status) {
+	cairo_scaled_font_destroy (font);
+	return status;
+    }
+
+    /* If the font tables aren't equal, then GDI may have failed to
+     * find the right font and substituted a different font.
+     */
+    if (!match) {
+#if 0
+	char *ps_name;
+	char *font_name;
+	status = _cairo_truetype_read_font_name (scaled_font, &ps_name, &font_name);
+	printf("dwrite fontname: %s PS name: %s\n", font_name, ps_name);
+	free (font_name);
+	free (ps_name);
+	status = _cairo_truetype_read_font_name (font, &ps_name, &font_name);
+	printf("win32  fontname: %s PS name: %s\n", font_name, ps_name);
+	free (font_name);
+	free (ps_name);
+#endif
+	cairo_scaled_font_destroy (font);
         return CAIRO_INT_STATUS_UNSUPPORTED;
     }
 

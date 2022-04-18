@@ -41,6 +41,8 @@
 
 #if CAIRO_HAS_FONT_SUBSET
 
+CAIRO_BEGIN_DECLS
+
 typedef struct _cairo_scaled_font_subsets_glyph {
     unsigned int font_id;
     unsigned int subset_id;
@@ -734,6 +736,9 @@ _cairo_escape_ps_name (char **ps_name);
 cairo_private void
 dump_scaled_font_subsets (cairo_scaled_font_subsets_t *font_subsets);
 #endif
+
+CAIRO_END_DECLS
+
 
 #endif /* CAIRO_HAS_FONT_SUBSET */
 

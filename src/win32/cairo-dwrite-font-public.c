@@ -44,10 +44,10 @@
 /**
  * SECTION:cairo-dwrite-fonts
  * @Title: DWrite Fonts
- * @Short_Description: Font support for Microsoft DWrite
+ * @Short_Description: Font support for Microsoft DirectWrite
  * @See_Also: #cairo_font_face_t
  *
- * The Microsoft DWrite font backend is primarily used to render text on
+ * The Microsoft DirectWrite font backend is primarily used to render text on
  * Microsoft Windows systems.
  **/
 
@@ -105,6 +105,17 @@
  * cairo_move_to(cr, 100, 100);
  * cairo_show_text(cr, "😃");
  * ]]></programlisting></informalexample>
+ *
+ * Note: When printing a DWrite font to a
+ * #CAIRO_SURFACE_TYPE_WIN32_PRINTING surface, the printing surface
+ * will substitute each DWrite font with a Win32 font created from the same
+ * underlying font file. If the matching font file can not be found,
+ * the #CAIRO_SURFACE_TYPE_WIN32_PRINTING surface will convert each
+ * glyph to a filled path. If a DWrite font was not created from a system
+ * font, it is recommended that the font used to create the DWrite
+ * font be made available to GDI to avoid the undesirable fallback
+ * to emitting paths. This can be achieved using the GDI font loading functions
+ * such as AddFontMemResourceEx().
  *
  * Return value: a newly created #cairo_font_face_t. Free with
  *  cairo_font_face_destroy() when you are done using it.
