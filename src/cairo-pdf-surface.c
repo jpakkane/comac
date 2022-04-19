@@ -6802,7 +6802,6 @@ _cairo_pdf_surface_write_xref (cairo_pdf_surface_t *surface)
     cairo_pdf_object_t *object;
     int num_objects, i;
     long long offset;
-    char buffer[11];
 
     num_objects = _cairo_array_num_elements (&surface->objects);
 
@@ -6816,9 +6815,8 @@ _cairo_pdf_surface_write_xref (cairo_pdf_surface_t *surface)
 				 "0000000000 65535 f \n");
     for (i = 0; i < num_objects; i++) {
 	object = _cairo_array_index (&surface->objects, i);
-	snprintf (buffer, sizeof buffer, "%010lld", object->u.offset);
 	_cairo_output_stream_printf (surface->output,
-				     "%s 00000 n \n", buffer);
+				     "%010lld 00000 n \n", object->u.offset);
     }
 
     return offset;
