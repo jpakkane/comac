@@ -523,7 +523,7 @@ _cairo_dwrite_font_face_scaled_font_create (void			*abstract_face,
 	sizeof(cairo_dwrite_scaled_font_t));
     if (unlikely(dwrite_font == NULL))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-    
+
     *font = reinterpret_cast<cairo_scaled_font_t*>(dwrite_font);
     status = _cairo_scaled_font_init (&dwrite_font->base,
 				      &font_face->base,
@@ -1332,7 +1332,7 @@ cairo_dwrite_font_face_create_for_dwrite_fontface_internal(void* dwrite_font_fac
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
 	return (cairo_font_face_t*)&_cairo_font_face_nil;
     }
-    
+
     dwriteface->AddRef();
     face->dwriteface = dwriteface;
     face->have_color = false;
