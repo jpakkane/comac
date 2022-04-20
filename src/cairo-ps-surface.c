@@ -2489,6 +2489,7 @@ _cairo_ps_surface_emit_base85_string (cairo_ps_surface_t    *surface,
     unsigned char *data_compressed;
     unsigned long data_compressed_size;
     cairo_status_t status, status2;
+    cairo_status_t this_cannot_be_handled;
 
     if (use_strings)
 	string_array_stream = _base85_strings_stream_create (surface->stream);
@@ -2506,6 +2507,7 @@ _cairo_ps_surface_emit_base85_string (cairo_ps_surface_t    *surface,
 	return _cairo_output_stream_destroy (base85_stream);
     }
 
+    status = 0;
     switch (compress) {
 	case CAIRO_PS_COMPRESS_NONE:
 	    _cairo_output_stream_write (base85_stream, data, length);
@@ -2517,8 +2519,8 @@ _cairo_ps_surface_emit_base85_string (cairo_ps_surface_t    *surface,
 	    data_compressed_size = length;
 	    data_compressed = _cairo_lzw_compress ((unsigned char*)data, &data_compressed_size);
 	    if (unlikely (data_compressed == NULL)) {
-		status = _cairo_output_stream_destroy (string_array_stream);
-		status = _cairo_output_stream_destroy (base85_stream);
+		this_cannot_be_handled = _cairo_output_stream_destroy (string_array_stream);
+		this_cannot_be_handled = _cairo_output_stream_destroy (base85_stream);
 		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 	    }
 	    _cairo_output_stream_write (base85_stream, data_compressed, data_compressed_size);
@@ -2533,9 +2535,9 @@ _cairo_ps_surface_emit_base85_string (cairo_ps_surface_t    *surface,
 	    _cairo_output_stream_write (deflate_stream, data, length);
 	    status = _cairo_output_stream_destroy (deflate_stream);
 	    if (unlikely (status)) {
-		status2 = _cairo_output_stream_destroy (string_array_stream);
-		status2 = _cairo_output_stream_destroy (base85_stream);
-		return _cairo_output_stream_destroy (deflate_stream);
+		this_cannot_be_handled = _cairo_output_stream_destroy (string_array_stream);
+		this_cannot_be_handled = _cairo_output_stream_destroy (base85_stream);
+		return status;
 	    }
 	    break;
     }
