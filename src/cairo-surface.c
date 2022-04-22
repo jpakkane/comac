@@ -2671,9 +2671,9 @@ composite_one_color_glyph (cairo_surface_t       *surface,
 	cairo_matrix_scale (&matrix, x_scale, y_scale);
         cairo_pattern_set_matrix (pattern, &matrix);
         if (op == CAIRO_OPERATOR_SOURCE || op == CAIRO_OPERATOR_CLEAR || !has_color)
-          status = _cairo_surface_mask (surface, op, pattern, pattern, clip);
+	    status = _cairo_surface_mask (surface, op, pattern, pattern, clip);
         else
-          status = _cairo_surface_paint (surface, op, pattern, clip);
+	    status = _cairo_surface_paint (surface, op, pattern, clip);
         cairo_pattern_destroy (pattern);
     }
 

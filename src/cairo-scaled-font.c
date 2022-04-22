@@ -3057,7 +3057,8 @@ _cairo_scaled_glyph_lookup (cairo_scaled_font_t *scaled_font,
     need_info = info & ~scaled_glyph->has_info;
 
     /* If this is not a color glyph, don't try loading the color surface again. */
-    if ((need_info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) && scaled_glyph->not_color_glyph)
+    if ((need_info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) &&
+	scaled_glyph->color_glyph_set && !scaled_glyph->color_glyph)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
     /* If requesting a color surface for a glyph that has used the

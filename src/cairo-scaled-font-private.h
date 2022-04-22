@@ -151,11 +151,10 @@ struct _cairo_scaled_glyph {
     /* TRUE if the color_surface required the foreground_color to render. */
     unsigned                uses_foreground_color : 1;
 
-    /* TRUE if this is not a color glyph, FALSE if is a color glyph or unknown.  */
-    unsigned                not_color_glyph : 1;
+    /* TRUE if color_glyph specifies if glyph is color or non color, FALSE if glyph color type unknown. */
+    unsigned                color_glyph_set : 1;
 
-    /* TRUE if recording_surface is a color glyph */
-    unsigned                recording_is_color : 1;
+    unsigned                color_glyph : 1;
 };
 
 struct _cairo_scaled_glyph_private {
