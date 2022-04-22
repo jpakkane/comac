@@ -1145,6 +1145,7 @@ cairo_scaled_font_create (cairo_font_face_t          *font_face,
 						     ctm, options, &scaled_font);
     /* Did we leave the backend in an error state? */
     if (unlikely (status)) {
+	status = _cairo_font_face_set_error (font_face, status);
 	_cairo_scaled_font_map_unlock ();
 	if (font_face != original_font_face)
 	    cairo_font_face_destroy (font_face);
@@ -1152,7 +1153,6 @@ cairo_scaled_font_create (cairo_font_face_t          *font_face,
 	if (dead != NULL)
 	    cairo_scaled_font_destroy (dead);
 
-	status = _cairo_font_face_set_error (font_face, status);
 	return _cairo_scaled_font_create_in_error (status);
     }
     /* Or did we encounter an error whilst constructing the scaled font? */
