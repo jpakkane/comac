@@ -1142,7 +1142,6 @@ _cairo_svg_surface_create_for_stream_internal (cairo_output_stream_t	*stream,
     surface = _cairo_svg_surface_create_for_document (document, CAIRO_CONTENT_COLOR_ALPHA,
 						      width, height, TRUE);
     if (surface->status) {
-	status = _cairo_svg_document_destroy (document);
 	return surface;
     }
 
