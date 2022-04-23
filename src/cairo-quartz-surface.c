@@ -2609,6 +2609,7 @@ _cairo_quartz_surface_snapshot_get_image (cairo_quartz_surface_t *surface)
 	if (unlikely (!snapshot || cairo_surface_status (snapshot)))
 	    return NULL;
 	_cairo_surface_attach_snapshot (&surface->base, snapshot, NULL);
+	cairo_surface_destroy (snapshot);
     }
 
     return CGImageRetain (((cairo_quartz_snapshot_t*)snapshot)->image);
