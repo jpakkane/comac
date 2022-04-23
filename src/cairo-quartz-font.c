@@ -412,7 +412,12 @@ _cairo_quartz_init_glyph_metrics (cairo_quartz_scaled_font_t *font,
     extents.y_bearing = - ymax;
     extents.width = xmax - xmin;
     extents.height = ymax - ymin;
-    extents.x_advance = advance.width;
+/* At the necessary 1.0pt ctFont size some glyphs get a reduced
+ * advance that causes overlaps when scaled up. We can avoid that by
+ * using the width instead if it's wider. Since cairo doesn't support
+ * vertical font layout we don't do the same for y_advance.
+ */
+    extents.x_advance = MAX(extents.width, advance.width);
     extents.y_advance = advance.height;
 
 #ifdef DEBUG
