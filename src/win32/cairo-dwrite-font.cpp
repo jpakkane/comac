@@ -864,8 +864,11 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
     cairo_bool_t uses_foreground_color = FALSE;
 
     cairo_dwrite_font_face_t *dwrite_font_face = (cairo_dwrite_font_face_t *)scaled_font->base.font_face;
-    if (!dwrite_font_face->have_color)
+    if (!dwrite_font_face->have_color) {
+	scaled_glyph->color_glyph = FALSE;
+	scaled_glyph->color_glyph_set = TRUE;
 	return CAIRO_INT_STATUS_UNSUPPORTED;
+    }
 
     x1 = _cairo_fixed_integer_floor (scaled_glyph->bbox.p1.x);
     y1 = _cairo_fixed_integer_floor (scaled_glyph->bbox.p1.y);
@@ -931,8 +934,12 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 	0,
 	&run_enumerator);
 
-    if (hr == DWRITE_E_NOCOLOR)
-	return CAIRO_INT_STATUS_UNSUPPORTED; /* No color glyphs */
+    if (hr == DWRITE_E_NOCOLOR) {
+	/* No color glyphs */
+	scaled_glyph->color_glyph = FALSE;
+	scaled_glyph->color_glyph_set = TRUE;
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+    }
 
     if (FAILED(hr))
 	return _cairo_dwrite_error (hr, "TranslateColorGlyphRun failed");
@@ -971,15 +978,11 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 	return _cairo_dwrite_error (hr, "QueryInterface(&dc4) failed");
 
     RefPtr<ID2D1SolidColorBrush> foreground_color_brush;
-    if (foreground_color) {
-	dc4->CreateSolidColorBrush(
-	    D2D1::ColorF(foreground_color->red,
-			 foreground_color->green,
-			 foreground_color->blue,
-			 foreground_color->alpha), &foreground_color_brush);
-    } else {
-	dc4->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &foreground_color_brush);
-    }
+    dc4->CreateSolidColorBrush(
+	D2D1::ColorF(foreground_color->red,
+		     foreground_color->green,
+		     foreground_color->blue,
+		     foreground_color->alpha), &foreground_color_brush);
 
     RefPtr<ID2D1SolidColorBrush> color_brush;
     dc4->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &color_brush);
@@ -1027,8 +1030,7 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 				     nullptr,
 				     0,
 				     DWRITE_MEASURING_MODE_NATURAL);
-		if (foreground_color)
-		    uses_foreground_color = TRUE;
+		uses_foreground_color = TRUE;
 		break;
 	    case DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE:
 	    case DWRITE_GLYPH_IMAGE_FORMATS_CFF:
@@ -1068,6 +1070,8 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 					   &scaled_font->base,
 					   (cairo_image_surface_t *) image,
 					   uses_foreground_color);
+    scaled_glyph->color_glyph = TRUE;
+    scaled_glyph->color_glyph_set = TRUE;
 
     return CAIRO_INT_STATUS_SUCCESS;
 }

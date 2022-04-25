@@ -1115,6 +1115,12 @@ _cairo_win32_scaled_font_glyph_init (void		       *abstract_font,
 	    return status;
     }
 
+    if (info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
+	scaled_glyph->color_glyph = FALSE;
+	scaled_glyph->color_glyph_set = TRUE;
+	return CAIRO_INT_STATUS_UNSUPPORTED;
+    }
+
     if (info & CAIRO_SCALED_GLYPH_INFO_SURFACE) {
 	status = _cairo_win32_scaled_font_init_glyph_surface (scaled_font, scaled_glyph);
 	if (status)

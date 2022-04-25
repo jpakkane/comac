@@ -36,11 +36,13 @@
 #define TEXT_SIZE 64
 #define WIDTH  (TEXT_SIZE * 15 + 2*BORDER)
 #ifndef ROTATED
- #define HEIGHT ((TEXT_SIZE + 2*BORDER)*2)
+ #define HEIGHT ((TEXT_SIZE + 2*BORDER)*3)
 #else
  #define HEIGHT WIDTH
 #endif
-#define TEXT   "geez... cairo user-font"
+
+#define TEXT1   "cairo user-font."
+#define TEXT2   " zg."
 
 #define END_GLYPH 0
 #define STROKE 126
@@ -136,8 +138,14 @@ test_scaled_font_render_glyph (cairo_scaled_font_t  *scaled_font,
     return CAIRO_STATUS_SUCCESS;
 }
 
+
+/* If color_render is TRUE, use the render_color_glyph callback
+ * instead of the render_glyph callbac. The output should be identical
+ * in this test since the render function does not alter the cairo_t
+ * source.
+ */
 static cairo_status_t
-_user_font_face_create (cairo_font_face_t **out)
+_user_font_face_create (cairo_font_face_t **out, cairo_bool_t color_render)
 {
     /* Simple glyph definition: 1 - 15 means lineto (or moveto for first
      * point) for one of the points on this grid:
@@ -174,8 +182,12 @@ _user_font_face_create (cairo_font_face_t **out)
     cairo_status_t status;
 
     user_font_face = cairo_user_font_face_create ();
-    cairo_user_font_face_set_init_func             (user_font_face, test_scaled_font_init);
-    cairo_user_font_face_set_render_glyph_func     (user_font_face, test_scaled_font_render_glyph);
+    cairo_user_font_face_set_init_func (user_font_face, test_scaled_font_init);
+    if (color_render)
+        cairo_user_font_face_set_render_color_glyph_func (user_font_face, test_scaled_font_render_glyph);
+    else
+        cairo_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
+
     cairo_user_font_face_set_unicode_to_glyph_func (user_font_face, test_scaled_font_unicode_to_glyph);
 
     status = cairo_font_face_set_user_data (user_font_face,
@@ -194,10 +206,14 @@ static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)
 {
     cairo_font_face_t *font_face;
-    const char text[] = TEXT;
+    char full_text[100];
     cairo_font_extents_t font_extents;
     cairo_text_extents_t extents;
     cairo_status_t status;
+
+    strcpy(full_text, TEXT1);
+    strcat(full_text, TEXT2);
+    strcat(full_text, TEXT2);
 
     cairo_set_source_rgb (cr, 1, 1, 1);
     cairo_paint (cr);
@@ -207,7 +223,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_rotate (cr, .6);
 #endif
 
-    status = _user_font_face_create (&font_face);
+    status = _user_font_face_create (&font_face, FALSE);
     if (status) {
 	return cairo_test_status_from_status (cairo_test_get_context (cr),
 					      status);
@@ -219,7 +235,7 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_font_size (cr, TEXT_SIZE);
 
     cairo_font_extents (cr, &font_extents);
-    cairo_text_extents (cr, text, &extents);
+    cairo_text_extents (cr, full_text, &extents);
 
     /* logical boundaries in red */
     cairo_move_to (cr, 0, BORDER);
@@ -244,16 +260,45 @@ draw (cairo_t *cr, int width, int height)
     cairo_set_line_width (cr, 2);
     cairo_stroke (cr);
 
-    /* text in black */
+    /* First line. Text in black, except first "zg." in green */
     cairo_set_source_rgb (cr, 0, 0, 0);
     cairo_move_to (cr, BORDER, BORDER + font_extents.ascent);
-    cairo_show_text (cr, text);
+    cairo_show_text (cr, TEXT1);
+    cairo_set_source_rgb (cr, 0, 1, 0);
+    cairo_show_text (cr, TEXT2);
+    cairo_set_source_rgb (cr, 0, 0, 0);
+    cairo_show_text (cr, TEXT2);
 
+    /* Now draw the second line using the render_color_glyph callback. The
+     * output should be the same because same render function is used
+     * and the render function does not set a color. This exercises
+     * the paint color glyph with foreground color code path and
+     * ensures cairo updates the glyph image when the foreground color
+     * changes.
+     */
+    status = _user_font_face_create (&font_face, TRUE);
+    if (status) {
+	return cairo_test_status_from_status (cairo_test_get_context (cr),
+					      status);
+    }
 
-    /* filled version of text in blue */
-    cairo_set_source_rgb (cr, 0, 0, 1);
+    cairo_set_font_face (cr, font_face);
+    cairo_font_face_destroy (font_face);
+
+    cairo_set_font_size (cr, TEXT_SIZE);
+
+    /* text in black, except first "zg." in green */
     cairo_move_to (cr, BORDER, BORDER + font_extents.height + 2*BORDER + font_extents.ascent);
-    cairo_text_path (cr, text);
+    cairo_show_text (cr, TEXT1);
+    cairo_set_source_rgb (cr, 0, 1, 0);
+    cairo_show_text (cr, TEXT2);
+    cairo_set_source_rgb (cr, 0, 0, 0);
+    cairo_show_text (cr, TEXT2);
+
+    /* Third line. Filled version of text in blue */
+    cairo_set_source_rgb (cr, 0, 0, 1);
+    cairo_move_to (cr, BORDER, BORDER + font_extents.height + 4*BORDER + 2*font_extents.ascent);
+    cairo_text_path (cr, full_text);
     cairo_fill (cr);
 
     return CAIRO_TEST_SUCCESS;

@@ -2500,9 +2500,15 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
     cairo_image_surface_t	*surface;
     cairo_bool_t uses_foreground_color = FALSE;
 
+    /* Only one info type at a time handled in this function */
+    assert (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE || info == CAIRO_SCALED_GLYPH_INFO_SURFACE);
+
     if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
-	if (!unscaled->have_color)
+	if (!unscaled->have_color) {
+	    scaled_glyph->color_glyph = FALSE;
+	    scaled_glyph->color_glyph_set = TRUE;
 	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	}
 
 #ifdef HAVE_FT_PALETTE_SET_FOREGROUND_COLOR
 	FT_LayerIterator  iterator;
@@ -2539,7 +2545,7 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 #ifdef FT_LOAD_COLOR
 	load_flags |= FT_LOAD_COLOR;
 #endif
-    } else {
+    } else { /* info == CAIRO_SCALED_GLYPH_INFO_SURFACE */
 #ifdef FT_LOAD_COLOR
         load_flags &= ~FT_LOAD_COLOR;
 #endif
@@ -2571,18 +2577,34 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 	if (unlikely (status))
 	    return status;
     }
-    if (pixman_image_get_format (surface->pixman_image) == PIXMAN_a8r8g8b8 &&
-	!pixman_image_get_component_alpha (surface->pixman_image)) {
-	_cairo_scaled_glyph_set_color_surface (scaled_glyph,
-					       &scaled_font->base,
-					       surface,
-					       uses_foreground_color);
-    } else {
+
+    if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
+	/* We tried loading a color glyph and can now check if we got
+	 * a color glyph and set scaled_glyph->color_glyph
+	 * accordingly */
+	if (pixman_image_get_format (surface->pixman_image) == PIXMAN_a8r8g8b8 &&
+	    !pixman_image_get_component_alpha (surface->pixman_image))
+	{
+	    _cairo_scaled_glyph_set_color_surface (scaled_glyph,
+						   &scaled_font->base,
+						   surface,
+						   uses_foreground_color);
+
+	    scaled_glyph->color_glyph = TRUE;
+	} else {
+	    /* We didn't ask for a non-color surface, but store it
+	     * anyway so we don't have to load it again. */
+	    _cairo_scaled_glyph_set_surface (scaled_glyph,
+					     &scaled_font->base,
+					     surface);
+	    scaled_glyph->color_glyph = FALSE;
+	    status = CAIRO_INT_STATUS_UNSUPPORTED;
+	}
+	scaled_glyph->color_glyph_set = TRUE;
+    } else { /* info == CAIRO_SCALED_GLYPH_INFO_SURFACE */
 	_cairo_scaled_glyph_set_surface (scaled_glyph,
 					 &scaled_font->base,
 					 surface);
-	if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE)
-	    scaled_glyph->not_color_glyph = TRUE;
     }
 
     return status;
