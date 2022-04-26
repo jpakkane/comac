@@ -27,7 +27,7 @@ endif
 
 # Need to add quartz-surface-source
 if CAIRO_HAS_QUARTZ_SURFACE
-test_sources += $(quartz_surface_test_sources)
+test_sources += "$(quartz_surface_test_sources) $(quartz_color_font_test_sources)"
 endif
 
 if CAIRO_HAS_PDF_SURFACE

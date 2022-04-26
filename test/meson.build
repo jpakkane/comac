@@ -438,6 +438,7 @@ test_egl_sources = [
 
 test_quartz_sources = [
   'quartz-surface-source.c',
+  'quartz-color-font.c',
 ]
 
 test_pdf_sources = [

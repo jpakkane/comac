@@ -434,6 +434,8 @@ egl_surface_test_sources = \
 
 quartz_surface_test_sources = quartz-surface-source.c
 
+quartz_color_font_test_sources = quartz-color-font.c
+
 pdf_surface_test_sources = \
 	pdf-features.c \
 	pdf-mime-data.c \
