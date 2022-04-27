@@ -105,6 +105,12 @@ CairoQuartzCreateCGImage (cairo_format_t format,
 
 cairo_private CGFontRef
 _cairo_quartz_scaled_font_get_cg_font_ref (cairo_scaled_font_t *sfont);
+cairo_private CTFontRef
+_cairo_quartz_scaled_font_get_ct_font (cairo_scaled_font_t *sfont);
+cairo_private cairo_font_face_t*
+_cairo_quartz_font_face_create_for_ctfont (CTFontRef ctFont);
+cairo_private void
+_cairo_quartz_set_antialiasing (CGContextRef context, cairo_antialias_t antialias);
 
 #else
 

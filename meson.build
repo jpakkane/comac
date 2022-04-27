@@ -455,7 +455,6 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
     deps += [quartz_deps]
 
     feature_conf.set('CAIRO_HAS_QUARTZ_SURFACE', 1)
-    feature_conf.set('CAIRO_HAS_QUARTZ_FONT', 1)
     feature_conf.set('CAIRO_HAS_QUARTZ_IMAGE_SURFACE', 1)
 
     built_features += [
@@ -468,13 +467,18 @@ if host_machine.system() == 'darwin' and not get_option('quartz').disabled()
         'name': 'cairo-quartz-image',
         'description': 'Quartz Image surface backend',
         'deps': quartz_deps,
-      },
-      {
-        'name': 'cairo-quartz-font',
-        'description': 'Quartz font backend',
-        'deps': quartz_deps,
-      },
-    ]
+      }]
+    compiler = meson.get_compiler('c')
+    if compiler.has_function('CTFontDrawGlyphs', prefix: '#include <ApplicationServices/ApplicationServices.h>',
+                             dependencies: quartz_deps)
+      built_features += [
+           {
+               'name': 'cairo-quartz-font',
+               'description': 'Quartz font backend',
+               'deps': quartz_deps,
+           }]
+      feature_conf.set('CAIRO_HAS_QUARTZ_FONT', 1)
+    endif
   endif
 endif
 
