@@ -294,6 +294,8 @@ _cairo_gl_get_image_format_and_type_gl (pixman_format_code_t pixman_format,
     case PIXMAN_r8g8b8x8:
     case PIXMAN_r8g8b8a8:
     case PIXMAN_x14r6g6b6:
+    case PIXMAN_rgb_float:
+    case PIXMAN_rgba_float:
     default:
 	return FALSE;
     }

@@ -59,8 +59,9 @@ _cairo_gl_get_version (void)
 }
 
 
-cairo_gl_flavor_t
-_cairo_gl_degrade_flavor_by_build_features (cairo_gl_flavor_t flavor) {
+static cairo_gl_flavor_t
+_cairo_gl_degrade_flavor_by_build_features (cairo_gl_flavor_t flavor)
+{
     switch(flavor) {
     case CAIRO_GL_FLAVOR_DESKTOP:
 #if CAIRO_HAS_GL_SURFACE
@@ -83,6 +84,7 @@ _cairo_gl_degrade_flavor_by_build_features (cairo_gl_flavor_t flavor) {
 	/* intentional fall through: no OpenGL in first place or no surfaces for it's version */
 #endif
 
+    case CAIRO_GL_FLAVOR_NONE:
     default:
 	return CAIRO_GL_FLAVOR_NONE;
     }
