@@ -1035,7 +1035,6 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 	    case DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE:
 	    case DWRITE_GLYPH_IMAGE_FORMATS_CFF:
 	    case DWRITE_GLYPH_IMAGE_FORMATS_COLR:
-	    default:
 		/* Outline glyphs */
 		if (color_run->paletteIndex == 0xFFFF) {
 		    D2D1_COLOR_F color = foreground_color_brush->GetColor();
@@ -1050,6 +1049,8 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 				  color_run->glyphRunDescription,
 				  color_brush,
 				  DWRITE_MEASURING_MODE_NATURAL);
+	    case DWRITE_GLYPH_IMAGE_FORMATS_NONE:
+		break;
 	}
     }
 
