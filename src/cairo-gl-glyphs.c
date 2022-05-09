@@ -181,6 +181,8 @@ cairo_gl_context_get_glyph_cache (cairo_gl_context_t *ctx,
     cairo_content_t content;
 
     switch (format) {
+    case CAIRO_FORMAT_RGBA128F:
+    case CAIRO_FORMAT_RGB96F:
     case CAIRO_FORMAT_RGB30:
     case CAIRO_FORMAT_RGB16_565:
     case CAIRO_FORMAT_ARGB32:
