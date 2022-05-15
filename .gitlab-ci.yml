@@ -300,13 +300,11 @@ meson vs2017 amd64:
   extends: '.build meson windows'
   variables:
     ARCH: 'amd64'
-  when: 'manual'
 
 meson vs2017 x86:
   extends: '.build meson windows'
   variables:
     ARCH: 'x86'
-  when: 'manual'
 
 meson android arm64 fedora:
   # TODO: should probably build our own image here some day
