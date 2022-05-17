@@ -629,6 +629,11 @@ exe = executable('cairo-test-suite', [cairo_test_suite_sources, test_sources, ca
     libpdiff_dep],
 )
 
+html_files = ['index.html', 'testtable.js', 'view-test-results.py']
+foreach file : html_files
+  configure_file(input: file, output : file, copy: true)
+endforeach
+
 env = environment()
 
 env.set('srcdir', meson.current_source_dir())
