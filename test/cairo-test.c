@@ -196,9 +196,14 @@ _cairo_test_init (cairo_test_context_t *ctx,
 	ctx->own_targets = TRUE;
 
 	ctx->srcdir = getenv ("srcdir");
-	if (ctx->srcdir == NULL)
-	    ctx->srcdir = ".";
-
+	if (ctx->srcdir == NULL) {
+            ctx->srcdir = ".";
+#if HAVE_SYS_STAT_H
+            struct stat st;
+            if (stat ("srcdir", &st) == 0 && (st.st_mode & S_IFDIR))
+                ctx->srcdir = "srcdir";
+#endif
+        }
 	ctx->refdir = getenv ("CAIRO_REF_DIR");
     }
 

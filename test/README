@@ -17,6 +17,11 @@ file, which, when viewed in a web browser makes it quite easy to
 visually see any failed renderings alongside the corresponding
 reference image, (and a diff image as well).
 
+As some browsers do not permit Javascript to read from the local
+filesystem, the view-test-results.py script can used to view the
+results. It starts a http server serving the current directory before
+displaying the test results in a browser.
+
 The test suite needs to be run before any code is committed and before
 any release. See below for hints and rules governing the use of the suite.
 
@@ -35,6 +40,15 @@ CAIRO_TEST_TARGET environment variable, so for instance:
     CAIRO_TEST_TARGET=gl ./cairo-test-suite -k blur
 This binary should be backwards-compatible with all library versions,
 allowing you to compare current versus past behaviour for any test.
+
+The test suite needs to find the "test" directory in the source
+tree. The srcdir environment variable can be used to specify
+the location of this directory. If this environment variable is not
+set, the binary looks for the directory "srcdir" in the current
+directory. The meson build system symlinks "srcdir" in the
+$builddir/test directory to the "test" directory in the source
+tree. If this is not found the binary defaults to the current
+directory.
 
 Tailoring tests running
 -----------------------
