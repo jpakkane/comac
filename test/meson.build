@@ -634,6 +634,13 @@ foreach file : html_files
   configure_file(input: file, output : file, copy: true)
 endforeach
 
+if build_machine.system() != 'windows'
+  run_command('ln', '-sf',
+              meson.current_source_dir(),
+              join_paths(meson.current_build_dir(), 'srcdir'),
+              check: true)
+endif
+
 env = environment()
 
 env.set('srcdir', meson.current_source_dir())
