@@ -476,7 +476,7 @@ _cairo_scaled_glyph_page_pluck (void *closure)
 
     scaled_font = page->scaled_font;
 
-    CAIRO_MUTEX_LOCK (scaled_font->mutex);
+    /* The font is locked in _cairo_scaled_glyph_page_can_remove () */
     _cairo_scaled_glyph_page_destroy (scaled_font, page);
     CAIRO_MUTEX_UNLOCK (scaled_font->mutex);
 }
@@ -2855,14 +2855,17 @@ _cairo_scaled_glyph_set_color_surface (cairo_scaled_glyph_t *scaled_glyph,
 	scaled_glyph->has_info &= ~CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE;
 }
 
+/* _cairo_hash_table_random_entry () predicate. To avoid race conditions,
+ * the font is locked when tested. The font is unlocked in
+ * _cairo_scaled_glyph_page_pluck. */
 static cairo_bool_t
 _cairo_scaled_glyph_page_can_remove (const void *closure)
 {
     const cairo_scaled_glyph_page_t *page = closure;
-    const cairo_scaled_font_t *scaled_font;
+    cairo_scaled_font_t *scaled_font;
 
     scaled_font = page->scaled_font;
-    return scaled_font->cache_frozen == 0;
+    return CAIRO_MUTEX_TRY_LOCK (scaled_font->mutex);
 }
 
 static cairo_status_t
