@@ -113,6 +113,7 @@ struct _cairo_scaled_font {
     cairo_list_t glyph_pages;
     cairo_bool_t cache_frozen;
     cairo_bool_t global_cache_frozen;
+    cairo_array_t recording_surfaces_to_free; /* array of cairo_surface_t* */
 
     cairo_list_t dev_privates;
 
