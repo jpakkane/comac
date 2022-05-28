@@ -7,7 +7,13 @@ import webbrowser
 
 port = 8000
 
-server = http.server.ThreadingHTTPServer(("localhost", port), http.server.SimpleHTTPRequestHandler)
+for i in range(10):
+    try:
+        server = http.server.ThreadingHTTPServer(("localhost", port), http.server.SimpleHTTPRequestHandler)
+        break
+    except OSError:
+        port += 1
+
 thread = threading.Thread(target = server.serve_forever)
 thread.daemon = True
 thread.start()
