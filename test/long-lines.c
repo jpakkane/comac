@@ -29,6 +29,9 @@
 #define LINE_WIDTH	1.
 #define SIZE		10
 #define LINE_NBR	6
+#define WIDTH (SIZE * (LINE_NBR + 1))
+#define HEIGHT (SIZE * (LINE_NBR + 1))
+
 
 struct {
     double length;
@@ -66,8 +69,8 @@ draw (cairo_t *cr, int width, int height)
     }
 
     /* This should display a perfect vertically centered black line */
-    cairo_move_to (cr, 0.5, -1e100);
-    cairo_line_to (cr, pos,  1e100);
+    cairo_move_to (cr, -1e100, HEIGHT/2);
+    cairo_line_to (cr, 1e100, HEIGHT/2);
     cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
     cairo_stroke (cr);
 
@@ -80,6 +83,6 @@ CAIRO_TEST (long_lines,
 	    "\nLong lines are not drawn due to the limitations of the internal 16.16 fixed-point coordinates",
 	    "stroke, stress", /* keywords */
 	    NULL, /* requirements */
-	    SIZE * (LINE_NBR + 1), SIZE * (LINE_NBR + 1),
+	    WIDTH, HEIGHT,
 	    NULL, draw)
 
