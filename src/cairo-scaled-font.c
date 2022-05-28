@@ -39,6 +39,7 @@
  */
 
 #include "cairoint.h"
+#include "cairo-array-private.h"
 #include "cairo-error-private.h"
 #include "cairo-image-surface-private.h"
 #include "cairo-list-inline.h"
@@ -215,8 +216,17 @@ _cairo_scaled_glyph_fini (cairo_scaled_font_t *scaled_font,
 	_cairo_path_fixed_destroy (scaled_glyph->path);
 
     if (scaled_glyph->recording_surface != NULL) {
-	cairo_surface_finish (scaled_glyph->recording_surface);
-	cairo_surface_destroy (scaled_glyph->recording_surface);
+	cairo_status_t status;
+
+	/* If the recording surface contains other fonts, destroying
+	 * it while holding _cairo_scaled_glyph_page_cache_mutex will
+	 * result in deadlock when the recording surface font is
+	 * destroyed. Instead, move the recording surface to a list of
+	 * surfaces to free and free it in
+	 * _cairo_scaled_font_thaw_cache() after
+	 * _cairo_scaled_glyph_page_cache_mutex is unlocked. */
+	status = _cairo_array_append (&scaled_font->recording_surfaces_to_free, &scaled_glyph->recording_surface);
+	assert (status == CAIRO_STATUS_SUCCESS);
     }
 
     if (scaled_glyph->color_surface != NULL)
@@ -250,6 +260,7 @@ static const cairo_scaled_font_t _cairo_scaled_font_nil = {
     { NULL, NULL },		/* pages */
     FALSE,			/* cache_frozen */
     FALSE,			/* global_cache_frozen */
+    { 0, 0, sizeof(cairo_surface_t*), NULL }, /* recording_surfaces_to_free */
     { NULL, NULL },		/* privates */
     NULL			/* backend */
 };
@@ -476,7 +487,7 @@ _cairo_scaled_glyph_page_pluck (void *closure)
 
     scaled_font = page->scaled_font;
 
-    CAIRO_MUTEX_LOCK (scaled_font->mutex);
+    /* The font is locked in _cairo_scaled_glyph_page_can_remove () */
     _cairo_scaled_glyph_page_destroy (scaled_font, page);
     CAIRO_MUTEX_UNLOCK (scaled_font->mutex);
 }
@@ -765,6 +776,7 @@ _cairo_scaled_font_init (cairo_scaled_font_t               *scaled_font,
     cairo_list_init (&scaled_font->glyph_pages);
     scaled_font->cache_frozen = FALSE;
     scaled_font->global_cache_frozen = FALSE;
+    _cairo_array_init (&scaled_font->recording_surfaces_to_free, sizeof (cairo_surface_t *));
 
     scaled_font->holdover = FALSE;
     scaled_font->finished = FALSE;
@@ -784,6 +796,22 @@ _cairo_scaled_font_init (cairo_scaled_font_t               *scaled_font,
     cairo_list_init (&scaled_font->link);
 
     return CAIRO_STATUS_SUCCESS;
+}
+
+static void _cairo_scaled_font_free_recording_surfaces (cairo_scaled_font_t *scaled_font)
+{
+    int num_recording_surfaces;
+    cairo_surface_t *surface;
+
+    num_recording_surfaces = _cairo_array_num_elements (&scaled_font->recording_surfaces_to_free);
+    if (num_recording_surfaces > 0) {
+	for (int i = 0; i < num_recording_surfaces; i++) {
+	    _cairo_array_copy_element (&scaled_font->recording_surfaces_to_free, i, &surface);
+	    cairo_surface_finish (surface);
+	    cairo_surface_destroy (surface);
+	}
+	_cairo_array_truncate (&scaled_font->recording_surfaces_to_free, 0);
+    }
 }
 
 void
@@ -807,6 +835,8 @@ _cairo_scaled_font_thaw_cache (cairo_scaled_font_t *scaled_font)
 	CAIRO_MUTEX_UNLOCK (_cairo_scaled_glyph_page_cache_mutex);
 	scaled_font->global_cache_frozen = FALSE;
     }
+
+    _cairo_scaled_font_free_recording_surfaces (scaled_font);
 
     scaled_font->cache_frozen = FALSE;
     CAIRO_MUTEX_UNLOCK (scaled_font->mutex);
@@ -888,6 +918,9 @@ _cairo_scaled_font_fini_internal (cairo_scaled_font_t *scaled_font)
 
     cairo_font_face_destroy (scaled_font->font_face);
     cairo_font_face_destroy (scaled_font->original_font_face);
+
+    _cairo_scaled_font_free_recording_surfaces (scaled_font);
+    _cairo_array_fini (&scaled_font->recording_surfaces_to_free);
 
     CAIRO_MUTEX_FINI (scaled_font->mutex);
 
@@ -2342,201 +2375,6 @@ _cairo_scaled_font_glyph_approximate_extents (cairo_scaled_font_t	 *scaled_font,
     return TRUE;
 }
 
-#if 0
-/* XXX win32 */
-cairo_status_t
-_cairo_scaled_font_show_glyphs (cairo_scaled_font_t	*scaled_font,
-				cairo_operator_t	 op,
-				const cairo_pattern_t	*pattern,
-				cairo_surface_t		*surface,
-				int			 source_x,
-				int			 source_y,
-				int			 dest_x,
-				int			 dest_y,
-				unsigned int		 width,
-				unsigned int		 height,
-				cairo_glyph_t		*glyphs,
-				int			 num_glyphs,
-				cairo_region_t		*clip_region)
-{
-    cairo_int_status_t status;
-    cairo_surface_t *mask = NULL;
-    cairo_format_t mask_format = CAIRO_FORMAT_A1; /* shut gcc up */
-    cairo_surface_pattern_t mask_pattern;
-    int i;
-
-    /* These operators aren't interpreted the same way by the backends;
-     * they are implemented in terms of other operators in cairo-gstate.c
-     */
-    assert (op != CAIRO_OPERATOR_SOURCE && op != CAIRO_OPERATOR_CLEAR);
-
-    if (scaled_font->status)
-	return scaled_font->status;
-
-    if (!num_glyphs)
-	return CAIRO_STATUS_SUCCESS;
-
-    if (scaled_font->backend->show_glyphs != NULL) {
-	int remaining_glyphs = num_glyphs;
-	status = scaled_font->backend->show_glyphs (scaled_font,
-						    op, pattern,
-						    surface,
-						    source_x, source_y,
-						    dest_x, dest_y,
-						    width, height,
-						    glyphs, num_glyphs,
-						    clip_region,
-						    &remaining_glyphs);
-	glyphs += num_glyphs - remaining_glyphs;
-	num_glyphs = remaining_glyphs;
-	if (remaining_glyphs == 0)
-	    status = CAIRO_INT_STATUS_SUCCESS;
-	if (status != CAIRO_INT_STATUS_UNSUPPORTED)
-	    return _cairo_scaled_font_set_error (scaled_font, status);
-    }
-
-    /* Font display routine either does not exist or failed. */
-
-    _cairo_scaled_font_freeze_cache (scaled_font);
-
-    for (i = 0; i < num_glyphs; i++) {
-	int x, y;
-	cairo_image_surface_t *glyph_surface;
-	cairo_scaled_glyph_t *scaled_glyph;
-
-	status = _cairo_scaled_glyph_lookup (scaled_font,
-					     glyphs[i].index,
-					     CAIRO_SCALED_GLYPH_INFO_SURFACE,
-					     NULL, /* foreground color */
-					     &scaled_glyph);
-
-	if (unlikely (status))
-	    goto CLEANUP_MASK;
-
-	glyph_surface = scaled_glyph->surface;
-
-	/* To start, create the mask using the format from the first
-	 * glyph. Later we'll deal with different formats. */
-	if (mask == NULL) {
-	    mask_format = glyph_surface->format;
-	    mask = cairo_image_surface_create (mask_format, width, height);
-	    status = mask->status;
-	    if (unlikely (status))
-		goto CLEANUP_MASK;
-	}
-
-	/* If we have glyphs of different formats, we "upgrade" the mask
-	 * to the wider of the formats. */
-	if (glyph_surface->format != mask_format &&
-	    _cairo_format_bits_per_pixel (mask_format) <
-	    _cairo_format_bits_per_pixel (glyph_surface->format) )
-	{
-	    cairo_surface_t *new_mask;
-
-	    switch (glyph_surface->format) {
-	    case CAIRO_FORMAT_ARGB32:
-	    case CAIRO_FORMAT_A8:
-	    case CAIRO_FORMAT_A1:
-		mask_format = glyph_surface->format;
-		break;
-	    case CAIRO_FORMAT_RGB16_565:
-	    case CAIRO_FORMAT_RGB24:
-	    case CAIRO_FORMAT_RGB30:
-	    case CAIRO_FORMAT_INVALID:
-	    default:
-		ASSERT_NOT_REACHED;
-		mask_format = CAIRO_FORMAT_ARGB32;
-		break;
-	    }
-
-	    new_mask = cairo_image_surface_create (mask_format, width, height);
-	    status = new_mask->status;
-	    if (unlikely (status)) {
-		cairo_surface_destroy (new_mask);
-		goto CLEANUP_MASK;
-	    }
-
-	    _cairo_pattern_init_for_surface (&mask_pattern, mask);
-	    /* Note that we only upgrade masks, i.e. A1 -> A8 -> ARGB32, so there is
-	     * never any component alpha here.
-	     */
-	    status = _cairo_surface_composite (CAIRO_OPERATOR_ADD,
-					       &_cairo_pattern_white.base,
-					       &mask_pattern.base,
-					       new_mask,
-					       0, 0,
-					       0, 0,
-					       0, 0,
-					       width, height,
-					       NULL);
-
-	    _cairo_pattern_fini (&mask_pattern.base);
-
-	    if (unlikely (status)) {
-		cairo_surface_destroy (new_mask);
-		goto CLEANUP_MASK;
-	    }
-
-	    cairo_surface_destroy (mask);
-	    mask = new_mask;
-	}
-
-	if (glyph_surface->width && glyph_surface->height) {
-	    cairo_surface_pattern_t glyph_pattern;
-
-	    /* round glyph locations to the nearest pixel */
-	    /* XXX: FRAGILE: We're ignoring device_transform scaling here. A bug? */
-	    x = _cairo_lround (glyphs[i].x -
-			       glyph_surface->base.device_transform.x0);
-	    y = _cairo_lround (glyphs[i].y -
-			       glyph_surface->base.device_transform.y0);
-
-	    _cairo_pattern_init_for_surface (&glyph_pattern,
-					     &glyph_surface->base);
-	    if (mask_format == CAIRO_FORMAT_ARGB32)
-		glyph_pattern.base.has_component_alpha = TRUE;
-
-	    status = _cairo_surface_composite (CAIRO_OPERATOR_ADD,
-					       &_cairo_pattern_white.base,
-					       &glyph_pattern.base,
-					       mask,
-					       0, 0,
-					       0, 0,
-					       x - dest_x, y - dest_y,
-					       glyph_surface->width,
-					       glyph_surface->height,
-					       NULL);
-
-	    _cairo_pattern_fini (&glyph_pattern.base);
-
-	    if (unlikely (status))
-		goto CLEANUP_MASK;
-	}
-    }
-
-    _cairo_pattern_init_for_surface (&mask_pattern, mask);
-    if (mask_format == CAIRO_FORMAT_ARGB32)
-	mask_pattern.base.has_component_alpha = TRUE;
-
-    status = _cairo_surface_composite (op, pattern, &mask_pattern.base,
-				       surface,
-				       source_x, source_y,
-				       0,        0,
-				       dest_x,   dest_y,
-				       width,    height,
-				       clip_region);
-
-    _cairo_pattern_fini (&mask_pattern.base);
-
-CLEANUP_MASK:
-    _cairo_scaled_font_thaw_cache (scaled_font);
-
-    if (mask != NULL)
-	cairo_surface_destroy (mask);
-    return _cairo_scaled_font_set_error (scaled_font, status);
-}
-#endif
-
 /* Add a single-device-unit rectangle to a path. */
 static cairo_status_t
 _add_unit_rectangle_to_path (cairo_path_fixed_t *path,
@@ -2855,14 +2693,17 @@ _cairo_scaled_glyph_set_color_surface (cairo_scaled_glyph_t *scaled_glyph,
 	scaled_glyph->has_info &= ~CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE;
 }
 
+/* _cairo_hash_table_random_entry () predicate. To avoid race conditions,
+ * the font is locked when tested. The font is unlocked in
+ * _cairo_scaled_glyph_page_pluck. */
 static cairo_bool_t
 _cairo_scaled_glyph_page_can_remove (const void *closure)
 {
     const cairo_scaled_glyph_page_t *page = closure;
-    const cairo_scaled_font_t *scaled_font;
+    cairo_scaled_font_t *scaled_font;
 
     scaled_font = page->scaled_font;
-    return scaled_font->cache_frozen == 0;
+    return CAIRO_MUTEX_TRY_LOCK (scaled_font->mutex);
 }
 
 static cairo_status_t

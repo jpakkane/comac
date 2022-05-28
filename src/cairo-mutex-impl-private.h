@@ -87,6 +87,9 @@
  *   No trailing semicolons are needed (in any macro you define here).
  *   You should be able to compile the following snippet:
  *
+ * - #define CAIRO_MUTEX_IMPL_TRY_LOCK(mutex) to try locking the mutex object,
+ *   returning TRUE if the lock is acquired, FALSE if the mutex could not be locked.
+ *
  *   <programlisting>
  *	cairo_mutex_impl_t _cairo_some_mutex;
  *
@@ -163,6 +166,7 @@
 # define CAIRO_MUTEX_IMPL_NO 1
 # define CAIRO_MUTEX_IMPL_INITIALIZE() CAIRO_MUTEX_IMPL_NOOP
 # define CAIRO_MUTEX_IMPL_LOCK(mutex) CAIRO_MUTEX_IMPL_NOOP1(mutex)
+# define CAIRO_MUTEX_IMPL_TRY_LOCK(mutex) (CAIRO_MUTEX_IMPL_NOOP1(mutex), TRUE)
 # define CAIRO_MUTEX_IMPL_UNLOCK(mutex) CAIRO_MUTEX_IMPL_NOOP1(mutex)
 # define CAIRO_MUTEX_IMPL_NIL_INITIALIZER 0
 
@@ -190,6 +194,7 @@
 
 # define CAIRO_MUTEX_IMPL_WIN32 1
 # define CAIRO_MUTEX_IMPL_LOCK(mutex) EnterCriticalSection (&(mutex))
+# define CAIRO_MUTEX_IMPL_TRY_LOCK(mutex) TryEnterCriticalSection (&(mutex))
 # define CAIRO_MUTEX_IMPL_UNLOCK(mutex) LeaveCriticalSection (&(mutex))
 # define CAIRO_MUTEX_IMPL_INIT(mutex) InitializeCriticalSection (&(mutex))
 # define CAIRO_MUTEX_IMPL_FINI(mutex) DeleteCriticalSection (&(mutex))
@@ -208,6 +213,7 @@
 # define CAIRO_MUTEX_IMPL_INIT(mutex) pthread_mutex_init (&(mutex), NULL)
 #endif
 # define CAIRO_MUTEX_IMPL_LOCK(mutex) pthread_mutex_lock (&(mutex))
+# define CAIRO_MUTEX_IMPL_TRY_LOCK(mutex) (pthread_mutex_trylock (&(mutex)) == 0)
 # define CAIRO_MUTEX_IMPL_UNLOCK(mutex) pthread_mutex_unlock (&(mutex))
 #if HAVE_LOCKDEP
 # define CAIRO_MUTEX_IS_LOCKED(mutex) LOCKDEP_IS_LOCKED (&(mutex))
