@@ -102,7 +102,7 @@ fedora autotools build:
   stage: 'build'
   script:
     - ./autogen.sh
-    - make V=1 VERBOSE=1
+    - make V=1 VERBOSE=1 -j $(nproc)
   artifacts:
     when: 'always'
     expire_in: '2 days'
