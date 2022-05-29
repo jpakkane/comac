@@ -10,7 +10,6 @@ bug-source-cu
 clip-device-offset
 clip-fill-rule-pixel-aligned
 clip-text
-clip-unbounded
 culled-glyphs
 dash-zero-length
 degenerate-path
