@@ -924,6 +924,15 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
         DWRITE_GLYPH_IMAGE_FORMATS_TIFF |
         DWRITE_GLYPH_IMAGE_FORMATS_PREMULTIPLIED_B8G8R8A8;
 
+    RefPtr<IDWriteFontFace2> fontFace2;
+    UINT32 palette_count = 0;
+    if (SUCCEEDED(dwrite_font_face->dwriteface->QueryInterface(&fontFace2)))
+	palette_count = fontFace2->GetColorPaletteCount();
+
+    UINT32 palette_index = CAIRO_COLOR_PALETTE_DEFAULT;
+    if (scaled_font->base.options.palette_index < palette_count)
+	palette_index = scaled_font->base.options.palette_index;
+
     hr = DWriteFactory::Instance4()->TranslateColorGlyphRun(
 	origin,
 	&run,
@@ -931,7 +940,7 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 	supported_formats,
 	DWRITE_MEASURING_MODE_NATURAL,
 	&matrix,
-	0,
+	palette_index,
 	&run_enumerator);
 
     if (hr == DWRITE_E_NOCOLOR) {
@@ -1028,7 +1037,7 @@ _cairo_dwrite_scaled_font_init_glyph_color_surface(cairo_dwrite_scaled_font_t *s
 				     &color_run->glyphRun,
 				     foreground_color_brush,
 				     nullptr,
-				     0,
+				     palette_index,
 				     DWRITE_MEASURING_MODE_NATURAL);
 		uses_foreground_color = TRUE;
 		break;

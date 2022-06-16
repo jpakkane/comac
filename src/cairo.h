@@ -1446,6 +1446,15 @@ cairo_public void
 cairo_font_options_set_variations (cairo_font_options_t *options,
                                    const char           *variations);
 
+#define CAIRO_COLOR_PALETTE_DEFAULT 0
+
+cairo_public unsigned int
+cairo_font_options_get_color_palette (const cairo_font_options_t *options);
+
+cairo_public void
+cairo_font_options_set_color_palette (cairo_font_options_t *options,
+                                      unsigned int          palette_index);
+
 /* This interface is for dealing with text as text, not caring about the
    font object inside the the cairo_t. */
 

@@ -195,6 +195,7 @@ struct _cairo_font_options {
     cairo_hint_metrics_t hint_metrics;
     cairo_round_glyph_positions_t round_glyph_positions;
     char *variations;
+    unsigned int palette_index;
 };
 
 struct _cairo_glyph_text_info {

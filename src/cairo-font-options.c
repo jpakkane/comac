@@ -56,7 +56,8 @@ static const cairo_font_options_t _cairo_font_options_nil = {
     CAIRO_HINT_STYLE_DEFAULT,
     CAIRO_HINT_METRICS_DEFAULT,
     CAIRO_ROUND_GLYPH_POS_DEFAULT,
-    NULL
+    NULL, /* variations */
+    CAIRO_COLOR_PALETTE_DEFAULT
 };
 
 /**
@@ -75,6 +76,7 @@ _cairo_font_options_init_default (cairo_font_options_t *options)
     options->hint_metrics = CAIRO_HINT_METRICS_DEFAULT;
     options->round_glyph_positions = CAIRO_ROUND_GLYPH_POS_DEFAULT;
     options->variations = NULL;
+    options->palette_index = CAIRO_COLOR_PALETTE_DEFAULT;
 }
 
 void
@@ -88,6 +90,7 @@ _cairo_font_options_init_copy (cairo_font_options_t		*options,
     options->hint_metrics = other->hint_metrics;
     options->round_glyph_positions = other->round_glyph_positions;
     options->variations = other->variations ? strdup (other->variations) : NULL;
+    options->palette_index = other->palette_index;
 }
 
 /**
@@ -255,6 +258,9 @@ cairo_font_options_merge (cairo_font_options_t       *options,
         options->variations = strdup (other->variations);
       }
     }
+
+    if (other->palette_index != CAIRO_COLOR_PALETTE_DEFAULT)
+	options->palette_index = other->palette_index;
 }
 slim_hidden_def (cairo_font_options_merge);
 
@@ -291,7 +297,8 @@ cairo_font_options_equal (const cairo_font_options_t *options,
 	    options->round_glyph_positions == other->round_glyph_positions &&
             ((options->variations == NULL && other->variations == NULL) ||
              (options->variations != NULL && other->variations != NULL &&
-              strcmp (options->variations, other->variations) == 0)));
+              strcmp (options->variations, other->variations) == 0)) &&
+	    options->palette_index == other->palette_index);
 }
 slim_hidden_def (cairo_font_options_equal);
 
@@ -319,6 +326,8 @@ cairo_font_options_hash (const cairo_font_options_t *options)
 
     if (options->variations)
       hash = _cairo_string_hash (options->variations, strlen (options->variations));
+
+    hash ^= options->palette_index;
 
     return ((options->antialias) |
 	    (options->subpixel_order << 4) |
@@ -620,4 +629,45 @@ const char *
 cairo_font_options_get_variations (cairo_font_options_t *options)
 {
   return options->variations;
+}
+
+/**
+ * cairo_font_options_set_color_palette:
+ * @options: a #cairo_font_options_t
+ * @palette_index: the palette index in the CPAL table
+ *
+ * Sets the OpenType font color palette for the font options
+ * object. OpenType color fonts with a CPAL table may contain multiple
+ * palettes. The default color palette index is %CAIRO_COLOR_PALETTE_DEFAULT. If
+ * @palette_index is invalid, the default palette is used.
+ *
+ * Since: 1.18
+ **/
+void
+cairo_font_options_set_color_palette (cairo_font_options_t *options,
+                                      unsigned int          palette_index)
+{
+    if (cairo_font_options_status (options))
+	return;
+
+    options->palette_index = palette_index;
+}
+
+/**
+ * cairo_font_options_get_color_palette:
+ * @options: a #cairo_font_options_t
+ *
+ * Gets the OpenType color font palette for the font options object.
+ *
+ * Return value: the palette index
+ *
+ * Since: 1.18
+ **/
+unsigned int
+cairo_font_options_get_color_palette (const cairo_font_options_t *options)
+{
+    if (cairo_font_options_status ((cairo_font_options_t *) options))
+	return CAIRO_COLOR_PALETTE_DEFAULT;
+
+    return options->palette_index;
 }
