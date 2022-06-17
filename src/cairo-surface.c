@@ -2901,7 +2901,9 @@ _cairo_surface_show_text_glyphs (cairo_surface_t	    *surface,
     if (unlikely (status))
 	return status;
 
-    if (_cairo_scaled_font_has_color_glyphs (scaled_font)) {
+    if (_cairo_scaled_font_has_color_glyphs (scaled_font) &&
+	scaled_font->options.color_mode != CAIRO_COLOR_MODE_NO_COLOR)
+    {
         utf8_copy = malloc (sizeof (char) * utf8_len);
         memcpy (utf8_copy, utf8, sizeof (char) * utf8_len);
         utf8 = utf8_copy;

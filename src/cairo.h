@@ -1370,6 +1370,29 @@ typedef enum _cairo_hint_metrics {
 } cairo_hint_metrics_t;
 
 /**
+ * cairo_color_mode_t:
+ * @CAIRO_COLOR_MODE_DEFAULT: Use the default color mode for
+ * font backend and target device, since 1.18.
+ * @CAIRO_COLOR_MODE_NO_COLOR: Disable rendering color glyphs. Glyphs are
+ * always rendered as outline glyphs, since 1.18.
+ * @CAIRO_COLOR_MODE_COLOR: Enable rendering color glyphs. If the font
+ * contains a color presentation for a glyph, and when supported by
+ * the font backend, the glyph will be rendered in color, since 1.18.
+ *
+ * Specifies if color fonts are to be rendered using the the color
+ * glyphs or outline glyphs. Glyphs that do not have a color
+ * presentation, and non-color fonts are not affected by this font
+ * option.
+ *
+ * Since: 1.18
+ **/
+typedef enum _cairo_color_mode {
+    CAIRO_COLOR_MODE_DEFAULT,
+    CAIRO_COLOR_MODE_NO_COLOR,
+    CAIRO_COLOR_MODE_COLOR
+} cairo_color_mode_t;
+
+/**
  * cairo_font_options_t:
  *
  * An opaque structure holding all options that are used when
@@ -1447,6 +1470,13 @@ cairo_font_options_set_variations (cairo_font_options_t *options,
                                    const char           *variations);
 
 #define CAIRO_COLOR_PALETTE_DEFAULT 0
+
+cairo_public void
+cairo_font_options_set_color_mode (cairo_font_options_t *options,
+                                   cairo_color_mode_t    color_mode);
+
+cairo_public cairo_color_mode_t
+cairo_font_options_get_color_mode (const cairo_font_options_t *options);
 
 cairo_public unsigned int
 cairo_font_options_get_color_palette (const cairo_font_options_t *options);

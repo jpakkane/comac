@@ -57,6 +57,7 @@ static const cairo_font_options_t _cairo_font_options_nil = {
     CAIRO_HINT_METRICS_DEFAULT,
     CAIRO_ROUND_GLYPH_POS_DEFAULT,
     NULL, /* variations */
+    CAIRO_COLOR_MODE_DEFAULT,
     CAIRO_COLOR_PALETTE_DEFAULT
 };
 
@@ -76,6 +77,7 @@ _cairo_font_options_init_default (cairo_font_options_t *options)
     options->hint_metrics = CAIRO_HINT_METRICS_DEFAULT;
     options->round_glyph_positions = CAIRO_ROUND_GLYPH_POS_DEFAULT;
     options->variations = NULL;
+    options->color_mode = CAIRO_COLOR_MODE_DEFAULT;
     options->palette_index = CAIRO_COLOR_PALETTE_DEFAULT;
 }
 
@@ -90,6 +92,7 @@ _cairo_font_options_init_copy (cairo_font_options_t		*options,
     options->hint_metrics = other->hint_metrics;
     options->round_glyph_positions = other->round_glyph_positions;
     options->variations = other->variations ? strdup (other->variations) : NULL;
+    options->color_mode = other->color_mode;
     options->palette_index = other->palette_index;
 }
 
@@ -259,6 +262,8 @@ cairo_font_options_merge (cairo_font_options_t       *options,
       }
     }
 
+    if (other->color_mode != CAIRO_COLOR_MODE_DEFAULT)
+	options->color_mode = other->color_mode;
     if (other->palette_index != CAIRO_COLOR_PALETTE_DEFAULT)
 	options->palette_index = other->palette_index;
 }
@@ -298,6 +303,7 @@ cairo_font_options_equal (const cairo_font_options_t *options,
             ((options->variations == NULL && other->variations == NULL) ||
              (options->variations != NULL && other->variations != NULL &&
               strcmp (options->variations, other->variations) == 0)) &&
+	    options->color_mode == other->color_mode &&
 	    options->palette_index == other->palette_index);
 }
 slim_hidden_def (cairo_font_options_equal);
@@ -333,7 +339,8 @@ cairo_font_options_hash (const cairo_font_options_t *options)
 	    (options->subpixel_order << 4) |
 	    (options->lcd_filter << 8) |
 	    (options->hint_style << 12) |
-	    (options->hint_metrics << 16)) ^ hash;
+	    (options->hint_metrics << 16) |
+            (options->color_mode << 20)) ^ hash;
 }
 slim_hidden_def (cairo_font_options_hash);
 
@@ -629,6 +636,47 @@ const char *
 cairo_font_options_get_variations (cairo_font_options_t *options)
 {
   return options->variations;
+}
+
+/**
+ * cairo_font_options_set_color_mode:
+ * @options: a #cairo_font_options_t
+ * @font_color: the new color mode
+ *
+ * Sets the color mode for the font options object. This controls
+ * whether color fonts are to be rendered in color or as outlines.
+ * See the documentation for #cairo_color_mode_t for full details.
+ *
+ * Since: 1.18
+ **/
+cairo_public void
+cairo_font_options_set_color_mode (cairo_font_options_t *options,
+                                   cairo_color_mode_t    color_mode)
+{
+    if (cairo_font_options_status (options))
+	return;
+
+    options->color_mode = color_mode;
+}
+
+/**
+ * cairo_font_options_get_color_mode:
+ * @options: a #cairo_font_options_t
+ *
+ * Gets the color mode for the font options object.
+ * See the documentation for #cairo_color_mode_t for full details.
+ *
+ * Return value: the color mode for the font options object
+ *
+ * Since: 1.18
+ **/
+cairo_public cairo_color_mode_t
+cairo_font_options_get_color_mode (const cairo_font_options_t *options)
+{
+    if (cairo_font_options_status ((cairo_font_options_t *) options))
+	return CAIRO_COLOR_MODE_DEFAULT;
+
+    return options->color_mode;
 }
 
 /**

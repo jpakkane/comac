@@ -2664,10 +2664,20 @@ _cairo_ft_scaled_glyph_init (void			*abstract_font,
 
 	cairo_bool_t hint_metrics = scaled_font->base.options.hint_metrics != CAIRO_HINT_METRICS_OFF;
 
+	/* The font metrics for color glyphs should be the same as the
+	 * outline glyphs. But just in case there aren't, request the
+	 * color or outline metrics based on the font option and if
+	 * the font has color.
+	 */
+	int color_flag = 0;
+#ifdef FT_LOAD_COLOR
+	if (unscaled->have_color && scaled_font->base.options.color_mode != CAIRO_COLOR_MODE_NO_COLOR)
+	    color_flag = FT_LOAD_COLOR;
+#endif
 	status = _cairo_ft_scaled_glyph_load_glyph (scaled_font,
 						    scaled_glyph,
 						    face,
-						    load_flags,
+						    load_flags | color_flag,
 						    !hint_metrics,
 						    vertical_layout);
 	if (unlikely (status))
