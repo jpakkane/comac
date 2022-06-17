@@ -37,6 +37,7 @@
 #include "cairoint.h"
 #include "cairo-win32-refptr.hpp"
 #include <dwrite.h>
+#include <dwrite_2.h>
 #include <d2d1.h>
 
 /* If either of the dwrite_3.h or d2d1_3.h headers required for color fonts

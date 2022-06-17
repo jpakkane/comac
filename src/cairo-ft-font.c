@@ -176,6 +176,7 @@ struct _cairo_ft_unscaled_font {
     unsigned int have_color_set  : 1;
     unsigned int have_color      : 1;  /* true if the font contains color glyphs */
     FT_Fixed *variations;              /* variation settings that FT_Face came */
+    unsigned int num_palettes;
 
     cairo_mutex_t mutex;
     int lock_count;
@@ -2510,11 +2511,12 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 	    return CAIRO_INT_STATUS_UNSUPPORTED;
 	}
 
-#ifdef HAVE_FT_PALETTE_SET_FOREGROUND_COLOR
+#ifdef HAVE_FT_PALETTE_SELECT
 	FT_LayerIterator  iterator;
 	FT_UInt layer_glyph_index;
 	FT_UInt layer_color_index;
 	FT_Color color;
+	FT_Palette_Data palette_data;
 
 	/* Check if there is a layer that uses the foreground color */
 	iterator.p  = NULL;
@@ -2535,6 +2537,14 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 	    color.blue = (FT_Byte)(foreground_color->blue * 0xFF);
 	    color.alpha = (FT_Byte)(foreground_color->alpha * 0xFF);
 	    FT_Palette_Set_Foreground_Color (face, color);
+	}
+
+	if (FT_Palette_Data_Get(face, &palette_data) == 0 && palette_data.num_palettes > 0) {
+	    FT_UShort palette_index = CAIRO_COLOR_PALETTE_DEFAULT;
+	    if (scaled_font->base.options.palette_index < palette_data.num_palettes)
+		palette_index = scaled_font->base.options.palette_index;
+
+	    FT_Palette_Select (face, palette_index, NULL);
 	}
 #endif
 
