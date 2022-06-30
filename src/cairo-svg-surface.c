@@ -2118,24 +2118,28 @@ _cairo_svg_surface_emit_surface (cairo_svg_document_t *document,
     assert (is_bounded);
 
     _cairo_svg_stream_printf (&document->xml_node_defs,
-			      "<image id=\"source-%d\" x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" xlink:href=\"",
+			      "<image id=\"source-%d\" x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\"",
 			      source_id,
 			      extents.x, extents.y,
 			      extents.width, extents.height);
 
-    cairo_surface_get_mime_data (surface, CAIRO_MIME_TYPE_URI,
-				 &uri, &uri_len);
-    if (uri != NULL) {
-	_cairo_svg_surface_emit_attr_value (&document->xml_node_defs,
-					    uri, uri_len);
-    } else {
-	status = _cairo_surface_base64_encode (surface,
-					       &document->xml_node_defs);
-	if (unlikely (status))
-	    return status;
+    if (extents.width != 0 && extents.height != 0) {
+	_cairo_svg_stream_printf (&document->xml_node_defs, " xlink:href=\"");
+	cairo_surface_get_mime_data (surface, CAIRO_MIME_TYPE_URI,
+				     &uri, &uri_len);
+	if (uri != NULL) {
+	    _cairo_svg_surface_emit_attr_value (&document->xml_node_defs,
+						uri, uri_len);
+	} else {
+	    status = _cairo_surface_base64_encode (surface,
+						   &document->xml_node_defs);
+	    if (unlikely (status))
+		return status;
+	}
+    _cairo_svg_stream_printf (&document->xml_node_defs, "\"");
     }
 
-    _cairo_svg_stream_printf (&document->xml_node_defs, "\"/>\n");
+    _cairo_svg_stream_printf (&document->xml_node_defs, "/>\n");
 
     return CAIRO_STATUS_SUCCESS;
 }
