@@ -212,16 +212,16 @@ fedora meson build:
     - export CFLAGS="-Werror -Wno-error=deprecated-declarations"
     - meson builddir ${MESON_ARGS}
     - ninja -C builddir
-    # - ninja -C builddir test
 
     # Run test scripts
     #- (cd builddir/src && srcdir=../../src bash "$srcdir/check-def.sh")   This script calls "make cairo.def" and thus does not work with meson
     - mkdir builddir/src/.libs
     - touch builddir/src/.libs/libfoo.so
-    - MAKE=echo CAIRO_HAS_HIDDEN_SYMBOLS=1 bash src/check-plt.sh builddir/src/libcairo.so
-    - (cd src && bash "check-headers.sh")
-    - (cd src && bash "check-preprocessor-syntax.sh")
-    - (cd src && bash "check-doc-syntax.sh")
+    # Run all the tests, except for the big test executable which
+    # gets run separately
+    - meson test -C builddir --no-suite=slow
+
+    # TODO: These aren't set up as Meson tests yet
     - (cd doc/public && bash "check-doc-syntax.sh")
     # FIXME: The following line really needs gtk-doc to run first
     - (cd doc/public && DOC_MODULE=cairo bash "check-doc-coverage.sh")
