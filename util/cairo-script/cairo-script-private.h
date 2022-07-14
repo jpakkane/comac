@@ -914,7 +914,7 @@ csi_number_get_value (const csi_object_t *obj)
     }
 }
 
-csi_status_t
+csi_private csi_status_t
 _csi_stack_push (csi_t *ctx, csi_stack_t *stack,
 		 const csi_object_t *obj);
 
