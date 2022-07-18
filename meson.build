@@ -206,7 +206,6 @@ endif
 
 lzo_dep = dependency('lzo2', required: false)
 if lzo_dep.found()
-  deps += [lzo_dep]
   conf.set('HAVE_LZO', 1)
 endif
 
