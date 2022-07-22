@@ -12,7 +12,7 @@ variables:
 
   # TODO: should probably get its own image at some point instead of reusing the GStreamer one
   # See https://gitlab.freedesktop.org/gstreamer/gstreamer/container_registry/18035 for latest
-  WINDOWS_IMAGE: "registry.freedesktop.org/gstreamer/gstreamer/amd64/windows:2021-10-04.1-main"
+  WINDOWS_IMAGE: "registry.freedesktop.org/gstreamer/gstreamer/amd64/windows:2022-05-16.1-main"
 
   DEFAULT_MESON_ARGS: >
     --default-library=both
@@ -276,7 +276,7 @@ meson mingw-64 build:
   tags:
     - 'docker'
     - 'windows'
-    - '1809'
+    - '2022'
   timeout: '30min'
   variables:
     MESON_ARGS: >
@@ -309,12 +309,12 @@ meson mingw-64 build:
         meson build $env:MESON_ARGS &&
         ninja -C build"
 
-meson vs2017 amd64:
+meson vs2019 amd64:
   extends: '.build meson windows'
   variables:
     ARCH: 'amd64'
 
-meson vs2017 x86:
+meson vs2019 x86:
   extends: '.build meson windows'
   variables:
     ARCH: 'x86'
