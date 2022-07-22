@@ -648,5 +648,6 @@ env.set('srcdir', meson.current_source_dir())
 test('cairo', exe,
   timeout: 60 * 60,
   env: env,
+  suite: ['cairo-test-suite', 'slow'],
   workdir: meson.current_build_dir(),
   depends: test_depends)

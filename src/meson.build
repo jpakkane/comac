@@ -307,6 +307,7 @@ if shell.found()
   foreach test_script: test_scripts
     test(test_script, shell,
       args: [test_script],
+      suite: ['fast', 'lint'],
       workdir: meson.current_source_dir())
   endforeach
 
@@ -316,6 +317,7 @@ if shell.found()
   test('check-plt.sh', shell,
     args: ['check-plt.sh', libcairo ],
     env: env,
+    suite: ['fast', 'plt'],
     workdir: meson.current_source_dir())
 
 endif
