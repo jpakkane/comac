@@ -219,8 +219,8 @@ static const cairo_pdf_version_t _cairo_pdf_versions[] =
 static const char * _cairo_pdf_version_strings[CAIRO_PDF_VERSION_LAST] =
 {
     "PDF 1.4",
-    "PDF 1.5"
-    "PDF 1.6"
+    "PDF 1.5",
+    "PDF 1.6",
     "PDF 1.7"
 };
 
