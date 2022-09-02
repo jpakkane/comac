@@ -2584,9 +2584,10 @@ _cairo_ft_scaled_glyph_init_surface (cairo_ft_scaled_font_t     *scaled_font,
 	    if (unlikely (status))
 		cairo_surface_destroy (&surface->base);
 	}
-	if (unlikely (status))
-	    return status;
     }
+
+    if (unlikely (status))
+	return status;
 
     if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
 	/* We tried loading a color glyph and can now check if we got
