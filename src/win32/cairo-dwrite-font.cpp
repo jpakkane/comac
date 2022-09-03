@@ -330,7 +330,7 @@ _cairo_dwrite_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
     MultiByteToWideChar(CP_UTF8, 0, toy_face->family, -1, face_name, face_name_len);
 
     RefPtr<IDWriteFontFamily> family = DWriteFactory::FindSystemFontFamily(face_name);
-    delete face_name;
+    delete[] face_name;
     if (!family) {
 	/* If the family is not found, use the default that should always exist. */
 	face_name_len = MultiByteToWideChar(CP_UTF8, 0, CAIRO_FONT_FAMILY_DEFAULT, -1, NULL, 0);
@@ -338,7 +338,7 @@ _cairo_dwrite_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
 	MultiByteToWideChar(CP_UTF8, 0, CAIRO_FONT_FAMILY_DEFAULT, -1, face_name, face_name_len);
 
 	family = DWriteFactory::FindSystemFontFamily(face_name);
-	delete face_name;
+	delete[] face_name;
 	if (!family) {
 	    *font_face = (cairo_font_face_t*)&_cairo_font_face_nil;
 	    return (cairo_status_t)CAIRO_INT_STATUS_UNSUPPORTED;
