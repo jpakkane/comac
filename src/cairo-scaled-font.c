@@ -2703,7 +2703,16 @@ _cairo_scaled_glyph_page_can_remove (const void *closure)
     cairo_scaled_font_t *scaled_font;
 
     scaled_font = page->scaled_font;
-    return CAIRO_MUTEX_TRY_LOCK (scaled_font->mutex);
+
+    if (!CAIRO_MUTEX_TRY_LOCK (scaled_font->mutex))
+       return FALSE;
+
+    if (scaled_font->cache_frozen != 0) {
+       CAIRO_MUTEX_UNLOCK (scaled_font->mutex);
+       return FALSE;
+    }
+
+    return TRUE;
 }
 
 static cairo_status_t
