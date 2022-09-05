@@ -107,7 +107,7 @@ struct _cairo_scaled_font {
     cairo_font_extents_t fs_extents; /* font space */
 
     /* The mutex protects modification to all subsequent fields. */
-    cairo_mutex_t mutex;
+    cairo_recursive_mutex_t mutex;
 
     cairo_hash_table_t *glyphs;
     cairo_list_t glyph_pages;
