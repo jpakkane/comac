@@ -69,7 +69,7 @@ if cc.get_id() != 'msvc'
   ]
 
   if get_option('optimization') in ['1', '2', '3']
-    cflags += ['-Wp,-D_FORTIFY_SOURCE=2', '-Wl,-lssp']
+    cflags += '-Wp,-D_FORTIFY_SOURCE=2'
   endif
 
   supported_cflags = cc.get_supported_arguments(cflags)
