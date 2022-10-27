@@ -11,8 +11,8 @@ variables:
   FDO_DISTRIBUTION_TAG: '2021-08-26.0'
 
   # TODO: should probably get its own image at some point instead of reusing the GStreamer one
-  # See https://gitlab.freedesktop.org/gstreamer/gstreamer/container_registry/18035 for latest
-  WINDOWS_IMAGE: "registry.freedesktop.org/gstreamer/gstreamer/amd64/windows:2022-05-16.1-main"
+  # See https://gitlab.freedesktop.org/gstreamer/gstreamer/-/blob/main/.gitlab-image-tags.yml for latest
+  WINDOWS_IMAGE: "registry.freedesktop.org/gstreamer/gstreamer/amd64/windows:2022-09-23.0-main"
 
   DEFAULT_MESON_ARGS: >
     --default-library=both
@@ -285,17 +285,22 @@ meson mingw-64 build:
       -Dfreetype=enabled
       -Dglib=enabled
       -Dzlib=enabled
+      ${EXTRA_MESON_ARGS}
   before_script:
     # Make sure meson is up to date, so we don't need to rebuild the image with each release
-    - pip3 install -U meson
+    # FIXME: don't update meson version for now, since there seems to be a bug
+    # in newer meson versions (0.63.3 at the time of writing) where it can't
+    # find some hash file and then meson subprojects update fails)
+    # - pip3 install -U meson
   script:
     # Make sure powershell exists on errors
     # https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_preference_variables?view=powershell-6
     - $ErrorActionPreference = "Stop"
 
     # Copy GLib from existing subproject cache to avoid downloading it
-    - cd $env:CI_PROJECT_DIR
-    - cp -r C:/subprojects/glib subprojects/
+    # FIXME: no longer cached in GStreamer image, using tarball for now
+    #- cd $env:CI_PROJECT_DIR
+    #- cp -r C:/subprojects/glib subprojects/
 
     # For some reason, options are separated by newline instead of space, so we
     # have to replace them first.
@@ -309,15 +314,23 @@ meson mingw-64 build:
         meson build $env:MESON_ARGS &&
         ninja -C build"
 
-meson vs2019 amd64:
+meson vs2019 shared amd64:
   extends: '.build meson windows'
   variables:
     ARCH: 'amd64'
+    EXTRA_MESON_ARGS: '--default-library=shared'
 
-meson vs2019 x86:
+meson vs2019 static amd64:
+  extends: '.build meson windows'
+  variables:
+    ARCH: 'amd64'
+    EXTRA_MESON_ARGS: '--default-library=static'
+
+meson vs2019 shared x86:
   extends: '.build meson windows'
   variables:
     ARCH: 'x86'
+    EXTRA_MESON_ARGS: '--default-library=shared'
 
 meson android arm64 fedora:
   # TODO: should probably build our own image here some day
