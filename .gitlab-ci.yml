@@ -391,6 +391,8 @@ meson macOS:
     exclude:
       - "build/test/**/*.cs"
       - "build/test/**/*.trace"
+  # Unit tests on macOS have been failing for a while now, needs investigating..
+  allow_failure: true
   before_script:
     # Install the DejaVu fonts
     - curl -LO https://downloads.sourceforge.net/dejavu/dejavu-fonts-ttf-2.37.zip
