@@ -377,7 +377,7 @@ meson android arm64 fedora:
 
 meson macOS:
   tags:
-    - gst-macos-11.1
+    - gst-macos-12.3
   stage: 'build'
   artifacts:
     when: 'always'
