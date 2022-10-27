@@ -260,6 +260,12 @@ endforeach
 
 incsrc = include_directories('.')
 
+cairo_static_args = []
+if get_option('default_library') == 'static' and host_machine.system() == 'windows'
+  cairo_static_args += ['-DCAIRO_WIN32_STATIC_BUILD']
+  add_project_arguments('-DCAIRO_WIN32_STATIC_BUILD', language: 'c')
+endif
+
 libcairo = library('cairo', cairo_sources,
   dependencies: deps,
   c_args: cairo_no_warn_c_args + pthread_c_args,
@@ -272,11 +278,6 @@ libcairo = library('cairo', cairo_sources,
 )
 
 cairo_headers += [configure_file(output: 'cairo-features.h', configuration: feature_conf)]
-
-cairo_static_args = []
-if get_option('default_library') == 'static' and host_machine.system() == 'windows'
-  cairo_static_args += ['-DCAIRO_WIN32_STATIC_BUILD']
-endif
 
 libcairo_dep = declare_dependency(link_with: libcairo,
   dependencies: deps,
