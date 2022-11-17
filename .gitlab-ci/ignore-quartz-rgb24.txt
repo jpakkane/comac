@@ -1,5 +1,4 @@
 a1-clip-fill-rule
-alpha-similar
 big-empty-box
 big-empty-triangle
 big-little-box
