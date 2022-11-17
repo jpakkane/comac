@@ -1904,7 +1904,7 @@ _cairo_quartz_cg_glyphs (const cairo_compositor_t *compositor,
 			 cairo_bool_t overlap)
 {
     CGAffineTransform textTransform, invTextTransform;
-    CGGlyph glyphs_static[CAIRO_STACK_ARRAY_LENGTH (CGGlyph)];
+    CGGlyph glyphs_static[CAIRO_STACK_ARRAY_LENGTH (CGPoint)];
     CGPoint cg_positions_static[CAIRO_STACK_ARRAY_LENGTH (CGPoint)];
     CGGlyph *cg_glyphs = &glyphs_static[0];
     CGPoint *cg_positions = &cg_positions_static[0];
