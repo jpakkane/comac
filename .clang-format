@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+BreakBeforeBraces: Linux
+SpaceBeforeParens: Always
+AllowAllArgumentsOnNextLine: false
+AlwaysBreakAfterReturnType: All
+UseTab: Always
+BinPackParameters: false
+BinPackArguments: false
+SpaceAfterLogicalNot: true
+SpaceAfterCStyleCast: true
+SortIncludes: Never
+ReflowComments: false
