@@ -244,7 +244,6 @@ png_dep = dependency('libpng',
   fallback: ['libpng', 'libpng_dep']
 )
 if png_dep.found()
-  feature_conf.set('CAIRO_HAS_SVG_SURFACE', 1)
   feature_conf.set('CAIRO_HAS_PNG_FUNCTIONS', 1)
   built_features += [
     {
@@ -745,15 +744,6 @@ if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
   endif
 endif
 
-if feature_conf.get('CAIRO_HAS_SVG_SURFACE', 0) == 1
-  librsvg_dep = dependency('librsvg-2.0', version: '>= 2.35.0',
-                           required: get_option('tests'))
-  if librsvg_dep.found()
-    conf.set('CAIRO_CAN_TEST_SVG_SURFACE', 1)
-    test_deps += [librsvg_dep]
-  endif
-endif
-
 pixman_dep = dependency('pixman-1',
   version: '>= 0.36.0',
   fallback: ['pixman', 'idep_pixman'],
@@ -946,14 +936,9 @@ summary({
         'XML': feature_conf.get('CAIRO_HAS_XML_SURFACE', 0) == 1,
         'Xlib': feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1,
         'Xlib Xrender': feature_conf.get('CAIRO_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
-        'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_SURFACE', 0) == 1,
-        'Quartz-image': feature_conf.get('CAIRO_HAS_QUARTZ_IMAGE_SURFACE', 0) == 1,
         'XCB': feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1,
-        'Win32': feature_conf.get('CAIRO_HAS_WIN32_SURFACE', 0) == 1,
         'CairoScript': feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1,
-        'PostScript':  feature_conf.get('CAIRO_HAS_PS_SURFACE', 0) == 1,
         'PDF':  feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1,
-        'SVG':  feature_conf.get('CAIRO_HAS_SVG_SURFACE', 0) == 1,
         'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
         'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
         'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
@@ -963,15 +948,11 @@ summary({
         'User': true,
         'FreeType': feature_conf.get('CAIRO_HAS_FT_FONT', 0) == 1,
         'Fontconfig': feature_conf.get('CAIRO_HAS_FC_FONT', 0) == 1,
-        'Win32': feature_conf.get('CAIRO_HAS_WIN32_FONT', 0) == 1,
-        'Win32 DWrite': feature_conf.get('CAIRO_HAS_DWRITE_FONT', 0) == 1,
-        'Quartz': feature_conf.get('CAIRO_HAS_QUARTZ_FONT', 0) == 1,
         }, section: 'Font Backends', bool_yn: true)
 
 summary({
         'PNG functions': feature_conf.get('CAIRO_HAS_PNG_FUNCTIONS', 0) == 1,
         'GLX functions': feature_conf.get('CAIRO_HAS_GLX_FUNCTIONS', 0) == 1,
-        'WGL functions': feature_conf.get('CAIRO_HAS_WGL_FUNCTIONS', 0) == 1,
         'EGL functions': feature_conf.get('CAIRO_HAS_EGL_FUNCTIONS', 0) == 1,
         'X11-xcb': feature_conf.get('CAIRO_HAS_XLIB_XCB_FUNCTIONS', 0) == 1,
         'XCB-shm': feature_conf.get('CAIRO_HAS_XCB_SHM_FUNCTIONS', 0) == 1,

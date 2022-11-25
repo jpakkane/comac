@@ -444,12 +444,6 @@ test_pdf_sources = [
   'pdf-tagged-text.c',
 ]
 
-test_svg_sources = [
-  'svg-surface.c',
-  'svg-clip.c',
-  'svg-surface-source.c',
-]
-
 test_xcb_sources = [
   'xcb-surface-source.c',
 ]
@@ -496,10 +490,6 @@ pdf2png_sources = [
   'pdf2png.c',
 ]
 
-svg2png_sources = [
-  'svg2png.c',
-]
-
 build_any2ppm = false
 has_multipage_surfaces = false
 add_fallback_resolution = false
@@ -517,12 +507,6 @@ if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
   has_multipage_surfaces = true
   add_fallback_resolution = true
   build_any2ppm = true
-endif
-
-if feature_conf.get('CAIRO_HAS_SVG_SURFACE', 0) == 1
-  test_sources += test_svg_sources
-  build_any2ppm = true
-  add_fallback_resolution = true
 endif
 
 if feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1
@@ -568,11 +552,6 @@ if conf.get('CAIRO_CAN_TEST_PDF_SURFACE', 0) == 1
   )
 endif
 
-if conf.get('CAIRO_CAN_TEST_SVG_SURFACE', 0) == 1
-  exe = executable('svg2png', svg2png_sources,
-    dependencies: deps + test_deps,
-  )
-endif
 
 if conf.get('CAIRO_HAS_SPECTRE', 0) == 1
   exe = executable('ps2png', ps2png_sources,

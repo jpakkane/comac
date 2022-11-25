@@ -178,9 +178,6 @@ cairo_feature_sources = {
     'cairo-pdf-surface.c',
     'cairo-pdf-interchange.c',
   ],
-  'cairo-svg': [
-    'cairo-svg-surface.c',
-  ],
   'cairo-egl': [
     'cairo-egl-context.c',
   ],
@@ -200,7 +197,6 @@ cairo_feature_sources = {
 
 cairo_feature_headers = {
   'cairo-pdf': ['cairo-pdf.h'],
-  'cairo-svg': ['cairo-svg.h'],
   'cairo-ft': ['cairo-ft.h'],
   'cairo-xlib': ['cairo-xlib.h'],
   'cairo-xlib-xrender': ['cairo-xlib-xrender.h'],
