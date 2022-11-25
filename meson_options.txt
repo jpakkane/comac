@@ -15,7 +15,6 @@ option('tests', type : 'feature', value : 'auto')
 option('gtk2-utils', type : 'feature', value : 'disabled')
 
 # Misc deps
-option('glib', type : 'feature', value : 'auto')
 option('spectre', type : 'feature', value : 'auto')
 option('symbol-lookup', type: 'feature', value : 'auto',
        description: 'Symbol lookup in debug utils via binutils/bfd')

@@ -341,19 +341,6 @@ if freetype_dep.found()
   endif
 endif
 
-gobject_dep = dependency('gobject-2.0',
-  required: get_option('glib'),
-  fallback: ['glib', 'libgobject_dep']
-)
-glib_dep = dependency('glib-2.0',
-  required: get_option('glib'),
-  version: glib_required_version,
-  fallback: ['glib', 'libglib_dep'],
-)
-if gobject_dep.found() and glib_dep.found()
-  feature_conf.set('CAIRO_HAS_GOBJECT_FUNCTIONS', 1)
-endif
-
 if zlib_dep.found()
   feature_conf.set('CAIRO_HAS_SCRIPT_SURFACE', 1)
   built_features += [{
