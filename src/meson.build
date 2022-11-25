@@ -156,22 +156,6 @@ cairo_feature_sources = {
     'cairo-xcb-surface-render.c',
     'cairo-xcb-resources.c',
   ],
-  'cairo-win32': [
-    'win32/cairo-win32-debug.c',
-    'win32/cairo-win32-device.c',
-    'win32/cairo-win32-gdi-compositor.c',
-    'win32/cairo-win32-system.c',
-    'win32/cairo-win32-surface.c',
-    'win32/cairo-win32-display-surface.c',
-    'win32/cairo-win32-printing-surface.c',
-  ],
-  'cairo-win32-font': [
-    'win32/cairo-win32-font.c',
-  ],
-  'cairo-win32-dwrite-font': [
-    'win32/cairo-dwrite-font-public.c',
-    'win32/cairo-dwrite-font.cpp',
-  ],
   'cairo-gl': [
     'cairo-gl-composite.c',
     'cairo-gl-device.c',
@@ -227,7 +211,6 @@ cairo_feature_headers = {
   'cairo-xcb': ['cairo-xcb.h'],
   'cairo-quartz': ['cairo-quartz.h'],
   'cairo-quartz-image': ['cairo-quartz-image.h'],
-  'cairo-win32': ['cairo-win32.h'],
   'cairo-gl': ['cairo-gl.h'],
   'cairo-script': ['cairo-script.h'],
   'cairo-tee': ['cairo-tee.h'],

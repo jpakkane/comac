@@ -35,4 +35,3 @@ option('gtk_doc', type : 'boolean', value : false,
 # FIXME: implement these to avoid automagic
 #option('egl', type : 'feature', value : 'auto')
 #option('glx', type : 'feature', value : 'auto')
-#option('wgl', type : 'feature', value : 'auto')
