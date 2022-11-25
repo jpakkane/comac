@@ -11,9 +11,6 @@ option('zlib', type : 'feature', value : 'auto') # script, ps, pdf, xml surfaces
 # Tests
 option('tests', type : 'feature', value : 'auto')
 
-# Util deps
-option('gtk2-utils', type : 'feature', value : 'disabled')
-
 # Misc deps
 option('spectre', type : 'feature', value : 'auto')
 option('symbol-lookup', type: 'feature', value : 'auto',

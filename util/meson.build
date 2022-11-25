@@ -22,17 +22,6 @@ if conf.get('CAIRO_HAS_TRACE', 0) == 1
   endif
 endif
 
-if gtk_dep.found()
-  cairo_utils += [
-    ['show-contour.c', {'deps': [gtk_dep]}],
-    ['show-traps.c', {'deps': [gtk_dep]}],
-    ['show-edges.c', {'deps': [gtk_dep]}],
-    ['show-polygon.c', {'deps': [gtk_dep]}],
-    ['show-events.c', {'deps': [gtk_dep]}],
-    ['font-view.c', {'deps': [gtk_dep]}],
-  ]
-endif
-
 if feature_conf.get('CAIRO_HAS_XML_SURFACE', 0) == 1
   expat_dep = dependency('expat', fallback: ['expat', 'expat_dep'])
   cairo_utils += [

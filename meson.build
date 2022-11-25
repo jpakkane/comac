@@ -180,8 +180,6 @@ check_thread_flags = [
 ]
 
 m_dep = cc.find_library('m', required: false)
-# Used in util
-gtk_dep = dependency('gtk+-2.0', required: get_option('gtk2-utils'))
 
 deps = [m_dep]
 test_deps = []
