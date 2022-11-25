@@ -1128,7 +1128,8 @@ attach_proxy (comac_surface_t *source, comac_surface_t *image)
 			 &proxy_backend,
 			 NULL,
 			 image->content,
-			 FALSE);
+			 FALSE,
+			 source->colorspace);
 
     proxy->image = image;
     _comac_surface_attach_snapshot (source, &proxy->base, NULL);
@@ -1697,7 +1698,8 @@ _comac_image_source_create_for_pattern (comac_surface_t *dst,
 			 &_comac_image_source_backend,
 			 NULL, /* device */
 			 COMAC_CONTENT_COLOR_ALPHA,
-			 FALSE); /* is_vector */
+			 FALSE, /* is_vector */
+			 COMAC_COLORSPACE_RGB);
 
     source->is_opaque_solid =
 	pattern == NULL || _comac_pattern_is_opaque_solid (pattern);

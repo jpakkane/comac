@@ -319,7 +319,7 @@ comac_surface_get_colorspace (comac_surface_t *surface)
 
 // FIXME, maybe this should only be settable on surface creation.
 comac_public void
-cairo_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs)
+comac_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs)
 {
     surface->colorspace = cs;
 }
@@ -446,7 +446,8 @@ _comac_surface_init (comac_surface_t *surface,
 		     const comac_surface_backend_t *backend,
 		     comac_device_t *device,
 		     comac_content_t content,
-		     comac_bool_t is_vector)
+		     comac_bool_t is_vector,
+		     comac_colorspace_t colorspace)
 {
     COMAC_MUTEX_INITIALIZE ();
 
@@ -455,6 +456,7 @@ _comac_surface_init (comac_surface_t *surface,
     surface->content = content;
     surface->type = backend->type;
     surface->is_vector = is_vector;
+    surface->colorspace = colorspace;
 
     COMAC_REFERENCE_COUNT_INIT (&surface->ref_count, 1);
     surface->status = COMAC_STATUS_SUCCESS;
@@ -483,8 +485,6 @@ _comac_surface_init (comac_surface_t *surface,
     surface->snapshot_of = NULL;
 
     surface->has_font_options = FALSE;
-
-    surface->colorspace = COMAC_COLORSPACE_RGB;
 }
 
 static void

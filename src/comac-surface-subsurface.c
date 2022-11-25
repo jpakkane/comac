@@ -530,7 +530,8 @@ comac_surface_create_for_rectangle (
 			 &_comac_surface_subsurface_backend,
 			 NULL, /* device */
 			 target->content,
-			 target->is_vector);
+			 target->is_vector,
+			 target->colorspace);
 
     /* XXX forced integer alignment */
     surface->extents.x = ceil (x);
@@ -583,7 +584,8 @@ _comac_surface_create_for_rectangle_int (comac_surface_t *target,
 			 &_comac_surface_subsurface_backend,
 			 NULL, /* device */
 			 target->content,
-			 target->is_vector);
+			 target->is_vector,
+			 target->colorspace);
 
     surface->extents = *extents;
     surface->extents.x *= target->device_transform.xx;

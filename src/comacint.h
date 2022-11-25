@@ -1395,7 +1395,8 @@ _comac_surface_init (comac_surface_t *surface,
 		     const comac_surface_backend_t *backend,
 		     comac_device_t *device,
 		     comac_content_t content,
-		     comac_bool_t is_vector);
+		     comac_bool_t is_vector,
+		     comac_colorspace_t colorspace);
 
 comac_private void
 _comac_surface_set_font_options (comac_surface_t *surface,

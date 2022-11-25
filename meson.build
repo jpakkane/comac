@@ -536,6 +536,9 @@ foreach feature: built_features
   )
 endforeach
 
+executable('pdftest', 'pdftest.c',
+  dependencies: libcomac_dep)
+
 # summary
 summary({
         'Image': true,
@@ -544,14 +547,7 @@ summary({
         'Mime': true,
         'Tee': feature_conf.get('COMAC_HAS_TEE_SURFACE', 0) == 1,
         'XML': feature_conf.get('COMAC_HAS_XML_SURFACE', 0) == 1,
-        'Xlib': feature_conf.get('COMAC_HAS_XLIB_SURFACE', 0) == 1,
-        'Xlib Xrender': feature_conf.get('COMAC_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
-        'XCB': feature_conf.get('COMAC_HAS_XCB_SURFACE', 0) == 1,
-        'CairoScript': feature_conf.get('COMAC_HAS_SCRIPT_SURFACE', 0) == 1,
         'PDF':  feature_conf.get('COMAC_HAS_PDF_SURFACE', 0) == 1,
-        'OpenGL': feature_conf.get('COMAC_HAS_GL_SURFACE', 0) == 1,
-        'OpenGL ES 2.0': feature_conf.get('COMAC_HAS_GLESV2_SURFACE', 0) == 1,
-        'OpenGL ES 3.0': feature_conf.get('COMAC_HAS_GLESV3_SURFACE', 0) == 1,
         }, section: 'Surface Backends', bool_yn: true)
 
 summary({

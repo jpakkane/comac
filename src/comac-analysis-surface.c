@@ -125,7 +125,8 @@ attach_proxy (comac_surface_t *source, comac_surface_t *target)
 			 &proxy_backend,
 			 NULL,
 			 target->content,
-			 target->is_vector);
+			 target->is_vector,
+			 target->colorspace);
 
     proxy->target = target;
     _comac_surface_attach_snapshot (source, &proxy->base, NULL);
@@ -882,7 +883,8 @@ _comac_analysis_surface_create (comac_surface_t *target)
 			 &comac_analysis_surface_backend,
 			 NULL, /* device */
 			 COMAC_CONTENT_COLOR_ALPHA,
-			 target->is_vector);
+			 target->is_vector,
+			 target->colorspace);
 
     comac_matrix_init_identity (&surface->ctm);
     surface->has_ctm = FALSE;
@@ -1085,7 +1087,8 @@ _comac_null_surface_create (comac_content_t content)
 			 &comac_null_surface_backend,
 			 NULL, /* device */
 			 content,
-			 TRUE); /* is_vector */
+			 TRUE,
+			 COMAC_COLORSPACE_RGB); /* is_vector */
 
     return surface;
 }

@@ -68,10 +68,23 @@ comac_pdf_surface_create (const char *filename,
 			  double height_in_points);
 
 comac_public comac_surface_t *
+comac_pdf_surface_create2 (const char *filename,
+			   comac_colorspace_t colorspace,
+			   double width_in_points,
+			   double height_in_points);
+
+comac_public comac_surface_t *
 comac_pdf_surface_create_for_stream (comac_write_func_t write_func,
 				     void *closure,
 				     double width_in_points,
 				     double height_in_points);
+
+comac_public comac_surface_t *
+comac_pdf_surface_create_for_stream2 (comac_write_func_t write_func,
+				      void *closure,
+				      comac_colorspace_t colorspace,
+				      double width_in_points,
+				      double height_in_points);
 
 comac_public void
 comac_pdf_surface_restrict_to_version (comac_surface_t *surface,

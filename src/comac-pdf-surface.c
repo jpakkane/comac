@@ -466,6 +466,7 @@ _comac_pdf_surface_clipper_intersect_clip_path (
 
 static comac_surface_t *
 _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t *output,
+					       comac_colorspace_t colorspace,
 					       double width,
 					       double height)
 {
@@ -484,7 +485,8 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t *output,
 			 &comac_pdf_surface_backend,
 			 NULL, /* device */
 			 COMAC_CONTENT_COLOR_ALPHA,
-			 TRUE); /* is_vector */
+			 TRUE,
+			 colorspace); /* is_vector */
 
     surface->output = output;
     surface->width = width;
@@ -543,7 +545,10 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t *output,
 
     surface->struct_tree_root.id = 0;
     surface->pdf_version = COMAC_PDF_VERSION_1_7;
-    surface->compress_streams = TRUE;
+    if (getenv ("COMAC_DEBUG_PDF") != NULL)
+	surface->compress_streams = FALSE;
+    else
+	surface->compress_streams = TRUE;
     surface->pdf_stream.active = FALSE;
     surface->pdf_stream.old_output = NULL;
     surface->group_stream.active = FALSE;
@@ -594,9 +599,6 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t *output,
     surface->thumbnail_width = 0;
     surface->thumbnail_height = 0;
     surface->thumbnail_image = NULL;
-
-    if (getenv ("COMAC_DEBUG_PDF") != NULL)
-	surface->compress_streams = FALSE;
 
     surface->paginated_surface =
 	_comac_paginated_surface_create (&surface->base,
@@ -653,6 +655,20 @@ comac_pdf_surface_create_for_stream (comac_write_func_t write_func,
 				     double width_in_points,
 				     double height_in_points)
 {
+    return comac_pdf_surface_create_for_stream2 (write_func,
+						 closure,
+						 COMAC_COLORSPACE_RGB,
+						 width_in_points,
+						 height_in_points);
+}
+
+comac_surface_t *
+comac_pdf_surface_create_for_stream2 (comac_write_func_t write_func,
+				      void *closure,
+				      comac_colorspace_t colorspace,
+				      double width_in_points,
+				      double height_in_points)
+{
     comac_output_stream_t *output;
 
     output = _comac_output_stream_create (write_func, NULL, closure);
@@ -661,6 +677,7 @@ comac_pdf_surface_create_for_stream (comac_write_func_t write_func,
 	    _comac_output_stream_destroy (output));
 
     return _comac_pdf_surface_create_for_stream_internal (output,
+							  colorspace,
 							  width_in_points,
 							  height_in_points);
 }
@@ -692,6 +709,18 @@ comac_pdf_surface_create (const char *filename,
 			  double width_in_points,
 			  double height_in_points)
 {
+    return comac_pdf_surface_create2 (filename,
+				      COMAC_COLORSPACE_RGB,
+				      width_in_points,
+				      height_in_points);
+}
+
+comac_surface_t *
+comac_pdf_surface_create2 (const char *filename,
+			   comac_colorspace_t colorspace,
+			   double width_in_points,
+			   double height_in_points)
+{
     comac_output_stream_t *output;
 
     output = _comac_output_stream_create_for_filename (filename);
@@ -700,6 +729,7 @@ comac_pdf_surface_create (const char *filename,
 	    _comac_output_stream_destroy (output));
 
     return _comac_pdf_surface_create_for_stream_internal (output,
+							  colorspace,
 							  width_in_points,
 							  height_in_points);
 }

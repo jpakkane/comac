@@ -90,7 +90,8 @@ _comac_type3_glyph_surface_create (
 			 &comac_type3_glyph_surface_backend,
 			 NULL, /* device */
 			 COMAC_CONTENT_COLOR_ALPHA,
-			 TRUE); /* is_vector */
+			 TRUE, /* is_vector */
+			 COMAC_COLORSPACE_RGB);
 
     surface->scaled_font = scaled_font;
     surface->stream = stream;

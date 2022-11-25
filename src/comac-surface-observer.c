@@ -396,7 +396,8 @@ _comac_surface_create_observer_internal (comac_device_t *device,
 			 &_comac_surface_observer_backend,
 			 device,
 			 target->content,
-			 target->is_vector);
+			 target->is_vector,
+			 target->colorspace);
 
     status =
 	log_init (&surface->log,

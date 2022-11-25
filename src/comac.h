@@ -2435,7 +2435,7 @@ comac_public comac_colorspace_t
 comac_surface_get_colorspace (comac_surface_t *surface);
 
 comac_public void
-cairo_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs);
+comac_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs);
 
 /**
  * comac_surface_type_t:
