@@ -444,12 +444,6 @@ test_pdf_sources = [
   'pdf-tagged-text.c',
 ]
 
-test_ps_sources = [
-  'ps-eps.c',
-  'ps-features.c',
-  'ps-surface-source.c',
-]
-
 test_svg_sources = [
   'svg-surface.c',
   'svg-clip.c',
@@ -506,10 +500,6 @@ svg2png_sources = [
   'svg2png.c',
 ]
 
-ps2png_sources = [
-  'ps2png.c',
-]
-
 build_any2ppm = false
 has_multipage_surfaces = false
 add_fallback_resolution = false
@@ -524,13 +514,6 @@ endif
 
 if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
   test_sources += test_pdf_sources
-  has_multipage_surfaces = true
-  add_fallback_resolution = true
-  build_any2ppm = true
-endif
-
-if feature_conf.get('CAIRO_HAS_PS_SURFACE', 0) == 1
-  test_sources += test_ps_sources
   has_multipage_surfaces = true
   add_fallback_resolution = true
   build_any2ppm = true

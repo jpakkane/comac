@@ -174,9 +174,6 @@ cairo_feature_sources = {
   'cairo-script': [
     'cairo-script-surface.c',
   ],
-  'cairo-ps': [
-    'cairo-ps-surface.c',
-  ],
   'cairo-pdf': [
     'cairo-pdf-surface.c',
     'cairo-pdf-interchange.c',
@@ -202,7 +199,6 @@ cairo_feature_sources = {
 }
 
 cairo_feature_headers = {
-  'cairo-ps': ['cairo-ps.h'],
   'cairo-pdf': ['cairo-pdf.h'],
   'cairo-svg': ['cairo-svg.h'],
   'cairo-ft': ['cairo-ft.h'],

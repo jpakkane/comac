@@ -687,15 +687,6 @@ if zlib_dep.found()
 endif
 
 if zlib_dep.found()
-  feature_conf.set('CAIRO_HAS_PS_SURFACE', 1)
-  built_features += [{
-    'name': 'cairo-ps',
-    'description': 'PostScript surface backend',
-    'deps': [zlib_dep],
-  }]
-endif
-
-if zlib_dep.found()
   feature_conf.set('CAIRO_HAS_PDF_SURFACE', 1)
   built_features += [{
     'name': 'cairo-pdf',
