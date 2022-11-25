@@ -156,15 +156,6 @@ cairo_feature_sources = {
     'cairo-xcb-surface-render.c',
     'cairo-xcb-resources.c',
   ],
-  'cairo-quartz': [
-    'cairo-quartz-surface.c',
-  ],
-  'cairo-quartz-image': [
-    'cairo-quartz-image-surface.c',
-  ],
-  'cairo-quartz-font': [
-    'cairo-quartz-font.c',
-  ],
   'cairo-win32': [
     'win32/cairo-win32-debug.c',
     'win32/cairo-win32-device.c',

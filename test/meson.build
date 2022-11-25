@@ -436,11 +436,6 @@ test_egl_sources = [
   'egl-surface-source.c',
 ]
 
-test_quartz_sources = [
-  'quartz-surface-source.c',
-  'quartz-color-font.c',
-]
-
 test_pdf_sources = [
   'pdf-features.c',
   'pdf-mime-data.c',
@@ -525,10 +520,6 @@ endif
 
 if feature_conf.get('CAIRO_HAS_FT_FONT', 0) == 1 and feature_conf.get('CAIRO_HAS_FC_FONT', 0) == 1
   test_sources += test_ft_font_sources
-endif
-
-if feature_conf.get('CAIRO_HAS_QUARTZ_SURFACE', 0) == 1
-  test_sources += test_quartz_sources
 endif
 
 if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
