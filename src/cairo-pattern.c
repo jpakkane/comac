@@ -667,7 +667,6 @@ cairo_pattern_create_rgb (double red, double green, double blue)
 {
     return cairo_pattern_create_rgba (red, green, blue, 1.0);
 }
-slim_hidden_def (cairo_pattern_create_rgb);
 
 /**
  * cairo_pattern_create_rgba:
@@ -709,7 +708,6 @@ cairo_pattern_create_rgba (double red, double green, double blue,
 
     return _cairo_pattern_create_solid (&color);
 }
-slim_hidden_def (cairo_pattern_create_rgba);
 
 /**
  * cairo_pattern_create_for_surface:
@@ -758,7 +756,6 @@ cairo_pattern_create_for_surface (cairo_surface_t *surface)
 
     return &pattern->base;
 }
-slim_hidden_def (cairo_pattern_create_for_surface);
 
 /**
  * cairo_pattern_create_linear:
@@ -1073,7 +1070,6 @@ cairo_pattern_reference (cairo_pattern_t *pattern)
 
     return pattern;
 }
-slim_hidden_def (cairo_pattern_reference);
 
 /**
  * cairo_pattern_get_type:
@@ -1144,7 +1140,6 @@ cairo_pattern_destroy (cairo_pattern_t *pattern)
     else
 	free (pattern);
 }
-slim_hidden_def (cairo_pattern_destroy);
 
 /**
  * cairo_pattern_get_reference_count:
@@ -1484,7 +1479,6 @@ cairo_mesh_pattern_curve_to (cairo_pattern_t *pattern,
 	mesh->current_patch->points[i][j].y = y3;
     }
 }
-slim_hidden_def (cairo_mesh_pattern_curve_to);
 
 /**
  * cairo_mesh_pattern_line_to:
@@ -1555,7 +1549,6 @@ cairo_mesh_pattern_line_to (cairo_pattern_t *pattern,
 				 (last_point.y + 2 * y) * (1. / 3),
 				 x, y);
 }
-slim_hidden_def (cairo_mesh_pattern_line_to);
 
 /**
  * cairo_mesh_pattern_move_to:
@@ -1605,7 +1598,6 @@ cairo_mesh_pattern_move_to (cairo_pattern_t *pattern,
     mesh->current_patch->points[0][0].x = x;
     mesh->current_patch->points[0][0].y = y;
 }
-slim_hidden_def (cairo_mesh_pattern_move_to);
 
 /**
  * cairo_mesh_pattern_set_control_point:
@@ -1824,7 +1816,6 @@ cairo_mesh_pattern_set_corner_color_rgba (cairo_pattern_t *pattern,
 
     _cairo_mesh_pattern_set_corner_color (mesh, corner_num, red, green, blue, alpha);
 }
-slim_hidden_def (cairo_mesh_pattern_set_corner_color_rgba);
 
 static void
 _cairo_pattern_add_color_stop (cairo_gradient_pattern_t	*pattern,
@@ -1968,7 +1959,6 @@ cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern,
     _cairo_pattern_add_color_stop ((cairo_gradient_pattern_t *) pattern,
 				   offset, red, green, blue, alpha);
 }
-slim_hidden_def (cairo_pattern_add_color_stop_rgba);
 
 /**
  * cairo_pattern_set_matrix:
@@ -2025,7 +2015,6 @@ cairo_pattern_set_matrix (cairo_pattern_t      *pattern,
     if (unlikely (status))
 	status = _cairo_pattern_set_error (pattern, status);
 }
-slim_hidden_def (cairo_pattern_set_matrix);
 
 /**
  * cairo_pattern_get_matrix:
@@ -2133,7 +2122,6 @@ cairo_pattern_get_extend (cairo_pattern_t *pattern)
 {
     return pattern->extend;
 }
-slim_hidden_def (cairo_pattern_get_extend);
 
 void
 _cairo_pattern_pretransform (cairo_pattern_t	*pattern,
@@ -4440,7 +4428,6 @@ cairo_mesh_pattern_get_patch_count (cairo_pattern_t *pattern,
 
     return CAIRO_STATUS_SUCCESS;
 }
-slim_hidden_def (cairo_mesh_pattern_get_patch_count);
 
 /**
  * cairo_mesh_pattern_get_path:
@@ -4528,7 +4515,6 @@ cairo_mesh_pattern_get_path (cairo_pattern_t *pattern,
 
     return path;
 }
-slim_hidden_def (cairo_mesh_pattern_get_path);
 
 /**
  * cairo_mesh_pattern_get_corner_color_rgba:
@@ -4596,7 +4582,6 @@ cairo_mesh_pattern_get_corner_color_rgba (cairo_pattern_t *pattern,
 
     return CAIRO_STATUS_SUCCESS;
 }
-slim_hidden_def (cairo_mesh_pattern_get_corner_color_rgba);
 
 /**
  * cairo_mesh_pattern_get_control_point:
@@ -4661,7 +4646,6 @@ cairo_mesh_pattern_get_control_point (cairo_pattern_t *pattern,
 
     return CAIRO_STATUS_SUCCESS;
 }
-slim_hidden_def (cairo_mesh_pattern_get_control_point);
 
 void
 _cairo_pattern_reset_static_data (void)

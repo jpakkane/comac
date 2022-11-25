@@ -85,7 +85,6 @@ cairo_matrix_init_identity (cairo_matrix_t *matrix)
 		       0, 1,
 		       0, 0);
 }
-slim_hidden_def(cairo_matrix_init_identity);
 
 /**
  * cairo_matrix_init:
@@ -118,7 +117,6 @@ cairo_matrix_init (cairo_matrix_t *matrix,
     matrix->xy = xy; matrix->yy = yy;
     matrix->x0 = x0; matrix->y0 = y0;
 }
-slim_hidden_def(cairo_matrix_init);
 
 /**
  * _cairo_matrix_get_affine:
@@ -178,7 +176,6 @@ cairo_matrix_init_translate (cairo_matrix_t *matrix,
 		       0, 1,
 		       tx, ty);
 }
-slim_hidden_def(cairo_matrix_init_translate);
 
 /**
  * cairo_matrix_translate:
@@ -202,7 +199,6 @@ cairo_matrix_translate (cairo_matrix_t *matrix, double tx, double ty)
 
     cairo_matrix_multiply (matrix, &tmp, matrix);
 }
-slim_hidden_def (cairo_matrix_translate);
 
 /**
  * cairo_matrix_init_scale:
@@ -224,7 +220,6 @@ cairo_matrix_init_scale (cairo_matrix_t *matrix,
 		       0, sy,
 		       0, 0);
 }
-slim_hidden_def(cairo_matrix_init_scale);
 
 /**
  * cairo_matrix_scale:
@@ -247,7 +242,6 @@ cairo_matrix_scale (cairo_matrix_t *matrix, double sx, double sy)
 
     cairo_matrix_multiply (matrix, &tmp, matrix);
 }
-slim_hidden_def(cairo_matrix_scale);
 
 /**
  * cairo_matrix_init_rotate:
@@ -277,7 +271,6 @@ cairo_matrix_init_rotate (cairo_matrix_t *matrix,
 		       -s, c,
 		       0, 0);
 }
-slim_hidden_def(cairo_matrix_init_rotate);
 
 /**
  * cairo_matrix_rotate:
@@ -343,7 +336,6 @@ cairo_matrix_multiply (cairo_matrix_t *result, const cairo_matrix_t *a, const ca
 
     *result = r;
 }
-slim_hidden_def(cairo_matrix_multiply);
 
 void
 _cairo_matrix_multiply (cairo_matrix_t *r,
@@ -394,7 +386,6 @@ cairo_matrix_transform_distance (const cairo_matrix_t *matrix, double *dx, doubl
     *dx = new_x;
     *dy = new_y;
 }
-slim_hidden_def(cairo_matrix_transform_distance);
 
 /**
  * cairo_matrix_transform_point:
@@ -414,7 +405,6 @@ cairo_matrix_transform_point (const cairo_matrix_t *matrix, double *x, double *y
     *x += matrix->x0;
     *y += matrix->y0;
 }
-slim_hidden_def(cairo_matrix_transform_point);
 
 void
 _cairo_matrix_transform_bounding_box (const cairo_matrix_t *matrix,
@@ -625,7 +615,6 @@ cairo_matrix_invert (cairo_matrix_t *matrix)
 
     return CAIRO_STATUS_SUCCESS;
 }
-slim_hidden_def(cairo_matrix_invert);
 
 cairo_bool_t
 _cairo_matrix_is_invertible (const cairo_matrix_t *matrix)

@@ -57,8 +57,6 @@ typedef struct _cairo_tee_surface {
     cairo_array_t slaves;
 } cairo_tee_surface_t;
 
-slim_hidden_proto (cairo_tee_surface_create);
-slim_hidden_proto (cairo_tee_surface_add);
 
 static cairo_surface_t *
 _cairo_tee_surface_create_similar (void			*abstract_surface,
@@ -444,7 +442,6 @@ cairo_tee_surface_create (cairo_surface_t *master)
 
     return &surface->base;
 }
-slim_hidden_def (cairo_tee_surface_create);
 
 void
 cairo_tee_surface_add (cairo_surface_t *abstract_surface,
@@ -482,7 +479,6 @@ cairo_tee_surface_add (cairo_surface_t *abstract_surface,
 	status = _cairo_surface_set_error (&surface->base, status);
     }
 }
-slim_hidden_def (cairo_tee_surface_add);
 
 void
 cairo_tee_surface_remove (cairo_surface_t *abstract_surface,

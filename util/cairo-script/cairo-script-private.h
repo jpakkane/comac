@@ -989,7 +989,5 @@ _csi_push_ostack_real (csi_t *ctx, csi_real_t v)
     return _csi_stack_push (ctx, &ctx->ostack, &obj);
 }
 
-slim_hidden_proto_no_warn (cairo_script_interpreter_destroy);
-slim_hidden_proto_no_warn (cairo_script_interpreter_reference);
 
 #endif /* CAIRO_SCRIPT_PRIVATE_H */

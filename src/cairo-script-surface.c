@@ -3953,7 +3953,6 @@ cairo_script_surface_create (cairo_device_t *script,
 						   content, extents,
 						   NULL)->base;
 }
-slim_hidden_def (cairo_script_surface_create);
 
 /**
  * cairo_script_surface_create_for_target:

@@ -635,7 +635,6 @@ cairo_script_interpreter_reference (csi_t *ctx)
     ctx->ref_count++;
     return ctx;
 }
-slim_hidden_def (cairo_script_interpreter_reference);
 
 cairo_status_t
 cairo_script_interpreter_finish (csi_t *ctx)
@@ -684,7 +683,6 @@ cairo_script_interpreter_destroy (csi_t *ctx)
 
     return status;
 }
-slim_hidden_def (cairo_script_interpreter_destroy);
 
 cairo_status_t
 cairo_script_interpreter_translate_stream (FILE *stream,

@@ -438,7 +438,6 @@ cairo_recording_surface_create (cairo_content_t		 content,
 
     return &surface->base;
 }
-slim_hidden_def (cairo_recording_surface_create);
 
 static cairo_surface_t *
 _cairo_recording_surface_create_similar (void		       *abstract_surface,

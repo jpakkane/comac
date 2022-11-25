@@ -207,7 +207,6 @@ cairo_font_options_status (cairo_font_options_t *options)
     else
 	return CAIRO_STATUS_SUCCESS;
 }
-slim_hidden_def (cairo_font_options_status);
 
 /**
  * cairo_font_options_merge:
@@ -267,7 +266,6 @@ cairo_font_options_merge (cairo_font_options_t       *options,
     if (other->palette_index != CAIRO_COLOR_PALETTE_DEFAULT)
 	options->palette_index = other->palette_index;
 }
-slim_hidden_def (cairo_font_options_merge);
 
 /**
  * cairo_font_options_equal:
@@ -306,7 +304,6 @@ cairo_font_options_equal (const cairo_font_options_t *options,
 	    options->color_mode == other->color_mode &&
 	    options->palette_index == other->palette_index);
 }
-slim_hidden_def (cairo_font_options_equal);
 
 /**
  * cairo_font_options_hash:
@@ -342,7 +339,6 @@ cairo_font_options_hash (const cairo_font_options_t *options)
 	    (options->hint_metrics << 16) |
             (options->color_mode << 20)) ^ hash;
 }
-slim_hidden_def (cairo_font_options_hash);
 
 /**
  * cairo_font_options_set_antialias:
@@ -363,7 +359,6 @@ cairo_font_options_set_antialias (cairo_font_options_t *options,
 
     options->antialias = antialias;
 }
-slim_hidden_def (cairo_font_options_set_antialias);
 
 /**
  * cairo_font_options_get_antialias:
@@ -406,7 +401,6 @@ cairo_font_options_set_subpixel_order (cairo_font_options_t   *options,
 
     options->subpixel_order = subpixel_order;
 }
-slim_hidden_def (cairo_font_options_set_subpixel_order);
 
 /**
  * cairo_font_options_get_subpixel_order:
@@ -522,7 +516,6 @@ cairo_font_options_set_hint_style (cairo_font_options_t *options,
 
     options->hint_style = hint_style;
 }
-slim_hidden_def (cairo_font_options_set_hint_style);
 
 /**
  * cairo_font_options_get_hint_style:
@@ -565,7 +558,6 @@ cairo_font_options_set_hint_metrics (cairo_font_options_t *options,
 
     options->hint_metrics = hint_metrics;
 }
-slim_hidden_def (cairo_font_options_set_hint_metrics);
 
 /**
  * cairo_font_options_get_hint_metrics:

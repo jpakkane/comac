@@ -52,7 +52,6 @@ cairo_private void
 _cairo_script_context_attach_snapshots (cairo_device_t *device,
 					cairo_bool_t enable);
 
-slim_hidden_proto (cairo_script_surface_create);
 
 CAIRO_END_DECLS
 

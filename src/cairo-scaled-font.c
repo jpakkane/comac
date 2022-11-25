@@ -336,7 +336,6 @@ cairo_scaled_font_status (cairo_scaled_font_t *scaled_font)
 {
     return scaled_font->status;
 }
-slim_hidden_def (cairo_scaled_font_status);
 
 /* Here we keep a unique mapping from
  * font_face/matrix/ctm/font_options => #cairo_scaled_font_t.
@@ -1241,7 +1240,6 @@ cairo_scaled_font_create (cairo_font_face_t          *font_face,
 
     return scaled_font;
 }
-slim_hidden_def (cairo_scaled_font_create);
 
 static cairo_scaled_font_t *_cairo_scaled_font_nil_objects[CAIRO_STATUS_LAST_STATUS + 1];
 
@@ -1327,7 +1325,6 @@ cairo_scaled_font_reference (cairo_scaled_font_t *scaled_font)
 
     return scaled_font;
 }
-slim_hidden_def (cairo_scaled_font_reference);
 
 /**
  * cairo_scaled_font_destroy:
@@ -1411,7 +1408,6 @@ cairo_scaled_font_destroy (cairo_scaled_font_t *scaled_font)
 	free (lru);
     }
 }
-slim_hidden_def (cairo_scaled_font_destroy);
 
 /**
  * cairo_scaled_font_get_reference_count:
@@ -1455,7 +1451,6 @@ cairo_scaled_font_get_user_data (cairo_scaled_font_t	     *scaled_font,
     return _cairo_user_data_array_get_data (&scaled_font->user_data,
 					    key);
 }
-slim_hidden_def (cairo_scaled_font_get_user_data);
 
 /**
  * cairo_scaled_font_set_user_data:
@@ -1487,7 +1482,6 @@ cairo_scaled_font_set_user_data (cairo_scaled_font_t	     *scaled_font,
     return _cairo_user_data_array_set_data (&scaled_font->user_data,
 					    key, user_data, destroy);
 }
-slim_hidden_def (cairo_scaled_font_set_user_data);
 
 /* Public font API follows. */
 
@@ -1515,7 +1509,6 @@ cairo_scaled_font_extents (cairo_scaled_font_t  *scaled_font,
 
     *extents = scaled_font->extents;
 }
-slim_hidden_def (cairo_scaled_font_extents);
 
 /**
  * cairo_scaled_font_text_extents:
@@ -1715,7 +1708,6 @@ ZERO_EXTENTS:
     extents->x_advance = 0.0;
     extents->y_advance = 0.0;
 }
-slim_hidden_def (cairo_scaled_font_glyph_extents);
 
 #define GLYPH_LUT_SIZE 64
 static cairo_status_t
@@ -2182,7 +2174,6 @@ cairo_scaled_font_text_to_glyphs (cairo_scaled_font_t   *scaled_font,
 
     return status;
 }
-slim_hidden_def (cairo_scaled_font_text_to_glyphs);
 
 static inline cairo_bool_t
 _range_contains_glyph (const cairo_box_t *extents,
@@ -2979,7 +2970,6 @@ cairo_scaled_font_get_font_face (cairo_scaled_font_t *scaled_font)
 
     return scaled_font->font_face;
 }
-slim_hidden_def (cairo_scaled_font_get_font_face);
 
 /**
  * cairo_scaled_font_get_font_matrix:
@@ -3002,7 +2992,6 @@ cairo_scaled_font_get_font_matrix (cairo_scaled_font_t	*scaled_font,
 
     *font_matrix = scaled_font->font_matrix;
 }
-slim_hidden_def (cairo_scaled_font_get_font_matrix);
 
 /**
  * cairo_scaled_font_get_ctm:
@@ -3027,7 +3016,6 @@ cairo_scaled_font_get_ctm (cairo_scaled_font_t	*scaled_font,
 
     *ctm = scaled_font->ctm;
 }
-slim_hidden_def (cairo_scaled_font_get_ctm);
 
 /**
  * cairo_scaled_font_get_scale_matrix:
@@ -3077,7 +3065,6 @@ cairo_scaled_font_get_font_options (cairo_scaled_font_t		*scaled_font,
 
     _cairo_font_options_init_copy (options, &scaled_font->options);
 }
-slim_hidden_def (cairo_scaled_font_get_font_options);
 
 cairo_bool_t
 _cairo_scaled_font_has_color_glyphs (cairo_scaled_font_t *scaled_font)

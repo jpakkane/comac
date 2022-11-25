@@ -524,7 +524,6 @@ endif
 if have_shm and conf.get('CAIRO_HAS_INTERPRETER', 0) == 1
   cairo_test_trace_exe = executable('cairo-test-trace', cairo_test_trace_sources,
   include_directories: [incbase],
-  c_args: pthread_c_args,
   link_args: extra_link_args,
   dependencies: deps + test_deps + [rt_dep, libcairo_dep, cairoboilerplate_dep, libpdiff_dep, libcairomissing_dep, libcairoscript_dep])
 endif

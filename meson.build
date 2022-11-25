@@ -173,15 +173,12 @@ check_funcs = [
   'strtod_l',
 ]
 
-check_thread_flags = [
-  [['-D_REENTRANT'], ['-lpthread']],
-  [['-pthread'], []],
-  [['-D_REENTRANT'], [], {'real': false}],
-]
-
 m_dep = cc.find_library('m', required: false)
+thread_dep = dependency('threads')
+conf.set('CAIRO_HAS_PTHREAD', 1)
+conf.set('CAIRO_HAS_REAL_PTHREAD', 1)
 
-deps = [m_dep]
+deps = [m_dep, thread_dep]
 test_deps = []
 internal_deps = []
 extra_link_args = []
@@ -483,28 +480,6 @@ foreach name : check_funcs
 endforeach
 
 conf.set('HAVE_STRNDUP', cc.has_function('strndup', prefix : '#include <string.h>'))
-
-pthread_c_args = []
-pthread_link_args = []
-
-foreach thread_flags : check_thread_flags
-  if not conf.has('CAIRO_HAS_PTHREAD')
-    cflags = thread_flags[0]
-    lflags = thread_flags[1]
-    real_pthread = thread_flags.length() > 2 ? thread_flags[2].get('real', true) : true
-
-    if cc.links(files('meson-cc-tests/pthread.c'), args: cflags + lflags, name: 'pthreads')
-      conf.set('CAIRO_HAS_PTHREAD', 1)
-      if real_pthread
-        conf.set('CAIRO_HAS_REAL_PTHREAD', 1)
-      endif
-      pthread_c_args = cflags
-      pthread_link_args = lflags
-    endif
-  endif
-endforeach
-
-extra_link_args += pthread_link_args
 
 if cc.links(files('meson-cc-tests/atomic-ops-cxx11.c'), name: 'Atomic ops: cxx11')
   conf.set('HAVE_CXX11_ATOMIC_PRIMITIVES', 1)

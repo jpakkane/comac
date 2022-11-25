@@ -69,7 +69,6 @@ struct _cairo_xml_surface {
     double width, height;
 };
 
-slim_hidden_proto (cairo_xml_for_recording_surface);
 
 static const cairo_surface_backend_t _cairo_xml_surface_backend;
 
@@ -1209,4 +1208,3 @@ cairo_xml_for_recording_surface (cairo_device_t	 *device,
 
     return status;
 }
-slim_hidden_def (cairo_xml_for_recording_surface);

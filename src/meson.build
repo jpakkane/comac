@@ -176,13 +176,13 @@ if get_option('default_library') == 'static' and host_machine.system() == 'windo
   add_project_arguments('-DCAIRO_WIN32_STATIC_BUILD', language: 'c')
 endif
 
-libcairo = library('cairo', cairo_sources,
+# Since this library is not meant for public consumption yet,
+# only build a static library.
+libcairo = static_library('cairo', cairo_sources,
   dependencies: deps,
-  c_args: cairo_no_warn_c_args + pthread_c_args,
-  cpp_args: cairo_no_warn_c_args + pthread_c_args,
+  c_args: cairo_no_warn_c_args,
+  cpp_args: cairo_no_warn_c_args,
   link_args: extra_link_args,
-  soversion: cairo_version_sonum,
-  version: cairo_libversion,
   install: true,
   include_directories: incbase,
 )

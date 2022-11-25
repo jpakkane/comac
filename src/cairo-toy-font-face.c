@@ -340,7 +340,6 @@ cairo_toy_font_face_create (const char          *family,
  UNWIND:
     return (cairo_font_face_t*) &_cairo_font_face_nil;
 }
-slim_hidden_def (cairo_toy_font_face_create);
 
 static cairo_bool_t
 _cairo_toy_font_face_destroy (void *abstract_face)
@@ -469,7 +468,6 @@ cairo_toy_font_face_get_slant (cairo_font_face_t *font_face)
     }
     return toy_font_face->slant;
 }
-slim_hidden_def (cairo_toy_font_face_get_slant);
 
 /**
  * cairo_toy_font_face_get_weight:
@@ -496,7 +494,6 @@ cairo_toy_font_face_get_weight (cairo_font_face_t *font_face)
     }
     return toy_font_face->weight;
 }
-slim_hidden_def (cairo_toy_font_face_get_weight);
 
 static const cairo_font_face_backend_t _cairo_toy_font_face_backend = {
     CAIRO_FONT_TYPE_TOY,

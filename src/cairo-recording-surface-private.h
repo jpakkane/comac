@@ -157,7 +157,6 @@ typedef struct _cairo_recording_surface {
     } bbtree;
 } cairo_recording_surface_t;
 
-slim_hidden_proto (cairo_recording_surface_create);
 
 cairo_private cairo_int_status_t
 _cairo_recording_surface_get_path (cairo_surface_t	 *surface,

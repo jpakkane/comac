@@ -569,7 +569,6 @@ cairo_surface_write_to_png_stream (cairo_surface_t	*surface,
 
     return write_png (surface, stream_write_func, &png_closure);
 }
-slim_hidden_def (cairo_surface_write_to_png_stream);
 
 static inline int
 multiply_alpha (int alpha, int color)
