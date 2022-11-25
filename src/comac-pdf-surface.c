@@ -217,6 +217,47 @@ static const comac_pdf_version_t _comac_pdf_versions[] = {
 static const char *_comac_pdf_version_strings[COMAC_PDF_VERSION_LAST] = {
     "PDF 1.4", "PDF 1.5", "PDF 1.6", "PDF 1.7"};
 
+static const char *_comac_pdf_colorspace_strings[3] = {
+    "DeviceRGB", "DeviceGray", "DeviceCMYK"};
+
+static const char *_comac_pdf_set_stroke_color[3] = {"RG", "G", "K"};
+
+static const char *_comac_pdf_set_nonstroke_color[3] = {"rg", "g", "k"};
+
+typedef struct {
+    double c;
+    double m;
+    double y;
+    double k;
+} CMYKColor;
+
+static double
+rgb2gray (double r, double g, double b)
+{
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+static double
+color2gray (const comac_color_t *c)
+{
+    return rgb2gray (c->red, c->green, c->blue);
+}
+
+static CMYKColor
+color2cmyk (const comac_color_t *c)
+{
+    CMYKColor result;
+    result.k = 1.0 - MAX (c->red, MAX (c->green, c->blue));
+    if (result.k > 0.99) {
+	result.m = result.y = result.c = 0.0;
+    } else {
+	result.c = (1.0 - c->red - result.k) / (1.0 - result.k);
+	result.m = (1.0 - c->green - result.k) / (1.0 - result.k);
+	result.y = (1.0 - c->blue - result.k) / (1.0 - result.k);
+    }
+    return result;
+}
+
 static const char *_comac_pdf_supported_mime_types[] = {
     COMAC_MIME_TYPE_JPEG,
     COMAC_MIME_TYPE_JP2,
@@ -2114,18 +2155,20 @@ _comac_pdf_surface_write_memory_stream (comac_pdf_surface_t *surface,
 				     "   /Filter /FlateDecode\n");
     }
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Subtype /Form\n"
-				 "   /BBox [ %f %f %f %f ]\n"
-				 "   /Group <<\n"
-				 "      /Type /Group\n"
-				 "      /S /Transparency\n"
-				 "      /I true\n"
-				 "      /CS /DeviceRGB\n",
-				 bbox->p1.x,
-				 bbox->p1.y,
-				 bbox->p2.x,
-				 bbox->p2.y);
+    _comac_output_stream_printf (
+	surface->output,
+	"   /Subtype /Form\n"
+	"   /BBox [ %f %f %f %f ]\n"
+	"   /Group <<\n"
+	"      /Type /Group\n"
+	"      /S /Transparency\n"
+	"      /I true\n"
+	"      /CS /%s\n",
+	bbox->p1.x,
+	bbox->p1.y,
+	bbox->p2.x,
+	bbox->p2.y,
+	_comac_pdf_colorspace_strings[surface->base.colorspace]);
 
     if (is_knockout_group)
 	_comac_output_stream_printf (surface->output, "      /K true\n");
@@ -2451,25 +2494,26 @@ _comac_pdf_surface_open_content_stream (comac_pdf_surface_t *surface,
 	assert (bbox != NULL);
 
 	if (is_group) {
-	    status =
-		_comac_pdf_surface_open_stream (surface,
-						resource,
-						surface->compress_streams,
-						"   /Type /XObject\n"
-						"   /Subtype /Form\n"
-						"   /BBox [ %f %f %f %f ]\n"
-						"   /Group <<\n"
-						"      /Type /Group\n"
-						"      /S /Transparency\n"
-						"      /I true\n"
-						"      /CS /DeviceRGB\n"
-						"   >>\n"
-						"   /Resources %d 0 R\n",
-						bbox->p1.x,
-						bbox->p1.y,
-						bbox->p2.x,
-						bbox->p2.y,
-						surface->content_resources.id);
+	    status = _comac_pdf_surface_open_stream (
+		surface,
+		resource,
+		surface->compress_streams,
+		"   /Type /XObject\n"
+		"   /Subtype /Form\n"
+		"   /BBox [ %f %f %f %f ]\n"
+		"   /Group <<\n"
+		"      /Type /Group\n"
+		"      /S /Transparency\n"
+		"      /I true\n"
+		"      /CS /%s\n"
+		"   >>\n"
+		"   /Resources %d 0 R\n",
+		bbox->p1.x,
+		bbox->p1.y,
+		bbox->p2.x,
+		bbox->p2.y,
+		_comac_pdf_colorspace_strings[surface->base.colorspace],
+		surface->content_resources.id);
 	} else {
 	    status =
 		_comac_pdf_surface_open_stream (surface,
@@ -5022,15 +5066,16 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t *surface,
     }
 
     _comac_pdf_surface_update_object (surface, pdf_pattern->pattern_res);
-    _comac_pdf_surface_output_gradient (surface,
-					pdf_pattern,
-					pdf_pattern->pattern_res,
-					&pat_to_pdf,
-					&start,
-					&end,
-					domain,
-					"/DeviceRGB",
-					color_function);
+    _comac_pdf_surface_output_gradient (
+	surface,
+	pdf_pattern,
+	pdf_pattern->pattern_res,
+	&pat_to_pdf,
+	&start,
+	&end,
+	domain,
+	_comac_pdf_colorspace_strings[surface->base.colorspace],
+	color_function);
 
     if (alpha_function.id != 0) {
 	comac_pdf_resource_t mask_resource;
@@ -5097,19 +5142,21 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t *surface,
     if (unlikely (res.id == 0))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    _comac_output_stream_printf (surface->output,
-				 "%d 0 obj\n"
-				 "<< /ShadingType %d\n"
-				 "   /ColorSpace /DeviceRGB\n"
-				 "   /BitsPerCoordinate %d\n"
-				 "   /BitsPerComponent %d\n"
-				 "   /BitsPerFlag %d\n"
-				 "   /Decode [",
-				 res.id,
-				 shading.shading_type,
-				 shading.bits_per_coordinate,
-				 shading.bits_per_component,
-				 shading.bits_per_flag);
+    _comac_output_stream_printf (
+	surface->output,
+	"%d 0 obj\n"
+	"<< /ShadingType %d\n"
+	"   /ColorSpace /%s\n"
+	"   /BitsPerCoordinate %d\n"
+	"   /BitsPerComponent %d\n"
+	"   /BitsPerFlag %d\n"
+	"   /Decode [",
+	res.id,
+	shading.shading_type,
+	_comac_pdf_colorspace_strings[surface->base.colorspace],
+	shading.bits_per_coordinate,
+	shading.bits_per_component,
+	shading.bits_per_flag);
 
     for (i = 0; i < shading.decode_array_length; i++)
 	_comac_output_stream_printf (surface->output,
@@ -5532,16 +5579,39 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 	    if (unlikely (status))
 		return status;
 
-	    _comac_output_stream_printf (surface->output,
-					 "%f %f %f ",
-					 solid_color->red,
-					 solid_color->green,
-					 solid_color->blue);
+	    if (surface->base.colorspace == COMAC_COLORSPACE_RGB) {
+		_comac_output_stream_printf (surface->output,
+					     "%f %f %f ",
+					     solid_color->red,
+					     solid_color->green,
+					     solid_color->blue);
+	    } else if (surface->base.colorspace == COMAC_COLORSPACE_GRAY) {
+		_comac_output_stream_printf (surface->output,
+					     "%f ",
+					     color2gray (solid_color));
+	    } else if (surface->base.colorspace == COMAC_COLORSPACE_CMYK) {
+		CMYKColor cc = color2cmyk (solid_color);
+		_comac_output_stream_printf (surface->output,
+					     "%f %f %f %f ",
+					     cc.c,
+					     cc.m,
+					     cc.y,
+					     cc.k);
+	    } else {
+		printf ("Unreachable!\n");
+		abort ();
+	    }
 
 	    if (is_stroke)
-		_comac_output_stream_printf (surface->output, "RG ");
+		_comac_output_stream_printf (
+		    surface->output,
+		    "%s ",
+		    _comac_pdf_set_stroke_color[surface->base.colorspace]);
 	    else
-		_comac_output_stream_printf (surface->output, "rg ");
+		_comac_output_stream_printf (
+		    surface->output,
+		    "%s ",
+		    _comac_pdf_set_nonstroke_color[surface->base.colorspace]);
 
 	    surface->current_color_red = solid_color->red;
 	    surface->current_color_green = solid_color->green;
@@ -7787,24 +7857,26 @@ _comac_pdf_surface_write_page (comac_pdf_surface_t *surface)
     if (unlikely (status))
 	return status;
 
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 "<< /Type /Page %% %d\n"
-				 "   /Parent %d 0 R\n"
-				 "   /MediaBox [ 0 0 %f %f ]\n"
-				 "   /Contents %d 0 R\n"
-				 "   /Group <<\n"
-				 "      /Type /Group\n"
-				 "      /S /Transparency\n"
-				 "      /I true\n"
-				 "      /CS /DeviceRGB\n"
-				 "   >>\n"
-				 "   /Resources %d 0 R\n",
-				 page_num,
-				 surface->pages_resource.id,
-				 surface->width,
-				 surface->height,
-				 surface->content.id,
-				 surface->content_resources.id);
+    _comac_output_stream_printf (
+	surface->object_stream.stream,
+	"<< /Type /Page %% %d\n"
+	"   /Parent %d 0 R\n"
+	"   /MediaBox [ 0 0 %f %f ]\n"
+	"   /Contents %d 0 R\n"
+	"   /Group <<\n"
+	"      /Type /Group\n"
+	"      /S /Transparency\n"
+	"      /I true\n"
+	"      /CS /%s\n"
+	"   >>\n"
+	"   /Resources %d 0 R\n",
+	page_num,
+	surface->pages_resource.id,
+	surface->width,
+	surface->height,
+	surface->content.id,
+	_comac_pdf_colorspace_strings[surface->base.colorspace],
+	surface->content_resources.id);
 
     if (surface->page_parent_tree >= 0) {
 	_comac_output_stream_printf (surface->object_stream.stream,
