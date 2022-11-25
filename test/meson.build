@@ -419,17 +419,6 @@ test_ft_font_sources = [
   'ft-text-antialias-none.c',
 ]
 
-test_gl_sources = [
-  'gl-device-release.c',
-  'gl-oversized-surface.c',
-  'gl-surface-source.c',
-]
-
-test_egl_sources = [
-  'egl-oversized-surface.c',
-  'egl-surface-source.c',
-]
-
 test_pdf_sources = [
   'pdf-features.c',
   'pdf-mime-data.c',
@@ -488,10 +477,6 @@ if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
   has_multipage_surfaces = true
   add_fallback_resolution = true
   build_any2ppm = true
-endif
-
-if feature_conf.get('CAIRO_HAS_EGL_FUNCTIONS', 0) == 1
-  test_sources += test_egl_sources
 endif
 
 if has_multipage_surfaces

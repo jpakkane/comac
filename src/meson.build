@@ -131,37 +131,12 @@ cairo_feature_sources = {
   'cairo-ft': [
     'cairo-ft-font.c',
   ],
-
-  'cairo-gl': [
-    'cairo-gl-composite.c',
-    'cairo-gl-device.c',
-    'cairo-gl-dispatch.c',
-    'cairo-gl-glyphs.c',
-    'cairo-gl-gradient.c',
-    'cairo-gl-info.c',
-    'cairo-gl-msaa-compositor.c',
-    'cairo-gl-operand.c',
-    'cairo-gl-shaders.c',
-    'cairo-gl-source.c',
-    'cairo-gl-spans-compositor.c',
-    'cairo-gl-surface.c',
-    'cairo-gl-traps-compositor.c',
-  ],
   'cairo-script': [
     'cairo-script-surface.c',
   ],
   'cairo-pdf': [
     'cairo-pdf-surface.c',
     'cairo-pdf-interchange.c',
-  ],
-  'cairo-egl': [
-    'cairo-egl-context.c',
-  ],
-  'cairo-glx': [
-    'cairo-glx-context.c',
-  ],
-  'cairo-wgl': [
-    'cairo-wgl-context.c',
   ],
   'cairo-xml': [
     'cairo-xml-surface.c',
@@ -174,11 +149,9 @@ cairo_feature_sources = {
 cairo_feature_headers = {
   'cairo-pdf': ['cairo-pdf.h'],
   'cairo-ft': ['cairo-ft.h'],
-  'cairo-gl': ['cairo-gl.h'],
   'cairo-script': ['cairo-script.h'],
   'cairo-tee': ['cairo-tee.h'],
   'cairo-xml': ['cairo-xml.h'],
-  'cairo-vg': ['cairo-vg.h'],
 }
 
 cairo_no_warn_c_args = cc.get_supported_arguments([
