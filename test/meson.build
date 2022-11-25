@@ -395,12 +395,6 @@ test_sources = [
   'user-font-subpixel.c',
   'world-map.c',
   'white-in-noop.c',
-  'xcb-huge-image-shm.c',
-  'xcb-huge-subimage.c',
-  'xcb-stress-cache.c',
-  'xcb-snapshot-assert.c',
-  'xcomposite-projection.c',
-  'xlib-expose-event.c',
   'zero-alpha.c',
   'zero-mask.c',
 ]
@@ -442,19 +436,6 @@ test_pdf_sources = [
   'pdf-operators-text.c',
   'pdf-surface-source.c',
   'pdf-tagged-text.c',
-]
-
-test_xcb_sources = [
-  'xcb-surface-source.c',
-]
-
-test_xlib_sources = [
-  'xlib-surface.c',
-  'xlib-surface-source.c',
-]
-
-test_xlib_xrender_sources = [
-  'get-xrender-format.c',
 ]
 
 test_multi_page_sources = [
@@ -507,18 +488,6 @@ if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
   has_multipage_surfaces = true
   add_fallback_resolution = true
   build_any2ppm = true
-endif
-
-if feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1
-  test_sources += test_xcb_sources
-endif
-
-if feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1
-  test_sources += test_xlib_sources
-endif
-
-if feature_conf.get('CAIRO_HAS_XLIB_XRENDER_SURFACE', 0) == 1
-  test_sources += test_xlib_xrender_sources
 endif
 
 if feature_conf.get('CAIRO_HAS_EGL_FUNCTIONS', 0) == 1
