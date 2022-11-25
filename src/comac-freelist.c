@@ -97,7 +97,8 @@ _comac_freepool_init (comac_freepool_t *freepool, unsigned nodesize)
     freepool->embedded_pool.rem = sizeof (freepool->embedded_data);
     freepool->embedded_pool.data = freepool->embedded_data;
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (freepool->embedded_data, sizeof (freepool->embedded_data)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (freepool->embedded_data,
+				     sizeof (freepool->embedded_data)));
 }
 
 void
@@ -183,7 +184,7 @@ _comac_freepool_alloc_array (comac_freepool_t *freepool,
 
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP:
+CLEANUP:
     while (i--)
 	_comac_freepool_free (freepool, array[i]);
 

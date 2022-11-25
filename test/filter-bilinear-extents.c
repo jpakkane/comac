@@ -37,10 +37,10 @@
  *	https://bugs.freedesktop.org/show_bug.cgi?id=15349
  */
 
-#define SCALE	10
-#define PAD	3
-#define WIDTH	(PAD + 3 * SCALE + PAD)
-#define HEIGHT	WIDTH
+#define SCALE 10
+#define PAD 3
+#define WIDTH (PAD + 3 * SCALE + PAD)
+#define HEIGHT WIDTH
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -56,11 +56,11 @@ draw (comac_t *cr, int width, int height)
 
     /* First check handling of pattern extents > surface extents */
     comac_save (cr);
-    comac_scale (cr, width/2., height/2.);
+    comac_scale (cr, width / 2., height / 2.);
 
     /* Create a solid black source to merge with the background */
     cr2 = comac_create (image);
-    comac_set_source_rgb (cr2, 0, 0 ,0);
+    comac_set_source_rgb (cr2, 0, 0, 0);
     comac_paint (cr2);
     comac_set_source_surface (cr, comac_get_target (cr2), 0, 0);
     comac_destroy (cr2);
@@ -76,7 +76,7 @@ draw (comac_t *cr, int width, int height)
 
     /* Create a 2x2 blue+red checkerboard source */
     cr2 = comac_create (image);
-    comac_set_source_rgb (cr2, 1, 0 ,0); /* red */
+    comac_set_source_rgb (cr2, 1, 0, 0); /* red */
     comac_paint (cr2);
     comac_set_source_rgb (cr2, 0, 0, 1); /* blue */
     comac_rectangle (cr2, 0, 1, 1, 1);
@@ -94,9 +94,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (filter_bilinear_extents,
-	    "Test that pattern extents are properly computed for COMAC_FILTER_BILINEAR",
-	    "extents", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    filter_bilinear_extents,
+    "Test that pattern extents are properly computed for COMAC_FILTER_BILINEAR",
+    "extents", /* keywords */
+    NULL,      /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

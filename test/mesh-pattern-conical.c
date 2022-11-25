@@ -27,13 +27,12 @@
 #include "comac-test.h"
 #include <math.h>
 
-#define PAT_WIDTH  100
+#define PAT_WIDTH 100
 #define PAT_HEIGHT 100
 #define SIZE PAT_WIDTH
 #define PAD 2
 #define WIDTH (PAD + SIZE + PAD)
 #define HEIGHT WIDTH
-
 
 /*
  * This test is designed to paint a mesh pattern which contains 8
@@ -42,14 +41,18 @@
 
 #define CENTER_X 50
 #define CENTER_Y 50
-#define RADIUS   50
+#define RADIUS 50
 
 static void
 sector_patch (comac_pattern_t *pattern,
 	      double angle_A,
-	      double A_r, double A_g, double A_b,
+	      double A_r,
+	      double A_g,
+	      double A_b,
 	      double angle_B,
-	      double B_r, double B_g, double B_b)
+	      double B_r,
+	      double B_g,
+	      double B_b)
 {
     double r_sin_A, r_cos_A;
     double r_sin_B, r_cos_B;
@@ -60,7 +63,7 @@ sector_patch (comac_pattern_t *pattern,
     r_sin_B = RADIUS * sin (angle_B);
     r_cos_B = RADIUS * cos (angle_B);
 
-    h = 4.0/3.0 * tan ((angle_B - angle_A) / 4.0);
+    h = 4.0 / 3.0 * tan ((angle_B - angle_A) / 4.0);
 
     comac_mesh_pattern_begin_patch (pattern);
 
@@ -95,30 +98,14 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, PAD, PAD);
 
     pattern = comac_pattern_create_mesh ();
-    sector_patch (pattern,
-		  0,         1, 0, 0,
-		  M_PI/4,    1, 1, 0);
-    sector_patch (pattern,
-		  M_PI/4,    0, 1, 0,
-		  M_PI/2,    0, 1, 1);
-    sector_patch (pattern,
-		  M_PI/2,    0, 0, 1,
-		  3*M_PI/4,  1, 0, 1);
-    sector_patch (pattern,
-		  3*M_PI/4,  1, 0, 0,
-		  M_PI,      1, 1, 0);
-    sector_patch (pattern,
-		  -M_PI,     1, 1, 0,
-		  -3*M_PI/4, 0, 1, 0);
-    sector_patch (pattern,
-		  -3*M_PI/4, 0, 1, 0,
-		  -M_PI/2,   0, 1, 1);
-    sector_patch (pattern,
-		  -M_PI/2,   0, 1, 1,
-		  -M_PI/4,   0, 0, 1);
-    sector_patch (pattern,
-		  -M_PI/4,   0, 0, 1,
-		  0,         1, 0, 0);
+    sector_patch (pattern, 0, 1, 0, 0, M_PI / 4, 1, 1, 0);
+    sector_patch (pattern, M_PI / 4, 0, 1, 0, M_PI / 2, 0, 1, 1);
+    sector_patch (pattern, M_PI / 2, 0, 0, 1, 3 * M_PI / 4, 1, 0, 1);
+    sector_patch (pattern, 3 * M_PI / 4, 1, 0, 0, M_PI, 1, 1, 0);
+    sector_patch (pattern, -M_PI, 1, 1, 0, -3 * M_PI / 4, 0, 1, 0);
+    sector_patch (pattern, -3 * M_PI / 4, 0, 1, 0, -M_PI / 2, 0, 1, 1);
+    sector_patch (pattern, -M_PI / 2, 0, 1, 1, -M_PI / 4, 0, 0, 1);
+    sector_patch (pattern, -M_PI / 4, 0, 0, 1, 0, 1, 0, 0);
 
     comac_set_source (cr, pattern);
     comac_paint (cr);
@@ -130,6 +117,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mesh_pattern_conical,
 	    "Paint a conical pattern using a mesh pattern",
 	    "conical, mesh, pattern", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,		      /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

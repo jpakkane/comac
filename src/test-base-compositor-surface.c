@@ -55,14 +55,14 @@
  * important of all does not try to be clever!
  */
 
-typedef comac_int_status_t
-(*draw_func_t) (comac_image_surface_t		*dst,
-		void				*closure,
-		comac_operator_t		 op,
-		const comac_pattern_t		*pattern,
-		int				 dst_x,
-		int				 dst_y,
-		const comac_rectangle_int_t	*extents);
+typedef comac_int_status_t (*draw_func_t) (
+    comac_image_surface_t *dst,
+    void *closure,
+    comac_operator_t op,
+    const comac_pattern_t *pattern,
+    int dst_x,
+    int dst_y,
+    const comac_rectangle_int_t *extents);
 
 static pixman_op_t
 _pixman_operator (comac_operator_t op)
@@ -138,9 +138,9 @@ _pixman_operator (comac_operator_t op)
 }
 
 static comac_image_surface_t *
-create_composite_mask (comac_image_surface_t	*dst,
-		       void			*draw_closure,
-		       draw_func_t		 draw_func,
+create_composite_mask (comac_image_surface_t *dst,
+		       void *draw_closure,
+		       draw_func_t draw_func,
 		       const comac_composite_rectangles_t *extents)
 {
     comac_image_surface_t *surface;
@@ -149,16 +149,20 @@ create_composite_mask (comac_image_surface_t	*dst,
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     surface = (comac_image_surface_t *)
-	_comac_image_surface_create_with_pixman_format (NULL, PIXMAN_a8,
+	_comac_image_surface_create_with_pixman_format (NULL,
+							PIXMAN_a8,
 							extents->bounded.width,
 							extents->bounded.height,
 							0);
     if (unlikely (surface->base.status))
 	return surface;
 
-    status = draw_func (surface, draw_closure,
-			COMAC_OPERATOR_ADD, &_comac_pattern_white.base,
-			extents->bounded.x, extents->bounded.y,
+    status = draw_func (surface,
+			draw_closure,
+			COMAC_OPERATOR_ADD,
+			&_comac_pattern_white.base,
+			extents->bounded.x,
+			extents->bounded.y,
 			&extents->bounded);
     if (unlikely (status))
 	goto error;
@@ -174,18 +178,18 @@ create_composite_mask (comac_image_surface_t	*dst,
 
 error:
     comac_surface_destroy (&surface->base);
-    return (comac_image_surface_t *)_comac_surface_create_in_error (status);
+    return (comac_image_surface_t *) _comac_surface_create_in_error (status);
 }
 
 /* Handles compositing with a clip surface when the operator allows
  * us to combine the clip with the mask
  */
 static comac_status_t
-clip_and_composite_with_mask (const comac_composite_rectangles_t*extents,
-			      draw_func_t		 draw_func,
-			      void			*draw_closure)
+clip_and_composite_with_mask (const comac_composite_rectangles_t *extents,
+			      draw_func_t draw_func,
+			      void *draw_closure)
 {
-    comac_image_surface_t *dst = (comac_image_surface_t *)extents->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *) extents->surface;
     comac_image_surface_t *mask;
     pixman_image_t *src;
     comac_status_t status = COMAC_STATUS_SUCCESS;
@@ -198,22 +202,29 @@ clip_and_composite_with_mask (const comac_composite_rectangles_t*extents,
 	return mask->base.status;
 
     src = _pixman_image_for_pattern (dst,
-				     &extents->source_pattern.base, FALSE,
+				     &extents->source_pattern.base,
+				     FALSE,
 				     &extents->bounded,
 				     &extents->source_sample_area,
-				     &src_x, &src_y);
+				     &src_x,
+				     &src_y);
     if (unlikely (src == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto error;
     }
 
     pixman_image_composite32 (_pixman_operator (extents->op),
-			      src, mask->pixman_image, dst->pixman_image,
+			      src,
+			      mask->pixman_image,
+			      dst->pixman_image,
 			      extents->bounded.x + src_x,
 			      extents->bounded.y + src_y,
-			      0, 0,
-			      extents->bounded.x,      extents->bounded.y,
-			      extents->bounded.width,  extents->bounded.height);
+			      0,
+			      0,
+			      extents->bounded.x,
+			      extents->bounded.y,
+			      extents->bounded.width,
+			      extents->bounded.height);
 
     pixman_image_unref (src);
 error:
@@ -225,11 +236,11 @@ error:
  * in two pieces and combine them together.
  */
 static comac_status_t
-clip_and_composite_combine (const comac_composite_rectangles_t*extents,
-			    draw_func_t			 draw_func,
-			    void			*draw_closure)
+clip_and_composite_combine (const comac_composite_rectangles_t *extents,
+			    draw_func_t draw_func,
+			    void *draw_closure)
 {
-    comac_image_surface_t *dst = (comac_image_surface_t *)extents->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *) extents->surface;
     comac_image_surface_t *tmp, *clip;
     int clip_x, clip_y;
     comac_status_t status;
@@ -246,15 +257,24 @@ clip_and_composite_combine (const comac_composite_rectangles_t*extents,
 	return tmp->base.status;
 
     pixman_image_composite32 (PIXMAN_OP_SRC,
-			      dst->pixman_image, NULL, tmp->pixman_image,
-			      extents->bounded.x,      extents->bounded.y,
-			      0, 0,
-			      0, 0,
-			      extents->bounded.width,  extents->bounded.height);
+			      dst->pixman_image,
+			      NULL,
+			      tmp->pixman_image,
+			      extents->bounded.x,
+			      extents->bounded.y,
+			      0,
+			      0,
+			      0,
+			      0,
+			      extents->bounded.width,
+			      extents->bounded.height);
 
-    status = draw_func (tmp, draw_closure,
-			extents->op, &extents->source_pattern.base,
-			extents->bounded.x, extents->bounded.y,
+    status = draw_func (tmp,
+			draw_closure,
+			extents->op,
+			&extents->source_pattern.base,
+			extents->bounded.x,
+			extents->bounded.y,
 			&extents->bounded);
     if (unlikely (status))
 	goto error;
@@ -265,21 +285,33 @@ clip_and_composite_combine (const comac_composite_rectangles_t*extents,
 	goto error;
 
     pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-			      clip->pixman_image, NULL, dst->pixman_image,
-			      extents->bounded.x - clip_x, extents->bounded.y - clip_y,
-			      0,      0,
-			      extents->bounded.x, extents->bounded.y,
-			      extents->bounded.width, extents->bounded.height);
+			      clip->pixman_image,
+			      NULL,
+			      dst->pixman_image,
+			      extents->bounded.x - clip_x,
+			      extents->bounded.y - clip_y,
+			      0,
+			      0,
+			      extents->bounded.x,
+			      extents->bounded.y,
+			      extents->bounded.width,
+			      extents->bounded.height);
     pixman_image_composite32 (PIXMAN_OP_ADD,
-			      tmp->pixman_image, clip->pixman_image, dst->pixman_image,
-			      0,  0,
-			      extents->bounded.x - clip_x, extents->bounded.y - clip_y,
-			      extents->bounded.x, extents->bounded.y,
-			      extents->bounded.width, extents->bounded.height);
+			      tmp->pixman_image,
+			      clip->pixman_image,
+			      dst->pixman_image,
+			      0,
+			      0,
+			      extents->bounded.x - clip_x,
+			      extents->bounded.y - clip_y,
+			      extents->bounded.x,
+			      extents->bounded.y,
+			      extents->bounded.width,
+			      extents->bounded.height);
 
     comac_surface_destroy (&clip->base);
 
- error:
+error:
     comac_surface_destroy (&tmp->base);
 
     return status;
@@ -289,11 +321,11 @@ clip_and_composite_combine (const comac_composite_rectangles_t*extents,
  * defined as (src IN mask IN clip) ADD (dst OUT (mask IN clip))
  */
 static comac_status_t
-clip_and_composite_source (const comac_composite_rectangles_t	*extents,
-			   draw_func_t				 draw_func,
-			   void					*draw_closure)
+clip_and_composite_source (const comac_composite_rectangles_t *extents,
+			   draw_func_t draw_func,
+			   void *draw_closure)
 {
-    comac_image_surface_t *dst = (comac_image_surface_t *)extents->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *) extents->surface;
     comac_image_surface_t *mask;
     pixman_image_t *src;
     int src_x, src_y;
@@ -306,28 +338,42 @@ clip_and_composite_source (const comac_composite_rectangles_t	*extents,
 	return mask->base.status;
 
     pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-			      mask->pixman_image, NULL, dst->pixman_image,
-			      0,      0,
-			      0,      0,
-			      extents->bounded.x, extents->bounded.y,
-			      extents->bounded.width, extents->bounded.height);
+			      mask->pixman_image,
+			      NULL,
+			      dst->pixman_image,
+			      0,
+			      0,
+			      0,
+			      0,
+			      extents->bounded.x,
+			      extents->bounded.y,
+			      extents->bounded.width,
+			      extents->bounded.height);
 
     src = _pixman_image_for_pattern (dst,
-				     &extents->source_pattern.base, FALSE,
+				     &extents->source_pattern.base,
+				     FALSE,
 				     &extents->bounded,
 				     &extents->source_sample_area,
-				     &src_x, &src_y);
+				     &src_x,
+				     &src_y);
     if (unlikely (src == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto error;
     }
 
     pixman_image_composite32 (PIXMAN_OP_ADD,
-			      src, mask->pixman_image, dst->pixman_image,
-			      extents->bounded.x + src_x,  extents->bounded.y + src_y,
-			      0, 0,
-			      extents->bounded.x, extents->bounded.y,
-			      extents->bounded.width, extents->bounded.height);
+			      src,
+			      mask->pixman_image,
+			      dst->pixman_image,
+			      extents->bounded.x + src_x,
+			      extents->bounded.y + src_y,
+			      0,
+			      0,
+			      extents->bounded.x,
+			      extents->bounded.y,
+			      extents->bounded.width,
+			      extents->bounded.height);
 
     pixman_image_unref (src);
 
@@ -339,7 +385,7 @@ error:
 static comac_status_t
 fixup_unbounded (const comac_composite_rectangles_t *extents)
 {
-    comac_image_surface_t *dst = (comac_image_surface_t *)extents->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *) extents->surface;
     pixman_image_t *mask;
     int mask_x, mask_y;
 
@@ -348,9 +394,10 @@ fixup_unbounded (const comac_composite_rectangles_t *extents)
     if (! _comac_clip_is_region (extents->clip)) {
 	comac_image_surface_t *clip;
 
-	clip = (comac_image_surface_t *)
-	    _comac_clip_get_surface (extents->clip, &dst->base,
-				     &mask_x, &mask_y);
+	clip = (comac_image_surface_t *) _comac_clip_get_surface (extents->clip,
+								  &dst->base,
+								  &mask_x,
+								  &mask_y);
 	if (unlikely (clip->base.status))
 	    return clip->base.status;
 
@@ -371,11 +418,17 @@ fixup_unbounded (const comac_composite_rectangles_t *extents)
 	int height = extents->bounded.y - y;
 
 	pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-				  mask, NULL, dst->pixman_image,
-				  x - mask_x, y - mask_y,
-				  0, 0,
-				  x, y,
-				  width, height);
+				  mask,
+				  NULL,
+				  dst->pixman_image,
+				  x - mask_x,
+				  y - mask_y,
+				  0,
+				  0,
+				  x,
+				  y,
+				  width,
+				  height);
     }
 
     /* left */
@@ -386,41 +439,61 @@ fixup_unbounded (const comac_composite_rectangles_t *extents)
 	int height = extents->bounded.height;
 
 	pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-				  mask, NULL, dst->pixman_image,
-				  x - mask_x, y - mask_y,
-				  0, 0,
-				  x, y,
-				  width, height);
+				  mask,
+				  NULL,
+				  dst->pixman_image,
+				  x - mask_x,
+				  y - mask_y,
+				  0,
+				  0,
+				  x,
+				  y,
+				  width,
+				  height);
     }
 
     /* right */
-    if (extents->bounded.x + extents->bounded.width != extents->unbounded.x + extents->unbounded.width) {
+    if (extents->bounded.x + extents->bounded.width !=
+	extents->unbounded.x + extents->unbounded.width) {
 	int x = extents->bounded.x + extents->bounded.width;
 	int y = extents->bounded.y;
 	int width = extents->unbounded.x + extents->unbounded.width - x;
 	int height = extents->bounded.height;
 
 	pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-				  mask, NULL, dst->pixman_image,
-				  x - mask_x, y - mask_y,
-				  0, 0,
-				  x, y,
-				  width, height);
+				  mask,
+				  NULL,
+				  dst->pixman_image,
+				  x - mask_x,
+				  y - mask_y,
+				  0,
+				  0,
+				  x,
+				  y,
+				  width,
+				  height);
     }
 
     /* bottom */
-    if (extents->bounded.y + extents->bounded.height != extents->unbounded.y + extents->unbounded.height) {
+    if (extents->bounded.y + extents->bounded.height !=
+	extents->unbounded.y + extents->unbounded.height) {
 	int x = extents->unbounded.x;
 	int y = extents->bounded.y + extents->bounded.height;
 	int width = extents->unbounded.width;
 	int height = extents->unbounded.y + extents->unbounded.height - y;
 
 	pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-				  mask, NULL, dst->pixman_image,
-				  x - mask_x, y - mask_y,
-				  0, 0,
-				  x, y,
-				  width, height);
+				  mask,
+				  NULL,
+				  dst->pixman_image,
+				  x - mask_x,
+				  y - mask_y,
+				  0,
+				  0,
+				  x,
+				  y,
+				  width,
+				  height);
     }
 
     pixman_image_unref (mask);
@@ -442,8 +515,8 @@ set_clip_region (comac_composite_rectangles_t *extents)
 
 static comac_status_t
 clip_and_composite (comac_composite_rectangles_t *extents,
-		    draw_func_t		 draw_func,
-		    void		*draw_closure)
+		    draw_func_t draw_func,
+		    void *draw_closure)
 {
     comac_status_t status;
 
@@ -460,15 +533,20 @@ clip_and_composite (comac_composite_rectangles_t *extents,
 	}
 	if (! _comac_clip_is_region (extents->clip)) {
 	    if (extents->is_bounded)
-		status = clip_and_composite_with_mask (extents, draw_func, draw_closure);
+		status = clip_and_composite_with_mask (extents,
+						       draw_func,
+						       draw_closure);
 	    else
-		status = clip_and_composite_combine (extents, draw_func, draw_closure);
+		status = clip_and_composite_combine (extents,
+						     draw_func,
+						     draw_closure);
 	} else {
 	    status = draw_func ((comac_image_surface_t *) extents->surface,
 				draw_closure,
 				extents->op,
 				&extents->source_pattern.base,
-				0, 0,
+				0,
+				0,
 				&extents->bounded);
 	}
     }
@@ -482,13 +560,13 @@ clip_and_composite (comac_composite_rectangles_t *extents,
 /* high-level compositor interface */
 
 static comac_int_status_t
-composite_paint (comac_image_surface_t		*dst,
-		 void				*closure,
-		 comac_operator_t		 op,
-		 const comac_pattern_t		*pattern,
-		 int				 dst_x,
-		 int				 dst_y,
-		 const comac_rectangle_int_t	*extents)
+composite_paint (comac_image_surface_t *dst,
+		 void *closure,
+		 comac_operator_t op,
+		 const comac_pattern_t *pattern,
+		 int dst_x,
+		 int dst_y,
+		 const comac_rectangle_int_t *extents)
 {
     comac_rectangle_int_t sample;
     pixman_image_t *src;
@@ -498,23 +576,37 @@ composite_paint (comac_image_surface_t		*dst,
 
     _comac_pattern_sampled_area (pattern, extents, &sample);
     src = _pixman_image_for_pattern (dst,
-				     pattern, FALSE,
-				     extents, &sample,
-				     &src_x, &src_y);
+				     pattern,
+				     FALSE,
+				     extents,
+				     &sample,
+				     &src_x,
+				     &src_y);
     if (unlikely (src == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    TRACE ((stderr, "%s: src=(%d, %d), dst=(%d, %d) size=%dx%d\n", __FUNCTION__,
-	    extents->x + src_x, extents->y + src_y,
-	    extents->x - dst_x, extents->y - dst_y,
-	    extents->width, extents->height));
+    TRACE ((stderr,
+	    "%s: src=(%d, %d), dst=(%d, %d) size=%dx%d\n",
+	    __FUNCTION__,
+	    extents->x + src_x,
+	    extents->y + src_y,
+	    extents->x - dst_x,
+	    extents->y - dst_y,
+	    extents->width,
+	    extents->height));
 
     pixman_image_composite32 (_pixman_operator (op),
-			      src, NULL, dst->pixman_image,
-			      extents->x + src_x, extents->y + src_y,
-			      0, 0,
-			      extents->x - dst_x, extents->y - dst_y,
-			      extents->width, extents->height);
+			      src,
+			      NULL,
+			      dst->pixman_image,
+			      extents->x + src_x,
+			      extents->y + src_y,
+			      0,
+			      0,
+			      extents->x - dst_x,
+			      extents->y - dst_y,
+			      extents->width,
+			      extents->height);
 
     pixman_image_unref (src);
 
@@ -530,13 +622,13 @@ base_compositor_paint (const comac_compositor_t *_compositor,
 }
 
 static comac_int_status_t
-composite_mask (comac_image_surface_t		*dst,
-		void				*closure,
-		comac_operator_t		 op,
-		const comac_pattern_t		*pattern,
-		int				 dst_x,
-		int				 dst_y,
-		const comac_rectangle_int_t	 *extents)
+composite_mask (comac_image_surface_t *dst,
+		void *closure,
+		comac_operator_t op,
+		const comac_pattern_t *pattern,
+		int dst_x,
+		int dst_y,
+		const comac_rectangle_int_t *extents)
 {
     comac_rectangle_int_t sample;
     pixman_image_t *src, *mask;
@@ -546,27 +638,41 @@ composite_mask (comac_image_surface_t		*dst,
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     _comac_pattern_sampled_area (pattern, extents, &sample);
-    src = _pixman_image_for_pattern (dst, pattern, FALSE,
-				     extents, &sample,
-				     &src_x, &src_y);
+    src = _pixman_image_for_pattern (dst,
+				     pattern,
+				     FALSE,
+				     extents,
+				     &sample,
+				     &src_x,
+				     &src_y);
     if (unlikely (src == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     _comac_pattern_sampled_area (closure, extents, &sample);
-    mask = _pixman_image_for_pattern (dst, closure, TRUE,
-				      extents, &sample,
-				      &mask_x, &mask_y);
+    mask = _pixman_image_for_pattern (dst,
+				      closure,
+				      TRUE,
+				      extents,
+				      &sample,
+				      &mask_x,
+				      &mask_y);
     if (unlikely (mask == NULL)) {
 	pixman_image_unref (src);
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
     pixman_image_composite32 (_pixman_operator (op),
-			      src, mask, dst->pixman_image,
-			      extents->x + src_x, extents->y + src_y,
-			      extents->x + mask_x, extents->y + mask_y,
-			      extents->x - dst_x, extents->y - dst_y,
-			      extents->width, extents->height);
+			      src,
+			      mask,
+			      dst->pixman_image,
+			      extents->x + src_x,
+			      extents->y + src_y,
+			      extents->x + mask_x,
+			      extents->y + mask_y,
+			      extents->x - dst_x,
+			      extents->y - dst_y,
+			      extents->width,
+			      extents->height);
 
     pixman_image_unref (mask);
     pixman_image_unref (src);
@@ -579,7 +685,9 @@ base_compositor_mask (const comac_compositor_t *_compositor,
 		      comac_composite_rectangles_t *extents)
 {
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    return clip_and_composite (extents, composite_mask, &extents->mask_pattern.base);
+    return clip_and_composite (extents,
+			       composite_mask,
+			       &extents->mask_pattern.base);
 }
 
 typedef struct {
@@ -588,12 +696,12 @@ typedef struct {
 } composite_traps_info_t;
 
 static comac_int_status_t
-composite_traps (comac_image_surface_t	*dst,
-		 void			*closure,
-		 comac_operator_t	 op,
-		 const comac_pattern_t	*pattern,
-		 int			 dst_x,
-		 int			 dst_y,
+composite_traps (comac_image_surface_t *dst,
+		 void *closure,
+		 comac_operator_t op,
+		 const comac_pattern_t *pattern,
+		 int dst_x,
+		 int dst_y,
 		 const comac_rectangle_int_t *extents)
 {
     composite_traps_info_t *info = closure;
@@ -604,15 +712,22 @@ composite_traps (comac_image_surface_t	*dst,
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     _comac_pattern_sampled_area (pattern, extents, &sample);
-    src = _pixman_image_for_pattern (dst, pattern, FALSE,
-				     extents, &sample,
-				     &src_x, &src_y);
+    src = _pixman_image_for_pattern (dst,
+				     pattern,
+				     FALSE,
+				     extents,
+				     &sample,
+				     &src_x,
+				     &src_y);
     if (unlikely (src == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    mask = pixman_image_create_bits (info->antialias == COMAC_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8,
-				     extents->width, extents->height,
-				     NULL, 0);
+    mask = pixman_image_create_bits (
+	info->antialias == COMAC_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8,
+	extents->width,
+	extents->height,
+	NULL,
+	0);
     if (unlikely (mask == NULL)) {
 	pixman_image_unref (src);
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -620,16 +735,22 @@ composite_traps (comac_image_surface_t	*dst,
 
     _pixman_image_add_traps (mask, extents->x, extents->y, &info->traps);
     pixman_image_composite32 (_pixman_operator (op),
-                              src, mask, dst->pixman_image,
-                              extents->x + src_x - dst_x, extents->y + src_y - dst_y,
-                              0, 0,
-                              extents->x - dst_x, extents->y - dst_y,
-                              extents->width, extents->height);
+			      src,
+			      mask,
+			      dst->pixman_image,
+			      extents->x + src_x - dst_x,
+			      extents->y + src_y - dst_y,
+			      0,
+			      0,
+			      extents->x - dst_x,
+			      extents->y - dst_y,
+			      extents->width,
+			      extents->height);
 
     pixman_image_unref (mask);
     pixman_image_unref (src);
 
-    return  COMAC_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
@@ -650,10 +771,10 @@ base_compositor_stroke (const comac_compositor_t *_compositor,
 			comac_composite_rectangles_t *extents,
 			const comac_path_fixed_t *path,
 			const comac_stroke_style_t *style,
-			const comac_matrix_t	*ctm,
-			const comac_matrix_t	*ctm_inverse,
-			double			 tolerance,
-			comac_antialias_t	 antialias)
+			const comac_matrix_t *ctm,
+			const comac_matrix_t *ctm_inverse,
+			double tolerance,
+			comac_antialias_t antialias)
 {
     composite_traps_info_t info;
     comac_int_status_t status;
@@ -662,8 +783,10 @@ base_compositor_stroke (const comac_compositor_t *_compositor,
 
     info.antialias = antialias;
     _comac_traps_init_with_clip (&info.traps, extents->clip);
-    status = _comac_path_fixed_stroke_polygon_to_traps (path, style,
-							ctm, ctm_inverse,
+    status = _comac_path_fixed_stroke_polygon_to_traps (path,
+							style,
+							ctm,
+							ctm_inverse,
 							tolerance,
 							&info.traps);
     if (likely (status == COMAC_INT_STATUS_SUCCESS))
@@ -678,10 +801,10 @@ base_compositor_stroke (const comac_compositor_t *_compositor,
 static comac_int_status_t
 base_compositor_fill (const comac_compositor_t *_compositor,
 		      comac_composite_rectangles_t *extents,
-		      const comac_path_fixed_t	*path,
-		      comac_fill_rule_t		 fill_rule,
-		      double			 tolerance,
-		      comac_antialias_t		 antialias)
+		      const comac_path_fixed_t *path,
+		      comac_fill_rule_t fill_rule,
+		      double tolerance,
+		      comac_antialias_t antialias)
 {
     composite_traps_info_t info;
     comac_int_status_t status;
@@ -691,7 +814,8 @@ base_compositor_fill (const comac_compositor_t *_compositor,
     info.antialias = antialias;
     _comac_traps_init_with_clip (&info.traps, extents->clip);
     status = _comac_path_fixed_fill_to_traps (path,
-					      fill_rule, tolerance,
+					      fill_rule,
+					      tolerance,
 					      &info.traps);
     if (likely (status == COMAC_INT_STATUS_SUCCESS))
 	status = trim_extents_to_traps (extents, &info.traps);
@@ -703,12 +827,12 @@ base_compositor_fill (const comac_compositor_t *_compositor,
 }
 
 static comac_int_status_t
-composite_glyphs (comac_image_surface_t	*dst,
-		  void			 *closure,
-		  comac_operator_t	 op,
-		  const comac_pattern_t	*pattern,
-		  int			 dst_x,
-		  int			 dst_y,
+composite_glyphs (comac_image_surface_t *dst,
+		  void *closure,
+		  comac_operator_t op,
+		  const comac_pattern_t *pattern,
+		  int dst_x,
+		  int dst_y,
 		  const comac_rectangle_int_t *extents)
 {
     comac_composite_glyphs_info_t *info = closure;
@@ -719,8 +843,10 @@ composite_glyphs (comac_image_surface_t	*dst,
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     mask = pixman_image_create_bits (PIXMAN_a8,
-				     extents->width, extents->height,
-				     NULL, 0);
+				     extents->width,
+				     extents->height,
+				     NULL,
+				     0);
     if (unlikely (mask == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -732,7 +858,8 @@ composite_glyphs (comac_image_surface_t	*dst,
 	unsigned long glyph_index = info->glyphs[i].index;
 	int x, y;
 
-	status = _comac_scaled_glyph_lookup (info->font, glyph_index,
+	status = _comac_scaled_glyph_lookup (info->font,
+					     glyph_index,
 					     COMAC_SCALED_GLYPH_INFO_SURFACE,
 					     NULL, /* foreground color */
 					     &scaled_glyph);
@@ -750,10 +877,15 @@ composite_glyphs (comac_image_surface_t	*dst,
 			       glyph_surface->base.device_transform.y0);
 
 	    pixman_image_composite32 (PIXMAN_OP_ADD,
-				      glyph_surface->pixman_image, NULL, mask,
-				      0, 0,
-                                      0, 0,
-                                      x - extents->x, y - extents->y,
+				      glyph_surface->pixman_image,
+				      NULL,
+				      mask,
+				      0,
+				      0,
+				      0,
+				      0,
+				      x - extents->x,
+				      y - extents->y,
 				      glyph_surface->width,
 				      glyph_surface->height);
 	}
@@ -766,18 +898,28 @@ composite_glyphs (comac_image_surface_t	*dst,
 	int src_x, src_y;
 
 	_comac_pattern_sampled_area (pattern, extents, &sample);
-	src = _pixman_image_for_pattern (dst, pattern, FALSE,
-					 extents, &sample,
-					 &src_x, &src_y);
+	src = _pixman_image_for_pattern (dst,
+					 pattern,
+					 FALSE,
+					 extents,
+					 &sample,
+					 &src_x,
+					 &src_y);
 	if (src != NULL) {
 	    dst_x = extents->x - dst_x;
 	    dst_y = extents->y - dst_y;
 	    pixman_image_composite32 (_pixman_operator (op),
-				      src, mask, dst->pixman_image,
-				      src_x + dst_x,  src_y + dst_y,
-				      0, 0,
-				      dst_x, dst_y,
-				      extents->width, extents->height);
+				      src,
+				      mask,
+				      dst->pixman_image,
+				      src_x + dst_x,
+				      src_y + dst_y,
+				      0,
+				      0,
+				      dst_x,
+				      dst_y,
+				      extents->width,
+				      extents->height);
 	    pixman_image_unref (src);
 	} else
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -788,12 +930,12 @@ composite_glyphs (comac_image_surface_t	*dst,
 }
 
 static comac_int_status_t
-base_compositor_glyphs (const comac_compositor_t	*_compositor,
-			comac_composite_rectangles_t	*extents,
-			comac_scaled_font_t		*scaled_font,
-			comac_glyph_t			*glyphs,
-			int				 num_glyphs,
-			comac_bool_t			 overlap)
+base_compositor_glyphs (const comac_compositor_t *_compositor,
+			comac_composite_rectangles_t *extents,
+			comac_scaled_font_t *scaled_font,
+			comac_glyph_t *glyphs,
+			int num_glyphs,
+			comac_bool_t overlap)
 {
     comac_composite_glyphs_info_t info;
 
@@ -816,10 +958,12 @@ static const comac_compositor_t base_compositor = {
 };
 
 comac_surface_t *
-_comac_test_base_compositor_surface_create (comac_content_t	content,
-					    int		width,
-					    int		height)
+_comac_test_base_compositor_surface_create (comac_content_t content,
+					    int width,
+					    int height)
 {
     return test_compositor_surface_create (&base_compositor,
-					   content, width, height);
+					   content,
+					   width,
+					   height);
 }

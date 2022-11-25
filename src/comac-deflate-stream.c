@@ -45,61 +45,62 @@
 #define BUFFER_SIZE 16384
 
 typedef struct _comac_deflate_stream {
-    comac_output_stream_t  base;
+    comac_output_stream_t base;
     comac_output_stream_t *output;
-    z_stream               zlib_stream;
-    unsigned char          input_buf[BUFFER_SIZE];
-    unsigned char          output_buf[BUFFER_SIZE];
+    z_stream zlib_stream;
+    unsigned char input_buf[BUFFER_SIZE];
+    unsigned char output_buf[BUFFER_SIZE];
 } comac_deflate_stream_t;
 
 static void
-comac_deflate_stream_deflate (comac_deflate_stream_t *stream, comac_bool_t flush)
+comac_deflate_stream_deflate (comac_deflate_stream_t *stream,
+			      comac_bool_t flush)
 {
     int ret;
     comac_bool_t finished;
 
     do {
-        ret = deflate (&stream->zlib_stream, flush ? Z_FINISH : Z_NO_FLUSH);
-        if (flush || stream->zlib_stream.avail_out == 0)
-        {
-            _comac_output_stream_write (stream->output,
-                                        stream->output_buf,
-                                        BUFFER_SIZE - stream->zlib_stream.avail_out);
-            stream->zlib_stream.next_out = stream->output_buf;
-            stream->zlib_stream.avail_out = BUFFER_SIZE;
-        }
+	ret = deflate (&stream->zlib_stream, flush ? Z_FINISH : Z_NO_FLUSH);
+	if (flush || stream->zlib_stream.avail_out == 0) {
+	    _comac_output_stream_write (stream->output,
+					stream->output_buf,
+					BUFFER_SIZE -
+					    stream->zlib_stream.avail_out);
+	    stream->zlib_stream.next_out = stream->output_buf;
+	    stream->zlib_stream.avail_out = BUFFER_SIZE;
+	}
 
-        finished = TRUE;
-        if (stream->zlib_stream.avail_in != 0)
-            finished = FALSE;
-        if (flush && ret != Z_STREAM_END)
-            finished = FALSE;
+	finished = TRUE;
+	if (stream->zlib_stream.avail_in != 0)
+	    finished = FALSE;
+	if (flush && ret != Z_STREAM_END)
+	    finished = FALSE;
 
-    } while (!finished);
+    } while (! finished);
 
     stream->zlib_stream.next_in = stream->input_buf;
 }
 
 static comac_status_t
 _comac_deflate_stream_write (comac_output_stream_t *base,
-                             const unsigned char   *data,
-                             unsigned int	    length)
+			     const unsigned char *data,
+			     unsigned int length)
 {
     comac_deflate_stream_t *stream = (comac_deflate_stream_t *) base;
     unsigned int count;
     const unsigned char *p = data;
 
     while (length) {
-        count = length;
-        if (count > BUFFER_SIZE - stream->zlib_stream.avail_in)
-            count = BUFFER_SIZE - stream->zlib_stream.avail_in;
-        memcpy (stream->input_buf + stream->zlib_stream.avail_in, p, count);
-        p += count;
-        stream->zlib_stream.avail_in += count;
-        length -= count;
+	count = length;
+	if (count > BUFFER_SIZE - stream->zlib_stream.avail_in)
+	    count = BUFFER_SIZE - stream->zlib_stream.avail_in;
+	memcpy (stream->input_buf + stream->zlib_stream.avail_in, p, count);
+	p += count;
+	stream->zlib_stream.avail_in += count;
+	length -= count;
 
-        if (stream->zlib_stream.avail_in == BUFFER_SIZE)
-            comac_deflate_stream_deflate (stream, FALSE);
+	if (stream->zlib_stream.avail_in == BUFFER_SIZE)
+	    comac_deflate_stream_deflate (stream, FALSE);
     }
 
     return _comac_output_stream_get_status (stream->output);
@@ -137,8 +138,8 @@ _comac_deflate_stream_create (comac_output_stream_t *output)
     stream->output = output;
 
     stream->zlib_stream.zalloc = Z_NULL;
-    stream->zlib_stream.zfree  = Z_NULL;
-    stream->zlib_stream.opaque  = Z_NULL;
+    stream->zlib_stream.zfree = Z_NULL;
+    stream->zlib_stream.opaque = Z_NULL;
 
     if (deflateInit (&stream->zlib_stream, Z_DEFAULT_COMPRESSION) != Z_OK) {
 	free (stream);

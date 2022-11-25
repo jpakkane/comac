@@ -39,7 +39,9 @@ static char *png_filename = NULL;
 /* Lazy way of determining PNG dimensions... */
 static void
 png_dimensions (const char *filename,
-		comac_content_t *content, int *width, int *height)
+		comac_content_t *content,
+		int *width,
+		int *height)
 {
     comac_surface_t *surface;
 
@@ -51,7 +53,8 @@ png_dimensions (const char *filename,
 }
 
 static comac_surface_t *
-png_acquire (comac_pattern_t *pattern, void *closure,
+png_acquire (comac_pattern_t *pattern,
+	     void *closure,
 	     comac_surface_t *target,
 	     const comac_rectangle_int_t *extents)
 {
@@ -59,7 +62,8 @@ png_acquire (comac_pattern_t *pattern, void *closure,
 }
 
 static comac_surface_t *
-red_acquire (comac_pattern_t *pattern, void *closure,
+red_acquire (comac_pattern_t *pattern,
+	     void *closure,
 	     comac_surface_t *target,
 	     const comac_rectangle_int_t *extents)
 {
@@ -87,7 +91,7 @@ release (comac_pattern_t *pattern, void *closure, comac_surface_t *image)
 }
 
 static void
-free_filename(void)
+free_filename (void)
 {
     free (png_filename);
 }
@@ -101,25 +105,29 @@ draw (comac_t *cr, int width, int height)
     int i, j;
 
     if (png_filename == NULL) {
-      const comac_test_context_t *ctx = comac_test_get_context (cr);
-      xasprintf (&png_filename, "%s/png.png", ctx->srcdir);
-      atexit (free_filename);
+	const comac_test_context_t *ctx = comac_test_get_context (cr);
+	xasprintf (&png_filename, "%s/png.png", ctx->srcdir);
+	atexit (free_filename);
     }
 
     png_dimensions (png_filename, &content, &png_width, &png_height);
 
-    png = comac_pattern_create_raster_source ((void*)png_filename,
-					      content, png_width, png_height);
+    png = comac_pattern_create_raster_source ((void *) png_filename,
+					      content,
+					      png_width,
+					      png_height);
     comac_raster_source_pattern_set_acquire (png, png_acquire, release);
 
     red = comac_pattern_create_raster_source (NULL,
-					      COMAC_CONTENT_COLOR, WIDTH, HEIGHT);
+					      COMAC_CONTENT_COLOR,
+					      WIDTH,
+					      HEIGHT);
     comac_raster_source_pattern_set_acquire (red, red_acquire, release);
 
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_paint (cr);
 
-    comac_translate (cr, 0, (HEIGHT-png_height)/2);
+    comac_translate (cr, 0, (HEIGHT - png_height) / 2);
     for (i = 0; i < 4; i++) {
 	for (j = 0; j < 4; j++) {
 	    comac_pattern_t *source;
@@ -128,7 +136,11 @@ draw (comac_t *cr, int width, int height)
 	    else
 		source = png;
 	    comac_set_source (cr, source);
-	    comac_rectangle (cr, i * WIDTH/4, j * png_height/4, WIDTH/4, png_height/4);
+	    comac_rectangle (cr,
+			     i * WIDTH / 4,
+			     j * png_height / 4,
+			     WIDTH / 4,
+			     png_height / 4);
 	    comac_fill (cr);
 	}
     }
@@ -142,6 +154,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (raster_source,
 	    "Check that the mime-surface embedding works",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

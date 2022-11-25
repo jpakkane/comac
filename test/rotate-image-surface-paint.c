@@ -68,7 +68,7 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_pattern_t *source;
-    int surface_size = sqrt ((SIZE - 2*PAD)*(SIZE - 2*PAD)/2);
+    int surface_size = sqrt ((SIZE - 2 * PAD) * (SIZE - 2 * PAD) / 2);
 
     /* Use a gray (neutral) background, so we can spot if the backend pads
      * with any other colour.
@@ -76,13 +76,13 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, .5, .5, .5);
     comac_paint (cr);
 
-    comac_translate(cr, SIZE/2, SIZE/2);
+    comac_translate (cr, SIZE / 2, SIZE / 2);
     comac_rotate (cr, M_PI / 4.0);
-    comac_translate (cr, -surface_size/2, -surface_size/2);
+    comac_translate (cr, -surface_size / 2, -surface_size / 2);
 
     source = create_image_source (surface_size);
     comac_pattern_set_filter (source, COMAC_FILTER_NEAREST);
-    comac_set_source(cr, source);
+    comac_set_source (cr, source);
     comac_pattern_destroy (source);
 
     comac_paint (cr);
@@ -94,7 +94,7 @@ static comac_test_status_t
 clip_draw (comac_t *cr, int width, int height)
 {
     comac_pattern_t *source;
-    int surface_size = sqrt ((SIZE - 2*PAD)*(SIZE - 2*PAD)/2);
+    int surface_size = sqrt ((SIZE - 2 * PAD) * (SIZE - 2 * PAD) / 2);
 
     /* Use a gray (neutral) background, so we can spot if the backend pads
      * with any other colour.
@@ -102,16 +102,16 @@ clip_draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, .5, .5, .5);
     comac_paint (cr);
 
-    comac_rectangle (cr, 2*PAD, 2*PAD, SIZE-4*PAD, SIZE-4*PAD);
+    comac_rectangle (cr, 2 * PAD, 2 * PAD, SIZE - 4 * PAD, SIZE - 4 * PAD);
     comac_clip (cr);
 
-    comac_translate(cr, SIZE/2, SIZE/2);
+    comac_translate (cr, SIZE / 2, SIZE / 2);
     comac_rotate (cr, M_PI / 4.0);
-    comac_translate (cr, -surface_size/2, -surface_size/2);
+    comac_translate (cr, -surface_size / 2, -surface_size / 2);
 
     source = create_image_source (surface_size);
     comac_pattern_set_filter (source, COMAC_FILTER_NEAREST);
-    comac_set_source(cr, source);
+    comac_set_source (cr, source);
     comac_pattern_destroy (source);
 
     comac_paint (cr);
@@ -123,7 +123,7 @@ static comac_test_status_t
 draw_clip (comac_t *cr, int width, int height)
 {
     comac_pattern_t *source;
-    int surface_size = sqrt ((SIZE - 2*PAD)*(SIZE - 2*PAD)/2);
+    int surface_size = sqrt ((SIZE - 2 * PAD) * (SIZE - 2 * PAD) / 2);
 
     /* Use a gray (neutral) background, so we can spot if the backend pads
      * with any other colour.
@@ -131,16 +131,20 @@ draw_clip (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, .5, .5, .5);
     comac_paint (cr);
 
-    comac_translate(cr, SIZE/2, SIZE/2);
+    comac_translate (cr, SIZE / 2, SIZE / 2);
     comac_rotate (cr, M_PI / 4.0);
-    comac_translate (cr, -surface_size/2, -surface_size/2);
+    comac_translate (cr, -surface_size / 2, -surface_size / 2);
 
-    comac_rectangle (cr, PAD, PAD, surface_size-2*PAD, surface_size-2*PAD);
+    comac_rectangle (cr,
+		     PAD,
+		     PAD,
+		     surface_size - 2 * PAD,
+		     surface_size - 2 * PAD);
     comac_clip (cr);
 
     source = create_image_source (surface_size);
     comac_pattern_set_filter (source, COMAC_FILTER_NEAREST);
-    comac_set_source(cr, source);
+    comac_set_source (cr, source);
     comac_pattern_destroy (source);
 
     comac_paint (cr);
@@ -149,24 +153,33 @@ draw_clip (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (rotate_image_surface_paint,
-	    "Test call sequence: image_surface_create; rotate; set_source_surface; paint"
+	    "Test call sequence: image_surface_create; rotate; "
+	    "set_source_surface; paint"
 	    "\nThis test is known to fail on the ps backend currently",
 	    "image, transform, paint", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,		       /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)
 
 COMAC_TEST (clip_rotate_image_surface_paint,
-	    "Test call sequence: image_surface_create; rotate; set_source_surface; paint"
+	    "Test call sequence: image_surface_create; rotate; "
+	    "set_source_surface; paint"
 	    "\nThis test is known to fail on the ps backend currently",
 	    "image, transform, paint", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, clip_draw)
+	    NULL,		       /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    clip_draw)
 COMAC_TEST (rotate_clip_image_surface_paint,
-	    "Test call sequence: image_surface_create; rotate; set_source_surface; paint"
+	    "Test call sequence: image_surface_create; rotate; "
+	    "set_source_surface; paint"
 	    "\nThis test is known to fail on the ps backend currently",
 	    "image, transform, paint", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw_clip)
+	    NULL,		       /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw_clip)

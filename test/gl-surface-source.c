@@ -48,15 +48,17 @@ cleanup (void *data)
 static comac_surface_t *
 create_source_surface (int size)
 {
-    int rgba_attribs[] = {
-	GLX_RGBA,
-	GLX_RED_SIZE, 1,
-	GLX_GREEN_SIZE, 1,
-	GLX_BLUE_SIZE, 1,
-	GLX_ALPHA_SIZE, 1,
-	GLX_DOUBLEBUFFER,
-	None
-    };
+    int rgba_attribs[] = {GLX_RGBA,
+			  GLX_RED_SIZE,
+			  1,
+			  GLX_GREEN_SIZE,
+			  1,
+			  GLX_BLUE_SIZE,
+			  1,
+			  GLX_ALPHA_SIZE,
+			  1,
+			  GLX_DOUBLEBUFFER,
+			  None};
     XVisualInfo *visinfo;
     GLXContext ctx;
     struct closure *arg;
@@ -89,15 +91,13 @@ create_source_surface (int size)
     if (comac_device_set_user_data (device,
 				    (comac_user_data_key_t *) cleanup,
 				    arg,
-				    cleanup))
-    {
+				    cleanup)) {
 	cleanup (arg);
 	return NULL;
     }
 
-    surface = comac_gl_surface_create (device,
-				       COMAC_CONTENT_COLOR_ALPHA,
-				       size, size);
+    surface =
+	comac_gl_surface_create (device, COMAC_CONTENT_COLOR_ALPHA, size, size);
     comac_device_destroy (device);
 
     return surface;
@@ -106,6 +106,8 @@ create_source_surface (int size)
 COMAC_TEST (gl_surface_source,
 	    "Test using a GL surface as the source",
 	    "source", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    preamble, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    preamble,
+	    draw)

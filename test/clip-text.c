@@ -36,8 +36,8 @@ draw (comac_t *cr, int width, int height)
     double x0, y0;
 
     comac_text_extents (cr, comac, &extents);
-    x0 = WIDTH/2. - (extents.width/2. + extents.x_bearing);
-    y0 = HEIGHT/2. - (extents.height/2. + extents.y_bearing);
+    x0 = WIDTH / 2. - (extents.width / 2. + extents.x_bearing);
+    y0 = HEIGHT / 2. - (extents.height / 2. + extents.y_bearing);
 
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
@@ -83,6 +83,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_text,
 	    "Tests drawing text through complex clips.",
 	    "clip, text", /* keywords */
-	    NULL, /* requirements */
-	    2 * WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    2 * WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

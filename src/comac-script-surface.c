@@ -63,7 +63,6 @@
  * Since: 1.12
  **/
 
-
 #include "comacint.h"
 
 #include "comac-script.h"
@@ -93,10 +92,10 @@
 #ifdef WORDS_BIGENDIAN
 #define to_be32(x) x
 #else
-#define to_be32(x) bswap_32(x)
+#define to_be32(x) bswap_32 (x)
 #endif
 
-#define _comac_output_stream_puts(S, STR) \
+#define _comac_output_stream_puts(S, STR)                                      \
     _comac_output_stream_write ((S), (STR), strlen (STR))
 
 #define static comac_warn static
@@ -113,7 +112,6 @@ typedef struct _operand {
     } type;
     comac_list_t link;
 } operand_t;
-
 
 struct deferred_finish {
     comac_list_t link;
@@ -217,7 +215,7 @@ _bitmap_release_id (struct _bitmap *b, unsigned long token)
 
 	    token -= b->min;
 	    elem = token / (sizeof (b->map[0]) * CHAR_BIT);
-	    bit  = token % (sizeof (b->map[0]) * CHAR_BIT);
+	    bit = token % (sizeof (b->map[0]) * CHAR_BIT);
 	    b->map[elem] &= ~(1 << bit);
 	    if (! --b->count && prev) {
 		*prev = b->next;
@@ -231,8 +229,7 @@ _bitmap_release_id (struct _bitmap *b, unsigned long token)
 }
 
 static comac_status_t
-_bitmap_next_id (struct _bitmap *b,
-		 unsigned long *id)
+_bitmap_next_id (struct _bitmap *b, unsigned long *id)
 {
     struct _bitmap *bb, **prev = NULL;
     unsigned long min = 0;
@@ -247,11 +244,12 @@ _bitmap_next_id (struct _bitmap *b,
 		if (b->map[n] == (unsigned int) -1)
 		    continue;
 
-		for (m=0, bit=1; m<sizeof (b->map[0])*CHAR_BIT; m++, bit<<=1) {
+		for (m = 0, bit = 1; m < sizeof (b->map[0]) * CHAR_BIT;
+		     m++, bit <<= 1) {
 		    if ((b->map[n] & bit) == 0) {
 			b->map[n] |= bit;
 			b->count++;
-			*id = n * sizeof (b->map[0])*CHAR_BIT + m + b->min;
+			*id = n * sizeof (b->map[0]) * CHAR_BIT + m + b->min;
 			return COMAC_STATUS_SUCCESS;
 		    }
 		}
@@ -292,10 +290,7 @@ _bitmap_fini (struct _bitmap *b)
 static const char *
 _direction_to_string (comac_bool_t backward)
 {
-    static const char *names[] = {
-	"FORWARD",
-	"BACKWARD"
-    };
+    static const char *names[] = {"FORWARD", "BACKWARD"};
     assert (backward < ARRAY_LENGTH (names));
     return names[backward];
 }
@@ -304,39 +299,39 @@ static const char *
 _operator_to_string (comac_operator_t op)
 {
     static const char *names[] = {
-	"CLEAR",	/* COMAC_OPERATOR_CLEAR */
+	"CLEAR", /* COMAC_OPERATOR_CLEAR */
 
-	"SOURCE",	/* COMAC_OPERATOR_SOURCE */
-	"OVER",		/* COMAC_OPERATOR_OVER */
-	"IN",		/* COMAC_OPERATOR_IN */
-	"OUT",		/* COMAC_OPERATOR_OUT */
-	"ATOP",		/* COMAC_OPERATOR_ATOP */
+	"SOURCE", /* COMAC_OPERATOR_SOURCE */
+	"OVER",	  /* COMAC_OPERATOR_OVER */
+	"IN",	  /* COMAC_OPERATOR_IN */
+	"OUT",	  /* COMAC_OPERATOR_OUT */
+	"ATOP",	  /* COMAC_OPERATOR_ATOP */
 
-	"DEST",		/* COMAC_OPERATOR_DEST */
-	"DEST_OVER",	/* COMAC_OPERATOR_DEST_OVER */
-	"DEST_IN",	/* COMAC_OPERATOR_DEST_IN */
-	"DEST_OUT",	/* COMAC_OPERATOR_DEST_OUT */
-	"DEST_ATOP",	/* COMAC_OPERATOR_DEST_ATOP */
+	"DEST",	     /* COMAC_OPERATOR_DEST */
+	"DEST_OVER", /* COMAC_OPERATOR_DEST_OVER */
+	"DEST_IN",   /* COMAC_OPERATOR_DEST_IN */
+	"DEST_OUT",  /* COMAC_OPERATOR_DEST_OUT */
+	"DEST_ATOP", /* COMAC_OPERATOR_DEST_ATOP */
 
-	"XOR",		/* COMAC_OPERATOR_XOR */
-	"ADD",		/* COMAC_OPERATOR_ADD */
-	"SATURATE",	/* COMAC_OPERATOR_SATURATE */
+	"XOR",	    /* COMAC_OPERATOR_XOR */
+	"ADD",	    /* COMAC_OPERATOR_ADD */
+	"SATURATE", /* COMAC_OPERATOR_SATURATE */
 
-	"MULTIPLY",	/* COMAC_OPERATOR_MULTIPLY */
-	"SCREEN",	/* COMAC_OPERATOR_SCREEN */
-	"OVERLAY",	/* COMAC_OPERATOR_OVERLAY */
-	"DARKEN",	/* COMAC_OPERATOR_DARKEN */
-	"LIGHTEN",	/* COMAC_OPERATOR_LIGHTEN */
-	"DODGE",	/* COMAC_OPERATOR_COLOR_DODGE */
-	"BURN",		/* COMAC_OPERATOR_COLOR_BURN */
-	"HARD_LIGHT",	/* COMAC_OPERATOR_HARD_LIGHT */
-	"SOFT_LIGHT",	/* COMAC_OPERATOR_SOFT_LIGHT */
-	"DIFFERENCE",	/* COMAC_OPERATOR_DIFFERENCE */
-	"EXCLUSION",	/* COMAC_OPERATOR_EXCLUSION */
-	"HSL_HUE",	/* COMAC_OPERATOR_HSL_HUE */
+	"MULTIPLY",	  /* COMAC_OPERATOR_MULTIPLY */
+	"SCREEN",	  /* COMAC_OPERATOR_SCREEN */
+	"OVERLAY",	  /* COMAC_OPERATOR_OVERLAY */
+	"DARKEN",	  /* COMAC_OPERATOR_DARKEN */
+	"LIGHTEN",	  /* COMAC_OPERATOR_LIGHTEN */
+	"DODGE",	  /* COMAC_OPERATOR_COLOR_DODGE */
+	"BURN",		  /* COMAC_OPERATOR_COLOR_BURN */
+	"HARD_LIGHT",	  /* COMAC_OPERATOR_HARD_LIGHT */
+	"SOFT_LIGHT",	  /* COMAC_OPERATOR_SOFT_LIGHT */
+	"DIFFERENCE",	  /* COMAC_OPERATOR_DIFFERENCE */
+	"EXCLUSION",	  /* COMAC_OPERATOR_EXCLUSION */
+	"HSL_HUE",	  /* COMAC_OPERATOR_HSL_HUE */
 	"HSL_SATURATION", /* COMAC_OPERATOR_HSL_SATURATION */
-	"HSL_COLOR",	/* COMAC_OPERATOR_HSL_COLOR */
-	"HSL_LUMINOSITY" /* COMAC_OPERATOR_HSL_LUMINOSITY */
+	"HSL_COLOR",	  /* COMAC_OPERATOR_HSL_COLOR */
+	"HSL_LUMINOSITY"  /* COMAC_OPERATOR_HSL_LUMINOSITY */
     };
     assert (op < ARRAY_LENGTH (names));
     return names[op];
@@ -346,10 +341,10 @@ static const char *
 _extend_to_string (comac_extend_t extend)
 {
     static const char *names[] = {
-	"EXTEND_NONE",		/* COMAC_EXTEND_NONE */
-	"EXTEND_REPEAT",	/* COMAC_EXTEND_REPEAT */
-	"EXTEND_REFLECT",	/* COMAC_EXTEND_REFLECT */
-	"EXTEND_PAD"		/* COMAC_EXTEND_PAD */
+	"EXTEND_NONE",	  /* COMAC_EXTEND_NONE */
+	"EXTEND_REPEAT",  /* COMAC_EXTEND_REPEAT */
+	"EXTEND_REFLECT", /* COMAC_EXTEND_REFLECT */
+	"EXTEND_PAD"	  /* COMAC_EXTEND_PAD */
     };
     assert (extend < ARRAY_LENGTH (names));
     return names[extend];
@@ -359,12 +354,12 @@ static const char *
 _filter_to_string (comac_filter_t filter)
 {
     static const char *names[] = {
-	"FILTER_FAST",		/* COMAC_FILTER_FAST */
-	"FILTER_GOOD",		/* COMAC_FILTER_GOOD */
-	"FILTER_BEST",		/* COMAC_FILTER_BEST */
-	"FILTER_NEAREST",	/* COMAC_FILTER_NEAREST */
-	"FILTER_BILINEAR",	/* COMAC_FILTER_BILINEAR */
-	"FILTER_GAUSSIAN",	/* COMAC_FILTER_GAUSSIAN */
+	"FILTER_FAST",	   /* COMAC_FILTER_FAST */
+	"FILTER_GOOD",	   /* COMAC_FILTER_GOOD */
+	"FILTER_BEST",	   /* COMAC_FILTER_BEST */
+	"FILTER_NEAREST",  /* COMAC_FILTER_NEAREST */
+	"FILTER_BILINEAR", /* COMAC_FILTER_BILINEAR */
+	"FILTER_GAUSSIAN", /* COMAC_FILTER_GAUSSIAN */
     };
     assert (filter < ARRAY_LENGTH (names));
     return names[filter];
@@ -374,8 +369,8 @@ static const char *
 _fill_rule_to_string (comac_fill_rule_t rule)
 {
     static const char *names[] = {
-	"WINDING",	/* COMAC_FILL_RULE_WINDING */
-	"EVEN_ODD"	/* COMAC_FILL_RILE_EVEN_ODD */
+	"WINDING", /* COMAC_FILL_RULE_WINDING */
+	"EVEN_ODD" /* COMAC_FILL_RILE_EVEN_ODD */
     };
     assert (rule < ARRAY_LENGTH (names));
     return names[rule];
@@ -385,13 +380,13 @@ static const char *
 _antialias_to_string (comac_antialias_t antialias)
 {
     static const char *names[] = {
-	"ANTIALIAS_DEFAULT",	/* COMAC_ANTIALIAS_DEFAULT */
-	"ANTIALIAS_NONE",	/* COMAC_ANTIALIAS_NONE */
-	"ANTIALIAS_GRAY",	/* COMAC_ANTIALIAS_GRAY */
-	"ANTIALIAS_SUBPIXEL",	/* COMAC_ANTIALIAS_SUBPIXEL */
-	"ANTIALIAS_FAST",	/* COMAC_ANTIALIAS_FAST */
-	"ANTIALIAS_GOOD",	/* COMAC_ANTIALIAS_GOOD */
-	"ANTIALIAS_BEST"	/* COMAC_ANTIALIAS_BEST */
+	"ANTIALIAS_DEFAULT",  /* COMAC_ANTIALIAS_DEFAULT */
+	"ANTIALIAS_NONE",     /* COMAC_ANTIALIAS_NONE */
+	"ANTIALIAS_GRAY",     /* COMAC_ANTIALIAS_GRAY */
+	"ANTIALIAS_SUBPIXEL", /* COMAC_ANTIALIAS_SUBPIXEL */
+	"ANTIALIAS_FAST",     /* COMAC_ANTIALIAS_FAST */
+	"ANTIALIAS_GOOD",     /* COMAC_ANTIALIAS_GOOD */
+	"ANTIALIAS_BEST"      /* COMAC_ANTIALIAS_BEST */
     };
     assert (antialias < ARRAY_LENGTH (names));
     return names[antialias];
@@ -401,9 +396,9 @@ static const char *
 _line_cap_to_string (comac_line_cap_t line_cap)
 {
     static const char *names[] = {
-	"LINE_CAP_BUTT",	/* COMAC_LINE_CAP_BUTT */
-	"LINE_CAP_ROUND",	/* COMAC_LINE_CAP_ROUND */
-	"LINE_CAP_SQUARE"	/* COMAC_LINE_CAP_SQUARE */
+	"LINE_CAP_BUTT",  /* COMAC_LINE_CAP_BUTT */
+	"LINE_CAP_ROUND", /* COMAC_LINE_CAP_ROUND */
+	"LINE_CAP_SQUARE" /* COMAC_LINE_CAP_SQUARE */
     };
     assert (line_cap < ARRAY_LENGTH (names));
     return names[line_cap];
@@ -413,9 +408,9 @@ static const char *
 _line_join_to_string (comac_line_join_t line_join)
 {
     static const char *names[] = {
-	"LINE_JOIN_MITER",	/* COMAC_LINE_JOIN_MITER */
-	"LINE_JOIN_ROUND",	/* COMAC_LINE_JOIN_ROUND */
-	"LINE_JOIN_BEVEL",	/* COMAC_LINE_JOIN_BEVEL */
+	"LINE_JOIN_MITER", /* COMAC_LINE_JOIN_MITER */
+	"LINE_JOIN_ROUND", /* COMAC_LINE_JOIN_ROUND */
+	"LINE_JOIN_BEVEL", /* COMAC_LINE_JOIN_BEVEL */
     };
     assert (line_join < ARRAY_LENGTH (names));
     return names[line_join];
@@ -446,7 +441,8 @@ target_depth (comac_script_surface_t *surface)
     comac_list_t *link;
     int depth = 0;
 
-    comac_list_foreach (link, &to_context (surface)->operands) {
+    comac_list_foreach (link, &to_context (surface)->operands)
+    {
 	if (link == &surface->operand.link)
 	    break;
 	depth++;
@@ -466,7 +462,8 @@ _get_target (comac_script_surface_t *surface)
     }
 
     if (surface->defined) {
-	_comac_output_stream_printf (ctx->stream, "s%u ",
+	_comac_output_stream_printf (ctx->stream,
+				     "s%u ",
 				     surface->base.unique_id);
     } else {
 	int depth = target_depth (surface);
@@ -481,8 +478,7 @@ _get_target (comac_script_surface_t *surface)
 	    if (depth == 1) {
 		_comac_output_stream_puts (ctx->stream, "exch ");
 	    } else {
-		_comac_output_stream_printf (ctx->stream,
-					     "%d -1 roll ", depth);
+		_comac_output_stream_printf (ctx->stream, "%d -1 roll ", depth);
 	    }
 	    target_push (surface);
 	    _comac_output_stream_puts (ctx->stream, "dup ");
@@ -494,10 +490,13 @@ static const char *
 _content_to_string (comac_content_t content)
 {
     switch (content) {
-    case COMAC_CONTENT_ALPHA: return "ALPHA";
-    case COMAC_CONTENT_COLOR: return "COLOR";
+    case COMAC_CONTENT_ALPHA:
+	return "ALPHA";
+    case COMAC_CONTENT_COLOR:
+	return "COLOR";
     default:
-    case COMAC_CONTENT_COLOR_ALPHA: return "COLOR_ALPHA";
+    case COMAC_CONTENT_COLOR_ALPHA:
+	return "COLOR_ALPHA";
     }
 }
 
@@ -517,10 +516,9 @@ _emit_surface (comac_script_surface_t *surface)
     }
 
     if (surface->base.x_fallback_resolution !=
-	COMAC_SURFACE_FALLBACK_RESOLUTION_DEFAULT ||
+	    COMAC_SURFACE_FALLBACK_RESOLUTION_DEFAULT ||
 	surface->base.y_fallback_resolution !=
-	COMAC_SURFACE_FALLBACK_RESOLUTION_DEFAULT)
-    {
+	    COMAC_SURFACE_FALLBACK_RESOLUTION_DEFAULT) {
 	_comac_output_stream_printf (ctx->stream,
 				     " /fallback-resolution [%f %f]",
 				     surface->base.x_fallback_resolution,
@@ -528,14 +526,13 @@ _emit_surface (comac_script_surface_t *surface)
     }
 
     if (surface->base.device_transform.x0 != 0. ||
-	surface->base.device_transform.y0 != 0.)
-    {
+	surface->base.device_transform.y0 != 0.) {
 	/* XXX device offset is encoded into the pattern matrices etc. */
 	if (0) {
-	_comac_output_stream_printf (ctx->stream,
-				     " /device-offset [%f %f]",
-				     surface->base.device_transform.x0,
-				     surface->base.device_transform.y0);
+	    _comac_output_stream_printf (ctx->stream,
+					 " /device-offset [%f %f]",
+					 surface->base.device_transform.x0,
+					 surface->base.device_transform.y0);
 	}
     }
 
@@ -556,9 +553,7 @@ _emit_context (comac_script_surface_t *surface)
 	operand_t *op;
 	comac_script_surface_t *old;
 
-	op = comac_list_first_entry (&ctx->operands,
-				     operand_t,
-				     link);
+	op = comac_list_first_entry (&ctx->operands, operand_t, link);
 	if (op->type == DEFERRED)
 	    break;
 
@@ -602,9 +597,7 @@ _emit_context (comac_script_surface_t *surface)
 	if (depth == 1) {
 	    _comac_output_stream_puts (ctx->stream, "exch\n");
 	} else {
-	    _comac_output_stream_printf (ctx->stream,
-					 "%d -1 roll\n",
-					 depth);
+	    _comac_output_stream_printf (ctx->stream, "%d -1 roll\n", depth);
 	}
     }
     target_push (surface);
@@ -613,8 +606,7 @@ _emit_context (comac_script_surface_t *surface)
 }
 
 static comac_status_t
-_emit_operator (comac_script_surface_t *surface,
-		comac_operator_t op)
+_emit_operator (comac_script_surface_t *surface, comac_operator_t op)
 {
     assert (target_is_active (surface));
 
@@ -630,8 +622,7 @@ _emit_operator (comac_script_surface_t *surface,
 }
 
 static comac_status_t
-_emit_fill_rule (comac_script_surface_t *surface,
-		 comac_fill_rule_t fill_rule)
+_emit_fill_rule (comac_script_surface_t *surface, comac_fill_rule_t fill_rule)
 {
     assert (target_is_active (surface));
 
@@ -653,10 +644,8 @@ _emit_tolerance (comac_script_surface_t *surface,
 {
     assert (target_is_active (surface));
 
-    if ((! force ||
-	 fabs (tolerance - COMAC_GSTATE_TOLERANCE_DEFAULT) < 1e-5) &&
-	surface->cr.current_tolerance == tolerance)
-    {
+    if ((! force || fabs (tolerance - COMAC_GSTATE_TOLERANCE_DEFAULT) < 1e-5) &&
+	surface->cr.current_tolerance == tolerance) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -669,8 +658,7 @@ _emit_tolerance (comac_script_surface_t *surface,
 }
 
 static comac_status_t
-_emit_antialias (comac_script_surface_t *surface,
-		 comac_antialias_t antialias)
+_emit_antialias (comac_script_surface_t *surface, comac_antialias_t antialias)
 {
     assert (target_is_active (surface));
 
@@ -688,15 +676,14 @@ _emit_antialias (comac_script_surface_t *surface,
 
 static comac_status_t
 _emit_line_width (comac_script_surface_t *surface,
-		 double line_width,
-		 comac_bool_t force)
+		  double line_width,
+		  comac_bool_t force)
 {
     assert (target_is_active (surface));
 
     if ((! force ||
 	 fabs (line_width - COMAC_GSTATE_LINE_WIDTH_DEFAULT) < 1e-5) &&
-	surface->cr.current_style.line_width == line_width)
-    {
+	surface->cr.current_style.line_width == line_width) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -713,22 +700,20 @@ _emit_hairline (comac_script_surface_t *surface, comac_bool_t set_hairline)
 {
     assert (target_is_active (surface));
 
-    if (surface->cr.current_style.is_hairline == set_hairline)
-    {
+    if (surface->cr.current_style.is_hairline == set_hairline) {
 	return COMAC_STATUS_SUCCESS;
     }
 
     surface->cr.current_style.is_hairline = set_hairline;
 
-    _comac_output_stream_printf (to_context (surface)->stream, 
-					"%d set-hairline\n",
-					set_hairline);
+    _comac_output_stream_printf (to_context (surface)->stream,
+				 "%d set-hairline\n",
+				 set_hairline);
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_emit_line_cap (comac_script_surface_t *surface,
-		comac_line_cap_t line_cap)
+_emit_line_cap (comac_script_surface_t *surface, comac_line_cap_t line_cap)
 {
     assert (target_is_active (surface));
 
@@ -744,8 +729,7 @@ _emit_line_cap (comac_script_surface_t *surface,
 }
 
 static comac_status_t
-_emit_line_join (comac_script_surface_t *surface,
-		 comac_line_join_t line_join)
+_emit_line_join (comac_script_surface_t *surface, comac_line_join_t line_join)
 {
     assert (target_is_active (surface));
 
@@ -769,8 +753,7 @@ _emit_miter_limit (comac_script_surface_t *surface,
 
     if ((! force ||
 	 fabs (miter_limit - COMAC_GSTATE_MITER_LIMIT_DEFAULT) < 1e-5) &&
-	surface->cr.current_style.miter_limit == miter_limit)
-    {
+	surface->cr.current_style.miter_limit == miter_limit) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -805,10 +788,7 @@ _emit_dash (comac_script_surface_t *surface,
 
     assert (target_is_active (surface));
 
-    if (force &&
-	num_dashes == 0 &&
-	surface->cr.current_style.num_dashes == 0)
-    {
+    if (force && num_dashes == 0 && surface->cr.current_style.num_dashes == 0) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -816,19 +796,22 @@ _emit_dash (comac_script_surface_t *surface,
 	(surface->cr.current_style.num_dashes == num_dashes &&
 	 (num_dashes == 0 ||
 	  (fabs (surface->cr.current_style.dash_offset - offset) < 1e-5 &&
-	   _dashes_equal (surface->cr.current_style.dash, dash, num_dashes)))))
-    {
+	   _dashes_equal (surface->cr.current_style.dash,
+			  dash,
+			  num_dashes))))) {
 	return COMAC_STATUS_SUCCESS;
     }
 
-
     if (num_dashes) {
-	surface->cr.current_style.dash = _comac_realloc_ab
-	    (surface->cr.current_style.dash, num_dashes, sizeof (double));
+	surface->cr.current_style.dash =
+	    _comac_realloc_ab (surface->cr.current_style.dash,
+			       num_dashes,
+			       sizeof (double));
 	if (unlikely (surface->cr.current_style.dash == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	memcpy (surface->cr.current_style.dash, dash,
+	memcpy (surface->cr.current_style.dash,
+		dash,
 		sizeof (double) * num_dashes);
     } else {
 	free (surface->cr.current_style.dash);
@@ -840,8 +823,10 @@ _emit_dash (comac_script_surface_t *surface,
 
     _comac_output_stream_puts (to_context (surface)->stream, "[");
     for (n = 0; n < num_dashes; n++) {
-	_comac_output_stream_printf (to_context (surface)->stream, "%f", dash[n]);
-	if (n < num_dashes-1)
+	_comac_output_stream_printf (to_context (surface)->stream,
+				     "%f",
+				     dash[n]);
+	if (n < num_dashes - 1)
 	    _comac_output_stream_puts (to_context (surface)->stream, " ");
     }
     _comac_output_stream_printf (to_context (surface)->stream,
@@ -881,7 +866,9 @@ _emit_stroke_style (comac_script_surface_t *surface,
 	return status;
 
     status = _emit_dash (surface,
-			 style->dash, style->num_dashes, style->dash_offset,
+			 style->dash,
+			 style->num_dashes,
+			 style->dash_offset,
 			 force);
     if (unlikely (status))
 	return status;
@@ -893,15 +880,24 @@ static const char *
 _format_to_string (comac_format_t format)
 {
     switch (format) {
-    case COMAC_FORMAT_RGBA128F: return "RGBA128F";
-    case COMAC_FORMAT_RGB96F: return "RGB96F";
-    case COMAC_FORMAT_ARGB32:  return "ARGB32";
-    case COMAC_FORMAT_RGB30:   return "RGB30";
-    case COMAC_FORMAT_RGB24:   return "RGB24";
-    case COMAC_FORMAT_RGB16_565: return "RGB16_565";
-    case COMAC_FORMAT_A8:      return "A8";
-    case COMAC_FORMAT_A1:      return "A1";
-    case COMAC_FORMAT_INVALID: return "INVALID";
+    case COMAC_FORMAT_RGBA128F:
+	return "RGBA128F";
+    case COMAC_FORMAT_RGB96F:
+	return "RGB96F";
+    case COMAC_FORMAT_ARGB32:
+	return "ARGB32";
+    case COMAC_FORMAT_RGB30:
+	return "RGB30";
+    case COMAC_FORMAT_RGB24:
+	return "RGB24";
+    case COMAC_FORMAT_RGB16_565:
+	return "RGB16_565";
+    case COMAC_FORMAT_A8:
+	return "A8";
+    case COMAC_FORMAT_A1:
+	return "A1";
+    case COMAC_FORMAT_INVALID:
+	return "INVALID";
     }
     ASSERT_NOT_REACHED;
     return "INVALID";
@@ -914,19 +910,18 @@ _emit_solid_pattern (comac_script_surface_t *surface,
     comac_solid_pattern_t *solid = (comac_solid_pattern_t *) pattern;
     comac_script_context_t *ctx = to_context (surface);
 
-    if (! COMAC_COLOR_IS_OPAQUE (&solid->color))
-    {
+    if (! COMAC_COLOR_IS_OPAQUE (&solid->color)) {
 	if (! (surface->base.content & COMAC_CONTENT_COLOR) ||
-	    ((solid->color.red_short   == 0 || solid->color.red_short   == 0xffff) &&
-	     (solid->color.green_short == 0 || solid->color.green_short == 0xffff) &&
-	     (solid->color.blue_short  == 0 || solid->color.blue_short  == 0xffff) ))
-	{
+	    ((solid->color.red_short == 0 ||
+	      solid->color.red_short == 0xffff) &&
+	     (solid->color.green_short == 0 ||
+	      solid->color.green_short == 0xffff) &&
+	     (solid->color.blue_short == 0 ||
+	      solid->color.blue_short == 0xffff))) {
 	    _comac_output_stream_printf (ctx->stream,
 					 "%f a",
 					 solid->color.alpha);
-	}
-	else
-	{
+	} else {
 	    _comac_output_stream_printf (ctx->stream,
 					 "%f %f %f %f rgba",
 					 solid->color.red,
@@ -934,18 +929,11 @@ _emit_solid_pattern (comac_script_surface_t *surface,
 					 solid->color.blue,
 					 solid->color.alpha);
 	}
-    }
-    else
-    {
+    } else {
 	if (solid->color.red_short == solid->color.green_short &&
-	    solid->color.red_short == solid->color.blue_short)
-	{
-	    _comac_output_stream_printf (ctx->stream,
-					 "%f g",
-					 solid->color.red);
-	}
-	else
-	{
+	    solid->color.red_short == solid->color.blue_short) {
+	    _comac_output_stream_printf (ctx->stream, "%f g", solid->color.red);
+	} else {
 	    _comac_output_stream_printf (ctx->stream,
 					 "%f %f %f rgb",
 					 solid->color.red,
@@ -956,7 +944,6 @@ _emit_solid_pattern (comac_script_surface_t *surface,
 
     return COMAC_STATUS_SUCCESS;
 }
-
 
 static comac_status_t
 _emit_gradient_color_stops (comac_gradient_pattern_t *gradient,
@@ -988,8 +975,10 @@ _emit_linear_pattern (comac_script_surface_t *surface,
 
     _comac_output_stream_printf (ctx->stream,
 				 "%f %f %f %f linear",
-				 linear->pd1.x, linear->pd1.y,
-				 linear->pd2.x, linear->pd2.y);
+				 linear->pd1.x,
+				 linear->pd1.y,
+				 linear->pd2.x,
+				 linear->pd2.y);
     return _emit_gradient_color_stops (&linear->base, ctx->stream);
 }
 
@@ -1039,25 +1028,30 @@ _emit_mesh_pattern (comac_script_surface_t *surface,
 	if (unlikely (path->status))
 	    return path->status;
 
-	for (j = 0; j < path->num_data; j+=data[0].header.length) {
+	for (j = 0; j < path->num_data; j += data[0].header.length) {
 	    data = &path->data[j];
 	    switch (data->header.type) {
 	    case COMAC_PATH_MOVE_TO:
 		_comac_output_stream_printf (ctx->stream,
 					     "\n  %f %f m",
-					     data[1].point.x, data[1].point.y);
+					     data[1].point.x,
+					     data[1].point.y);
 		break;
 	    case COMAC_PATH_LINE_TO:
 		_comac_output_stream_printf (ctx->stream,
 					     "\n  %f %f l",
-					     data[1].point.x, data[1].point.y);
+					     data[1].point.x,
+					     data[1].point.y);
 		break;
 	    case COMAC_PATH_CURVE_TO:
 		_comac_output_stream_printf (ctx->stream,
 					     "\n  %f %f %f %f %f %f c",
-					     data[1].point.x, data[1].point.y,
-					     data[2].point.x, data[2].point.y,
-					     data[3].point.x, data[3].point.y);
+					     data[1].point.x,
+					     data[1].point.y,
+					     data[2].point.x,
+					     data[2].point.y,
+					     data[3].point.x,
+					     data[3].point.y);
 		break;
 	    case COMAC_PATH_CLOSE_PATH:
 		break;
@@ -1073,19 +1067,31 @@ _emit_mesh_pattern (comac_script_surface_t *surface,
 		return status;
 	    _comac_output_stream_printf (ctx->stream,
 					 "\n  %d %f %f set-control-point",
-					 j, x, y);
+					 j,
+					 x,
+					 y);
 	}
 
 	for (j = 0; j < 4; j++) {
 	    double r, g, b, a;
 
-	    status = comac_mesh_pattern_get_corner_color_rgba (mesh, i, j, &r, &g, &b, &a);
+	    status = comac_mesh_pattern_get_corner_color_rgba (mesh,
+							       i,
+							       j,
+							       &r,
+							       &g,
+							       &b,
+							       &a);
 	    if (unlikely (status))
 		return status;
 
 	    _comac_output_stream_printf (ctx->stream,
 					 "\n  %d %f %f %f %f set-corner-color",
-					 j, r, g, b, a);
+					 j,
+					 r,
+					 g,
+					 b,
+					 a);
 	}
 
 	_comac_output_stream_printf (ctx->stream, "\n  end-patch");
@@ -1112,7 +1118,8 @@ static const comac_surface_backend_t script_snapshot_backend = {
 static void
 detach_snapshot (comac_surface_t *abstract_surface)
 {
-    comac_script_surface_t *surface = (comac_script_surface_t *)abstract_surface;
+    comac_script_surface_t *surface =
+	(comac_script_surface_t *) abstract_surface;
     comac_script_context_t *ctx = to_context (surface);
 
     _comac_output_stream_printf (ctx->stream,
@@ -1121,8 +1128,7 @@ detach_snapshot (comac_surface_t *abstract_surface)
 }
 
 static void
-attach_snapshot (comac_script_context_t *ctx,
-		 comac_surface_t *source)
+attach_snapshot (comac_script_context_t *ctx, comac_surface_t *source)
 {
     struct script_snapshot *surface;
 
@@ -1158,7 +1164,8 @@ _emit_recording_surface_pattern (comac_script_surface_t *surface,
     comac_rectangle_t r, *extents;
     comac_status_t status;
 
-    snapshot = _comac_surface_has_snapshot (&source->base, &script_snapshot_backend);
+    snapshot =
+	_comac_surface_has_snapshot (&source->base, &script_snapshot_backend);
     if (snapshot) {
 	_comac_output_stream_printf (ctx->stream, "s%d", snapshot->unique_id);
 	return COMAC_INT_STATUS_SUCCESS;
@@ -1177,12 +1184,16 @@ _emit_recording_surface_pattern (comac_script_surface_t *surface,
 
     similar->base.is_clear = TRUE;
 
-    _comac_output_stream_printf (ctx->stream, "//%s ",
+    _comac_output_stream_printf (ctx->stream,
+				 "//%s ",
 				 _content_to_string (source->base.content));
     if (extents) {
-	_comac_output_stream_printf (ctx->stream, "[%f %f %f %f]",
-				     extents->x, extents->y,
-				     extents->width, extents->height);
+	_comac_output_stream_printf (ctx->stream,
+				     "[%f %f %f %f]",
+				     extents->x,
+				     extents->y,
+				     extents->width,
+				     extents->height);
     } else
 	_comac_output_stream_puts (ctx->stream, "[]");
     _comac_output_stream_puts (ctx->stream, " record\n");
@@ -1193,7 +1204,6 @@ _emit_recording_surface_pattern (comac_script_surface_t *surface,
 
     target_push (similar);
     similar->emitted = TRUE;
-
 
     old_cr = surface->cr;
     _comac_script_implicit_context_init (&surface->cr);
@@ -1239,37 +1249,37 @@ _write_image_surface (comac_output_stream_t *output,
 #if WORDS_BIGENDIAN
     switch (image->format) {
     case COMAC_FORMAT_A1:
-	for (row = image->height; row--; ) {
-	    _comac_output_stream_write (output, data, (width+7)/8);
+	for (row = image->height; row--;) {
+	    _comac_output_stream_write (output, data, (width + 7) / 8);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_A8:
-	for (row = image->height; row--; ) {
+	for (row = image->height; row--;) {
 	    _comac_output_stream_write (output, data, width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB16_565:
-	for (row = image->height; row--; ) {
-	    _comac_output_stream_write (output, data, 2*width);
+	for (row = image->height; row--;) {
+	    _comac_output_stream_write (output, data, 2 * width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB24:
-	for (row = image->height; row--; ) {
+	for (row = image->height; row--;) {
 	    int col;
 	    rowdata = data;
-	    for (col = width; col--; ) {
+	    for (col = width; col--;) {
 		_comac_output_stream_write (output, rowdata, 3);
-		rowdata+=4;
+		rowdata += 4;
 	    }
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_ARGB32:
-	for (row = image->height; row--; ) {
-	    _comac_output_stream_write (output, data, 4*width);
+	for (row = image->height; row--;) {
+	    _comac_output_stream_write (output, data, 4 * width);
 	    data += stride;
 	}
 	break;
@@ -1288,66 +1298,66 @@ _write_image_surface (comac_output_stream_t *output,
 
     switch (image->format) {
     case COMAC_FORMAT_A1:
-	for (row = image->height; row--; ) {
+	for (row = image->height; row--;) {
 	    int col;
-	    for (col = 0; col < (width + 7)/8; col++)
+	    for (col = 0; col < (width + 7) / 8; col++)
 		rowdata[col] = COMAC_BITSWAP8 (data[col]);
-	    _comac_output_stream_write (output, rowdata, (width+7)/8);
+	    _comac_output_stream_write (output, rowdata, (width + 7) / 8);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_A8:
-	for (row = image->height; row--; ) {
+	for (row = image->height; row--;) {
 	    _comac_output_stream_write (output, data, width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB16_565:
-	for (row = image->height; row--; ) {
+	for (row = image->height; row--;) {
 	    uint16_t *src = (uint16_t *) data;
 	    uint16_t *dst = (uint16_t *) rowdata;
 	    int col;
 	    for (col = 0; col < width; col++)
 		dst[col] = bswap_16 (src[col]);
-	    _comac_output_stream_write (output, rowdata, 2*width);
+	    _comac_output_stream_write (output, rowdata, 2 * width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB24:
-	for (row = image->height; row--; ) {
+	for (row = image->height; row--;) {
 	    uint8_t *src = data;
 	    int col;
 	    for (col = 0; col < width; col++) {
-		rowdata[3*col+2] = *src++;
-		rowdata[3*col+1] = *src++;
-		rowdata[3*col+0] = *src++;
+		rowdata[3 * col + 2] = *src++;
+		rowdata[3 * col + 1] = *src++;
+		rowdata[3 * col + 0] = *src++;
 		src++;
 	    }
-	    _comac_output_stream_write (output, rowdata, 3*width);
+	    _comac_output_stream_write (output, rowdata, 3 * width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB30:
     case COMAC_FORMAT_ARGB32:
-	for (row = image->height; row--; ) {
+	for (row = image->height; row--;) {
 	    uint32_t *src = (uint32_t *) data;
 	    uint32_t *dst = (uint32_t *) rowdata;
 	    int col;
 	    for (col = 0; col < width; col++)
 		dst[col] = bswap_32 (src[col]);
-	    _comac_output_stream_write (output, rowdata, 4*width);
+	    _comac_output_stream_write (output, rowdata, 4 * width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB96F:
-	for (row = image->height; row--; ) {
-	    _comac_output_stream_write (output, data, 12*width);
+	for (row = image->height; row--;) {
+	    _comac_output_stream_write (output, data, 12 * width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGBA128F:
-	for (row = image->height; row--; ) {
-	    _comac_output_stream_write (output, data, 16*width);
+	for (row = image->height; row--;) {
+	    _comac_output_stream_write (output, data, 16 * width);
 	    data += stride;
 	}
 	break;
@@ -1373,8 +1383,10 @@ _emit_png_surface (comac_script_surface_t *surface,
     const uint8_t *mime_data;
     unsigned long mime_data_length;
 
-    comac_surface_get_mime_data (&image->base, COMAC_MIME_TYPE_PNG,
-				 &mime_data, &mime_data_length);
+    comac_surface_get_mime_data (&image->base,
+				 COMAC_MIME_TYPE_PNG,
+				 &mime_data,
+				 &mime_data_length);
     if (mime_data == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
@@ -1385,7 +1397,8 @@ _emit_png_surface (comac_script_surface_t *surface,
 				 "/format //%s "
 				 "/mime-type (image/png) "
 				 "/source <~",
-				 image->width, image->height,
+				 image->width,
+				 image->height,
 				 _format_to_string (image->format));
 
     base85_stream = _comac_base85_stream_create (ctx->stream);
@@ -1410,8 +1423,8 @@ _emit_image_surface (comac_script_surface_t *surface,
     const uint8_t *mime_data;
     unsigned long mime_data_length;
 
-    snapshot = _comac_surface_has_snapshot (&image->base,
-					    &script_snapshot_backend);
+    snapshot =
+	_comac_surface_has_snapshot (&image->base, &script_snapshot_backend);
     if (snapshot) {
 	_comac_output_stream_printf (ctx->stream, "s%u ", snapshot->unique_id);
 	return COMAC_INT_STATUS_SUCCESS;
@@ -1427,8 +1440,8 @@ _emit_image_surface (comac_script_surface_t *surface,
 	if (image->format == COMAC_FORMAT_INVALID) {
 	    clone = _comac_image_surface_coerce (image);
 	} else {
-	    clone = (comac_image_surface_t *)
-		comac_surface_reference (&image->base);
+	    clone = (comac_image_surface_t *) comac_surface_reference (
+		&image->base);
 	}
 
 	_comac_output_stream_printf (ctx->stream,
@@ -1437,12 +1450,13 @@ _emit_image_surface (comac_script_surface_t *surface,
 				     "/height %d "
 				     "/format //%s "
 				     "/source ",
-				     clone->width, clone->height,
+				     clone->width,
+				     clone->height,
 				     _format_to_string (clone->format));
 
 	switch (clone->format) {
 	case COMAC_FORMAT_A1:
-	    len = (clone->width + 7)/8;
+	    len = (clone->width + 7) / 8;
 	    break;
 	case COMAC_FORMAT_A8:
 	    len = clone->width;
@@ -1506,8 +1520,10 @@ _emit_image_surface (comac_script_surface_t *surface,
 	comac_surface_destroy (&clone->base);
     }
 
-    comac_surface_get_mime_data (&image->base, COMAC_MIME_TYPE_JPEG,
-				 &mime_data, &mime_data_length);
+    comac_surface_get_mime_data (&image->base,
+				 COMAC_MIME_TYPE_JPEG,
+				 &mime_data,
+				 &mime_data_length);
     if (mime_data != NULL) {
 	_comac_output_stream_printf (ctx->stream,
 				     "\n  (%s) <~",
@@ -1522,8 +1538,10 @@ _emit_image_surface (comac_script_surface_t *surface,
 	_comac_output_stream_puts (ctx->stream, "~> set-mime-data\n");
     }
 
-    comac_surface_get_mime_data (&image->base, COMAC_MIME_TYPE_JP2,
-				 &mime_data, &mime_data_length);
+    comac_surface_get_mime_data (&image->base,
+				 COMAC_MIME_TYPE_JP2,
+				 &mime_data,
+				 &mime_data_length);
     if (mime_data != NULL) {
 	_comac_output_stream_printf (ctx->stream,
 				     "\n  (%s) <~",
@@ -1567,10 +1585,14 @@ _emit_subsurface_pattern (comac_script_surface_t *surface,
 
     switch ((int) source->backend->type) {
     case COMAC_SURFACE_TYPE_RECORDING:
-	status = _emit_recording_surface_pattern (surface, (comac_recording_surface_t *) source);
+	status = _emit_recording_surface_pattern (
+	    surface,
+	    (comac_recording_surface_t *) source);
 	break;
     case COMAC_SURFACE_TYPE_SCRIPT:
-	status = _emit_script_surface_pattern (surface, (comac_script_surface_t *) source);
+	status =
+	    _emit_script_surface_pattern (surface,
+					  (comac_script_surface_t *) source);
 	break;
     default:
 	status = _emit_image_surface_pattern (surface, source);
@@ -1602,7 +1624,8 @@ _emit_surface_pattern (comac_script_surface_t *surface,
     source = surface_pattern->surface;
 
     if (_comac_surface_is_snapshot (source)) {
-	snapshot = _comac_surface_has_snapshot (source, &script_snapshot_backend);
+	snapshot =
+	    _comac_surface_has_snapshot (source, &script_snapshot_backend);
 	if (snapshot) {
 	    _comac_output_stream_printf (ctx->stream,
 					 "s%d pattern ",
@@ -1618,13 +1641,19 @@ _emit_surface_pattern (comac_script_surface_t *surface,
 
     switch ((int) source->backend->type) {
     case COMAC_SURFACE_TYPE_RECORDING:
-	status = _emit_recording_surface_pattern (surface, (comac_recording_surface_t *) source);
+	status = _emit_recording_surface_pattern (
+	    surface,
+	    (comac_recording_surface_t *) source);
 	break;
     case COMAC_SURFACE_TYPE_SCRIPT:
-	status = _emit_script_surface_pattern (surface, (comac_script_surface_t *) source);
+	status =
+	    _emit_script_surface_pattern (surface,
+					  (comac_script_surface_t *) source);
 	break;
     case COMAC_SURFACE_TYPE_SUBSURFACE:
-	status = _emit_subsurface_pattern (surface, (comac_surface_subsurface_t *) source);
+	status =
+	    _emit_subsurface_pattern (surface,
+				      (comac_surface_subsurface_t *) source);
 	break;
     default:
 	status = _emit_image_surface_pattern (surface, source);
@@ -1648,7 +1677,8 @@ _emit_raster_pattern (comac_script_surface_t *surface,
     comac_surface_t *source;
     comac_int_status_t status;
 
-    source = _comac_raster_source_pattern_acquire (pattern, &surface->base, NULL);
+    source =
+	_comac_raster_source_pattern_acquire (pattern, &surface->base, NULL);
     if (unlikely (source == NULL)) {
 	ASSERT_NOT_REACHED;
 	return COMAC_INT_STATUS_UNSUPPORTED;
@@ -1661,13 +1691,12 @@ _emit_raster_pattern (comac_script_surface_t *surface,
     if (unlikely (status))
 	return status;
 
-    _comac_output_stream_puts (to_context(surface)->stream, "pattern");
+    _comac_output_stream_puts (to_context (surface)->stream, "pattern");
     return COMAC_INT_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_emit_pattern (comac_script_surface_t *surface,
-	       const comac_pattern_t *pattern)
+_emit_pattern (comac_script_surface_t *surface, const comac_pattern_t *pattern)
 {
     comac_script_context_t *ctx = to_context (surface);
     comac_int_status_t status;
@@ -1715,9 +1744,12 @@ _emit_pattern (comac_script_surface_t *surface,
 
 	_comac_output_stream_printf (ctx->stream,
 				     " [%f %f %f %f %f %f] set-matrix\n ",
-				     pattern->matrix.xx, pattern->matrix.yx,
-				     pattern->matrix.xy, pattern->matrix.yy,
-				     pattern->matrix.x0, pattern->matrix.y0);
+				     pattern->matrix.xx,
+				     pattern->matrix.yx,
+				     pattern->matrix.xy,
+				     pattern->matrix.yy,
+				     pattern->matrix.x0,
+				     pattern->matrix.y0);
     }
 
     /* XXX need to discriminate the user explicitly setting the default */
@@ -1731,7 +1763,7 @@ _emit_pattern (comac_script_surface_t *surface,
 				     " //%s set-filter\n ",
 				     _filter_to_string (pattern->filter));
     }
-    if (! is_default_extend ){
+    if (! is_default_extend) {
 	if (need_newline) {
 	    _comac_output_stream_puts (ctx->stream, "\n ");
 	    need_newline = FALSE;
@@ -1749,8 +1781,7 @@ _emit_pattern (comac_script_surface_t *surface,
 }
 
 static comac_int_status_t
-_emit_identity (comac_script_surface_t *surface,
-		comac_bool_t *matrix_updated)
+_emit_identity (comac_script_surface_t *surface, comac_bool_t *matrix_updated)
 {
     assert (target_is_active (surface));
 
@@ -1785,8 +1816,8 @@ _emit_source (comac_script_surface_t *surface,
 	return COMAC_INT_STATUS_SUCCESS;
 
     _comac_pattern_fini (&surface->cr.current_source.base);
-    status = _comac_pattern_init_copy (&surface->cr.current_source.base,
-				       source);
+    status =
+	_comac_pattern_init_copy (&surface->cr.current_source.base, source);
     if (unlikely (status))
 	return status;
 
@@ -1799,14 +1830,12 @@ _emit_source (comac_script_surface_t *surface,
 	return status;
 
     assert (target_is_active (surface));
-    _comac_output_stream_puts (to_context (surface)->stream,
-			       " set-source\n");
+    _comac_output_stream_puts (to_context (surface)->stream, " set-source\n");
     return COMAC_INT_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_path_move_to (void *closure,
-	       const comac_point_t *point)
+_path_move_to (void *closure, const comac_point_t *point)
 {
     _comac_output_stream_printf (closure,
 				 " %f %f m",
@@ -1817,8 +1846,7 @@ _path_move_to (void *closure,
 }
 
 static comac_status_t
-_path_line_to (void *closure,
-	       const comac_point_t *point)
+_path_line_to (void *closure, const comac_point_t *point)
 {
     _comac_output_stream_printf (closure,
 				 " %f %f l",
@@ -1849,8 +1877,7 @@ _path_curve_to (void *closure,
 static comac_status_t
 _path_close (void *closure)
 {
-    _comac_output_stream_printf (closure,
-				 " h");
+    _comac_output_stream_printf (closure, " h");
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -1895,7 +1922,10 @@ _emit_path_boxes (comac_script_surface_t *surface,
 
 	    _comac_output_stream_printf (ctx->stream,
 					 "\n  %f %f %f %f rectangle",
-					 x1, y1, x2 - x1, y2 - y1);
+					 x1,
+					 y1,
+					 x2 - x1,
+					 y2 - y1);
 	}
     }
 
@@ -1943,7 +1973,10 @@ _emit_path (comac_script_surface_t *surface,
 
 	_comac_output_stream_printf (ctx->stream,
 				     " %f %f %f %f rectangle",
-				     x1, y1, x2 - x1, y2 - y1);
+				     x1,
+				     y1,
+				     x2 - x1,
+				     y2 - y1);
 	status = COMAC_INT_STATUS_SUCCESS;
     } else if (is_fill && _comac_path_fixed_fill_is_rectilinear (path)) {
 	status = _emit_path_boxes (surface, path);
@@ -1963,13 +1996,10 @@ _emit_path (comac_script_surface_t *surface,
     return status;
 }
 static comac_bool_t
-_scaling_matrix_equal (const comac_matrix_t *a,
-		       const comac_matrix_t *b)
+_scaling_matrix_equal (const comac_matrix_t *a, const comac_matrix_t *b)
 {
-    return fabs (a->xx - b->xx) < 1e-5 &&
-	   fabs (a->xy - b->xy) < 1e-5 &&
-	   fabs (a->yx - b->yx) < 1e-5 &&
-	   fabs (a->yy - b->yy) < 1e-5;
+    return fabs (a->xx - b->xx) < 1e-5 && fabs (a->xy - b->xy) < 1e-5 &&
+	   fabs (a->yx - b->yx) < 1e-5 && fabs (a->yy - b->yy) < 1e-5;
 }
 
 static comac_status_t
@@ -1992,17 +2022,19 @@ _emit_scaling_matrix (comac_script_surface_t *surface,
     surface->cr.current_ctm.y0 = 0.;
 
     if (_comac_matrix_is_identity (&surface->cr.current_ctm)) {
-	_comac_output_stream_puts (ctx->stream,
-				   "identity set-matrix\n");
+	_comac_output_stream_puts (ctx->stream, "identity set-matrix\n");
     } else if (was_identity && fabs (ctm->yx) < 1e-5 && fabs (ctm->xy) < 1e-5) {
 	_comac_output_stream_printf (ctx->stream,
 				     "%f %f scale\n",
-				     ctm->xx, ctm->yy);
+				     ctm->xx,
+				     ctm->yy);
     } else {
 	_comac_output_stream_printf (ctx->stream,
 				     "[%f %f %f %f 0 0] set-matrix\n",
-				     ctm->xx, ctm->yx,
-				     ctm->xy, ctm->yy);
+				     ctm->xx,
+				     ctm->yx,
+				     ctm->xy,
+				     ctm->yy);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -2017,32 +2049,33 @@ _emit_font_matrix (comac_script_surface_t *surface,
 
     if (memcmp (&surface->cr.current_font_matrix,
 		font_matrix,
-		sizeof (comac_matrix_t)) == 0)
-    {
+		sizeof (comac_matrix_t)) == 0) {
 	return COMAC_STATUS_SUCCESS;
     }
 
     surface->cr.current_font_matrix = *font_matrix;
 
     if (_comac_matrix_is_identity (font_matrix)) {
-	_comac_output_stream_puts (ctx->stream,
-				   "identity set-font-matrix\n");
+	_comac_output_stream_puts (ctx->stream, "identity set-font-matrix\n");
     } else {
 	_comac_output_stream_printf (ctx->stream,
 				     "[%f %f %f %f %f %f] set-font-matrix\n",
-				     font_matrix->xx, font_matrix->yx,
-				     font_matrix->xy, font_matrix->yy,
-				     font_matrix->x0, font_matrix->y0);
+				     font_matrix->xx,
+				     font_matrix->yx,
+				     font_matrix->xy,
+				     font_matrix->yy,
+				     font_matrix->x0,
+				     font_matrix->y0);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_surface_t *
-_comac_script_surface_create_similar (void	       *abstract_surface,
-				      comac_content_t	content,
-				      int		width,
-				      int		height)
+_comac_script_surface_create_similar (void *abstract_surface,
+				      comac_content_t content,
+				      int width,
+				      int height)
 {
     comac_script_surface_t *surface, *other = abstract_surface;
     comac_surface_t *passthrough = NULL;
@@ -2067,9 +2100,10 @@ _comac_script_surface_create_similar (void	       *abstract_surface,
     }
 
     if (_comac_surface_wrapper_is_active (&other->wrapper)) {
-	passthrough =
-	    _comac_surface_wrapper_create_similar (&other->wrapper,
-						   content, width, height);
+	passthrough = _comac_surface_wrapper_create_similar (&other->wrapper,
+							     content,
+							     width,
+							     height);
 	if (unlikely (passthrough->status)) {
 	    comac_device_release (&ctx->base);
 	    return passthrough;
@@ -2079,8 +2113,10 @@ _comac_script_surface_create_similar (void	       *abstract_surface,
     extents.x = extents.y = 0;
     extents.width = width;
     extents.height = height;
-    surface = _comac_script_surface_create_internal (ctx, content,
-						     &extents, passthrough);
+    surface = _comac_script_surface_create_internal (ctx,
+						     content,
+						     &extents,
+						     passthrough);
     comac_surface_destroy (passthrough);
 
     if (unlikely (surface->base.status)) {
@@ -2089,11 +2125,13 @@ _comac_script_surface_create_similar (void	       *abstract_surface,
     }
 
     _get_target (other);
-    _comac_output_stream_printf (ctx->stream,
-				 "%u %u //%s similar dup /s%u exch def context\n",
-				 width, height,
-				 _content_to_string (content),
-				 surface->base.unique_id);
+    _comac_output_stream_printf (
+	ctx->stream,
+	"%u %u //%s similar dup /s%u exch def context\n",
+	width,
+	height,
+	_content_to_string (content),
+	surface->base.unique_id);
 
     surface->emitted = TRUE;
     surface->defined = TRUE;
@@ -2137,14 +2175,14 @@ _device_destroy (void *abstract_device)
 }
 
 static comac_surface_t *
-_comac_script_surface_source (void                    *abstract_surface,
-			      comac_rectangle_int_t	*extents)
+_comac_script_surface_source (void *abstract_surface,
+			      comac_rectangle_int_t *extents)
 {
     comac_script_surface_t *surface = abstract_surface;
 
     if (extents) {
 	extents->x = extents->y = 0;
-	extents->width  = surface->width;
+	extents->width = surface->width;
 	extents->height = surface->height;
     }
 
@@ -2152,9 +2190,9 @@ _comac_script_surface_source (void                    *abstract_surface,
 }
 
 static comac_status_t
-_comac_script_surface_acquire_source_image (void                    *abstract_surface,
-					    comac_image_surface_t  **image_out,
-					    void                   **image_extra)
+_comac_script_surface_acquire_source_image (void *abstract_surface,
+					    comac_image_surface_t **image_out,
+					    void **image_extra)
 {
     comac_script_surface_t *surface = abstract_surface;
 
@@ -2168,9 +2206,9 @@ _comac_script_surface_acquire_source_image (void                    *abstract_su
 }
 
 static void
-_comac_script_surface_release_source_image (void                   *abstract_surface,
-					   comac_image_surface_t  *image,
-					   void                   *image_extra)
+_comac_script_surface_release_source_image (void *abstract_surface,
+					    comac_image_surface_t *image,
+					    void *image_extra)
 {
     comac_script_surface_t *surface = abstract_surface;
 
@@ -2206,13 +2244,11 @@ _comac_script_surface_finish (void *abstract_surface)
 	if (! comac_list_is_empty (&surface->operand.link)) {
 	    if (! ctx->active) {
 		if (target_is_active (surface)) {
-		    _comac_output_stream_printf (ctx->stream,
-						 "pop\n");
+		    _comac_output_stream_printf (ctx->stream, "pop\n");
 		} else {
 		    int depth = target_depth (surface);
 		    if (depth == 1) {
-			_comac_output_stream_printf (ctx->stream,
-						     "exch pop\n");
+			_comac_output_stream_printf (ctx->stream, "exch pop\n");
 		    } else {
 			_comac_output_stream_printf (ctx->stream,
 						     "%d -1 roll pop\n",
@@ -2294,15 +2330,15 @@ BAIL:
 }
 
 static comac_status_t
-_comac_script_surface_clipper_intersect_clip_path (comac_surface_clipper_t *clipper,
-						   comac_path_fixed_t	*path,
-						   comac_fill_rule_t	 fill_rule,
-						   double		 tolerance,
-						   comac_antialias_t	 antialias)
+_comac_script_surface_clipper_intersect_clip_path (
+    comac_surface_clipper_t *clipper,
+    comac_path_fixed_t *path,
+    comac_fill_rule_t fill_rule,
+    double tolerance,
+    comac_antialias_t antialias)
 {
-    comac_script_surface_t *surface = comac_container_of (clipper,
-							  comac_script_surface_t,
-							  clipper);
+    comac_script_surface_t *surface =
+	comac_container_of (clipper, comac_script_surface_t, clipper);
     comac_script_context_t *ctx = to_context (surface);
     comac_bool_t matrix_updated = FALSE;
     comac_status_t status;
@@ -2322,12 +2358,10 @@ _comac_script_surface_clipper_intersect_clip_path (comac_surface_clipper_t *clip
 
     /* skip the trivial clip covering the surface extents */
     if (surface->width >= 0 && surface->height >= 0 &&
-	_comac_path_fixed_is_box (path, &box))
-    {
+	_comac_path_fixed_is_box (path, &box)) {
 	if (box.p1.x <= 0 && box.p1.y <= 0 &&
 	    box.p2.x >= _comac_fixed_from_double (surface->width) &&
-	    box.p2.y >= _comac_fixed_from_double (surface->height))
-	{
+	    box.p2.y >= _comac_fixed_from_double (surface->height)) {
 	    return COMAC_STATUS_SUCCESS;
 	}
     }
@@ -2402,7 +2436,8 @@ inactive (comac_script_surface_t *surface)
 				     link);
 
 	depth = 0;
-	comac_list_foreach (operand, &ctx->operands) {
+	comac_list_foreach (operand, &ctx->operands)
+	{
 	    if (operand == &df->operand.link)
 		break;
 	    depth++;
@@ -2415,7 +2450,8 @@ inactive (comac_script_surface_t *surface)
 	} else {
 	    struct deferred_finish *pos;
 
-	    comac_list_foreach_entry (pos, struct deferred_finish,
+	    comac_list_foreach_entry (pos,
+				      struct deferred_finish,
 				      &sorted,
 				      link)
 	    {
@@ -2431,23 +2467,20 @@ inactive (comac_script_surface_t *surface)
 	comac_list_t *operand;
 	int depth;
 
-	df = comac_list_first_entry (&sorted,
-				     struct deferred_finish,
-				     link);
+	df = comac_list_first_entry (&sorted, struct deferred_finish, link);
 
 	depth = 0;
-	comac_list_foreach (operand, &ctx->operands) {
+	comac_list_foreach (operand, &ctx->operands)
+	{
 	    if (operand == &df->operand.link)
 		break;
 	    depth++;
 	}
 
 	if (depth == 0) {
-	    _comac_output_stream_printf (ctx->stream,
-					 "pop\n");
+	    _comac_output_stream_printf (ctx->stream, "pop\n");
 	} else if (depth == 1) {
-	    _comac_output_stream_printf (ctx->stream,
-					 "exch pop\n");
+	    _comac_output_stream_printf (ctx->stream, "exch pop\n");
 	} else {
 	    _comac_output_stream_printf (ctx->stream,
 					 "%d -1 roll pop\n",
@@ -2464,10 +2497,10 @@ DONE:
 }
 
 static comac_int_status_t
-_comac_script_surface_paint (void			*abstract_surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     const comac_clip_t		*clip)
+_comac_script_surface_paint (void *abstract_surface,
+			     comac_operator_t op,
+			     const comac_pattern_t *source,
+			     const comac_clip_t *clip)
 {
     comac_script_surface_t *surface = abstract_surface;
     comac_status_t status;
@@ -2492,14 +2525,15 @@ _comac_script_surface_paint (void			*abstract_surface,
     if (unlikely (status))
 	goto BAIL;
 
-    _comac_output_stream_puts (to_context (surface)->stream,
-			       "paint\n");
+    _comac_output_stream_puts (to_context (surface)->stream, "paint\n");
 
     inactive (surface);
 
     if (_comac_surface_wrapper_is_active (&surface->wrapper)) {
 	return _comac_surface_wrapper_paint (&surface->wrapper,
-					     op, source, clip);
+					     op,
+					     source,
+					     clip);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -2510,11 +2544,11 @@ BAIL:
 }
 
 static comac_int_status_t
-_comac_script_surface_mask (void			*abstract_surface,
-			    comac_operator_t		 op,
-			    const comac_pattern_t	*source,
-			    const comac_pattern_t	*mask,
-			    const comac_clip_t		*clip)
+_comac_script_surface_mask (void *abstract_surface,
+			    comac_operator_t op,
+			    const comac_pattern_t *source,
+			    const comac_pattern_t *mask,
+			    const comac_clip_t *clip)
 {
     comac_script_surface_t *surface = abstract_surface;
     comac_status_t status;
@@ -2549,14 +2583,16 @@ _comac_script_surface_mask (void			*abstract_surface,
 
     assert (surface->cr.current_operator == op);
 
-    _comac_output_stream_puts (to_context (surface)->stream,
-			       " mask\n");
+    _comac_output_stream_puts (to_context (surface)->stream, " mask\n");
 
     inactive (surface);
 
     if (_comac_surface_wrapper_is_active (&surface->wrapper)) {
 	return _comac_surface_wrapper_mask (&surface->wrapper,
-					    op, source, mask, clip);
+					    op,
+					    source,
+					    mask,
+					    clip);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -2567,16 +2603,16 @@ BAIL:
 }
 
 static comac_int_status_t
-_comac_script_surface_stroke (void				*abstract_surface,
-			      comac_operator_t			 op,
-			      const comac_pattern_t		*source,
-			      const comac_path_fixed_t		*path,
-			      const comac_stroke_style_t	*style,
-			      const comac_matrix_t		*ctm,
-			      const comac_matrix_t		*ctm_inverse,
-			      double				 tolerance,
-			      comac_antialias_t			 antialias,
-			      const comac_clip_t		*clip)
+_comac_script_surface_stroke (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      const comac_stroke_style_t *style,
+			      const comac_matrix_t *ctm,
+			      const comac_matrix_t *ctm_inverse,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip)
 {
     comac_script_surface_t *surface = abstract_surface;
     comac_bool_t matrix_updated = FALSE;
@@ -2615,12 +2651,9 @@ _comac_script_surface_stroke (void				*abstract_surface,
 	goto BAIL;
 
     if (_scaling_matrix_equal (&surface->cr.current_ctm,
-			       &surface->cr.current_stroke_matrix))
-    {
+			       &surface->cr.current_stroke_matrix)) {
 	matrix_updated = FALSE;
-    }
-    else
-    {
+    } else {
 	matrix_updated = TRUE;
 	surface->cr.current_stroke_matrix = surface->cr.current_ctm;
     }
@@ -2643,10 +2676,14 @@ _comac_script_surface_stroke (void				*abstract_surface,
 
     if (_comac_surface_wrapper_is_active (&surface->wrapper)) {
 	return _comac_surface_wrapper_stroke (&surface->wrapper,
-					      op, source, path,
+					      op,
+					      source,
+					      path,
 					      style,
-					      ctm, ctm_inverse,
-					      tolerance, antialias,
+					      ctm,
+					      ctm_inverse,
+					      tolerance,
+					      antialias,
 					      clip);
     }
 
@@ -2658,14 +2695,14 @@ BAIL:
 }
 
 static comac_int_status_t
-_comac_script_surface_fill (void			*abstract_surface,
-			    comac_operator_t		 op,
-			    const comac_pattern_t	*source,
-			    const comac_path_fixed_t	*path,
-			    comac_fill_rule_t		 fill_rule,
-			    double			 tolerance,
-			    comac_antialias_t		 antialias,
-			    const comac_clip_t		*clip)
+_comac_script_surface_fill (void *abstract_surface,
+			    comac_operator_t op,
+			    const comac_pattern_t *source,
+			    const comac_path_fixed_t *path,
+			    comac_fill_rule_t fill_rule,
+			    double tolerance,
+			    comac_antialias_t antialias,
+			    const comac_clip_t *clip)
 {
     comac_script_surface_t *surface = abstract_surface;
     comac_bool_t matrix_updated = FALSE;
@@ -2724,7 +2761,9 @@ _comac_script_surface_fill (void			*abstract_surface,
 
     if (_comac_surface_wrapper_is_active (&surface->wrapper)) {
 	return _comac_surface_wrapper_fill (&surface->wrapper,
-					    op, source, path,
+					    op,
+					    source,
+					    path,
 					    fill_rule,
 					    tolerance,
 					    antialias,
@@ -2759,11 +2798,11 @@ static const char *
 _subpixel_order_to_string (comac_subpixel_order_t subpixel_order)
 {
     static const char *names[] = {
-	"SUBPIXEL_ORDER_DEFAULT",	/* COMAC_SUBPIXEL_ORDER_DEFAULT */
-	"SUBPIXEL_ORDER_RGB",		/* COMAC_SUBPIXEL_ORDER_RGB */
-	"SUBPIXEL_ORDER_BGR",		/* COMAC_SUBPIXEL_ORDER_BGR */
-	"SUBPIXEL_ORDER_VRGB",		/* COMAC_SUBPIXEL_ORDER_VRGB */
-	"SUBPIXEL_ORDER_VBGR"		/* COMAC_SUBPIXEL_ORDER_VBGR */
+	"SUBPIXEL_ORDER_DEFAULT", /* COMAC_SUBPIXEL_ORDER_DEFAULT */
+	"SUBPIXEL_ORDER_RGB",	  /* COMAC_SUBPIXEL_ORDER_RGB */
+	"SUBPIXEL_ORDER_BGR",	  /* COMAC_SUBPIXEL_ORDER_BGR */
+	"SUBPIXEL_ORDER_VRGB",	  /* COMAC_SUBPIXEL_ORDER_VRGB */
+	"SUBPIXEL_ORDER_VBGR"	  /* COMAC_SUBPIXEL_ORDER_VBGR */
     };
     return names[subpixel_order];
 }
@@ -2771,11 +2810,11 @@ static const char *
 _hint_style_to_string (comac_hint_style_t hint_style)
 {
     static const char *names[] = {
-	"HINT_STYLE_DEFAULT",	/* COMAC_HINT_STYLE_DEFAULT */
-	"HINT_STYLE_NONE",	/* COMAC_HINT_STYLE_NONE */
-	"HINT_STYLE_SLIGHT",	/* COMAC_HINT_STYLE_SLIGHT */
-	"HINT_STYLE_MEDIUM",	/* COMAC_HINT_STYLE_MEDIUM */
-	"HINT_STYLE_FULL"	/* COMAC_HINT_STYLE_FULL */
+	"HINT_STYLE_DEFAULT", /* COMAC_HINT_STYLE_DEFAULT */
+	"HINT_STYLE_NONE",    /* COMAC_HINT_STYLE_NONE */
+	"HINT_STYLE_SLIGHT",  /* COMAC_HINT_STYLE_SLIGHT */
+	"HINT_STYLE_MEDIUM",  /* COMAC_HINT_STYLE_MEDIUM */
+	"HINT_STYLE_FULL"     /* COMAC_HINT_STYLE_FULL */
     };
     return names[hint_style];
 }
@@ -2783,9 +2822,9 @@ static const char *
 _hint_metrics_to_string (comac_hint_metrics_t hint_metrics)
 {
     static const char *names[] = {
-	 "HINT_METRICS_DEFAULT",	/* COMAC_HINT_METRICS_DEFAULT */
-	 "HINT_METRICS_OFF",		/* COMAC_HINT_METRICS_OFF */
-	 "HINT_METRICS_ON"		/* COMAC_HINT_METRICS_ON */
+	"HINT_METRICS_DEFAULT", /* COMAC_HINT_METRICS_DEFAULT */
+	"HINT_METRICS_OFF",	/* COMAC_HINT_METRICS_OFF */
+	"HINT_METRICS_ON"	/* COMAC_HINT_METRICS_ON */
     };
     return names[hint_metrics];
 }
@@ -2797,45 +2836,44 @@ _emit_font_options (comac_script_surface_t *surface,
     comac_script_context_t *ctx = to_context (surface);
 
     if (comac_font_options_equal (&surface->cr.current_font_options,
-				  font_options))
-    {
+				  font_options)) {
 	return COMAC_STATUS_SUCCESS;
     }
 
     _comac_output_stream_printf (ctx->stream, "<<");
 
     if (font_options->antialias != surface->cr.current_font_options.antialias) {
-	_comac_output_stream_printf (ctx->stream,
-				     " /antialias //%s",
-				     _antialias_to_string (font_options->antialias));
+	_comac_output_stream_printf (
+	    ctx->stream,
+	    " /antialias //%s",
+	    _antialias_to_string (font_options->antialias));
     }
 
     if (font_options->subpixel_order !=
-	surface->cr.current_font_options.subpixel_order)
-    {
-	_comac_output_stream_printf (ctx->stream,
-				     " /subpixel-order //%s",
-				     _subpixel_order_to_string (font_options->subpixel_order));
+	surface->cr.current_font_options.subpixel_order) {
+	_comac_output_stream_printf (
+	    ctx->stream,
+	    " /subpixel-order //%s",
+	    _subpixel_order_to_string (font_options->subpixel_order));
     }
 
     if (font_options->hint_style !=
-	surface->cr.current_font_options.hint_style)
-    {
-	_comac_output_stream_printf (ctx->stream,
-				     " /hint-style //%s",
-				     _hint_style_to_string (font_options->hint_style));
+	surface->cr.current_font_options.hint_style) {
+	_comac_output_stream_printf (
+	    ctx->stream,
+	    " /hint-style //%s",
+	    _hint_style_to_string (font_options->hint_style));
     }
 
     if (font_options->hint_metrics !=
-	surface->cr.current_font_options.hint_metrics)
-    {
-	_comac_output_stream_printf (ctx->stream,
-				     " /hint-metrics //%s",
-				     _hint_metrics_to_string (font_options->hint_metrics));
+	surface->cr.current_font_options.hint_metrics) {
+	_comac_output_stream_printf (
+	    ctx->stream,
+	    " /hint-metrics //%s",
+	    _hint_metrics_to_string (font_options->hint_metrics));
     }
 
-    _comac_output_stream_printf (ctx->stream,
-				 " >> set-font-options\n");
+    _comac_output_stream_printf (ctx->stream, " >> set-font-options\n");
 
     surface->cr.current_font_options = *font_options;
     return COMAC_STATUS_SUCCESS;
@@ -2845,8 +2883,9 @@ static void
 _comac_script_scaled_font_fini (comac_scaled_font_private_t *abstract_private,
 				comac_scaled_font_t *scaled_font)
 {
-    comac_script_font_t *priv = (comac_script_font_t *)abstract_private;
-    comac_script_context_t *ctx = (comac_script_context_t *)abstract_private->key;
+    comac_script_font_t *priv = (comac_script_font_t *) abstract_private;
+    comac_script_context_t *ctx =
+	(comac_script_context_t *) abstract_private->key;
     comac_status_t status;
 
     status = comac_device_acquire (&ctx->base);
@@ -2960,7 +2999,9 @@ _emit_scaled_font_init (comac_script_surface_t *surface,
     if (unlikely (font_private == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    _comac_scaled_font_attach_private (scaled_font, &font_private->base, ctx,
+    _comac_scaled_font_attach_private (scaled_font,
+				       &font_private->base,
+				       ctx,
 				       _comac_script_scaled_font_fini);
 
     font_private->parent = scaled_font;
@@ -2969,8 +3010,7 @@ _emit_scaled_font_init (comac_script_surface_t *surface,
 
     comac_list_add (&font_private->link, &ctx->fonts);
 
-    status = _bitmap_next_id (&ctx->font_id,
-			      &font_private->id);
+    status = _bitmap_next_id (&ctx->font_id, &font_private->id);
     if (unlikely (status)) {
 	free (font_private);
 	return status;
@@ -3069,7 +3109,7 @@ _emit_scaled_glyph_vector (comac_script_surface_t *surface,
 
     index = ++font_private->subset_glyph_index;
     scaled_glyph->dev_private_key = ctx;
-    scaled_glyph->dev_private = (void *)(uintptr_t)index;
+    scaled_glyph->dev_private = (void *) (uintptr_t) index;
 
     _comac_output_stream_printf (ctx->stream,
 				 "%lu <<\n"
@@ -3117,7 +3157,7 @@ _emit_scaled_glyph_bitmap (comac_script_surface_t *surface,
 
     index = ++font_private->subset_glyph_index;
     scaled_glyph->dev_private_key = ctx;
-    scaled_glyph->dev_private = (void *)(uintptr_t)index;
+    scaled_glyph->dev_private = (void *) (uintptr_t) index;
 
     _comac_output_stream_printf (ctx->stream,
 				 "%lu <<\n"
@@ -3150,8 +3190,7 @@ _emit_scaled_glyph_bitmap (comac_script_surface_t *surface,
 				     scaled_font->font_matrix.x0,
 				     scaled_font->font_matrix.y0);
     }
-    _comac_output_stream_puts (ctx->stream,
-				 "mask\n} >> set\n");
+    _comac_output_stream_puts (ctx->stream, "mask\n} >> set\n");
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -3162,7 +3201,8 @@ _emit_scaled_glyph_prologue (comac_script_surface_t *surface,
 {
     comac_script_context_t *ctx = to_context (surface);
 
-    _comac_output_stream_printf (ctx->stream, "f%lu /glyphs get\n",
+    _comac_output_stream_printf (ctx->stream,
+				 "f%lu /glyphs get\n",
 				 _comac_script_font_id (ctx, scaled_font));
 
     return COMAC_STATUS_SUCCESS;
@@ -3194,7 +3234,7 @@ _emit_scaled_glyphs (comac_script_surface_t *surface,
 	status = _comac_scaled_glyph_lookup (scaled_font,
 					     glyphs[n].index,
 					     COMAC_SCALED_GLYPH_INFO_METRICS,
-                                             NULL, /* foreground color */
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (unlikely (status))
 	    break;
@@ -3202,11 +3242,12 @@ _emit_scaled_glyphs (comac_script_surface_t *surface,
 	if (scaled_glyph->dev_private_key == ctx)
 	    continue;
 
-	status = _comac_scaled_glyph_lookup (scaled_font,
-					     glyphs[n].index,
-					     COMAC_SCALED_GLYPH_INFO_RECORDING_SURFACE,
-                                             NULL, /* foreground color */
-					     &scaled_glyph);
+	status = _comac_scaled_glyph_lookup (
+	    scaled_font,
+	    glyphs[n].index,
+	    COMAC_SCALED_GLYPH_INFO_RECORDING_SURFACE,
+	    NULL, /* foreground color */
+	    &scaled_glyph);
 	if (_comac_status_is_error (status))
 	    break;
 
@@ -3220,7 +3261,8 @@ _emit_scaled_glyphs (comac_script_surface_t *surface,
 	    }
 
 	    status = _emit_scaled_glyph_vector (surface,
-						scaled_font, font_private,
+						scaled_font,
+						font_private,
 						scaled_glyph);
 	    if (unlikely (status))
 		break;
@@ -3231,7 +3273,7 @@ _emit_scaled_glyphs (comac_script_surface_t *surface,
 	status = _comac_scaled_glyph_lookup (scaled_font,
 					     glyphs[n].index,
 					     COMAC_SCALED_GLYPH_INFO_SURFACE,
-                                             NULL, /* foreground color */
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (_comac_status_is_error (status))
 	    break;
@@ -3275,7 +3317,8 @@ to_octal (int value, char *buf, size_t size)
 
 static void
 _emit_string_literal (comac_script_surface_t *surface,
-		      const char *utf8, int len)
+		      const char *utf8,
+		      int len)
 {
     comac_script_context_t *ctx = to_context (surface);
     char c;
@@ -3311,16 +3354,16 @@ _emit_string_literal (comac_script_surface_t *surface,
 	case '\\':
 	case '(':
 	case ')':
-ESCAPED_CHAR:
+	ESCAPED_CHAR:
 	    _comac_output_stream_printf (ctx->stream, "\\%c", c);
 	    break;
 	default:
-	    if (_comac_isprint(c)) {
+	    if (_comac_isprint (c)) {
 		_comac_output_stream_printf (ctx->stream, "%c", c);
 	    } else {
-		char buf[4] = { '\\' };
+		char buf[4] = {'\\'};
 
-		to_octal (c, buf+1, 3);
+		to_octal (c, buf + 1, 3);
 		_comac_output_stream_write (ctx->stream, buf, 4);
 	    }
 	    break;
@@ -3330,18 +3373,18 @@ ESCAPED_CHAR:
 }
 
 static comac_int_status_t
-_comac_script_surface_show_text_glyphs (void			    *abstract_surface,
-					comac_operator_t	     op,
-					const comac_pattern_t	    *source,
-					const char		    *utf8,
-					int			     utf8_len,
-					comac_glyph_t		    *glyphs,
-					int			     num_glyphs,
-					const comac_text_cluster_t  *clusters,
-					int			     num_clusters,
-					comac_text_cluster_flags_t   backward,
-					comac_scaled_font_t	    *scaled_font,
-					const comac_clip_t	    *clip)
+_comac_script_surface_show_text_glyphs (void *abstract_surface,
+					comac_operator_t op,
+					const comac_pattern_t *source,
+					const char *utf8,
+					int utf8_len,
+					comac_glyph_t *glyphs,
+					int num_glyphs,
+					const comac_text_cluster_t *clusters,
+					int num_clusters,
+					comac_text_cluster_flags_t backward,
+					comac_scaled_font_t *scaled_font,
+					const comac_clip_t *clip)
 {
     comac_script_surface_t *surface = abstract_surface;
     comac_script_context_t *ctx = to_context (surface);
@@ -3402,26 +3445,25 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
     _comac_scaled_font_freeze_cache (scaled_font);
     font_private = _comac_script_font_get (ctx, scaled_font);
 
-    _comac_output_stream_printf (ctx->stream,
-				 "[%f %f ",
-				 ix, iy);
+    _comac_output_stream_printf (ctx->stream, "[%f %f ", ix, iy);
 
     for (n = 0; n < num_glyphs; n++) {
 	if (font_private->has_sfnt) {
 	    if (glyphs[n].index > 256)
 		break;
 	} else {
-	    status = _comac_scaled_glyph_lookup (scaled_font,
-						 glyphs[n].index,
-						 COMAC_SCALED_GLYPH_INFO_METRICS,
-						 NULL, /* foreground color */
-						 &scaled_glyph);
+	    status =
+		_comac_scaled_glyph_lookup (scaled_font,
+					    glyphs[n].index,
+					    COMAC_SCALED_GLYPH_INFO_METRICS,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 	    if (unlikely (status)) {
 		_comac_scaled_font_thaw_cache (scaled_font);
 		goto BAIL;
 	    }
 
-	    if ((uintptr_t)scaled_glyph->dev_private > 256)
+	    if ((uintptr_t) scaled_glyph->dev_private > 256)
 		break;
 	}
     }
@@ -3438,7 +3480,7 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
 	status = _comac_scaled_glyph_lookup (scaled_font,
 					     glyphs[n].index,
 					     COMAC_SCALED_GLYPH_INFO_METRICS,
-                                             NULL, /* foreground color */
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (unlikely (status)) {
 	    _comac_scaled_font_thaw_cache (scaled_font);
@@ -3455,11 +3497,13 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
 		    }
 
 		    _comac_output_stream_printf (ctx->stream,
-						 "~> %f <~", glyphs[n].x - x);
+						 "~> %f <~",
+						 glyphs[n].x - x);
 		    base85_stream = _comac_base85_stream_create (ctx->stream);
 		} else {
 		    _comac_output_stream_printf (ctx->stream,
-						 " ] %f [ ", glyphs[n].x - x);
+						 " ] %f [ ",
+						 glyphs[n].x - x);
 		}
 
 		x = glyphs[n].x;
@@ -3478,12 +3522,14 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
 
 		    _comac_output_stream_printf (ctx->stream,
 						 "~> %f %f <~",
-						 ix, iy);
+						 ix,
+						 iy);
 		    base85_stream = _comac_base85_stream_create (ctx->stream);
 		} else {
 		    _comac_output_stream_printf (ctx->stream,
 						 " ] %f %f [ ",
-						 ix, iy);
+						 ix,
+						 iy);
 		}
 	    }
 	}
@@ -3498,15 +3544,18 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
 	    _comac_output_stream_write (base85_stream, &c, 1);
 	} else {
 	    if (font_private->has_sfnt)
-		_comac_output_stream_printf (ctx->stream, " %lu",
+		_comac_output_stream_printf (ctx->stream,
+					     " %lu",
 					     glyphs[n].index);
 	    else
-		_comac_output_stream_printf (ctx->stream, " %lu",
-					     (long unsigned) (uintptr_t)scaled_glyph->dev_private);
+		_comac_output_stream_printf (
+		    ctx->stream,
+		    " %lu",
+		    (long unsigned) (uintptr_t) scaled_glyph->dev_private);
 	}
 
-        dx = scaled_glyph->metrics.x_advance;
-        dy = scaled_glyph->metrics.y_advance;
+	dx = scaled_glyph->metrics.x_advance;
+	dy = scaled_glyph->metrics.y_advance;
 	comac_matrix_transform_distance (&scaled_font->ctm, &dx, &dy);
 	x += dx;
 	y += dy;
@@ -3530,8 +3579,7 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
     if (utf8 != NULL && clusters != NULL) {
 	for (n = 0; n < num_clusters; n++) {
 	    if (clusters[n].num_bytes > UCHAR_MAX ||
-		clusters[n].num_glyphs > UCHAR_MAX)
-	    {
+		clusters[n].num_glyphs > UCHAR_MAX) {
 		break;
 	    }
 	}
@@ -3545,9 +3593,7 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
 					     clusters[n].num_glyphs);
 	    }
 	    _comac_output_stream_puts (ctx->stream, "]");
-	}
-	else
-	{
+	} else {
 	    _comac_output_stream_puts (ctx->stream, "] <~");
 	    base85_stream = _comac_base85_stream_create (ctx->stream);
 	    for (n = 0; n < num_clusters; n++) {
@@ -3567,18 +3613,21 @@ _comac_script_surface_show_text_glyphs (void			    *abstract_surface,
 				     " //%s show-text-glyphs\n",
 				     _direction_to_string (backward));
     } else {
-	_comac_output_stream_puts (ctx->stream,
-				   "] show-glyphs\n");
+	_comac_output_stream_puts (ctx->stream, "] show-glyphs\n");
     }
 
     inactive (surface);
 
-    if (_comac_surface_wrapper_is_active (&surface->wrapper)){
+    if (_comac_surface_wrapper_is_active (&surface->wrapper)) {
 	return _comac_surface_wrapper_show_text_glyphs (&surface->wrapper,
-							op, source,
-							utf8, utf8_len,
-							glyphs, num_glyphs,
-							clusters, num_clusters,
+							op,
+							source,
+							utf8,
+							utf8_len,
+							glyphs,
+							num_glyphs,
+							clusters,
+							num_clusters,
 							backward,
 							scaled_font,
 							clip);
@@ -3613,8 +3662,7 @@ _comac_script_surface_get_extents (void *abstract_surface,
     return TRUE;
 }
 
-static const comac_surface_backend_t
-_comac_script_surface_backend = {
+static const comac_surface_backend_t _comac_script_surface_backend = {
     COMAC_SURFACE_TYPE_SCRIPT,
     _comac_script_surface_finish,
 
@@ -3646,8 +3694,7 @@ _comac_script_surface_backend = {
     NULL, /* fill/stroke */
     NULL, /* glyphs */
     _comac_script_surface_has_show_text_glyphs,
-    _comac_script_surface_show_text_glyphs
-};
+    _comac_script_surface_show_text_glyphs};
 
 static void
 _comac_script_implicit_context_init (comac_script_implicit_context_t *cr)
@@ -3657,8 +3704,7 @@ _comac_script_implicit_context_init (comac_script_implicit_context_t *cr)
     cr->current_tolerance = COMAC_GSTATE_TOLERANCE_DEFAULT;
     cr->current_antialias = COMAC_ANTIALIAS_DEFAULT;
     _comac_stroke_style_init (&cr->current_style);
-    _comac_pattern_init_solid (&cr->current_source.solid,
-			       COMAC_COLOR_BLACK);
+    _comac_pattern_init_solid (&cr->current_source.solid, COMAC_COLOR_BLACK);
     _comac_path_fixed_init (&cr->current_path);
     comac_matrix_init_identity (&cr->current_ctm);
     comac_matrix_init_identity (&cr->current_stroke_matrix);
@@ -3689,11 +3735,13 @@ _comac_script_surface_create_internal (comac_script_context_t *ctx,
     comac_script_surface_t *surface;
 
     if (unlikely (ctx == NULL))
-	return (comac_script_surface_t *) _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NULL_POINTER));
+	return (comac_script_surface_t *) _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NULL_POINTER));
 
     surface = _comac_malloc (sizeof (comac_script_surface_t));
     if (unlikely (surface == NULL))
-	return (comac_script_surface_t *) _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return (comac_script_surface_t *) _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
 			 &_comac_script_surface_backend,
@@ -3703,15 +3751,17 @@ _comac_script_surface_create_internal (comac_script_context_t *ctx,
 
     _comac_surface_wrapper_init (&surface->wrapper, passthrough);
 
-    _comac_surface_clipper_init (&surface->clipper,
-				 _comac_script_surface_clipper_intersect_clip_path);
+    _comac_surface_clipper_init (
+	&surface->clipper,
+	_comac_script_surface_clipper_intersect_clip_path);
 
     surface->width = surface->height = -1;
     if (extents) {
 	surface->width = extents->width;
 	surface->height = extents->height;
 	comac_surface_set_device_offset (&surface->base,
-					 -extents->x, -extents->y);
+					 -extents->x,
+					 -extents->y);
     }
 
     surface->emitted = FALSE;
@@ -3728,12 +3778,12 @@ _comac_script_surface_create_internal (comac_script_context_t *ctx,
 static const comac_device_backend_t _comac_script_device_backend = {
     COMAC_DEVICE_TYPE_SCRIPT,
 
-    NULL, NULL, /* lock, unlock */
+    NULL,
+    NULL, /* lock, unlock */
 
-    _device_flush,  /* flush */
-    NULL,  /* finish */
-    _device_destroy
-};
+    _device_flush, /* flush */
+    NULL,	   /* finish */
+    _device_destroy};
 
 comac_device_t *
 _comac_script_context_create_internal (comac_output_stream_t *stream)
@@ -3742,7 +3792,8 @@ _comac_script_context_create_internal (comac_output_stream_t *stream)
 
     ctx = _comac_malloc (sizeof (comac_script_context_t));
     if (unlikely (ctx == NULL))
-	return _comac_device_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_device_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     memset (ctx, 0, sizeof (comac_script_context_t));
 
@@ -3776,8 +3827,8 @@ _comac_script_context_create (comac_output_stream_t *stream)
 {
     comac_script_context_t *ctx;
 
-    ctx = (comac_script_context_t *)
-	_comac_script_context_create_internal (stream);
+    ctx = (comac_script_context_t *) _comac_script_context_create_internal (
+	stream);
     if (unlikely (ctx->base.status))
 	return &ctx->base;
 
@@ -3835,8 +3886,7 @@ comac_script_create (const char *filename)
  * Since: 1.12
  **/
 comac_device_t *
-comac_script_create_for_stream (comac_write_func_t	 write_func,
-				void			*closure)
+comac_script_create_for_stream (comac_write_func_t write_func, void *closure)
 {
     comac_output_stream_t *stream;
     comac_status_t status;
@@ -3883,8 +3933,7 @@ comac_script_write_comment (comac_device_t *script,
  * Since: 1.12
  **/
 void
-comac_script_set_mode (comac_device_t *script,
-		       comac_script_mode_t mode)
+comac_script_set_mode (comac_device_t *script, comac_script_mode_t mode)
 {
     comac_script_context_t *context = (comac_script_context_t *) script;
 
@@ -3937,7 +3986,8 @@ comac_script_surface_create (comac_device_t *script,
     comac_rectangle_t *extents, r;
 
     if (unlikely (script->backend->type != COMAC_DEVICE_TYPE_SCRIPT))
-	return _comac_surface_create_in_error (COMAC_STATUS_DEVICE_TYPE_MISMATCH);
+	return _comac_surface_create_in_error (
+	    COMAC_STATUS_DEVICE_TYPE_MISMATCH);
 
     if (unlikely (script->status))
 	return _comac_surface_create_in_error (script->status);
@@ -3945,13 +3995,16 @@ comac_script_surface_create (comac_device_t *script,
     extents = NULL;
     if (width > 0 && height > 0) {
 	r.x = r.y = 0;
-	r.width  = width;
+	r.width = width;
 	r.height = height;
 	extents = &r;
     }
-    return &_comac_script_surface_create_internal ((comac_script_context_t *) script,
-						   content, extents,
-						   NULL)->base;
+    return &_comac_script_surface_create_internal (
+		(comac_script_context_t *) script,
+		content,
+		extents,
+		NULL)
+		->base;
 }
 
 /**
@@ -3980,7 +4033,8 @@ comac_script_surface_create_for_target (comac_device_t *script,
     comac_rectangle_t rect, *r;
 
     if (unlikely (script->backend->type != COMAC_DEVICE_TYPE_SCRIPT))
-	return _comac_surface_create_in_error (COMAC_STATUS_DEVICE_TYPE_MISMATCH);
+	return _comac_surface_create_in_error (
+	    COMAC_STATUS_DEVICE_TYPE_MISMATCH);
 
     if (unlikely (script->status))
 	return _comac_surface_create_in_error (script->status);
@@ -3993,11 +4047,14 @@ comac_script_surface_create_for_target (comac_device_t *script,
 	rect.x = rect.y = 0;
 	rect.width = extents.width;
 	rect.height = extents.height;
-	r= &rect;
+	r = &rect;
     }
-    return &_comac_script_surface_create_internal ((comac_script_context_t *) script,
-						   target->content, r,
-						   target)->base;
+    return &_comac_script_surface_create_internal (
+		(comac_script_context_t *) script,
+		target->content,
+		r,
+		target)
+		->base;
 }
 
 /**
@@ -4035,10 +4092,12 @@ comac_script_from_recording_surface (comac_device_t *script,
     if (_comac_recording_surface_get_bounds (recording_surface, &r))
 	extents = &r;
 
-    surface = &_comac_script_surface_create_internal ((comac_script_context_t *) script,
-						      recording_surface->content,
-						      extents,
-						      NULL)->base;
+    surface = &_comac_script_surface_create_internal (
+		   (comac_script_context_t *) script,
+		   recording_surface->content,
+		   extents,
+		   NULL)
+		   ->base;
     if (unlikely (surface->status))
 	return surface->status;
 

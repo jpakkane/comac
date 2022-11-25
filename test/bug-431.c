@@ -34,11 +34,13 @@ draw (comac_t *cr, int width, int height)
     test_matrix.yy = -794;
     test_matrix.x0 = -1.3831;
     test_matrix.y0 = 793;
-    comac_set_matrix(cr, &test_matrix);
+    comac_set_matrix (cr, &test_matrix);
 
     const comac_test_context_t *ctx = comac_test_get_context (cr);
-    comac_surface_t *png_surface = comac_test_create_surface_from_png (ctx, "romedalen.png");
-    comac_pattern_t *png_pattern = comac_pattern_create_for_surface(png_surface);
+    comac_surface_t *png_surface =
+	comac_test_create_surface_from_png (ctx, "romedalen.png");
+    comac_pattern_t *png_pattern =
+	comac_pattern_create_for_surface (png_surface);
     comac_matrix_t matrix;
     matrix.xx = 1228;
     matrix.yx = 0;
@@ -47,18 +49,21 @@ draw (comac_t *cr, int width, int height)
     matrix.x0 = 0;
     matrix.y0 = 1590;
     comac_pattern_set_matrix (png_pattern, &matrix);
-    comac_pattern_t *mask_pattern = comac_pattern_create_rgba (1.0, 1.0, 1.0, 0.15);
-    comac_save(cr);
-    comac_set_source(cr, png_pattern);
-    comac_mask(cr, mask_pattern);
-    comac_restore(cr);
+    comac_pattern_t *mask_pattern =
+	comac_pattern_create_rgba (1.0, 1.0, 1.0, 0.15);
+    comac_save (cr);
+    comac_set_source (cr, png_pattern);
+    comac_mask (cr, mask_pattern);
+    comac_restore (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
 COMAC_TEST (bug_431,
 	    "Bug 431 (Different result on SVG surface)",
-	    "", /* keywords */
+	    "",	  /* keywords */
 	    NULL, /* requirements */
-	    128, 96,
-	    NULL, draw)
+	    128,
+	    96,
+	    NULL,
+	    draw)

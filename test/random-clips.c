@@ -29,7 +29,7 @@
 #include "comac-test.h"
 
 #define SIZE 512
-#define STEP (512+2)
+#define STEP (512 + 2)
 #define NUM_SEGMENTS 128
 
 static uint32_t state;
@@ -39,12 +39,13 @@ uniform_random (double minval, double maxval)
 {
     static uint32_t const poly = 0x9a795537U;
     uint32_t n = 32;
-    while (n-->0)
-	state = 2*state < state ? (2*state ^ poly) : 2*state;
+    while (n-- > 0)
+	state = 2 * state < state ? (2 * state ^ poly) : 2 * state;
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
-static void nz_path (comac_t *cr)
+static void
+nz_path (comac_t *cr)
 {
     int i;
 
@@ -59,7 +60,8 @@ static void nz_path (comac_t *cr)
     comac_close_path (cr);
 }
 
-static void region_path (comac_t *cr)
+static void
+region_path (comac_t *cr)
 {
     int i;
 
@@ -74,7 +76,8 @@ static void region_path (comac_t *cr)
     }
 }
 
-static void rectangle_path (comac_t *cr)
+static void
+rectangle_path (comac_t *cr)
 {
     int i;
 
@@ -89,7 +92,8 @@ static void rectangle_path (comac_t *cr)
     }
 }
 
-static void arc_path (comac_t *cr)
+static void
+arc_path (comac_t *cr)
 {
     int i;
 
@@ -100,12 +104,12 @@ static void arc_path (comac_t *cr)
 	double y = uniform_random (0, SIZE);
 	double r = uniform_random (0, 20);
 	comac_new_sub_path (cr);
-	comac_arc (cr, x, y, r, 0, 2*M_PI);
+	comac_arc (cr, x, y, r, 0, 2 * M_PI);
     }
 }
 
-
-static void nz_fill_stroke (comac_t *cr)
+static void
+nz_fill_stroke (comac_t *cr)
 {
     nz_path (cr);
 
@@ -116,7 +120,8 @@ static void nz_fill_stroke (comac_t *cr)
     comac_stroke (cr);
 }
 
-static void clip_to_quadrant (comac_t *cr)
+static void
+clip_to_quadrant (comac_t *cr)
 {
     comac_rectangle (cr, 0, 0, SIZE, SIZE);
     comac_clip (cr);
@@ -134,16 +139,19 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, 1, 1);
 
     /* no clipping */
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 
 	nz_fill_stroke (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, STEP, 0);
 
     /* random clipping */
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 
 	nz_path (cr);
@@ -153,12 +161,14 @@ draw (comac_t *cr, int width, int height)
 
 	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
 	comac_paint (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, STEP, 0);
 
     /* regional clipping */
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 
 	region_path (cr);
@@ -168,12 +178,14 @@ draw (comac_t *cr, int width, int height)
 
 	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
 	comac_paint (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
-    comac_translate (cr, -2*STEP, STEP);
+    comac_translate (cr, -2 * STEP, STEP);
 
     /* rectangular clipping */
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 
 	rectangle_path (cr);
@@ -183,12 +195,14 @@ draw (comac_t *cr, int width, int height)
 
 	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
 	comac_paint (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, STEP, 0);
 
     /* circular clipping */
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 
 	arc_path (cr);
@@ -198,12 +212,14 @@ draw (comac_t *cr, int width, int height)
 
 	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
 	comac_paint (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, STEP, 0);
 
     /* all-of-the-above clipping */
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 
 	nz_path (cr);
@@ -219,7 +235,8 @@ draw (comac_t *cr, int width, int height)
 
 	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
 	comac_paint (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     return COMAC_TEST_SUCCESS;
 }
@@ -227,6 +244,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (random_clip,
 	    "Tests the clip generation and intersection computation",
 	    "trap, clip", /* keywords */
-	    NULL, /* requirements */
-	    3*STEP+2, 2*STEP+2,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    3 * STEP + 2,
+	    2 * STEP + 2,
+	    NULL,
+	    draw)

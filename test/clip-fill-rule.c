@@ -76,12 +76,16 @@ a1_draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_fill_rule,
 	    "Tests interaction of clipping with comac_set_fill_rule",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    STAR_SIZE * 2 + 2, STAR_SIZE + 2,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    STAR_SIZE * 2 + 2,
+	    STAR_SIZE + 2,
+	    NULL,
+	    draw)
 COMAC_TEST (a1_clip_fill_rule,
 	    "Tests interaction of clipping with comac_set_fill_rule",
-	    "clip", /* keywords */
+	    "clip",	     /* keywords */
 	    "target=raster", /* requirements */
-	    STAR_SIZE * 2 + 2, STAR_SIZE + 2,
-	    NULL, a1_draw)
+	    STAR_SIZE * 2 + 2,
+	    STAR_SIZE + 2,
+	    NULL,
+	    a1_draw)

@@ -61,14 +61,14 @@ comac_private comac_status_t
 _comac_array_append (comac_array_t *array, const void *element);
 
 comac_private comac_status_t
-_comac_array_append_multiple (comac_array_t	*array,
-			      const void	*elements,
-			      unsigned int	 num_elements);
+_comac_array_append_multiple (comac_array_t *array,
+			      const void *elements,
+			      unsigned int num_elements);
 
 comac_private comac_status_t
-_comac_array_allocate (comac_array_t	 *array,
-		       unsigned int	  num_elements,
-		       void		**elements);
+_comac_array_allocate (comac_array_t *array,
+		       unsigned int num_elements,
+		       void **elements);
 
 comac_private void *
 _comac_array_index (comac_array_t *array, unsigned int index);
@@ -77,7 +77,9 @@ comac_private const void *
 _comac_array_index_const (const comac_array_t *array, unsigned int index);
 
 comac_private void
-_comac_array_copy_element (const comac_array_t *array, unsigned int index, void *dst);
+_comac_array_copy_element (const comac_array_t *array,
+			   unsigned int index,
+			   void *dst);
 
 comac_private unsigned int
 _comac_array_num_elements (const comac_array_t *array);
@@ -86,7 +88,8 @@ comac_private unsigned int
 _comac_array_size (const comac_array_t *array);
 
 comac_private void
-_comac_array_sort (const comac_array_t *array, int (*compar)(const void *, const void *));
+_comac_array_sort (const comac_array_t *array,
+		   int (*compar) (const void *, const void *));
 
 COMAC_END_DECLS
 

@@ -61,25 +61,17 @@ draw (comac_t *cr, int width, int height)
      * the reference image having the curved portion of that fold,
      * (which would just be harder to match in all the backends than
      * we really want). */
-    comac_move_to (cr,
-		     10.5, 0.5);
-    comac_curve_to (cr,
-		     11.5, 0.5,
-		    -25.0, 0.5,
-		     31.0, 0.5);
+    comac_move_to (cr, 10.5, 0.5);
+    comac_curve_to (cr, 11.5, 0.5, -25.0, 0.5, 31.0, 0.5);
 
     comac_stroke (cr);
 
     comac_translate (cr, 0, 2.0);
 
     /* A reflected version: DBAC */
-    comac_move_to (cr,
-		    19.5, 0.5);
+    comac_move_to (cr, 19.5, 0.5);
 
-    comac_curve_to (cr,
-		    18.5, 0.5,
-		    55.0, 0.5,
-		    -1.0, 0.5);
+    comac_curve_to (cr, 18.5, 0.5, 55.0, 0.5, -1.0, 0.5);
 
     comac_stroke (cr);
 
@@ -89,7 +81,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (curve_to_as_line_to,
 	    "Test optimization treating curve_to as line_to",
 	    "path", /* keywords */
-	    NULL, /* requirements */
+	    NULL,   /* requirements */
 	    30,
 	    5,
-	    NULL, draw)
+	    NULL,
+	    draw)

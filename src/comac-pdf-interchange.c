@@ -34,7 +34,6 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-
 /* PDF Document Interchange features:
  *  - metadata
  *  - document outline
@@ -63,9 +62,9 @@
 #endif
 
 static void
-write_rect_to_pdf_quad_points (comac_output_stream_t   *stream,
+write_rect_to_pdf_quad_points (comac_output_stream_t *stream,
 			       const comac_rectangle_t *rect,
-			       double                   surface_height)
+			       double surface_height)
 {
     _comac_output_stream_printf (stream,
 				 "%f %f %f %f %f %f %f %f",
@@ -80,9 +79,9 @@ write_rect_to_pdf_quad_points (comac_output_stream_t   *stream,
 }
 
 static void
-write_rect_int_to_pdf_bbox (comac_output_stream_t       *stream,
+write_rect_int_to_pdf_bbox (comac_output_stream_t *stream,
 			    const comac_rectangle_int_t *rect,
-			    double                       surface_height)
+			    double surface_height)
 {
     _comac_output_stream_printf (stream,
 				 "%d %f %d %f",
@@ -93,14 +92,14 @@ write_rect_int_to_pdf_bbox (comac_output_stream_t       *stream,
 }
 
 static comac_int_status_t
-add_tree_node (comac_pdf_surface_t           *surface,
-	       comac_pdf_struct_tree_node_t  *parent,
-	       const char                    *name,
+add_tree_node (comac_pdf_surface_t *surface,
+	       comac_pdf_struct_tree_node_t *parent,
+	       const char *name,
 	       comac_pdf_struct_tree_node_t **new_node)
 {
     comac_pdf_struct_tree_node_t *node;
 
-    node = _comac_malloc (sizeof(comac_pdf_struct_tree_node_t));
+    node = _comac_malloc (sizeof (comac_pdf_struct_tree_node_t));
     if (unlikely (node == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -111,7 +110,7 @@ add_tree_node (comac_pdf_surface_t           *surface,
 
     node->parent = parent;
     comac_list_init (&node->children);
-    _comac_array_init (&node->mcid, sizeof(struct page_mcid));
+    _comac_array_init (&node->mcid, sizeof (struct page_mcid));
     node->annot_res.id = 0;
     node->extents.valid = FALSE;
     comac_list_init (&node->extents.link);
@@ -125,7 +124,7 @@ add_tree_node (comac_pdf_surface_t           *surface,
 static comac_bool_t
 is_leaf_node (comac_pdf_struct_tree_node_t *node)
 {
-    return node->parent && comac_list_is_empty (&node->children) ;
+    return node->parent && comac_list_is_empty (&node->children);
 }
 
 static void
@@ -133,11 +132,14 @@ free_node (comac_pdf_struct_tree_node_t *node)
 {
     comac_pdf_struct_tree_node_t *child, *next;
 
-    if (!node)
+    if (! node)
 	return;
 
-    comac_list_foreach_entry_safe (child, next, comac_pdf_struct_tree_node_t,
-				   &node->children, link)
+    comac_list_foreach_entry_safe (child,
+				   next,
+				   comac_pdf_struct_tree_node_t,
+				   &node->children,
+				   link)
     {
 	comac_list_del (&child->link);
 	free_node (child);
@@ -148,10 +150,10 @@ free_node (comac_pdf_struct_tree_node_t *node)
 }
 
 static comac_status_t
-add_mcid_to_node (comac_pdf_surface_t          *surface,
+add_mcid_to_node (comac_pdf_surface_t *surface,
 		  comac_pdf_struct_tree_node_t *node,
-		  int                           page,
-		  int                          *mcid)
+		  int page,
+		  int *mcid)
 {
     struct page_mcid mcid_elem;
     comac_int_status_t status;
@@ -168,16 +170,16 @@ add_mcid_to_node (comac_pdf_surface_t          *surface,
 }
 
 static comac_int_status_t
-add_annotation (comac_pdf_surface_t           *surface,
-		comac_pdf_struct_tree_node_t  *node,
-		const char                    *name,
-		const char                    *attributes)
+add_annotation (comac_pdf_surface_t *surface,
+		comac_pdf_struct_tree_node_t *node,
+		const char *name,
+		const char *attributes)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
     comac_pdf_interchange_t *ic = &surface->interchange;
     comac_pdf_annotation_t *annot;
 
-    annot = malloc (sizeof(comac_pdf_annotation_t));
+    annot = malloc (sizeof (comac_pdf_annotation_t));
     if (unlikely (annot == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -212,7 +214,7 @@ comac_pdf_interchange_clear_annotations (comac_pdf_surface_t *surface)
 
     num_elems = _comac_array_num_elements (&ic->annots);
     for (i = 0; i < num_elems; i++) {
-	comac_pdf_annotation_t * annot;
+	comac_pdf_annotation_t *annot;
 
 	_comac_array_copy_element (&ic->annots, i, &annot);
 	free_annotation (annot);
@@ -221,8 +223,8 @@ comac_pdf_interchange_clear_annotations (comac_pdf_surface_t *surface)
 }
 
 static comac_int_status_t
-comac_pdf_interchange_write_node_object (comac_pdf_surface_t            *surface,
-					 comac_pdf_struct_tree_node_t   *node)
+comac_pdf_interchange_write_node_object (comac_pdf_surface_t *surface,
+					 comac_pdf_struct_tree_node_t *node)
 {
     struct page_mcid *mcid_elem;
     int i, num_mcid, first_page;
@@ -242,58 +244,79 @@ comac_pdf_interchange_write_node_object (comac_pdf_surface_t            *surface
 				 node->parent->res.id);
 
     if (! comac_list_is_empty (&node->children)) {
-	if (comac_list_is_singular (&node->children) && node->annot_res.id == 0) {
-	    child = comac_list_first_entry (&node->children, comac_pdf_struct_tree_node_t, link);
-	    _comac_output_stream_printf (surface->object_stream.stream, "   /K %d 0 R\n", child->res.id);
+	if (comac_list_is_singular (&node->children) &&
+	    node->annot_res.id == 0) {
+	    child = comac_list_first_entry (&node->children,
+					    comac_pdf_struct_tree_node_t,
+					    link);
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "   /K %d 0 R\n",
+					 child->res.id);
 	} else {
-	    _comac_output_stream_printf (surface->object_stream.stream, "   /K [ ");
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "   /K [ ");
 	    if (node->annot_res.id != 0) {
 		_comac_output_stream_printf (surface->object_stream.stream,
 					     "<< /Type /OBJR /Obj %d 0 R >> ",
 					     node->annot_res.id);
 	    }
-	    comac_list_foreach_entry (child, comac_pdf_struct_tree_node_t,
-				      &node->children, link)
+	    comac_list_foreach_entry (child,
+				      comac_pdf_struct_tree_node_t,
+				      &node->children,
+				      link)
 	    {
-		_comac_output_stream_printf (surface->object_stream.stream, "%d 0 R ", child->res.id);
+		_comac_output_stream_printf (surface->object_stream.stream,
+					     "%d 0 R ",
+					     child->res.id);
 	    }
 	    _comac_output_stream_printf (surface->object_stream.stream, "]\n");
 	}
     } else {
 	num_mcid = _comac_array_num_elements (&node->mcid);
-	if (num_mcid > 0 ) {
+	if (num_mcid > 0) {
 	    mcid_elem = _comac_array_index (&node->mcid, 0);
 	    first_page = mcid_elem->page;
 	    page_res = _comac_array_index (&surface->pages, first_page - 1);
-	    _comac_output_stream_printf (surface->object_stream.stream, "   /Pg %d 0 R\n", page_res->id);
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "   /Pg %d 0 R\n",
+					 page_res->id);
 
 	    if (num_mcid == 1 && node->annot_res.id == 0) {
-		_comac_output_stream_printf (surface->object_stream.stream, "   /K %d\n", mcid_elem->mcid);
+		_comac_output_stream_printf (surface->object_stream.stream,
+					     "   /K %d\n",
+					     mcid_elem->mcid);
 	    } else {
-		_comac_output_stream_printf (surface->object_stream.stream, "   /K [ ");
+		_comac_output_stream_printf (surface->object_stream.stream,
+					     "   /K [ ");
 		if (node->annot_res.id != 0) {
-		    _comac_output_stream_printf (surface->object_stream.stream,
-						 "<< /Type /OBJR /Obj %d 0 R >> ",
-						 node->annot_res.id);
+		    _comac_output_stream_printf (
+			surface->object_stream.stream,
+			"<< /Type /OBJR /Obj %d 0 R >> ",
+			node->annot_res.id);
 		}
 		for (i = 0; i < num_mcid; i++) {
 		    mcid_elem = _comac_array_index (&node->mcid, i);
-		    page_res = _comac_array_index (&surface->pages, mcid_elem->page - 1);
+		    page_res = _comac_array_index (&surface->pages,
+						   mcid_elem->page - 1);
 		    if (mcid_elem->page == first_page) {
-			_comac_output_stream_printf (surface->object_stream.stream, "%d ", mcid_elem->mcid);
+			_comac_output_stream_printf (
+			    surface->object_stream.stream,
+			    "%d ",
+			    mcid_elem->mcid);
 		    } else {
-			_comac_output_stream_printf (surface->object_stream.stream,
-						     "\n       << /Type /MCR /Pg %d 0 R /MCID %d >> ",
-						     page_res->id,
-						     mcid_elem->mcid);
+			_comac_output_stream_printf (
+			    surface->object_stream.stream,
+			    "\n       << /Type /MCR /Pg %d 0 R /MCID %d >> ",
+			    page_res->id,
+			    mcid_elem->mcid);
 		    }
 		}
-		_comac_output_stream_printf (surface->object_stream.stream, "]\n");
+		_comac_output_stream_printf (surface->object_stream.stream,
+					     "]\n");
 	    }
 	}
     }
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 ">>\n");
+    _comac_output_stream_printf (surface->object_stream.stream, ">>\n");
 
     _comac_pdf_surface_object_end (surface);
 
@@ -330,10 +353,10 @@ _named_dest_pluck (void *entry, void *closure)
 
 static comac_int_status_t
 comac_pdf_interchange_write_explicit_dest (comac_pdf_surface_t *surface,
-                                          int                  page,
-                                          comac_bool_t         has_pos,
-                                          double               x,
-                                          double               y)
+					   int page,
+					   comac_bool_t has_pos,
+					   double x,
+					   double y)
 {
     comac_pdf_resource_t res;
     double height;
@@ -341,15 +364,15 @@ comac_pdf_interchange_write_explicit_dest (comac_pdf_surface_t *surface,
     _comac_array_copy_element (&surface->page_heights, page - 1, &height);
     _comac_array_copy_element (&surface->pages, page - 1, &res);
     if (has_pos) {
-       _comac_output_stream_printf (surface->object_stream.stream,
-                                    "[%d 0 R /XYZ %f %f 0]\n",
-                                    res.id,
-                                    x,
-                                    height - y);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "[%d 0 R /XYZ %f %f 0]\n",
+				     res.id,
+				     x,
+				     height - y);
     } else {
-       _comac_output_stream_printf (surface->object_stream.stream,
-                                    "[%d 0 R /XYZ null null 0]\n",
-                                    res.id);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "[%d 0 R /XYZ null null 0]\n",
+				     res.id);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -357,7 +380,7 @@ comac_pdf_interchange_write_explicit_dest (comac_pdf_surface_t *surface,
 
 static comac_int_status_t
 comac_pdf_interchange_write_dest (comac_pdf_surface_t *surface,
-				  comac_link_attrs_t  *link_attrs)
+				  comac_link_attrs_t *link_attrs)
 {
     comac_int_status_t status;
     comac_pdf_interchange_t *ic = &surface->interchange;
@@ -388,27 +411,35 @@ comac_pdf_interchange_write_dest (comac_pdf_surface_t *surface,
 	    if (named_dest->attrs.y_valid)
 		y = named_dest->attrs.y;
 
-	    _comac_output_stream_printf (surface->object_stream.stream, "   /Dest ");
-	    status = comac_pdf_interchange_write_explicit_dest (surface,
-                                                                named_dest->page,
-                                                                TRUE,
-                                                                x, y);
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "   /Dest ");
+	    status =
+		comac_pdf_interchange_write_explicit_dest (surface,
+							   named_dest->page,
+							   TRUE,
+							   x,
+							   y);
 	    return status;
 	}
     }
 
     /* If the page is known, emit an explicit dest */
-    if (!link_attrs->dest) {
+    if (! link_attrs->dest) {
 	if (link_attrs->page < 1)
-	    return _comac_tag_error ("Link attribute: \"page=%d\" page must be >= 1", link_attrs->page);
+	    return _comac_tag_error (
+		"Link attribute: \"page=%d\" page must be >= 1",
+		link_attrs->page);
 
-	if (link_attrs->page <= (int)_comac_array_num_elements (&surface->pages)) {
-	    _comac_output_stream_printf (surface->object_stream.stream, "   /Dest ");
-	    return comac_pdf_interchange_write_explicit_dest (surface,
-							      link_attrs->page,
-							      link_attrs->has_pos,
-							      link_attrs->pos.x,
-							      link_attrs->pos.y);
+	if (link_attrs->page <=
+	    (int) _comac_array_num_elements (&surface->pages)) {
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "   /Dest ");
+	    return comac_pdf_interchange_write_explicit_dest (
+		surface,
+		link_attrs->page,
+		link_attrs->has_pos,
+		link_attrs->pos.x,
+		link_attrs->pos.y);
 	}
     }
 
@@ -448,7 +479,7 @@ _comac_utf8_to_pdf_utf8_hexstring (const char *utf8, char **str_out)
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
 
     ascii = TRUE;
-    p = (unsigned char *)utf8;
+    p = (unsigned char *) utf8;
     len = 0;
     while (*p) {
 	if (*p < 32 || *p > 126) {
@@ -467,7 +498,7 @@ _comac_utf8_to_pdf_utf8_hexstring (const char *utf8, char **str_out)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	str[0] = '(';
-	p = (unsigned char *)utf8;
+	p = (unsigned char *) utf8;
 	i = 1;
 	while (*p) {
 	    if (*p == '(' || *p == ')' || *p == '\\')
@@ -478,19 +509,19 @@ _comac_utf8_to_pdf_utf8_hexstring (const char *utf8, char **str_out)
 	str[i++] = ')';
 	str[i++] = 0;
     } else {
-	str = _comac_malloc (len*2 + 3);
+	str = _comac_malloc (len * 2 + 3);
 	if (str == NULL)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	str[0] = '<';
-	p = (unsigned char *)utf8;
+	p = (unsigned char *) utf8;
 	i = 1;
 	while (*p) {
 	    if (*p == '\\') {
-		snprintf(str + i, 3, "%02x", '\\');
+		snprintf (str + i, 3, "%02x", '\\');
 		i += 2;
 	    }
-	    snprintf(str + i, 3, "%02x", *p);
+	    snprintf (str + i, 3, "%02x", *p);
 	    i += 2;
 	    p++;
 	}
@@ -503,8 +534,8 @@ _comac_utf8_to_pdf_utf8_hexstring (const char *utf8, char **str_out)
 }
 
 static comac_int_status_t
-comac_pdf_interchange_write_link_action (comac_pdf_surface_t   *surface,
-					 comac_link_attrs_t    *link_attrs)
+comac_pdf_interchange_write_link_action (comac_pdf_surface_t *surface,
+					 comac_link_attrs_t *link_attrs)
 {
     comac_int_status_t status;
     char *dest = NULL;
@@ -521,7 +552,8 @@ comac_pdf_interchange_write_link_action (comac_pdf_surface_t   *surface,
 
 	if (dest[0] != '(') {
 	    free (dest);
-	    return _comac_tag_error ("Link attribute: \"url=%s\" URI may only contain ASCII characters",
+	    return _comac_tag_error ("Link attribute: \"url=%s\" URI may only "
+				     "contain ASCII characters",
 				     link_attrs->uri);
 	}
 
@@ -558,15 +590,14 @@ comac_pdf_interchange_write_link_action (comac_pdf_surface_t   *surface,
 				     dest);
 	free (dest);
 
-	if (surface->pdf_version >= COMAC_PDF_VERSION_1_7)
-	{
+	if (surface->pdf_version >= COMAC_PDF_VERSION_1_7) {
 	    status = _comac_utf8_to_pdf_string (link_attrs->file, &dest);
 	    if (unlikely (status))
 		return status;
 
 	    _comac_output_stream_printf (surface->object_stream.stream,
-				     "      /UF %s\n",
-				     dest);
+					 "      /UF %s\n",
+					 dest);
 	    free (dest);
 	}
 
@@ -592,15 +623,14 @@ comac_pdf_interchange_write_link_action (comac_pdf_surface_t   *surface,
 					     link_attrs->page);
 	    }
 	}
-	_comac_output_stream_printf (surface->object_stream.stream,
-				     "   >>\n");
+	_comac_output_stream_printf (surface->object_stream.stream, "   >>\n");
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-comac_pdf_interchange_write_annot (comac_pdf_surface_t    *surface,
+comac_pdf_interchange_write_annot (comac_pdf_surface_t *surface,
 				   comac_pdf_annotation_t *annot)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
@@ -613,8 +643,7 @@ comac_pdf_interchange_write_annot (comac_pdf_surface_t    *surface,
     num_rects = _comac_array_num_elements (&annot->link_attrs.rects);
     if (strcmp (node->name, COMAC_TAG_LINK) == 0 &&
 	annot->link_attrs.link_type != TAG_LINK_EMPTY &&
-	(node->extents.valid || num_rects > 0))
-    {
+	(node->extents.valid || num_rects > 0)) {
 	status = _comac_array_append (&ic->parent_tree, &node->res);
 	if (unlikely (status))
 	    return status;
@@ -656,22 +685,30 @@ comac_pdf_interchange_write_annot (comac_pdf_surface_t    *surface,
 		else
 		    _comac_rectangle_union (&bbox_rect, &recti);
 
-		write_rect_to_pdf_quad_points (surface->object_stream.stream, &rectf, height);
-		_comac_output_stream_printf (surface->object_stream.stream, " ");
+		write_rect_to_pdf_quad_points (surface->object_stream.stream,
+					       &rectf,
+					       height);
+		_comac_output_stream_printf (surface->object_stream.stream,
+					     " ");
 	    }
 	    _comac_output_stream_printf (surface->object_stream.stream,
 					 "]\n"
 					 "   /Rect [ ");
-	    write_rect_int_to_pdf_bbox (surface->object_stream.stream, &bbox_rect, height);
+	    write_rect_int_to_pdf_bbox (surface->object_stream.stream,
+					&bbox_rect,
+					height);
 	    _comac_output_stream_printf (surface->object_stream.stream, " ]\n");
 	} else {
 	    _comac_output_stream_printf (surface->object_stream.stream,
 					 "   /Rect [ ");
-	    write_rect_int_to_pdf_bbox (surface->object_stream.stream, &node->extents.extents, height);
+	    write_rect_int_to_pdf_bbox (surface->object_stream.stream,
+					&node->extents.extents,
+					height);
 	    _comac_output_stream_printf (surface->object_stream.stream, " ]\n");
 	}
 
-	status = comac_pdf_interchange_write_link_action (surface, &annot->link_attrs);
+	status = comac_pdf_interchange_write_link_action (surface,
+							  &annot->link_attrs);
 	if (unlikely (status))
 	    return status;
 
@@ -680,17 +717,19 @@ comac_pdf_interchange_write_annot (comac_pdf_surface_t    *surface,
 				     ">>\n");
 
 	_comac_pdf_surface_object_end (surface);
-	status = _comac_output_stream_get_status (surface->object_stream.stream);
+	status =
+	    _comac_output_stream_get_status (surface->object_stream.stream);
     }
 
     return status;
 }
 
 static comac_int_status_t
-comac_pdf_interchange_walk_struct_tree (comac_pdf_surface_t          *surface,
-					comac_pdf_struct_tree_node_t *node,
-					comac_int_status_t (*func) (comac_pdf_surface_t *surface,
-								    comac_pdf_struct_tree_node_t *node))
+comac_pdf_interchange_walk_struct_tree (
+    comac_pdf_surface_t *surface,
+    comac_pdf_struct_tree_node_t *node,
+    comac_int_status_t (*func) (comac_pdf_surface_t *surface,
+				comac_pdf_struct_tree_node_t *node))
 {
     comac_int_status_t status;
     comac_pdf_struct_tree_node_t *child;
@@ -701,8 +740,10 @@ comac_pdf_interchange_walk_struct_tree (comac_pdf_surface_t          *surface,
 	    return status;
     }
 
-    comac_list_foreach_entry (child, comac_pdf_struct_tree_node_t,
-			      &node->children, link)
+    comac_list_foreach_entry (child,
+			      comac_pdf_struct_tree_node_t,
+			      &node->children,
+			      link)
     {
 	status = comac_pdf_interchange_walk_struct_tree (surface, child, func);
 	if (unlikely (status))
@@ -728,11 +769,17 @@ comac_pdf_interchange_write_struct_tree (comac_pdf_surface_t *surface)
 
     ic->struct_root->res = surface->struct_tree_root;
 
-    comac_pdf_interchange_walk_struct_tree (surface, ic->struct_root, comac_pdf_interchange_write_node_object);
+    comac_pdf_interchange_walk_struct_tree (
+	surface,
+	ic->struct_root,
+	comac_pdf_interchange_write_node_object);
 
-    child = comac_list_first_entry (&ic->struct_root->children, comac_pdf_struct_tree_node_t, link);
+    child = comac_list_first_entry (&ic->struct_root->children,
+				    comac_pdf_struct_tree_node_t,
+				    link);
 
-    status = _comac_pdf_surface_object_begin (surface, surface->struct_tree_root);
+    status =
+	_comac_pdf_surface_object_begin (surface, surface->struct_tree_root);
     if (unlikely (status))
 	return status;
 
@@ -742,21 +789,28 @@ comac_pdf_interchange_write_struct_tree (comac_pdf_surface_t *surface)
 				 ic->parent_tree_res.id);
 
     if (comac_list_is_singular (&ic->struct_root->children)) {
-	child = comac_list_first_entry (&ic->struct_root->children, comac_pdf_struct_tree_node_t, link);
-	_comac_output_stream_printf (surface->object_stream.stream, "   /K [ %d 0 R ]\n", child->res.id);
+	child = comac_list_first_entry (&ic->struct_root->children,
+					comac_pdf_struct_tree_node_t,
+					link);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /K [ %d 0 R ]\n",
+				     child->res.id);
     } else {
 	_comac_output_stream_printf (surface->object_stream.stream, "   /K [ ");
 
-	comac_list_foreach_entry (child, comac_pdf_struct_tree_node_t,
-				  &ic->struct_root->children, link)
+	comac_list_foreach_entry (child,
+				  comac_pdf_struct_tree_node_t,
+				  &ic->struct_root->children,
+				  link)
 	{
-	    _comac_output_stream_printf (surface->object_stream.stream, "%d 0 R ", child->res.id);
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "%d 0 R ",
+					 child->res.id);
 	}
 	_comac_output_stream_printf (surface->object_stream.stream, "]\n");
     }
 
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 ">>\n");
+    _comac_output_stream_printf (surface->object_stream.stream, ">>\n");
     _comac_pdf_surface_object_end (surface);
 
     return COMAC_STATUS_SUCCESS;
@@ -771,7 +825,7 @@ comac_pdf_interchange_write_page_annots (comac_pdf_surface_t *surface)
 
     num_elems = _comac_array_num_elements (&ic->annots);
     for (i = 0; i < num_elems; i++) {
-	comac_pdf_annotation_t * annot;
+	comac_pdf_annotation_t *annot;
 
 	_comac_array_copy_element (&ic->annots, i, &annot);
 	status = comac_pdf_interchange_write_annot (surface, annot);
@@ -802,18 +856,19 @@ comac_pdf_interchange_write_page_parent_elems (comac_pdf_surface_t *surface)
 	if (unlikely (status))
 	    return status;
 
-	_comac_output_stream_printf (surface->object_stream.stream,
-				     "[\n");
+	_comac_output_stream_printf (surface->object_stream.stream, "[\n");
 	for (i = 0; i < num_elems; i++) {
 	    _comac_array_copy_element (&ic->mcid_to_tree, i, &node);
-	    _comac_output_stream_printf (surface->object_stream.stream, "  %d 0 R\n", node->res.id);
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "  %d 0 R\n",
+					 node->res.id);
 	}
-	_comac_output_stream_printf (surface->object_stream.stream,
-				     "]\n");
+	_comac_output_stream_printf (surface->object_stream.stream, "]\n");
 	_comac_pdf_surface_object_end (surface);
 
 	status = _comac_array_append (&ic->parent_tree, &res);
-	surface->page_parent_tree = _comac_array_num_elements (&ic->parent_tree) - 1;
+	surface->page_parent_tree =
+	    _comac_array_num_elements (&ic->parent_tree) - 1;
     }
 
     return status;
@@ -943,12 +998,12 @@ comac_pdf_interchange_write_outline (comac_pdf_surface_t *surface)
 					 flags);
 	}
 
-	status = comac_pdf_interchange_write_link_action (surface, &outline->link_attrs);
+	status = comac_pdf_interchange_write_link_action (surface,
+							  &outline->link_attrs);
 	if (unlikely (status))
 	    return status;
 
-	_comac_output_stream_printf (surface->object_stream.stream,
-				     ">>\n");
+	_comac_output_stream_printf (surface->object_stream.stream, ">>\n");
 	_comac_pdf_surface_object_end (surface);
     }
 
@@ -964,7 +1019,7 @@ comac_pdf_interchange_write_outline (comac_pdf_surface_t *surface)
  *  "A-002" => "A-00",  2
  */
 static char *
-split_label (const char* label, int *num)
+split_label (const char *label, int *num)
 {
     int len, i;
 
@@ -974,8 +1029,8 @@ split_label (const char* label, int *num)
 	return NULL;
 
     i = len;
-    while (i > 0 && _comac_isdigit (label[i-1]))
-	   i--;
+    while (i > 0 && _comac_isdigit (label[i - 1]))
+	i--;
 
     while (i < len && label[i] == '0')
 	i++;
@@ -986,7 +1041,7 @@ split_label (const char* label, int *num)
     if (i > 0) {
 	char *s;
 	s = _comac_malloc (i + 1);
-	if (!s)
+	if (! s)
 	    return NULL;
 
 	memcpy (s, label, i);
@@ -1004,7 +1059,7 @@ strcmp_null (const char *s1, const char *s2)
     if (s1 && s2)
 	return strcmp (s1, s2) == 0;
 
-    if (!s1 && !s2)
+    if (! s1 && ! s2)
 	return TRUE;
 
     return FALSE;
@@ -1023,10 +1078,11 @@ comac_pdf_interchange_write_forward_links (comac_pdf_surface_t *surface)
     num_elems = _comac_array_num_elements (&surface->forward_links);
     for (i = 0; i < num_elems; i++) {
 	link = _comac_array_index (&surface->forward_links, i);
-	if (link->page > (int)_comac_array_num_elements (&surface->pages))
-	    return _comac_tag_error ("Link attribute: \"page=%d\" page exceeds page count (%d)",
-				     link->page, _comac_array_num_elements (&surface->pages));
-
+	if (link->page > (int) _comac_array_num_elements (&surface->pages))
+	    return _comac_tag_error (
+		"Link attribute: \"page=%d\" page exceeds page count (%d)",
+		link->page,
+		_comac_array_num_elements (&surface->pages));
 
 	status = _comac_pdf_surface_object_begin (surface, link->res);
 	if (unlikely (status))
@@ -1051,12 +1107,15 @@ comac_pdf_interchange_write_forward_links (comac_pdf_surface_t *surface)
 		if (named_dest->attrs.y_valid)
 		    y = named_dest->attrs.y;
 
-		status = comac_pdf_interchange_write_explicit_dest (surface,
-								    named_dest->page,
-								    TRUE,
-								    x, y);
+		status =
+		    comac_pdf_interchange_write_explicit_dest (surface,
+							       named_dest->page,
+							       TRUE,
+							       x,
+							       y);
 	    } else {
-		return _comac_tag_error ("Link to dest=\"%s\" not found", link->dest);
+		return _comac_tag_error ("Link to dest=\"%s\" not found",
+					 link->dest);
 	    }
 	} else {
 	    comac_pdf_interchange_write_explicit_dest (surface,
@@ -1093,19 +1152,19 @@ comac_pdf_interchange_write_page_labels (comac_pdf_surface_t *surface)
 	}
     }
 
-    if (!has_labels)
+    if (! has_labels)
 	return COMAC_STATUS_SUCCESS;
 
     surface->page_labels_res = _comac_pdf_surface_new_object (surface);
     if (surface->page_labels_res.id == 0)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = _comac_pdf_surface_object_begin (surface, surface->page_labels_res);
+    status =
+	_comac_pdf_surface_object_begin (surface, surface->page_labels_res);
     if (unlikely (status))
 	return status;
 
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 "<< /Nums [\n");
+    _comac_output_stream_printf (surface->object_stream.stream, "<< /Nums [\n");
     prefix = NULL;
     prev_prefix = NULL;
     num = 0;
@@ -1119,11 +1178,15 @@ comac_pdf_interchange_write_page_labels (comac_pdf_surface_t *surface)
 	    num = i + 1;
 	}
 
-	if (!strcmp_null (prefix, prev_prefix) || num != prev_num + 1) {
-	    _comac_output_stream_printf (surface->object_stream.stream,  "   %d << ", i);
+	if (! strcmp_null (prefix, prev_prefix) || num != prev_num + 1) {
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 "   %d << ",
+					 i);
 
 	    if (num)
-		_comac_output_stream_printf (surface->object_stream.stream,  "/S /D /St %d ", num);
+		_comac_output_stream_printf (surface->object_stream.stream,
+					     "/S /D /St %d ",
+					     num);
 
 	    if (prefix) {
 		char *s;
@@ -1131,11 +1194,13 @@ comac_pdf_interchange_write_page_labels (comac_pdf_surface_t *surface)
 		if (unlikely (status))
 		    return status;
 
-		_comac_output_stream_printf (surface->object_stream.stream,  "/P %s ", s);
+		_comac_output_stream_printf (surface->object_stream.stream,
+					     "/P %s ",
+					     s);
 		free (s);
 	    }
 
-	    _comac_output_stream_printf (surface->object_stream.stream,  ">>\n");
+	    _comac_output_stream_printf (surface->object_stream.stream, ">>\n");
 	}
 	free (prev_prefix);
 	prev_prefix = prefix;
@@ -1159,15 +1224,15 @@ _collect_external_dest (void *entry, void *closure)
     comac_pdf_surface_t *surface = closure;
     comac_pdf_interchange_t *ic = &surface->interchange;
 
-    if (!dest->attrs.internal)
+    if (! dest->attrs.internal)
 	ic->sorted_dests[ic->num_dests++] = dest;
 }
 
 static int
 _dest_compare (const void *a, const void *b)
 {
-    const comac_pdf_named_dest_t * const *dest_a = a;
-    const comac_pdf_named_dest_t * const *dest_b = b;
+    const comac_pdf_named_dest_t *const *dest_a = a;
+    const comac_pdf_named_dest_t *const *dest_b = b;
 
     return strcmp ((*dest_a)->attrs.name, (*dest_b)->attrs.name);
 }
@@ -1181,17 +1246,23 @@ _comac_pdf_interchange_write_document_dests (comac_pdf_surface_t *surface)
 
     if (ic->num_dests == 0) {
 	ic->dests_res.id = 0;
-        return COMAC_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
-    ic->sorted_dests = calloc (ic->num_dests, sizeof (comac_pdf_named_dest_t *));
+    ic->sorted_dests =
+	calloc (ic->num_dests, sizeof (comac_pdf_named_dest_t *));
     if (unlikely (ic->sorted_dests == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     ic->num_dests = 0;
-    _comac_hash_table_foreach (ic->named_dests, _collect_external_dest, surface);
+    _comac_hash_table_foreach (ic->named_dests,
+			       _collect_external_dest,
+			       surface);
 
-    qsort (ic->sorted_dests, ic->num_dests, sizeof (comac_pdf_named_dest_t *), _dest_compare);
+    qsort (ic->sorted_dests,
+	   ic->num_dests,
+	   sizeof (comac_pdf_named_dest_t *),
+	   _dest_compare);
 
     ic->dests_res = _comac_pdf_surface_new_object (surface);
     if (ic->dests_res.id == 0)
@@ -1225,7 +1296,9 @@ _comac_pdf_interchange_write_document_dests (comac_pdf_surface_t *surface)
 	    y = dest->attrs.y;
 
 	_comac_array_copy_element (&surface->pages, dest->page - 1, &page_res);
-	_comac_array_copy_element (&surface->page_heights, dest->page - 1, &height);
+	_comac_array_copy_element (&surface->page_heights,
+				   dest->page - 1,
+				   &height);
 	_comac_output_stream_printf (surface->object_stream.stream,
 				     "   (%s) [%d 0 R /XYZ %f %f 0]\n",
 				     dest->attrs.name,
@@ -1257,7 +1330,8 @@ comac_pdf_interchange_write_names_dict (comac_pdf_surface_t *surface)
 	if (surface->names_dict_res.id == 0)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	status = _comac_pdf_surface_object_begin (surface, surface->names_dict_res);
+	status =
+	    _comac_pdf_surface_object_begin (surface, surface->names_dict_res);
 	if (unlikely (status))
 	    return status;
 
@@ -1287,30 +1361,45 @@ comac_pdf_interchange_write_docinfo (comac_pdf_surface_t *surface)
     if (unlikely (status))
 	return status;
 
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 "<< /Producer (comac %s (https://comacgraphics.org))\n",
-				 comac_version_string ());
+    _comac_output_stream_printf (
+	surface->object_stream.stream,
+	"<< /Producer (comac %s (https://comacgraphics.org))\n",
+	comac_version_string ());
 
     if (ic->docinfo.title)
-	_comac_output_stream_printf (surface->object_stream.stream, "   /Title %s\n", ic->docinfo.title);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /Title %s\n",
+				     ic->docinfo.title);
 
     if (ic->docinfo.author)
-	_comac_output_stream_printf (surface->object_stream.stream, "   /Author %s\n", ic->docinfo.author);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /Author %s\n",
+				     ic->docinfo.author);
 
     if (ic->docinfo.subject)
-	_comac_output_stream_printf (surface->object_stream.stream, "   /Subject %s\n", ic->docinfo.subject);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /Subject %s\n",
+				     ic->docinfo.subject);
 
     if (ic->docinfo.keywords)
-	_comac_output_stream_printf (surface->object_stream.stream, "   /Keywords %s\n", ic->docinfo.keywords);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /Keywords %s\n",
+				     ic->docinfo.keywords);
 
     if (ic->docinfo.creator)
-	_comac_output_stream_printf (surface->object_stream.stream, "   /Creator %s\n", ic->docinfo.creator);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /Creator %s\n",
+				     ic->docinfo.creator);
 
     if (ic->docinfo.create_date)
-	_comac_output_stream_printf (surface->object_stream.stream, "   /CreationDate %s\n", ic->docinfo.create_date);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /CreationDate %s\n",
+				     ic->docinfo.create_date);
 
     if (ic->docinfo.mod_date)
-	_comac_output_stream_printf (surface->object_stream.stream, "   /ModDate %s\n", ic->docinfo.mod_date);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "   /ModDate %s\n",
+				     ic->docinfo.mod_date);
 
     num_elems = _comac_array_num_elements (&ic->custom_metadata);
     for (i = 0; i < num_elems; i++) {
@@ -1320,57 +1409,69 @@ comac_pdf_interchange_write_docinfo (comac_pdf_surface_t *surface)
 	    /* The name can be any utf8 string. Use hex codes as
 	     * specified in section 7.3.5 of PDF reference
 	     */
-	    p = (unsigned char *)data->name;
+	    p = (unsigned char *) data->name;
 	    while (*p) {
 		if (*p < 0x21 || *p > 0x7e || *p == '#' || *p == '/')
-		    _comac_output_stream_printf (surface->object_stream.stream, "#%02x", *p);
+		    _comac_output_stream_printf (surface->object_stream.stream,
+						 "#%02x",
+						 *p);
 		else
-		    _comac_output_stream_printf (surface->object_stream.stream, "%c", *p);
+		    _comac_output_stream_printf (surface->object_stream.stream,
+						 "%c",
+						 *p);
 		p++;
 	    }
-	    _comac_output_stream_printf (surface->object_stream.stream, " %s\n", data->value);
+	    _comac_output_stream_printf (surface->object_stream.stream,
+					 " %s\n",
+					 data->value);
 	}
     }
 
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 ">>\n");
+    _comac_output_stream_printf (surface->object_stream.stream, ">>\n");
     _comac_pdf_surface_object_end (surface);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_comac_pdf_interchange_begin_structure_tag (comac_pdf_surface_t    *surface,
-					    comac_tag_type_t        tag_type,
-					    const char             *name,
-					    const char             *attributes)
+_comac_pdf_interchange_begin_structure_tag (comac_pdf_surface_t *surface,
+					    comac_tag_type_t tag_type,
+					    const char *name,
+					    const char *attributes)
 {
     int page_num, mcid;
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
     comac_pdf_interchange_t *ic = &surface->interchange;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
-	status = add_tree_node (surface, ic->current_node, name, &ic->current_node);
+	status =
+	    add_tree_node (surface, ic->current_node, name, &ic->current_node);
 	if (unlikely (status))
 	    return status;
 
-	_comac_tag_stack_set_top_data (&ic->analysis_tag_stack, ic->current_node);
+	_comac_tag_stack_set_top_data (&ic->analysis_tag_stack,
+				       ic->current_node);
 
 	if (tag_type & TAG_TYPE_LINK) {
-	    status = add_annotation (surface, ic->current_node, name, attributes);
+	    status =
+		add_annotation (surface, ic->current_node, name, attributes);
 	    if (unlikely (status))
 		return status;
 
-	    comac_list_add_tail (&ic->current_node->extents.link, &ic->extents_list);
+	    comac_list_add_tail (&ic->current_node->extents.link,
+				 &ic->extents_list);
 	}
 
     } else if (surface->paginated_mode == COMAC_PAGINATED_MODE_RENDER) {
-	ic->current_node = _comac_tag_stack_top_elem (&ic->render_tag_stack)->data;
+	ic->current_node =
+	    _comac_tag_stack_top_elem (&ic->render_tag_stack)->data;
 	assert (ic->current_node != NULL);
 	if (is_leaf_node (ic->current_node)) {
 	    page_num = _comac_array_num_elements (&surface->pages);
 	    add_mcid_to_node (surface, ic->current_node, page_num, &mcid);
-	    status = _comac_pdf_operators_tag_begin (&surface->pdf_operators, name, mcid);
+	    status = _comac_pdf_operators_tag_begin (&surface->pdf_operators,
+						     name,
+						     mcid);
 	}
     }
 
@@ -1378,10 +1479,10 @@ _comac_pdf_interchange_begin_structure_tag (comac_pdf_surface_t    *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_interchange_begin_dest_tag (comac_pdf_surface_t    *surface,
-				       comac_tag_type_t        tag_type,
-				       const char             *name,
-				       const char             *attributes)
+_comac_pdf_interchange_begin_dest_tag (comac_pdf_surface_t *surface,
+				       comac_tag_type_t tag_type,
+				       const char *name,
+				       const char *attributes)
 {
     comac_pdf_named_dest_t *dest;
     comac_pdf_interchange_t *ic = &surface->interchange;
@@ -1393,8 +1494,7 @@ _comac_pdf_interchange_begin_dest_tag (comac_pdf_surface_t    *surface,
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	status = _comac_tag_parse_dest_attributes (attributes, &dest->attrs);
-	if (unlikely (status))
-	{
+	if (unlikely (status)) {
 	    free (dest);
 	    return status;
 	}
@@ -1402,8 +1502,7 @@ _comac_pdf_interchange_begin_dest_tag (comac_pdf_surface_t    *surface,
 	dest->page = _comac_array_num_elements (&surface->pages);
 	init_named_dest_key (dest);
 	status = _comac_hash_table_insert (ic->named_dests, &dest->base);
-	if (unlikely (status))
-	{
+	if (unlikely (status)) {
 	    free (dest->attrs.name);
 	    free (dest);
 	    return status;
@@ -1418,9 +1517,9 @@ _comac_pdf_interchange_begin_dest_tag (comac_pdf_surface_t    *surface,
 }
 
 comac_int_status_t
-_comac_pdf_interchange_tag_begin (comac_pdf_surface_t    *surface,
-				  const char             *name,
-				  const char             *attributes)
+_comac_pdf_interchange_tag_begin (comac_pdf_surface_t *surface,
+				  const char *name,
+				  const char *attributes)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
     comac_tag_type_t tag_type;
@@ -1428,10 +1527,12 @@ _comac_pdf_interchange_tag_begin (comac_pdf_surface_t    *surface,
     void *ptr;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
-	status = _comac_tag_stack_push (&ic->analysis_tag_stack, name, attributes);
+	status =
+	    _comac_tag_stack_push (&ic->analysis_tag_stack, name, attributes);
 
     } else if (surface->paginated_mode == COMAC_PAGINATED_MODE_RENDER) {
-	status = _comac_tag_stack_push (&ic->render_tag_stack, name, attributes);
+	status =
+	    _comac_tag_stack_push (&ic->render_tag_stack, name, attributes);
 	_comac_array_copy_element (&ic->push_data, ic->push_data_index++, &ptr);
 	_comac_tag_stack_set_top_data (&ic->render_tag_stack, ptr);
     }
@@ -1441,13 +1542,19 @@ _comac_pdf_interchange_tag_begin (comac_pdf_surface_t    *surface,
 
     tag_type = _comac_tag_get_type (name);
     if (tag_type & TAG_TYPE_STRUCTURE) {
-	status = _comac_pdf_interchange_begin_structure_tag (surface, tag_type, name, attributes);
+	status = _comac_pdf_interchange_begin_structure_tag (surface,
+							     tag_type,
+							     name,
+							     attributes);
 	if (unlikely (status))
 	    return status;
     }
 
     if (tag_type & TAG_TYPE_DEST) {
-	status = _comac_pdf_interchange_begin_dest_tag (surface, tag_type, name, attributes);
+	status = _comac_pdf_interchange_begin_dest_tag (surface,
+							tag_type,
+							name,
+							attributes);
 	if (unlikely (status))
 	    return status;
     }
@@ -1461,8 +1568,8 @@ _comac_pdf_interchange_tag_begin (comac_pdf_surface_t    *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_interchange_end_structure_tag (comac_pdf_surface_t    *surface,
-					  comac_tag_type_t        tag_type,
+_comac_pdf_interchange_end_structure_tag (comac_pdf_surface_t *surface,
+					  comac_tag_type_t tag_type,
 					  comac_tag_stack_elem_t *elem)
 {
     const comac_pdf_struct_tree_node_t *node;
@@ -1474,8 +1581,12 @@ _comac_pdf_interchange_end_structure_tag (comac_pdf_surface_t    *surface,
     node = elem->data;
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
 	if (tag_type & TAG_TYPE_LINK) {
-	    comac_list_foreach_entry_safe (tag, next, struct tag_extents,
-					   &ic->extents_list, link) {
+	    comac_list_foreach_entry_safe (tag,
+					   next,
+					   struct tag_extents,
+					   &ic->extents_list,
+					   link)
+	    {
 		if (tag == &node->extents) {
 		    comac_list_del (&tag->link);
 		    break;
@@ -1497,8 +1608,8 @@ _comac_pdf_interchange_end_structure_tag (comac_pdf_surface_t    *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_interchange_end_dest_tag (comac_pdf_surface_t    *surface,
-				     comac_tag_type_t        tag_type,
+_comac_pdf_interchange_end_dest_tag (comac_pdf_surface_t *surface,
+				     comac_tag_type_t tag_type,
 				     comac_tag_stack_elem_t *elem)
 {
     struct tag_extents *tag, *next;
@@ -1508,8 +1619,12 @@ _comac_pdf_interchange_end_dest_tag (comac_pdf_surface_t    *surface,
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
 	assert (elem->data != NULL);
 	dest = (comac_pdf_named_dest_t *) elem->data;
-	comac_list_foreach_entry_safe (tag, next, struct tag_extents,
-					   &ic->extents_list, link) {
+	comac_list_foreach_entry_safe (tag,
+				       next,
+				       struct tag_extents,
+				       &ic->extents_list,
+				       link)
+	{
 	    if (tag == &dest->extents) {
 		comac_list_del (&tag->link);
 		break;
@@ -1521,8 +1636,7 @@ _comac_pdf_interchange_end_dest_tag (comac_pdf_surface_t    *surface,
 }
 
 comac_int_status_t
-_comac_pdf_interchange_tag_end (comac_pdf_surface_t *surface,
-				const char          *name)
+_comac_pdf_interchange_tag_end (comac_pdf_surface_t *surface, const char *name)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
     comac_pdf_interchange_t *ic = &surface->interchange;
@@ -1539,7 +1653,8 @@ _comac_pdf_interchange_tag_end (comac_pdf_surface_t *surface,
 
     tag_type = _comac_tag_get_type (name);
     if (tag_type & TAG_TYPE_STRUCTURE) {
-	status = _comac_pdf_interchange_end_structure_tag (surface, tag_type, elem);
+	status =
+	    _comac_pdf_interchange_end_structure_tag (surface, tag_type, elem);
 	if (unlikely (status))
 	    goto cleanup;
     }
@@ -1550,21 +1665,25 @@ _comac_pdf_interchange_tag_end (comac_pdf_surface_t *surface,
 	    goto cleanup;
     }
 
-  cleanup:
+cleanup:
     _comac_tag_stack_free_elem (elem);
 
     return status;
 }
 
 comac_int_status_t
-_comac_pdf_interchange_add_operation_extents (comac_pdf_surface_t         *surface,
-					      const comac_rectangle_int_t *extents)
+_comac_pdf_interchange_add_operation_extents (
+    comac_pdf_surface_t *surface, const comac_rectangle_int_t *extents)
 {
     comac_pdf_interchange_t *ic = &surface->interchange;
     struct tag_extents *tag;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
-	comac_list_foreach_entry (tag, struct tag_extents, &ic->extents_list, link) {
+	comac_list_foreach_entry (tag,
+				  struct tag_extents,
+				  &ic->extents_list,
+				  link)
+	{
 	    if (tag->valid) {
 		_comac_rectangle_union (&tag->extents, extents);
 	    } else {
@@ -1640,7 +1759,8 @@ _comac_pdf_interchange_write_document_objects (comac_pdf_surface_t *surface)
     comac_tag_stack_structure_type_t tag_type;
 
     tag_type = _comac_tag_stack_get_structure_type (&ic->analysis_tag_stack);
-    if (tag_type == TAG_TREE_TYPE_TAGGED || tag_type == TAG_TREE_TYPE_STRUCTURE ||
+    if (tag_type == TAG_TREE_TYPE_TAGGED ||
+	tag_type == TAG_TREE_TYPE_STRUCTURE ||
 	tag_type == TAG_TREE_TYPE_LINK_ONLY) {
 
 	status = comac_pdf_interchange_write_parent_tree (surface);
@@ -1688,7 +1808,7 @@ _comac_pdf_interchange_set_create_date (comac_pdf_surface_t *surface)
 
     utc = time (NULL);
     localtime_r (&utc, &tm_local);
-    strftime (buf, sizeof(buf), "(D:%Y%m%d%H%M%S", &tm_local);
+    strftime (buf, sizeof (buf), "(D:%Y%m%d%H%M%S", &tm_local);
 
     /* strftime "%z" is non standard and does not work on windows (it prints zone name, not offset).
      * Calculate time zone offset by comparing local and utc time_t values for the same time.
@@ -1709,7 +1829,11 @@ _comac_pdf_interchange_set_create_date (comac_pdf_surface_t *surface)
 	}
 	p = buf + strlen (buf);
 	buf_size = sizeof (buf) - strlen (buf);
-	snprintf (p, buf_size, "%02d'%02d", (int)(offset/3600), (int)(offset%3600)/60);
+	snprintf (p,
+		  buf_size,
+		  "%02d'%02d",
+		  (int) (offset / 3600),
+		  (int) (offset % 3600) / 60);
     }
     strcat (buf, ")");
     ic->docinfo.create_date = strdup (buf);
@@ -1724,19 +1848,20 @@ _comac_pdf_interchange_init (comac_pdf_surface_t *surface)
 
     _comac_tag_stack_init (&ic->analysis_tag_stack);
     _comac_tag_stack_init (&ic->render_tag_stack);
-    _comac_array_init (&ic->push_data, sizeof(void *));
-    ic->struct_root = calloc (1, sizeof(comac_pdf_struct_tree_node_t));
+    _comac_array_init (&ic->push_data, sizeof (void *));
+    ic->struct_root = calloc (1, sizeof (comac_pdf_struct_tree_node_t));
     if (unlikely (ic->struct_root == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     comac_list_init (&ic->struct_root->children);
-    _comac_array_init (&ic->struct_root->mcid, sizeof(struct page_mcid));
+    _comac_array_init (&ic->struct_root->mcid, sizeof (struct page_mcid));
     ic->current_node = ic->struct_root;
     ic->begin_page_node = NULL;
     ic->end_page_node = NULL;
-    _comac_array_init (&ic->parent_tree, sizeof(comac_pdf_resource_t));
-    _comac_array_init (&ic->mcid_to_tree, sizeof(comac_pdf_struct_tree_node_t *));
-    _comac_array_init (&ic->annots, sizeof(comac_pdf_annotation_t *));
+    _comac_array_init (&ic->parent_tree, sizeof (comac_pdf_resource_t));
+    _comac_array_init (&ic->mcid_to_tree,
+		       sizeof (comac_pdf_struct_tree_node_t *));
+    _comac_array_init (&ic->annots, sizeof (comac_pdf_annotation_t *));
     ic->parent_tree_res.id = 0;
     comac_list_init (&ic->extents_list);
     ic->named_dests = _comac_hash_table_create (_named_dest_equal);
@@ -1747,13 +1872,13 @@ _comac_pdf_interchange_init (comac_pdf_surface_t *surface)
     ic->sorted_dests = NULL;
     ic->dests_res.id = 0;
 
-    _comac_array_init (&ic->outline, sizeof(comac_pdf_outline_entry_t *));
-    outline_root = calloc (1, sizeof(comac_pdf_outline_entry_t));
+    _comac_array_init (&ic->outline, sizeof (comac_pdf_outline_entry_t *));
+    outline_root = calloc (1, sizeof (comac_pdf_outline_entry_t));
     if (unlikely (outline_root == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     memset (&ic->docinfo, 0, sizeof (ic->docinfo));
-    _comac_array_init (&ic->custom_metadata, sizeof(struct metadata));
+    _comac_array_init (&ic->custom_metadata, sizeof (struct metadata));
     _comac_pdf_interchange_set_create_date (surface);
     status = _comac_array_append (&ic->outline, &outline_root);
 
@@ -1795,7 +1920,9 @@ _comac_pdf_interchange_fini (comac_pdf_surface_t *surface)
     comac_pdf_interchange_clear_annotations (surface);
     _comac_array_fini (&ic->annots);
     _comac_array_fini (&ic->parent_tree);
-    _comac_hash_table_foreach (ic->named_dests, _named_dest_pluck, ic->named_dests);
+    _comac_hash_table_foreach (ic->named_dests,
+			       _named_dest_pluck,
+			       ic->named_dests);
     _comac_hash_table_destroy (ic->named_dests);
     free (ic->sorted_dests);
     _comac_pdf_interchange_free_outlines (surface);
@@ -1817,26 +1944,28 @@ _comac_pdf_interchange_fini (comac_pdf_surface_t *surface)
 }
 
 comac_int_status_t
-_comac_pdf_interchange_add_outline (comac_pdf_surface_t        *surface,
-				    int                         parent_id,
-				    const char                 *name,
-				    const char                 *link_attribs,
-				    comac_pdf_outline_flags_t   flags,
-				    int                        *id)
+_comac_pdf_interchange_add_outline (comac_pdf_surface_t *surface,
+				    int parent_id,
+				    const char *name,
+				    const char *link_attribs,
+				    comac_pdf_outline_flags_t flags,
+				    int *id)
 {
     comac_pdf_interchange_t *ic = &surface->interchange;
     comac_pdf_outline_entry_t *outline;
     comac_pdf_outline_entry_t *parent;
     comac_int_status_t status;
 
-    if (parent_id < 0 || parent_id >= (int)_comac_array_num_elements (&ic->outline))
+    if (parent_id < 0 ||
+	parent_id >= (int) _comac_array_num_elements (&ic->outline))
 	return COMAC_STATUS_SUCCESS;
 
-    outline = _comac_malloc (sizeof(comac_pdf_outline_entry_t));
+    outline = _comac_malloc (sizeof (comac_pdf_outline_entry_t));
     if (unlikely (outline == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = _comac_tag_parse_link_attributes (link_attribs, &outline->link_attrs);
+    status =
+	_comac_tag_parse_link_attributes (link_attribs, &outline->link_attrs);
     if (unlikely (status)) {
 	free (outline);
 	return status;
@@ -1904,18 +2033,18 @@ iso8601_to_pdf_date_string (const char *iso)
     /* Check that utf8 contains only the characters "0123456789-T:Z+" */
     p = iso;
     while (*p) {
-       if (!_comac_isdigit (*p) && *p != '-' && *p != 'T' &&
-           *p != ':' && *p != 'Z' && *p != '+')
-           return NULL;
-       p++;
+	if (! _comac_isdigit (*p) && *p != '-' && *p != 'T' && *p != ':' &&
+	    *p != 'Z' && *p != '+')
+	    return NULL;
+	p++;
     }
 
     p = iso;
     strcpy (buf, "(");
 
-   /* YYYY (required) */
+    /* YYYY (required) */
     if (strlen (p) < 4)
-       return NULL;
+	return NULL;
 
     strncat (buf, p, 4);
     p += 4;
@@ -1931,7 +2060,7 @@ iso8601_to_pdf_date_string (const char *iso)
 
     /* Z, +, - */
     if (strlen (p) < 1)
-       goto finish;
+	goto finish;
     strncat (buf, p, 1);
     p += 1;
 
@@ -1950,15 +2079,15 @@ iso8601_to_pdf_date_string (const char *iso)
     strncat (buf, p + 1, 2);
     strcat (buf, "'");
 
-  finish:
+finish:
     strcat (buf, ")");
     return strdup (buf);
 }
 
 comac_int_status_t
-_comac_pdf_interchange_set_metadata (comac_pdf_surface_t  *surface,
-				     comac_pdf_metadata_t  metadata,
-				     const char           *utf8)
+_comac_pdf_interchange_set_metadata (comac_pdf_surface_t *surface,
+				     comac_pdf_metadata_t metadata,
+				     const char *utf8)
 {
     comac_pdf_interchange_t *ic = &surface->interchange;
     comac_status_t status;
@@ -1976,34 +2105,34 @@ _comac_pdf_interchange_set_metadata (comac_pdf_surface_t  *surface,
     }
 
     switch (metadata) {
-	case COMAC_PDF_METADATA_TITLE:
-	    free (ic->docinfo.title);
-	    ic->docinfo.title = s;
-	    break;
-	case COMAC_PDF_METADATA_AUTHOR:
-	    free (ic->docinfo.author);
-	    ic->docinfo.author = s;
-	    break;
-	case COMAC_PDF_METADATA_SUBJECT:
-	    free (ic->docinfo.subject);
-	    ic->docinfo.subject = s;
-	    break;
-	case COMAC_PDF_METADATA_KEYWORDS:
-	    free (ic->docinfo.keywords);
-	    ic->docinfo.keywords = s;
-	    break;
-	case COMAC_PDF_METADATA_CREATOR:
-	    free (ic->docinfo.creator);
-	    ic->docinfo.creator = s;
-	    break;
-	case COMAC_PDF_METADATA_CREATE_DATE:
-	    free (ic->docinfo.create_date);
-	    ic->docinfo.create_date = s;
-	    break;
-	case COMAC_PDF_METADATA_MOD_DATE:
-	    free (ic->docinfo.mod_date);
-	    ic->docinfo.mod_date = s;
-	    break;
+    case COMAC_PDF_METADATA_TITLE:
+	free (ic->docinfo.title);
+	ic->docinfo.title = s;
+	break;
+    case COMAC_PDF_METADATA_AUTHOR:
+	free (ic->docinfo.author);
+	ic->docinfo.author = s;
+	break;
+    case COMAC_PDF_METADATA_SUBJECT:
+	free (ic->docinfo.subject);
+	ic->docinfo.subject = s;
+	break;
+    case COMAC_PDF_METADATA_KEYWORDS:
+	free (ic->docinfo.keywords);
+	ic->docinfo.keywords = s;
+	break;
+    case COMAC_PDF_METADATA_CREATOR:
+	free (ic->docinfo.creator);
+	ic->docinfo.creator = s;
+	break;
+    case COMAC_PDF_METADATA_CREATE_DATE:
+	free (ic->docinfo.create_date);
+	ic->docinfo.create_date = s;
+	break;
+    case COMAC_PDF_METADATA_MOD_DATE:
+	free (ic->docinfo.mod_date);
+	ic->docinfo.mod_date = s;
+	break;
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -2023,9 +2152,9 @@ static const char *reserved_metadata_names[] = {
 };
 
 comac_int_status_t
-_comac_pdf_interchange_set_custom_metadata (comac_pdf_surface_t  *surface,
-					    const char           *name,
-					    const char           *value)
+_comac_pdf_interchange_set_custom_metadata (comac_pdf_surface_t *surface,
+					    const char *name,
+					    const char *value)
 {
     comac_pdf_interchange_t *ic = &surface->interchange;
     struct metadata *data;
@@ -2038,7 +2167,7 @@ _comac_pdf_interchange_set_custom_metadata (comac_pdf_surface_t  *surface,
 	return COMAC_STATUS_NULL_POINTER;
 
     for (i = 0; i < ARRAY_LENGTH (reserved_metadata_names); i++) {
-	if (strcmp(name, reserved_metadata_names[i]) == 0)
+	if (strcmp (name, reserved_metadata_names[i]) == 0)
 	    return COMAC_STATUS_INVALID_STRING;
     }
 
@@ -2048,10 +2177,10 @@ _comac_pdf_interchange_set_custom_metadata (comac_pdf_surface_t  *surface,
     num_elems = _comac_array_num_elements (&ic->custom_metadata);
     for (i = 0; i < num_elems; i++) {
 	data = _comac_array_index (&ic->custom_metadata, i);
-	if (strcmp(name, data->name) == 0) {
+	if (strcmp (name, data->name) == 0) {
 	    free (data->value);
 	    data->value = NULL;
-	    if (value && strlen(value)) {
+	    if (value && strlen (value)) {
 		status = _comac_utf8_to_pdf_string (value, &s);
 		if (unlikely (status))
 		    return status;
@@ -2063,7 +2192,7 @@ _comac_pdf_interchange_set_custom_metadata (comac_pdf_surface_t  *surface,
 
     /* Add new entry */
     status = COMAC_STATUS_SUCCESS;
-    if (value && strlen(value)) {
+    if (value && strlen (value)) {
 	new_data.name = strdup (name);
 	status = _comac_utf8_to_pdf_string (value, &s);
 	if (unlikely (status))

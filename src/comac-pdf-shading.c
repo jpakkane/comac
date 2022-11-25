@@ -52,7 +52,7 @@ encode_coordinate (unsigned char *p, double c)
     f = c;
     *p++ = f >> 24;
     *p++ = (f >> 16) & 0xff;
-    *p++ = (f >> 8)  & 0xff;
+    *p++ = (f >> 8) & 0xff;
     *p++ = f & 0xff;
 
     return p;
@@ -98,9 +98,9 @@ encode_alpha (unsigned char *p, const comac_color_t *color)
 }
 
 static comac_status_t
-_comac_pdf_shading_generate_decode_array (comac_pdf_shading_t        *shading,
+_comac_pdf_shading_generate_decode_array (comac_pdf_shading_t *shading,
 					  const comac_mesh_pattern_t *mesh,
-					  comac_bool_t                is_alpha)
+					  comac_bool_t is_alpha)
 {
     unsigned int num_color_components, i;
     comac_bool_t is_valid;
@@ -111,8 +111,8 @@ _comac_pdf_shading_generate_decode_array (comac_pdf_shading_t        *shading,
 	num_color_components = 3;
 
     shading->decode_array_length = 4 + num_color_components * 2;
-    shading->decode_array = _comac_malloc_ab (shading->decode_array_length,
-					      sizeof (double));
+    shading->decode_array =
+	_comac_malloc_ab (shading->decode_array_length, sizeof (double));
     if (unlikely (shading->decode_array == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -127,8 +127,8 @@ _comac_pdf_shading_generate_decode_array (comac_pdf_shading_t        *shading,
     assert (shading->decode_array[3] - shading->decode_array[2] >= DBL_EPSILON);
 
     for (i = 0; i < num_color_components; i++) {
-	shading->decode_array[4 + 2*i] = 0;
-	shading->decode_array[5 + 2*i] = 1;
+	shading->decode_array[4 + 2 * i] = 0;
+	shading->decode_array[5 + 2 * i] = 1;
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -137,14 +137,14 @@ _comac_pdf_shading_generate_decode_array (comac_pdf_shading_t        *shading,
 /* The ISO32000 specification mandates this order for the points which
  * define the patch. */
 static const int pdf_points_order_i[16] = {
-    0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1, 1, 1, 2, 2 };
+    0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1, 1, 1, 2, 2};
 static const int pdf_points_order_j[16] = {
-    0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0, 1, 2, 2, 1 };
+    0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0, 1, 2, 2, 1};
 
 static comac_status_t
-_comac_pdf_shading_generate_data (comac_pdf_shading_t        *shading,
+_comac_pdf_shading_generate_data (comac_pdf_shading_t *shading,
 				  const comac_mesh_pattern_t *mesh,
-				  comac_bool_t                is_alpha)
+				  comac_bool_t is_alpha)
 {
     const comac_mesh_patch_t *patch;
     double x_off, y_off, x_scale, y_scale;
@@ -169,7 +169,8 @@ _comac_pdf_shading_generate_data (comac_pdf_shading_t        *shading,
      *
      * 4 colors. Each color is stored in 2 bytes * num_color_components.
      */
-    shading->data_length = num_patches * (1 + 16 * 2 * 4 + 4 * 2 * num_color_components);
+    shading->data_length =
+	num_patches * (1 + 16 * 2 * 4 + 4 * 2 * num_color_components);
     shading->data = _comac_malloc (shading->data_length);
     if (unlikely (shading->data == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -222,9 +223,9 @@ _comac_pdf_shading_generate_data (comac_pdf_shading_t        *shading,
 }
 
 static comac_status_t
-_comac_pdf_shading_init (comac_pdf_shading_t        *shading,
+_comac_pdf_shading_init (comac_pdf_shading_t *shading,
 			 const comac_mesh_pattern_t *mesh,
-			 comac_bool_t                is_alpha)
+			 comac_bool_t is_alpha)
 {
     comac_status_t status;
 
@@ -256,14 +257,14 @@ _comac_pdf_shading_init (comac_pdf_shading_t        *shading,
 }
 
 comac_status_t
-_comac_pdf_shading_init_color (comac_pdf_shading_t        *shading,
+_comac_pdf_shading_init_color (comac_pdf_shading_t *shading,
 			       const comac_mesh_pattern_t *pattern)
 {
     return _comac_pdf_shading_init (shading, pattern, FALSE);
 }
 
 comac_status_t
-_comac_pdf_shading_init_alpha (comac_pdf_shading_t        *shading,
+_comac_pdf_shading_init_alpha (comac_pdf_shading_t *shading,
 			       const comac_mesh_pattern_t *pattern)
 {
     return _comac_pdf_shading_init (shading, pattern, TRUE);

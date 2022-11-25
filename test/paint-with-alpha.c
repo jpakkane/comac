@@ -26,26 +26,39 @@
 
 #include "comac-test.h"
 
-static uint32_t data[16] = {
-    0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
-    0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
+static uint32_t data[16] = {0xffffffff,
+			    0xffffffff,
+			    0xffff0000,
+			    0xffff0000,
+			    0xffffffff,
+			    0xffffffff,
+			    0xffff0000,
+			    0xffff0000,
 
-    0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff,
-    0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
-};
+			    0xff00ff00,
+			    0xff00ff00,
+			    0xff0000ff,
+			    0xff0000ff,
+			    0xff00ff00,
+			    0xff00ff00,
+			    0xff0000ff,
+			    0xff0000ff};
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_test_paint_checkered (cr);
 
     comac_scale (cr, 4, 4);
 
-    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_set_source_surface (cr, surface, 2, 2);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint_with_alpha (cr, 0.5);
 
@@ -63,7 +76,7 @@ draw_solid_clip (comac_t *cr, int width, int height)
     comac_rectangle (cr, 2.5, 2.5, 27, 27);
     comac_clip (cr);
 
-    comac_set_source_rgb (cr, 1., 0.,0.);
+    comac_set_source_rgb (cr, 1., 0., 0.);
     comac_paint_with_alpha (cr, 0.5);
 
     return COMAC_TEST_SUCCESS;
@@ -75,7 +88,10 @@ draw_clip (comac_t *cr, int width, int height)
     comac_surface_t *surface;
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_test_paint_checkered (cr);
 
@@ -84,7 +100,7 @@ draw_clip (comac_t *cr, int width, int height)
 
     comac_scale (cr, 4, 4);
 
-    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_set_source_surface (cr, surface, 2, 2);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint_with_alpha (cr, 0.5);
 
@@ -100,7 +116,10 @@ draw_clip_mask (comac_t *cr, int width, int height)
     comac_surface_t *surface;
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_test_paint_checkered (cr);
 
@@ -112,7 +131,7 @@ draw_clip_mask (comac_t *cr, int width, int height)
 
     comac_scale (cr, 4, 4);
 
-    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_set_source_surface (cr, surface, 2, 2);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint_with_alpha (cr, 0.5);
 
@@ -125,24 +144,32 @@ draw_clip_mask (comac_t *cr, int width, int height)
 COMAC_TEST (paint_with_alpha,
 	    "Simple test of comac_paint_with_alpha",
 	    "paint, alpha", /* keywords */
-	    NULL, /* requirements */
-	    32, 32,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    32,
+	    32,
+	    NULL,
+	    draw)
 COMAC_TEST (paint_with_alpha_solid_clip,
 	    "Simple test of comac_paint_with_alpha+unaligned clip",
 	    "paint, alpha, clip", /* keywords */
-	    NULL, /* requirements */
-	    32, 32,
-	    NULL, draw_solid_clip)
+	    NULL,		  /* requirements */
+	    32,
+	    32,
+	    NULL,
+	    draw_solid_clip)
 COMAC_TEST (paint_with_alpha_clip,
 	    "Simple test of comac_paint_with_alpha+unaligned clip",
 	    "paint, alpha, clip", /* keywords */
-	    NULL, /* requirements */
-	    32, 32,
-	    NULL, draw_clip)
+	    NULL,		  /* requirements */
+	    32,
+	    32,
+	    NULL,
+	    draw_clip)
 COMAC_TEST (paint_with_alpha_clip_mask,
 	    "Simple test of comac_paint_with_alpha+unaligned clip",
 	    "paint, alpha, clip", /* keywords */
-	    NULL, /* requirements */
-	    32, 32,
-	    NULL, draw_clip_mask)
+	    NULL,		  /* requirements */
+	    32,
+	    32,
+	    NULL,
+	    draw_clip_mask)

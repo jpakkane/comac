@@ -34,19 +34,16 @@ xmalloc (size_t size);
 
 #define xcalloc comac_boilerplate_xcalloc
 void *
-xcalloc (size_t nmemb,
-	 size_t size);
+xcalloc (size_t nmemb, size_t size);
 
 #define xrealloc comac_boilerplate_xrealloc
 void *
-xrealloc (void	 *buf,
-	  size_t  size);
+xrealloc (void *buf, size_t size);
 
 #define xasprintf comac_boilerplate_xasprintf
 void
-xasprintf (char       **strp,
-	   const char  *fmt,
-			...) COMAC_BOILERPLATE_PRINTF_FORMAT(2, 3);
+xasprintf (char **strp, const char *fmt, ...)
+    COMAC_BOILERPLATE_PRINTF_FORMAT (2, 3);
 
 #define xunlink comac_boilerplate_xunlink
 void

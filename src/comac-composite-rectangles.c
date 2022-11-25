@@ -42,7 +42,8 @@
 
 /* A collection of routines to facilitate writing compositors. */
 
-void _comac_composite_rectangles_fini (comac_composite_rectangles_t *extents)
+void
+_comac_composite_rectangles_fini (comac_composite_rectangles_t *extents)
 {
     /* If adding further free() code here, make sure those fields are inited by
      * _comac_composite_rectangles_init IN ALL CASES
@@ -66,8 +67,8 @@ _comac_composite_reduce_pattern (const comac_pattern_t *src,
     tx = ty = 0;
     if (_comac_matrix_is_pixman_translation (&dst->base.matrix,
 					     dst->base.filter,
-					     &tx, &ty))
-    {
+					     &tx,
+					     &ty)) {
 	dst->base.matrix.x0 = tx;
 	dst->base.matrix.y0 = ty;
     }
@@ -119,15 +120,18 @@ _comac_composite_rectangles_init (comac_composite_rectangles_t *extents,
 }
 
 comac_int_status_t
-_comac_composite_rectangles_init_for_paint (comac_composite_rectangles_t *extents,
-					    comac_surface_t *surface,
-					    comac_operator_t		 op,
-					    const comac_pattern_t	*source,
-					    const comac_clip_t		*clip)
+_comac_composite_rectangles_init_for_paint (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_clip_t *clip)
 {
     if (! _comac_composite_rectangles_init (extents,
-					    surface, op, source, clip))
-    {
+					    surface,
+					    op,
+					    source,
+					    clip)) {
 	goto NOTHING_TO_DO;
     }
 
@@ -148,7 +152,7 @@ _comac_composite_rectangles_init_for_paint (comac_composite_rectangles_t *extent
 
     return COMAC_INT_STATUS_SUCCESS;
 NOTHING_TO_DO:
-    _comac_composite_rectangles_fini(extents);
+    _comac_composite_rectangles_fini (extents);
     return COMAC_INT_STATUS_NOTHING_TO_DO;
 }
 
@@ -156,14 +160,15 @@ static comac_int_status_t
 _comac_composite_rectangles_intersect (comac_composite_rectangles_t *extents,
 				       const comac_clip_t *clip)
 {
-    if ((!_comac_rectangle_intersect (&extents->bounded, &extents->mask)) &&
-        (extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK))
+    if ((! _comac_rectangle_intersect (&extents->bounded, &extents->mask)) &&
+	(extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK))
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-    if (extents->is_bounded == (COMAC_OPERATOR_BOUND_BY_MASK | COMAC_OPERATOR_BOUND_BY_SOURCE)) {
+    if (extents->is_bounded ==
+	(COMAC_OPERATOR_BOUND_BY_MASK | COMAC_OPERATOR_BOUND_BY_SOURCE)) {
 	extents->unbounded = extents->bounded;
     } else if (extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK) {
-	if (!_comac_rectangle_intersect (&extents->unbounded, &extents->mask))
+	if (! _comac_rectangle_intersect (&extents->unbounded, &extents->mask))
 	    return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
@@ -175,10 +180,10 @@ _comac_composite_rectangles_intersect (comac_composite_rectangles_t *extents,
 				      _comac_clip_get_extents (extents->clip)))
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-    if (! _comac_rectangle_intersect (&extents->bounded,
-				      _comac_clip_get_extents (extents->clip)) &&
-	extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK)
-    {
+    if (! _comac_rectangle_intersect (
+	    &extents->bounded,
+	    _comac_clip_get_extents (extents->clip)) &&
+	extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK) {
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
@@ -201,18 +206,16 @@ _comac_composite_rectangles_intersect (comac_composite_rectangles_t *extents,
 }
 
 comac_int_status_t
-_comac_composite_rectangles_intersect_source_extents (comac_composite_rectangles_t *extents,
-						      const comac_box_t *box)
+_comac_composite_rectangles_intersect_source_extents (
+    comac_composite_rectangles_t *extents, const comac_box_t *box)
 {
     comac_rectangle_int_t rect;
     comac_clip_t *clip;
 
     _comac_box_round_to_rectangle (box, &rect);
-    if (rect.x == extents->source.x &&
-	rect.y == extents->source.y &&
-	rect.width  == extents->source.width &&
-	rect.height == extents->source.height)
-    {
+    if (rect.x == extents->source.x && rect.y == extents->source.y &&
+	rect.width == extents->source.width &&
+	rect.height == extents->source.height) {
 	return COMAC_INT_STATUS_SUCCESS;
     }
 
@@ -223,14 +226,15 @@ _comac_composite_rectangles_intersect_source_extents (comac_composite_rectangles
 	extents->is_bounded & COMAC_OPERATOR_BOUND_BY_SOURCE)
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-    if (rect.width  == extents->bounded.width &&
+    if (rect.width == extents->bounded.width &&
 	rect.height == extents->bounded.height)
 	return COMAC_INT_STATUS_SUCCESS;
 
-    if (extents->is_bounded == (COMAC_OPERATOR_BOUND_BY_MASK | COMAC_OPERATOR_BOUND_BY_SOURCE)) {
+    if (extents->is_bounded ==
+	(COMAC_OPERATOR_BOUND_BY_MASK | COMAC_OPERATOR_BOUND_BY_SOURCE)) {
 	extents->unbounded = extents->bounded;
     } else if (extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK) {
-	if (!_comac_rectangle_intersect (&extents->unbounded, &extents->mask))
+	if (! _comac_rectangle_intersect (&extents->unbounded, &extents->mask))
 	    return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
@@ -263,18 +267,16 @@ _comac_composite_rectangles_intersect_source_extents (comac_composite_rectangles
 }
 
 comac_int_status_t
-_comac_composite_rectangles_intersect_mask_extents (comac_composite_rectangles_t *extents,
-						    const comac_box_t *box)
+_comac_composite_rectangles_intersect_mask_extents (
+    comac_composite_rectangles_t *extents, const comac_box_t *box)
 {
     comac_rectangle_int_t mask;
     comac_clip_t *clip;
 
     _comac_box_round_to_rectangle (box, &mask);
-    if (mask.x == extents->mask.x &&
-	mask.y == extents->mask.y &&
-	mask.width  == extents->mask.width &&
-	mask.height == extents->mask.height)
-    {
+    if (mask.x == extents->mask.x && mask.y == extents->mask.y &&
+	mask.width == extents->mask.width &&
+	mask.height == extents->mask.height) {
 	return COMAC_INT_STATUS_SUCCESS;
     }
 
@@ -285,14 +287,15 @@ _comac_composite_rectangles_intersect_mask_extents (comac_composite_rectangles_t
 	extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK)
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-    if (mask.width  == extents->bounded.width &&
+    if (mask.width == extents->bounded.width &&
 	mask.height == extents->bounded.height)
 	return COMAC_INT_STATUS_SUCCESS;
 
-    if (extents->is_bounded == (COMAC_OPERATOR_BOUND_BY_MASK | COMAC_OPERATOR_BOUND_BY_SOURCE)) {
+    if (extents->is_bounded ==
+	(COMAC_OPERATOR_BOUND_BY_MASK | COMAC_OPERATOR_BOUND_BY_SOURCE)) {
 	extents->unbounded = extents->bounded;
     } else if (extents->is_bounded & COMAC_OPERATOR_BOUND_BY_MASK) {
-	if (!_comac_rectangle_intersect (&extents->unbounded, &extents->mask))
+	if (! _comac_rectangle_intersect (&extents->unbounded, &extents->mask))
 	    return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
@@ -325,179 +328,205 @@ _comac_composite_rectangles_intersect_mask_extents (comac_composite_rectangles_t
 }
 
 comac_int_status_t
-_comac_composite_rectangles_init_for_mask (comac_composite_rectangles_t *extents,
-					   comac_surface_t              *surface,
-					   comac_operator_t		 op,
-					   const comac_pattern_t	*source,
-					   const comac_pattern_t	*mask,
-					   const comac_clip_t		*clip)
+_comac_composite_rectangles_init_for_mask (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_pattern_t *mask,
+    const comac_clip_t *clip)
 {
     comac_int_status_t status;
     if (! _comac_composite_rectangles_init (extents,
-					    surface, op, source, clip))
-    {
-	_comac_composite_rectangles_fini(extents);
+					    surface,
+					    op,
+					    source,
+					    clip)) {
+	_comac_composite_rectangles_fini (extents);
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
     extents->original_mask_pattern = mask;
     _comac_composite_reduce_pattern (mask, &extents->mask_pattern);
-    _comac_pattern_get_extents (&extents->mask_pattern.base, &extents->mask, surface->is_vector);
+    _comac_pattern_get_extents (&extents->mask_pattern.base,
+				&extents->mask,
+				surface->is_vector);
 
     status = _comac_composite_rectangles_intersect (extents, clip);
-    if(status == COMAC_INT_STATUS_NOTHING_TO_DO) {
-	_comac_composite_rectangles_fini(extents);
+    if (status == COMAC_INT_STATUS_NOTHING_TO_DO) {
+	_comac_composite_rectangles_fini (extents);
     }
     return status;
 }
 
 comac_int_status_t
-_comac_composite_rectangles_init_for_stroke (comac_composite_rectangles_t *extents,
-					     comac_surface_t *surface,
-					     comac_operator_t		 op,
-					     const comac_pattern_t	*source,
-					     const comac_path_fixed_t		*path,
-					     const comac_stroke_style_t	*style,
-					     const comac_matrix_t	*ctm,
-					     const comac_clip_t		*clip)
+_comac_composite_rectangles_init_for_stroke (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_path_fixed_t *path,
+    const comac_stroke_style_t *style,
+    const comac_matrix_t *ctm,
+    const comac_clip_t *clip)
 {
     comac_int_status_t status;
     if (! _comac_composite_rectangles_init (extents,
-					    surface, op, source, clip))
-    {
-	_comac_composite_rectangles_fini(extents);
+					    surface,
+					    op,
+					    source,
+					    clip)) {
+	_comac_composite_rectangles_fini (extents);
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
-    _comac_path_fixed_approximate_stroke_extents (path, style, ctm, surface->is_vector, &extents->mask);
+    _comac_path_fixed_approximate_stroke_extents (path,
+						  style,
+						  ctm,
+						  surface->is_vector,
+						  &extents->mask);
 
     status = _comac_composite_rectangles_intersect (extents, clip);
-    if(status == COMAC_INT_STATUS_NOTHING_TO_DO) {
-	_comac_composite_rectangles_fini(extents);
+    if (status == COMAC_INT_STATUS_NOTHING_TO_DO) {
+	_comac_composite_rectangles_fini (extents);
     }
     return status;
 }
 
 comac_int_status_t
-_comac_composite_rectangles_init_for_fill (comac_composite_rectangles_t *extents,
-					   comac_surface_t *surface,
-					   comac_operator_t		 op,
-					   const comac_pattern_t	*source,
-					   const comac_path_fixed_t		*path,
-					   const comac_clip_t		*clip)
+_comac_composite_rectangles_init_for_fill (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_path_fixed_t *path,
+    const comac_clip_t *clip)
 {
     comac_int_status_t status;
     if (! _comac_composite_rectangles_init (extents,
-					    surface, op, source, clip))
-    {
-	_comac_composite_rectangles_fini(extents);
+					    surface,
+					    op,
+					    source,
+					    clip)) {
+	_comac_composite_rectangles_fini (extents);
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
     _comac_path_fixed_approximate_fill_extents (path, &extents->mask);
 
     status = _comac_composite_rectangles_intersect (extents, clip);
-        if(status == COMAC_INT_STATUS_NOTHING_TO_DO) {
-    _comac_composite_rectangles_fini(extents);
+    if (status == COMAC_INT_STATUS_NOTHING_TO_DO) {
+	_comac_composite_rectangles_fini (extents);
     }
     return status;
 }
 
 comac_int_status_t
-_comac_composite_rectangles_init_for_polygon (comac_composite_rectangles_t *extents,
-					      comac_surface_t		*surface,
-					      comac_operator_t		 op,
-					      const comac_pattern_t	*source,
-					      const comac_polygon_t	*polygon,
-					      const comac_clip_t		*clip)
+_comac_composite_rectangles_init_for_polygon (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_polygon_t *polygon,
+    const comac_clip_t *clip)
 {
     comac_int_status_t status;
     if (! _comac_composite_rectangles_init (extents,
-					    surface, op, source, clip))
-    {
-	_comac_composite_rectangles_fini(extents);
+					    surface,
+					    op,
+					    source,
+					    clip)) {
+	_comac_composite_rectangles_fini (extents);
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
     _comac_box_round_to_rectangle (&polygon->extents, &extents->mask);
     status = _comac_composite_rectangles_intersect (extents, clip);
-    if(status == COMAC_INT_STATUS_NOTHING_TO_DO) {
-	_comac_composite_rectangles_fini(extents);
+    if (status == COMAC_INT_STATUS_NOTHING_TO_DO) {
+	_comac_composite_rectangles_fini (extents);
     }
     return status;
 }
 
 comac_int_status_t
-_comac_composite_rectangles_init_for_boxes (comac_composite_rectangles_t *extents,
-					      comac_surface_t		*surface,
-					      comac_operator_t		 op,
-					      const comac_pattern_t	*source,
-					      const comac_boxes_t	*boxes,
-					      const comac_clip_t		*clip)
+_comac_composite_rectangles_init_for_boxes (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_boxes_t *boxes,
+    const comac_clip_t *clip)
 {
     comac_box_t box;
     comac_int_status_t status;
 
     if (! _comac_composite_rectangles_init (extents,
-					    surface, op, source, clip))
-    {
-	_comac_composite_rectangles_fini(extents);
+					    surface,
+					    op,
+					    source,
+					    clip)) {
+	_comac_composite_rectangles_fini (extents);
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
     _comac_boxes_extents (boxes, &box);
     _comac_box_round_to_rectangle (&box, &extents->mask);
     status = _comac_composite_rectangles_intersect (extents, clip);
-    if(status == COMAC_INT_STATUS_NOTHING_TO_DO) {
-	_comac_composite_rectangles_fini(extents);
+    if (status == COMAC_INT_STATUS_NOTHING_TO_DO) {
+	_comac_composite_rectangles_fini (extents);
     }
     return status;
 }
 
 comac_int_status_t
-_comac_composite_rectangles_init_for_glyphs (comac_composite_rectangles_t *extents,
-					     comac_surface_t *surface,
-					     comac_operator_t		 op,
-					     const comac_pattern_t	*source,
-					     comac_scaled_font_t	*scaled_font,
-					     comac_glyph_t		*glyphs,
-					     int			 num_glyphs,
-					     const comac_clip_t		*clip,
-					     comac_bool_t		*overlap)
+_comac_composite_rectangles_init_for_glyphs (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    comac_scaled_font_t *scaled_font,
+    comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_clip_t *clip,
+    comac_bool_t *overlap)
 {
     comac_status_t status;
     comac_int_status_t int_status;
 
-    if (! _comac_composite_rectangles_init (extents, surface, op, source, clip)) {
-	_comac_composite_rectangles_fini(extents);
+    if (! _comac_composite_rectangles_init (extents,
+					    surface,
+					    op,
+					    source,
+					    clip)) {
+	_comac_composite_rectangles_fini (extents);
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
     }
 
     status = _comac_scaled_font_glyph_device_extents (scaled_font,
-						      glyphs, num_glyphs,
+						      glyphs,
+						      num_glyphs,
 						      &extents->mask,
 						      overlap);
     if (unlikely (status)) {
-	_comac_composite_rectangles_fini(extents);
+	_comac_composite_rectangles_fini (extents);
 	return status;
     }
     if (overlap && *overlap &&
 	scaled_font->options.antialias == COMAC_ANTIALIAS_NONE &&
-	_comac_pattern_is_opaque_solid (&extents->source_pattern.base))
-    {
+	_comac_pattern_is_opaque_solid (&extents->source_pattern.base)) {
 	*overlap = FALSE;
     }
 
     int_status = _comac_composite_rectangles_intersect (extents, clip);
     if (int_status == COMAC_INT_STATUS_NOTHING_TO_DO) {
-	_comac_composite_rectangles_fini(extents);
+	_comac_composite_rectangles_fini (extents);
     }
     return int_status;
 }
 
 comac_bool_t
-_comac_composite_rectangles_can_reduce_clip (comac_composite_rectangles_t *composite,
-					     comac_clip_t *clip)
+_comac_composite_rectangles_can_reduce_clip (
+    comac_composite_rectangles_t *composite, comac_clip_t *clip)
 {
     comac_rectangle_int_t extents;
     comac_box_t box;
@@ -516,16 +545,16 @@ _comac_composite_rectangles_can_reduce_clip (comac_composite_rectangles_t *compo
 }
 
 comac_int_status_t
-_comac_composite_rectangles_add_to_damage (comac_composite_rectangles_t *composite,
-					   comac_boxes_t *damage)
+_comac_composite_rectangles_add_to_damage (
+    comac_composite_rectangles_t *composite, comac_boxes_t *damage)
 {
     comac_int_status_t status;
     int n;
 
     for (n = 0; n < composite->clip->num_boxes; n++) {
 	status = _comac_boxes_add (damage,
-			  COMAC_ANTIALIAS_NONE,
-			  &composite->clip->boxes[n]);
+				   COMAC_ANTIALIAS_NONE,
+				   &composite->clip->boxes[n]);
 	if (unlikely (status))
 	    return status;
     }

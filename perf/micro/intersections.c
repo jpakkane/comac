@@ -34,14 +34,14 @@ uniform_random (double minval, double maxval)
 {
     static unsigned const poly = 0x9a795537U;
     unsigned n = 32;
-    while (n-->0)
-	state = 2*state < state ? (2*state ^ poly) : 2*state;
+    while (n-- > 0)
+	state = 2 * state < state ? (2 * state ^ poly) : 2 * state;
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
 static comac_time_t
-draw_random (comac_t *cr, comac_fill_rule_t fill_rule,
-	     int width, int height, int loops)
+draw_random (
+    comac_t *cr, comac_fill_rule_t fill_rule, int width, int height, int loops)
 {
     double x[NUM_SEGMENTS];
     double y[NUM_SEGMENTS];
@@ -52,8 +52,8 @@ draw_random (comac_t *cr, comac_fill_rule_t fill_rule,
     comac_paint (cr);
 
     for (i = 0; i < NUM_SEGMENTS; i++) {
-         x[i] = uniform_random (0, width);
-         y[i] = uniform_random (0, height);
+	x[i] = uniform_random (0, width);
+	y[i] = uniform_random (0, height);
     }
 
     state = 0x12345678;
@@ -69,7 +69,7 @@ draw_random (comac_t *cr, comac_fill_rule_t fill_rule,
 
     comac_perf_timer_start ();
     while (loops--)
-        comac_fill_preserve (cr);
+	comac_fill_preserve (cr);
     comac_perf_timer_stop ();
 
     comac_restore (cr);
@@ -78,20 +78,20 @@ draw_random (comac_t *cr, comac_fill_rule_t fill_rule,
 }
 
 static comac_time_t
-draw_random_curve (comac_t *cr, comac_fill_rule_t fill_rule,
-		   int width, int height, int loops)
+draw_random_curve (
+    comac_t *cr, comac_fill_rule_t fill_rule, int width, int height, int loops)
 {
-    double x[3*NUM_SEGMENTS];
-    double y[3*NUM_SEGMENTS];
+    double x[3 * NUM_SEGMENTS];
+    double y[3 * NUM_SEGMENTS];
     int i;
 
     comac_save (cr);
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_paint (cr);
 
-    for (i = 0; i < 3*NUM_SEGMENTS; i++) {
-         x[i] = uniform_random (0, width);
-         y[i] = uniform_random (0, height);
+    for (i = 0; i < 3 * NUM_SEGMENTS; i++) {
+	x[i] = uniform_random (0, width);
+	y[i] = uniform_random (0, height);
     }
 
     state = 0x12345678;
@@ -103,15 +103,18 @@ draw_random_curve (comac_t *cr, comac_fill_rule_t fill_rule,
     comac_move_to (cr, 0, 0);
     for (i = 0; i < NUM_SEGMENTS; i++) {
 	comac_curve_to (cr,
-			x[3*i+0], y[3*i+0],
-			x[3*i+1], y[3*i+1],
-			x[3*i+2], y[3*i+2]);
+			x[3 * i + 0],
+			y[3 * i + 0],
+			x[3 * i + 1],
+			y[3 * i + 1],
+			x[3 * i + 2],
+			y[3 * i + 2]);
     }
     comac_close_path (cr);
 
     comac_perf_timer_start ();
     while (loops--)
-        comac_fill_preserve (cr);
+	comac_fill_preserve (cr);
     comac_perf_timer_stop ();
 
     comac_restore (cr);
@@ -134,13 +137,21 @@ random_nz (comac_t *cr, int width, int height, int loops)
 static comac_time_t
 random_curve_eo (comac_t *cr, int width, int height, int loops)
 {
-    return draw_random_curve (cr, COMAC_FILL_RULE_EVEN_ODD, width, height, loops);
+    return draw_random_curve (cr,
+			      COMAC_FILL_RULE_EVEN_ODD,
+			      width,
+			      height,
+			      loops);
 }
 
 static comac_time_t
 random_curve_nz (comac_t *cr, int width, int height, int loops)
 {
-    return draw_random_curve (cr, COMAC_FILL_RULE_WINDING, width, height, loops);
+    return draw_random_curve (cr,
+			      COMAC_FILL_RULE_WINDING,
+			      width,
+			      height,
+			      loops);
 }
 
 comac_bool_t

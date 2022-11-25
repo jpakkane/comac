@@ -31,7 +31,6 @@
 #define WIDTH (PAD + SIZE + PAD)
 #define HEIGHT WIDTH
 
-
 /* This test is designed to paint a mesh pattern with a simple
  * fold. */
 
@@ -49,10 +48,10 @@ draw (comac_t *cr, int width, int height)
     comac_mesh_pattern_begin_patch (pattern);
 
     comac_mesh_pattern_move_to (pattern, 0, 0);
-    comac_mesh_pattern_curve_to (pattern,  30, -30, 60,  30, 100, 0);
+    comac_mesh_pattern_curve_to (pattern, 30, -30, 60, 30, 100, 0);
     comac_mesh_pattern_curve_to (pattern, 130, 140, 60, -40, 100, 100);
-    comac_mesh_pattern_curve_to (pattern,  60,  70, 30, 130,   0, 100);
-    comac_mesh_pattern_curve_to (pattern, -30, -40, 30, 140,   0, 0);
+    comac_mesh_pattern_curve_to (pattern, 60, 70, 30, 130, 0, 100);
+    comac_mesh_pattern_curve_to (pattern, -30, -40, 30, 140, 0, 0);
 
     comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
     comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
@@ -71,6 +70,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mesh_pattern_overlap,
 	    "Paint a mesh pattern with a simple fold",
 	    "mesh, pattern", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

@@ -46,6 +46,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (stroke_open_box,
 	    "Tests stroking of a 3-sided box",
 	    "stroke,box", /* keywords */
-	    NULL, /* requirements */
-	    30, 32,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    30,
+	    32,
+	    NULL,
+	    draw)

@@ -57,10 +57,13 @@ glyph_array_show (glyph_array_t *glyphs, comac_t *cr)
     comac_show_glyphs (cr, glyphs->glyph_list, glyphs->num_glyphs);
 }
 
-#define DOUBLE_FROM_26_6(t) ((double)(t) / 64.0)
+#define DOUBLE_FROM_26_6(t) ((double) (t) / 64.0)
 
 static comac_status_t
-glyph_array_add_text(glyph_array_t *glyphs, comac_t *cr, const char *s, double spacing)
+glyph_array_add_text (glyph_array_t *glyphs,
+		      comac_t *cr,
+		      const char *s,
+		      double spacing)
 {
     comac_scaled_font_t *scaled_font;
     comac_status_t status;
@@ -83,34 +86,43 @@ glyph_array_add_text(glyph_array_t *glyphs, comac_t *cr, const char *s, double s
 	return COMAC_STATUS_FONT_TYPE_MISMATCH;
 
     p = s;
-    while (*p)
-    {
-        charcode = *p;
-        index = FT_Get_Char_Index (face, charcode);
-        glyphs->glyph_list[glyphs->num_glyphs].index = index;
-        if (first) {
-            first = FALSE;
-            glyphs->glyph_list[glyphs->num_glyphs].x = glyphs->x;
-            glyphs->glyph_list[glyphs->num_glyphs].y = glyphs->y;
-        } else {
-            comac_glyph_extents (cr, &glyphs->glyph_list[glyphs->num_glyphs - 1], 1, &extents);
-            FT_Get_Kerning (face,
-                            glyphs->glyph_list[glyphs->num_glyphs - 1].index,
-                            glyphs->glyph_list[glyphs->num_glyphs].index,
-                            FT_KERNING_UNSCALED,
-                            &kerning);
-            kern_x = DOUBLE_FROM_26_6(kerning.x);
-            glyphs->glyph_list[glyphs->num_glyphs].x =
-		glyphs->glyph_list[glyphs->num_glyphs - 1].x + extents.x_advance + kern_x + spacing;
-            glyphs->glyph_list[glyphs->num_glyphs].y =
-		glyphs->glyph_list[glyphs->num_glyphs - 1].y + extents.y_advance;
+    while (*p) {
+	charcode = *p;
+	index = FT_Get_Char_Index (face, charcode);
+	glyphs->glyph_list[glyphs->num_glyphs].index = index;
+	if (first) {
+	    first = FALSE;
+	    glyphs->glyph_list[glyphs->num_glyphs].x = glyphs->x;
+	    glyphs->glyph_list[glyphs->num_glyphs].y = glyphs->y;
+	} else {
+	    comac_glyph_extents (cr,
+				 &glyphs->glyph_list[glyphs->num_glyphs - 1],
+				 1,
+				 &extents);
+	    FT_Get_Kerning (face,
+			    glyphs->glyph_list[glyphs->num_glyphs - 1].index,
+			    glyphs->glyph_list[glyphs->num_glyphs].index,
+			    FT_KERNING_UNSCALED,
+			    &kerning);
+	    kern_x = DOUBLE_FROM_26_6 (kerning.x);
+	    glyphs->glyph_list[glyphs->num_glyphs].x =
+		glyphs->glyph_list[glyphs->num_glyphs - 1].x +
+		extents.x_advance + kern_x + spacing;
+	    glyphs->glyph_list[glyphs->num_glyphs].y =
+		glyphs->glyph_list[glyphs->num_glyphs - 1].y +
+		extents.y_advance;
 	}
 
-	comac_glyph_extents (cr, &glyphs->glyph_list[glyphs->num_glyphs], 1, &extents);
-	glyphs->x = glyphs->glyph_list[glyphs->num_glyphs].x + extents.x_advance + spacing;
-	glyphs->y = glyphs->glyph_list[glyphs->num_glyphs].y + extents.y_advance;
+	comac_glyph_extents (cr,
+			     &glyphs->glyph_list[glyphs->num_glyphs],
+			     1,
+			     &extents);
+	glyphs->x = glyphs->glyph_list[glyphs->num_glyphs].x +
+		    extents.x_advance + spacing;
+	glyphs->y =
+	    glyphs->glyph_list[glyphs->num_glyphs].y + extents.y_advance;
 	p++;
-        glyphs->num_glyphs++;
+	glyphs->num_glyphs++;
     }
 
     comac_ft_scaled_font_unlock_face (scaled_font);
@@ -130,7 +142,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -145,36 +158,36 @@ draw (comac_t *cr, int width, int height)
 
     glyph_array_init (&glyphs, 1, TEXT_SIZE);
 
-    status = glyph_array_add_text(&glyphs, cr, "AWAY again", 0.0);
+    status = glyph_array_add_text (&glyphs, cr, "AWAY again", 0.0);
     if (status)
 	return comac_test_status_from_status (ctx, status);
 
-    glyph_array_rel_move_to (&glyphs, TEXT_SIZE*1, 0.0);
-    status = glyph_array_add_text(&glyphs, cr, "character space", TEXT_SIZE*0.3);
+    glyph_array_rel_move_to (&glyphs, TEXT_SIZE * 1, 0.0);
+    status =
+	glyph_array_add_text (&glyphs, cr, "character space", TEXT_SIZE * 0.3);
     if (status)
 	return comac_test_status_from_status (ctx, status);
 
     glyph_array_show (&glyphs, cr);
 
+    glyph_array_init (&glyphs, 1, TEXT_SIZE * 2 + 4);
 
-    glyph_array_init (&glyphs, 1, TEXT_SIZE*2 + 4);
-
-    status = glyph_array_add_text(&glyphs, cr, "Increasing", 0.0);
+    status = glyph_array_add_text (&glyphs, cr, "Increasing", 0.0);
     if (status)
 	return comac_test_status_from_status (ctx, status);
 
-    glyph_array_rel_move_to (&glyphs, TEXT_SIZE*0.5, 0.0);
-    status = glyph_array_add_text(&glyphs, cr, "space", 0.0);
+    glyph_array_rel_move_to (&glyphs, TEXT_SIZE * 0.5, 0.0);
+    status = glyph_array_add_text (&glyphs, cr, "space", 0.0);
     if (status)
 	return comac_test_status_from_status (ctx, status);
 
-    glyph_array_rel_move_to (&glyphs, TEXT_SIZE*1.0, 0.0);
-    status = glyph_array_add_text(&glyphs, cr, "between", 0.0);
+    glyph_array_rel_move_to (&glyphs, TEXT_SIZE * 1.0, 0.0);
+    status = glyph_array_add_text (&glyphs, cr, "between", 0.0);
     if (status)
 	return comac_test_status_from_status (ctx, status);
 
-    glyph_array_rel_move_to (&glyphs, TEXT_SIZE*1.5, 0.0);
-    status = glyph_array_add_text(&glyphs, cr, "words", 0.0);
+    glyph_array_rel_move_to (&glyphs, TEXT_SIZE * 1.5, 0.0);
+    status = glyph_array_add_text (&glyphs, cr, "words", 0.0);
     if (status)
 	return comac_test_status_from_status (ctx, status);
 
@@ -186,6 +199,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (ft_show_glyphs_positioning,
 	    "Test that the PS/PDF glyph positioning optimizations are correct",
 	    "ft, text", /* keywords */
-	    NULL, /* requirements */
-	    235, (TEXT_SIZE + 4)*2,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    235,
+	    (TEXT_SIZE + 4) * 2,
+	    NULL,
+	    draw)

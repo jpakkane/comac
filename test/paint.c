@@ -43,6 +43,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (paint,
 	    "Test calls to comac_paint",
 	    "paint", /* keywords */
-	    NULL, /* requirements */
-	    8, 8,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    8,
+	    8,
+	    NULL,
+	    draw)

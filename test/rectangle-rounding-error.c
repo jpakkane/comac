@@ -39,26 +39,29 @@ draw (comac_t *cr, int width, int height)
     comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
     comac_set_source_rgb (cr, 0, 0, 0);
 
-    comac_translate(cr, -300, -300);
-    comac_scale(cr, 677.0/26, 677.0/26);
-    comac_translate(cr, 1, 1);
+    comac_translate (cr, -300, -300);
+    comac_scale (cr, 677.0 / 26, 677.0 / 26);
+    comac_translate (cr, 1, 1);
 
     /* this should draw a seamless 2x2 rectangle */
-    comac_rectangle(cr, 11, 11, 1, 1);
-    comac_rectangle(cr, 11, 12, 1, 1);
-    comac_rectangle(cr, 12, 11, 1, 1);
-    comac_rectangle(cr, 12, 12, 1, 1);
+    comac_rectangle (cr, 11, 11, 1, 1);
+    comac_rectangle (cr, 11, 12, 1, 1);
+    comac_rectangle (cr, 12, 11, 1, 1);
+    comac_rectangle (cr, 12, 12, 1, 1);
 
-    comac_set_source_rgb(cr, 0, 0, 0);
-    comac_fill(cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (rectangle_rounding_error,
-	    "This demonstrates (or not) a rounding error that causes a gap between "
-	    "two neighbouring rectangles.",
-	    "trap", /* keywords */
-	    "target=raster", /* requirements */
-	    76, 76,
-	    NULL, draw)
+COMAC_TEST (
+    rectangle_rounding_error,
+    "This demonstrates (or not) a rounding error that causes a gap between "
+    "two neighbouring rectangles.",
+    "trap",	     /* keywords */
+    "target=raster", /* requirements */
+    76,
+    76,
+    NULL,
+    draw)

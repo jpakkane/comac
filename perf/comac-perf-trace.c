@@ -66,7 +66,6 @@ basename_no_ext (char *path)
     return name;
 }
 
-
 #else
 #include <dirent.h>
 
@@ -96,14 +95,14 @@ basename_no_ext (char *path)
 #include <fontconfig/fontconfig.h>
 #endif
 
-#define COMAC_PERF_ITERATIONS_DEFAULT	15
-#define COMAC_PERF_LOW_STD_DEV		0.05
-#define COMAC_PERF_MIN_STD_DEV_COUNT	3
+#define COMAC_PERF_ITERATIONS_DEFAULT 15
+#define COMAC_PERF_LOW_STD_DEV 0.05
+#define COMAC_PERF_MIN_STD_DEV_COUNT 3
 #define COMAC_PERF_STABLE_STD_DEV_COUNT 3
 
 struct trace {
     const comac_boilerplate_target_t *target;
-    void            *closure;
+    void *closure;
     comac_surface_t *surface;
     comac_bool_t observe;
     int tile_size;
@@ -111,7 +110,7 @@ struct trace {
 
 comac_bool_t
 comac_perf_can_run (comac_perf_t *perf,
-		    const char	 *name,
+		    const char *name,
 		    comac_bool_t *is_explicit)
 {
     unsigned int i;
@@ -190,8 +189,7 @@ static comac_hash_table_t *surface_cache;
 static comac_surface_t *surface_holdovers[16];
 
 static comac_bool_t
-scache_equal (const void *A,
-	      const void *B)
+scache_equal (const void *A, const void *B)
 {
     const struct scache *a = A, *b = B;
     return a->entry.hash == b->entry.hash;
@@ -243,30 +241,32 @@ scache_remove (void *closure)
 }
 
 static comac_surface_t *
-_similar_surface_create (void		 *closure,
-			 comac_content_t  content,
-			 double		  width,
-			 double		  height,
-			 long		  uid)
+_similar_surface_create (void *closure,
+			 comac_content_t content,
+			 double width,
+			 double height,
+			 long uid)
 {
     struct trace *args = closure;
     comac_surface_t *surface;
     struct scache skey, *s;
 
     if (args->observe)
-	    return comac_surface_create_similar (args->surface,
-						 content, width, height);
+	return comac_surface_create_similar (args->surface,
+					     content,
+					     width,
+					     height);
 
     if (uid == 0 || surface_cache == NULL)
-	return args->target->create_similar (args->surface, content, width, height);
+	return args->target->create_similar (args->surface,
+					     content,
+					     width,
+					     height);
 
     skey.entry.hash = uid;
     s = _comac_hash_table_lookup (surface_cache, &skey.entry);
     if (s != NULL) {
-	if (s->content == content &&
-	    s->width   == width   &&
-	    s->height  == height)
-	{
+	if (s->content == content && s->width == width && s->height == height) {
 	    return comac_surface_reference (s->surface);
 	}
 
@@ -275,7 +275,8 @@ _similar_surface_create (void		 *closure,
 	 */
     }
 
-    surface = args->target->create_similar (args->surface, content, width, height);
+    surface =
+	args->target->create_similar (args->surface, content, width, height);
     s = malloc (sizeof (struct scache));
     if (s == NULL)
 	return surface;
@@ -287,11 +288,11 @@ _similar_surface_create (void		 *closure,
     s->surface = surface;
     if (_comac_hash_table_insert (surface_cache, &s->entry)) {
 	free (s);
-    } else if (comac_surface_set_user_data
-	       (surface,
-		(const comac_user_data_key_t *) &surface_cache,
-		s, scache_remove))
-    {
+    } else if (comac_surface_set_user_data (
+		   surface,
+		   (const comac_user_data_key_t *) &surface_cache,
+		   s,
+		   scache_remove)) {
 	scache_remove (s);
     }
 
@@ -299,21 +300,19 @@ _similar_surface_create (void		 *closure,
 }
 
 static comac_surface_t *
-_source_image_create (void		*closure,
-		      comac_format_t	 format,
-		      int		 width,
-		      int		 height,
-		      long		 uid)
+_source_image_create (
+    void *closure, comac_format_t format, int width, int height, long uid)
 {
     struct trace *args = closure;
 
     return comac_surface_create_similar_image (args->surface,
-					       format, width, height);
+					       format,
+					       width,
+					       height);
 }
 
 static comac_t *
-_context_create (void		 *closure,
-		 comac_surface_t *surface)
+_context_create (void *closure, comac_surface_t *surface)
 {
     scache_mark_active (surface);
     return comac_create (surface);
@@ -333,30 +332,29 @@ interrupt (int sig)
 }
 
 static void
-describe (comac_perf_t *perf,
-          void *closure)
+describe (comac_perf_t *perf, void *closure)
 {
     char *description = NULL;
 
     if (perf->has_described_backend)
-	    return;
+	return;
     perf->has_described_backend = TRUE;
 
     if (perf->target->describe)
-        description = perf->target->describe (closure);
+	description = perf->target->describe (closure);
 
     if (description == NULL)
-        return;
+	return;
 
     if (perf->raw) {
-        printf ("[ # ] %s: %s\n", perf->target->name, description);
+	printf ("[ # ] %s: %s\n", perf->target->name, description);
     }
 
     if (perf->summary) {
-        fprintf (perf->summary,
-                 "[ # ] %8s: %s\n",
-                 perf->target->name,
-                 description);
+	fprintf (perf->summary,
+		 "[ # ] %8s: %s\n",
+		 perf->target->name,
+		 description);
     }
 
     free (description);
@@ -365,30 +363,36 @@ describe (comac_perf_t *perf,
 static void
 usage (const char *argv0)
 {
-    fprintf (stderr,
-"Usage: %s [-clrsv] [-i iterations] [-t tile-size] [-x exclude-file] [test-names ... | traces ...]\n"
-"\n"
-"Run the comac performance test suite over the given tests (all by default)\n"
-"The command-line arguments are interpreted as follows:\n"
-"\n"
-"  -c	use surface cache; keep a cache of surfaces to be reused\n"
-"  -i	iterations; specify the number of iterations per test case\n"
-"  -l	list only; just list selected test case names without executing\n"
-"  -r	raw; display each time measurement instead of summary statistics\n"
-"  -s	sync; only sum the elapsed time of the individual operations\n"
-"  -t	tile size; draw to tiled surfaces\n"
-"  -v	verbose; in raw mode also show the summaries\n"
-"  -x	exclude; specify a file to read a list of traces to exclude\n"
-"\n"
-"If test names are given they are used as sub-string matches so a command\n"
-"such as \"%s firefox\" can be used to run all firefox traces.\n"
-"Alternatively, you can specify a list of filenames to execute.\n",
-	     argv0, argv0);
+    fprintf (
+	stderr,
+	"Usage: %s [-clrsv] [-i iterations] [-t tile-size] [-x exclude-file] "
+	"[test-names ... | traces ...]\n"
+	"\n"
+	"Run the comac performance test suite over the given tests (all by "
+	"default)\n"
+	"The command-line arguments are interpreted as follows:\n"
+	"\n"
+	"  -c	use surface cache; keep a cache of surfaces to be reused\n"
+	"  -i	iterations; specify the number of iterations per test case\n"
+	"  -l	list only; just list selected test case names without "
+	"executing\n"
+	"  -r	raw; display each time measurement instead of summary "
+	"statistics\n"
+	"  -s	sync; only sum the elapsed time of the individual operations\n"
+	"  -t	tile size; draw to tiled surfaces\n"
+	"  -v	verbose; in raw mode also show the summaries\n"
+	"  -x	exclude; specify a file to read a list of traces to exclude\n"
+	"\n"
+	"If test names are given they are used as sub-string matches so a "
+	"command\n"
+	"such as \"%s firefox\" can be used to run all firefox traces.\n"
+	"Alternatively, you can specify a list of filenames to execute.\n",
+	argv0,
+	argv0);
 }
 
 static comac_bool_t
-read_excludes (comac_perf_t *perf,
-	       const char   *filename)
+read_excludes (comac_perf_t *perf, const char *filename)
 {
     FILE *file;
     char *line = NULL;
@@ -416,9 +420,9 @@ read_excludes (comac_perf_t *perf,
 
 	if (s != t) {
 	    int i = perf->num_exclude_names;
-	    perf->exclude_names = xrealloc (perf->exclude_names,
-					    sizeof (char *) * (i+1));
-	    perf->exclude_names[i] = strndup (s, t-s);
+	    perf->exclude_names =
+		xrealloc (perf->exclude_names, sizeof (char *) * (i + 1));
+	    perf->exclude_names[i] = strndup (s, t - s);
 	    perf->num_exclude_names++;
 	}
     }
@@ -430,9 +434,7 @@ read_excludes (comac_perf_t *perf,
 }
 
 static void
-parse_options (comac_perf_t *perf,
-	       int	     argc,
-	       char	    *argv[])
+parse_options (comac_perf_t *perf, int argc, char *argv[])
 {
     int c;
     const char *iters;
@@ -470,7 +472,8 @@ parse_options (comac_perf_t *perf,
 	    perf->exact_iterations = TRUE;
 	    perf->iterations = strtoul (optarg, &end, 10);
 	    if (*end != '\0') {
-		fprintf (stderr, "Invalid argument for -i (not an integer): %s\n",
+		fprintf (stderr,
+			 "Invalid argument for -i (not an integer): %s\n",
 			 optarg);
 		exit (1);
 	    }
@@ -488,7 +491,8 @@ parse_options (comac_perf_t *perf,
 	case 't':
 	    perf->tile_size = strtoul (optarg, &end, 10);
 	    if (*end != '\0') {
-		fprintf (stderr, "Invalid argument for -t (not an integer): %s\n",
+		fprintf (stderr,
+			 "Invalid argument for -t (not an integer): %s\n",
 			 optarg);
 		exit (1);
 	    }
@@ -498,7 +502,8 @@ parse_options (comac_perf_t *perf,
 	    break;
 	case 'x':
 	    if (! read_excludes (perf, optarg)) {
-		fprintf (stderr, "Invalid argument for -x (not readable file): %s\n",
+		fprintf (stderr,
+			 "Invalid argument for -x (not readable file): %s\n",
 			 optarg);
 		exit (1);
 	    }
@@ -597,7 +602,9 @@ _tiling_surface_finish (comac_surface_t *observer,
 	     * to replay the target onto the observer directly.
 	     */
 	    surface = args->target->create_similar (args->surface,
-						    content, width, height);
+						    content,
+						    width,
+						    height);
 
 	    cr = comac_create (surface);
 	    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
@@ -611,11 +618,11 @@ _tiling_surface_finish (comac_surface_t *observer,
 }
 
 static comac_surface_t *
-_tiling_surface_create (void		 *closure,
-			comac_content_t  content,
-			double		  width,
-			double		  height,
-			long		  uid)
+_tiling_surface_create (void *closure,
+			comac_content_t content,
+			double width,
+			double height,
+			long uid)
 {
     comac_rectangle_t r;
     comac_surface_t *surface, *observer;
@@ -625,8 +632,8 @@ _tiling_surface_create (void		 *closure,
     r.height = height;
 
     surface = comac_recording_surface_create (content, &r);
-    observer = comac_surface_create_observer (surface,
-					      COMAC_SURFACE_OBSERVER_NORMAL);
+    observer =
+	comac_surface_create_observer (surface, COMAC_SURFACE_OBSERVER_NORMAL);
     comac_surface_destroy (surface);
 
     comac_surface_observer_add_finish_callback (observer,
@@ -637,15 +644,15 @@ _tiling_surface_create (void		 *closure,
 }
 
 static void
-comac_perf_trace (comac_perf_t			   *perf,
+comac_perf_trace (comac_perf_t *perf,
 		  const comac_boilerplate_target_t *target,
-		  const char			   *trace)
+		  const char *trace)
 {
     static comac_bool_t first_run = TRUE;
     unsigned int i;
     comac_time_t *times, *paint, *mask, *fill, *stroke, *glyphs;
     comac_stats_t stats = {0.0, 0.0};
-    struct trace args = { target };
+    struct trace args = {target};
     int low_std_dev_count;
     char *trace_cpy, *name;
     const comac_script_interpreter_hooks_t hooks = {
@@ -674,21 +681,35 @@ comac_perf_trace (comac_perf_t			   *perf,
     if (first_run) {
 	if (perf->raw) {
 	    printf ("[ # ] %s.%-s %s %s %s ...\n",
-		    "backend", "content", "test-size", "ticks-per-ms", "time(ticks)");
+		    "backend",
+		    "content",
+		    "test-size",
+		    "ticks-per-ms",
+		    "time(ticks)");
 	}
 
 	if (perf->summary) {
 	    if (perf->observe) {
 		fprintf (perf->summary,
 			 "[ # ] %8s %28s  %9s %9s %9s %9s %9s %9s %5s\n",
-			 "backend", "test",
-			 "total(s)", "paint(s)", "mask(s)", "fill(s)", "stroke(s)", "glyphs(s)",
+			 "backend",
+			 "test",
+			 "total(s)",
+			 "paint(s)",
+			 "mask(s)",
+			 "fill(s)",
+			 "stroke(s)",
+			 "glyphs(s)",
 			 "count");
 	    } else {
 		fprintf (perf->summary,
 			 "[ # ] %8s %28s %8s %5s %5s %s\n",
-			 "backend", "test", "min(s)", "median(s)",
-			 "stddev.", "count");
+			 "backend",
+			 "test",
+			 "min(s)",
+			 "median(s)",
+			 "stddev.",
+			 "count");
 	    }
 	}
 	first_run = FALSE;
@@ -709,11 +730,13 @@ comac_perf_trace (comac_perf_t			   *perf,
 
 	args.surface = target->create_surface (NULL,
 					       COMAC_CONTENT_COLOR_ALPHA,
-					       1, 1,
-					       1, 1,
+					       1,
+					       1,
+					       1,
+					       1,
 					       COMAC_BOILERPLATE_MODE_PERF,
 					       &args.closure);
-	fill_surface(args.surface); /* remove any clear flags */
+	fill_surface (args.surface); /* remove any clear flags */
 
 	if (perf->observe) {
 	    comac_surface_t *obs;
@@ -762,14 +785,21 @@ comac_perf_trace (comac_perf_t			   *perf,
 
 	if (perf->observe) {
 	    comac_device_t *observer = comac_surface_get_device (args.surface);
-	    times[i] = _comac_time_from_s (1.e-9 * comac_device_observer_elapsed (observer));
-	    paint[i] = _comac_time_from_s (1.e-9 * comac_device_observer_paint_elapsed (observer));
-	    mask[i] = _comac_time_from_s (1.e-9 * comac_device_observer_mask_elapsed (observer));
-	    stroke[i] = _comac_time_from_s (1.e-9 * comac_device_observer_stroke_elapsed (observer));
-	    fill[i] = _comac_time_from_s (1.e-9 * comac_device_observer_fill_elapsed (observer));
-	    glyphs[i] = _comac_time_from_s (1.e-9 * comac_device_observer_glyphs_elapsed (observer));
+	    times[i] = _comac_time_from_s (
+		1.e-9 * comac_device_observer_elapsed (observer));
+	    paint[i] = _comac_time_from_s (
+		1.e-9 * comac_device_observer_paint_elapsed (observer));
+	    mask[i] = _comac_time_from_s (
+		1.e-9 * comac_device_observer_mask_elapsed (observer));
+	    stroke[i] = _comac_time_from_s (
+		1.e-9 * comac_device_observer_stroke_elapsed (observer));
+	    fill[i] = _comac_time_from_s (
+		1.e-9 * comac_device_observer_fill_elapsed (observer));
+	    glyphs[i] = _comac_time_from_s (
+		1.e-9 * comac_device_observer_glyphs_elapsed (observer));
 	} else {
-	    fill_surface (args.surface); /* queue a write to the sync'ed surface */
+	    fill_surface (
+		args.surface); /* queue a write to the sync'ed surface */
 	    comac_perf_timer_stop ();
 	    times[i] = comac_perf_timer_elapsed ();
 	}
@@ -784,7 +814,8 @@ comac_perf_trace (comac_perf_t			   *perf,
 	status = comac_script_interpreter_destroy (csi);
 	if (status) {
 	    if (perf->summary) {
-		fprintf (perf->summary, "Error during replay, line %d: %s\n",
+		fprintf (perf->summary,
+			 "Error during replay, line %d: %s\n",
 			 line_no,
 			 comac_status_to_string (status));
 	    }
@@ -803,7 +834,7 @@ comac_perf_trace (comac_perf_t			   *perf,
 	    fflush (stdout);
 	} else if (! perf->exact_iterations) {
 	    if (i > COMAC_PERF_MIN_STD_DEV_COUNT) {
-		_comac_stats_compute (&stats, times, i+1);
+		_comac_stats_compute (&stats, times, i + 1);
 
 		if (stats.std_dev <= COMAC_PERF_LOW_STD_DEV) {
 		    if (++low_std_dev_count >= COMAC_PERF_STABLE_STD_DEV_COUNT)
@@ -815,7 +846,7 @@ comac_perf_trace (comac_perf_t			   *perf,
 	}
 
 	if (perf->summary && perf->summary_continuous) {
-	    _comac_stats_compute (&stats, times, i+1);
+	    _comac_stats_compute (&stats, times, i + 1);
 
 	    fprintf (perf->summary,
 		     "\r[%3d] %8s %28s ",
@@ -824,37 +855,43 @@ comac_perf_trace (comac_perf_t			   *perf,
 		     name);
 	    if (perf->observe) {
 		fprintf (perf->summary,
-			 " %#9.3f", _comac_time_to_s (stats.median_ticks));
+			 " %#9.3f",
+			 _comac_time_to_s (stats.median_ticks));
 
-		_comac_stats_compute (&stats, paint, i+1);
+		_comac_stats_compute (&stats, paint, i + 1);
 		fprintf (perf->summary,
-			 " %#9.3f", _comac_time_to_s (stats.median_ticks));
+			 " %#9.3f",
+			 _comac_time_to_s (stats.median_ticks));
 
-		_comac_stats_compute (&stats, mask, i+1);
+		_comac_stats_compute (&stats, mask, i + 1);
 		fprintf (perf->summary,
-			 " %#9.3f", _comac_time_to_s (stats.median_ticks));
+			 " %#9.3f",
+			 _comac_time_to_s (stats.median_ticks));
 
-		_comac_stats_compute (&stats, fill, i+1);
+		_comac_stats_compute (&stats, fill, i + 1);
 		fprintf (perf->summary,
-			 " %#9.3f", _comac_time_to_s (stats.median_ticks));
+			 " %#9.3f",
+			 _comac_time_to_s (stats.median_ticks));
 
-		_comac_stats_compute (&stats, stroke, i+1);
+		_comac_stats_compute (&stats, stroke, i + 1);
 		fprintf (perf->summary,
-			 " %#9.3f", _comac_time_to_s (stats.median_ticks));
+			 " %#9.3f",
+			 _comac_time_to_s (stats.median_ticks));
 
-		_comac_stats_compute (&stats, glyphs, i+1);
+		_comac_stats_compute (&stats, glyphs, i + 1);
 		fprintf (perf->summary,
-			 " %#9.3f", _comac_time_to_s (stats.median_ticks));
+			 " %#9.3f",
+			 _comac_time_to_s (stats.median_ticks));
 
-		fprintf (perf->summary,
-			 " %5d", i+1);
+		fprintf (perf->summary, " %5d", i + 1);
 	    } else {
 		fprintf (perf->summary,
 			 "%#8.3f %#8.3f %#6.2f%% %4d/%d",
 			 _comac_time_to_s (stats.min_ticks),
 			 _comac_time_to_s (stats.median_ticks),
 			 stats.std_dev * 100.0,
-			 stats.iterations, i+1);
+			 stats.iterations,
+			 i + 1);
 	    }
 	    fflush (perf->summary);
 	}
@@ -872,37 +909,43 @@ comac_perf_trace (comac_perf_t			   *perf,
 	}
 	if (perf->observe) {
 	    fprintf (perf->summary,
-		     " %#9.3f", _comac_time_to_s (stats.median_ticks));
+		     " %#9.3f",
+		     _comac_time_to_s (stats.median_ticks));
 
 	    _comac_stats_compute (&stats, paint, i);
 	    fprintf (perf->summary,
-		     " %#9.3f", _comac_time_to_s (stats.median_ticks));
+		     " %#9.3f",
+		     _comac_time_to_s (stats.median_ticks));
 
 	    _comac_stats_compute (&stats, mask, i);
 	    fprintf (perf->summary,
-		     " %#9.3f", _comac_time_to_s (stats.median_ticks));
+		     " %#9.3f",
+		     _comac_time_to_s (stats.median_ticks));
 
 	    _comac_stats_compute (&stats, fill, i);
 	    fprintf (perf->summary,
-		     " %#9.3f", _comac_time_to_s (stats.median_ticks));
+		     " %#9.3f",
+		     _comac_time_to_s (stats.median_ticks));
 
 	    _comac_stats_compute (&stats, stroke, i);
 	    fprintf (perf->summary,
-		     " %#9.3f", _comac_time_to_s (stats.median_ticks));
+		     " %#9.3f",
+		     _comac_time_to_s (stats.median_ticks));
 
 	    _comac_stats_compute (&stats, glyphs, i);
 	    fprintf (perf->summary,
-		     " %#9.3f", _comac_time_to_s (stats.median_ticks));
+		     " %#9.3f",
+		     _comac_time_to_s (stats.median_ticks));
 
-	    fprintf (perf->summary,
-		     " %5d\n", i);
+	    fprintf (perf->summary, " %5d\n", i);
 	} else {
 	    fprintf (perf->summary,
 		     "%#8.3f %#8.3f %#6.2f%% %4d/%d\n",
 		     _comac_time_to_s (stats.min_ticks),
 		     _comac_time_to_s (stats.median_ticks),
 		     stats.std_dev * 100.0,
-		     stats.iterations, i);
+		     stats.iterations,
+		     i);
 	}
 	fflush (perf->summary);
     }
@@ -918,22 +961,23 @@ out:
 }
 
 static void
-warn_no_traces (const char *message,
-		const char *trace_dir)
+warn_no_traces (const char *message, const char *trace_dir)
 {
     fprintf (stderr,
-"Error: %s '%s'.\n"
-"Have you cloned the comac-traces repository and uncompressed the traces?\n"
-"  git clone git://anongit.freedesktop.org/comac-traces\n"
-"  cd comac-traces && make\n"
-"Or set the env.var COMAC_TRACE_DIR to point to your traces?\n",
-	    message, trace_dir);
+	     "Error: %s '%s'.\n"
+	     "Have you cloned the comac-traces repository and uncompressed the "
+	     "traces?\n"
+	     "  git clone git://anongit.freedesktop.org/comac-traces\n"
+	     "  cd comac-traces && make\n"
+	     "Or set the env.var COMAC_TRACE_DIR to point to your traces?\n",
+	     message,
+	     trace_dir);
 }
 
 static int
-comac_perf_trace_dir (comac_perf_t		       *perf,
+comac_perf_trace_dir (comac_perf_t *perf,
 		      const comac_boilerplate_target_t *target,
-		      const char		       *dirname)
+		      const char *dirname)
 {
     DIR *dir;
     struct dirent *de;
@@ -960,7 +1004,7 @@ comac_perf_trace_dir (comac_perf_t		       *perf,
 	if (stat (trace, &st) != 0)
 	    goto next;
 
-	if (S_ISDIR(st.st_mode)) {
+	if (S_ISDIR (st.st_mode)) {
 	    num_traces += comac_perf_trace_dir (perf, target, trace);
 	} else {
 	    const char *dot;
@@ -972,14 +1016,13 @@ comac_perf_trace_dir (comac_perf_t		       *perf,
 		goto next;
 
 	    num_traces++;
-	    if (!force && ! comac_perf_can_run (perf, de->d_name, NULL))
+	    if (! force && ! comac_perf_can_run (perf, de->d_name, NULL))
 		goto next;
 
 	    comac_perf_trace (perf, target, trace);
 	}
-next:
+    next:
 	free (trace);
-
     }
     closedir (dir);
 
@@ -987,11 +1030,11 @@ next:
 }
 
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
     comac_perf_t perf;
-    const char *trace_dir = "comac-traces:/usr/src/comac-traces:/usr/share/comac-traces";
+    const char *trace_dir =
+	"comac-traces:/usr/src/comac-traces:/usr/share/comac-traces";
     unsigned int n;
     int i;
 
@@ -1038,8 +1081,8 @@ main (int   argc,
 		char buf[1024];
 		const char *end = strchr (dir, ':');
 		if (end != NULL) {
-		    memcpy (buf, dir, end-dir);
-		    buf[end-dir] = '\0';
+		    memcpy (buf, dir, end - dir);
+		    buf[end - dir] = '\0';
 		    end++;
 
 		    dir = buf;

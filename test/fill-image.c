@@ -27,7 +27,7 @@
 
 #define PAD 10
 #define SIZE 100
-#define IMAGE_SIZE (SIZE-PAD*2)
+#define IMAGE_SIZE (SIZE - PAD * 2)
 #define LINE_WIDTH 10
 
 static comac_test_status_t
@@ -39,8 +39,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_paint (cr);
 
-    image = comac_image_surface_create (COMAC_FORMAT_RGB24,
-	                                IMAGE_SIZE, IMAGE_SIZE);
+    image =
+	comac_image_surface_create (COMAC_FORMAT_RGB24, IMAGE_SIZE, IMAGE_SIZE);
     cr_image = comac_create (image);
     comac_surface_destroy (image);
 
@@ -50,10 +50,20 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_source_rgb (cr_image, 0, 1, 0);
     comac_new_sub_path (cr_image);
-    comac_arc (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH, 0, M_PI * 2.0);
+    comac_arc (cr_image,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2 - LINE_WIDTH,
+	       0,
+	       M_PI * 2.0);
     comac_close_path (cr_image);
     comac_new_sub_path (cr_image);
-    comac_arc_negative (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2, 0, -M_PI * 2.0);
+    comac_arc_negative (cr_image,
+			IMAGE_SIZE / 2,
+			IMAGE_SIZE / 2,
+			IMAGE_SIZE / 2,
+			0,
+			-M_PI * 2.0);
     comac_close_path (cr_image);
     comac_fill (cr_image);
 
@@ -64,10 +74,20 @@ draw (comac_t *cr, int width, int height)
     comac_destroy (cr_image);
 
     comac_new_sub_path (cr);
-    comac_arc (cr, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH, 0, M_PI * 2.0);
+    comac_arc (cr,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2 - LINE_WIDTH,
+	       0,
+	       M_PI * 2.0);
     comac_close_path (cr);
     comac_new_sub_path (cr);
-    comac_arc_negative (cr, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2, 0, -M_PI * 2.0);
+    comac_arc_negative (cr,
+			IMAGE_SIZE / 2,
+			IMAGE_SIZE / 2,
+			IMAGE_SIZE / 2,
+			0,
+			-M_PI * 2.0);
     comac_close_path (cr);
 
     comac_fill (cr);
@@ -78,6 +98,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (fill_image,
 	    "Test filling with an image source, with a non-identity CTM",
 	    "fill, image, transform", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,		      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

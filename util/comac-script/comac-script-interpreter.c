@@ -44,7 +44,7 @@
 #include <assert.h>
 
 #ifndef MAX
-#define MAX(a,b) (((a)>=(b))?(a):(b))
+#define MAX(a, b) (((a) >= (b)) ? (a) : (b))
 #endif
 
 csi_status_t
@@ -93,7 +93,7 @@ _csi_perm_alloc (csi_t *ctx, int size)
     csi_chunk_t *chunk;
     void *ptr;
 
-    size = (size + sizeof (void *)-1) & -sizeof (void *);
+    size = (size + sizeof (void *) - 1) & -sizeof (void *);
 
     chunk = ctx->perm_chunk;
     if (chunk == NULL || chunk->rem < size) {
@@ -140,7 +140,7 @@ _csi_slab_alloc (csi_t *ctx, int size)
 
 	chunk = _csi_alloc (ctx,
 			    sizeof (csi_chunk_t) +
-			    cnt * chunk_size * 2 * sizeof (void *));
+				cnt * chunk_size * 2 * sizeof (void *));
 	if (_csi_unlikely (chunk == NULL))
 	    return NULL;
 
@@ -180,8 +180,7 @@ _csi_slab_free (csi_t *ctx, void *ptr, int size)
 }
 
 csi_status_t
-_csi_stack_push (csi_t *ctx, csi_stack_t *stack,
-		 const csi_object_t *obj)
+_csi_stack_push (csi_t *ctx, csi_stack_t *stack, const csi_object_t *obj)
 {
     if (_csi_unlikely (stack->len == stack->size))
 	return _csi_stack_push_internal (ctx, stack, obj);
@@ -318,8 +317,8 @@ _init_dictionaries (csi_t *ctx)
 
 	if (! csi_dictionary_has (opcodes, (csi_name_t) odef->op)) {
 	    csi_integer_new (&obj, n);
-	    status = csi_dictionary_put (ctx,
-		                         opcodes, (csi_name_t) odef->op, &obj);
+	    status =
+		csi_dictionary_put (ctx, opcodes, (csi_name_t) odef->op, &obj);
 	    if (_csi_unlikely (status))
 		return status;
 
@@ -343,7 +342,6 @@ _init_dictionaries (csi_t *ctx)
 
     /* and seal */
     //dict.type &= ~CSI_OBJECT_ATTR_WRITABLE;
-
 
     /* globaldict */
     status = csi_dictionary_new (ctx, &obj);
@@ -445,10 +443,11 @@ _csi_finish (csi_t *ctx)
 csi_status_t
 _csi_name_define (csi_t *ctx, csi_name_t name, csi_object_t *obj)
 {
-    return csi_dictionary_put (ctx,
-			ctx->dstack.objects[ctx->dstack.len-1].datum.dictionary,
-			name,
-			obj);
+    return csi_dictionary_put (
+	ctx,
+	ctx->dstack.objects[ctx->dstack.len - 1].datum.dictionary,
+	name,
+	obj);
 }
 
 csi_status_t
@@ -456,7 +455,7 @@ _csi_name_lookup (csi_t *ctx, csi_name_t name, csi_object_t *obj)
 {
     int i;
 
-    for (i = ctx->dstack.len; i--; ) {
+    for (i = ctx->dstack.len; i--;) {
 	csi_dictionary_t *dict;
 	csi_dictionary_entry_t *entry;
 
@@ -477,10 +476,9 @@ _csi_name_undefine (csi_t *ctx, csi_name_t name)
 {
     unsigned int i;
 
-    for (i = ctx->dstack.len; --i; ) {
+    for (i = ctx->dstack.len; --i;) {
 	if (csi_dictionary_has (ctx->dstack.objects[i].datum.dictionary,
-				name))
-	{
+				name)) {
 	    csi_dictionary_remove (ctx,
 				   ctx->dstack.objects[i].datum.dictionary,
 				   name);
@@ -504,8 +502,7 @@ _csi_intern_string (csi_t *ctx, const char **str_inout, int len)
 
     istring = _csi_hash_table_lookup (&ctx->strings, &tmpl.hash_entry);
     if (istring == NULL) {
-	istring = _csi_perm_alloc (ctx,
-				   sizeof (csi_intern_string_t) + len + 1);
+	istring = _csi_perm_alloc (ctx, sizeof (csi_intern_string_t) + len + 1);
 	if (istring != NULL) {
 	    istring->hash_entry.hash = tmpl.hash_entry.hash;
 	    istring->len = tmpl.len;
@@ -513,8 +510,8 @@ _csi_intern_string (csi_t *ctx, const char **str_inout, int len)
 	    memcpy (istring->string, str, len);
 	    istring->string[len] = '\0';
 
-	    status = _csi_hash_table_insert (&ctx->strings,
-					     &istring->hash_entry);
+	    status =
+		_csi_hash_table_insert (&ctx->strings, &istring->hash_entry);
 	    if (_csi_unlikely (status)) {
 		_csi_free (ctx, istring);
 		return status;
@@ -529,7 +526,7 @@ _csi_intern_string (csi_t *ctx, const char **str_inout, int len)
 
 /* Public */
 
-static csi_t _csi_nil = { -1, CSI_STATUS_NO_MEMORY };
+static csi_t _csi_nil = {-1, CSI_STATUS_NO_MEMORY};
 
 csi_t *
 comac_script_interpreter_create (void)
@@ -546,8 +543,7 @@ comac_script_interpreter_create (void)
 }
 
 void
-comac_script_interpreter_install_hooks (csi_t *ctx,
-					const csi_hooks_t *hooks)
+comac_script_interpreter_install_hooks (csi_t *ctx, const csi_hooks_t *hooks)
 {
     if (ctx->status)
 	return;
@@ -686,7 +682,7 @@ comac_script_interpreter_destroy (csi_t *ctx)
 
 comac_status_t
 comac_script_interpreter_translate_stream (FILE *stream,
-	                                   comac_write_func_t write_func,
+					   comac_write_func_t write_func,
 					   void *closure)
 {
     csi_t ctx;

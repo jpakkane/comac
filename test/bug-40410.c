@@ -26,8 +26,8 @@
 
 #include "comac-test.h"
 
-#define WIDTH	300
-#define HEIGHT	100
+#define WIDTH 300
+#define HEIGHT 100
 
 /*
  * The bug appears to be triggered if:
@@ -43,7 +43,7 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
     comac_move_to (cr, 10.3, 10.6);
@@ -66,7 +66,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (bug_40410,
 	    "Exercises a bug found in 1.10.2 (and never again!)",
-	    "fill", /* keywords */
+	    "fill",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

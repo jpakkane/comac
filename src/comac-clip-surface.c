@@ -52,7 +52,8 @@
 comac_status_t
 _comac_clip_combine_with_surface (const comac_clip_t *clip,
 				  comac_surface_t *dst,
-				  int dst_x, int dst_y)
+				  int dst_x,
+				  int dst_y)
 {
     comac_clip_path_t *copy_path;
     comac_clip_path_t *clip_path;
@@ -121,7 +122,8 @@ _comac_path_fixed_add_box (comac_path_fixed_t *path,
 comac_surface_t *
 _comac_clip_get_surface (const comac_clip_t *clip,
 			 comac_surface_t *target,
-			 int *tx, int *ty)
+			 int *tx,
+			 int *ty)
 {
     comac_surface_t *surface;
     comac_status_t status;
@@ -142,10 +144,13 @@ _comac_clip_get_surface (const comac_clip_t *clip,
 
 	_comac_path_fixed_init (&path);
 	status = COMAC_STATUS_SUCCESS;
-	for (i = 0; status == COMAC_STATUS_SUCCESS && i < clip->num_boxes; i++) {
-	    status = _comac_path_fixed_add_box (&path, &clip->boxes[i],
-						-_comac_fixed_from_int (clip->extents.x),
-						-_comac_fixed_from_int (clip->extents.y));
+	for (i = 0; status == COMAC_STATUS_SUCCESS && i < clip->num_boxes;
+	     i++) {
+	    status = _comac_path_fixed_add_box (
+		&path,
+		&clip->boxes[i],
+		-_comac_fixed_from_int (clip->extents.x),
+		-_comac_fixed_from_int (clip->extents.y));
 	}
 	if (status == COMAC_STATUS_SUCCESS)
 	    status = _comac_surface_fill (surface,
@@ -225,11 +230,15 @@ _comac_clip_get_image (const comac_clip_t *clip,
     if (unlikely (surface->status))
 	return surface;
 
-    status = _comac_surface_paint (surface, COMAC_OPERATOR_SOURCE,
-				   &_comac_pattern_white.base, NULL);
+    status = _comac_surface_paint (surface,
+				   COMAC_OPERATOR_SOURCE,
+				   &_comac_pattern_white.base,
+				   NULL);
     if (likely (status == COMAC_STATUS_SUCCESS))
-	status = _comac_clip_combine_with_surface (clip, surface,
-						   extents->x, extents->y);
+	status = _comac_clip_combine_with_surface (clip,
+						   surface,
+						   extents->x,
+						   extents->y);
 
     if (unlikely (status)) {
 	comac_surface_destroy (surface);

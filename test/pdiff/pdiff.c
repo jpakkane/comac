@@ -22,33 +22,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if   HAVE_STDINT_H
-# include <stdint.h>
+#if HAVE_STDINT_H
+#include <stdint.h>
 #elif HAVE_INTTYPES_H
-# include <inttypes.h>
+#include <inttypes.h>
 #elif HAVE_SYS_INT_TYPES_H
-# include <sys/int_types.h>
+#include <sys/int_types.h>
 #elif defined(_MSC_VER)
-  typedef __int8 int8_t;
-  typedef unsigned __int8 uint8_t;
-  typedef __int16 int16_t;
-  typedef unsigned __int16 uint16_t;
-  typedef __int32 int32_t;
-  typedef unsigned __int32 uint32_t;
-  typedef __int64 int64_t;
-  typedef unsigned __int64 uint64_t;
-# ifndef HAVE_UINT64_T
-#  define HAVE_UINT64_T 1
-# endif
-# ifndef INT16_MIN
-#  define INT16_MIN	(-32767-1)
-# endif
-# ifndef INT16_MAX
-#  define INT16_MAX	(32767)
-# endif
-# ifndef UINT16_MAX
-#  define UINT16_MAX	(65535)
-# endif
+typedef __int8 int8_t;
+typedef unsigned __int8 uint8_t;
+typedef __int16 int16_t;
+typedef unsigned __int16 uint16_t;
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#ifndef HAVE_UINT64_T
+#define HAVE_UINT64_T 1
+#endif
+#ifndef INT16_MIN
+#define INT16_MIN (-32767 - 1)
+#endif
+#ifndef INT16_MAX
+#define INT16_MAX (32767)
+#endif
+#ifndef UINT16_MAX
+#define UINT16_MAX (65535)
+#endif
 #else
 #error Cannot find definitions for fixed-width integral types (uint8_t, uint32_t, etc.)
 #endif
@@ -60,11 +60,11 @@
 #endif
 
 #ifndef __USE_ISOC99
-#define expf	exp
-#define powf	pow
-#define fabsf	fabs
-#define sqrtf	sqrt
-#define log10f	log10
+#define expf exp
+#define powf pow
+#define fabsf fabs
+#define sqrtf sqrt
+#define log10f log10
 #endif
 
 /*
@@ -80,21 +80,21 @@ tvi (float adaptation_luminance)
        units are candelas per meter squared
     */
     float log_a, r, result;
-    log_a = log10f(adaptation_luminance);
+    log_a = log10f (adaptation_luminance);
 
     if (log_a < -3.94f) {
 	r = -2.86f;
     } else if (log_a < -1.44f) {
-	r = powf(0.405f * log_a + 1.6f , 2.18f) - 2.86f;
+	r = powf (0.405f * log_a + 1.6f, 2.18f) - 2.86f;
     } else if (log_a < -0.0184f) {
 	r = log_a - 0.395f;
     } else if (log_a < 1.9f) {
-	r = powf(0.249f * log_a + 0.65f, 2.7f) - 0.72f;
+	r = powf (0.249f * log_a + 0.65f, 2.7f) - 0.72f;
     } else {
 	r = log_a - 1.255f;
     }
 
-    result = powf(10.0f , r);
+    result = powf (10.0f, r);
 
     return result;
 }
@@ -107,10 +107,10 @@ csf (float cpd, float lum)
 {
     float a, b, result;
 
-    a = 440.0f * powf((1.0f + 0.7f / lum), -0.2f);
-    b = 0.3f * powf((1.0f + 100.0f / lum), 0.15f);
+    a = 440.0f * powf ((1.0f + 0.7f / lum), -0.2f);
+    b = 0.3f * powf ((1.0f + 100.0f / lum), 0.15f);
 
-    result = a * cpd * expf(-b * cpd) * sqrtf(1.0f + 0.06f * expf(b * cpd));
+    result = a * cpd * expf (-b * cpd) * sqrtf (1.0f + 0.06f * expf (b * cpd));
 
     return result;
 }
@@ -123,9 +123,9 @@ static float
 mask (float contrast)
 {
     float a, b, result;
-    a = powf(392.498f * contrast,  0.7f);
-    b = powf(0.0153f * a, 4.0f);
-    result = powf(1.0f + b, 0.25f);
+    a = powf (392.498f * contrast, 0.7f);
+    b = powf (0.0153f * a, 4.0f);
+    result = powf (1.0f + b, 0.25f);
 
     return result;
 }
@@ -146,7 +146,7 @@ XYZToLAB (float x, float y, float z, float *L, float *A, float *B)
     static float xw = -1;
     static float yw;
     static float zw;
-    const float epsilon  = 216.0f / 24389.0f;
+    const float epsilon = 216.0f / 24389.0f;
     const float kappa = 24389.0f / 27.0f;
     float f[3];
     float r[3];
@@ -154,14 +154,14 @@ XYZToLAB (float x, float y, float z, float *L, float *A, float *B)
 
     /* reference white */
     if (xw < 0) {
-	AdobeRGBToXYZ(1, 1, 1, &xw, &yw, &zw);
+	AdobeRGBToXYZ (1, 1, 1, &xw, &yw, &zw);
     }
     r[0] = x / xw;
     r[1] = y / yw;
     r[2] = z / zw;
     for (i = 0; i < 3; i++) {
 	if (r[i] > epsilon) {
-	    f[i] = powf(r[i], 1.0f / 3.0f);
+	    f[i] = powf (r[i], 1.0f / 3.0f);
 	} else {
 	    f[i] = (kappa * r[i] + 16.0f) / 116.0f;
 	}
@@ -243,8 +243,8 @@ pdiff_compare (comac_surface_t *surface_a,
 	       double luminance,
 	       double field_of_view)
 {
-    unsigned int dim = (comac_image_surface_get_width (surface_a)
-			* comac_image_surface_get_height (surface_a));
+    unsigned int dim = (comac_image_surface_get_width (surface_a) *
+			comac_image_surface_get_height (surface_a));
     unsigned int i;
 
     /* assuming colorspaces are in Adobe RGB (1998) convert to XYZ */
@@ -307,18 +307,18 @@ pdiff_compare (comac_surface_t *surface_a,
 	for (x = 0; x < w; x++) {
 	    float r, g, b, l;
 	    i = x + y * w;
-	    r = powf(_get_red (data_a, i, format_a) / 255.0f, gamma);
-	    g = powf(_get_green (data_a, i, format_a) / 255.0f, gamma);
-	    b = powf(_get_blue (data_a, i, format_a) / 255.0f, gamma);
+	    r = powf (_get_red (data_a, i, format_a) / 255.0f, gamma);
+	    g = powf (_get_green (data_a, i, format_a) / 255.0f, gamma);
+	    b = powf (_get_blue (data_a, i, format_a) / 255.0f, gamma);
 
-	    AdobeRGBToXYZ(r,g,b,&aX[i],&aY[i],&aZ[i]);
-	    XYZToLAB(aX[i], aY[i], aZ[i], &l, &aA[i], &aB[i]);
-	    r = powf(_get_red (data_b, i, format_b) / 255.0f, gamma);
-	    g = powf(_get_green (data_b, i, format_b) / 255.0f, gamma);
-	    b = powf(_get_blue (data_b, i, format_b) / 255.0f, gamma);
+	    AdobeRGBToXYZ (r, g, b, &aX[i], &aY[i], &aZ[i]);
+	    XYZToLAB (aX[i], aY[i], aZ[i], &l, &aA[i], &aB[i]);
+	    r = powf (_get_red (data_b, i, format_b) / 255.0f, gamma);
+	    g = powf (_get_green (data_b, i, format_b) / 255.0f, gamma);
+	    b = powf (_get_blue (data_b, i, format_b) / 255.0f, gamma);
 
-	    AdobeRGBToXYZ(r,g,b,&bX[i],&bY[i],&bZ[i]);
-	    XYZToLAB(bX[i], bY[i], bZ[i], &l, &bA[i], &bB[i]);
+	    AdobeRGBToXYZ (r, g, b, &bX[i], &bY[i], &bZ[i]);
+	    XYZToLAB (bX[i], bY[i], bZ[i], &l, &bA[i], &bB[i]);
 	    aLum[i] = aY[i] * luminance;
 	    bLum[i] = bY[i] * luminance;
 	}
@@ -327,22 +327,26 @@ pdiff_compare (comac_surface_t *surface_a,
     la = lpyramid_create (aLum, w, h);
     lb = lpyramid_create (bLum, w, h);
 
-    num_one_degree_pixels = (float) (2 * tan(field_of_view * 0.5 * M_PI / 180) * 180 / M_PI);
+    num_one_degree_pixels =
+	(float) (2 * tan (field_of_view * 0.5 * M_PI / 180) * 180 / M_PI);
     pixels_per_degree = w / num_one_degree_pixels;
 
     num_pixels = 1;
     adaptation_level = 0;
     for (i = 0; i < MAX_PYR_LEVELS; i++) {
 	adaptation_level = i;
-	if (num_pixels > num_one_degree_pixels) break;
+	if (num_pixels > num_one_degree_pixels)
+	    break;
 	num_pixels *= 2;
     }
 
     cpd[0] = 0.5f * pixels_per_degree;
-    for (i = 1; i < MAX_PYR_LEVELS; i++) cpd[i] = 0.5f * cpd[i - 1];
-    csf_max = csf(3.248f, 100.0f);
+    for (i = 1; i < MAX_PYR_LEVELS; i++)
+	cpd[i] = 0.5f * cpd[i - 1];
+    csf_max = csf (3.248f, 100.0f);
 
-    for (i = 0; i < MAX_PYR_LEVELS - 2; i++) F_freq[i] = csf_max / csf( cpd[i], 100.0f);
+    for (i = 0; i < MAX_PYR_LEVELS - 2; i++)
+	F_freq[i] = csf_max / csf (cpd[i], 100.0f);
 
     pixels_failed = 0;
     for (y = 0; y < h; y++) {
@@ -356,33 +360,42 @@ pdiff_compare (comac_surface_t *surface_a,
 	    bool pass;
 	    float sum_contrast = 0;
 	    for (i = 0; i < MAX_PYR_LEVELS - 2; i++) {
-		float n1 = fabsf(lpyramid_get_value (la,x,y,i) - lpyramid_get_value (la,x,y,i + 1));
-		float n2 = fabsf(lpyramid_get_value (lb,x,y,i) - lpyramid_get_value (lb,x,y,i + 1));
+		float n1 = fabsf (lpyramid_get_value (la, x, y, i) -
+				  lpyramid_get_value (la, x, y, i + 1));
+		float n2 = fabsf (lpyramid_get_value (lb, x, y, i) -
+				  lpyramid_get_value (lb, x, y, i + 1));
 		float numerator = (n1 > n2) ? n1 : n2;
-		float d1 = fabsf(lpyramid_get_value(la,x,y,i+2));
-		float d2 = fabsf(lpyramid_get_value(lb,x,y,i+2));
+		float d1 = fabsf (lpyramid_get_value (la, x, y, i + 2));
+		float d2 = fabsf (lpyramid_get_value (lb, x, y, i + 2));
 		float denominator = (d1 > d2) ? d1 : d2;
-		if (denominator < 1e-5f) denominator = 1e-5f;
+		if (denominator < 1e-5f)
+		    denominator = 1e-5f;
 		contrast[i] = numerator / denominator;
 		sum_contrast += contrast[i];
 	    }
-	    if (sum_contrast < 1e-5) sum_contrast = 1e-5f;
-	    adapt = lpyramid_get_value(la,x,y,adaptation_level) + lpyramid_get_value(lb,x,y,adaptation_level);
+	    if (sum_contrast < 1e-5)
+		sum_contrast = 1e-5f;
+	    adapt = lpyramid_get_value (la, x, y, adaptation_level) +
+		    lpyramid_get_value (lb, x, y, adaptation_level);
 	    adapt *= 0.5f;
-	    if (adapt < 1e-5) adapt = 1e-5f;
+	    if (adapt < 1e-5)
+		adapt = 1e-5f;
 	    for (i = 0; i < MAX_PYR_LEVELS - 2; i++) {
-		F_mask[i] = mask(contrast[i] * csf(cpd[i], adapt));
+		F_mask[i] = mask (contrast[i] * csf (cpd[i], adapt));
 	    }
 	    factor = 0;
 	    for (i = 0; i < MAX_PYR_LEVELS - 2; i++) {
 		factor += contrast[i] * F_freq[i] * F_mask[i] / sum_contrast;
 	    }
-	    if (factor < 1) factor = 1;
-	    if (factor > 10) factor = 10;
-	    delta = fabsf(lpyramid_get_value(la,x,y,0) - lpyramid_get_value(lb,x,y,0));
+	    if (factor < 1)
+		factor = 1;
+	    if (factor > 10)
+		factor = 10;
+	    delta = fabsf (lpyramid_get_value (la, x, y, 0) -
+			   lpyramid_get_value (lb, x, y, 0));
 	    pass = true;
 	    /* pure luminance test */
-	    if (delta > factor * tvi(adapt)) {
+	    if (delta > factor * tvi (adapt)) {
 		pass = false;
 	    } else {
 		/* CIE delta E test with modifications */
@@ -402,7 +415,7 @@ pdiff_compare (comac_surface_t *surface_a,
 		    pass = false;
 		}
 	    }
-	    if (!pass)
+	    if (! pass)
 		pixels_failed++;
 	}
     }

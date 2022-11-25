@@ -47,7 +47,7 @@ draw (comac_t *cr, int width, int height)
     comac_save (cr);
     comac_rectangle (cr, 0, 0, 20, 20);
     comac_clip (cr);
-    comac_arc (cr, 10, 10, 8, 0, 2*M_PI);
+    comac_arc (cr, 10, 10, 8, 0, 2 * M_PI);
     comac_fill (cr);
     comac_restore (cr);
 
@@ -57,8 +57,8 @@ draw (comac_t *cr, int width, int height)
     comac_clip (cr);
     comac_text_extents (cr, "Comac", &extents);
     comac_move_to (cr,
-	           10 - (extents.width/2. + extents.x_bearing),
-	           10 - (extents.height/2. + extents.y_bearing));
+		   10 - (extents.width / 2. + extents.x_bearing),
+		   10 - (extents.height / 2. + extents.y_bearing));
     comac_text_path (cr, "Comac");
     comac_fill (cr);
     comac_restore (cr);
@@ -80,7 +80,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clear,
 	    "Test masked clears",
 	    "paint, clear", /* keywords */
-	    NULL, /* requirements */
-	    44, 44,
-	    NULL, draw)
-
+	    NULL,	    /* requirements */
+	    44,
+	    44,
+	    NULL,
+	    draw)

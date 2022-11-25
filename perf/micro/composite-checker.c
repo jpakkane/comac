@@ -41,17 +41,14 @@
  * Comac is (at the time of writing) about 2-3 times as slow as
  * gdk-pixbuf.
  */
-#define PAT_SIZE    16
-#define SRC_SIZE    64
+#define PAT_SIZE 16
+#define SRC_SIZE 64
 
 static comac_pattern_t *checkerboard = NULL;
 static comac_pattern_t *src_pattern = NULL;
 
 static comac_time_t
-do_composite_checker (comac_t *cr,
-                      int      width,
-                      int      height,
-		      int loops)
+do_composite_checker (comac_t *cr, int width, int height, int loops)
 {
     /* Compute zoom so that the src_pattern covers the whole output image. */
     double xscale = width / (double) SRC_SIZE;
@@ -82,19 +79,15 @@ composite_checker_enabled (comac_perf_t *perf)
 }
 
 void
-composite_checker (comac_perf_t *perf,
-                   comac_t      *cr,
-                   int           width,
-                   int           height)
+composite_checker (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     comac_surface_t *image;
 
     /* Create the checker pattern. We don't actually need to draw
      * anything on it since that wouldn't affect performance.
      */
-    image = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-                                        PAT_SIZE,
-                                        PAT_SIZE);
+    image =
+	comac_image_surface_create (COMAC_FORMAT_ARGB32, PAT_SIZE, PAT_SIZE);
     checkerboard = comac_pattern_create_for_surface (image);
     comac_pattern_set_filter (checkerboard, COMAC_FILTER_NEAREST);
     comac_pattern_set_extend (checkerboard, COMAC_EXTEND_REPEAT);
@@ -103,9 +96,8 @@ composite_checker (comac_perf_t *perf,
     /* Create the image source pattern. Again we use the NEAREST
      * filtering which should be fastest.
     */
-    image = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-                                        SRC_SIZE,
-                                        SRC_SIZE);
+    image =
+	comac_image_surface_create (COMAC_FORMAT_ARGB32, SRC_SIZE, SRC_SIZE);
     src_pattern = comac_pattern_create_for_surface (image);
     comac_pattern_set_filter (src_pattern, COMAC_FILTER_NEAREST);
     comac_surface_destroy (image);

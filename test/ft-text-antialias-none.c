@@ -29,13 +29,12 @@
 #include "comac-test.h"
 #include <comac-ft.h>
 
-#define WIDTH  40
+#define WIDTH 40
 #define HEIGHT 30
 #define TEXT_SIZE 12
 
 static comac_status_t
-create_scaled_font (comac_t * cr,
-		    comac_scaled_font_t **out)
+create_scaled_font (comac_t *cr, comac_scaled_font_t **out)
 {
     FcPattern *pattern, *resolved;
     FcResult result;
@@ -54,7 +53,9 @@ create_scaled_font (comac_t * cr,
     if (pattern == NULL)
 	return COMAC_STATUS_NO_MEMORY;
 
-    FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) COMAC_TEST_FONT_FAMILY " Sans");
+    FcPatternAddString (pattern,
+			FC_FAMILY,
+			(FcChar8 *) COMAC_TEST_FONT_FAMILY " Sans");
     FcPatternAddDouble (pattern, FC_SIZE, TEXT_SIZE);
     FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
@@ -80,10 +81,8 @@ create_scaled_font (comac_t * cr,
 
     comac_get_matrix (cr, &ctm);
 
-    scaled_font = comac_scaled_font_create (font_face,
-					    &font_matrix,
-					    &ctm,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &font_matrix, &ctm, font_options);
 
     comac_font_options_destroy (font_options);
     comac_font_face_destroy (font_face);
@@ -140,7 +139,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (ft_text_antialias_none,
 	    "Tests text rendering with no antialiasing",
-	    "ft, text", /* keywords */
+	    "ft, text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

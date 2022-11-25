@@ -90,6 +90,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_image,
 	    "Tests painting an image through complex clips.",
 	    "clip, paint", /* keywords */
-	    NULL, /* requirements */
-	    2 * WIDTH, 2 * HEIGHT,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    2 * WIDTH,
+	    2 * HEIGHT,
+	    NULL,
+	    draw)

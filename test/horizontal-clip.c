@@ -42,36 +42,39 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
     comac_set_source_rgb (cr, 0, 0, 0);
 
-    comac_move_to (cr,       - BUGX, 6 - BUGY);
-    comac_line_to (cr,       + BUGX, 6 + BUGY);
+    comac_move_to (cr, -BUGX, 6 - BUGY);
+    comac_line_to (cr, +BUGX, 6 + BUGY);
     comac_line_to (cr, WIDTH + BUGX, 2 - BUGY);
     comac_line_to (cr, WIDTH - BUGX, 2 + BUGY);
     comac_fill (cr);
 
-    comac_move_to (cr, WIDTH + BUGX, 8  - BUGY);
-    comac_line_to (cr, WIDTH - BUGX, 8  + BUGY);
-    comac_line_to (cr,       - BUGX, 12 - BUGY);
-    comac_line_to (cr,       + BUGX, 12 + BUGY);
+    comac_move_to (cr, WIDTH + BUGX, 8 - BUGY);
+    comac_line_to (cr, WIDTH - BUGX, 8 + BUGY);
+    comac_line_to (cr, -BUGX, 12 - BUGY);
+    comac_line_to (cr, +BUGX, 12 + BUGY);
     comac_fill (cr);
 
-    comac_move_to (cr,       - BUGX, 14 - BUGY);
-    comac_line_to (cr,       + BUGX, 14 + BUGY);
+    comac_move_to (cr, -BUGX, 14 - BUGY);
+    comac_line_to (cr, +BUGX, 14 + BUGY);
     comac_line_to (cr, WIDTH + BUGX, 18 - BUGY);
     comac_line_to (cr, WIDTH - BUGX, 18 + BUGY);
     comac_fill (cr);
 
     comac_move_to (cr, WIDTH + BUGX, 24 - BUGY);
     comac_line_to (cr, WIDTH - BUGX, 24 + BUGY);
-    comac_line_to (cr,       - BUGX, 20 - BUGY);
-    comac_line_to (cr,       + BUGX, 20 + BUGY);
+    comac_line_to (cr, -BUGX, 20 - BUGY);
+    comac_line_to (cr, +BUGX, 20 + BUGY);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (horizontal_clip,
-	    "Tests intersection of a nearly horizontal lines with a clipped polygon",
-	    "clip, fill", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    horizontal_clip,
+    "Tests intersection of a nearly horizontal lines with a clipped polygon",
+    "clip, fill", /* keywords */
+    NULL,	  /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

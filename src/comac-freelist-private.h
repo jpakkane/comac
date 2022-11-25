@@ -64,7 +64,6 @@ _comac_freelist_calloc (comac_freelist_t *freelist);
 comac_private void
 _comac_freelist_free (comac_freelist_t *freelist, void *node);
 
-
 comac_private void
 _comac_freepool_init (comac_freepool_t *freepool, unsigned nodesize);
 

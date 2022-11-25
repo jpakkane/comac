@@ -54,16 +54,16 @@ struct _comac_tristrip {
     int num_points;
     int size_points;
     comac_point_t *points;
-    comac_point_t  points_embedded[64];
+    comac_point_t points_embedded[64];
 };
 
 comac_private void
 _comac_tristrip_init (comac_tristrip_t *strip);
 
 comac_private void
-_comac_tristrip_limit (comac_tristrip_t	*strip,
-		       const comac_box_t	*limits,
-		       int			 num_limits);
+_comac_tristrip_limit (comac_tristrip_t *strip,
+		       const comac_box_t *limits,
+		       int num_limits);
 
 comac_private void
 _comac_tristrip_init_with_clip (comac_tristrip_t *strip,
@@ -73,16 +73,13 @@ comac_private void
 _comac_tristrip_translate (comac_tristrip_t *strip, int x, int y);
 
 comac_private void
-_comac_tristrip_move_to (comac_tristrip_t *strip,
-			 const comac_point_t *point);
+_comac_tristrip_move_to (comac_tristrip_t *strip, const comac_point_t *point);
 
 comac_private void
-_comac_tristrip_add_point (comac_tristrip_t *strip,
-			   const comac_point_t *point);
+_comac_tristrip_add_point (comac_tristrip_t *strip, const comac_point_t *point);
 
 comac_private void
-_comac_tristrip_extents (const comac_tristrip_t *strip,
-			 comac_box_t         *extents);
+_comac_tristrip_extents (const comac_tristrip_t *strip, comac_box_t *extents);
 
 comac_private void
 _comac_tristrip_fini (comac_tristrip_t *strip);

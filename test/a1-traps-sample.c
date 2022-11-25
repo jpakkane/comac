@@ -26,11 +26,11 @@
 
 #include "comac-test.h"
 
-#define POINTS	10
-#define STEP	(1.0 / POINTS)
-#define PAD	1
-#define WIDTH	(PAD + POINTS * 2 + PAD)
-#define HEIGHT	(WIDTH)
+#define POINTS 10
+#define STEP (1.0 / POINTS)
+#define PAD 1
+#define WIDTH (PAD + POINTS * 2 + PAD)
+#define HEIGHT (WIDTH)
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -58,7 +58,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (a1_traps_sample,
 	    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
-	    "alpha, traps", /* keywords */
+	    "alpha, traps",  /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

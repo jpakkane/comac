@@ -25,9 +25,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 10.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
@@ -120,31 +120,35 @@ draw_05 (comac_t *cr, int width, int height)
 COMAC_TEST (caps_joins,
 	    "Test caps and joins",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
+	    NULL,     /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    2 * (PAD + SIZE) + PAD,
-	    NULL, draw_10)
+	    NULL,
+	    draw_10)
 
 COMAC_TEST (caps_joins_2,
 	    "Test caps and joins with default line width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
+	    NULL,     /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    2 * (PAD + SIZE) + PAD,
-	    NULL, draw_2)
+	    NULL,
+	    draw_2)
 
 COMAC_TEST (caps_joins_1,
 	    "Test caps and joins with hairlines",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
+	    NULL,     /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    2 * (PAD + SIZE) + PAD,
-	    NULL, draw_1)
+	    NULL,
+	    draw_1)
 
 COMAC_TEST (caps_joins_05,
 	    "Test caps and joins with fine lines",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
+	    NULL,     /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    2 * (PAD + SIZE) + PAD,
-	    NULL, draw_05)
+	    NULL,
+	    draw_05)

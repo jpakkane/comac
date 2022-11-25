@@ -43,15 +43,14 @@
 
 #define DEBUG_POLYGON 0
 
-#if DEBUG_POLYGON && !NDEBUG
+#if DEBUG_POLYGON && ! NDEBUG
 static void
-assert_last_edge_is_valid(comac_polygon_t *polygon,
-			  const comac_box_t *limit)
+assert_last_edge_is_valid (comac_polygon_t *polygon, const comac_box_t *limit)
 {
     comac_edge_t *edge;
     comac_fixed_t x;
 
-    edge = &polygon->edges[polygon->num_edges-1];
+    edge = &polygon->edges[polygon->num_edges - 1];
 
     assert (edge->bottom > edge->top);
     assert (edge->top >= limit->p1.y);
@@ -81,8 +80,8 @@ _comac_polygon_add_edge (comac_polygon_t *polygon,
 
 void
 _comac_polygon_limit (comac_polygon_t *polygon,
-		     const comac_box_t *limits,
-		     int num_limits)
+		      const comac_box_t *limits,
+		      int num_limits)
 {
     int n;
 
@@ -148,8 +147,7 @@ _comac_polygon_init_with_clip (comac_polygon_t *polygon,
 }
 
 comac_status_t
-_comac_polygon_init_boxes (comac_polygon_t *polygon,
-			   const comac_boxes_t *boxes)
+_comac_polygon_init_boxes (comac_polygon_t *polygon, const comac_boxes_t *boxes)
 {
     const struct _comac_boxes_chunk *chunk;
     int i;
@@ -162,10 +160,10 @@ _comac_polygon_init_boxes (comac_polygon_t *polygon,
 
     polygon->edges = polygon->edges_embedded;
     polygon->edges_size = ARRAY_LENGTH (polygon->edges_embedded);
-    if (boxes->num_boxes > ARRAY_LENGTH (polygon->edges_embedded)/2) {
+    if (boxes->num_boxes > ARRAY_LENGTH (polygon->edges_embedded) / 2) {
 	polygon->edges_size = 2 * boxes->num_boxes;
-	polygon->edges = _comac_malloc_ab (polygon->edges_size,
-					   2*sizeof(comac_edge_t));
+	polygon->edges =
+	    _comac_malloc_ab (polygon->edges_size, 2 * sizeof (comac_edge_t));
 	if (unlikely (polygon->edges == NULL))
 	    return polygon->status = _comac_error (COMAC_STATUS_NO_MEMORY);
     }
@@ -210,10 +208,10 @@ _comac_polygon_init_box_array (comac_polygon_t *polygon,
 
     polygon->edges = polygon->edges_embedded;
     polygon->edges_size = ARRAY_LENGTH (polygon->edges_embedded);
-    if (num_boxes > ARRAY_LENGTH (polygon->edges_embedded)/2) {
+    if (num_boxes > ARRAY_LENGTH (polygon->edges_embedded) / 2) {
 	polygon->edges_size = 2 * num_boxes;
-	polygon->edges = _comac_malloc_ab (polygon->edges_size,
-					   2*sizeof(comac_edge_t));
+	polygon->edges =
+	    _comac_malloc_ab (polygon->edges_size, 2 * sizeof (comac_edge_t));
 	if (unlikely (polygon->edges == NULL))
 	    return polygon->status = _comac_error (COMAC_STATUS_NO_MEMORY);
     }
@@ -241,7 +239,6 @@ _comac_polygon_init_box_array (comac_polygon_t *polygon,
     return polygon->status;
 }
 
-
 void
 _comac_polygon_fini (comac_polygon_t *polygon)
 {
@@ -267,10 +264,12 @@ _comac_polygon_grow (comac_polygon_t *polygon)
     if (polygon->edges == polygon->edges_embedded) {
 	new_edges = _comac_malloc_ab (new_size, sizeof (comac_edge_t));
 	if (new_edges != NULL)
-	    memcpy (new_edges, polygon->edges, old_size * sizeof (comac_edge_t));
+	    memcpy (new_edges,
+		    polygon->edges,
+		    old_size * sizeof (comac_edge_t));
     } else {
-	new_edges = _comac_realloc_ab (polygon->edges,
-		                       new_size, sizeof (comac_edge_t));
+	new_edges =
+	    _comac_realloc_ab (polygon->edges, new_size, sizeof (comac_edge_t));
     }
 
     if (unlikely (new_edges == NULL)) {
@@ -288,7 +287,8 @@ static void
 _add_edge (comac_polygon_t *polygon,
 	   const comac_point_t *p1,
 	   const comac_point_t *p2,
-	   int top, int bottom,
+	   int top,
+	   int bottom,
 	   int dir)
 {
     comac_edge_t *edge;
@@ -337,7 +337,8 @@ static void
 _add_clipped_edge (comac_polygon_t *polygon,
 		   const comac_point_t *p1,
 		   const comac_point_t *p2,
-		   const int top, const int bottom,
+		   const int top,
+		   const int bottom,
 		   const int dir)
 {
     comac_point_t bot_left, top_right;
@@ -420,16 +421,25 @@ _add_clipped_edge (comac_polygon_t *polygon,
 		if (pleft >= limits->p1.x) {
 		    left_y = top_y;
 		} else {
-		    left_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
-								       limits->p1.x);
-		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, left_y) < limits->p1.x)
+		    left_y =
+			_comac_edge_compute_intersection_y_for_x (p1,
+								  p2,
+								  limits->p1.x);
+		    if (_comac_edge_compute_intersection_x_for_y (p1,
+								  p2,
+								  left_y) <
+			limits->p1.x)
 			left_y++;
 		}
 
 		left_y = MIN (left_y, bot_y);
 		if (top_y < left_y) {
-		    _add_edge (polygon, &limits->p1, &bot_left,
-			       top_y, left_y, dir);
+		    _add_edge (polygon,
+			       &limits->p1,
+			       &bot_left,
+			       top_y,
+			       left_y,
+			       dir);
 		    assert_last_edge_is_valid (polygon, limits);
 		    top_y = left_y;
 		}
@@ -437,16 +447,25 @@ _add_clipped_edge (comac_polygon_t *polygon,
 		if (pright <= limits->p2.x) {
 		    right_y = bot_y;
 		} else {
-		    right_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
-									limits->p2.x);
-		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, right_y) > limits->p2.x)
+		    right_y =
+			_comac_edge_compute_intersection_y_for_x (p1,
+								  p2,
+								  limits->p2.x);
+		    if (_comac_edge_compute_intersection_x_for_y (p1,
+								  p2,
+								  right_y) >
+			limits->p2.x)
 			right_y--;
 		}
 
 		right_y = MAX (right_y, top_y);
 		if (bot_y > right_y) {
-		    _add_edge (polygon, &top_right, &limits->p2,
-			       right_y, bot_y, dir);
+		    _add_edge (polygon,
+			       &top_right,
+			       &limits->p2,
+			       right_y,
+			       bot_y,
+			       dir);
 		    assert_last_edge_is_valid (polygon, limits);
 		    bot_y = right_y;
 		}
@@ -454,16 +473,25 @@ _add_clipped_edge (comac_polygon_t *polygon,
 		if (pright <= limits->p2.x) {
 		    right_y = top_y;
 		} else {
-		    right_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
-									limits->p2.x);
-		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, right_y) > limits->p2.x)
+		    right_y =
+			_comac_edge_compute_intersection_y_for_x (p1,
+								  p2,
+								  limits->p2.x);
+		    if (_comac_edge_compute_intersection_x_for_y (p1,
+								  p2,
+								  right_y) >
+			limits->p2.x)
 			right_y++;
 		}
 
 		right_y = MIN (right_y, bot_y);
 		if (top_y < right_y) {
-		    _add_edge (polygon, &top_right, &limits->p2,
-			       top_y, right_y, dir);
+		    _add_edge (polygon,
+			       &top_right,
+			       &limits->p2,
+			       top_y,
+			       right_y,
+			       dir);
 		    assert_last_edge_is_valid (polygon, limits);
 		    top_y = right_y;
 		}
@@ -471,16 +499,25 @@ _add_clipped_edge (comac_polygon_t *polygon,
 		if (pleft >= limits->p1.x) {
 		    left_y = bot_y;
 		} else {
-		    left_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
-								       limits->p1.x);
-		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, left_y) < limits->p1.x)
+		    left_y =
+			_comac_edge_compute_intersection_y_for_x (p1,
+								  p2,
+								  limits->p1.x);
+		    if (_comac_edge_compute_intersection_x_for_y (p1,
+								  p2,
+								  left_y) <
+			limits->p1.x)
 			left_y--;
 		}
 
 		left_y = MAX (left_y, top_y);
 		if (bot_y > left_y) {
-		    _add_edge (polygon, &limits->p1, &bot_left,
-			       left_y, bot_y, dir);
+		    _add_edge (polygon,
+			       &limits->p1,
+			       &bot_left,
+			       left_y,
+			       bot_y,
+			       dir);
 		    assert_last_edge_is_valid (polygon, limits);
 		    bot_y = left_y;
 		}
@@ -534,7 +571,8 @@ _comac_polygon_add_external_edge (void *polygon,
 comac_status_t
 _comac_polygon_add_line (comac_polygon_t *polygon,
 			 const comac_line_t *line,
-			 int top, int bottom,
+			 int top,
+			 int bottom,
 			 int dir)
 {
     /* drop horizontal edges */
@@ -572,7 +610,9 @@ _comac_polygon_add_contour (comac_polygon_t *polygon,
     prev = &contour->chain.points[0];
     for (chain = &contour->chain; chain; chain = chain->next) {
 	for (i = 0; i < chain->num_points; i++) {
-	    _comac_polygon_add_edge (polygon, prev, &chain->points[i],
+	    _comac_polygon_add_edge (polygon,
+				     prev,
+				     &chain->points[i],
 				     contour->direction);
 	    prev = &chain->points[i];
 	}

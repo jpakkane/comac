@@ -46,13 +46,14 @@
 #include "comac-test.h"
 
 #define STEPS 16
-#define START_OPERATOR	COMAC_OPERATOR_CLEAR
-#define STOP_OPERATOR	COMAC_OPERATOR_HSL_LUMINOSITY
+#define START_OPERATOR COMAC_OPERATOR_CLEAR
+#define STOP_OPERATOR COMAC_OPERATOR_HSL_LUMINOSITY
 
 #define SIZE 3
 #define COUNT 6
-#define FULL_WIDTH  ((STEPS + 1) * COUNT - 1)
-#define FULL_HEIGHT ((COUNT + STOP_OPERATOR - START_OPERATOR) / COUNT) * (STEPS + 1)
+#define FULL_WIDTH ((STEPS + 1) * COUNT - 1)
+#define FULL_HEIGHT                                                            \
+    ((COUNT + STOP_OPERATOR - START_OPERATOR) / COUNT) * (STEPS + 1)
 
 static void
 create_patterns (comac_t *bg, comac_t *fg)
@@ -73,7 +74,10 @@ create_patterns (comac_t *bg, comac_t *fg)
 
 /* expects a STEP*STEP pixel rectangle */
 static void
-do_composite (comac_t *cr, comac_operator_t op, comac_surface_t *bg, comac_surface_t *fg)
+do_composite (comac_t *cr,
+	      comac_operator_t op,
+	      comac_surface_t *bg,
+	      comac_surface_t *fg)
 {
     comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
     comac_set_source_surface (cr, bg, 0, 0);
@@ -93,9 +97,13 @@ subdraw (comac_t *cr, int width, int height)
     comac_surface_t *bg, *fg;
 
     bg = comac_surface_create_similar (comac_get_target (cr),
-	    COMAC_CONTENT_ALPHA, SIZE * STEPS, SIZE * STEPS);
+				       COMAC_CONTENT_ALPHA,
+				       SIZE * STEPS,
+				       SIZE * STEPS);
     fg = comac_surface_create_similar (comac_get_target (cr),
-	    COMAC_CONTENT_ALPHA, SIZE * STEPS, SIZE * STEPS);
+				       COMAC_CONTENT_ALPHA,
+				       SIZE * STEPS,
+				       SIZE * STEPS);
     bgcr = comac_create (bg);
     fgcr = comac_create (fg);
     comac_scale (bgcr, SIZE, SIZE);
@@ -107,9 +115,9 @@ subdraw (comac_t *cr, int width, int height)
     for (op = START_OPERATOR; op <= STOP_OPERATOR; op++, i++) {
 	comac_save (cr);
 	comac_translate (cr,
-		SIZE * (STEPS + 1) * (i % COUNT),
-		SIZE * (STEPS + 1) * (i / COUNT));
-	comac_rectangle (cr, 0, 0, SIZE * (STEPS + 1), SIZE * (STEPS+1));
+			 SIZE * (STEPS + 1) * (i % COUNT),
+			 SIZE * (STEPS + 1) * (i / COUNT));
+	comac_rectangle (cr, 0, 0, SIZE * (STEPS + 1), SIZE * (STEPS + 1));
 	comac_clip (cr);
 	do_composite (cr, op, bg, fg);
 	comac_restore (cr);
@@ -119,7 +127,6 @@ subdraw (comac_t *cr, int width, int height)
     comac_surface_destroy (bg);
 }
 
-
 static comac_surface_t *
 create_source (comac_surface_t *target, int width, int height)
 {
@@ -128,7 +135,8 @@ create_source (comac_surface_t *target, int width, int height)
 
     similar = comac_surface_create_similar (target,
 					    COMAC_CONTENT_ALPHA,
-					    width, height);
+					    width,
+					    height);
     cr = comac_create (similar);
     comac_surface_destroy (similar);
 
@@ -157,10 +165,13 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (operator_alpha_alpha,
-	    "Tests result of compositing pure-alpha surfaces"
-	    "\nCompositing of pure-alpha sources is inconsistent across backends.",
-	    "alpha, similar, operator", /* keywords */
-	    NULL, /* requirements */
-	    FULL_WIDTH * SIZE, FULL_HEIGHT * SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    operator_alpha_alpha,
+    "Tests result of compositing pure-alpha surfaces"
+    "\nCompositing of pure-alpha sources is inconsistent across backends.",
+    "alpha, similar, operator", /* keywords */
+    NULL,			/* requirements */
+    FULL_WIDTH *SIZE,
+    FULL_HEIGHT *SIZE,
+    NULL,
+    draw)

@@ -52,22 +52,29 @@
  * comac_format_t.
  */
 static void
-buffer_diff_core (const unsigned char *_buf_a, int stride_a, comac_format_t format_a,
-		  const unsigned char *_buf_b, int stride_b, comac_format_t format_b,
-		  unsigned char *_buf_diff, int stride_diff, comac_format_t format_diff,
-		  int		width,
-		  int		height,
+buffer_diff_core (const unsigned char *_buf_a,
+		  int stride_a,
+		  comac_format_t format_a,
+		  const unsigned char *_buf_b,
+		  int stride_b,
+		  comac_format_t format_b,
+		  unsigned char *_buf_diff,
+		  int stride_diff,
+		  comac_format_t format_diff,
+		  int width,
+		  int height,
 		  buffer_diff_result_t *result_ret)
 {
-    const uint32_t *buf_a = (const uint32_t*) _buf_a;
-    const uint32_t *buf_b = (const uint32_t*) _buf_b;
-    uint32_t *buf_diff = (uint32_t*) _buf_diff;
+    const uint32_t *buf_a = (const uint32_t *) _buf_a;
+    const uint32_t *buf_b = (const uint32_t *) _buf_b;
+    uint32_t *buf_diff = (uint32_t *) _buf_diff;
     int x, y;
     buffer_diff_result_t result = {0, 0};
 
     assert (format_a == COMAC_FORMAT_RGB24 || format_a == COMAC_FORMAT_ARGB32);
     assert (format_b == COMAC_FORMAT_RGB24 || format_b == COMAC_FORMAT_ARGB32);
-    assert (format_diff == COMAC_FORMAT_RGB24 || format_diff == COMAC_FORMAT_ARGB32);
+    assert (format_diff == COMAC_FORMAT_RGB24 ||
+	    format_diff == COMAC_FORMAT_ARGB32);
 
     stride_a /= sizeof (uint32_t);
     stride_b /= sizeof (uint32_t);
@@ -93,18 +100,18 @@ buffer_diff_core (const unsigned char *_buf_a, int stride_a, comac_format_t form
 
 		/* calculate a difference value for all 4 channels */
 		for (channel = 0; channel < 4; channel++) {
-		    int value_a = (pixel_a >> (channel*8)) & 0xff;
-		    int value_b = (pixel_b >> (channel*8)) & 0xff;
+		    int value_a = (pixel_a >> (channel * 8)) & 0xff;
+		    int value_b = (pixel_b >> (channel * 8)) & 0xff;
 		    unsigned int diff;
 		    diff = abs (value_a - value_b);
 		    if (diff > result.max_diff)
 			result.max_diff = diff;
-		    diff *= 4;  /* emphasize */
+		    diff *= 4; /* emphasize */
 		    if (diff)
 			diff += 128; /* make sure it's visible */
 		    if (diff > 255)
 			diff = 255;
-		    diff_pixel |= diff << (channel*8);
+		    diff_pixel |= diff << (channel * 8);
 		}
 
 		result.pixels_changed++;
@@ -133,11 +140,11 @@ buffer_diff_core (const unsigned char *_buf_a, int stride_a, comac_format_t form
  * images differ.
  */
 static void
-compare_surfaces (const comac_test_context_t  *ctx,
-	          comac_surface_t	*surface_a,
-		  comac_surface_t	*surface_b,
-		  comac_surface_t	*surface_diff,
-		  buffer_diff_result_t	*result)
+compare_surfaces (const comac_test_context_t *ctx,
+		  comac_surface_t *surface_a,
+		  comac_surface_t *surface_b,
+		  comac_surface_t *surface_diff,
+		  buffer_diff_result_t *result)
 {
     /* These default values were taken straight from the
      * perceptualdiff program. We'll probably want to tune these as
@@ -167,8 +174,10 @@ compare_surfaces (const comac_test_context_t  *ctx,
 	return;
 
     comac_test_log (ctx,
-	            "%d pixels differ (with maximum difference of %d) from reference image\n",
-		    result->pixels_changed, result->max_diff);
+		    "%d pixels differ (with maximum difference of %d) from "
+		    "reference image\n",
+		    result->pixels_changed,
+		    result->max_diff);
 
     /* Then, if there are any different pixels, we give the pdiff code
      * a crack at the images. If it decides that there are no visually
@@ -179,14 +188,18 @@ compare_surfaces (const comac_test_context_t  *ctx,
      * is lower than a threshold, otherwise some problems could be masked.
      */
     if (result->max_diff < PERCEPTUAL_DIFF_THRESHOLD) {
-        discernible_pixels_changed = pdiff_compare (surface_a, surface_b,
-                                                    gamma, luminance, field_of_view);
-        if (discernible_pixels_changed == 0) {
-            result->pixels_changed = 0;
-            comac_test_log (ctx,
-		            "But perceptual diff finds no visually discernible difference.\n"
-                            "Accepting result.\n");
-        }
+	discernible_pixels_changed = pdiff_compare (surface_a,
+						    surface_b,
+						    gamma,
+						    luminance,
+						    field_of_view);
+	if (discernible_pixels_changed == 0) {
+	    result->pixels_changed = 0;
+	    comac_test_log (ctx,
+			    "But perceptual diff finds no visually discernible "
+			    "difference.\n"
+			    "Accepting result.\n");
+	}
     }
 }
 
@@ -194,16 +207,23 @@ void
 buffer_diff_noalpha (const unsigned char *buf_a,
 		     const unsigned char *buf_b,
 		     unsigned char *buf_diff,
-		     int	   width,
-		     int	   height,
-		     int	   stride,
+		     int width,
+		     int height,
+		     int stride,
 		     buffer_diff_result_t *result)
 {
-    buffer_diff_core(buf_a, stride, COMAC_FORMAT_RGB24,
-		     buf_b, stride, COMAC_FORMAT_RGB24,
-		     buf_diff, stride, COMAC_FORMAT_RGB24,
-		     width, height,
-		     result);
+    buffer_diff_core (buf_a,
+		      stride,
+		      COMAC_FORMAT_RGB24,
+		      buf_b,
+		      stride,
+		      COMAC_FORMAT_RGB24,
+		      buf_diff,
+		      stride,
+		      COMAC_FORMAT_RGB24,
+		      width,
+		      height,
+		      result);
 }
 
 static comac_bool_t
@@ -253,8 +273,7 @@ image_diff (const comac_test_context_t *ctx,
 	return comac_surface_status (surface_diff);
 
     if (! same_size (surface_a, surface_b) ||
-	! same_size (surface_a, surface_diff))
-    {
+	! same_size (surface_a, surface_diff)) {
 	comac_test_log (ctx, "Error: Image size mismatch\n");
 	return COMAC_STATUS_SURFACE_TYPE_MISMATCH;
     }
@@ -266,8 +285,7 @@ image_diff (const comac_test_context_t *ctx,
 
 comac_bool_t
 image_diff_is_failure (const buffer_diff_result_t *result,
-                       unsigned int                tolerance)
+		       unsigned int tolerance)
 {
-  return result->pixels_changed &&
-         result->max_diff > tolerance;
+    return result->pixels_changed && result->max_diff > tolerance;
 }

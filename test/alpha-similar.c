@@ -33,7 +33,8 @@ create_source (comac_surface_t *target, int width, int height)
 
     similar = comac_surface_create_similar (target,
 					    COMAC_CONTENT_ALPHA,
-					    width, height);
+					    width,
+					    height);
     cr = comac_create (similar);
     comac_surface_destroy (similar);
 
@@ -66,9 +67,11 @@ draw (comac_t *cr, int width, int height)
  */
 COMAC_TEST (alpha_similar,
 	    "Tests creation of similar alpha surfaces"
-	    "\nApplication of a pure-alpha similar source is inconsistent across backends.",
+	    "\nApplication of a pure-alpha similar source is inconsistent "
+	    "across backends.",
 	    "alpha, similar", /* keywords */
-	    NULL, /* requirements */
-	    10, 10,
-	    NULL, draw)
-
+	    NULL,	      /* requirements */
+	    10,
+	    10,
+	    NULL,
+	    draw)

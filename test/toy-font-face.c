@@ -32,7 +32,7 @@
 #include <assert.h>
 #include <string.h>
 
-#if   COMAC_HAS_WIN32_FONT
+#if COMAC_HAS_WIN32_FONT
 #define COMAC_FONT_FAMILY_DEFAULT "Arial"
 #elif COMAC_HAS_QUARTZ_FONT
 #define COMAC_FONT_FAMILY_DEFAULT "Helvetica"
@@ -41,7 +41,6 @@
 #else
 #define COMAC_FONT_FAMILY_DEFAULT "@comac:"
 #endif
-
 
 static comac_test_status_t
 preamble (comac_test_context_t *ctx)
@@ -58,9 +57,11 @@ preamble (comac_test_context_t *ctx)
     font_face = comac_font_face_reference (comac_get_font_face (cr));
     assert (comac_font_face_get_type (font_face) == COMAC_FONT_TYPE_TOY);
     assert (comac_toy_font_face_get_family (font_face) != NULL);
-    assert (comac_toy_font_face_get_slant (font_face) == COMAC_FONT_SLANT_NORMAL);
-    assert (comac_toy_font_face_get_weight (font_face) == COMAC_FONT_WEIGHT_NORMAL);
-    status = comac_font_face_status(font_face);
+    assert (comac_toy_font_face_get_slant (font_face) ==
+	    COMAC_FONT_SLANT_NORMAL);
+    assert (comac_toy_font_face_get_weight (font_face) ==
+	    COMAC_FONT_WEIGHT_NORMAL);
+    status = comac_font_face_status (font_face);
     comac_font_face_destroy (font_face);
 
     if (status)
@@ -72,10 +73,13 @@ preamble (comac_test_context_t *ctx)
 			    COMAC_FONT_WEIGHT_BOLD);
     font_face = comac_font_face_reference (comac_get_font_face (cr));
     assert (comac_font_face_get_type (font_face) == COMAC_FONT_TYPE_TOY);
-    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face), "bizarre"));
-    assert (comac_toy_font_face_get_slant (font_face) == COMAC_FONT_SLANT_OBLIQUE);
-    assert (comac_toy_font_face_get_weight (font_face) == COMAC_FONT_WEIGHT_BOLD);
-    status = comac_font_face_status(font_face);
+    assert (0 ==
+	    (strcmp) (comac_toy_font_face_get_family (font_face), "bizarre"));
+    assert (comac_toy_font_face_get_slant (font_face) ==
+	    COMAC_FONT_SLANT_OBLIQUE);
+    assert (comac_toy_font_face_get_weight (font_face) ==
+	    COMAC_FONT_WEIGHT_BOLD);
+    status = comac_font_face_status (font_face);
     comac_font_face_destroy (font_face);
 
     if (status)
@@ -85,10 +89,13 @@ preamble (comac_test_context_t *ctx)
 					    COMAC_FONT_SLANT_OBLIQUE,
 					    COMAC_FONT_WEIGHT_BOLD);
     assert (comac_font_face_get_type (font_face) == COMAC_FONT_TYPE_TOY);
-    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face), "bozarre"));
-    assert (comac_toy_font_face_get_slant (font_face) == COMAC_FONT_SLANT_OBLIQUE);
-    assert (comac_toy_font_face_get_weight (font_face) == COMAC_FONT_WEIGHT_BOLD);
-    status = comac_font_face_status(font_face);
+    assert (0 ==
+	    (strcmp) (comac_toy_font_face_get_family (font_face), "bozarre"));
+    assert (comac_toy_font_face_get_slant (font_face) ==
+	    COMAC_FONT_SLANT_OBLIQUE);
+    assert (comac_toy_font_face_get_weight (font_face) ==
+	    COMAC_FONT_WEIGHT_BOLD);
+    status = comac_font_face_status (font_face);
     comac_font_face_destroy (font_face);
 
     if (status)
@@ -98,40 +105,49 @@ preamble (comac_test_context_t *ctx)
 					    COMAC_FONT_SLANT_OBLIQUE,
 					    COMAC_FONT_WEIGHT_BOLD);
     assert (comac_font_face_get_type (font_face) == COMAC_FONT_TYPE_TOY);
-    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face), COMAC_FONT_FAMILY_DEFAULT));
-    assert (comac_toy_font_face_get_slant (font_face) == COMAC_FONT_SLANT_NORMAL);
-    assert (comac_toy_font_face_get_weight (font_face) == COMAC_FONT_WEIGHT_NORMAL);
-    assert (comac_font_face_status(font_face) == COMAC_STATUS_NULL_POINTER);
+    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face),
+			   COMAC_FONT_FAMILY_DEFAULT));
+    assert (comac_toy_font_face_get_slant (font_face) ==
+	    COMAC_FONT_SLANT_NORMAL);
+    assert (comac_toy_font_face_get_weight (font_face) ==
+	    COMAC_FONT_WEIGHT_NORMAL);
+    assert (comac_font_face_status (font_face) == COMAC_STATUS_NULL_POINTER);
     comac_font_face_destroy (font_face);
 
     font_face = comac_toy_font_face_create ("\xff",
 					    COMAC_FONT_SLANT_OBLIQUE,
 					    COMAC_FONT_WEIGHT_BOLD);
     assert (comac_font_face_get_type (font_face) == COMAC_FONT_TYPE_TOY);
-    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face), COMAC_FONT_FAMILY_DEFAULT));
-    assert (comac_toy_font_face_get_slant (font_face) == COMAC_FONT_SLANT_NORMAL);
-    assert (comac_toy_font_face_get_weight (font_face) == COMAC_FONT_WEIGHT_NORMAL);
-    assert (comac_font_face_status(font_face) == COMAC_STATUS_INVALID_STRING);
+    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face),
+			   COMAC_FONT_FAMILY_DEFAULT));
+    assert (comac_toy_font_face_get_slant (font_face) ==
+	    COMAC_FONT_SLANT_NORMAL);
+    assert (comac_toy_font_face_get_weight (font_face) ==
+	    COMAC_FONT_WEIGHT_NORMAL);
+    assert (comac_font_face_status (font_face) == COMAC_STATUS_INVALID_STRING);
     comac_font_face_destroy (font_face);
 
-    font_face = comac_toy_font_face_create ("sans",
-					    -1,
-					    COMAC_FONT_WEIGHT_BOLD);
+    font_face = comac_toy_font_face_create ("sans", -1, COMAC_FONT_WEIGHT_BOLD);
     assert (comac_font_face_get_type (font_face) == COMAC_FONT_TYPE_TOY);
-    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face), COMAC_FONT_FAMILY_DEFAULT));
-    assert (comac_toy_font_face_get_slant (font_face) == COMAC_FONT_SLANT_NORMAL);
-    assert (comac_toy_font_face_get_weight (font_face) == COMAC_FONT_WEIGHT_NORMAL);
-    assert (comac_font_face_status(font_face) == COMAC_STATUS_INVALID_SLANT);
+    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face),
+			   COMAC_FONT_FAMILY_DEFAULT));
+    assert (comac_toy_font_face_get_slant (font_face) ==
+	    COMAC_FONT_SLANT_NORMAL);
+    assert (comac_toy_font_face_get_weight (font_face) ==
+	    COMAC_FONT_WEIGHT_NORMAL);
+    assert (comac_font_face_status (font_face) == COMAC_STATUS_INVALID_SLANT);
     comac_font_face_destroy (font_face);
 
-    font_face = comac_toy_font_face_create ("sans",
-					    COMAC_FONT_SLANT_OBLIQUE,
-					    -1);
+    font_face =
+	comac_toy_font_face_create ("sans", COMAC_FONT_SLANT_OBLIQUE, -1);
     assert (comac_font_face_get_type (font_face) == COMAC_FONT_TYPE_TOY);
-    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face), COMAC_FONT_FAMILY_DEFAULT));
-    assert (comac_toy_font_face_get_slant (font_face) == COMAC_FONT_SLANT_NORMAL);
-    assert (comac_toy_font_face_get_weight (font_face) == COMAC_FONT_WEIGHT_NORMAL);
-    assert (comac_font_face_status(font_face) == COMAC_STATUS_INVALID_WEIGHT);
+    assert (0 == (strcmp) (comac_toy_font_face_get_family (font_face),
+			   COMAC_FONT_FAMILY_DEFAULT));
+    assert (comac_toy_font_face_get_slant (font_face) ==
+	    COMAC_FONT_SLANT_NORMAL);
+    assert (comac_toy_font_face_get_weight (font_face) ==
+	    COMAC_FONT_WEIGHT_NORMAL);
+    assert (comac_font_face_status (font_face) == COMAC_STATUS_INVALID_WEIGHT);
     comac_font_face_destroy (font_face);
 
     comac_destroy (cr);
@@ -142,6 +158,8 @@ preamble (comac_test_context_t *ctx)
 COMAC_TEST (toy_font_face,
 	    "Check the construction of 'toy' font faces",
 	    "font, api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,	 /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

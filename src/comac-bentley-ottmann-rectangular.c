@@ -102,7 +102,8 @@ dump_traps (comac_traps_t *traps, const char *filename)
     file = fopen (filename, "a");
     if (file != NULL) {
 	for (n = 0; n < traps->num_traps; n++) {
-	    fprintf (file, "%d %d L:(%d, %d), (%d, %d) R:(%d, %d), (%d, %d)\n",
+	    fprintf (file,
+		     "%d %d L:(%d, %d), (%d, %d) R:(%d, %d), (%d, %d)\n",
 		     traps->traps[n].top,
 		     traps->traps[n].bottom,
 		     traps->traps[n].left.p1.x,
@@ -123,15 +124,13 @@ dump_traps (comac_traps_t *traps, const char *filename)
 #endif
 
 static inline int
-rectangle_compare_start (const rectangle_t *a,
-			 const rectangle_t *b)
+rectangle_compare_start (const rectangle_t *a, const rectangle_t *b)
 {
     return a->top - b->top;
 }
 
 static inline int
-rectangle_compare_stop (const rectangle_t *a,
-			 const rectangle_t *b)
+rectangle_compare_stop (const rectangle_t *a, const rectangle_t *b)
 {
     return a->bottom - b->bottom;
 }
@@ -147,8 +146,7 @@ pqueue_push (sweep_line_t *sweep, rectangle_t *rectangle)
 	 i != PQ_FIRST_ENTRY &&
 	 rectangle_compare_stop (rectangle,
 				 elements[parent = PQ_PARENT_INDEX (i)]) < 0;
-	 i = parent)
-    {
+	 i = parent) {
 	elements[i] = elements[parent];
     }
 
@@ -170,12 +168,9 @@ rectangle_pop_stop (sweep_line_t *sweep)
 
     for (i = PQ_FIRST_ENTRY;
 	 (child = PQ_LEFT_CHILD_INDEX (i)) <= sweep->stop_size;
-	 i = child)
-    {
+	 i = child) {
 	if (child != sweep->stop_size &&
-	    rectangle_compare_stop (elements[child+1],
-				    elements[child]) < 0)
-	{
+	    rectangle_compare_stop (elements[child + 1], elements[child]) < 0) {
 	    child++;
 	}
 
@@ -199,17 +194,15 @@ rectangle_peek_stop (sweep_line_t *sweep_line)
     return sweep_line->stop[PQ_FIRST_ENTRY];
 }
 
-COMAC_COMBSORT_DECLARE (_rectangle_sort,
-			rectangle_t *,
-			rectangle_compare_start)
+COMAC_COMBSORT_DECLARE (_rectangle_sort, rectangle_t *, rectangle_compare_start)
 
 static void
-sweep_line_init (sweep_line_t	 *sweep_line,
-		 rectangle_t	**rectangles,
-		 int		  num_rectangles,
+sweep_line_init (sweep_line_t *sweep_line,
+		 rectangle_t **rectangles,
+		 int num_rectangles,
 		 comac_fill_rule_t fill_rule,
-		 comac_bool_t	 do_traps,
-		 void		*container)
+		 comac_bool_t do_traps,
+		 void *container)
 {
     rectangles[-2] = NULL;
     rectangles[-1] = NULL;
@@ -249,15 +242,22 @@ edge_end_box (sweep_line_t *sweep_line, edge_t *left, int32_t bot)
     /* Only emit (trivial) non-degenerate trapezoids with positive height. */
     if (likely (left->top < bot)) {
 	if (sweep_line->do_traps) {
-	    comac_line_t _left = {
-		{ left->x, left->top },
-		{ left->x, bot },
-	    }, _right = {
-		{ left->right->x, left->top },
-		{ left->right->x, bot },
-	    };
-	    _comac_traps_add_trap (sweep_line->container, left->top, bot, &_left, &_right);
-	    status = _comac_traps_status ((comac_traps_t *) sweep_line->container);
+	    comac_line_t _left =
+			     {
+				 {left->x, left->top},
+				 {left->x, bot},
+			     },
+			 _right = {
+			     {left->right->x, left->top},
+			     {left->right->x, bot},
+			 };
+	    _comac_traps_add_trap (sweep_line->container,
+				   left->top,
+				   bot,
+				   &_left,
+				   &_right);
+	    status =
+		_comac_traps_status ((comac_traps_t *) sweep_line->container);
 	} else {
 	    comac_box_t box;
 
@@ -284,9 +284,9 @@ edge_end_box (sweep_line_t *sweep_line, edge_t *left, int32_t bot)
  * trapezoid would be a continuation of the existing one. */
 static inline void
 edge_start_or_continue_box (sweep_line_t *sweep_line,
-			    edge_t	*left,
-			    edge_t	*right,
-			    int		 top)
+			    edge_t *left,
+			    edge_t *right,
+			    int top)
 {
     if (left->right == right)
 	return;
@@ -351,7 +351,7 @@ merge_sorted_edges (edge_t *head_a, edge_t *head_b)
 	if (head_a == NULL)
 	    return head;
 
-start_with_b:
+    start_with_b:
 	x = head_a->x;
 	while (head_b != NULL && head_b->x <= x) {
 	    prev = head_b;
@@ -383,9 +383,7 @@ start_with_b:
  * (we start with a small sorted list and keep merging other lists of the same size to it).
  */
 static edge_t *
-sort_edges (edge_t  *list,
-	    unsigned int  level,
-	    edge_t **head_out)
+sort_edges (edge_t *list, unsigned int level, edge_t **head_out)
 {
     edge_t *head_other, *remaining;
     unsigned int i;
@@ -523,7 +521,7 @@ active_edges_to_traps (sweep_line_t *sweep)
 		if (unlikely (right->right != NULL))
 		    edge_end_box (sweep, right, top);
 
-		    /* skip co-linear edges */
+		/* skip co-linear edges */
 		if (++count & 1 && right->x != right->next->x)
 		    break;
 
@@ -559,14 +557,13 @@ sweep_line_delete_edge (sweep_line_t *sweep, edge_t *edge)
 }
 
 static inline comac_bool_t
-sweep_line_delete (sweep_line_t	*sweep, rectangle_t *rectangle)
+sweep_line_delete (sweep_line_t *sweep, rectangle_t *rectangle)
 {
     comac_bool_t update;
 
     update = TRUE;
     if (sweep->fill_rule == COMAC_FILL_RULE_WINDING &&
-	rectangle->left.prev->dir == rectangle->left.dir)
-    {
+	rectangle->left.prev->dir == rectangle->left.dir) {
 	update = rectangle->left.next != &rectangle->right;
     }
 
@@ -578,7 +575,7 @@ sweep_line_delete (sweep_line_t	*sweep, rectangle_t *rectangle)
 }
 
 static inline void
-sweep_line_insert (sweep_line_t	*sweep, rectangle_t *rectangle)
+sweep_line_insert (sweep_line_t *sweep, rectangle_t *rectangle)
 {
     if (sweep->insert)
 	sweep->insert->prev = &rectangle->right;
@@ -594,11 +591,11 @@ sweep_line_insert (sweep_line_t	*sweep, rectangle_t *rectangle)
 }
 
 static comac_status_t
-_comac_bentley_ottmann_tessellate_rectangular (rectangle_t	**rectangles,
-					       int			  num_rectangles,
-					       comac_fill_rule_t	  fill_rule,
-					       comac_bool_t		 do_traps,
-					       void			*container)
+_comac_bentley_ottmann_tessellate_rectangular (rectangle_t **rectangles,
+					       int num_rectangles,
+					       comac_fill_rule_t fill_rule,
+					       comac_bool_t do_traps,
+					       void *container)
 {
     sweep_line_t sweep_line;
     rectangle_t *rectangle;
@@ -606,9 +603,11 @@ _comac_bentley_ottmann_tessellate_rectangular (rectangle_t	**rectangles,
     comac_bool_t update;
 
     sweep_line_init (&sweep_line,
-		     rectangles, num_rectangles,
+		     rectangles,
+		     num_rectangles,
 		     fill_rule,
-		     do_traps, container);
+		     do_traps,
+		     container);
     if ((status = setjmp (sweep_line.unwind)))
 	return status;
 
@@ -665,8 +664,8 @@ _comac_bentley_ottmann_tessellate_rectangular (rectangle_t	**rectangles,
 }
 
 comac_status_t
-_comac_bentley_ottmann_tessellate_rectangular_traps (comac_traps_t *traps,
-						     comac_fill_rule_t fill_rule)
+_comac_bentley_ottmann_tessellate_rectangular_traps (
+    comac_traps_t *traps, comac_fill_rule_t fill_rule)
 {
     rectangle_t stack_rectangles[COMAC_STACK_ARRAY_LENGTH (rectangle_t)];
     rectangle_t *stack_rectangles_ptrs[ARRAY_LENGTH (stack_rectangles) + 3];
@@ -674,17 +673,17 @@ _comac_bentley_ottmann_tessellate_rectangular_traps (comac_traps_t *traps,
     comac_status_t status;
     int i;
 
-   assert (traps->is_rectangular);
+    assert (traps->is_rectangular);
 
     if (unlikely (traps->num_traps <= 1)) {
-        if (traps->num_traps == 1) {
-            comac_trapezoid_t *trap = traps->traps;
-            if (trap->left.p1.x > trap->right.p1.x) {
-                comac_line_t tmp = trap->left;
-                trap->left = trap->right;
-                trap->right = tmp;
-            }
-        }
+	if (traps->num_traps == 1) {
+	    comac_trapezoid_t *trap = traps->traps;
+	    if (trap->left.p1.x > trap->right.p1.x) {
+		comac_line_t tmp = trap->left;
+		trap->left = trap->right;
+		trap->right = tmp;
+	    }
+	}
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -695,8 +694,8 @@ _comac_bentley_ottmann_tessellate_rectangular_traps (comac_traps_t *traps,
     if (traps->num_traps > ARRAY_LENGTH (stack_rectangles)) {
 	rectangles = _comac_malloc_ab_plus_c (traps->num_traps,
 					      sizeof (rectangle_t) +
-					      sizeof (rectangle_t *),
-					      3*sizeof (rectangle_t *));
+						  sizeof (rectangle_t *),
+					      3 * sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -724,15 +723,17 @@ _comac_bentley_ottmann_tessellate_rectangular_traps (comac_traps_t *traps,
 	rectangles[i].top = traps->traps[i].top;
 	rectangles[i].bottom = traps->traps[i].bottom;
 
-	rectangles_ptrs[i+2] = &rectangles[i];
+	rectangles_ptrs[i + 2] = &rectangles[i];
     }
     /* XXX incremental sort */
-    _rectangle_sort (rectangles_ptrs+2, i);
+    _rectangle_sort (rectangles_ptrs + 2, i);
 
     _comac_traps_clear (traps);
-    status = _comac_bentley_ottmann_tessellate_rectangular (rectangles_ptrs+2, i,
+    status = _comac_bentley_ottmann_tessellate_rectangular (rectangles_ptrs + 2,
+							    i,
 							    fill_rule,
-							    TRUE, traps);
+							    TRUE,
+							    traps);
     traps->is_rectilinear = TRUE;
     traps->is_rectangular = TRUE;
 
@@ -752,7 +753,8 @@ _comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
     rectangle_t stack_rectangles[COMAC_STACK_ARRAY_LENGTH (rectangle_t)];
     rectangle_t *stack_rectangles_ptrs[ARRAY_LENGTH (stack_rectangles) + 3];
     rectangle_t *rectangles, **rectangles_ptrs;
-    rectangle_t *stack_rectangles_chain[COMAC_STACK_ARRAY_LENGTH (rectangle_t *) ];
+    rectangle_t
+	*stack_rectangles_chain[COMAC_STACK_ARRAY_LENGTH (rectangle_t *)];
     rectangle_t **rectangles_chain = NULL;
     const struct _comac_boxes_chunk *chunk;
     comac_status_t status;
@@ -788,7 +790,8 @@ _comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
 	return COMAC_STATUS_SUCCESS;
     }
 
-    y_min = INT_MAX; y_max = INT_MIN;
+    y_min = INT_MAX;
+    y_max = INT_MIN;
     for (chunk = &in->chunks; chunk != NULL; chunk = chunk->next) {
 	const comac_box_t *box = chunk->base;
 	for (i = 0; i < chunk->count; i++) {
@@ -809,7 +812,7 @@ _comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
 	    if (unlikely (rectangles_chain == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
-	memset (rectangles_chain, 0, y_max * sizeof (rectangle_t*));
+	memset (rectangles_chain, 0, y_max * sizeof (rectangle_t *));
     }
 
     rectangles = stack_rectangles;
@@ -817,8 +820,8 @@ _comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
     if (in->num_boxes > ARRAY_LENGTH (stack_rectangles)) {
 	rectangles = _comac_malloc_ab_plus_c (in->num_boxes,
 					      sizeof (rectangle_t) +
-					      sizeof (rectangle_t *),
-					      3*sizeof (rectangle_t *));
+						  sizeof (rectangle_t *),
+					      3 * sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL)) {
 	    if (rectangles_chain != stack_rectangles_chain)
 		free (rectangles_chain);
@@ -856,10 +859,10 @@ _comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
 
 	    if (rectangles_chain) {
 		h = _comac_fixed_integer_floor (box[i].p1.y) - y_min;
-		rectangles[j].left.next = (edge_t *)rectangles_chain[h];
+		rectangles[j].left.next = (edge_t *) rectangles_chain[h];
 		rectangles_chain[h] = &rectangles[j];
 	    } else {
-		rectangles_ptrs[j+2] = &rectangles[j];
+		rectangles_ptrs[j + 2] = &rectangles[j];
 	    }
 	    j++;
 	}
@@ -870,7 +873,8 @@ _comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
 	for (y_min = 0; y_min < y_max; y_min++) {
 	    rectangle_t *r;
 	    int start = j;
-	    for (r = rectangles_chain[y_min]; r; r = (rectangle_t *)r->left.next)
+	    for (r = rectangles_chain[y_min]; r;
+		 r = (rectangle_t *) r->left.next)
 		rectangles_ptrs[j++] = r;
 	    if (j > start + 1)
 		_rectangle_sort (rectangles_ptrs + start, j - start);
@@ -885,9 +889,11 @@ _comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
     }
 
     _comac_boxes_clear (out);
-    status = _comac_bentley_ottmann_tessellate_rectangular (rectangles_ptrs+2, j,
+    status = _comac_bentley_ottmann_tessellate_rectangular (rectangles_ptrs + 2,
+							    j,
 							    fill_rule,
-							    FALSE, out);
+							    FALSE,
+							    out);
     if (rectangles != stack_rectangles)
 	free (rectangles);
 

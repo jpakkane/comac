@@ -41,10 +41,14 @@ get_glyph (const comac_test_context_t *ctx,
     text_to_glyphs = glyph;
     i = 1;
     status = comac_scaled_font_text_to_glyphs (scaled_font,
-					       0, 0,
-					       utf8, -1,
-					       &text_to_glyphs, &i,
-					       NULL, NULL,
+					       0,
+					       0,
+					       utf8,
+					       -1,
+					       &text_to_glyphs,
+					       &i,
+					       NULL,
+					       NULL,
 					       0);
     if (status != COMAC_STATUS_SUCCESS)
 	return comac_test_status_from_status (ctx, status);
@@ -57,7 +61,7 @@ get_glyph (const comac_test_context_t *ctx,
     return COMAC_TEST_SUCCESS;
 }
 
-static const char *characters[] = { "A", "B", "C", "D" };
+static const char *characters[] = {"A", "B", "C", "D"};
 
 #define NUM_CHARS ARRAY_LENGTH (characters)
 
@@ -66,7 +70,7 @@ draw (comac_t *cr, int width, int height)
 {
     const comac_test_context_t *ctx = comac_test_get_context (cr);
     comac_scaled_font_t *scaled_font;
-    comac_glyph_t *glyphs = xmalloc (NUM_CHARS  * sizeof (comac_glyph_t));
+    comac_glyph_t *glyphs = xmalloc (NUM_CHARS * sizeof (comac_glyph_t));
     int i;
     comac_test_status_t status;
 
@@ -93,8 +97,8 @@ draw (comac_t *cr, int width, int height)
 
     comac_show_glyphs (cr, glyphs, NUM_CHARS);
 
-  BAIL:
-    free(glyphs);
+BAIL:
+    free (glyphs);
 
     return status;
 }
@@ -102,6 +106,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (show_glyphs_advance,
 	    "Test that glyph advances work as expected along both axes",
 	    "text, matrix", /* keywords */
-	    NULL, /* requirements */
-	    64, 64,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    64,
+	    64,
+	    NULL,
+	    draw)

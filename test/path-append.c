@@ -39,7 +39,7 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     comac_translate (cr, 130, 130);
-    comac_rotate (cr, .5);//2*M_PI*angle/360);
+    comac_rotate (cr, .5); //2*M_PI*angle/360);
     comac_rectangle (cr, 0, 0, 50, 100);
     comac_get_matrix (cr, &m);
 
@@ -74,8 +74,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (path_append,
-	    "Test appending path to a context, in particular to exercise a regression in 005436",
+	    "Test appending path to a context, in particular to exercise a "
+	    "regression in 005436",
 	    "path", /* keywords */
-	    NULL, /* requirements */
-	    600, 600,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    600,
+	    600,
+	    NULL,
+	    draw)

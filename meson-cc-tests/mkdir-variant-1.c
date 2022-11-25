@@ -5,8 +5,9 @@
 #include <io.h>
 #endif
 
-int main(int ac, char **av)
+int
+main (int ac, char **av)
 {
-  mkdir("hello.world");
-  return 0;
+    mkdir ("hello.world");
+    return 0;
 }

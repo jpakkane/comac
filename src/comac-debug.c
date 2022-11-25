@@ -110,24 +110,24 @@ _comac_debug_check_image_surface_is_defined (const comac_surface_t *surface)
     bits = image->data;
     switch (image->format) {
     case COMAC_FORMAT_A1:
-	width = (image->width + 7)/8;
+	width = (image->width + 7) / 8;
 	break;
     case COMAC_FORMAT_A8:
 	width = image->width;
 	break;
     case COMAC_FORMAT_RGB16_565:
-	width = image->width*2;
+	width = image->width * 2;
 	break;
     case COMAC_FORMAT_RGB24:
     case COMAC_FORMAT_RGB30:
     case COMAC_FORMAT_ARGB32:
-	width = image->width*4;
+	width = image->width * 4;
 	break;
     case COMAC_FORMAT_RGB96F:
-	width = image->width*12;
+	width = image->width * 12;
 	break;
     case COMAC_FORMAT_RGBA128F:
-	width = image->width*16;
+	width = image->width * 16;
 	break;
     case COMAC_FORMAT_INVALID:
     default:
@@ -143,7 +143,6 @@ _comac_debug_check_image_surface_is_defined (const comac_surface_t *surface)
     }
 }
 #endif
-
 
 #if 0
 void
@@ -187,8 +186,7 @@ _comac_image_surface_write_to_ppm (comac_image_surface_t *isurf, const char *fn)
 #endif
 
 static comac_status_t
-_print_move_to (void *closure,
-		const comac_point_t *point)
+_print_move_to (void *closure, const comac_point_t *point)
 {
     fprintf (closure,
 	     " %f %f m",
@@ -199,8 +197,7 @@ _print_move_to (void *closure,
 }
 
 static comac_status_t
-_print_line_to (void *closure,
-		const comac_point_t *point)
+_print_line_to (void *closure, const comac_point_t *point)
 {
     fprintf (closure,
 	     " %f %f l",
@@ -244,10 +241,10 @@ _comac_debug_print_path (FILE *stream, const comac_path_fixed_t *path)
 
     fprintf (stream,
 	     "path: extents=(%f, %f), (%f, %f)\n",
-	    _comac_fixed_to_double (path->extents.p1.x),
-	    _comac_fixed_to_double (path->extents.p1.y),
-	    _comac_fixed_to_double (path->extents.p2.x),
-	    _comac_fixed_to_double (path->extents.p2.y));
+	     _comac_fixed_to_double (path->extents.p1.x),
+	     _comac_fixed_to_double (path->extents.p1.y),
+	     _comac_fixed_to_double (path->extents.p2.x),
+	     _comac_fixed_to_double (path->extents.p2.y));
 
     status = _comac_path_fixed_interpret (path,
 					  _print_move_to,
@@ -258,8 +255,12 @@ _comac_debug_print_path (FILE *stream, const comac_path_fixed_t *path)
     assert (status == COMAC_STATUS_SUCCESS);
 
     if (_comac_path_fixed_is_box (path, &box)) {
-	fprintf (stream, "[box (%d, %d), (%d, %d)]",
-		 box.p1.x, box.p1.y, box.p2.x, box.p2.y);
+	fprintf (stream,
+		 "[box (%d, %d), (%d, %d)]",
+		 box.p1.x,
+		 box.p1.y,
+		 box.p2.x,
+		 box.p2.y);
     }
 
     fprintf (stream, "\n");
@@ -272,10 +273,10 @@ _comac_debug_print_polygon (FILE *stream, comac_polygon_t *polygon)
 
     fprintf (stream,
 	     "polygon: extents=(%f, %f), (%f, %f)\n",
-	    _comac_fixed_to_double (polygon->extents.p1.x),
-	    _comac_fixed_to_double (polygon->extents.p1.y),
-	    _comac_fixed_to_double (polygon->extents.p2.x),
-	    _comac_fixed_to_double (polygon->extents.p2.y));
+	     _comac_fixed_to_double (polygon->extents.p1.x),
+	     _comac_fixed_to_double (polygon->extents.p1.y),
+	     _comac_fixed_to_double (polygon->extents.p2.x),
+	     _comac_fixed_to_double (polygon->extents.p2.y));
     if (polygon->num_limits) {
 	fprintf (stream,
 		 "       : limit=(%f, %f), (%f, %f) x %d\n",
@@ -299,23 +300,29 @@ _comac_debug_print_polygon (FILE *stream, comac_polygon_t *polygon)
 		 _comac_fixed_to_double (edge->top),
 		 _comac_fixed_to_double (edge->bottom),
 		 edge->dir);
-
     }
 }
 
 void
 _comac_debug_print_matrix (FILE *file, const comac_matrix_t *matrix)
 {
-    fprintf (file, "[%g %g %g %g %g %g]\n",
-	     matrix->xx, matrix->yx,
-	     matrix->xy, matrix->yy,
-	     matrix->x0, matrix->y0);
+    fprintf (file,
+	     "[%g %g %g %g %g %g]\n",
+	     matrix->xx,
+	     matrix->yx,
+	     matrix->xy,
+	     matrix->yy,
+	     matrix->x0,
+	     matrix->y0);
 }
 
 void
 _comac_debug_print_rect (FILE *file, const comac_rectangle_int_t *rect)
 {
-    fprintf (file, "x: %d y: %d width: %d height: %d\n",
-	     rect->x, rect->y,
-	     rect->width, rect->height);
+    fprintf (file,
+	     "x: %d y: %d width: %d height: %d\n",
+	     rect->x,
+	     rect->y,
+	     rect->width,
+	     rect->height);
 }

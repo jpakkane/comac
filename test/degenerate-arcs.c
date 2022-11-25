@@ -39,19 +39,22 @@ draw (comac_t *cr, int width, int height)
     /* This should be equivalent to a simple rectangle, such as may be
      * constructed for a rounded-rectangle with corner radii of 0...
      */
-    comac_arc (cr, 5, 5, 0, M_PI, 3*M_PI/2);
-    comac_arc (cr, 15, 5, 0, 3*M_PI/2, 2*M_PI);
-    comac_arc (cr, 15, 15, 0, 0, M_PI/2);
-    comac_arc (cr, 5, 15, 0, M_PI/2, M_PI);
+    comac_arc (cr, 5, 5, 0, M_PI, 3 * M_PI / 2);
+    comac_arc (cr, 15, 5, 0, 3 * M_PI / 2, 2 * M_PI);
+    comac_arc (cr, 15, 15, 0, 0, M_PI / 2);
+    comac_arc (cr, 5, 15, 0, M_PI / 2, M_PI);
 
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (degenerate_arcs,
-	    "Tests path construction using a series of degenerate (radius=0) arcs",
-	    "arc, fill", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    degenerate_arcs,
+    "Tests path construction using a series of degenerate (radius=0) arcs",
+    "arc, fill", /* keywords */
+    NULL,	 /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

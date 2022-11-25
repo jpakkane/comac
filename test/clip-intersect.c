@@ -29,7 +29,8 @@
 #define WIDTH 20
 #define HEIGHT 20
 
-static void clip_mask (comac_t *cr)
+static void
+clip_mask (comac_t *cr)
 {
     comac_move_to (cr, 10, 0);
     comac_line_to (cr, 0, 10);
@@ -89,6 +90,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_intersect,
 	    "Tests intersection of a simple clip with a clip-mask",
 	    "clip, paint", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

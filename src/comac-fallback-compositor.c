@@ -48,8 +48,8 @@
 /* high-level compositor interface */
 
 static comac_int_status_t
-_comac_fallback_compositor_paint (const comac_compositor_t	*_compositor,
-				  comac_composite_rectangles_t	*extents)
+_comac_fallback_compositor_paint (const comac_compositor_t *_compositor,
+				  comac_composite_rectangles_t *extents)
 {
     comac_image_surface_t *image;
     comac_int_status_t status;
@@ -69,8 +69,8 @@ _comac_fallback_compositor_paint (const comac_compositor_t	*_compositor,
 }
 
 static comac_int_status_t
-_comac_fallback_compositor_mask (const comac_compositor_t	*_compositor,
-				 comac_composite_rectangles_t	*extents)
+_comac_fallback_compositor_mask (const comac_compositor_t *_compositor,
+				 comac_composite_rectangles_t *extents)
 {
     comac_image_surface_t *image;
     comac_int_status_t status;
@@ -91,14 +91,14 @@ _comac_fallback_compositor_mask (const comac_compositor_t	*_compositor,
 }
 
 static comac_int_status_t
-_comac_fallback_compositor_stroke (const comac_compositor_t	*_compositor,
+_comac_fallback_compositor_stroke (const comac_compositor_t *_compositor,
 				   comac_composite_rectangles_t *extents,
-				   const comac_path_fixed_t	*path,
-				   const comac_stroke_style_t	*style,
-				   const comac_matrix_t		*ctm,
-				   const comac_matrix_t		*ctm_inverse,
-				   double			 tolerance,
-				   comac_antialias_t		 antialias)
+				   const comac_path_fixed_t *path,
+				   const comac_stroke_style_t *style,
+				   const comac_matrix_t *ctm,
+				   const comac_matrix_t *ctm_inverse,
+				   double tolerance,
+				   comac_antialias_t antialias)
 {
     comac_image_surface_t *image;
     comac_int_status_t status;
@@ -112,8 +112,10 @@ _comac_fallback_compositor_stroke (const comac_compositor_t	*_compositor,
 					   extents->unbounded.y,
 					   extents->op,
 					   &extents->source_pattern.base,
-					   path, style,
-					   ctm, ctm_inverse,
+					   path,
+					   style,
+					   ctm,
+					   ctm_inverse,
 					   tolerance,
 					   antialias,
 					   extents->clip);
@@ -122,12 +124,12 @@ _comac_fallback_compositor_stroke (const comac_compositor_t	*_compositor,
 }
 
 static comac_int_status_t
-_comac_fallback_compositor_fill (const comac_compositor_t	*_compositor,
+_comac_fallback_compositor_fill (const comac_compositor_t *_compositor,
 				 comac_composite_rectangles_t *extents,
-				 const comac_path_fixed_t	*path,
-				 comac_fill_rule_t		 fill_rule,
-				 double				 tolerance,
-				 comac_antialias_t		 antialias)
+				 const comac_path_fixed_t *path,
+				 comac_fill_rule_t fill_rule,
+				 double tolerance,
+				 comac_antialias_t antialias)
 {
     comac_image_surface_t *image;
     comac_int_status_t status;
@@ -142,19 +144,21 @@ _comac_fallback_compositor_fill (const comac_compositor_t	*_compositor,
 					 extents->op,
 					 &extents->source_pattern.base,
 					 path,
-					 fill_rule, tolerance, antialias,
+					 fill_rule,
+					 tolerance,
+					 antialias,
 					 extents->clip);
 
     return _comac_surface_unmap_image (extents->surface, image);
 }
 
 static comac_int_status_t
-_comac_fallback_compositor_glyphs (const comac_compositor_t	*_compositor,
+_comac_fallback_compositor_glyphs (const comac_compositor_t *_compositor,
 				   comac_composite_rectangles_t *extents,
-				   comac_scaled_font_t		*scaled_font,
-				   comac_glyph_t		*glyphs,
-				   int				 num_glyphs,
-				   comac_bool_t			 overlap)
+				   comac_scaled_font_t *scaled_font,
+				   comac_glyph_t *glyphs,
+				   int num_glyphs,
+				   comac_bool_t overlap)
 {
     comac_image_surface_t *image;
     comac_int_status_t status;
@@ -168,18 +172,20 @@ _comac_fallback_compositor_glyphs (const comac_compositor_t	*_compositor,
 					   extents->unbounded.y,
 					   extents->op,
 					   &extents->source_pattern.base,
-					   scaled_font, glyphs, num_glyphs,
+					   scaled_font,
+					   glyphs,
+					   num_glyphs,
 					   extents->clip);
 
     return _comac_surface_unmap_image (extents->surface, image);
 }
 
 const comac_compositor_t _comac_fallback_compositor = {
-     &__comac_no_compositor,
+    &__comac_no_compositor,
 
-     _comac_fallback_compositor_paint,
-     _comac_fallback_compositor_mask,
-     _comac_fallback_compositor_stroke,
-     _comac_fallback_compositor_fill,
-     _comac_fallback_compositor_glyphs,
+    _comac_fallback_compositor_paint,
+    _comac_fallback_compositor_mask,
+    _comac_fallback_compositor_stroke,
+    _comac_fallback_compositor_fill,
+    _comac_fallback_compositor_glyphs,
 };

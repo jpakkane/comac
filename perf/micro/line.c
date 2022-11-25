@@ -29,7 +29,7 @@
 static comac_time_t
 horizontal (comac_t *cr, int width, int height, int loops)
 {
-    double h = height/2 + .5;
+    double h = height / 2 + .5;
 
     comac_move_to (cr, 0, h);
     comac_line_to (cr, width, h);
@@ -63,10 +63,10 @@ horizontal_wide (comac_t *cr, int width, int height, int loops)
 static comac_time_t
 nearly_horizontal (comac_t *cr, int width, int height, int loops)
 {
-    double h = height/2;
+    double h = height / 2;
 
     comac_move_to (cr, 0, h);
-    comac_line_to (cr, width, h+1);
+    comac_line_to (cr, width, h + 1);
 
     comac_perf_timer_start ();
 
@@ -94,11 +94,10 @@ nearly_horizontal_wide (comac_t *cr, int width, int height, int loops)
     return nearly_horizontal (cr, width, height, loops);
 }
 
-
 static comac_time_t
 vertical (comac_t *cr, int width, int height, int loops)
 {
-    double w = width/2 + .5;
+    double w = width / 2 + .5;
 
     comac_move_to (cr, w, 0);
     comac_line_to (cr, w, height);
@@ -132,10 +131,10 @@ vertical_wide (comac_t *cr, int width, int height, int loops)
 static comac_time_t
 nearly_vertical (comac_t *cr, int width, int height, int loops)
 {
-    double w = width/2;
+    double w = width / 2;
 
     comac_move_to (cr, w, 0);
-    comac_line_to (cr, w+1, height);
+    comac_line_to (cr, w + 1, height);
 
     comac_perf_timer_start ();
 
@@ -162,7 +161,6 @@ nearly_vertical_wide (comac_t *cr, int width, int height, int loops)
     comac_set_line_width (cr, 5.);
     return nearly_vertical (cr, width, height, loops);
 }
-
 
 static comac_time_t
 diagonal (comac_t *cr, int width, int height, int loops)

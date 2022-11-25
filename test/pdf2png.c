@@ -27,12 +27,16 @@
 #include <stdlib.h>
 #include <poppler.h>
 
-#define FAIL(msg)							\
-    do { fprintf (stderr, "FAIL: %s\n", msg); exit (-1); } while (0)
+#define FAIL(msg)                                                              \
+    do {                                                                       \
+	fprintf (stderr, "FAIL: %s\n", msg);                                   \
+	exit (-1);                                                             \
+    } while (0)
 
 #define PIXELS_PER_POINT 1
 
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
     PopplerDocument *document;
     PopplerPage *page;
@@ -49,11 +53,11 @@ int main (int argc, char *argv[])
     if (argc != 4)
 	FAIL ("usage: pdf2png input_file.pdf output_file.png page");
 
-#if !GLIB_CHECK_VERSION(2,36,0)
+#if ! GLIB_CHECK_VERSION(2, 36, 0)
     g_type_init ();
 #endif
 
-    if (g_path_is_absolute(filename)) {
+    if (g_path_is_absolute (filename)) {
 	absolute = g_strdup (filename);
     } else {
 	gchar *dir = g_get_current_dir ();
@@ -82,7 +86,7 @@ int main (int argc, char *argv[])
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
     comac_push_group_with_content (cr, COMAC_CONTENT_COLOR_ALPHA);
 
@@ -92,8 +96,8 @@ int main (int argc, char *argv[])
     comac_pop_group_to_source (cr);
     comac_paint (cr);
 
-    status = comac_surface_write_to_png (comac_get_target (cr),
-					 output_filename);
+    status =
+	comac_surface_write_to_png (comac_get_target (cr), output_filename);
     comac_destroy (cr);
 
     if (status)

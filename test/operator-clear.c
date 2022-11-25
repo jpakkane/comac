@@ -56,14 +56,15 @@ draw_mask (comac_t *cr, int x, int y)
     comac_surface_t *mask_surface;
     comac_t *cr2;
 
-    double width = (int)(0.9 * WIDTH);
-    double height = (int)(0.9 * HEIGHT);
+    double width = (int) (0.9 * WIDTH);
+    double height = (int) (0.9 * HEIGHT);
     x += 0.05 * WIDTH;
     y += 0.05 * HEIGHT;
 
     mask_surface = comac_surface_create_similar (comac_get_group_target (cr),
 						 COMAC_CONTENT_ALPHA,
-						 width, height);
+						 width,
+						 height);
     cr2 = comac_create (mask_surface);
     comac_surface_destroy (mask_surface);
 
@@ -84,17 +85,18 @@ draw_glyphs (comac_t *cr, int x, int y)
     comac_set_font_size (cr, 0.8 * HEIGHT);
 
     comac_text_extents (cr, "FG", &extents);
-    comac_move_to (cr,
-		   x + floor ((WIDTH - extents.width) / 2 + 0.5) - extents.x_bearing,
-		   y + floor ((HEIGHT - extents.height) / 2 + 0.5) - extents.y_bearing);
+    comac_move_to (
+	cr,
+	x + floor ((WIDTH - extents.width) / 2 + 0.5) - extents.x_bearing,
+	y + floor ((HEIGHT - extents.height) / 2 + 0.5) - extents.y_bearing);
     comac_show_text (cr, "FG");
 }
 
 static void
 draw_polygon (comac_t *cr, int x, int y)
 {
-    double width = (int)(0.9 * WIDTH);
-    double height = (int)(0.9 * HEIGHT);
+    double width = (int) (0.9 * WIDTH);
+    double height = (int) (0.9 * HEIGHT);
     x += 0.05 * WIDTH;
     y += 0.05 * HEIGHT;
 
@@ -112,31 +114,29 @@ draw_polygon (comac_t *cr, int x, int y)
 static void
 draw_rects (comac_t *cr, int x, int y)
 {
-    double block_width = (int)(0.33 * WIDTH + 0.5);
-    double block_height = (int)(0.33 * HEIGHT + 0.5);
+    double block_width = (int) (0.33 * WIDTH + 0.5);
+    double block_height = (int) (0.33 * HEIGHT + 0.5);
     int i, j;
 
     for (i = 0; i < 3; i++)
 	for (j = 0; j < 3; j++)
 	    if ((i + j) % 2 == 0)
 		comac_rectangle (cr,
-				 x + block_width * i, y + block_height * j,
-				 block_width,         block_height);
+				 x + block_width * i,
+				 y + block_height * j,
+				 block_width,
+				 block_height);
 
     comac_fill (cr);
 }
 
-static void (* const pattern_funcs[])(comac_t *cr, int x, int y) = {
+static void (*const pattern_funcs[]) (comac_t *cr, int x, int y) = {
     set_solid_pattern,
     set_gradient_pattern,
 };
 
-static void (* const draw_funcs[])(comac_t *cr, int x, int y) = {
-    draw_mask,
-    draw_glyphs,
-    draw_polygon,
-    draw_rects
-};
+static void (*const draw_funcs[]) (comac_t *cr, int x, int y) = {
+    draw_mask, draw_glyphs, draw_polygon, draw_rects};
 
 #define IMAGE_WIDTH (ARRAY_LENGTH (pattern_funcs) * (WIDTH + PAD) + PAD)
 #define IMAGE_HEIGHT (ARRAY_LENGTH (draw_funcs) * (HEIGHT + PAD) + PAD)
@@ -148,7 +148,8 @@ draw (comac_t *cr, int width, int height)
     size_t i, j, x, y;
     comac_pattern_t *pattern;
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
@@ -159,12 +160,19 @@ draw (comac_t *cr, int width, int height)
 
 	    comac_save (cr);
 
-	    pattern = comac_pattern_create_linear (x + WIDTH, y,
-						   x,         y + HEIGHT);
-	    comac_pattern_add_color_stop_rgba (pattern, 0.2,
-					       0.0, 0.0, 1.0, 1.0); /* Solid blue */
-	    comac_pattern_add_color_stop_rgba (pattern, 0.8,
-					       0.0, 0.0, 1.0, 0.0); /* Transparent blue */
+	    pattern = comac_pattern_create_linear (x + WIDTH, y, x, y + HEIGHT);
+	    comac_pattern_add_color_stop_rgba (pattern,
+					       0.2,
+					       0.0,
+					       0.0,
+					       1.0,
+					       1.0); /* Solid blue */
+	    comac_pattern_add_color_stop_rgba (pattern,
+					       0.8,
+					       0.0,
+					       0.0,
+					       1.0,
+					       0.0); /* Transparent blue */
 	    comac_set_source (cr, pattern);
 	    comac_pattern_destroy (pattern);
 
@@ -173,17 +181,17 @@ draw (comac_t *cr, int width, int height)
 	    comac_clip (cr);
 
 	    comac_set_operator (cr, COMAC_OPERATOR_CLEAR);
-	    pattern_funcs[i] (cr, x, y);
-	    draw_funcs[j] (cr, x, y);
+	    pattern_funcs[i](cr, x, y);
+	    draw_funcs[j](cr, x, y);
 	    if (comac_status (cr))
-		comac_test_log (ctx, "%d %d HERE!\n", (int)i, (int)j);
+		comac_test_log (ctx, "%d %d HERE!\n", (int) i, (int) j);
 
 	    comac_restore (cr);
 	}
     }
 
     if (comac_status (cr) != COMAC_STATUS_SUCCESS)
-	comac_test_log (ctx, "%d %d .HERE!\n", (int)i, (int)j);
+	comac_test_log (ctx, "%d %d .HERE!\n", (int) i, (int) j);
 
     return COMAC_TEST_SUCCESS;
 }
@@ -191,6 +199,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (operator_clear,
 	    "Test of COMAC_OPERATOR_CLEAR",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

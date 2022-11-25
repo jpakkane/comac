@@ -41,8 +41,7 @@
 COMAC_BEGIN_DECLS
 
 static inline comac_int_status_t
-_comac_contour_add_point (comac_contour_t *contour,
-			  const comac_point_t *point)
+_comac_contour_add_point (comac_contour_t *contour, const comac_point_t *point)
 {
     struct _comac_contour_chain *tail = contour->tail;
 
@@ -62,7 +61,7 @@ _comac_contour_first_point (comac_contour_t *c)
 static inline comac_point_t *
 _comac_contour_last_point (comac_contour_t *c)
 {
-    return &c->tail->points[c->tail->num_points-1];
+    return &c->tail->points[c->tail->num_points - 1];
 }
 
 static inline void

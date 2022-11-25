@@ -26,26 +26,28 @@
 
 #include "comac-test.h"
 
-#define STEP	5
-#define WIDTH	100
-#define HEIGHT	100
+#define STEP 5
+#define WIDTH 100
+#define HEIGHT 100
 
-static void diamond (comac_t *cr)
+static void
+diamond (comac_t *cr)
 {
-    comac_move_to (cr, WIDTH/2, 0);
-    comac_line_to (cr, WIDTH, HEIGHT/2);
-    comac_line_to (cr, WIDTH/2, HEIGHT);
-    comac_line_to (cr, 0, HEIGHT/2);
+    comac_move_to (cr, WIDTH / 2, 0);
+    comac_line_to (cr, WIDTH, HEIGHT / 2);
+    comac_line_to (cr, WIDTH / 2, HEIGHT);
+    comac_line_to (cr, 0, HEIGHT / 2);
     comac_close_path (cr);
 }
 
-static void background (comac_t *cr)
+static void
+background (comac_t *cr)
 {
     comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
-    comac_set_source_rgb (cr, 0,0,0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 }
 
 static comac_test_status_t
@@ -66,10 +68,10 @@ draw (comac_t *cr, int width, int height)
 
     /* partial overlap */
     comac_save (cr);
-    comac_translate (cr, -WIDTH/4, 0);
+    comac_translate (cr, -WIDTH / 4, 0);
     diamond (cr);
     comac_clip (cr);
-    comac_translate (cr, WIDTH/2, 0);
+    comac_translate (cr, WIDTH / 2, 0);
     diamond (cr);
     comac_clip (cr);
     comac_paint (cr);
@@ -79,7 +81,7 @@ draw (comac_t *cr, int width, int height)
 
     /* no overlap, but the bounding boxes must */
     comac_save (cr);
-    comac_translate (cr, -WIDTH/2 + 2, -2);
+    comac_translate (cr, -WIDTH / 2 + 2, -2);
     diamond (cr);
     comac_clip (cr);
     comac_translate (cr, WIDTH - 4, 4);
@@ -92,7 +94,7 @@ draw (comac_t *cr, int width, int height)
 
     /* completely disjoint */
     comac_save (cr);
-    comac_translate (cr, -WIDTH/2 - 1, 0);
+    comac_translate (cr, -WIDTH / 2 - 1, 0);
     diamond (cr);
     comac_clip (cr);
     comac_translate (cr, WIDTH + 2, 0);
@@ -106,7 +108,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (clip_polygons,
 	    "Test drawing through through an intersection of polygons",
-	    "clip", /* keywords */
+	    "clip",	     /* keywords */
 	    "target=raster", /* requirements */
-	    4*WIDTH, HEIGHT,
-	    NULL, draw)
+	    4 * WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

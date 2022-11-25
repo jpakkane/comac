@@ -31,31 +31,31 @@
 
 /* A spline showing bugs in the "contour-based stroking" in comac 1.12 */
 static const struct spline {
-    struct { double x, y; } pt[5];
+    struct {
+	double x, y;
+    } pt[5];
     double line_width;
     double rgba[4];
-} splines[] = {
-    {
-	{
-	    { 172.25, 156.185 },
-	    { 177.225, 164.06 },
-	    { 176.5, 157.5 },
-	    { 175.5, 159.5 },
-	},
-	WIDE_LINE_WIDTH,
-	{ 1, 1, 1, 1 },
-    },
-    {
-	{
-	    { 571.25, 247.185 },
-	    { 78.225, 224.06 },
-	    { 129.5, 312.5 },
-	    { 210.5, 224.5 },
-	},
-	NARROW_LINE_WIDTH,
-	{ 1, 0, 0, 1 },
-    }
-};
+} splines[] = {{
+		   {
+		       {172.25, 156.185},
+		       {177.225, 164.06},
+		       {176.5, 157.5},
+		       {175.5, 159.5},
+		   },
+		   WIDE_LINE_WIDTH,
+		   {1, 1, 1, 1},
+	       },
+	       {
+		   {
+		       {571.25, 247.185},
+		       {78.225, 224.06},
+		       {129.5, 312.5},
+		       {210.5, 224.5},
+		   },
+		   NARROW_LINE_WIDTH,
+		   {1, 0, 0, 1},
+	       }};
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -65,9 +65,9 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_paint (cr);
 
-    comac_set_line_cap(cr, COMAC_LINE_CAP_SQUARE);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_SQUARE);
 
-    for (n = 0; n < ARRAY_LENGTH(splines); n++) {
+    for (n = 0; n < ARRAY_LENGTH (splines); n++) {
 	comac_set_line_width (cr, splines[n].line_width);
 	comac_set_source_rgba (cr,
 			       splines[n].rgba[0],
@@ -77,9 +77,12 @@ draw (comac_t *cr, int width, int height)
 
 	comac_move_to (cr, splines[n].pt[0].x, splines[n].pt[0].y);
 	comac_curve_to (cr,
-			splines[n].pt[1].x, splines[n].pt[1].y,
-			splines[n].pt[2].x, splines[n].pt[2].y,
-			splines[n].pt[3].x, splines[n].pt[3].y);
+			splines[n].pt[1].x,
+			splines[n].pt[1].y,
+			splines[n].pt[2].x,
+			splines[n].pt[2].y,
+			splines[n].pt[3].x,
+			splines[n].pt[3].y);
 
 	comac_stroke (cr);
     }
@@ -90,6 +93,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_spline,
 	    "Exercises a bug in the stroking of splines",
 	    "spline, stroke", /* keywords */
-	    NULL, /* requirements */
-	    300, 300,
-	    NULL, draw)
+	    NULL,	      /* requirements */
+	    300,
+	    300,
+	    NULL,
+	    draw)

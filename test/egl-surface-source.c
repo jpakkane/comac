@@ -55,21 +55,29 @@ static comac_surface_t *
 create_source_surface (int size)
 {
     EGLint config_attribs[] = {
-	EGL_RED_SIZE, 8,
-	EGL_GREEN_SIZE, 8,
-	EGL_BLUE_SIZE, 8,
-	EGL_ALPHA_SIZE, 8,
-	EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+	EGL_RED_SIZE,
+	8,
+	EGL_GREEN_SIZE,
+	8,
+	EGL_BLUE_SIZE,
+	8,
+	EGL_ALPHA_SIZE,
+	8,
+	EGL_SURFACE_TYPE,
+	EGL_PBUFFER_BIT,
 #if COMAC_HAS_GL_SURFACE
-	EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+	EGL_RENDERABLE_TYPE,
+	EGL_OPENGL_BIT,
 #elif COMAC_HAS_GLESV2_SURFACE
-	EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+	EGL_RENDERABLE_TYPE,
+	EGL_OPENGL_ES2_BIT,
 #endif
 	EGL_NONE
     };
     const EGLint ctx_attribs[] = {
 #if COMAC_HAS_GLESV2_SURFACE
-	EGL_CONTEXT_CLIENT_VERSION, 2,
+	EGL_CONTEXT_CLIENT_VERSION,
+	2,
 #endif
 	EGL_NONE
     };
@@ -99,8 +107,7 @@ create_source_surface (int size)
     eglBindAPI (EGL_OPENGL_ES_API);
 #endif
 
-   ctx = eglCreateContext (dpy, config, EGL_NO_CONTEXT,
-				  ctx_attribs);
+    ctx = eglCreateContext (dpy, config, EGL_NO_CONTEXT, ctx_attribs);
     if (ctx == EGL_NO_CONTEXT) {
 	eglTerminate (dpy);
 	return NULL;
@@ -113,15 +120,13 @@ create_source_surface (int size)
     if (comac_device_set_user_data (device,
 				    (comac_user_data_key_t *) cleanup,
 				    arg,
-				    cleanup))
-    {
+				    cleanup)) {
 	cleanup (arg);
 	return NULL;
     }
 
-    surface = comac_gl_surface_create (device,
-				       COMAC_CONTENT_COLOR_ALPHA,
-				       size, size);
+    surface =
+	comac_gl_surface_create (device, COMAC_CONTENT_COLOR_ALPHA, size, size);
     comac_device_destroy (device);
 
     return surface;
@@ -130,6 +135,8 @@ create_source_surface (int size)
 COMAC_TEST (egl_surface_source,
 	    "Test using a EGL surface as the source",
 	    "source", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    preamble, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    preamble,
+	    draw)

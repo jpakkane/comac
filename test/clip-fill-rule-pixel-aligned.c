@@ -34,17 +34,17 @@ pixel_aligned_path (comac_t *cr)
     comac_save (cr);
     {
 	comac_scale (cr, SIZE, SIZE);
-	comac_move_to     (cr,  1,  0);
-	comac_rel_line_to (cr,  1,  0);
-	comac_rel_line_to (cr,  0,  3);
-	comac_rel_line_to (cr,  1,  0);
-	comac_rel_line_to (cr,  0, -1);
-	comac_rel_line_to (cr, -3,  0);
-	comac_rel_line_to (cr,  0, -1);
-	comac_rel_line_to (cr,  4,  0);
-	comac_rel_line_to (cr,  0,  3);
-	comac_rel_line_to (cr, -3,  0);
-	comac_rel_line_to (cr,  0, -4);
+	comac_move_to (cr, 1, 0);
+	comac_rel_line_to (cr, 1, 0);
+	comac_rel_line_to (cr, 0, 3);
+	comac_rel_line_to (cr, 1, 0);
+	comac_rel_line_to (cr, 0, -1);
+	comac_rel_line_to (cr, -3, 0);
+	comac_rel_line_to (cr, 0, -1);
+	comac_rel_line_to (cr, 4, 0);
+	comac_rel_line_to (cr, 0, 3);
+	comac_rel_line_to (cr, -3, 0);
+	comac_rel_line_to (cr, 0, -4);
 	comac_close_path (cr);
     }
     comac_restore (cr);
@@ -67,7 +67,7 @@ draw (comac_t *cr, int width, int height)
     }
     comac_restore (cr);
 
-    comac_translate (cr, SIZE*4 + PAD, 0);
+    comac_translate (cr, SIZE * 4 + PAD, 0);
 
     comac_save (cr);
     {
@@ -82,9 +82,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (clip_fill_rule_pixel_aligned,
-	    "Tests interaction of clipping and comac_set_fill_rule with a pixel-aligned path",
+	    "Tests interaction of clipping and comac_set_fill_rule with a "
+	    "pixel-aligned path",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    PAD + (SIZE*4) + PAD + (SIZE*4) + PAD,
-	    PAD + (SIZE*4) + PAD,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    PAD + (SIZE * 4) + PAD + (SIZE * 4) + PAD,
+	    PAD + (SIZE * 4) + PAD,
+	    NULL,
+	    draw)

@@ -29,18 +29,18 @@ draw (comac_t *cr, int width, int height)
 {
     int row;
 
-    comac_set_source_rgb(cr, 1, 1, 1);
-    comac_paint(cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    comac_set_source_rgb(cr, 1, 0, 0);
-    for(row = 0; row < SIZE; row++) {
-	comac_rectangle(cr, 0, row, SIZE, 1);
-	comac_clip(cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    for (row = 0; row < SIZE; row++) {
+	comac_rectangle (cr, 0, row, SIZE, 1);
+	comac_clip (cr);
 
-	comac_arc(cr, SIZE/2, SIZE/2, SIZE/2-8, 0, 2*M_PI);
-	comac_stroke(cr);
+	comac_arc (cr, SIZE / 2, SIZE / 2, SIZE / 2 - 8, 0, 2 * M_PI);
+	comac_stroke (cr);
 
-	comac_reset_clip(cr);
+	comac_reset_clip (cr);
     }
 
     return COMAC_TEST_SUCCESS;
@@ -49,6 +49,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (stroke_clipped,
 	    "Check that the stroke is accurately drawn through smaller clips",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

@@ -57,7 +57,7 @@
 static pixman_image_t *
 to_pixman_image (comac_surface_t *s)
 {
-    return ((comac_image_surface_t *)s)->pixman_image;
+    return ((comac_image_surface_t *) s)->pixman_image;
 }
 
 static comac_int_status_t
@@ -73,8 +73,7 @@ release (void *abstract_dst)
 }
 
 static comac_int_status_t
-set_clip_region (void *_surface,
-		 comac_region_t *region)
+set_clip_region (void *_surface, comac_region_t *region)
 {
     comac_image_surface_t *surface = _surface;
     pixman_region32_t *rgn = region ? &region->rgn : NULL;
@@ -89,7 +88,8 @@ static comac_int_status_t
 draw_image_boxes (void *_dst,
 		  comac_image_surface_t *image,
 		  comac_boxes_t *boxes,
-		  int dx, int dy)
+		  int dx,
+		  int dy)
 {
     comac_image_surface_t *dst = _dst;
     struct _comac_boxes_chunk *chunk;
@@ -105,21 +105,30 @@ draw_image_boxes (void *_dst,
 	    int w = _comac_fixed_integer_part (b->p2.x) - x;
 	    int h = _comac_fixed_integer_part (b->p2.y) - y;
 	    if (dst->pixman_format != image->pixman_format ||
-		! pixman_blt ((uint32_t *)image->data, (uint32_t *)dst->data,
+		! pixman_blt ((uint32_t *) image->data,
+			      (uint32_t *) dst->data,
 			      image->stride / sizeof (uint32_t),
 			      dst->stride / sizeof (uint32_t),
 			      PIXMAN_FORMAT_BPP (image->pixman_format),
 			      PIXMAN_FORMAT_BPP (dst->pixman_format),
-			      x + dx, y + dy,
-			      x, y,
-			      w, h))
-	    {
+			      x + dx,
+			      y + dy,
+			      x,
+			      y,
+			      w,
+			      h)) {
 		pixman_image_composite32 (PIXMAN_OP_SRC,
-					  image->pixman_image, NULL, dst->pixman_image,
-					  x + dx, y + dy,
-					  0, 0,
-					  x, y,
-					  w, h);
+					  image->pixman_image,
+					  NULL,
+					  dst->pixman_image,
+					  x + dx,
+					  y + dy,
+					  0,
+					  0,
+					  x,
+					  y,
+					  w,
+					  h);
 	    }
 	}
     }
@@ -129,54 +138,42 @@ draw_image_boxes (void *_dst,
 static inline uint32_t
 color_to_uint32 (const comac_color_t *color)
 {
-    return
-        ((uint32_t)color->alpha_short >> 8 << 24) |
-        (color->red_short >> 8 << 16)   |
-        (color->green_short & 0xff00)   |
-        (color->blue_short >> 8);
+    return ((uint32_t) color->alpha_short >> 8 << 24) |
+	   (color->red_short >> 8 << 16) | (color->green_short & 0xff00) |
+	   (color->blue_short >> 8);
 }
 
 static inline comac_bool_t
-color_to_pixel (const comac_color_t	*color,
-                pixman_format_code_t	 format,
-                uint32_t		*pixel)
+color_to_pixel (const comac_color_t *color,
+		pixman_format_code_t format,
+		uint32_t *pixel)
 {
     uint32_t c;
 
-    if (!(format == PIXMAN_a8r8g8b8     ||
-          format == PIXMAN_x8r8g8b8     ||
-          format == PIXMAN_a8b8g8r8     ||
-          format == PIXMAN_x8b8g8r8     ||
-          format == PIXMAN_b8g8r8a8     ||
-          format == PIXMAN_b8g8r8x8     ||
-          format == PIXMAN_r5g6b5       ||
-          format == PIXMAN_b5g6r5       ||
-          format == PIXMAN_a8))
-    {
+    if (! (format == PIXMAN_a8r8g8b8 || format == PIXMAN_x8r8g8b8 ||
+	   format == PIXMAN_a8b8g8r8 || format == PIXMAN_x8b8g8r8 ||
+	   format == PIXMAN_b8g8r8a8 || format == PIXMAN_b8g8r8x8 ||
+	   format == PIXMAN_r5g6b5 || format == PIXMAN_b5g6r5 ||
+	   format == PIXMAN_a8)) {
 	return FALSE;
     }
 
     c = color_to_uint32 (color);
 
     if (PIXMAN_FORMAT_TYPE (format) == PIXMAN_TYPE_ABGR) {
-	c = ((c & 0xff000000) >>  0) |
-	    ((c & 0x00ff0000) >> 16) |
-	    ((c & 0x0000ff00) >>  0) |
-	    ((c & 0x000000ff) << 16);
+	c = ((c & 0xff000000) >> 0) | ((c & 0x00ff0000) >> 16) |
+	    ((c & 0x0000ff00) >> 0) | ((c & 0x000000ff) << 16);
     }
 
     if (PIXMAN_FORMAT_TYPE (format) == PIXMAN_TYPE_BGRA) {
-	c = ((c & 0xff000000) >> 24) |
-	    ((c & 0x00ff0000) >>  8) |
-	    ((c & 0x0000ff00) <<  8) |
-	    ((c & 0x000000ff) << 24);
+	c = ((c & 0xff000000) >> 24) | ((c & 0x00ff0000) >> 8) |
+	    ((c & 0x0000ff00) << 8) | ((c & 0x000000ff) << 24);
     }
 
     if (format == PIXMAN_a8) {
 	c = c >> 24;
     } else if (format == PIXMAN_r5g6b5 || format == PIXMAN_b5g6r5) {
-	c = ((((c) >> 3) & 0x001f) |
-	     (((c) >> 5) & 0x07e0) |
+	c = ((((c) >> 3) & 0x001f) | (((c) >> 5) & 0x07e0) |
 	     (((c) >> 8) & 0xf800));
     }
 
@@ -286,11 +283,11 @@ fill_reduces_to_source (comac_operator_t op,
 }
 
 static comac_int_status_t
-fill_rectangles (void			*_dst,
-		 comac_operator_t	 op,
-		 const comac_color_t	*color,
-		 comac_rectangle_int_t	*rects,
-		 int			 num_rects)
+fill_rectangles (void *_dst,
+		 comac_operator_t op,
+		 const comac_color_t *color,
+		 comac_rectangle_int_t *rects,
+		 int num_rects)
 {
     comac_image_surface_t *dst = _dst;
     uint32_t pixel;
@@ -300,10 +297,13 @@ fill_rectangles (void			*_dst,
 
     if (fill_reduces_to_source (op, color, dst, &pixel)) {
 	for (i = 0; i < num_rects; i++) {
-	    pixman_fill ((uint32_t *) dst->data, dst->stride / sizeof (uint32_t),
+	    pixman_fill ((uint32_t *) dst->data,
+			 dst->stride / sizeof (uint32_t),
 			 PIXMAN_FORMAT_BPP (dst->pixman_format),
-			 rects[i].x, rects[i].y,
-			 rects[i].width, rects[i].height,
+			 rects[i].x,
+			 rects[i].y,
+			 rects[i].width,
+			 rects[i].height,
 			 pixel);
 	}
     } else {
@@ -314,11 +314,17 @@ fill_rectangles (void			*_dst,
 	op = _pixman_operator (op);
 	for (i = 0; i < num_rects; i++) {
 	    pixman_image_composite32 (op,
-				      src, NULL, dst->pixman_image,
-				      0, 0,
-				      0, 0,
-				      rects[i].x, rects[i].y,
-				      rects[i].width, rects[i].height);
+				      src,
+				      NULL,
+				      dst->pixman_image,
+				      0,
+				      0,
+				      0,
+				      0,
+				      rects[i].x,
+				      rects[i].y,
+				      rects[i].width,
+				      rects[i].height);
 	}
 
 	pixman_image_unref (src);
@@ -328,10 +334,10 @@ fill_rectangles (void			*_dst,
 }
 
 static comac_int_status_t
-fill_boxes (void		*_dst,
-	    comac_operator_t	 op,
-	    const comac_color_t	*color,
-	    comac_boxes_t	*boxes)
+fill_boxes (void *_dst,
+	    comac_operator_t op,
+	    const comac_color_t *color,
+	    comac_boxes_t *boxes)
 {
     comac_image_surface_t *dst = _dst;
     struct _comac_boxes_chunk *chunk;
@@ -350,12 +356,14 @@ fill_boxes (void		*_dst,
 		pixman_fill ((uint32_t *) dst->data,
 			     dst->stride / sizeof (uint32_t),
 			     PIXMAN_FORMAT_BPP (dst->pixman_format),
-			     x, y, w, h, pixel);
+			     x,
+			     y,
+			     w,
+			     h,
+			     pixel);
 	    }
 	}
-    }
-    else
-    {
+    } else {
 	pixman_image_t *src = _pixman_image_for_color (color);
 	if (unlikely (src == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -368,11 +376,17 @@ fill_boxes (void		*_dst,
 		int x2 = _comac_fixed_integer_part (chunk->base[i].p2.x);
 		int y2 = _comac_fixed_integer_part (chunk->base[i].p2.y);
 		pixman_image_composite32 (op,
-					  src, NULL, dst->pixman_image,
-					  0, 0,
-					  0, 0,
-					  x1, y1,
-					  x2-x1, y2-y1);
+					  src,
+					  NULL,
+					  dst->pixman_image,
+					  0,
+					  0,
+					  0,
+					  0,
+					  x1,
+					  y1,
+					  x2 - x1,
+					  y2 - y1);
 	    }
 	}
 
@@ -383,116 +397,155 @@ fill_boxes (void		*_dst,
 }
 
 static comac_int_status_t
-composite (void			*_dst,
-	   comac_operator_t	op,
-	   comac_surface_t	*abstract_src,
-	   comac_surface_t	*abstract_mask,
-	   int			src_x,
-	   int			src_y,
-	   int			mask_x,
-	   int			mask_y,
-	   int			dst_x,
-	   int			dst_y,
-	   unsigned int		width,
-	   unsigned int		height)
+composite (void *_dst,
+	   comac_operator_t op,
+	   comac_surface_t *abstract_src,
+	   comac_surface_t *abstract_mask,
+	   int src_x,
+	   int src_y,
+	   int mask_x,
+	   int mask_y,
+	   int dst_x,
+	   int dst_y,
+	   unsigned int width,
+	   unsigned int height)
 {
-    comac_image_source_t *src = (comac_image_source_t *)abstract_src;
-    comac_image_source_t *mask = (comac_image_source_t *)abstract_mask;
+    comac_image_source_t *src = (comac_image_source_t *) abstract_src;
+    comac_image_source_t *mask = (comac_image_source_t *) abstract_mask;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     if (mask) {
 	pixman_image_composite32 (_pixman_operator (op),
-				  src->pixman_image, mask->pixman_image, to_pixman_image (_dst),
-				  src_x, src_y,
-				  mask_x, mask_y,
-				  dst_x, dst_y,
-				  width, height);
+				  src->pixman_image,
+				  mask->pixman_image,
+				  to_pixman_image (_dst),
+				  src_x,
+				  src_y,
+				  mask_x,
+				  mask_y,
+				  dst_x,
+				  dst_y,
+				  width,
+				  height);
     } else {
 	pixman_image_composite32 (_pixman_operator (op),
-				  src->pixman_image, NULL, to_pixman_image (_dst),
-				  src_x, src_y,
-				  0, 0,
-				  dst_x, dst_y,
-				  width, height);
+				  src->pixman_image,
+				  NULL,
+				  to_pixman_image (_dst),
+				  src_x,
+				  src_y,
+				  0,
+				  0,
+				  dst_x,
+				  dst_y,
+				  width,
+				  height);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-lerp (void			*_dst,
-      comac_surface_t		*abstract_src,
-      comac_surface_t		*abstract_mask,
-      int			src_x,
-      int			src_y,
-      int			mask_x,
-      int			mask_y,
-      int			dst_x,
-      int			dst_y,
-      unsigned int		width,
-      unsigned int		height)
+lerp (void *_dst,
+      comac_surface_t *abstract_src,
+      comac_surface_t *abstract_mask,
+      int src_x,
+      int src_y,
+      int mask_x,
+      int mask_y,
+      int dst_x,
+      int dst_y,
+      unsigned int width,
+      unsigned int height)
 {
     comac_image_surface_t *dst = _dst;
-    comac_image_source_t *src = (comac_image_source_t *)abstract_src;
-    comac_image_source_t *mask = (comac_image_source_t *)abstract_mask;
+    comac_image_source_t *src = (comac_image_source_t *) abstract_src;
+    comac_image_source_t *mask = (comac_image_source_t *) abstract_mask;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
 #if PIXMAN_HAS_OP_LERP
     pixman_image_composite32 (PIXMAN_OP_LERP_SRC,
-			      src->pixman_image, mask->pixman_image, dst->pixman_image,
-			      src_x,  src_y,
-			      mask_x, mask_y,
-			      dst_x,  dst_y,
-			      width,  height);
+			      src->pixman_image,
+			      mask->pixman_image,
+			      dst->pixman_image,
+			      src_x,
+			      src_y,
+			      mask_x,
+			      mask_y,
+			      dst_x,
+			      dst_y,
+			      width,
+			      height);
 #else
     /* Punch the clip out of the destination */
-    TRACE ((stderr, "%s - OUT_REVERSE (mask=%d/%p, dst=%d/%p)\n",
+    TRACE ((stderr,
+	    "%s - OUT_REVERSE (mask=%d/%p, dst=%d/%p)\n",
 	    __FUNCTION__,
-	    mask->base.unique_id, mask->pixman_image,
-	    dst->base.unique_id, dst->pixman_image));
+	    mask->base.unique_id,
+	    mask->pixman_image,
+	    dst->base.unique_id,
+	    dst->pixman_image));
     pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-			      mask->pixman_image, NULL, dst->pixman_image,
-			      mask_x, mask_y,
-			      0,      0,
-			      dst_x,  dst_y,
-			      width,  height);
+			      mask->pixman_image,
+			      NULL,
+			      dst->pixman_image,
+			      mask_x,
+			      mask_y,
+			      0,
+			      0,
+			      dst_x,
+			      dst_y,
+			      width,
+			      height);
 
     /* Now add the two results together */
-    TRACE ((stderr, "%s - ADD (src=%d/%p, mask=%d/%p, dst=%d/%p)\n",
+    TRACE ((stderr,
+	    "%s - ADD (src=%d/%p, mask=%d/%p, dst=%d/%p)\n",
 	    __FUNCTION__,
-	    src->base.unique_id, src->pixman_image,
-	    mask->base.unique_id, mask->pixman_image,
-	    dst->base.unique_id, dst->pixman_image));
+	    src->base.unique_id,
+	    src->pixman_image,
+	    mask->base.unique_id,
+	    mask->pixman_image,
+	    dst->base.unique_id,
+	    dst->pixman_image));
     pixman_image_composite32 (PIXMAN_OP_ADD,
-			      src->pixman_image, mask->pixman_image, dst->pixman_image,
-			      src_x,  src_y,
-			      mask_x, mask_y,
-			      dst_x,  dst_y,
-			      width,  height);
+			      src->pixman_image,
+			      mask->pixman_image,
+			      dst->pixman_image,
+			      src_x,
+			      src_y,
+			      mask_x,
+			      mask_y,
+			      dst_x,
+			      dst_y,
+			      width,
+			      height);
 #endif
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-composite_boxes (void			*_dst,
-		 comac_operator_t	op,
-		 comac_surface_t	*abstract_src,
-		 comac_surface_t	*abstract_mask,
-		 int			src_x,
-		 int			src_y,
-		 int			mask_x,
-		 int			mask_y,
-		 int			dst_x,
-		 int			dst_y,
-		 comac_boxes_t		*boxes,
-		 const comac_rectangle_int_t  *extents)
+composite_boxes (void *_dst,
+		 comac_operator_t op,
+		 comac_surface_t *abstract_src,
+		 comac_surface_t *abstract_mask,
+		 int src_x,
+		 int src_y,
+		 int mask_x,
+		 int mask_y,
+		 int dst_x,
+		 int dst_y,
+		 comac_boxes_t *boxes,
+		 const comac_rectangle_int_t *extents)
 {
     pixman_image_t *dst = to_pixman_image (_dst);
-    pixman_image_t *src = ((comac_image_source_t *)abstract_src)->pixman_image;
-    pixman_image_t *mask = abstract_mask ? ((comac_image_source_t *)abstract_mask)->pixman_image : NULL;
+    pixman_image_t *src = ((comac_image_source_t *) abstract_src)->pixman_image;
+    pixman_image_t *mask =
+	abstract_mask ? ((comac_image_source_t *) abstract_mask)->pixman_image
+		      : NULL;
     pixman_image_t *free_src = NULL;
     struct _comac_boxes_chunk *chunk;
     int i;
@@ -500,9 +553,8 @@ composite_boxes (void			*_dst,
     /* XXX consider using a region? saves multiple prepare-composite */
     TRACE ((stderr, "%s x %d\n", __FUNCTION__, boxes->num_boxes));
 
-    if (((comac_surface_t *)_dst)->is_clear &&
-	(op == COMAC_OPERATOR_SOURCE ||
-	 op == COMAC_OPERATOR_OVER ||
+    if (((comac_surface_t *) _dst)->is_clear &&
+	(op == COMAC_OPERATOR_SOURCE || op == COMAC_OPERATOR_OVER ||
 	 op == COMAC_OPERATOR_ADD)) {
 	op = PIXMAN_OP_SRC;
     } else if (mask) {
@@ -535,11 +587,18 @@ composite_boxes (void			*_dst,
 	    int x2 = _comac_fixed_integer_part (chunk->base[i].p2.x);
 	    int y2 = _comac_fixed_integer_part (chunk->base[i].p2.y);
 
-	    pixman_image_composite32 (op, src, mask, dst,
-				      x1 + src_x, y1 + src_y,
-				      x1 + mask_x, y1 + mask_y,
-				      x1 + dst_x, y1 + dst_y,
-				      x2 - x1, y2 - y1);
+	    pixman_image_composite32 (op,
+				      src,
+				      mask,
+				      dst,
+				      x1 + src_x,
+				      y1 + src_y,
+				      x1 + mask_x,
+				      y1 + mask_y,
+				      x1 + dst_x,
+				      y1 + dst_y,
+				      x2 - x1,
+				      y2 - y1);
 	}
     }
 
@@ -555,18 +614,17 @@ composite_boxes (void			*_dst,
 static comac_bool_t
 line_exceeds_16_16 (const comac_line_t *line)
 {
-    return
-	line->p1.x <= COMAC_FIXED_16_16_MIN ||
-	line->p1.x >= COMAC_FIXED_16_16_MAX ||
+    return line->p1.x <= COMAC_FIXED_16_16_MIN ||
+	   line->p1.x >= COMAC_FIXED_16_16_MAX ||
 
-	line->p2.x <= COMAC_FIXED_16_16_MIN ||
-	line->p2.x >= COMAC_FIXED_16_16_MAX ||
+	   line->p2.x <= COMAC_FIXED_16_16_MIN ||
+	   line->p2.x >= COMAC_FIXED_16_16_MAX ||
 
-	line->p1.y <= COMAC_FIXED_16_16_MIN ||
-	line->p1.y >= COMAC_FIXED_16_16_MAX ||
+	   line->p1.y <= COMAC_FIXED_16_16_MIN ||
+	   line->p1.y >= COMAC_FIXED_16_16_MAX ||
 
-	line->p2.y <= COMAC_FIXED_16_16_MIN ||
-	line->p2.y >= COMAC_FIXED_16_16_MAX;
+	   line->p2.y <= COMAC_FIXED_16_16_MIN ||
+	   line->p2.y >= COMAC_FIXED_16_16_MAX;
 }
 
 static void
@@ -586,13 +644,16 @@ project_line_x_onto_16_16 (const comac_line_t *line,
     p2.y = _comac_fixed_to_double (line->p2.y);
 
     m = (p2.x - p1.x) / (p2.y - p1.y);
-    out->p1.x = _comac_fixed_16_16_from_double (p1.x + m * _comac_fixed_to_double (top - line->p1.y));
-    out->p2.x = _comac_fixed_16_16_from_double (p1.x + m * _comac_fixed_to_double (bottom - line->p1.y));
+    out->p1.x = _comac_fixed_16_16_from_double (
+	p1.x + m * _comac_fixed_to_double (top - line->p1.y));
+    out->p2.x = _comac_fixed_16_16_from_double (
+	p1.x + m * _comac_fixed_to_double (bottom - line->p1.y));
 }
 
 void
 _pixman_image_add_traps (pixman_image_t *image,
-			 int dst_x, int dst_y,
+			 int dst_x,
+			 int dst_y,
 			 comac_traps_t *traps)
 {
     comac_trapezoid_t *t = traps->traps;
@@ -620,7 +681,10 @@ _pixman_image_add_traps (pixman_image_t *image,
 	}
 
 	if (unlikely (line_exceeds_16_16 (&t->right))) {
-	    project_line_x_onto_16_16 (&t->right, t->top, t->bottom, &trap.right);
+	    project_line_x_onto_16_16 (&t->right,
+				       t->top,
+				       t->bottom,
+				       &trap.right);
 	    trap.right.p1.y = trap.top;
 	    trap.right.p2.y = trap.bottom;
 	} else {
@@ -636,16 +700,16 @@ _pixman_image_add_traps (pixman_image_t *image,
 }
 
 static comac_int_status_t
-composite_traps (void			*_dst,
-		 comac_operator_t	op,
-		 comac_surface_t	*abstract_src,
-		 int			src_x,
-		 int			src_y,
-		 int			dst_x,
-		 int			dst_y,
+composite_traps (void *_dst,
+		 comac_operator_t op,
+		 comac_surface_t *abstract_src,
+		 int src_x,
+		 int src_y,
+		 int dst_x,
+		 int dst_y,
 		 const comac_rectangle_int_t *extents,
-		 comac_antialias_t	antialias,
-		 comac_traps_t		*traps)
+		 comac_antialias_t antialias,
+		 comac_traps_t *traps)
 {
     comac_image_surface_t *dst = (comac_image_surface_t *) _dst;
     comac_image_source_t *src = (comac_image_source_t *) abstract_src;
@@ -659,7 +723,7 @@ composite_traps (void			*_dst,
     status = _comac_bentley_ottmann_tessellate_traps (traps,
 						      COMAC_FILL_RULE_WINDING);
     if (status != COMAC_INT_STATUS_SUCCESS)
-	    return status;
+	return status;
 
     /* Special case adding trapezoids onto a mask surface; we want to avoid
      * creating an intermediate temporary mask unnecessarily.
@@ -671,32 +735,39 @@ composite_traps (void			*_dst,
     format = antialias == COMAC_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8;
     if (dst->pixman_format == format &&
 	(abstract_src == NULL ||
-	 (op == COMAC_OPERATOR_ADD && src->is_opaque_solid)))
-    {
+	 (op == COMAC_OPERATOR_ADD && src->is_opaque_solid))) {
 	_pixman_image_add_traps (dst->pixman_image, dst_x, dst_y, traps);
 	return COMAC_STATUS_SUCCESS;
     }
 
     mask = pixman_image_create_bits (format,
-				     extents->width, extents->height,
-				     NULL, 0);
+				     extents->width,
+				     extents->height,
+				     NULL,
+				     0);
     if (unlikely (mask == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     _pixman_image_add_traps (mask, extents->x, extents->y, traps);
     pixman_image_composite32 (_pixman_operator (op),
-                              src->pixman_image, mask, dst->pixman_image,
-                              extents->x + src_x, extents->y + src_y,
-                              0, 0,
-                              extents->x - dst_x, extents->y - dst_y,
-                              extents->width, extents->height);
+			      src->pixman_image,
+			      mask,
+			      dst->pixman_image,
+			      extents->x + src_x,
+			      extents->y + src_y,
+			      0,
+			      0,
+			      extents->x - dst_x,
+			      extents->y - dst_y,
+			      extents->width,
+			      extents->height);
 
     pixman_image_unref (mask);
 
-    return  COMAC_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,22,0)
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0, 22, 0)
 static void
 set_point (pixman_point_fixed_t *p, comac_point_t *c)
 {
@@ -706,11 +777,12 @@ set_point (pixman_point_fixed_t *p, comac_point_t *c)
 
 void
 _pixman_image_add_tristrip (pixman_image_t *image,
-			    int dst_x, int dst_y,
+			    int dst_x,
+			    int dst_y,
 			    comac_tristrip_t *strip)
 {
     pixman_triangle_t tri;
-    pixman_point_fixed_t *p[3] = {&tri.p1, &tri.p2, &tri.p3 };
+    pixman_point_fixed_t *p[3] = {&tri.p1, &tri.p2, &tri.p3};
     int n;
 
     set_point (p[0], &strip->points[0]);
@@ -718,22 +790,22 @@ _pixman_image_add_tristrip (pixman_image_t *image,
     set_point (p[2], &strip->points[2]);
     pixman_add_triangles (image, -dst_x, -dst_y, 1, &tri);
     for (n = 3; n < strip->num_points; n++) {
-	set_point (p[n%3], &strip->points[n]);
+	set_point (p[n % 3], &strip->points[n]);
 	pixman_add_triangles (image, -dst_x, -dst_y, 1, &tri);
     }
 }
 
 static comac_int_status_t
-composite_tristrip (void			*_dst,
-		    comac_operator_t	op,
-		    comac_surface_t	*abstract_src,
-		    int			src_x,
-		    int			src_y,
-		    int			dst_x,
-		    int			dst_y,
+composite_tristrip (void *_dst,
+		    comac_operator_t op,
+		    comac_surface_t *abstract_src,
+		    int src_x,
+		    int src_y,
+		    int dst_x,
+		    int dst_y,
 		    const comac_rectangle_int_t *extents,
-		    comac_antialias_t	antialias,
-		    comac_tristrip_t	*strip)
+		    comac_antialias_t antialias,
+		    comac_tristrip_t *strip)
 {
     comac_image_surface_t *dst = (comac_image_surface_t *) _dst;
     comac_image_source_t *src = (comac_image_source_t *) abstract_src;
@@ -746,56 +818,69 @@ composite_tristrip (void			*_dst,
 	return COMAC_STATUS_SUCCESS;
 
     if (1) { /* pixman doesn't eliminate self-intersecting triangles/edges */
-	    comac_int_status_t status;
-	    comac_traps_t traps;
-	    int n;
+	comac_int_status_t status;
+	comac_traps_t traps;
+	int n;
 
-	    _comac_traps_init (&traps);
-	    for (n = 0; n < strip->num_points; n++) {
-		    comac_point_t p[4];
+	_comac_traps_init (&traps);
+	for (n = 0; n < strip->num_points; n++) {
+	    comac_point_t p[4];
 
-		    p[0] = strip->points[0];
-		    p[1] = strip->points[1];
-		    p[2] = strip->points[2];
-		    p[3] = strip->points[0];
+	    p[0] = strip->points[0];
+	    p[1] = strip->points[1];
+	    p[2] = strip->points[2];
+	    p[3] = strip->points[0];
 
-		    _comac_traps_tessellate_convex_quad (&traps, p);
-	    }
-	    status = composite_traps (_dst, op, abstract_src,
-				      src_x, src_y,
-				      dst_x, dst_y,
-				      extents, antialias, &traps);
-	    _comac_traps_fini (&traps);
+	    _comac_traps_tessellate_convex_quad (&traps, p);
+	}
+	status = composite_traps (_dst,
+				  op,
+				  abstract_src,
+				  src_x,
+				  src_y,
+				  dst_x,
+				  dst_y,
+				  extents,
+				  antialias,
+				  &traps);
+	_comac_traps_fini (&traps);
 
-	    return status;
+	return status;
     }
 
     format = antialias == COMAC_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8;
     if (dst->pixman_format == format &&
 	(abstract_src == NULL ||
-	 (op == COMAC_OPERATOR_ADD && src->is_opaque_solid)))
-    {
+	 (op == COMAC_OPERATOR_ADD && src->is_opaque_solid))) {
 	_pixman_image_add_tristrip (dst->pixman_image, dst_x, dst_y, strip);
 	return COMAC_STATUS_SUCCESS;
     }
 
     mask = pixman_image_create_bits (format,
-				     extents->width, extents->height,
-				     NULL, 0);
+				     extents->width,
+				     extents->height,
+				     NULL,
+				     0);
     if (unlikely (mask == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     _pixman_image_add_tristrip (mask, extents->x, extents->y, strip);
     pixman_image_composite32 (_pixman_operator (op),
-                              src->pixman_image, mask, dst->pixman_image,
-                              extents->x + src_x, extents->y + src_y,
-                              0, 0,
-                              extents->x - dst_x, extents->y - dst_y,
-                              extents->width, extents->height);
+			      src->pixman_image,
+			      mask,
+			      dst->pixman_image,
+			      extents->x + src_x,
+			      extents->y + src_y,
+			      0,
+			      0,
+			      extents->x - dst_x,
+			      extents->y - dst_y,
+			      extents->width,
+			      extents->height);
 
     pixman_image_unref (mask);
 
-    return  COMAC_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 #endif
 
@@ -814,7 +899,7 @@ static pixman_glyph_cache_t *global_glyph_cache;
 static inline pixman_glyph_cache_t *
 get_glyph_cache (void)
 {
-    if (!global_glyph_cache)
+    if (! global_glyph_cache)
 	global_glyph_cache = pixman_glyph_cache_create ();
 
     return global_glyph_cache;
@@ -839,25 +924,25 @@ _comac_image_scaled_glyph_fini (comac_scaled_font_t *scaled_font,
     COMAC_MUTEX_LOCK (_comac_glyph_cache_mutex);
 
     if (global_glyph_cache) {
-	pixman_glyph_cache_remove (
-	    global_glyph_cache, scaled_font,
-	    (void *)scaled_glyph->hash_entry.hash);
+	pixman_glyph_cache_remove (global_glyph_cache,
+				   scaled_font,
+				   (void *) scaled_glyph->hash_entry.hash);
     }
 
     COMAC_MUTEX_UNLOCK (_comac_glyph_cache_mutex);
 }
 
-#define PHASE(x) ((int)(floor (4 * (x + 0.125)) - 4 * floor (x + 0.125)))
+#define PHASE(x) ((int) (floor (4 * (x + 0.125)) - 4 * floor (x + 0.125)))
 #define POSITION(x) ((int) floor (x + 0.125))
 
 static comac_int_status_t
-composite_glyphs (void				*_dst,
-		  comac_operator_t		 op,
-		  comac_surface_t		*_src,
-		  int				 src_x,
-		  int				 src_y,
-		  int				 dst_x,
-		  int				 dst_y,
+composite_glyphs (void *_dst,
+		  comac_operator_t op,
+		  comac_surface_t *_src,
+		  int src_x,
+		  int src_y,
+		  int dst_x,
+		  int dst_y,
 		  comac_composite_glyphs_info_t *info)
 {
     comac_int_status_t status = COMAC_INT_STATUS_SUCCESS;
@@ -871,7 +956,7 @@ composite_glyphs (void				*_dst,
 
     COMAC_MUTEX_LOCK (_comac_glyph_cache_mutex);
 
-    glyph_cache = get_glyph_cache();
+    glyph_cache = get_glyph_cache ();
     if (unlikely (glyph_cache == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto out_unlock;
@@ -891,15 +976,17 @@ composite_glyphs (void				*_dst,
     for (i = 0; i < info->num_glyphs; i++) {
 	unsigned long index = info->glyphs[i].index;
 	const void *glyph;
-        unsigned long xphase, yphase;
+	unsigned long xphase, yphase;
 
-        xphase = PHASE(info->glyphs[i].x);
-        yphase = PHASE(info->glyphs[i].y);
+	xphase = PHASE (info->glyphs[i].x);
+	yphase = PHASE (info->glyphs[i].y);
 
 	index = index | (xphase << 24) | (yphase << 26);
 
-	glyph = pixman_glyph_cache_lookup (glyph_cache, info->font, (void *)(uintptr_t)index);
-	if (!glyph) {
+	glyph = pixman_glyph_cache_lookup (glyph_cache,
+					   info->font,
+					   (void *) (uintptr_t) index);
+	if (! glyph) {
 	    comac_scaled_glyph_t *scaled_glyph;
 	    comac_image_surface_t *glyph_surface;
 
@@ -907,21 +994,26 @@ composite_glyphs (void				*_dst,
 	     * drop the mutex around it.
 	     */
 	    COMAC_MUTEX_UNLOCK (_comac_glyph_cache_mutex);
-	    status = _comac_scaled_glyph_lookup (info->font, index,
-						 COMAC_SCALED_GLYPH_INFO_SURFACE,
-						 NULL, /* foreground color */
-						 &scaled_glyph);
+	    status =
+		_comac_scaled_glyph_lookup (info->font,
+					    index,
+					    COMAC_SCALED_GLYPH_INFO_SURFACE,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 	    COMAC_MUTEX_LOCK (_comac_glyph_cache_mutex);
 
 	    if (unlikely (status))
 		goto out_thaw;
 
 	    glyph_surface = scaled_glyph->surface;
-	    glyph = pixman_glyph_cache_insert (glyph_cache, info->font, (void *)(uintptr_t)index,
-					       glyph_surface->base.device_transform.x0,
-					       glyph_surface->base.device_transform.y0,
-					       glyph_surface->pixman_image);
-	    if (unlikely (!glyph)) {
+	    glyph = pixman_glyph_cache_insert (
+		glyph_cache,
+		info->font,
+		(void *) (uintptr_t) index,
+		glyph_surface->base.device_transform.x0,
+		glyph_surface->base.device_transform.y0,
+		glyph_surface->pixman_image);
+	    if (unlikely (! glyph)) {
 		status = _comac_error (COMAC_STATUS_NO_MEMORY);
 		goto out_thaw;
 	    }
@@ -936,31 +1028,43 @@ composite_glyphs (void				*_dst,
     if (info->use_mask) {
 	pixman_format_code_t mask_format;
 
-	mask_format = pixman_glyph_get_mask_format (glyph_cache, pg - pglyphs, pglyphs);
+	mask_format =
+	    pixman_glyph_get_mask_format (glyph_cache, pg - pglyphs, pglyphs);
 
 	pixman_composite_glyphs (_pixman_operator (op),
-				 ((comac_image_source_t *)_src)->pixman_image,
+				 ((comac_image_source_t *) _src)->pixman_image,
 				 to_pixman_image (_dst),
 				 mask_format,
-				 info->extents.x + src_x, info->extents.y + src_y,
-				 info->extents.x, info->extents.y,
-				 info->extents.x - dst_x, info->extents.y - dst_y,
-				 info->extents.width, info->extents.height,
-				 glyph_cache, pg - pglyphs, pglyphs);
+				 info->extents.x + src_x,
+				 info->extents.y + src_y,
+				 info->extents.x,
+				 info->extents.y,
+				 info->extents.x - dst_x,
+				 info->extents.y - dst_y,
+				 info->extents.width,
+				 info->extents.height,
+				 glyph_cache,
+				 pg - pglyphs,
+				 pglyphs);
     } else {
-	pixman_composite_glyphs_no_mask (_pixman_operator (op),
-					 ((comac_image_source_t *)_src)->pixman_image,
-					 to_pixman_image (_dst),
-					 src_x, src_y,
-					 - dst_x, - dst_y,
-					 glyph_cache, pg - pglyphs, pglyphs);
+	pixman_composite_glyphs_no_mask (
+	    _pixman_operator (op),
+	    ((comac_image_source_t *) _src)->pixman_image,
+	    to_pixman_image (_dst),
+	    src_x,
+	    src_y,
+	    -dst_x,
+	    -dst_y,
+	    glyph_cache,
+	    pg - pglyphs,
+	    pglyphs);
     }
 
 out_thaw:
     pixman_glyph_cache_thaw (glyph_cache);
 
     if (pglyphs != pglyphs_stack)
-	free(pglyphs);
+	free (pglyphs);
 
 out_unlock:
     COMAC_MUTEX_UNLOCK (_comac_glyph_cache_mutex);
@@ -979,14 +1083,14 @@ _comac_image_scaled_glyph_fini (comac_scaled_font_t *scaled_font,
 }
 
 static comac_int_status_t
-composite_one_glyph (void				*_dst,
-		     comac_operator_t			 op,
-		     comac_surface_t			*_src,
-		     int				 src_x,
-		     int				 src_y,
-		     int				 dst_x,
-		     int				 dst_y,
-		     comac_composite_glyphs_info_t	 *info)
+composite_one_glyph (void *_dst,
+		     comac_operator_t op,
+		     comac_surface_t *_src,
+		     int src_x,
+		     int src_y,
+		     int dst_x,
+		     int dst_y,
+		     comac_composite_glyphs_info_t *info)
 {
     comac_image_surface_t *glyph_surface;
     comac_scaled_glyph_t *scaled_glyph;
@@ -1016,12 +1120,15 @@ composite_one_glyph (void				*_dst,
 		       glyph_surface->base.device_transform.y0);
 
     pixman_image_composite32 (_pixman_operator (op),
-			      ((comac_image_source_t *)_src)->pixman_image,
+			      ((comac_image_source_t *) _src)->pixman_image,
 			      glyph_surface->pixman_image,
 			      to_pixman_image (_dst),
-			      x + src_x,  y + src_y,
-			      0, 0,
-			      x - dst_x, y - dst_y,
+			      x + src_x,
+			      y + src_y,
+			      0,
+			      0,
+			      x - dst_x,
+			      y - dst_y,
 			      glyph_surface->width,
 			      glyph_surface->height);
 
@@ -1029,13 +1136,13 @@ composite_one_glyph (void				*_dst,
 }
 
 static comac_int_status_t
-composite_glyphs_via_mask (void				*_dst,
-			   comac_operator_t		 op,
-			   comac_surface_t		*_src,
-			   int				 src_x,
-			   int				 src_y,
-			   int				 dst_x,
-			   int				 dst_y,
+composite_glyphs_via_mask (void *_dst,
+			   comac_operator_t op,
+			   comac_surface_t *_src,
+			   int src_x,
+			   int src_y,
+			   int dst_x,
+			   int dst_y,
 			   comac_composite_glyphs_info_t *info)
 {
     comac_scaled_glyph_t *glyph_cache[64];
@@ -1069,7 +1176,8 @@ composite_glyphs_via_mask (void				*_dst,
     }
 
     memset (glyph_cache, 0, sizeof (glyph_cache));
-    glyph_cache[info->glyphs[0].index % ARRAY_LENGTH (glyph_cache)] = scaled_glyph;
+    glyph_cache[info->glyphs[0].index % ARRAY_LENGTH (glyph_cache)] =
+	scaled_glyph;
 
     format = PIXMAN_a8;
     i = (info->extents.width + 3) & ~3;
@@ -1080,15 +1188,17 @@ composite_glyphs_via_mask (void				*_dst,
 
     if (i * info->extents.height > (int) sizeof (buf)) {
 	mask = pixman_image_create_bits (format,
-					info->extents.width,
-					info->extents.height,
-					NULL, 0);
+					 info->extents.width,
+					 info->extents.height,
+					 NULL,
+					 0);
     } else {
 	memset (buf, 0, i * info->extents.height);
 	mask = pixman_image_create_bits (format,
-					info->extents.width,
-					info->extents.height,
-					(uint32_t *)buf, i);
+					 info->extents.width,
+					 info->extents.height,
+					 (uint32_t *) buf,
+					 i);
     }
     if (unlikely (mask == NULL)) {
 	pixman_image_unref (white);
@@ -1104,12 +1214,13 @@ composite_glyphs_via_mask (void				*_dst,
 
 	scaled_glyph = glyph_cache[cache_index];
 	if (scaled_glyph == NULL ||
-	    _comac_scaled_glyph_index (scaled_glyph) != glyph_index)
-	{
-	    status = _comac_scaled_glyph_lookup (info->font, glyph_index,
-						 COMAC_SCALED_GLYPH_INFO_SURFACE,
-						 NULL, /* foreground color */
-						 &scaled_glyph);
+	    _comac_scaled_glyph_index (scaled_glyph) != glyph_index) {
+	    status =
+		_comac_scaled_glyph_lookup (info->font,
+					    glyph_index,
+					    COMAC_SCALED_GLYPH_INFO_SURFACE,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 
 	    if (unlikely (status)) {
 		pixman_image_unref (mask);
@@ -1130,7 +1241,8 @@ composite_glyphs_via_mask (void				*_dst,
 		ca_mask = pixman_image_create_bits (format,
 						    info->extents.width,
 						    info->extents.height,
-						    NULL, 0);
+						    NULL,
+						    0);
 		if (unlikely (ca_mask == NULL)) {
 		    pixman_image_unref (mask);
 		    pixman_image_unref (white);
@@ -1138,10 +1250,15 @@ composite_glyphs_via_mask (void				*_dst,
 		}
 
 		pixman_image_composite32 (PIXMAN_OP_SRC,
-					  white, mask, ca_mask,
-					  0, 0,
-					  0, 0,
-					  0, 0,
+					  white,
+					  mask,
+					  ca_mask,
+					  0,
+					  0,
+					  0,
+					  0,
+					  0,
+					  0,
 					  info->extents.width,
 					  info->extents.height);
 		pixman_image_unref (mask);
@@ -1157,18 +1274,28 @@ composite_glyphs_via_mask (void				*_dst,
 
 	    if (glyph_surface->pixman_format == format) {
 		pixman_image_composite32 (PIXMAN_OP_ADD,
-					  glyph_surface->pixman_image, NULL, mask,
-					  0, 0,
-					  0, 0,
-					  x - info->extents.x, y - info->extents.y,
+					  glyph_surface->pixman_image,
+					  NULL,
+					  mask,
+					  0,
+					  0,
+					  0,
+					  0,
+					  x - info->extents.x,
+					  y - info->extents.y,
 					  glyph_surface->width,
 					  glyph_surface->height);
 	    } else {
 		pixman_image_composite32 (PIXMAN_OP_ADD,
-					  white, glyph_surface->pixman_image, mask,
-					  0, 0,
-					  0, 0,
-					  x - info->extents.x, y - info->extents.y,
+					  white,
+					  glyph_surface->pixman_image,
+					  mask,
+					  0,
+					  0,
+					  0,
+					  0,
+					  x - info->extents.x,
+					  y - info->extents.y,
 					  glyph_surface->width,
 					  glyph_surface->height);
 	    }
@@ -1179,13 +1306,17 @@ composite_glyphs_via_mask (void				*_dst,
 	pixman_image_set_component_alpha (mask, TRUE);
 
     pixman_image_composite32 (_pixman_operator (op),
-			      ((comac_image_source_t *)_src)->pixman_image,
+			      ((comac_image_source_t *) _src)->pixman_image,
 			      mask,
 			      to_pixman_image (_dst),
-			      info->extents.x + src_x, info->extents.y + src_y,
-			      0, 0,
-			      info->extents.x - dst_x, info->extents.y - dst_y,
-			      info->extents.width, info->extents.height);
+			      info->extents.x + src_x,
+			      info->extents.y + src_y,
+			      0,
+			      0,
+			      info->extents.x - dst_x,
+			      info->extents.y - dst_y,
+			      info->extents.width,
+			      info->extents.height);
     pixman_image_unref (mask);
     pixman_image_unref (white);
 
@@ -1193,13 +1324,13 @@ composite_glyphs_via_mask (void				*_dst,
 }
 
 static comac_int_status_t
-composite_glyphs (void				*_dst,
-		  comac_operator_t		 op,
-		  comac_surface_t		*_src,
-		  int				 src_x,
-		  int				 src_y,
-		  int				 dst_x,
-		  int				 dst_y,
+composite_glyphs (void *_dst,
+		  comac_operator_t op,
+		  comac_surface_t *_src,
+		  int src_x,
+		  int src_y,
+		  int dst_x,
+		  int dst_y,
 		  comac_composite_glyphs_info_t *info)
 {
     comac_scaled_glyph_t *glyph_cache[64];
@@ -1210,14 +1341,28 @@ composite_glyphs (void				*_dst,
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     if (info->num_glyphs == 1)
-	return composite_one_glyph(_dst, op, _src, src_x, src_y, dst_x, dst_y, info);
+	return composite_one_glyph (_dst,
+				    op,
+				    _src,
+				    src_x,
+				    src_y,
+				    dst_x,
+				    dst_y,
+				    info);
 
     if (info->use_mask)
-	return composite_glyphs_via_mask(_dst, op, _src, src_x, src_y, dst_x, dst_y, info);
+	return composite_glyphs_via_mask (_dst,
+					  op,
+					  _src,
+					  src_x,
+					  src_y,
+					  dst_x,
+					  dst_y,
+					  info);
 
     op = _pixman_operator (op);
     dst = to_pixman_image (_dst);
-    src = ((comac_image_source_t *)_src)->pixman_image;
+    src = ((comac_image_source_t *) _src)->pixman_image;
 
     memset (glyph_cache, 0, sizeof (glyph_cache));
     status = COMAC_STATUS_SUCCESS;
@@ -1231,12 +1376,13 @@ composite_glyphs (void				*_dst,
 
 	scaled_glyph = glyph_cache[cache_index];
 	if (scaled_glyph == NULL ||
-	    _comac_scaled_glyph_index (scaled_glyph) != glyph_index)
-	{
-	    status = _comac_scaled_glyph_lookup (info->font, glyph_index,
-						 COMAC_SCALED_GLYPH_INFO_SURFACE,
-						 NULL, /* foreground color */
-						 &scaled_glyph);
+	    _comac_scaled_glyph_index (scaled_glyph) != glyph_index) {
+	    status =
+		_comac_scaled_glyph_lookup (info->font,
+					    glyph_index,
+					    COMAC_SCALED_GLYPH_INFO_SURFACE,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 
 	    if (unlikely (status))
 		break;
@@ -1253,10 +1399,16 @@ composite_glyphs (void				*_dst,
 	    y = _comac_lround (info->glyphs[i].y -
 			       glyph_surface->base.device_transform.y0);
 
-	    pixman_image_composite32 (op, src, glyph_surface->pixman_image, dst,
-                                      x + src_x,  y + src_y,
-                                      0, 0,
-                                      x - dst_x, y - dst_y,
+	    pixman_image_composite32 (op,
+				      src,
+				      glyph_surface->pixman_image,
+				      dst,
+				      x + src_x,
+				      y + src_y,
+				      0,
+				      0,
+				      x - dst_x,
+				      y - dst_y,
 				      glyph_surface->width,
 				      glyph_surface->height);
 	}
@@ -1278,9 +1430,8 @@ _comac_image_traps_compositor_get (void)
     static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
     static comac_traps_compositor_t compositor;
 
-    if (_comac_atomic_init_once_enter(&once)) {
-	_comac_traps_compositor_init(&compositor,
-				     &__comac_no_compositor);
+    if (_comac_atomic_init_once_enter (&once)) {
+	_comac_traps_compositor_init (&compositor, &__comac_no_compositor);
 	compositor.acquire = acquire;
 	compositor.release = release;
 	compositor.set_clip_region = set_clip_region;
@@ -1296,13 +1447,13 @@ _comac_image_traps_compositor_get (void)
 	//compositor.check_composite_traps = check_composite_traps;
 	compositor.composite_traps = composite_traps;
 	//compositor.check_composite_tristrip = check_composite_traps;
-#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,22,0)
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0, 22, 0)
 	compositor.composite_tristrip = composite_tristrip;
 #endif
 	compositor.check_composite_glyphs = check_composite_glyphs;
 	compositor.composite_glyphs = composite_glyphs;
 
-	_comac_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave (&once);
     }
 
     return &compositor.base;
@@ -1314,7 +1465,7 @@ _comac_image_mask_compositor_get (void)
     static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
     static comac_mask_compositor_t compositor;
 
-    if (_comac_atomic_init_once_enter(&once)) {
+    if (_comac_atomic_init_once_enter (&once)) {
 	_comac_mask_compositor_init (&compositor,
 				     _comac_image_traps_compositor_get ());
 	compositor.acquire = acquire;
@@ -1332,7 +1483,7 @@ _comac_image_mask_compositor_get (void)
 	compositor.check_composite_glyphs = check_composite_glyphs;
 	compositor.composite_glyphs = composite_glyphs;
 
-	_comac_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave (&once);
     }
 
     return &compositor.base;
@@ -1347,11 +1498,13 @@ typedef struct _comac_image_span_renderer {
     float opacity;
     comac_rectangle_int_t extents;
 } comac_image_span_renderer_t;
-COMPILE_TIME_ASSERT (sizeof (comac_image_span_renderer_t) <= sizeof (comac_abstract_span_renderer_t));
+COMPILE_TIME_ASSERT (sizeof (comac_image_span_renderer_t) <=
+		     sizeof (comac_abstract_span_renderer_t));
 
 static comac_status_t
 _comac_image_bounded_opaque_spans (void *abstract_renderer,
-				   int y, int height,
+				   int y,
+				   int height,
 				   const comac_half_open_span_t *spans,
 				   unsigned num_spans)
 {
@@ -1363,8 +1516,10 @@ _comac_image_bounded_opaque_spans (void *abstract_renderer,
     do {
 	if (spans[0].coverage)
 	    pixman_image_compositor_blt (r->compositor,
-					 spans[0].x, y,
-					 spans[1].x - spans[0].x, height,
+					 spans[0].x,
+					 y,
+					 spans[1].x - spans[0].x,
+					 height,
 					 spans[0].coverage);
 	spans++;
     } while (--num_spans > 1);
@@ -1374,7 +1529,8 @@ _comac_image_bounded_opaque_spans (void *abstract_renderer,
 
 static comac_status_t
 _comac_image_bounded_spans (void *abstract_renderer,
-			    int y, int height,
+			    int y,
+			    int height,
 			    const comac_half_open_span_t *spans,
 			    unsigned num_spans)
 {
@@ -1386,8 +1542,10 @@ _comac_image_bounded_spans (void *abstract_renderer,
     do {
 	if (spans[0].coverage) {
 	    pixman_image_compositor_blt (r->compositor,
-					 spans[0].x, y,
-					 spans[1].x - spans[0].x, height,
+					 spans[0].x,
+					 y,
+					 spans[1].x - spans[0].x,
+					 height,
 					 r->opacity * spans[0].coverage);
 	}
 	spans++;
@@ -1398,7 +1556,8 @@ _comac_image_bounded_spans (void *abstract_renderer,
 
 static comac_status_t
 _comac_image_unbounded_spans (void *abstract_renderer,
-			      int y, int height,
+			      int y,
+			      int height,
 			      const comac_half_open_span_t *spans,
 			      unsigned num_spans)
 {
@@ -1407,20 +1566,25 @@ _comac_image_unbounded_spans (void *abstract_renderer,
     assert (y + height <= r->extents.height);
     if (y > r->extents.y) {
 	pixman_image_compositor_blt (r->compositor,
-				     r->extents.x, r->extents.y,
-				     r->extents.width, y - r->extents.y,
+				     r->extents.x,
+				     r->extents.y,
+				     r->extents.width,
+				     y - r->extents.y,
 				     0);
     }
 
     if (num_spans == 0) {
 	pixman_image_compositor_blt (r->compositor,
-				     r->extents.x, y,
-				     r->extents.width,  height,
+				     r->extents.x,
+				     y,
+				     r->extents.width,
+				     height,
 				     0);
     } else {
 	if (spans[0].x != r->extents.x) {
 	    pixman_image_compositor_blt (r->compositor,
-					 r->extents.x, y,
+					 r->extents.x,
+					 y,
 					 spans[0].x - r->extents.x,
 					 height,
 					 0);
@@ -1429,8 +1593,10 @@ _comac_image_unbounded_spans (void *abstract_renderer,
 	do {
 	    assert (spans[0].x < r->extents.x + r->extents.width);
 	    pixman_image_compositor_blt (r->compositor,
-					 spans[0].x, y,
-					 spans[1].x - spans[0].x, height,
+					 spans[0].x,
+					 y,
+					 spans[1].x - spans[0].x,
+					 height,
 					 r->opacity * spans[0].coverage);
 	    spans++;
 	} while (--num_spans > 1);
@@ -1438,8 +1604,11 @@ _comac_image_unbounded_spans (void *abstract_renderer,
 	if (spans[0].x != r->extents.x + r->extents.width) {
 	    assert (spans[0].x < r->extents.x + r->extents.width);
 	    pixman_image_compositor_blt (r->compositor,
-					 spans[0].x,     y,
-					 r->extents.x + r->extents.width - spans[0].x, height,
+					 spans[0].x,
+					 y,
+					 r->extents.x + r->extents.width -
+					     spans[0].x,
+					 height,
 					 0);
 	}
     }
@@ -1450,7 +1619,8 @@ _comac_image_unbounded_spans (void *abstract_renderer,
 
 static comac_status_t
 _comac_image_clipped_spans (void *abstract_renderer,
-			    int y, int height,
+			    int y,
+			    int height,
 			    const comac_half_open_span_t *spans,
 			    unsigned num_spans)
 {
@@ -1461,8 +1631,10 @@ _comac_image_clipped_spans (void *abstract_renderer,
     do {
 	if (! spans[0].inverse)
 	    pixman_image_compositor_blt (r->compositor,
-					 spans[0].x, y,
-					 spans[1].x - spans[0].x, height,
+					 spans[0].x,
+					 y,
+					 spans[1].x - spans[0].x,
+					 height,
 					 r->opacity * spans[0].coverage);
 	spans++;
     } while (--num_spans > 1);
@@ -1478,7 +1650,8 @@ _comac_image_finish_unbounded_spans (void *abstract_renderer)
 
     if (r->extents.y < r->extents.height) {
 	pixman_image_compositor_blt (r->compositor,
-				     r->extents.x, r->extents.y,
+				     r->extents.x,
+				     r->extents.y,
 				     r->extents.width,
 				     r->extents.height - r->extents.y,
 				     0);
@@ -1488,12 +1661,12 @@ _comac_image_finish_unbounded_spans (void *abstract_renderer)
 }
 
 static comac_int_status_t
-span_renderer_init (comac_abstract_span_renderer_t	*_r,
+span_renderer_init (comac_abstract_span_renderer_t *_r,
 		    const comac_composite_rectangles_t *composite,
-		    comac_bool_t			 needs_clip)
+		    comac_bool_t needs_clip)
 {
-    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *)_r;
-    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
+    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *) _r;
+    comac_image_surface_t *dst = (comac_image_surface_t *) composite->surface;
     const comac_pattern_t *source = &composite->source_pattern.base;
     comac_operator_t op = composite->op;
     int src_x, src_y;
@@ -1504,8 +1677,7 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
     if (op == COMAC_OPERATOR_CLEAR) {
 	op = PIXMAN_OP_LERP_CLEAR;
     } else if (dst->base.is_clear &&
-	       (op == COMAC_OPERATOR_SOURCE ||
-		op == COMAC_OPERATOR_OVER ||
+	       (op == COMAC_OPERATOR_SOURCE || op == COMAC_OPERATOR_OVER ||
 		op == COMAC_OPERATOR_ADD)) {
 	op = PIXMAN_OP_SRC;
     } else if (op == COMAC_OPERATOR_SOURCE) {
@@ -1516,10 +1688,13 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
 
     r->compositor = NULL;
     r->mask = NULL;
-    r->src = _pixman_image_for_pattern (dst, source, FALSE,
+    r->src = _pixman_image_for_pattern (dst,
+					source,
+					FALSE,
 					&composite->unbounded,
 					&composite->source_sample_area,
-					&src_x, &src_y);
+					&src_x,
+					&src_y);
     if (unlikely (r->src == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -1532,14 +1707,14 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
 					     TRUE,
 					     &composite->unbounded,
 					     &composite->mask_sample_area,
-					     &mask_x, &mask_y);
+					     &mask_x,
+					     &mask_y);
 	if (unlikely (r->mask == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	/* XXX Component-alpha? */
 	if ((dst->base.content & COMAC_CONTENT_COLOR) == 0 &&
-	    _comac_pattern_is_opaque (source, &composite->source_sample_area))
-	{
+	    _comac_pattern_is_opaque (source, &composite->source_sample_area)) {
 	    pixman_image_unref (r->src);
 	    r->src = r->mask;
 	    src_x = mask_x;
@@ -1559,13 +1734,16 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
 	    r->base.render_rows = _comac_image_clipped_spans;
 	else
 	    r->base.render_rows = _comac_image_unbounded_spans;
-        r->base.finish = _comac_image_finish_unbounded_spans;
+	r->base.finish = _comac_image_finish_unbounded_spans;
 	r->extents = composite->unbounded;
 	r->extents.height += r->extents.y;
     }
 
     r->compositor =
-	pixman_image_create_compositor (op, r->src, r->mask, dst->pixman_image,
+	pixman_image_create_compositor (op,
+					r->src,
+					r->mask,
+					dst->pixman_image,
 					composite->unbounded.x + src_x,
 					composite->unbounded.y + src_y,
 					composite->unbounded.x + mask_x,
@@ -1636,13 +1814,17 @@ typedef struct _comac_image_span_renderer {
 	} mask;
     } u;
     uint8_t _buf[0];
-#define SZ_BUF (int)(sizeof (comac_abstract_span_renderer_t) - sizeof (comac_image_span_renderer_t))
+#define SZ_BUF                                                                 \
+    (int) (sizeof (comac_abstract_span_renderer_t) -                           \
+	   sizeof (comac_image_span_renderer_t))
 } comac_image_span_renderer_t;
-COMPILE_TIME_ASSERT (sizeof (comac_image_span_renderer_t) <= sizeof (comac_abstract_span_renderer_t));
+COMPILE_TIME_ASSERT (sizeof (comac_image_span_renderer_t) <=
+		     sizeof (comac_abstract_span_renderer_t));
 
 static comac_status_t
 _comac_image_spans (void *abstract_renderer,
-		    int y, int height,
+		    int y,
+		    int height,
 		    const comac_half_open_span_t *spans,
 		    unsigned num_spans)
 {
@@ -1680,7 +1862,8 @@ _comac_image_spans (void *abstract_renderer,
 
 static comac_status_t
 _comac_image_spans_and_zero (void *abstract_renderer,
-			     int y, int height,
+			     int y,
+			     int height,
 			     const comac_half_open_span_t *spans,
 			     unsigned num_spans)
 {
@@ -1739,29 +1922,35 @@ _comac_image_finish_spans_and_zero (void *abstract_renderer)
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (r->u.mask.extents.y < r->u.mask.extents.height)
-	memset (r->u.mask.data, 0, (r->u.mask.extents.height - r->u.mask.extents.y) * r->u.mask.stride);
+	memset (r->u.mask.data,
+		0,
+		(r->u.mask.extents.height - r->u.mask.extents.y) *
+		    r->u.mask.stride);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_fill8_spans (void *abstract_renderer, int y, int h,
-	       const comac_half_open_span_t *spans, unsigned num_spans)
+_fill8_spans (void *abstract_renderer,
+	      int y,
+	      int h,
+	      const comac_half_open_span_t *spans,
+	      unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
+    if (likely (h == 1)) {
 	do {
 	    if (spans[0].coverage) {
 		int len = spans[1].x - spans[0].x;
-		uint8_t *d = r->u.fill.data + r->u.fill.stride*y + spans[0].x;
+		uint8_t *d = r->u.fill.data + r->u.fill.stride * y + spans[0].x;
 		if (len == 1)
 		    *d = r->u.fill.pixel;
 		else
-		    memset(d, r->u.fill.pixel, len);
+		    memset (d, r->u.fill.pixel, len);
 	    }
 	    spans++;
 	} while (--num_spans > 1);
@@ -1771,11 +1960,12 @@ _fill8_spans (void *abstract_renderer, int y, int h,
 		int yy = y, hh = h;
 		do {
 		    int len = spans[1].x - spans[0].x;
-		    uint8_t *d = r->u.fill.data + r->u.fill.stride*yy + spans[0].x;
+		    uint8_t *d =
+			r->u.fill.data + r->u.fill.stride * yy + spans[0].x;
 		    if (len == 1)
 			*d = r->u.fill.pixel;
 		    else
-			memset(d, r->u.fill.pixel, len);
+			memset (d, r->u.fill.pixel, len);
 		    yy++;
 		} while (--hh);
 	    }
@@ -1787,19 +1977,24 @@ _fill8_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_fill16_spans (void *abstract_renderer, int y, int h,
-	       const comac_half_open_span_t *spans, unsigned num_spans)
+_fill16_spans (void *abstract_renderer,
+	       int y,
+	       int h,
+	       const comac_half_open_span_t *spans,
+	       unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
+    if (likely (h == 1)) {
 	do {
 	    if (spans[0].coverage) {
 		int len = spans[1].x - spans[0].x;
-		uint16_t *d = (uint16_t*)(r->u.fill.data + r->u.fill.stride*y + spans[0].x*2);
+		uint16_t *d =
+		    (uint16_t *) (r->u.fill.data + r->u.fill.stride * y +
+				  spans[0].x * 2);
 		while (len-- > 0)
 		    *d++ = r->u.fill.pixel;
 	    }
@@ -1811,7 +2006,9 @@ _fill16_spans (void *abstract_renderer, int y, int h,
 		int yy = y, hh = h;
 		do {
 		    int len = spans[1].x - spans[0].x;
-		    uint16_t *d = (uint16_t*)(r->u.fill.data + r->u.fill.stride*yy + spans[0].x*2);
+		    uint16_t *d =
+			(uint16_t *) (r->u.fill.data + r->u.fill.stride * yy +
+				      spans[0].x * 2);
 		    while (len-- > 0)
 			*d++ = r->u.fill.pixel;
 		    yy++;
@@ -1825,23 +2022,34 @@ _fill16_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_fill32_spans (void *abstract_renderer, int y, int h,
-	       const comac_half_open_span_t *spans, unsigned num_spans)
+_fill32_spans (void *abstract_renderer,
+	       int y,
+	       int h,
+	       const comac_half_open_span_t *spans,
+	       unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
+    if (likely (h == 1)) {
 	do {
 	    if (spans[0].coverage) {
 		int len = spans[1].x - spans[0].x;
 		if (len > 32) {
-		    pixman_fill ((uint32_t *)r->u.fill.data, r->u.fill.stride / sizeof(uint32_t), r->bpp,
-				 spans[0].x, y, len, 1, r->u.fill.pixel);
+		    pixman_fill ((uint32_t *) r->u.fill.data,
+				 r->u.fill.stride / sizeof (uint32_t),
+				 r->bpp,
+				 spans[0].x,
+				 y,
+				 len,
+				 1,
+				 r->u.fill.pixel);
 		} else {
-		    uint32_t *d = (uint32_t*)(r->u.fill.data + r->u.fill.stride*y + spans[0].x*4);
+		    uint32_t *d =
+			(uint32_t *) (r->u.fill.data + r->u.fill.stride * y +
+				      spans[0].x * 4);
 		    while (len-- > 0)
 			*d++ = r->u.fill.pixel;
 		}
@@ -1852,14 +2060,21 @@ _fill32_spans (void *abstract_renderer, int y, int h,
 	do {
 	    if (spans[0].coverage) {
 		if (spans[1].x - spans[0].x > 16) {
-		    pixman_fill ((uint32_t *)r->u.fill.data, r->u.fill.stride / sizeof(uint32_t), r->bpp,
-				 spans[0].x, y, spans[1].x - spans[0].x, h,
+		    pixman_fill ((uint32_t *) r->u.fill.data,
+				 r->u.fill.stride / sizeof (uint32_t),
+				 r->bpp,
+				 spans[0].x,
+				 y,
+				 spans[1].x - spans[0].x,
+				 h,
 				 r->u.fill.pixel);
 		} else {
 		    int yy = y, hh = h;
 		    do {
 			int len = spans[1].x - spans[0].x;
-			uint32_t *d = (uint32_t*)(r->u.fill.data + r->u.fill.stride*yy + spans[0].x*4);
+			uint32_t *d = (uint32_t *) (r->u.fill.data +
+						    r->u.fill.stride * yy +
+						    spans[0].x * 4);
 			while (len-- > 0)
 			    *d++ = r->u.fill.pixel;
 			yy++;
@@ -1898,8 +2113,11 @@ _fill_spans (void *abstract_renderer, int y, int h,
 #endif
 
 static comac_status_t
-_blit_spans (void *abstract_renderer, int y, int h,
-	     const comac_half_open_span_t *spans, unsigned num_spans)
+_blit_spans (void *abstract_renderer,
+	     int y,
+	     int h,
+	     const comac_half_open_span_t *spans,
+	     unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
     int cpp;
@@ -1907,32 +2125,32 @@ _blit_spans (void *abstract_renderer, int y, int h,
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    cpp = r->bpp/8;
+    cpp = r->bpp / 8;
     if (likely (h == 1)) {
-	uint8_t *src = r->u.blit.src_data + y*r->u.blit.src_stride;
-	uint8_t *dst = r->u.blit.data + y*r->u.blit.stride;
+	uint8_t *src = r->u.blit.src_data + y * r->u.blit.src_stride;
+	uint8_t *dst = r->u.blit.data + y * r->u.blit.stride;
 	do {
 	    if (spans[0].coverage) {
-		void *s = src + spans[0].x*cpp;
-		void *d = dst + spans[0].x*cpp;
+		void *s = src + spans[0].x * cpp;
+		void *d = dst + spans[0].x * cpp;
 		int len = (spans[1].x - spans[0].x) * cpp;
 		switch (len) {
 		case 1:
-		    *(uint8_t *)d = *(uint8_t *)s;
+		    *(uint8_t *) d = *(uint8_t *) s;
 		    break;
 		case 2:
-		    *(uint16_t *)d = *(uint16_t *)s;
+		    *(uint16_t *) d = *(uint16_t *) s;
 		    break;
 		case 4:
-		    *(uint32_t *)d = *(uint32_t *)s;
+		    *(uint32_t *) d = *(uint32_t *) s;
 		    break;
 #if HAVE_UINT64_T
 		case 8:
-		    *(uint64_t *)d = *(uint64_t *)s;
+		    *(uint64_t *) d = *(uint64_t *) s;
 		    break;
 #endif
 		default:
-		    memcpy(d, s, len);
+		    memcpy (d, s, len);
 		    break;
 		}
 	    }
@@ -1943,26 +2161,28 @@ _blit_spans (void *abstract_renderer, int y, int h,
 	    if (spans[0].coverage) {
 		int yy = y, hh = h;
 		do {
-		    void *src = r->u.blit.src_data + yy*r->u.blit.src_stride + spans[0].x*cpp;
-		    void *dst = r->u.blit.data + yy*r->u.blit.stride + spans[0].x*cpp;
+		    void *src = r->u.blit.src_data + yy * r->u.blit.src_stride +
+				spans[0].x * cpp;
+		    void *dst = r->u.blit.data + yy * r->u.blit.stride +
+				spans[0].x * cpp;
 		    int len = (spans[1].x - spans[0].x) * cpp;
 		    switch (len) {
 		    case 1:
-			*(uint8_t *)dst = *(uint8_t *)src;
+			*(uint8_t *) dst = *(uint8_t *) src;
 			break;
 		    case 2:
-			*(uint16_t *)dst = *(uint16_t *)src;
+			*(uint16_t *) dst = *(uint16_t *) src;
 			break;
 		    case 4:
-			*(uint32_t *)dst = *(uint32_t *)src;
+			*(uint32_t *) dst = *(uint32_t *) src;
 			break;
 #if HAVE_UINT64_T
 		    case 8:
-			*(uint64_t *)dst = *(uint64_t *)src;
+			*(uint64_t *) dst = *(uint64_t *) src;
 			break;
 #endif
 		    default:
-			memcpy(dst, src, len);
+			memcpy (dst, src, len);
 			break;
 		    }
 		    yy++;
@@ -1976,8 +2196,11 @@ _blit_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_mono_spans (void *abstract_renderer, int y, int h,
-	     const comac_half_open_span_t *spans, unsigned num_spans)
+_mono_spans (void *abstract_renderer,
+	     int y,
+	     int h,
+	     const comac_half_open_span_t *spans,
+	     unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
@@ -1987,11 +2210,17 @@ _mono_spans (void *abstract_renderer, int y, int h,
     do {
 	if (spans[0].coverage) {
 	    pixman_image_composite32 (r->op,
-				      r->src, NULL, r->u.composite.dst,
-				      spans[0].x + r->u.composite.src_x,  y + r->u.composite.src_y,
-				      0, 0,
-				      spans[0].x, y,
-				      spans[1].x - spans[0].x, h);
+				      r->src,
+				      NULL,
+				      r->u.composite.dst,
+				      spans[0].x + r->u.composite.src_x,
+				      y + r->u.composite.src_y,
+				      0,
+				      0,
+				      spans[0].x,
+				      y,
+				      spans[1].x - spans[0].x,
+				      h);
 	}
 	spans++;
     } while (--num_spans > 1);
@@ -2000,58 +2229,94 @@ _mono_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_mono_unbounded_spans (void *abstract_renderer, int y, int h,
-		       const comac_half_open_span_t *spans, unsigned num_spans)
+_mono_unbounded_spans (void *abstract_renderer,
+		       int y,
+		       int h,
+		       const comac_half_open_span_t *spans,
+		       unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0) {
 	pixman_image_composite32 (PIXMAN_OP_CLEAR,
-				  r->src, NULL, r->u.composite.dst,
-				  spans[0].x + r->u.composite.src_x,  y + r->u.composite.src_y,
-				  0, 0,
-				  r->composite->unbounded.x, y,
-				  r->composite->unbounded.width, h);
+				  r->src,
+				  NULL,
+				  r->u.composite.dst,
+				  spans[0].x + r->u.composite.src_x,
+				  y + r->u.composite.src_y,
+				  0,
+				  0,
+				  r->composite->unbounded.x,
+				  y,
+				  r->composite->unbounded.width,
+				  h);
 	r->u.composite.mask_y = y + h;
 	return COMAC_STATUS_SUCCESS;
     }
 
     if (y != r->u.composite.mask_y) {
 	pixman_image_composite32 (PIXMAN_OP_CLEAR,
-				  r->src, NULL, r->u.composite.dst,
-				  spans[0].x + r->u.composite.src_x,  y + r->u.composite.src_y,
-				  0, 0,
-				  r->composite->unbounded.x, r->u.composite.mask_y,
-				  r->composite->unbounded.width, y - r->u.composite.mask_y);
+				  r->src,
+				  NULL,
+				  r->u.composite.dst,
+				  spans[0].x + r->u.composite.src_x,
+				  y + r->u.composite.src_y,
+				  0,
+				  0,
+				  r->composite->unbounded.x,
+				  r->u.composite.mask_y,
+				  r->composite->unbounded.width,
+				  y - r->u.composite.mask_y);
     }
 
     if (spans[0].x != r->composite->unbounded.x) {
-	    pixman_image_composite32 (PIXMAN_OP_CLEAR,
-				      r->src, NULL, r->u.composite.dst,
-				      spans[0].x + r->u.composite.src_x,  y + r->u.composite.src_y,
-				      0, 0,
-				      r->composite->unbounded.x, y,
-				      spans[0].x - r->composite->unbounded.x, h);
+	pixman_image_composite32 (PIXMAN_OP_CLEAR,
+				  r->src,
+				  NULL,
+				  r->u.composite.dst,
+				  spans[0].x + r->u.composite.src_x,
+				  y + r->u.composite.src_y,
+				  0,
+				  0,
+				  r->composite->unbounded.x,
+				  y,
+				  spans[0].x - r->composite->unbounded.x,
+				  h);
     }
 
     do {
 	int op = spans[0].coverage ? r->op : PIXMAN_OP_CLEAR;
 	pixman_image_composite32 (op,
-				  r->src, NULL, r->u.composite.dst,
-				  spans[0].x + r->u.composite.src_x,  y + r->u.composite.src_y,
-				  0, 0,
-				  spans[0].x, y,
-				  spans[1].x - spans[0].x, h);
+				  r->src,
+				  NULL,
+				  r->u.composite.dst,
+				  spans[0].x + r->u.composite.src_x,
+				  y + r->u.composite.src_y,
+				  0,
+				  0,
+				  spans[0].x,
+				  y,
+				  spans[1].x - spans[0].x,
+				  h);
 	spans++;
     } while (--num_spans > 1);
 
-    if (spans[0].x != r->composite->unbounded.x + r->composite->unbounded.width) {
-	    pixman_image_composite32 (PIXMAN_OP_CLEAR,
-				      r->src, NULL, r->u.composite.dst,
-				      spans[0].x + r->u.composite.src_x,  y + r->u.composite.src_y,
-				      0, 0,
-				      spans[0].x, y,
-				      r->composite->unbounded.x + r->composite->unbounded.width - spans[0].x, h);
+    if (spans[0].x !=
+	r->composite->unbounded.x + r->composite->unbounded.width) {
+	pixman_image_composite32 (PIXMAN_OP_CLEAR,
+				  r->src,
+				  NULL,
+				  r->u.composite.dst,
+				  spans[0].x + r->u.composite.src_x,
+				  y + r->u.composite.src_y,
+				  0,
+				  0,
+				  spans[0].x,
+				  y,
+				  r->composite->unbounded.x +
+				      r->composite->unbounded.width -
+				      spans[0].x,
+				  h);
     }
 
     r->u.composite.mask_y = y + h;
@@ -2063,31 +2328,39 @@ _mono_finish_unbounded_spans (void *abstract_renderer)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
-    if (r->u.composite.mask_y < r->composite->unbounded.y + r->composite->unbounded.height) {
-	pixman_image_composite32 (PIXMAN_OP_CLEAR,
-				  r->src, NULL, r->u.composite.dst,
-				  r->composite->unbounded.x + r->u.composite.src_x,  r->u.composite.mask_y + r->u.composite.src_y,
-				  0, 0,
-				  r->composite->unbounded.x, r->u.composite.mask_y,
-				  r->composite->unbounded.width,
-				  r->composite->unbounded.y + r->composite->unbounded.height - r->u.composite.mask_y);
+    if (r->u.composite.mask_y <
+	r->composite->unbounded.y + r->composite->unbounded.height) {
+	pixman_image_composite32 (
+	    PIXMAN_OP_CLEAR,
+	    r->src,
+	    NULL,
+	    r->u.composite.dst,
+	    r->composite->unbounded.x + r->u.composite.src_x,
+	    r->u.composite.mask_y + r->u.composite.src_y,
+	    0,
+	    0,
+	    r->composite->unbounded.x,
+	    r->u.composite.mask_y,
+	    r->composite->unbounded.width,
+	    r->composite->unbounded.y + r->composite->unbounded.height -
+		r->u.composite.mask_y);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-mono_renderer_init (comac_image_span_renderer_t	*r,
+mono_renderer_init (comac_image_span_renderer_t *r,
 		    const comac_composite_rectangles_t *composite,
-		    comac_antialias_t			 antialias,
-		    comac_bool_t			 needs_clip)
+		    comac_antialias_t antialias,
+		    comac_bool_t needs_clip)
 {
-    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *) composite->surface;
 
     if (antialias != COMAC_ANTIALIAS_NONE)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    if (!_comac_pattern_is_opaque_solid (&composite->mask_pattern.base))
+    if (! _comac_pattern_is_opaque_solid (&composite->mask_pattern.base))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     r->base.render_rows = NULL;
@@ -2098,37 +2371,53 @@ mono_renderer_init (comac_image_span_renderer_t	*r,
 	if (composite->op == COMAC_OPERATOR_CLEAR)
 	    color = COMAC_COLOR_TRANSPARENT;
 
-	if (fill_reduces_to_source (composite->op, color, dst, &r->u.fill.pixel)) {
+	if (fill_reduces_to_source (composite->op,
+				    color,
+				    dst,
+				    &r->u.fill.pixel)) {
 	    /* Use plain C for the fill operations as the span length is
 	     * typically small, too small to payback the startup overheads of
 	     * using SSE2 etc.
 	     */
-	    switch (PIXMAN_FORMAT_BPP(dst->pixman_format)) {
-	    case 8: r->base.render_rows = _fill8_spans; break;
-	    case 16: r->base.render_rows = _fill16_spans; break;
-	    case 32: r->base.render_rows = _fill32_spans; break;
-	    default: break;
+	    switch (PIXMAN_FORMAT_BPP (dst->pixman_format)) {
+	    case 8:
+		r->base.render_rows = _fill8_spans;
+		break;
+	    case 16:
+		r->base.render_rows = _fill16_spans;
+		break;
+	    case 32:
+		r->base.render_rows = _fill32_spans;
+		break;
+	    default:
+		break;
 	    }
 	    r->u.fill.data = dst->data;
 	    r->u.fill.stride = dst->stride;
 	}
     } else if ((composite->op == COMAC_OPERATOR_SOURCE ||
 		(composite->op == COMAC_OPERATOR_OVER &&
-		 (dst->base.is_clear || (dst->base.content & COMAC_CONTENT_ALPHA) == 0))) &&
-	       composite->source_pattern.base.type == COMAC_PATTERN_TYPE_SURFACE &&
-	       composite->source_pattern.surface.surface->backend->type == COMAC_SURFACE_TYPE_IMAGE &&
-	       to_image_surface(composite->source_pattern.surface.surface)->format == dst->format)
-    {
-       comac_image_surface_t *src =
-	   to_image_surface(composite->source_pattern.surface.surface);
-       int tx, ty;
+		 (dst->base.is_clear ||
+		  (dst->base.content & COMAC_CONTENT_ALPHA) == 0))) &&
+	       composite->source_pattern.base.type ==
+		   COMAC_PATTERN_TYPE_SURFACE &&
+	       composite->source_pattern.surface.surface->backend->type ==
+		   COMAC_SURFACE_TYPE_IMAGE &&
+	       to_image_surface (composite->source_pattern.surface.surface)
+		       ->format == dst->format) {
+	comac_image_surface_t *src =
+	    to_image_surface (composite->source_pattern.surface.surface);
+	int tx, ty;
 
-	if (_comac_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
-						 &tx, &ty) &&
-	    composite->bounded.x + tx >= 0 &&
-	    composite->bounded.y + ty >= 0 &&
-	    composite->bounded.x + composite->bounded.width +  tx <= src->width &&
-	    composite->bounded.y + composite->bounded.height + ty <= src->height) {
+	if (_comac_matrix_is_integer_translation (
+		&composite->source_pattern.base.matrix,
+		&tx,
+		&ty) &&
+	    composite->bounded.x + tx >= 0 && composite->bounded.y + ty >= 0 &&
+	    composite->bounded.x + composite->bounded.width + tx <=
+		src->width &&
+	    composite->bounded.y + composite->bounded.height + ty <=
+		src->height) {
 
 	    r->u.blit.stride = dst->stride;
 	    r->u.blit.data = dst->data;
@@ -2139,10 +2428,13 @@ mono_renderer_init (comac_image_span_renderer_t	*r,
     }
 
     if (r->base.render_rows == NULL) {
-	r->src = _pixman_image_for_pattern (dst, &composite->source_pattern.base, FALSE,
+	r->src = _pixman_image_for_pattern (dst,
+					    &composite->source_pattern.base,
+					    FALSE,
 					    &composite->unbounded,
 					    &composite->source_sample_area,
-					    &r->u.composite.src_x, &r->u.composite.src_y);
+					    &r->u.composite.src_x,
+					    &r->u.composite.src_y);
 	if (unlikely (r->src == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -2155,7 +2447,7 @@ mono_renderer_init (comac_image_span_renderer_t	*r,
 	} else
 	    r->base.render_rows = _mono_spans;
     }
-    r->bpp = PIXMAN_FORMAT_BPP(dst->pixman_format);
+    r->bpp = PIXMAN_FORMAT_BPP (dst->pixman_format);
 
     return COMAC_INT_STATUS_SUCCESS;
 }
@@ -2183,42 +2475,45 @@ add8x2_8x2 (uint32_t a, uint32_t b)
 static inline uint8_t
 mul8_8 (uint8_t a, uint8_t b)
 {
-    uint16_t t = a * (uint16_t)b + ONE_HALF;
+    uint16_t t = a * (uint16_t) b + ONE_HALF;
     return ((t >> G_SHIFT) + t) >> G_SHIFT;
 }
 
 static inline uint32_t
 lerp8x4 (uint32_t src, uint8_t a, uint32_t dst)
 {
-    return (add8x2_8x2 (mul8x2_8 (src, a),
-			mul8x2_8 (dst, ~a)) |
-	    add8x2_8x2 (mul8x2_8 (src >> G_SHIFT, a),
-			mul8x2_8 (dst >> G_SHIFT, ~a)) << G_SHIFT);
+    return (
+	add8x2_8x2 (mul8x2_8 (src, a), mul8x2_8 (dst, ~a)) |
+	add8x2_8x2 (mul8x2_8 (src >> G_SHIFT, a), mul8x2_8 (dst >> G_SHIFT, ~a))
+	    << G_SHIFT);
 }
 
 static comac_status_t
-_fill_a8_lerp_opaque_spans (void *abstract_renderer, int y, int h,
-			    const comac_half_open_span_t *spans, unsigned num_spans)
+_fill_a8_lerp_opaque_spans (void *abstract_renderer,
+			    int y,
+			    int h,
+			    const comac_half_open_span_t *spans,
+			    unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
-	uint8_t *d = r->u.fill.data + r->u.fill.stride*y;
+    if (likely (h == 1)) {
+	uint8_t *d = r->u.fill.data + r->u.fill.stride * y;
 	do {
 	    uint8_t a = spans[0].coverage;
 	    if (a) {
 		int len = spans[1].x - spans[0].x;
 		if (a == 0xff) {
-		    memset(d + spans[0].x, r->u.fill.pixel, len);
+		    memset (d + spans[0].x, r->u.fill.pixel, len);
 		} else {
-		    uint8_t s = mul8_8(a, r->u.fill.pixel);
+		    uint8_t s = mul8_8 (a, r->u.fill.pixel);
 		    uint8_t *dst = d + spans[0].x;
 		    a = ~a;
 		    while (len-- > 0) {
-			uint8_t t = mul8_8(*dst, a);
+			uint8_t t = mul8_8 (*dst, a);
 			*dst++ = t + s;
 		    }
 		}
@@ -2233,18 +2528,20 @@ _fill_a8_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 		if (a == 0xff) {
 		    do {
 			int len = spans[1].x - spans[0].x;
-			uint8_t *d = r->u.fill.data + r->u.fill.stride*yy + spans[0].x;
-			memset(d, r->u.fill.pixel, len);
+			uint8_t *d =
+			    r->u.fill.data + r->u.fill.stride * yy + spans[0].x;
+			memset (d, r->u.fill.pixel, len);
 			yy++;
 		    } while (--hh);
 		} else {
-		    uint8_t s = mul8_8(a, r->u.fill.pixel);
+		    uint8_t s = mul8_8 (a, r->u.fill.pixel);
 		    a = ~a;
 		    do {
 			int len = spans[1].x - spans[0].x;
-			uint8_t *d = r->u.fill.data + r->u.fill.stride*yy + spans[0].x;
+			uint8_t *d =
+			    r->u.fill.data + r->u.fill.stride * yy + spans[0].x;
 			while (len-- > 0) {
-			    uint8_t t = mul8_8(*d, a);
+			    uint8_t t = mul8_8 (*d, a);
 			    *d++ = t + s;
 			}
 			yy++;
@@ -2259,33 +2556,47 @@ _fill_a8_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_fill_xrgb32_lerp_opaque_spans (void *abstract_renderer, int y, int h,
-				const comac_half_open_span_t *spans, unsigned num_spans)
+_fill_xrgb32_lerp_opaque_spans (void *abstract_renderer,
+				int y,
+				int h,
+				const comac_half_open_span_t *spans,
+				unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
+    if (likely (h == 1)) {
 	do {
 	    uint8_t a = spans[0].coverage;
 	    if (a) {
 		int len = spans[1].x - spans[0].x;
-		uint32_t *d = (uint32_t*)(r->u.fill.data + r->u.fill.stride*y + spans[0].x*4);
+		uint32_t *d =
+		    (uint32_t *) (r->u.fill.data + r->u.fill.stride * y +
+				  spans[0].x * 4);
 		if (a == 0xff) {
 		    if (len > 31) {
-			pixman_fill ((uint32_t *)r->u.fill.data, r->u.fill.stride / sizeof(uint32_t), 32,
-				     spans[0].x, y, len, 1, r->u.fill.pixel);
+			pixman_fill ((uint32_t *) r->u.fill.data,
+				     r->u.fill.stride / sizeof (uint32_t),
+				     32,
+				     spans[0].x,
+				     y,
+				     len,
+				     1,
+				     r->u.fill.pixel);
 		    } else {
-			uint32_t *d = (uint32_t*)(r->u.fill.data + r->u.fill.stride*y + spans[0].x*4);
+			uint32_t *d = (uint32_t *) (r->u.fill.data +
+						    r->u.fill.stride * y +
+						    spans[0].x * 4);
 			while (len-- > 0)
 			    *d++ = r->u.fill.pixel;
 		    }
-		} else while (len-- > 0) {
-		    *d = lerp8x4 (r->u.fill.pixel, a, *d);
-		    d++;
-		}
+		} else
+		    while (len-- > 0) {
+			*d = lerp8x4 (r->u.fill.pixel, a, *d);
+			d++;
+		    }
 	    }
 	    spans++;
 	} while (--num_spans > 1);
@@ -2295,14 +2606,21 @@ _fill_xrgb32_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 	    if (a) {
 		if (a == 0xff) {
 		    if (spans[1].x - spans[0].x > 16) {
-			pixman_fill ((uint32_t *)r->u.fill.data, r->u.fill.stride / sizeof(uint32_t), 32,
-				     spans[0].x, y, spans[1].x - spans[0].x, h,
+			pixman_fill ((uint32_t *) r->u.fill.data,
+				     r->u.fill.stride / sizeof (uint32_t),
+				     32,
+				     spans[0].x,
+				     y,
+				     spans[1].x - spans[0].x,
+				     h,
 				     r->u.fill.pixel);
 		    } else {
 			int yy = y, hh = h;
 			do {
 			    int len = spans[1].x - spans[0].x;
-			    uint32_t *d = (uint32_t*)(r->u.fill.data + r->u.fill.stride*yy + spans[0].x*4);
+			    uint32_t *d = (uint32_t *) (r->u.fill.data +
+							r->u.fill.stride * yy +
+							spans[0].x * 4);
 			    while (len-- > 0)
 				*d++ = r->u.fill.pixel;
 			    yy++;
@@ -2312,7 +2630,9 @@ _fill_xrgb32_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 		    int yy = y, hh = h;
 		    do {
 			int len = spans[1].x - spans[0].x;
-			uint32_t *d = (uint32_t *)(r->u.fill.data + r->u.fill.stride*yy + spans[0].x*4);
+			uint32_t *d = (uint32_t *) (r->u.fill.data +
+						    r->u.fill.stride * yy +
+						    spans[0].x * 4);
 			while (len-- > 0) {
 			    *d = lerp8x4 (r->u.fill.pixel, a, *d);
 			    d++;
@@ -2329,25 +2649,28 @@ _fill_xrgb32_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_fill_a8_lerp_spans (void *abstract_renderer, int y, int h,
-		     const comac_half_open_span_t *spans, unsigned num_spans)
+_fill_a8_lerp_spans (void *abstract_renderer,
+		     int y,
+		     int h,
+		     const comac_half_open_span_t *spans,
+		     unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
+    if (likely (h == 1)) {
 	do {
 	    uint8_t a = mul8_8 (spans[0].coverage, r->bpp);
 	    if (a) {
 		int len = spans[1].x - spans[0].x;
-		uint8_t *d = r->u.fill.data + r->u.fill.stride*y + spans[0].x;
-		uint16_t p = (uint16_t)a * r->u.fill.pixel + 0x7f;
+		uint8_t *d = r->u.fill.data + r->u.fill.stride * y + spans[0].x;
+		uint16_t p = (uint16_t) a * r->u.fill.pixel + 0x7f;
 		uint16_t ia = ~a;
 		while (len-- > 0) {
-		    uint16_t t = *d*ia + p;
-		    *d++ = (t + (t>>8)) >> 8;
+		    uint16_t t = *d * ia + p;
+		    *d++ = (t + (t >> 8)) >> 8;
 		}
 	    }
 	    spans++;
@@ -2357,14 +2680,15 @@ _fill_a8_lerp_spans (void *abstract_renderer, int y, int h,
 	    uint8_t a = mul8_8 (spans[0].coverage, r->bpp);
 	    if (a) {
 		int yy = y, hh = h;
-		uint16_t p = (uint16_t)a * r->u.fill.pixel + 0x7f;
+		uint16_t p = (uint16_t) a * r->u.fill.pixel + 0x7f;
 		uint16_t ia = ~a;
 		do {
 		    int len = spans[1].x - spans[0].x;
-		    uint8_t *d = r->u.fill.data + r->u.fill.stride*yy + spans[0].x;
+		    uint8_t *d =
+			r->u.fill.data + r->u.fill.stride * yy + spans[0].x;
 		    while (len-- > 0) {
-			uint16_t t = *d*ia + p;
-			*d++ = (t + (t>>8)) >> 8;
+			uint16_t t = *d * ia + p;
+			*d++ = (t + (t >> 8)) >> 8;
 		    }
 		    yy++;
 		} while (--hh);
@@ -2377,20 +2701,25 @@ _fill_a8_lerp_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_fill_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
-			 const comac_half_open_span_t *spans, unsigned num_spans)
+_fill_xrgb32_lerp_spans (void *abstract_renderer,
+			 int y,
+			 int h,
+			 const comac_half_open_span_t *spans,
+			 unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
+    if (likely (h == 1)) {
 	do {
 	    uint8_t a = mul8_8 (spans[0].coverage, r->bpp);
 	    if (a) {
 		int len = spans[1].x - spans[0].x;
-		uint32_t *d = (uint32_t*)(r->u.fill.data + r->u.fill.stride*y + spans[0].x*4);
+		uint32_t *d =
+		    (uint32_t *) (r->u.fill.data + r->u.fill.stride * y +
+				  spans[0].x * 4);
 		while (len-- > 0) {
 		    *d = lerp8x4 (r->u.fill.pixel, a, *d);
 		    d++;
@@ -2405,7 +2734,9 @@ _fill_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
 		int yy = y, hh = h;
 		do {
 		    int len = spans[1].x - spans[0].x;
-		    uint32_t *d = (uint32_t *)(r->u.fill.data + r->u.fill.stride*yy + spans[0].x*4);
+		    uint32_t *d =
+			(uint32_t *) (r->u.fill.data + r->u.fill.stride * yy +
+				      spans[0].x * 4);
 		    while (len-- > 0) {
 			*d = lerp8x4 (r->u.fill.pixel, a, *d);
 			d++;
@@ -2421,28 +2752,31 @@ _fill_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_blit_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
-			 const comac_half_open_span_t *spans, unsigned num_spans)
+_blit_xrgb32_lerp_spans (void *abstract_renderer,
+			 int y,
+			 int h,
+			 const comac_half_open_span_t *spans,
+			 unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    if (likely(h == 1)) {
-	uint8_t *src = r->u.blit.src_data + y*r->u.blit.src_stride;
-	uint8_t *dst = r->u.blit.data + y*r->u.blit.stride;
+    if (likely (h == 1)) {
+	uint8_t *src = r->u.blit.src_data + y * r->u.blit.src_stride;
+	uint8_t *dst = r->u.blit.data + y * r->u.blit.stride;
 	do {
 	    uint8_t a = mul8_8 (spans[0].coverage, r->bpp);
 	    if (a) {
-		uint32_t *s = (uint32_t*)src + spans[0].x;
-		uint32_t *d = (uint32_t*)dst + spans[0].x;
+		uint32_t *s = (uint32_t *) src + spans[0].x;
+		uint32_t *d = (uint32_t *) dst + spans[0].x;
 		int len = spans[1].x - spans[0].x;
 		if (a == 0xff) {
 		    if (len == 1)
 			*d = *s;
 		    else
-			memcpy(d, s, len*4);
+			memcpy (d, s, len * 4);
 		} else {
 		    while (len-- > 0) {
 			*d = lerp8x4 (*s, a, *d);
@@ -2458,14 +2792,18 @@ _blit_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
 	    if (a) {
 		int yy = y, hh = h;
 		do {
-		    uint32_t *s = (uint32_t *)(r->u.blit.src_data + yy*r->u.blit.src_stride + spans[0].x * 4);
-		    uint32_t *d = (uint32_t *)(r->u.blit.data + yy*r->u.blit.stride + spans[0].x * 4);
+		    uint32_t *s = (uint32_t *) (r->u.blit.src_data +
+						yy * r->u.blit.src_stride +
+						spans[0].x * 4);
+		    uint32_t *d =
+			(uint32_t *) (r->u.blit.data + yy * r->u.blit.stride +
+				      spans[0].x * 4);
 		    int len = spans[1].x - spans[0].x;
 		    if (a == 0xff) {
 			if (len == 1)
 			    *d = *s;
 			else
-			    memcpy(d, s, len * 4);
+			    memcpy (d, s, len * 4);
 		    } else {
 			while (len-- > 0) {
 			    *d = lerp8x4 (*s, a, *d);
@@ -2484,7 +2822,8 @@ _blit_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
 
 static comac_status_t
 _inplace_spans (void *abstract_renderer,
-		int y, int h,
+		int y,
+		int h,
 		const comac_half_open_span_t *spans,
 		unsigned num_spans)
 {
@@ -2496,16 +2835,22 @@ _inplace_spans (void *abstract_renderer,
 	return COMAC_STATUS_SUCCESS;
 
     if (num_spans == 2 && spans[0].coverage == 0xff) {
-	pixman_image_composite32 (r->op, r->src, NULL, r->u.composite.dst,
+	pixman_image_composite32 (r->op,
+				  r->src,
+				  NULL,
+				  r->u.composite.dst,
 				  spans[0].x + r->u.composite.src_x,
 				  y + r->u.composite.src_y,
-				  0, 0,
-				  spans[0].x, y,
-				  spans[1].x - spans[0].x, h);
+				  0,
+				  0,
+				  spans[0].x,
+				  y,
+				  spans[1].x - spans[0].x,
+				  h);
 	return COMAC_STATUS_SUCCESS;
     }
 
-    mask = (uint8_t *)pixman_image_get_data (r->mask);
+    mask = (uint8_t *) pixman_image_get_data (r->mask);
     x1 = x0 = spans[0].x;
     do {
 	int len = spans[1].x - spans[0].x;
@@ -2513,32 +2858,50 @@ _inplace_spans (void *abstract_renderer,
 	if (len > 1) {
 	    if (len >= r->u.composite.run_length && spans[0].coverage == 0xff) {
 		if (x1 != x0) {
-		    pixman_image_composite32 (r->op, r->src, r->mask, r->u.composite.dst,
+		    pixman_image_composite32 (r->op,
+					      r->src,
+					      r->mask,
+					      r->u.composite.dst,
 					      x0 + r->u.composite.src_x,
 					      y + r->u.composite.src_y,
-					      0, 0,
-					      x0, y,
-					      x1 - x0, h);
+					      0,
+					      0,
+					      x0,
+					      y,
+					      x1 - x0,
+					      h);
 		}
-		pixman_image_composite32 (r->op, r->src, NULL, r->u.composite.dst,
+		pixman_image_composite32 (r->op,
+					  r->src,
+					  NULL,
+					  r->u.composite.dst,
 					  spans[0].x + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  spans[0].x, y,
-					  len, h);
-		mask = (uint8_t *)pixman_image_get_data (r->mask);
+					  0,
+					  0,
+					  spans[0].x,
+					  y,
+					  len,
+					  h);
+		mask = (uint8_t *) pixman_image_get_data (r->mask);
 		x0 = spans[1].x;
 	    } else if (spans[0].coverage == 0x0 &&
 		       x1 - x0 > r->u.composite.run_length) {
-		pixman_image_composite32 (r->op, r->src, r->mask, r->u.composite.dst,
+		pixman_image_composite32 (r->op,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  x1 - x0, h);
-		mask = (uint8_t *)pixman_image_get_data (r->mask);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  x1 - x0,
+					  h);
+		mask = (uint8_t *) pixman_image_get_data (r->mask);
 		x0 = spans[1].x;
-	    }else {
+	    } else {
 		memset (mask, spans[0].coverage, --len);
 		mask += len;
 	    }
@@ -2548,19 +2911,27 @@ _inplace_spans (void *abstract_renderer,
     } while (--num_spans > 1);
 
     if (x1 != x0) {
-	pixman_image_composite32 (r->op, r->src, r->mask, r->u.composite.dst,
+	pixman_image_composite32 (r->op,
+				  r->src,
+				  r->mask,
+				  r->u.composite.dst,
 				  x0 + r->u.composite.src_x,
 				  y + r->u.composite.src_y,
-				  0, 0,
-				  x0, y,
-				  x1 - x0, h);
+				  0,
+				  0,
+				  x0,
+				  y,
+				  x1 - x0,
+				  h);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_inplace_opacity_spans (void *abstract_renderer, int y, int h,
+_inplace_opacity_spans (void *abstract_renderer,
+			int y,
+			int h,
 			const comac_half_open_span_t *spans,
 			unsigned num_spans)
 {
@@ -2571,24 +2942,29 @@ _inplace_opacity_spans (void *abstract_renderer, int y, int h,
     if (num_spans == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    mask = (uint8_t *)pixman_image_get_data (r->mask);
+    mask = (uint8_t *) pixman_image_get_data (r->mask);
     x1 = x0 = spans[0].x;
     do {
 	int len = spans[1].x - spans[0].x;
-	uint8_t m = mul8_8(spans[0].coverage, r->bpp);
+	uint8_t m = mul8_8 (spans[0].coverage, r->bpp);
 	*mask++ = m;
 	if (len > 1) {
-	    if (m == 0 &&
-		x1 - x0 > r->u.composite.run_length) {
-		pixman_image_composite32 (r->op, r->src, r->mask, r->u.composite.dst,
+	    if (m == 0 && x1 - x0 > r->u.composite.run_length) {
+		pixman_image_composite32 (r->op,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  x1 - x0, h);
-		mask = (uint8_t *)pixman_image_get_data (r->mask);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  x1 - x0,
+					  h);
+		mask = (uint8_t *) pixman_image_get_data (r->mask);
 		x0 = spans[1].x;
-	    }else {
+	    } else {
 		memset (mask, m, --len);
 		mask += len;
 	    }
@@ -2598,24 +2974,32 @@ _inplace_opacity_spans (void *abstract_renderer, int y, int h,
     } while (--num_spans > 1);
 
     if (x1 != x0) {
-	pixman_image_composite32 (r->op, r->src, r->mask, r->u.composite.dst,
+	pixman_image_composite32 (r->op,
+				  r->src,
+				  r->mask,
+				  r->u.composite.dst,
 				  x0 + r->u.composite.src_x,
 				  y + r->u.composite.src_y,
-				  0, 0,
-				  x0, y,
-				  x1 - x0, h);
+				  0,
+				  0,
+				  x0,
+				  y,
+				  x1 - x0,
+				  h);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_inplace_src_spans (void *abstract_renderer, int y, int h,
+_inplace_src_spans (void *abstract_renderer,
+		    int y,
+		    int h,
 		    const comac_half_open_span_t *spans,
 		    unsigned num_spans)
 {
     comac_image_span_renderer_t *r = abstract_renderer;
-    uint8_t *m, *base = (uint8_t*)pixman_image_get_data(r->mask);
+    uint8_t *m, *base = (uint8_t *) pixman_image_get_data (r->mask);
     int x0;
 
     if (num_spans == 0)
@@ -2629,36 +3013,57 @@ _inplace_src_spans (void *abstract_renderer, int y, int h,
 	    if (spans[0].x != x0) {
 #if PIXMAN_HAS_OP_LERP
 		pixman_image_composite32 (PIXMAN_OP_LERP_SRC,
-					  r->src, r->mask, r->u.composite.dst,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 #else
 		pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-					  r->mask, NULL, r->u.composite.dst,
-					  0, 0,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  r->mask,
+					  NULL,
+					  r->u.composite.dst,
+					  0,
+					  0,
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 		pixman_image_composite32 (PIXMAN_OP_ADD,
-					  r->src, r->mask, r->u.composite.dst,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 #endif
 	    }
 
 	    pixman_image_composite32 (PIXMAN_OP_SRC,
-				      r->src, NULL, r->u.composite.dst,
+				      r->src,
+				      NULL,
+				      r->u.composite.dst,
 				      spans[0].x + r->u.composite.src_x,
 				      y + r->u.composite.src_y,
-				      0, 0,
-				      spans[0].x, y,
-				      spans[1].x - spans[0].x, h);
+				      0,
+				      0,
+				      spans[0].x,
+				      y,
+				      spans[1].x - spans[0].x,
+				      h);
 
 	    m = base;
 	    x0 = spans[1].x;
@@ -2666,26 +3071,42 @@ _inplace_src_spans (void *abstract_renderer, int y, int h,
 	    if (spans[0].x != x0) {
 #if PIXMAN_HAS_OP_LERP
 		pixman_image_composite32 (PIXMAN_OP_LERP_SRC,
-					  r->src, r->mask, r->u.composite.dst,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 #else
 		pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-					  r->mask, NULL, r->u.composite.dst,
-					  0, 0,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  r->mask,
+					  NULL,
+					  r->u.composite.dst,
+					  0,
+					  0,
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 		pixman_image_composite32 (PIXMAN_OP_ADD,
-					  r->src, r->mask, r->u.composite.dst,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 #endif
 	    }
 
@@ -2704,26 +3125,42 @@ _inplace_src_spans (void *abstract_renderer, int y, int h,
     if (spans[0].x != x0) {
 #if PIXMAN_HAS_OP_LERP
 	pixman_image_composite32 (PIXMAN_OP_LERP_SRC,
-				  r->src, r->mask, r->u.composite.dst,
+				  r->src,
+				  r->mask,
+				  r->u.composite.dst,
 				  x0 + r->u.composite.src_x,
 				  y + r->u.composite.src_y,
-				  0, 0,
-				  x0, y,
-				  spans[0].x - x0, h);
+				  0,
+				  0,
+				  x0,
+				  y,
+				  spans[0].x - x0,
+				  h);
 #else
 	pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-				  r->mask, NULL, r->u.composite.dst,
-				  0, 0,
-				  0, 0,
-				  x0, y,
-				  spans[0].x - x0, h);
+				  r->mask,
+				  NULL,
+				  r->u.composite.dst,
+				  0,
+				  0,
+				  0,
+				  0,
+				  x0,
+				  y,
+				  spans[0].x - x0,
+				  h);
 	pixman_image_composite32 (PIXMAN_OP_ADD,
-				  r->src, r->mask, r->u.composite.dst,
+				  r->src,
+				  r->mask,
+				  r->u.composite.dst,
 				  x0 + r->u.composite.src_x,
 				  y + r->u.composite.src_y,
-				  0, 0,
-				  x0, y,
-				  spans[0].x - x0, h);
+				  0,
+				  0,
+				  x0,
+				  y,
+				  spans[0].x - x0,
+				  h);
 #endif
     }
 
@@ -2731,7 +3168,9 @@ _inplace_src_spans (void *abstract_renderer, int y, int h,
 }
 
 static comac_status_t
-_inplace_src_opacity_spans (void *abstract_renderer, int y, int h,
+_inplace_src_opacity_spans (void *abstract_renderer,
+			    int y,
+			    int h,
 			    const comac_half_open_span_t *spans,
 			    unsigned num_spans)
 {
@@ -2743,38 +3182,54 @@ _inplace_src_opacity_spans (void *abstract_renderer, int y, int h,
 	return COMAC_STATUS_SUCCESS;
 
     x0 = spans[0].x;
-    mask = (uint8_t *)pixman_image_get_data (r->mask);
+    mask = (uint8_t *) pixman_image_get_data (r->mask);
     do {
 	int len = spans[1].x - spans[0].x;
-	uint8_t m = mul8_8(spans[0].coverage, r->bpp);
+	uint8_t m = mul8_8 (spans[0].coverage, r->bpp);
 	if (m == 0) {
 	    if (spans[0].x != x0) {
 #if PIXMAN_HAS_OP_LERP
 		pixman_image_composite32 (PIXMAN_OP_LERP_SRC,
-					  r->src, r->mask, r->u.composite.dst,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 #else
 		pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-					  r->mask, NULL, r->u.composite.dst,
-					  0, 0,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  r->mask,
+					  NULL,
+					  r->u.composite.dst,
+					  0,
+					  0,
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 		pixman_image_composite32 (PIXMAN_OP_ADD,
-					  r->src, r->mask, r->u.composite.dst,
+					  r->src,
+					  r->mask,
+					  r->u.composite.dst,
 					  x0 + r->u.composite.src_x,
 					  y + r->u.composite.src_y,
-					  0, 0,
-					  x0, y,
-					  spans[0].x - x0, h);
+					  0,
+					  0,
+					  x0,
+					  y,
+					  spans[0].x - x0,
+					  h);
 #endif
 	    }
 
-	    mask = (uint8_t *)pixman_image_get_data (r->mask);
+	    mask = (uint8_t *) pixman_image_get_data (r->mask);
 	    x0 = spans[1].x;
 	} else {
 	    *mask++ = m;
@@ -2789,44 +3244,61 @@ _inplace_src_opacity_spans (void *abstract_renderer, int y, int h,
     if (spans[0].x != x0) {
 #if PIXMAN_HAS_OP_LERP
 	pixman_image_composite32 (PIXMAN_OP_LERP_SRC,
-				  r->src, r->mask, r->u.composite.dst,
+				  r->src,
+				  r->mask,
+				  r->u.composite.dst,
 				  x0 + r->u.composite.src_x,
 				  y + r->u.composite.src_y,
-				  0, 0,
-				  x0, y,
-				  spans[0].x - x0, h);
+				  0,
+				  0,
+				  x0,
+				  y,
+				  spans[0].x - x0,
+				  h);
 #else
 	pixman_image_composite32 (PIXMAN_OP_OUT_REVERSE,
-				  r->mask, NULL, r->u.composite.dst,
-				  0, 0,
-				  0, 0,
-				  x0, y,
-				  spans[0].x - x0, h);
+				  r->mask,
+				  NULL,
+				  r->u.composite.dst,
+				  0,
+				  0,
+				  0,
+				  0,
+				  x0,
+				  y,
+				  spans[0].x - x0,
+				  h);
 	pixman_image_composite32 (PIXMAN_OP_ADD,
-				  r->src, r->mask, r->u.composite.dst,
+				  r->src,
+				  r->mask,
+				  r->u.composite.dst,
 				  x0 + r->u.composite.src_x,
 				  y + r->u.composite.src_y,
-				  0, 0,
-				  x0, y,
-				  spans[0].x - x0, h);
+				  0,
+				  0,
+				  x0,
+				  y,
+				  spans[0].x - x0,
+				  h);
 #endif
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
-static void free_pixels (pixman_image_t *image, void *data)
+static void
+free_pixels (pixman_image_t *image, void *data)
 {
-	free (data);
+    free (data);
 }
 
 static comac_int_status_t
-inplace_renderer_init (comac_image_span_renderer_t	*r,
+inplace_renderer_init (comac_image_span_renderer_t *r,
 		       const comac_composite_rectangles_t *composite,
-		       comac_antialias_t		 antialias,
-		       comac_bool_t			 needs_clip)
+		       comac_antialias_t antialias,
+		       comac_bool_t needs_clip)
 {
-    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *) composite->surface;
     uint8_t *buf;
 
     if (composite->mask_pattern.base.type != COMAC_PATTERN_TYPE_SOLID)
@@ -2842,7 +3314,10 @@ inplace_renderer_init (comac_image_span_renderer_t	*r,
 	if (composite->op == COMAC_OPERATOR_CLEAR)
 	    color = COMAC_COLOR_TRANSPARENT;
 
-	if (fill_reduces_to_source (composite->op, color, dst, &r->u.fill.pixel)) {
+	if (fill_reduces_to_source (composite->op,
+				    color,
+				    dst,
+				    &r->u.fill.pixel)) {
 	    /* Use plain C for the fill operations as the span length is
 	     * typically small, too small to payback the startup overheads of
 	     * using SSE2 etc.
@@ -2862,7 +3337,8 @@ inplace_renderer_init (comac_image_span_renderer_t	*r,
 		case COMAC_FORMAT_RGB96F:
 		case COMAC_FORMAT_RGBA128F:
 		case COMAC_FORMAT_INVALID:
-		default: break;
+		default:
+		    break;
 		}
 	    } else {
 		switch (dst->format) {
@@ -2879,32 +3355,40 @@ inplace_renderer_init (comac_image_span_renderer_t	*r,
 		case COMAC_FORMAT_RGB96F:
 		case COMAC_FORMAT_RGBA128F:
 		case COMAC_FORMAT_INVALID:
-		default: break;
+		default:
+		    break;
 		}
 	    }
 	    r->u.fill.data = dst->data;
 	    r->u.fill.stride = dst->stride;
 	}
-    } else if ((dst->format == COMAC_FORMAT_ARGB32 || dst->format == COMAC_FORMAT_RGB24) &&
+    } else if ((dst->format == COMAC_FORMAT_ARGB32 ||
+		dst->format == COMAC_FORMAT_RGB24) &&
 	       (composite->op == COMAC_OPERATOR_SOURCE ||
 		(composite->op == COMAC_OPERATOR_OVER &&
-		 (dst->base.is_clear || (dst->base.content & COMAC_CONTENT_ALPHA) == 0))) &&
-	       composite->source_pattern.base.type == COMAC_PATTERN_TYPE_SURFACE &&
-	       composite->source_pattern.surface.surface->backend->type == COMAC_SURFACE_TYPE_IMAGE &&
-	       to_image_surface(composite->source_pattern.surface.surface)->format == dst->format)
-    {
-       comac_image_surface_t *src =
-	   to_image_surface(composite->source_pattern.surface.surface);
-       int tx, ty;
+		 (dst->base.is_clear ||
+		  (dst->base.content & COMAC_CONTENT_ALPHA) == 0))) &&
+	       composite->source_pattern.base.type ==
+		   COMAC_PATTERN_TYPE_SURFACE &&
+	       composite->source_pattern.surface.surface->backend->type ==
+		   COMAC_SURFACE_TYPE_IMAGE &&
+	       to_image_surface (composite->source_pattern.surface.surface)
+		       ->format == dst->format) {
+	comac_image_surface_t *src =
+	    to_image_surface (composite->source_pattern.surface.surface);
+	int tx, ty;
 
-	if (_comac_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
-						 &tx, &ty) &&
-	    composite->bounded.x + tx >= 0 &&
-	    composite->bounded.y + ty >= 0 &&
-	    composite->bounded.x + composite->bounded.width + tx <= src->width &&
-	    composite->bounded.y + composite->bounded.height + ty <= src->height) {
+	if (_comac_matrix_is_integer_translation (
+		&composite->source_pattern.base.matrix,
+		&tx,
+		&ty) &&
+	    composite->bounded.x + tx >= 0 && composite->bounded.y + ty >= 0 &&
+	    composite->bounded.x + composite->bounded.width + tx <=
+		src->width &&
+	    composite->bounded.y + composite->bounded.height + ty <=
+		src->height) {
 
-	    assert(PIXMAN_FORMAT_BPP(dst->pixman_format) == 32);
+	    assert (PIXMAN_FORMAT_BPP (dst->pixman_format) == 32);
 	    r->u.blit.stride = dst->stride;
 	    r->u.blit.data = dst->data;
 	    r->u.blit.src_stride = src->stride;
@@ -2919,20 +3403,21 @@ inplace_renderer_init (comac_image_span_renderer_t	*r,
 	if (composite->is_bounded == 0)
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-	r->base.render_rows = r->bpp == 0xff ? _inplace_spans : _inplace_opacity_spans;
+	r->base.render_rows =
+	    r->bpp == 0xff ? _inplace_spans : _inplace_opacity_spans;
 	width = (composite->bounded.width + 3) & ~3;
 
 	r->u.composite.run_length = 8;
 	if (src->type == COMAC_PATTERN_TYPE_LINEAR ||
 	    src->type == COMAC_PATTERN_TYPE_RADIAL)
-		r->u.composite.run_length = 256;
-	if (dst->base.is_clear &&
-	    (composite->op == COMAC_OPERATOR_SOURCE ||
-	     composite->op == COMAC_OPERATOR_OVER ||
-	     composite->op == COMAC_OPERATOR_ADD)) {
+	    r->u.composite.run_length = 256;
+	if (dst->base.is_clear && (composite->op == COMAC_OPERATOR_SOURCE ||
+				   composite->op == COMAC_OPERATOR_OVER ||
+				   composite->op == COMAC_OPERATOR_ADD)) {
 	    r->op = PIXMAN_OP_SRC;
 	} else if (composite->op == COMAC_OPERATOR_SOURCE) {
-	    r->base.render_rows = r->bpp == 0xff ? _inplace_src_spans : _inplace_src_opacity_spans;
+	    r->base.render_rows = r->bpp == 0xff ? _inplace_src_spans
+						 : _inplace_src_opacity_spans;
 	    r->u.composite.mask_y = r->composite->unbounded.y;
 	    width = (composite->unbounded.width + 3) & ~3;
 	} else if (composite->op == COMAC_OPERATOR_CLEAR) {
@@ -2942,10 +3427,13 @@ inplace_renderer_init (comac_image_span_renderer_t	*r,
 	    r->op = _pixman_operator (composite->op);
 	}
 
-	r->src = _pixman_image_for_pattern (dst, src, FALSE,
+	r->src = _pixman_image_for_pattern (dst,
+					    src,
+					    FALSE,
 					    &composite->bounded,
 					    &composite->source_sample_area,
-					    &r->u.composite.src_x, &r->u.composite.src_y);
+					    &r->u.composite.src_x,
+					    &r->u.composite.src_y);
 	if (unlikely (r->src == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -2959,13 +3447,15 @@ inplace_renderer_init (comac_image_span_renderer_t	*r,
 	    }
 	}
 	r->mask = pixman_image_create_bits (PIXMAN_a8,
-					    width, composite->unbounded.height,
-					    (uint32_t *)buf, 0);
+					    width,
+					    composite->unbounded.height,
+					    (uint32_t *) buf,
+					    0);
 	if (unlikely (r->mask == NULL)) {
 	    pixman_image_unref (r->src);
 	    if (buf != r->_buf)
 		free (buf);
-	    return _comac_error(COMAC_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
 
 	if (buf != r->_buf)
@@ -2978,19 +3468,22 @@ inplace_renderer_init (comac_image_span_renderer_t	*r,
 }
 
 static comac_int_status_t
-span_renderer_init (comac_abstract_span_renderer_t	*_r,
+span_renderer_init (comac_abstract_span_renderer_t *_r,
 		    const comac_composite_rectangles_t *composite,
-		    comac_antialias_t			 antialias,
-		    comac_bool_t			 needs_clip)
+		    comac_antialias_t antialias,
+		    comac_bool_t needs_clip)
 {
-    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *)_r;
-    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
+    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *) _r;
+    comac_image_surface_t *dst = (comac_image_surface_t *) composite->surface;
     const comac_pattern_t *source = &composite->source_pattern.base;
     comac_operator_t op = composite->op;
     comac_int_status_t status;
 
-    TRACE ((stderr, "%s: antialias=%d, needs_clip=%d\n", __FUNCTION__,
-	    antialias, needs_clip));
+    TRACE ((stderr,
+	    "%s: antialias=%d, needs_clip=%d\n",
+	    __FUNCTION__,
+	    antialias,
+	    needs_clip));
 
     if (needs_clip)
 	return COMAC_INT_STATUS_UNSUPPORTED;
@@ -3018,18 +3511,14 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
 	op = PIXMAN_OP_OUT_REVERSE;
 #endif
     } else if (dst->base.is_clear &&
-	       (op == COMAC_OPERATOR_SOURCE ||
-		op == COMAC_OPERATOR_OVER ||
+	       (op == COMAC_OPERATOR_SOURCE || op == COMAC_OPERATOR_OVER ||
 		op == COMAC_OPERATOR_ADD)) {
 	op = PIXMAN_OP_SRC;
     } else if (op == COMAC_OPERATOR_SOURCE) {
 	if (_comac_pattern_is_opaque (&composite->source_pattern.base,
-				      &composite->source_sample_area))
-	{
+				      &composite->source_sample_area)) {
 	    op = PIXMAN_OP_OVER;
-	}
-	else
-	{
+	} else {
 #if PIXMAN_HAS_OP_LERP
 	    op = PIXMAN_OP_LERP_SRC;
 #else
@@ -3041,10 +3530,13 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
     }
     r->op = op;
 
-    r->src = _pixman_image_for_pattern (dst, source, FALSE,
+    r->src = _pixman_image_for_pattern (dst,
+					source,
+					FALSE,
 					&composite->unbounded,
 					&composite->source_sample_area,
-					&r->u.mask.src_x, &r->u.mask.src_y);
+					&r->u.mask.src_x,
+					&r->u.mask.src_y);
     if (unlikely (r->src == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -3060,14 +3552,14 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
 					  TRUE,
 					  &composite->unbounded,
 					  &composite->mask_sample_area,
-					  &mask_x, &mask_y);
+					  &mask_x,
+					  &mask_y);
 	if (unlikely (mask == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	/* XXX Component-alpha? */
 	if ((dst->base.content & COMAC_CONTENT_COLOR) == 0 &&
-	    _comac_pattern_is_opaque (source, &composite->source_sample_area))
-	{
+	    _comac_pattern_is_opaque (source, &composite->source_sample_area)) {
 	    pixman_image_unref (r->src);
 	    r->src = mask;
 	    r->u.mask.src_x = mask_x;
@@ -3087,7 +3579,8 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
 	r->mask = pixman_image_create_bits (PIXMAN_a8,
 					    r->u.mask.extents.width,
 					    r->u.mask.extents.height,
-					    NULL, 0);
+					    NULL,
+					    0);
 
 	r->base.render_rows = _comac_image_spans;
 	r->base.finish = NULL;
@@ -3095,7 +3588,8 @@ span_renderer_init (comac_abstract_span_renderer_t	*_r,
 	r->mask = pixman_image_create_bits (PIXMAN_a8,
 					    r->u.mask.extents.width,
 					    r->u.mask.extents.height,
-					    (uint32_t *)r->_buf, r->u.mask.stride);
+					    (uint32_t *) r->_buf,
+					    r->u.mask.stride);
 
 	r->base.render_rows = _comac_image_spans_and_zero;
 	r->base.finish = _comac_image_finish_spans_and_zero;
@@ -3125,11 +3619,14 @@ span_renderer_fini (comac_abstract_span_renderer_t *_r,
     if (likely (status == COMAC_INT_STATUS_SUCCESS && r->bpp == 0)) {
 	const comac_composite_rectangles_t *composite = r->composite;
 
-	pixman_image_composite32 (r->op, r->src, r->mask,
+	pixman_image_composite32 (r->op,
+				  r->src,
+				  r->mask,
 				  to_pixman_image (composite->surface),
 				  composite->unbounded.x + r->u.mask.src_x,
 				  composite->unbounded.y + r->u.mask.src_y,
-				  0, 0,
+				  0,
+				  0,
 				  composite->unbounded.x,
 				  composite->unbounded.y,
 				  composite->unbounded.width,
@@ -3150,9 +3647,10 @@ _comac_image_spans_compositor_get (void)
     static comac_spans_compositor_t spans;
     static comac_compositor_t shape;
 
-    if (_comac_atomic_init_once_enter(&once)) {
-	_comac_shape_mask_compositor_init (&shape,
-					   _comac_image_traps_compositor_get());
+    if (_comac_atomic_init_once_enter (&once)) {
+	_comac_shape_mask_compositor_init (
+	    &shape,
+	    _comac_image_traps_compositor_get ());
 	shape.glyphs = NULL;
 
 	_comac_spans_compositor_init (&spans, &shape);
@@ -3174,7 +3672,7 @@ _comac_image_spans_compositor_get (void)
 	spans.renderer_init = span_renderer_init;
 	spans.renderer_fini = span_renderer_fini;
 
-	_comac_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave (&once);
     }
 
     return &spans.base;

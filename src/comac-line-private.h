@@ -42,9 +42,7 @@
 COMAC_BEGIN_DECLS
 
 comac_private int
-_comac_lines_compare_at_y (const comac_line_t *a,
-			 const comac_line_t *b,
-			 int y);
+_comac_lines_compare_at_y (const comac_line_t *a, const comac_line_t *b, int y);
 
 COMAC_END_DECLS
 

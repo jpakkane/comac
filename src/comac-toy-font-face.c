@@ -43,45 +43,38 @@
 #include "comacint.h"
 #include "comac-error-private.h"
 
-
 static const comac_font_face_t _comac_font_face_null_pointer = {
-    { 0 },				/* hash_entry */
-    COMAC_STATUS_NULL_POINTER,		/* status */
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    { 0, 0, 0, NULL },			/* user_data */
-    NULL
-};
+    {0},			   /* hash_entry */
+    COMAC_STATUS_NULL_POINTER,	   /* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    {0, 0, 0, NULL},		   /* user_data */
+    NULL};
 
 static const comac_font_face_t _comac_font_face_invalid_string = {
-    { 0 },				/* hash_entry */
-    COMAC_STATUS_INVALID_STRING,	/* status */
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    { 0, 0, 0, NULL },			/* user_data */
-    NULL
-};
+    {0},			   /* hash_entry */
+    COMAC_STATUS_INVALID_STRING,   /* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    {0, 0, 0, NULL},		   /* user_data */
+    NULL};
 
 static const comac_font_face_t _comac_font_face_invalid_slant = {
-    { 0 },				/* hash_entry */
-    COMAC_STATUS_INVALID_SLANT,		/* status */
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    { 0, 0, 0, NULL },			/* user_data */
-    NULL
-};
+    {0},			   /* hash_entry */
+    COMAC_STATUS_INVALID_SLANT,	   /* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    {0, 0, 0, NULL},		   /* user_data */
+    NULL};
 
 static const comac_font_face_t _comac_font_face_invalid_weight = {
-    { 0 },				/* hash_entry */
-    COMAC_STATUS_INVALID_WEIGHT,	/* status */
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    { 0, 0, 0, NULL },			/* user_data */
-    NULL
-};
-
+    {0},			   /* hash_entry */
+    COMAC_STATUS_INVALID_WEIGHT,   /* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    {0, 0, 0, NULL},		   /* user_data */
+    NULL};
 
 static const comac_font_face_backend_t _comac_toy_font_face_backend;
 
 static int
-_comac_toy_font_face_keys_equal (const void *key_a,
-				 const void *key_b);
+_comac_toy_font_face_keys_equal (const void *key_a, const void *key_b);
 
 /* We maintain a hash table from family/weight/slant =>
  * #comac_font_face_t for #comac_toy_font_t. The primary purpose of
@@ -100,8 +93,7 @@ _comac_toy_font_face_hash_table_lock (void)
 {
     COMAC_MUTEX_LOCK (_comac_toy_font_face_mutex);
 
-    if (comac_toy_font_face_hash_table == NULL)
-    {
+    if (comac_toy_font_face_hash_table == NULL) {
 	comac_toy_font_face_hash_table =
 	    _comac_hash_table_create (_comac_toy_font_face_keys_equal);
 
@@ -131,9 +123,9 @@ _comac_toy_font_face_hash_table_unlock (void)
  **/
 static void
 _comac_toy_font_face_init_key (comac_toy_font_face_t *key,
-			       const char	     *family,
-			       comac_font_slant_t     slant,
-			       comac_font_weight_t    weight)
+			       const char *family,
+			       comac_font_slant_t slant,
+			       comac_font_weight_t weight)
 {
     uintptr_t hash;
 
@@ -155,16 +147,16 @@ static comac_status_t
 _comac_toy_font_face_create_impl_face (comac_toy_font_face_t *font_face,
 				       comac_font_face_t **impl_font_face)
 {
-    const comac_font_face_backend_t * backend = COMAC_FONT_FACE_BACKEND_DEFAULT;
+    const comac_font_face_backend_t *backend = COMAC_FONT_FACE_BACKEND_DEFAULT;
     comac_int_status_t status = COMAC_INT_STATUS_UNSUPPORTED;
 
     if (unlikely (font_face->base.status))
 	return font_face->base.status;
 
     if (backend->create_for_toy != NULL &&
-	0 != strncmp (font_face->family, COMAC_USER_FONT_FAMILY_DEFAULT,
-		      strlen (COMAC_USER_FONT_FAMILY_DEFAULT)))
-    {
+	0 != strncmp (font_face->family,
+		      COMAC_USER_FONT_FAMILY_DEFAULT,
+		      strlen (COMAC_USER_FONT_FAMILY_DEFAULT))) {
 	status = backend->create_for_toy (font_face, impl_font_face);
     }
 
@@ -178,9 +170,9 @@ _comac_toy_font_face_create_impl_face (comac_toy_font_face_t *font_face,
 
 static comac_status_t
 _comac_toy_font_face_init (comac_toy_font_face_t *font_face,
-			   const char	         *family,
-			   comac_font_slant_t	  slant,
-			   comac_font_weight_t	  weight)
+			   const char *family,
+			   comac_font_slant_t slant,
+			   comac_font_weight_t weight)
 {
     char *family_copy;
     comac_status_t status;
@@ -210,22 +202,20 @@ _comac_toy_font_face_fini (comac_toy_font_face_t *font_face)
     /* We assert here that we own font_face->family before casting
      * away the const qualifier. */
     assert (font_face->owns_family);
-    free ((char*) font_face->family);
+    free ((char *) font_face->family);
 
     if (font_face->impl_face)
 	comac_font_face_destroy (font_face->impl_face);
 }
 
 static int
-_comac_toy_font_face_keys_equal (const void *key_a,
-				 const void *key_b)
+_comac_toy_font_face_keys_equal (const void *key_a, const void *key_b)
 {
     const comac_toy_font_face_t *face_a = key_a;
     const comac_toy_font_face_t *face_b = key_b;
 
     return (strcmp (face_a->family, face_b->family) == 0 &&
-	    face_a->slant == face_b->slant &&
-	    face_a->weight == face_b->weight);
+	    face_a->slant == face_b->slant && face_a->weight == face_b->weight);
 }
 
 /**
@@ -251,41 +241,41 @@ _comac_toy_font_face_keys_equal (const void *key_a,
  * Since: 1.8
  **/
 comac_font_face_t *
-comac_toy_font_face_create (const char          *family,
-			    comac_font_slant_t   slant,
-			    comac_font_weight_t  weight)
+comac_toy_font_face_create (const char *family,
+			    comac_font_slant_t slant,
+			    comac_font_weight_t weight)
 {
     comac_status_t status;
     comac_toy_font_face_t key, *font_face;
     comac_hash_table_t *hash_table;
 
     if (family == NULL)
-	return (comac_font_face_t*) &_comac_font_face_null_pointer;
+	return (comac_font_face_t *) &_comac_font_face_null_pointer;
 
     /* Make sure we've got valid UTF-8 for the family */
     status = _comac_utf8_to_ucs4 (family, -1, NULL, NULL);
     if (unlikely (status)) {
 	if (status == COMAC_STATUS_INVALID_STRING)
-	    return (comac_font_face_t*) &_comac_font_face_invalid_string;
+	    return (comac_font_face_t *) &_comac_font_face_invalid_string;
 
-	return (comac_font_face_t*) &_comac_font_face_nil;
+	return (comac_font_face_t *) &_comac_font_face_nil;
     }
 
     switch (slant) {
-	case COMAC_FONT_SLANT_NORMAL:
-	case COMAC_FONT_SLANT_ITALIC:
-	case COMAC_FONT_SLANT_OBLIQUE:
-	    break;
-	default:
-	    return (comac_font_face_t*) &_comac_font_face_invalid_slant;
+    case COMAC_FONT_SLANT_NORMAL:
+    case COMAC_FONT_SLANT_ITALIC:
+    case COMAC_FONT_SLANT_OBLIQUE:
+	break;
+    default:
+	return (comac_font_face_t *) &_comac_font_face_invalid_slant;
     }
 
     switch (weight) {
-	case COMAC_FONT_WEIGHT_NORMAL:
-	case COMAC_FONT_WEIGHT_BOLD:
-	    break;
-	default:
-	    return (comac_font_face_t*) &_comac_font_face_invalid_weight;
+    case COMAC_FONT_WEIGHT_NORMAL:
+    case COMAC_FONT_WEIGHT_BOLD:
+	break;
+    default:
+	return (comac_font_face_t *) &_comac_font_face_invalid_weight;
     }
 
     if (*family == '\0')
@@ -298,8 +288,7 @@ comac_toy_font_face_create (const char          *family,
     _comac_toy_font_face_init_key (&key, family, slant, weight);
 
     /* Return existing font_face if it exists in the hash table. */
-    font_face = _comac_hash_table_lookup (hash_table,
-					  &key.base.hash_entry);
+    font_face = _comac_hash_table_lookup (hash_table, &key.base.hash_entry);
     if (font_face != NULL) {
 	if (font_face->base.status == COMAC_STATUS_SUCCESS) {
 	    comac_font_face_reference (&font_face->base);
@@ -331,14 +320,14 @@ comac_toy_font_face_create (const char          *family,
 
     return &font_face->base;
 
- UNWIND_FONT_FACE_INIT:
+UNWIND_FONT_FACE_INIT:
     _comac_toy_font_face_fini (font_face);
- UNWIND_FONT_FACE_MALLOC:
+UNWIND_FONT_FACE_MALLOC:
     free (font_face);
- UNWIND_HASH_TABLE_LOCK:
+UNWIND_HASH_TABLE_LOCK:
     _comac_toy_font_face_hash_table_unlock ();
- UNWIND:
-    return (comac_font_face_t*) &_comac_font_face_nil;
+UNWIND:
+    return (comac_font_face_t *) &_comac_font_face_nil;
 }
 
 static comac_bool_t
@@ -362,7 +351,8 @@ _comac_toy_font_face_destroy (void *abstract_face)
      * hashtable if they are found during a lookup, thus they should
      * only be removed if they are in the hashtable. */
     if (likely (font_face->base.status == COMAC_STATUS_SUCCESS) ||
-	_comac_hash_table_lookup (hash_table, &font_face->base.hash_entry) == font_face)
+	_comac_hash_table_lookup (hash_table, &font_face->base.hash_entry) ==
+	    font_face)
 	_comac_hash_table_remove (hash_table, &font_face->base.hash_entry);
 
     _comac_toy_font_face_hash_table_unlock ();
@@ -372,23 +362,25 @@ _comac_toy_font_face_destroy (void *abstract_face)
 }
 
 static comac_status_t
-_comac_toy_font_face_scaled_font_create (void                *abstract_font_face,
-					 const comac_matrix_t       *font_matrix,
-					 const comac_matrix_t       *ctm,
+_comac_toy_font_face_scaled_font_create (void *abstract_font_face,
+					 const comac_matrix_t *font_matrix,
+					 const comac_matrix_t *ctm,
 					 const comac_font_options_t *options,
-					 comac_scaled_font_t	   **scaled_font)
+					 comac_scaled_font_t **scaled_font)
 {
-    comac_toy_font_face_t *font_face = (comac_toy_font_face_t *) abstract_font_face;
+    comac_toy_font_face_t *font_face =
+	(comac_toy_font_face_t *) abstract_font_face;
 
     ASSERT_NOT_REACHED;
 
-    return _comac_font_face_set_error (&font_face->base, COMAC_STATUS_FONT_TYPE_MISMATCH);
+    return _comac_font_face_set_error (&font_face->base,
+				       COMAC_STATUS_FONT_TYPE_MISMATCH);
 }
 
 static comac_font_face_t *
-_comac_toy_font_face_get_implementation (void                *abstract_font_face,
-					 const comac_matrix_t       *font_matrix,
-					 const comac_matrix_t       *ctm,
+_comac_toy_font_face_get_implementation (void *abstract_font_face,
+					 const comac_matrix_t *font_matrix,
+					 const comac_matrix_t *ctm,
 					 const comac_font_options_t *options)
 {
     comac_toy_font_face_t *font_face = abstract_font_face;
@@ -436,7 +428,8 @@ comac_toy_font_face_get_family (comac_font_face_t *font_face)
 
     toy_font_face = (comac_toy_font_face_t *) font_face;
     if (! _comac_font_face_is_toy (font_face)) {
-	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
+	if (_comac_font_face_set_error (font_face,
+					COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return COMAC_FONT_FAMILY_DEFAULT;
     }
     assert (toy_font_face->owns_family);
@@ -463,7 +456,8 @@ comac_toy_font_face_get_slant (comac_font_face_t *font_face)
 
     toy_font_face = (comac_toy_font_face_t *) font_face;
     if (! _comac_font_face_is_toy (font_face)) {
-	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
+	if (_comac_font_face_set_error (font_face,
+					COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return COMAC_FONT_SLANT_DEFAULT;
     }
     return toy_font_face->slant;
@@ -489,7 +483,8 @@ comac_toy_font_face_get_weight (comac_font_face_t *font_face)
 
     toy_font_face = (comac_toy_font_face_t *) font_face;
     if (! _comac_font_face_is_toy (font_face)) {
-	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
+	if (_comac_font_face_set_error (font_face,
+					COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return COMAC_FONT_WEIGHT_DEFAULT;
     }
     return toy_font_face->weight;
@@ -497,11 +492,10 @@ comac_toy_font_face_get_weight (comac_font_face_t *font_face)
 
 static const comac_font_face_backend_t _comac_toy_font_face_backend = {
     COMAC_FONT_TYPE_TOY,
-    NULL,					/* create_for_toy */
+    NULL, /* create_for_toy */
     _comac_toy_font_face_destroy,
     _comac_toy_font_face_scaled_font_create,
-    _comac_toy_font_face_get_implementation
-};
+    _comac_toy_font_face_get_implementation};
 
 void
 _comac_toy_font_face_reset_static_data (void)

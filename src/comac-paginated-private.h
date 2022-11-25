@@ -48,52 +48,46 @@ struct _comac_paginated_surface_backend {
      * any drawing operations for the page, (that is, it will occur
      * during the user's call to comac_show_page or comac_copy_page).
      */
-    comac_warn comac_int_status_t
-    (*start_page)		(void			*surface);
+    comac_warn comac_int_status_t (*start_page) (void *surface);
 
     /* Required. Will be called twice for each page, once with an
      * argument of COMAC_PAGINATED_MODE_ANALYZE and once with
      * COMAC_PAGINATED_MODE_RENDER. See more details in the
      * documentation for _comac_paginated_surface_create below.
      */
-    comac_warn comac_int_status_t
-    (*set_paginated_mode)	(void			*surface,
-				 comac_paginated_mode_t	 mode);
+    comac_warn
+	comac_int_status_t (*set_paginated_mode) (void *surface,
+						  comac_paginated_mode_t mode);
 
     /* Optional. Specifies the smallest box that encloses all objects
      * on the page. Will be called at the end of the ANALYZE phase but
      * before the mode is changed to RENDER.
      */
-    comac_warn comac_int_status_t
-    (*set_bounding_box)	(void		*surface,
-			 comac_box_t	*bbox);
+    comac_warn comac_int_status_t (*set_bounding_box) (void *surface,
+						       comac_box_t *bbox);
 
     /* Optional. Indicates whether the page requires fallback images.
      * Will be called at the end of the ANALYZE phase but before the
      * mode is changed to RENDER.
      */
-    comac_warn comac_int_status_t
-    (*set_fallback_images_required) (void	    *surface,
-				     comac_bool_t    fallbacks_required);
+    comac_warn comac_int_status_t (*set_fallback_images_required) (
+	void *surface, comac_bool_t fallbacks_required);
 
-    comac_bool_t
-    (*supports_fine_grained_fallbacks) (void	    *surface);
+    comac_bool_t (*supports_fine_grained_fallbacks) (void *surface);
 
     /* Optional. Indicates whether the page requires a thumbnail image to be
      * supplied. If a thumbnail is required, set width, height to size required
      * and return TRUE.
      */
-    comac_bool_t
-    (*requires_thumbnail_image) (void	*surface,
-				 int    *width,
-				 int    *height);
+    comac_bool_t (*requires_thumbnail_image) (void *surface,
+					      int *width,
+					      int *height);
 
     /* If thumbbail image requested, this function will be called before
      * _show_page().
      */
-    comac_warn comac_int_status_t
-    (*set_thumbnail_image) (void	          *surface,
-			    comac_image_surface_t *image);
+    comac_warn comac_int_status_t (*set_thumbnail_image) (
+	void *surface, comac_image_surface_t *image);
 };
 
 /* A #comac_paginated_surface_t provides a very convenient wrapper that
@@ -163,9 +157,10 @@ struct _comac_paginated_surface_backend {
  * even see these operations.
  */
 comac_private comac_surface_t *
-_comac_paginated_surface_create (comac_surface_t				*target,
-				 comac_content_t				 content,
-				 const comac_paginated_surface_backend_t	*backend);
+_comac_paginated_surface_create (
+    comac_surface_t *target,
+    comac_content_t content,
+    const comac_paginated_surface_backend_t *backend);
 
 comac_private comac_surface_t *
 _comac_paginated_surface_get_target (comac_surface_t *surface);
@@ -177,8 +172,8 @@ comac_private comac_bool_t
 _comac_surface_is_paginated (comac_surface_t *surface);
 
 comac_private comac_status_t
-_comac_paginated_surface_set_size (comac_surface_t 	*surface,
-				   int			 width,
-				   int			 height);
+_comac_paginated_surface_set_size (comac_surface_t *surface,
+				   int width,
+				   int height);
 
 #endif /* COMAC_PAGINATED_H */

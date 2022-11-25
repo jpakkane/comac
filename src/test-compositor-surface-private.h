@@ -47,9 +47,9 @@ COMAC_BEGIN_DECLS
 
 comac_private comac_surface_t *
 test_compositor_surface_create (const comac_compositor_t *compositor,
-				comac_content_t	content,
-				int		width,
-				int		height);
+				comac_content_t content,
+				int width,
+				int height);
 
 COMAC_END_DECLS
 

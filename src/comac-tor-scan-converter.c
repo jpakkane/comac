@@ -134,12 +134,12 @@ struct cell_list;
  * if GRID_X/Y inside glitter-paths.c is larger than
  * 1<<GLITTER_INPUT_BITS. */
 #ifndef GLITTER_INPUT_BITS
-#  define GLITTER_INPUT_BITS 8
+#define GLITTER_INPUT_BITS 8
 #endif
-#define GLITTER_INPUT_SCALE (1<<GLITTER_INPUT_BITS)
+#define GLITTER_INPUT_SCALE (1 << GLITTER_INPUT_BITS)
 typedef int glitter_input_scaled_t;
 
-#if !GLITTER_HAVE_STATUS_T
+#if ! GLITTER_HAVE_STATUS_T
 typedef enum {
     GLITTER_STATUS_SUCCESS = 0,
     GLITTER_STATUS_NO_MEMORY
@@ -147,7 +147,7 @@ typedef enum {
 #endif
 
 #ifndef I
-# define I /*static*/
+#define I /*static*/
 #endif
 
 /* Opaque type for scan converting. */
@@ -158,10 +158,11 @@ typedef struct glitter_scan_converter glitter_scan_converter_t;
  * is set to integer pixel coordinates xmin <= x < xmax, ymin <= y <
  * ymax. */
 I glitter_status_t
-glitter_scan_converter_reset(
-    glitter_scan_converter_t *converter,
-    int xmin, int ymin,
-    int xmax, int ymax);
+glitter_scan_converter_reset (glitter_scan_converter_t *converter,
+			      int xmin,
+			      int ymin,
+			      int xmax,
+			      int ymax);
 
 /* Render the polygon in the scan converter to the given A8 format
  * image raster.  Only the pixels accessible as pixels[y*stride+x] for
@@ -191,71 +192,72 @@ typedef int grid_scaled_y_t;
 /* Default x/y scale factors.
  *  You can either define GRID_X/Y_BITS to get a power-of-two scale
  *  or define GRID_X/Y separately. */
-#if !defined(GRID_X) && !defined(GRID_X_BITS)
-#  define GRID_X_BITS 8
+#if ! defined(GRID_X) && ! defined(GRID_X_BITS)
+#define GRID_X_BITS 8
 #endif
-#if !defined(GRID_Y) && !defined(GRID_Y_BITS)
-#  define GRID_Y 15
+#if ! defined(GRID_Y) && ! defined(GRID_Y_BITS)
+#define GRID_Y 15
 #endif
 
 /* Use GRID_X/Y_BITS to define GRID_X/Y if they're available. */
 #ifdef GRID_X_BITS
-#  define GRID_X (1 << GRID_X_BITS)
+#define GRID_X (1 << GRID_X_BITS)
 #endif
 #ifdef GRID_Y_BITS
-#  define GRID_Y (1 << GRID_Y_BITS)
+#define GRID_Y (1 << GRID_Y_BITS)
 #endif
 
 /* The GRID_X_TO_INT_FRAC macro splits a grid scaled coordinate into
  * integer and fractional parts. The integer part is floored. */
 #if defined(GRID_X_TO_INT_FRAC)
-  /* do nothing */
+/* do nothing */
 #elif defined(GRID_X_BITS)
-#  define GRID_X_TO_INT_FRAC(x, i, f) \
-	_GRID_TO_INT_FRAC_shift(x, i, f, GRID_X_BITS)
+#define GRID_X_TO_INT_FRAC(x, i, f)                                            \
+    _GRID_TO_INT_FRAC_shift (x, i, f, GRID_X_BITS)
 #else
-#  define GRID_X_TO_INT_FRAC(x, i, f) \
-	_GRID_TO_INT_FRAC_general(x, i, f, GRID_X)
+#define GRID_X_TO_INT_FRAC(x, i, f) _GRID_TO_INT_FRAC_general (x, i, f, GRID_X)
 #endif
 
-#define _GRID_TO_INT_FRAC_general(t, i, f, m) do {	\
-    (i) = (t) / (m);					\
-    (f) = (t) % (m);					\
-    if ((f) < 0) {					\
-	--(i);						\
-	(f) += (m);					\
-    }							\
-} while (0)
+#define _GRID_TO_INT_FRAC_general(t, i, f, m)                                  \
+    do {                                                                       \
+	(i) = (t) / (m);                                                       \
+	(f) = (t) % (m);                                                       \
+	if ((f) < 0) {                                                         \
+	    --(i);                                                             \
+	    (f) += (m);                                                        \
+	}                                                                      \
+    } while (0)
 
-#define _GRID_TO_INT_FRAC_shift(t, i, f, b) do {	\
-    (f) = (t) & ((1 << (b)) - 1);			\
-    (i) = (t) >> (b);					\
-} while (0)
+#define _GRID_TO_INT_FRAC_shift(t, i, f, b)                                    \
+    do {                                                                       \
+	(f) = (t) & ((1 << (b)) - 1);                                          \
+	(i) = (t) >> (b);                                                      \
+    } while (0)
 
 /* A grid area is a real in [0,1] scaled by 2*GRID_X*GRID_Y.  We want
  * to be able to represent exactly areas of subpixel trapezoids whose
  * vertices are given in grid scaled coordinates.  The scale factor
  * comes from needing to accurately represent the area 0.5*dx*dy of a
  * triangle with base dx and height dy in grid scaled numbers. */
-#define GRID_XY (2*GRID_X*GRID_Y) /* Unit area on the grid. */
+#define GRID_XY (2 * GRID_X * GRID_Y) /* Unit area on the grid. */
 
 /* GRID_AREA_TO_ALPHA(area): map [0,GRID_XY] to [0,255]. */
 #if GRID_XY == 510
-#  define GRID_AREA_TO_ALPHA(c)	  (((c)+1) >> 1)
+#define GRID_AREA_TO_ALPHA(c) (((c) + 1) >> 1)
 #elif GRID_XY == 255
-#  define  GRID_AREA_TO_ALPHA(c)  (c)
+#define GRID_AREA_TO_ALPHA(c) (c)
 #elif GRID_XY == 64
-#  define  GRID_AREA_TO_ALPHA(c)  (((c) << 2) | -(((c) & 0x40) >> 6))
+#define GRID_AREA_TO_ALPHA(c) (((c) << 2) | -(((c) &0x40) >> 6))
 #elif GRID_XY == 128
-#  define  GRID_AREA_TO_ALPHA(c)  ((((c) << 1) | -((c) >> 7)) & 255)
+#define GRID_AREA_TO_ALPHA(c) ((((c) << 1) | -((c) >> 7)) & 255)
 #elif GRID_XY == 256
-#  define  GRID_AREA_TO_ALPHA(c)  (((c) | -((c) >> 8)) & 255)
+#define GRID_AREA_TO_ALPHA(c) (((c) | -((c) >> 8)) & 255)
 #elif GRID_XY == 15
-#  define  GRID_AREA_TO_ALPHA(c)  (((c) << 4) + (c))
-#elif GRID_XY == 2*256*15
-#  define  GRID_AREA_TO_ALPHA(c)  (((c) + ((c)<<4) + 256) >> 9)
+#define GRID_AREA_TO_ALPHA(c) (((c) << 4) + (c))
+#elif GRID_XY == 2 * 256 * 15
+#define GRID_AREA_TO_ALPHA(c) (((c) + ((c) << 4) + 256) >> 9)
 #else
-#  define  GRID_AREA_TO_ALPHA(c)  (((c)*255 + GRID_XY/2) / GRID_XY)
+#define GRID_AREA_TO_ALPHA(c) (((c) *255 + GRID_XY / 2) / GRID_XY)
 #endif
 
 #define UNROLL3(x) x x x
@@ -283,7 +285,7 @@ struct _pool_chunk {
 
 /* The int64_t data member of _pool_chunk just exists to enforce alignment,
  * it shouldn't be included in the allocated size for the struct. */
-#define SIZEOF_POOL_CHUNK (sizeof(struct _pool_chunk) - sizeof(int64_t))
+#define SIZEOF_POOL_CHUNK (sizeof (struct _pool_chunk) - sizeof (int64_t))
 
 /* A memory pool.  This is supposed to be embedded on the stack or
  * within some other structure.	 It may optionally be followed by an
@@ -347,7 +349,7 @@ struct edge {
     int64_t dy;
 };
 
-#define EDGE_Y_BUCKET_INDEX(y, ymin) (((y) - (ymin))/GRID_Y)
+#define EDGE_Y_BUCKET_INDEX(y, ymin) (((y) - (ymin)) / GRID_Y)
 
 /* A collection of sorted and vertically clipped edges of the polygon.
  * Edges are moved from the polygon to an active list while scan
@@ -410,10 +412,10 @@ struct polygon {
  * contribution above and below the intersection point must be
  * computed separately. */
 struct cell {
-    struct cell		*next;
-    int			 x;
-    int16_t		 uncovered_area;
-    int16_t		 covered_height;
+    struct cell *next;
+    int x;
+    int16_t uncovered_area;
+    int16_t covered_height;
 };
 
 /* A cell list represents the scan line sparsely as cells ordered by
@@ -454,9 +456,9 @@ struct active_list {
 };
 
 struct glitter_scan_converter {
-    struct polygon	polygon[1];
-    struct active_list	active[1];
-    struct cell_list	coverages[1];
+    struct polygon polygon[1];
+    struct active_list active[1];
+    struct cell_list coverages[1];
 
     comac_half_open_span_t *spans;
     comac_half_open_span_t spans_embedded[64];
@@ -467,10 +469,9 @@ struct glitter_scan_converter {
 };
 
 static struct _pool_chunk *
-_pool_chunk_init(
-    struct _pool_chunk *p,
-    struct _pool_chunk *prev_chunk,
-    size_t capacity)
+_pool_chunk_init (struct _pool_chunk *p,
+		  struct _pool_chunk *prev_chunk,
+		  size_t capacity)
 {
     p->prev_chunk = prev_chunk;
     p->size = 0;
@@ -479,7 +480,7 @@ _pool_chunk_init(
 }
 
 static struct _pool_chunk *
-_pool_chunk_create(struct pool *pool, size_t size)
+_pool_chunk_create (struct pool *pool, size_t size)
 {
     struct _pool_chunk *p;
 
@@ -487,31 +488,31 @@ _pool_chunk_create(struct pool *pool, size_t size)
     if (unlikely (NULL == p))
 	longjmp (*pool->jmp, _comac_error (COMAC_STATUS_NO_MEMORY));
 
-    return _pool_chunk_init(p, pool->current, size);
+    return _pool_chunk_init (p, pool->current, size);
 }
 
 static void
-pool_init(struct pool *pool,
-	  jmp_buf *jmp,
-	  size_t default_capacity,
-	  size_t embedded_capacity)
+pool_init (struct pool *pool,
+	   jmp_buf *jmp,
+	   size_t default_capacity,
+	   size_t embedded_capacity)
 {
     pool->jmp = jmp;
-    pool->current = (void*) pool->sentinel;
+    pool->current = (void *) pool->sentinel;
     pool->first_free = NULL;
     pool->default_capacity = default_capacity;
-    _pool_chunk_init(pool->current, NULL, embedded_capacity);
+    _pool_chunk_init (pool->current, NULL, embedded_capacity);
 }
 
 static void
-pool_fini(struct pool *pool)
+pool_fini (struct pool *pool)
 {
     struct _pool_chunk *p = pool->current;
     do {
 	while (NULL != p) {
 	    struct _pool_chunk *prev = p->prev_chunk;
 	    if (p != (void *) pool->sentinel)
-		free(p);
+		free (p);
 	    p = prev;
 	}
 	p = pool->first_free;
@@ -524,9 +525,7 @@ pool_fini(struct pool *pool)
  * is called as a fallback if pool_alloc() couldn't do a quick
  * allocation from the current chunk in the pool. */
 static void *
-_pool_alloc_from_new_chunk(
-    struct pool *pool,
-    size_t size)
+_pool_alloc_from_new_chunk (struct pool *pool, size_t size)
 {
     struct _pool_chunk *chunk;
     void *obj;
@@ -542,7 +541,7 @@ _pool_alloc_from_new_chunk(
 	chunk = pool->first_free;
 	if (chunk) {
 	    pool->first_free = chunk->prev_chunk;
-	    _pool_chunk_init(chunk, pool->current, chunk->capacity);
+	    _pool_chunk_init (chunk, pool->current, chunk->capacity);
 	}
     }
 
@@ -550,7 +549,7 @@ _pool_alloc_from_new_chunk(
 	chunk = _pool_chunk_create (pool, capacity);
     pool->current = chunk;
 
-    obj = ((unsigned char*)&chunk->data + chunk->size);
+    obj = ((unsigned char *) &chunk->data + chunk->size);
     chunk->size += size;
     return obj;
 }
@@ -567,11 +566,11 @@ pool_alloc (struct pool *pool, size_t size)
     struct _pool_chunk *chunk = pool->current;
 
     if (size <= chunk->capacity - chunk->size) {
-	void *obj = ((unsigned char*)&chunk->data + chunk->size);
+	void *obj = ((unsigned char *) &chunk->data + chunk->size);
 	chunk->size += size;
 	return obj;
     } else {
-	return _pool_alloc_from_new_chunk(pool, size);
+	return _pool_alloc_from_new_chunk (pool, size);
     }
 }
 
@@ -618,11 +617,12 @@ cell_list_set_rewind (struct cell_list *cells)
 }
 
 static void
-cell_list_init(struct cell_list *cells, jmp_buf *jmp)
+cell_list_init (struct cell_list *cells, jmp_buf *jmp)
 {
-    pool_init(cells->cell_pool.base, jmp,
-	      256*sizeof(struct cell),
-	      sizeof(cells->cell_pool.embedded));
+    pool_init (cells->cell_pool.base,
+	       jmp,
+	       256 * sizeof (struct cell),
+	       sizeof (cells->cell_pool.embedded));
     cells->tail.next = NULL;
     cells->tail.x = INT_MAX;
     cells->head.x = INT_MIN;
@@ -631,7 +631,7 @@ cell_list_init(struct cell_list *cells, jmp_buf *jmp)
 }
 
 static void
-cell_list_fini(struct cell_list *cells)
+cell_list_fini (struct cell_list *cells)
 {
     pool_fini (cells->cell_pool.base);
 }
@@ -647,9 +647,7 @@ cell_list_reset (struct cell_list *cells)
 }
 
 inline static struct cell *
-cell_list_alloc (struct cell_list *cells,
-		 struct cell *tail,
-		 int x)
+cell_list_alloc (struct cell_list *cells, struct cell *tail, int x)
 {
     struct cell *cell;
 
@@ -657,7 +655,7 @@ cell_list_alloc (struct cell_list *cells,
     cell->next = tail->next;
     tail->next = cell;
     cell->x = x;
-    *(uint32_t *)&cell->uncovered_area = 0;
+    *(uint32_t *) &cell->uncovered_area = 0;
 
     return cell;
 }
@@ -676,17 +674,16 @@ cell_list_find (struct cell_list *cells, int x)
 	return tail;
 
     while (1) {
-	UNROLL3({
-		if (tail->next->x > x)
-			break;
-		tail = tail->next;
+	UNROLL3 ({
+	    if (tail->next->x > x)
+		break;
+	    tail = tail->next;
 	});
     }
 
     if (tail->x != x)
 	tail = cell_list_alloc (cells, tail, x);
     return cells->cursor = tail;
-
 }
 
 /* Find two cells at x1 and x2.	 This is exactly equivalent
@@ -697,16 +694,16 @@ cell_list_find (struct cell_list *cells, int x)
  *
  * except with less function call overhead. */
 inline static struct cell_pair
-cell_list_find_pair(struct cell_list *cells, int x1, int x2)
+cell_list_find_pair (struct cell_list *cells, int x1, int x2)
 {
     struct cell_pair pair;
 
     pair.cell1 = cells->cursor;
     while (1) {
-	UNROLL3({
-		if (pair.cell1->next->x > x1)
-			break;
-		pair.cell1 = pair.cell1->next;
+	UNROLL3 ({
+	    if (pair.cell1->next->x > x1)
+		break;
+	    pair.cell1 = pair.cell1->next;
 	});
     }
     if (pair.cell1->x != x1)
@@ -714,10 +711,10 @@ cell_list_find_pair(struct cell_list *cells, int x1, int x2)
 
     pair.cell2 = pair.cell1;
     while (1) {
-	UNROLL3({
-		if (pair.cell2->next->x > x2)
-			break;
-		pair.cell2 = pair.cell2->next;
+	UNROLL3 ({
+	    if (pair.cell2->next->x > x2)
+		break;
+	    pair.cell2 = pair.cell2->next;
 	});
     }
     if (pair.cell2->x != x2)
@@ -729,9 +726,9 @@ cell_list_find_pair(struct cell_list *cells, int x1, int x2)
 
 /* Add a subpixel span covering [x1, x2) to the coverage cells. */
 inline static void
-cell_list_add_subspan(struct cell_list *cells,
-		      grid_scaled_x_t x1,
-		      grid_scaled_x_t x2)
+cell_list_add_subspan (struct cell_list *cells,
+		       grid_scaled_x_t x1,
+		       grid_scaled_x_t x2)
 {
     int ix1, fx1;
     int ix2, fx2;
@@ -739,23 +736,24 @@ cell_list_add_subspan(struct cell_list *cells,
     if (x1 == x2)
 	return;
 
-    GRID_X_TO_INT_FRAC(x1, ix1, fx1);
-    GRID_X_TO_INT_FRAC(x2, ix2, fx2);
+    GRID_X_TO_INT_FRAC (x1, ix1, fx1);
+    GRID_X_TO_INT_FRAC (x2, ix2, fx2);
 
     if (ix1 != ix2) {
 	struct cell_pair p;
-	p = cell_list_find_pair(cells, ix1, ix2);
-	p.cell1->uncovered_area += 2*fx1;
+	p = cell_list_find_pair (cells, ix1, ix2);
+	p.cell1->uncovered_area += 2 * fx1;
 	++p.cell1->covered_height;
-	p.cell2->uncovered_area -= 2*fx2;
+	p.cell2->uncovered_area -= 2 * fx2;
 	--p.cell2->covered_height;
     } else {
-	struct cell *cell = cell_list_find(cells, ix1);
-	cell->uncovered_area += 2*(fx1-fx2);
+	struct cell *cell = cell_list_find (cells, ix1);
+	cell->uncovered_area += 2 * (fx1 - fx2);
     }
 }
 
-inline static void full_step (struct edge *e)
+inline static void
+full_step (struct edge *e)
 {
     if (e->dy == 0)
 	return;
@@ -770,9 +768,8 @@ inline static void full_step (struct edge *e)
 	e->x.rem -= e->dy;
     }
 
-    e->cell = e->x.quo + (e->x.rem >= e->dy/2);
+    e->cell = e->x.quo + (e->x.rem >= e->dy / 2);
 }
-
 
 /* Adds the analytical coverage of an edge crossing the current pixel
  * row to the coverage cells and advances the edge's x position to the
@@ -792,9 +789,7 @@ inline static void full_step (struct edge *e)
  * active list in the order they appear on the list (i.e. with
  * non-decreasing x-coordinate.)  */
 static void
-cell_list_render_edge(struct cell_list *cells,
-		      struct edge *edge,
-		      int sign)
+cell_list_render_edge (struct cell_list *cells, struct edge *edge, int sign)
 {
     struct quorem x1, x2;
     grid_scaled_x_t fx1, fx2;
@@ -827,18 +822,18 @@ cell_list_render_edge(struct cell_list *cells,
 	}
     }
 
-    GRID_X_TO_INT_FRAC(x1.quo, ix1, fx1);
-    GRID_X_TO_INT_FRAC(x2.quo, ix2, fx2);
+    GRID_X_TO_INT_FRAC (x1.quo, ix1, fx1);
+    GRID_X_TO_INT_FRAC (x2.quo, ix2, fx2);
 
-    cell_list_maybe_rewind(cells, MIN(ix1, ix2));
+    cell_list_maybe_rewind (cells, MIN (ix1, ix2));
 
     /* Edge is entirely within a column? */
     if (ix1 == ix2) {
 	/* We always know that ix1 is >= the cell list cursor in this
 	 * case due to the no-intersections precondition.  */
-	struct cell *cell = cell_list_find(cells, ix1);
-	cell->covered_height += sign*GRID_Y;
-	cell->uncovered_area += sign*(fx1 + fx2)*GRID_Y;
+	struct cell *cell = cell_list_find (cells, ix1);
+	cell->covered_height += sign * GRID_Y;
+	cell->uncovered_area += sign * (fx1 + fx2) * GRID_Y;
 	return;
     }
 
@@ -893,12 +888,12 @@ cell_list_render_edge(struct cell_list *cells,
 	 * right edge.  Fortunately such cases are rare.
 	 */
 
-	pair = cell_list_find_pair(cells, ix1, ix1+1);
-	pair.cell1->uncovered_area += sign*y.quo*(GRID_X + fx1);
-	pair.cell1->covered_height += sign*y.quo;
+	pair = cell_list_find_pair (cells, ix1, ix1 + 1);
+	pair.cell1->uncovered_area += sign * y.quo * (GRID_X + fx1);
+	pair.cell1->covered_height += sign * y.quo;
 	y_last = y.quo;
 
-	if (ix1+1 < ix2) {
+	if (ix1 + 1 < ix2) {
 	    struct cell *cell = pair.cell2;
 	    struct quorem dydx_full;
 
@@ -914,18 +909,18 @@ cell_list_render_edge(struct cell_list *cells,
 		    y.rem -= dx;
 		}
 
-		cell->uncovered_area += sign*(y.quo - y_last)*GRID_X;
-		cell->covered_height += sign*(y.quo - y_last);
+		cell->uncovered_area += sign * (y.quo - y_last) * GRID_X;
+		cell->covered_height += sign * (y.quo - y_last);
 		y_last = y.quo;
 
 		++ix1;
-		cell = cell_list_find(cells, ix1);
+		cell = cell_list_find (cells, ix1);
 	    } while (ix1 != ix2);
 
 	    pair.cell2 = cell;
 	}
-	pair.cell2->uncovered_area += sign*(GRID_Y - y_last)*fx2;
-	pair.cell2->covered_height += sign*(GRID_Y - y_last);
+	pair.cell2->uncovered_area += sign * (GRID_Y - y_last) * fx2;
+	pair.cell2->covered_height += sign * (GRID_Y - y_last);
     }
 }
 
@@ -934,7 +929,8 @@ polygon_init (struct polygon *polygon, jmp_buf *jmp)
 {
     polygon->ymin = polygon->ymax = 0;
     polygon->y_buckets = polygon->y_buckets_embedded;
-    pool_init (polygon->edge_pool.base, jmp,
+    pool_init (polygon->edge_pool.base,
+	       jmp,
 	       8192 - sizeof (struct _pool_chunk),
 	       sizeof (polygon->edge_pool.embedded));
 }
@@ -957,9 +953,9 @@ polygon_reset (struct polygon *polygon,
 	       grid_scaled_y_t ymax)
 {
     unsigned h = ymax - ymin;
-    unsigned num_buckets = EDGE_Y_BUCKET_INDEX(ymax + GRID_Y-1, ymin);
+    unsigned num_buckets = EDGE_Y_BUCKET_INDEX (ymax + GRID_Y - 1, ymin);
 
-    pool_reset(polygon->edge_pool.base);
+    pool_reset (polygon->edge_pool.base);
 
     if (unlikely (h > 0x7FFFFFFFU - GRID_Y))
 	goto bail_no_mem; /* even if you could, you wouldn't want to. */
@@ -967,10 +963,10 @@ polygon_reset (struct polygon *polygon,
     if (polygon->y_buckets != polygon->y_buckets_embedded)
 	free (polygon->y_buckets);
 
-    polygon->y_buckets =  polygon->y_buckets_embedded;
+    polygon->y_buckets = polygon->y_buckets_embedded;
     if (num_buckets > ARRAY_LENGTH (polygon->y_buckets_embedded)) {
-	polygon->y_buckets = _comac_malloc_ab (num_buckets,
-					       sizeof (struct edge *));
+	polygon->y_buckets =
+	    _comac_malloc_ab (num_buckets, sizeof (struct edge *));
 	if (unlikely (NULL == polygon->y_buckets))
 	    goto bail_no_mem;
     }
@@ -987,10 +983,9 @@ bail_no_mem:
 }
 
 static void
-_polygon_insert_edge_into_its_y_bucket(struct polygon *polygon,
-				       struct edge *e)
+_polygon_insert_edge_into_its_y_bucket (struct polygon *polygon, struct edge *e)
 {
-    unsigned ix = EDGE_Y_BUCKET_INDEX(e->ytop, polygon->ymin);
+    unsigned ix = EDGE_Y_BUCKET_INDEX (e->ytop, polygon->ymin);
     struct edge **ptail = &polygon->y_buckets[ix];
     e->next = *ptail;
     *ptail = e;
@@ -1014,9 +1009,9 @@ active_list_reset (struct active_list *active)
 }
 
 static void
-active_list_init(struct active_list *active)
+active_list_init (struct active_list *active)
 {
-    active_list_reset(active);
+    active_list_reset (active);
 }
 
 /*
@@ -1066,7 +1061,7 @@ merge_sorted_edges (struct edge *head_a, struct edge *head_b)
 	if (head_a == NULL)
 	    return head;
 
-start_with_b:
+    start_with_b:
 	x = head_a->cell;
 	while (head_b != NULL && head_b->cell <= x) {
 	    prev = head_b;
@@ -1099,9 +1094,7 @@ start_with_b:
  * (we start with a small sorted list and keep merging other lists of the same size to it).
  */
 static struct edge *
-sort_edges (struct edge *list,
-	    unsigned int level,
-	    struct edge **head_out)
+sort_edges (struct edge *list, unsigned int level, struct edge **head_out)
 {
     struct edge *head_other, *remaining;
     unsigned int i;
@@ -1133,7 +1126,7 @@ sort_edges (struct edge *list,
     return remaining;
 }
 
- static struct edge *
+static struct edge *
 merge_unsorted_edges (struct edge *head, struct edge *unsorted)
 {
     sort_edges (unsorted, UINT_MAX, &unsorted);
@@ -1184,7 +1177,7 @@ can_do_full_row (struct active_list *active)
 		x.quo++;
 		x.rem -= e->dy;
 	    }
-	    cell = x.quo + (x.rem >= e->dy/2);
+	    cell = x.quo + (x.rem >= e->dy / 2);
 	} else
 	    cell = e->cell;
 
@@ -1200,8 +1193,8 @@ can_do_full_row (struct active_list *active)
 /* Merges edges on the given subpixel row from the polygon to the
  * active_list. */
 inline static void
-active_list_merge_edges_from_bucket(struct active_list *active,
-				    struct edge *edges)
+active_list_merge_edges_from_bucket (struct active_list *active,
+				     struct edge *edges)
 {
     active->head.next = merge_unsorted_edges (active->head.next, edges);
 }
@@ -1229,7 +1222,7 @@ polygon_fill_buckets (struct active_list *active,
 	is_vertical &= edge->dy == 0;
 	edge = next;
 	if (suby > max_suby)
-		max_suby = suby;
+	    max_suby = suby;
     }
 
     active->is_vertical = is_vertical;
@@ -1238,7 +1231,8 @@ polygon_fill_buckets (struct active_list *active,
     return max_suby;
 }
 
-static void step (struct edge *edge)
+static void
+step (struct edge *edge)
 {
     if (edge->dy == 0)
 	return;
@@ -1253,7 +1247,7 @@ static void step (struct edge *edge)
 	edge->x.rem -= edge->dy;
     }
 
-    edge->cell = edge->x.quo + (edge->x.rem >= edge->dy/2);
+    edge->cell = edge->x.quo + (edge->x.rem >= edge->dy / 2);
 }
 
 inline static void
@@ -1306,7 +1300,8 @@ sub_row (struct active_list *active,
     }
 }
 
-inline static void dec (struct active_list *a, struct edge *e, int h)
+inline static void
+dec (struct active_list *a, struct edge *e, int h)
 {
     e->height_left -= h;
     if (e->height_left == 0) {
@@ -1352,80 +1347,79 @@ full_row (struct active_list *active,
 }
 
 static void
-_glitter_scan_converter_init(glitter_scan_converter_t *converter, jmp_buf *jmp)
+_glitter_scan_converter_init (glitter_scan_converter_t *converter, jmp_buf *jmp)
 {
-    polygon_init(converter->polygon, jmp);
-    active_list_init(converter->active);
-    cell_list_init(converter->coverages, jmp);
-    converter->xmin=0;
-    converter->ymin=0;
-    converter->xmax=0;
-    converter->ymax=0;
+    polygon_init (converter->polygon, jmp);
+    active_list_init (converter->active);
+    cell_list_init (converter->coverages, jmp);
+    converter->xmin = 0;
+    converter->ymin = 0;
+    converter->xmax = 0;
+    converter->ymax = 0;
 }
 
 static void
-_glitter_scan_converter_fini(glitter_scan_converter_t *self)
+_glitter_scan_converter_fini (glitter_scan_converter_t *self)
 {
     if (self->spans != self->spans_embedded)
 	free (self->spans);
 
-    polygon_fini(self->polygon);
-    cell_list_fini(self->coverages);
+    polygon_fini (self->polygon);
+    cell_list_fini (self->coverages);
 
-    self->xmin=0;
-    self->ymin=0;
-    self->xmax=0;
-    self->ymax=0;
+    self->xmin = 0;
+    self->ymin = 0;
+    self->xmax = 0;
+    self->ymax = 0;
 }
 
 static grid_scaled_t
-int_to_grid_scaled(int i, int scale)
+int_to_grid_scaled (int i, int scale)
 {
     /* Clamp to max/min representable scaled number. */
     if (i >= 0) {
-	if (i >= INT_MAX/scale)
-	    i = INT_MAX/scale;
+	if (i >= INT_MAX / scale)
+	    i = INT_MAX / scale;
+    } else {
+	if (i <= INT_MIN / scale)
+	    i = INT_MIN / scale;
     }
-    else {
-	if (i <= INT_MIN/scale)
-	    i = INT_MIN/scale;
-    }
-    return i*scale;
+    return i * scale;
 }
 
-#define int_to_grid_scaled_x(x) int_to_grid_scaled((x), GRID_X)
-#define int_to_grid_scaled_y(x) int_to_grid_scaled((x), GRID_Y)
+#define int_to_grid_scaled_x(x) int_to_grid_scaled ((x), GRID_X)
+#define int_to_grid_scaled_y(x) int_to_grid_scaled ((x), GRID_Y)
 
 I glitter_status_t
-glitter_scan_converter_reset(
-			     glitter_scan_converter_t *converter,
-			     int xmin, int ymin,
-			     int xmax, int ymax)
+glitter_scan_converter_reset (
+    glitter_scan_converter_t *converter, int xmin, int ymin, int xmax, int ymax)
 {
     glitter_status_t status;
     int max_num_spans;
 
-    converter->xmin = 0; converter->xmax = 0;
-    converter->ymin = 0; converter->ymax = 0;
+    converter->xmin = 0;
+    converter->xmax = 0;
+    converter->ymin = 0;
+    converter->ymax = 0;
 
     max_num_spans = xmax - xmin + 1;
 
-    if (max_num_spans > ARRAY_LENGTH(converter->spans_embedded)) {
-	converter->spans = _comac_malloc_ab (max_num_spans,
-					     sizeof (comac_half_open_span_t));
+    if (max_num_spans > ARRAY_LENGTH (converter->spans_embedded)) {
+	converter->spans =
+	    _comac_malloc_ab (max_num_spans, sizeof (comac_half_open_span_t));
 	if (unlikely (converter->spans == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     } else
 	converter->spans = converter->spans_embedded;
 
-    xmin = int_to_grid_scaled_x(xmin);
-    ymin = int_to_grid_scaled_y(ymin);
-    xmax = int_to_grid_scaled_x(xmax);
-    ymax = int_to_grid_scaled_y(ymax);
+    xmin = int_to_grid_scaled_x (xmin);
+    ymin = int_to_grid_scaled_y (ymin);
+    xmax = int_to_grid_scaled_x (xmax);
+    ymax = int_to_grid_scaled_y (ymax);
 
-    active_list_reset(converter->active);
-    cell_list_reset(converter->coverages);
-    status = polygon_reset(converter->polygon, ymin, ymax);
+    active_list_reset (converter->active);
+    cell_list_reset (converter->coverages);
+    status = polygon_reset (converter->polygon, ymin, ymax);
     if (status)
 	return status;
 
@@ -1443,28 +1437,32 @@ glitter_scan_converter_reset(
 /* Gah.. this bit of ugly defines INPUT_TO_GRID_X/Y so as to use
  * shifts if possible, and something saneish if not.
  */
-#if !defined(INPUT_TO_GRID_Y) && defined(GRID_Y_BITS) && GRID_Y_BITS <= GLITTER_INPUT_BITS
-#  define INPUT_TO_GRID_Y(in, out) (out) = (in) >> (GLITTER_INPUT_BITS - GRID_Y_BITS)
+#if ! defined(INPUT_TO_GRID_Y) && defined(GRID_Y_BITS) &&                      \
+    GRID_Y_BITS <= GLITTER_INPUT_BITS
+#define INPUT_TO_GRID_Y(in, out)                                               \
+    (out) = (in) >> (GLITTER_INPUT_BITS - GRID_Y_BITS)
 #else
-#  define INPUT_TO_GRID_Y(in, out) INPUT_TO_GRID_general(in, out, GRID_Y)
+#define INPUT_TO_GRID_Y(in, out) INPUT_TO_GRID_general (in, out, GRID_Y)
 #endif
 
-#if !defined(INPUT_TO_GRID_X) && defined(GRID_X_BITS) && GRID_X_BITS <= GLITTER_INPUT_BITS
-#  define INPUT_TO_GRID_X(in, out) (out) = (in) >> (GLITTER_INPUT_BITS - GRID_X_BITS)
+#if ! defined(INPUT_TO_GRID_X) && defined(GRID_X_BITS) &&                      \
+    GRID_X_BITS <= GLITTER_INPUT_BITS
+#define INPUT_TO_GRID_X(in, out)                                               \
+    (out) = (in) >> (GLITTER_INPUT_BITS - GRID_X_BITS)
 #else
-#  define INPUT_TO_GRID_X(in, out) INPUT_TO_GRID_general(in, out, GRID_X)
+#define INPUT_TO_GRID_X(in, out) INPUT_TO_GRID_general (in, out, GRID_X)
 #endif
 
-#define INPUT_TO_GRID_general(in, out, grid_scale) do {		\
-    long long tmp__ = (long long)(grid_scale) * (in);	\
-    tmp__ += 1 << (GLITTER_INPUT_BITS-1);			\
-    tmp__ >>= GLITTER_INPUT_BITS;				\
-    (out) = tmp__;						\
-} while (0)
+#define INPUT_TO_GRID_general(in, out, grid_scale)                             \
+    do {                                                                       \
+	long long tmp__ = (long long) (grid_scale) * (in);                     \
+	tmp__ += 1 << (GLITTER_INPUT_BITS - 1);                                \
+	tmp__ >>= GLITTER_INPUT_BITS;                                          \
+	(out) = tmp__;                                                         \
+    } while (0)
 
 inline static void
-polygon_add_edge (struct polygon *polygon,
-		  const comac_edge_t *edge)
+polygon_add_edge (struct polygon *polygon, const comac_edge_t *edge)
 {
     struct edge *e;
     grid_scaled_y_t ytop, ybot;
@@ -1472,27 +1470,27 @@ polygon_add_edge (struct polygon *polygon,
 
     INPUT_TO_GRID_Y (edge->top, ytop);
     if (ytop < polygon->ymin)
-	    ytop = polygon->ymin;
+	ytop = polygon->ymin;
 
     INPUT_TO_GRID_Y (edge->bottom, ybot);
     if (ybot > polygon->ymax)
-	    ybot = polygon->ymax;
+	ybot = polygon->ymax;
 
     if (ybot <= ytop)
-	    return;
+	return;
 
     e = pool_alloc (polygon->edge_pool.base, sizeof (struct edge));
 
     e->ytop = ytop;
     e->height_left = ybot - ytop;
     if (edge->line.p2.y > edge->line.p1.y) {
-	    e->dir = edge->dir;
-	    p1 = &edge->line.p1;
-	    p2 = &edge->line.p2;
+	e->dir = edge->dir;
+	p1 = &edge->line.p1;
+	p2 = &edge->line.p2;
     } else {
-	    e->dir = -edge->dir;
-	    p1 = &edge->line.p2;
-	    p2 = &edge->line.p1;
+	e->dir = -edge->dir;
+	p1 = &edge->line.p2;
+	p2 = &edge->line.p1;
     }
 
     if (p2->x == p1->x) {
@@ -1505,14 +1503,14 @@ polygon_add_edge (struct polygon *polygon,
     } else {
 	int64_t Ex, Ey, tmp;
 
-	Ex = (int64_t)(p2->x - p1->x) * GRID_X;
-	Ey = (int64_t)(p2->y - p1->y) * GRID_Y * (2 << GLITTER_INPUT_BITS);
+	Ex = (int64_t) (p2->x - p1->x) * GRID_X;
+	Ey = (int64_t) (p2->y - p1->y) * GRID_Y * (2 << GLITTER_INPUT_BITS);
 
 	e->dxdy.quo = Ex * (2 << GLITTER_INPUT_BITS) / Ey;
 	e->dxdy.rem = Ex * (2 << GLITTER_INPUT_BITS) % Ey;
 
-	tmp = (int64_t)(2*ytop + 1) << GLITTER_INPUT_BITS;
-	tmp -= (int64_t)p1->y * GRID_Y * 2;
+	tmp = (int64_t) (2 * ytop + 1) << GLITTER_INPUT_BITS;
+	tmp -= (int64_t) p1->y * GRID_Y * 2;
 	tmp *= Ex;
 	e->x.quo = tmp / Ey;
 	e->x.rem = tmp % Ey;
@@ -1520,17 +1518,18 @@ polygon_add_edge (struct polygon *polygon,
 #if GRID_X_BITS == GLITTER_INPUT_BITS
 	e->x.quo += p1->x;
 #else
-	tmp = (int64_t)p1->x * GRID_X;
+	tmp = (int64_t) p1->x * GRID_X;
 	e->x.quo += tmp >> GLITTER_INPUT_BITS;
-	e->x.rem += ((tmp & ((1 << GLITTER_INPUT_BITS) - 1)) * Ey) / (1 << GLITTER_INPUT_BITS);
+	e->x.rem += ((tmp & ((1 << GLITTER_INPUT_BITS) - 1)) * Ey) /
+		    (1 << GLITTER_INPUT_BITS);
 #endif
 
 	if (e->x.rem < 0) {
-		e->x.quo--;
-		e->x.rem += Ey;
-	} else  if (e->x.rem >= Ey) {
-		e->x.quo++;
-		e->x.rem -= Ey;
+	    e->x.quo--;
+	    e->x.rem += Ey;
+	} else if (e->x.rem >= Ey) {
+	    e->x.quo++;
+	    e->x.rem -= Ey;
 	}
 
 	if (e->height_left >= GRID_Y) {
@@ -1540,7 +1539,7 @@ polygon_add_edge (struct polygon *polygon,
 	} else
 	    e->dxdy_full.quo = e->dxdy_full.rem = 0;
 
-	e->cell = e->x.quo + (e->x.rem >= Ey/2);
+	e->cell = e->x.quo + (e->x.rem >= Ey / 2);
 	e->dy = Ey;
     }
 
@@ -1579,8 +1578,10 @@ static glitter_status_t
 blit_a8 (struct cell_list *cells,
 	 comac_span_renderer_t *renderer,
 	 comac_half_open_span_t *spans,
-	 int y, int height,
-	 int xmin, int xmax)
+	 int y,
+	 int height,
+	 int xmin,
+	 int xmax)
 {
     struct cell *cell = cells->head.next;
     int prev_x = xmin, last_x = -1;
@@ -1595,7 +1596,7 @@ blit_a8 (struct cell_list *cells,
 	cover += cell->covered_height;
 	cell = cell->next;
     }
-    cover *= GRID_X*2;
+    cover *= GRID_X * 2;
 
     /* Form the spans from the coverages and areas. */
     num_spans = 0;
@@ -1611,7 +1612,7 @@ blit_a8 (struct cell_list *cells,
 	    ++num_spans;
 	}
 
-	cover += cell->covered_height*GRID_X*2;
+	cover += cell->covered_height * GRID_X * 2;
 	area = cover - cell->uncovered_area;
 
 	if (area != last_cover) {
@@ -1622,7 +1623,7 @@ blit_a8 (struct cell_list *cells,
 	    ++num_spans;
 	}
 
-	prev_x = x+1;
+	prev_x = x + 1;
     }
 
     if (prev_x <= xmax && cover != last_cover) {
@@ -1643,13 +1644,15 @@ blit_a8 (struct cell_list *cells,
     return renderer->render_rows (renderer, y, height, spans, num_spans);
 }
 
-#define GRID_AREA_TO_A1(A)  ((GRID_AREA_TO_ALPHA (A) > 127) ? 255 : 0)
+#define GRID_AREA_TO_A1(A) ((GRID_AREA_TO_ALPHA (A) > 127) ? 255 : 0)
 static glitter_status_t
 blit_a1 (struct cell_list *cells,
 	 comac_span_renderer_t *renderer,
 	 comac_half_open_span_t *spans,
-	 int y, int height,
-	 int xmin, int xmax)
+	 int y,
+	 int height,
+	 int xmin,
+	 int xmax)
 {
     struct cell *cell = cells->head.next;
     int prev_x = xmin, last_x = -1;
@@ -1665,7 +1668,7 @@ blit_a1 (struct cell_list *cells,
 	cover += cell->covered_height;
 	cell = cell->next;
     }
-    cover *= GRID_X*2;
+    cover *= GRID_X * 2;
 
     /* Form the spans from the coverages and areas. */
     num_spans = 0;
@@ -1680,7 +1683,7 @@ blit_a1 (struct cell_list *cells,
 	    ++num_spans;
 	}
 
-	cover += cell->covered_height*GRID_X*2;
+	cover += cell->covered_height * GRID_X * 2;
 	area = cover - cell->uncovered_area;
 
 	coverage = GRID_AREA_TO_A1 (area);
@@ -1690,7 +1693,7 @@ blit_a1 (struct cell_list *cells,
 	    ++num_spans;
 	}
 
-	prev_x = x+1;
+	prev_x = x + 1;
     }
 
     coverage = GRID_AREA_TO_A1 (cover);
@@ -1712,12 +1715,11 @@ blit_a1 (struct cell_list *cells,
     return renderer->render_rows (renderer, y, height, spans, num_spans);
 }
 
-
 I void
-glitter_scan_converter_render(glitter_scan_converter_t *converter,
-			      unsigned int winding_mask,
-			      int antialias,
-			      comac_span_renderer_t *renderer)
+glitter_scan_converter_render (glitter_scan_converter_t *converter,
+			       unsigned int winding_mask,
+			       int antialias,
+			       comac_span_renderer_t *renderer)
 {
     int i, j;
     int ymax_i = converter->ymax / GRID_Y;
@@ -1727,7 +1729,7 @@ glitter_scan_converter_render(glitter_scan_converter_t *converter,
     struct polygon *polygon = converter->polygon;
     struct cell_list *coverages = converter->coverages;
     struct active_list *active = converter->active;
-    struct edge *buckets[GRID_Y] = { 0 };
+    struct edge *buckets[GRID_Y] = {0};
 
     xmin_i = converter->xmin / GRID_X;
     xmax_i = converter->xmax / GRID_X;
@@ -1744,7 +1746,7 @@ glitter_scan_converter_render(glitter_scan_converter_t *converter,
 	 * stepper. */
 	if (polygon_fill_buckets (active,
 				  polygon->y_buckets[i],
-				  (i+ymin_i)*GRID_Y,
+				  (i + ymin_i) * GRID_Y,
 				  buckets) == 0) {
 	    if (buckets[0]) {
 		active_list_merge_edges_from_bucket (active, buckets[0]);
@@ -1767,10 +1769,8 @@ glitter_scan_converter_render(glitter_scan_converter_t *converter,
 	    full_row (active, coverages, winding_mask);
 
 	    if (active->is_vertical) {
-		while (j < h &&
-		       polygon->y_buckets[j] == NULL &&
-		       active->min_height >= 2*GRID_Y)
-		{
+		while (j < h && polygon->y_buckets[j] == NULL &&
+		       active->min_height >= 2 * GRID_Y) {
 		    active->min_height -= GRID_Y;
 		    j++;
 		}
@@ -1791,11 +1791,21 @@ glitter_scan_converter_render(glitter_scan_converter_t *converter,
 	}
 
 	if (antialias)
-	    blit_a8 (coverages, renderer, converter->spans,
-		     i+ymin_i, j-i, xmin_i, xmax_i);
+	    blit_a8 (coverages,
+		     renderer,
+		     converter->spans,
+		     i + ymin_i,
+		     j - i,
+		     xmin_i,
+		     xmax_i);
 	else
-	    blit_a1 (coverages, renderer, converter->spans,
-		     i+ymin_i, j-i, xmin_i, xmax_i);
+	    blit_a1 (coverages,
+		     renderer,
+		     converter->spans,
+		     i + ymin_i,
+		     j - i,
+		     xmin_i,
+		     xmax_i);
 	cell_list_reset (coverages);
 
 	active->min_height -= GRID_Y;
@@ -1822,11 +1832,11 @@ _comac_tor_scan_converter_destroy (void *converter)
 	return;
     }
     _glitter_scan_converter_fini (self->converter);
-    free(self);
+    free (self);
 }
 
 comac_status_t
-_comac_tor_scan_converter_add_polygon (void		*converter,
+_comac_tor_scan_converter_add_polygon (void *converter,
 				       const comac_polygon_t *polygon)
 {
     comac_tor_scan_converter_t *self = converter;
@@ -1839,14 +1849,14 @@ _comac_tor_scan_converter_add_polygon (void		*converter,
 #endif
 
     for (i = 0; i < polygon->num_edges; i++)
-	 glitter_scan_converter_add_edge (self->converter, &polygon->edges[i]);
+	glitter_scan_converter_add_edge (self->converter, &polygon->edges[i]);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_comac_tor_scan_converter_generate (void			*converter,
-				    comac_span_renderer_t	*renderer)
+_comac_tor_scan_converter_generate (void *converter,
+				    comac_span_renderer_t *renderer)
 {
     comac_tor_scan_converter_t *self = converter;
     comac_status_t status;
@@ -1854,25 +1864,26 @@ _comac_tor_scan_converter_generate (void			*converter,
     if ((status = setjmp (self->jmp)))
 	return _comac_scan_converter_set_error (self, _comac_error (status));
 
-    glitter_scan_converter_render (self->converter,
-				   self->fill_rule == COMAC_FILL_RULE_WINDING ? ~0 : 1,
-				   self->antialias != COMAC_ANTIALIAS_NONE,
-				   renderer);
+    glitter_scan_converter_render (
+	self->converter,
+	self->fill_rule == COMAC_FILL_RULE_WINDING ? ~0 : 1,
+	self->antialias != COMAC_ANTIALIAS_NONE,
+	renderer);
     return COMAC_STATUS_SUCCESS;
 }
 
 comac_scan_converter_t *
-_comac_tor_scan_converter_create (int			xmin,
-				  int			ymin,
-				  int			xmax,
-				  int			ymax,
-				  comac_fill_rule_t	fill_rule,
-				  comac_antialias_t	antialias)
+_comac_tor_scan_converter_create (int xmin,
+				  int ymin,
+				  int xmax,
+				  int ymax,
+				  comac_fill_rule_t fill_rule,
+				  comac_antialias_t antialias)
 {
     comac_tor_scan_converter_t *self;
     comac_status_t status;
 
-    self = _comac_malloc (sizeof(struct _comac_tor_scan_converter));
+    self = _comac_malloc (sizeof (struct _comac_tor_scan_converter));
     if (unlikely (self == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto bail_nomem;
@@ -1882,8 +1893,8 @@ _comac_tor_scan_converter_create (int			xmin,
     self->base.generate = _comac_tor_scan_converter_generate;
 
     _glitter_scan_converter_init (self->converter, &self->jmp);
-    status = glitter_scan_converter_reset (self->converter,
-					   xmin, ymin, xmax, ymax);
+    status =
+	glitter_scan_converter_reset (self->converter, xmin, ymin, xmax, ymax);
     if (unlikely (status))
 	goto bail;
 
@@ -1892,8 +1903,8 @@ _comac_tor_scan_converter_create (int			xmin,
 
     return &self->base;
 
- bail:
-    self->base.destroy(&self->base);
- bail_nomem:
+bail:
+    self->base.destroy (&self->base);
+bail_nomem:
     return _comac_scan_converter_create_in_error (status);
 }

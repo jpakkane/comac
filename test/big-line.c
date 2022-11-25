@@ -55,8 +55,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (big_line,
-	    "Test drawing of simple lines with positive and negative coordinates > 2^16",
+	    "Test drawing of simple lines with positive and negative "
+	    "coordinates > 2^16",
 	    "stroke, line", /* keywords */
-	    NULL, /* requirements */
-	    100, 100,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw)

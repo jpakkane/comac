@@ -54,7 +54,9 @@ draw (comac_t *cr, int width, int height)
     comac_surface_t *surface;
     comac_status_t status;
 
-    xasprintf (&filename, "%s/reference/%s", ctx->srcdir,
+    xasprintf (&filename,
+	       "%s/reference/%s",
+	       ctx->srcdir,
 	       "create-from-png-stream.ref.png");
 
     file = fopen (filename, "rb");
@@ -72,8 +74,8 @@ draw (comac_t *cr, int width, int height)
 	return ret;
     }
 
-    surface = comac_image_surface_create_from_png_stream (read_png_from_file,
-							  file);
+    surface =
+	comac_image_surface_create_from_png_stream (read_png_from_file, file);
 
     fclose (file);
 
@@ -85,10 +87,11 @@ draw (comac_t *cr, int width, int height)
 
 	ret = comac_test_status_from_status (ctx, status);
 	if (ret != COMAC_TEST_NO_MEMORY) {
-	    comac_test_log (ctx,
-			    "Error: failed to create surface from PNG: %s - %s\n",
-			    filename,
-			    comac_status_to_string (status));
+	    comac_test_log (
+		ctx,
+		"Error: failed to create surface from PNG: %s - %s\n",
+		filename,
+		comac_status_to_string (status));
 	}
 
 	free (filename);
@@ -114,6 +117,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (create_from_png_stream,
 	    "Tests the creation of an image surface from a PNG using a FILE *",
 	    "png", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

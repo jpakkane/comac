@@ -45,8 +45,7 @@ _comac_surface_subsurface_get_target (comac_surface_t *surface)
 }
 
 static inline void
-_comac_surface_subsurface_offset (comac_surface_t *surface,
-				  int *x, int *y)
+_comac_surface_subsurface_offset (comac_surface_t *surface, int *x, int *y)
 {
     comac_surface_subsurface_t *ss = (comac_surface_subsurface_t *) surface;
     *x += ss->extents.x;
@@ -55,7 +54,8 @@ _comac_surface_subsurface_offset (comac_surface_t *surface,
 
 static inline comac_surface_t *
 _comac_surface_subsurface_get_target_with_offset (comac_surface_t *surface,
-						  int *x, int *y)
+						  int *x,
+						  int *y)
 {
     comac_surface_subsurface_t *ss = (comac_surface_subsurface_t *) surface;
     *x += ss->extents.x;

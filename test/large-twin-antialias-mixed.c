@@ -43,7 +43,6 @@ create_twin (comac_t *cr, comac_antialias_t antialias)
     return comac_scaled_font_reference (comac_get_scaled_font (cr));
 }
 
-
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
@@ -66,7 +65,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_scaled_font (cr, none);
     comac_show_text (cr, " giza?");
 
-    comac_move_to (cr, 4, 128+16);
+    comac_move_to (cr, 4, 128 + 16);
     comac_set_scaled_font (cr, gray);
     comac_show_text (cr, "Is comac's");
     comac_set_scaled_font (cr, none);
@@ -74,7 +73,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_scaled_font (cr, subpixel);
     comac_show_text (cr, " giza?");
 
-    comac_move_to (cr, 4, 192+32);
+    comac_move_to (cr, 4, 192 + 32);
     comac_set_scaled_font (cr, none);
     comac_show_text (cr, "Is comac's");
     comac_set_scaled_font (cr, gray);
@@ -91,7 +90,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (large_twin_antialias_mixed,
 	    "Tests the internal font (with intermixed antialiasing)",
-	    "twin, font", /* keywords */
+	    "twin, font",    /* keywords */
 	    "target=raster", /* requirements */
-	    524, 240,
-	    NULL, draw)
+	    524,
+	    240,
+	    NULL,
+	    draw)

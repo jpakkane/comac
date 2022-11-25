@@ -28,7 +28,7 @@
 #define LINES 5
 #define LINE_LENGTH 10
 #define IMAGE_WIDTH 2 * LINE_LENGTH + 6
-#define IMAGE_HEIGHT ((LINES+4)*LINES)/2 + 2
+#define IMAGE_HEIGHT ((LINES + 4) * LINES) / 2 + 2
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -42,15 +42,15 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_translate (cr, 2, 2);
 
-    for (i=0; i < LINES; i++) {
-	comac_set_line_width (cr, i+1);
+    for (i = 0; i < LINES; i++) {
+	comac_set_line_width (cr, i + 1);
 	comac_move_to (cr, 0, 0);
 	comac_rel_line_to (cr, LINE_LENGTH, 0);
 	comac_stroke (cr);
 	comac_move_to (cr, LINE_LENGTH + 2, 0.5);
 	comac_rel_line_to (cr, LINE_LENGTH, 0);
 	comac_stroke (cr);
-	comac_translate (cr, 0, i+3);
+	comac_translate (cr, 0, i + 3);
     }
 
     return COMAC_TEST_SUCCESS;
@@ -66,12 +66,16 @@ draw_a1 (comac_t *cr, int width, int height)
 COMAC_TEST (line_width,
 	    "Tests comac_set_line_width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)
 COMAC_TEST (a1_line_width,
 	    "Tests comac_set_line_width",
-	    "stroke", /* keywords */
+	    "stroke",	     /* keywords */
 	    "target=raster", /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw_a1)
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw_a1)

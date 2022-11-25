@@ -53,7 +53,8 @@ paint_with_alpha_enabled (comac_perf_t *perf)
 void
 paint_with_alpha (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    comac_perf_cover_sources_and_operators (perf, "paint-with-alpha",
+    comac_perf_cover_sources_and_operators (perf,
+					    "paint-with-alpha",
 					    do_paint_with_alpha,
 					    count_paint_with_alpha);
 }

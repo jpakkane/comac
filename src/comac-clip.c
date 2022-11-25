@@ -157,12 +157,14 @@ _comac_clip_copy (const comac_clip_t *clip)
 	if (clip->num_boxes == 1) {
 	    copy->boxes = &copy->embedded_box;
 	} else {
-	    copy->boxes = _comac_malloc_ab (clip->num_boxes, sizeof (comac_box_t));
+	    copy->boxes =
+		_comac_malloc_ab (clip->num_boxes, sizeof (comac_box_t));
 	    if (unlikely (copy->boxes == NULL))
 		return _comac_clip_set_all_clipped (copy);
 	}
 
-	memcpy (copy->boxes, clip->boxes,
+	memcpy (copy->boxes,
+		clip->boxes,
 		clip->num_boxes * sizeof (comac_box_t));
 	copy->num_boxes = clip->num_boxes;
     }
@@ -229,11 +231,11 @@ _comac_clip_copy_region (const comac_clip_t *clip)
 }
 
 comac_clip_t *
-_comac_clip_intersect_path (comac_clip_t       *clip,
+_comac_clip_intersect_path (comac_clip_t *clip,
 			    const comac_path_fixed_t *path,
-			    comac_fill_rule_t   fill_rule,
-			    double              tolerance,
-			    comac_antialias_t   antialias)
+			    comac_fill_rule_t fill_rule,
+			    double tolerance,
+			    comac_antialias_t antialias)
 {
     comac_clip_path_t *clip_path;
     comac_status_t status;
@@ -258,8 +260,10 @@ _comac_clip_intersect_path (comac_clip_t       *clip,
 	return _comac_clip_intersect_box (clip, &box);
     }
     if (_comac_path_fixed_fill_is_rectilinear (path))
-	return _comac_clip_intersect_rectilinear_path (clip, path,
-						       fill_rule, antialias);
+	return _comac_clip_intersect_rectilinear_path (clip,
+						       path,
+						       fill_rule,
+						       antialias);
 
     _comac_path_fixed_approximate_clip_extents (path, &extents);
     if (extents.width == 0 || extents.height == 0)
@@ -305,8 +309,7 @@ _comac_clip_intersect_clip_path (comac_clip_t *clip,
 }
 
 comac_clip_t *
-_comac_clip_intersect_clip (comac_clip_t *clip,
-			    const comac_clip_t *other)
+_comac_clip_intersect_clip (comac_clip_t *clip, const comac_clip_t *other)
 {
     if (_comac_clip_is_all_clipped (clip))
 	return clip;
@@ -349,8 +352,7 @@ _comac_clip_intersect_clip (comac_clip_t *clip,
 }
 
 comac_bool_t
-_comac_clip_equal (const comac_clip_t *clip_a,
-		   const comac_clip_t *clip_b)
+_comac_clip_equal (const comac_clip_t *clip_a, const comac_clip_t *clip_b)
 {
     const comac_clip_path_t *cp_a, *cp_b;
 
@@ -361,8 +363,7 @@ _comac_clip_equal (const comac_clip_t *clip_a,
     /* or just one of them? */
     if (clip_a == NULL || clip_b == NULL ||
 	_comac_clip_is_all_clipped (clip_a) ||
-	_comac_clip_is_all_clipped (clip_b))
-    {
+	_comac_clip_is_all_clipped (clip_b)) {
 	return FALSE;
     }
 
@@ -371,7 +372,8 @@ _comac_clip_equal (const comac_clip_t *clip_a,
     if (clip_a->num_boxes != clip_b->num_boxes)
 	return FALSE;
 
-    if (memcmp (clip_a->boxes, clip_b->boxes,
+    if (memcmp (clip_a->boxes,
+		clip_b->boxes,
 		sizeof (comac_box_t) * clip_a->num_boxes))
 	return FALSE;
 
@@ -392,8 +394,7 @@ _comac_clip_equal (const comac_clip_t *clip_a,
 	if (cp_a->fill_rule != cp_b->fill_rule)
 	    return FALSE;
 
-	if (! _comac_path_fixed_equal (&cp_a->path,
-				       &cp_b->path))
+	if (! _comac_path_fixed_equal (&cp_a->path, &cp_b->path))
 	    return FALSE;
 
 	cp_a = cp_a->prev;
@@ -404,16 +405,19 @@ _comac_clip_equal (const comac_clip_t *clip_a,
 }
 
 static comac_clip_t *
-_comac_clip_path_copy_with_translation (comac_clip_t      *clip,
+_comac_clip_path_copy_with_translation (comac_clip_t *clip,
 					comac_clip_path_t *other_path,
-					int fx, int fy)
+					int fx,
+					int fy)
 {
     comac_status_t status;
     comac_clip_path_t *clip_path;
 
     if (other_path->prev != NULL)
-	clip = _comac_clip_path_copy_with_translation (clip, other_path->prev,
-						       fx, fy);
+	clip = _comac_clip_path_copy_with_translation (clip,
+						       other_path->prev,
+						       fx,
+						       fy);
     if (_comac_clip_is_all_clipped (clip))
 	return clip;
 
@@ -421,8 +425,7 @@ _comac_clip_path_copy_with_translation (comac_clip_t      *clip,
     if (unlikely (clip_path == NULL))
 	return _comac_clip_set_all_clipped (clip);
 
-    status = _comac_path_fixed_init_copy (&clip_path->path,
-					  &other_path->path);
+    status = _comac_path_fixed_init_copy (&clip_path->path, &other_path->path);
     if (unlikely (status))
 	return _comac_clip_set_all_clipped (clip);
 
@@ -472,8 +475,7 @@ _comac_clip_translate (comac_clip_t *clip, int tx, int ty)
 }
 
 static comac_status_t
-_comac_path_fixed_add_box (comac_path_fixed_t *path,
-			   const comac_box_t *box)
+_comac_path_fixed_add_box (comac_path_fixed_t *path, const comac_box_t *box)
 {
     comac_status_t status;
 
@@ -538,7 +540,7 @@ _comac_clip_intersect_clip_path_transformed (comac_clip_t *clip,
 
     _comac_path_fixed_transform (&path, m);
 
-    clip =  _comac_clip_intersect_path (clip,
+    clip = _comac_clip_intersect_path (clip,
 				       &path,
 				       clip_path->fill_rule,
 				       clip_path->tolerance,
@@ -569,7 +571,8 @@ _comac_clip_transform (comac_clip_t *clip, const comac_matrix_t *m)
 	_comac_path_fixed_init_from_boxes (&path, &boxes);
 	_comac_path_fixed_transform (&path, m);
 
-	copy = _comac_clip_intersect_path (copy, &path,
+	copy = _comac_clip_intersect_path (copy,
+					   &path,
 					   COMAC_FILL_RULE_WINDING,
 					   0.1,
 					   COMAC_ANTIALIAS_DEFAULT);
@@ -578,7 +581,8 @@ _comac_clip_transform (comac_clip_t *clip, const comac_matrix_t *m)
     }
 
     if (clip->path)
-	copy = _comac_clip_intersect_clip_path_transformed (copy, clip->path,m);
+	copy =
+	    _comac_clip_intersect_clip_path_transformed (copy, clip->path, m);
 
     _comac_clip_destroy (clip);
     return copy;
@@ -591,14 +595,14 @@ _comac_clip_copy_with_translation (const comac_clip_t *clip, int tx, int ty)
     int fx, fy, i;
 
     if (clip == NULL || _comac_clip_is_all_clipped (clip))
-	return (comac_clip_t *)clip;
+	return (comac_clip_t *) clip;
 
     if (tx == 0 && ty == 0)
 	return _comac_clip_copy (clip);
 
     copy = _comac_clip_create ();
     if (copy == NULL)
-	    return _comac_clip_set_all_clipped (copy);
+	return _comac_clip_set_all_clipped (copy);
 
     fx = _comac_fixed_from_int (tx);
     fy = _comac_fixed_from_int (ty);
@@ -607,7 +611,8 @@ _comac_clip_copy_with_translation (const comac_clip_t *clip, int tx, int ty)
 	if (clip->num_boxes == 1) {
 	    copy->boxes = &copy->embedded_box;
 	} else {
-	    copy->boxes = _comac_malloc_ab (clip->num_boxes, sizeof (comac_box_t));
+	    copy->boxes =
+		_comac_malloc_ab (clip->num_boxes, sizeof (comac_box_t));
 	    if (unlikely (copy->boxes == NULL))
 		return _comac_clip_set_all_clipped (copy);
 	}
@@ -657,14 +662,19 @@ _comac_debug_print_clip (FILE *stream, const comac_clip_t *clip)
     }
 
     fprintf (stream, "clip:\n");
-    fprintf (stream, "  extents: (%d, %d) x (%d, %d), is-region? %d",
-	     clip->extents.x, clip->extents.y,
-	     clip->extents.width, clip->extents.height,
+    fprintf (stream,
+	     "  extents: (%d, %d) x (%d, %d), is-region? %d",
+	     clip->extents.x,
+	     clip->extents.y,
+	     clip->extents.width,
+	     clip->extents.height,
 	     clip->is_region);
 
     fprintf (stream, "  num_boxes = %d\n", clip->num_boxes);
     for (i = 0; i < clip->num_boxes; i++) {
-	fprintf (stream, "  [%d] = (%f, %f), (%f, %f)\n", i,
+	fprintf (stream,
+		 "  [%d] = (%f, %f), (%f, %f)\n",
+		 i,
 		 _comac_fixed_to_double (clip->boxes[i].p1.x),
 		 _comac_fixed_to_double (clip->boxes[i].p1.y),
 		 _comac_fixed_to_double (clip->boxes[i].p2.x),
@@ -674,7 +684,8 @@ _comac_debug_print_clip (FILE *stream, const comac_clip_t *clip)
     if (clip->path) {
 	comac_clip_path_t *clip_path = clip->path;
 	do {
-	    fprintf (stream, "path: aa=%d, tolerance=%f, rule=%d: ",
+	    fprintf (stream,
+		     "path: aa=%d, tolerance=%f, rule=%d: ",
 		     clip_path->antialias,
 		     clip_path->tolerance,
 		     clip_path->fill_rule);
@@ -696,10 +707,10 @@ _comac_clip_get_extents (const comac_clip_t *clip)
     return &clip->extents;
 }
 
-const comac_rectangle_list_t _comac_rectangles_nil =
-  { COMAC_STATUS_NO_MEMORY, NULL, 0 };
-static const comac_rectangle_list_t _comac_rectangles_not_representable =
-  { COMAC_STATUS_CLIP_NOT_REPRESENTABLE, NULL, 0 };
+const comac_rectangle_list_t _comac_rectangles_nil = {
+    COMAC_STATUS_NO_MEMORY, NULL, 0};
+static const comac_rectangle_list_t _comac_rectangles_not_representable = {
+    COMAC_STATUS_CLIP_NOT_REPRESENTABLE, NULL, 0};
 
 static comac_bool_t
 _comac_clip_int_rect_to_user (comac_gstate_t *gstate,
@@ -714,12 +725,15 @@ _comac_clip_int_rect_to_user (comac_gstate_t *gstate,
     double y2 = clip_rect->y + (int) clip_rect->height;
 
     _comac_gstate_backend_to_user_rectangle (gstate,
-					     &x1, &y1, &x2, &y2,
+					     &x1,
+					     &y1,
+					     &x2,
+					     &y2,
 					     &is_tight);
 
     user_rect->x = x1;
     user_rect->y = y1;
-    user_rect->width  = x2 - x1;
+    user_rect->width = x2 - x1;
     user_rect->height = y2 - y1;
 
     return is_tight;
@@ -731,14 +745,14 @@ _comac_rectangle_list_create_in_error (comac_status_t status)
     comac_rectangle_list_t *list;
 
     if (status == COMAC_STATUS_NO_MEMORY)
-	return (comac_rectangle_list_t*) &_comac_rectangles_nil;
+	return (comac_rectangle_list_t *) &_comac_rectangles_nil;
     if (status == COMAC_STATUS_CLIP_NOT_REPRESENTABLE)
-	return (comac_rectangle_list_t*) &_comac_rectangles_not_representable;
+	return (comac_rectangle_list_t *) &_comac_rectangles_not_representable;
 
     list = _comac_malloc (sizeof (*list));
     if (unlikely (list == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
-	return (comac_rectangle_list_t*) &_comac_rectangles_nil;
+	return (comac_rectangle_list_t *) &_comac_rectangles_nil;
     }
 
     list->status = status;
@@ -786,18 +800,17 @@ _comac_clip_copy_rectangle_list (comac_clip_t *clip, comac_gstate_t *gstate)
 
 	    if (! _comac_clip_int_rect_to_user (gstate,
 						&clip_rect,
-						&rectangles[i]))
-	    {
+						&rectangles[i])) {
 		free (rectangles);
 		return ERROR_LIST (COMAC_STATUS_CLIP_NOT_REPRESENTABLE);
 	    }
 	}
     }
 
- DONE:
+DONE:
     list = _comac_malloc (sizeof (comac_rectangle_list_t));
     if (unlikely (list == NULL)) {
-        free (rectangles);
+	free (rectangles);
 	return ERROR_LIST (COMAC_STATUS_NO_MEMORY);
     }
 
@@ -823,8 +836,8 @@ void
 comac_rectangle_list_destroy (comac_rectangle_list_t *rectangle_list)
 {
     if (rectangle_list == NULL || rectangle_list == &_comac_rectangles_nil ||
-        rectangle_list == &_comac_rectangles_not_representable)
-        return;
+	rectangle_list == &_comac_rectangles_not_representable)
+	return;
 
     free (rectangle_list->rectangles);
     free (rectangle_list);

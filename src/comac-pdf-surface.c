@@ -194,8 +194,8 @@
  **/
 
 static comac_bool_t
-_comac_pdf_surface_get_extents (void		        *abstract_surface,
-				comac_rectangle_int_t   *rectangle);
+_comac_pdf_surface_get_extents (void *abstract_surface,
+				comac_rectangle_int_t *rectangle);
 
 /**
  * COMAC_HAS_PDF_SURFACE:
@@ -206,26 +206,18 @@ _comac_pdf_surface_get_extents (void		        *abstract_surface,
  * Since: 1.2
  **/
 
-static const comac_pdf_version_t _comac_pdf_versions[] =
-{
+static const comac_pdf_version_t _comac_pdf_versions[] = {
     COMAC_PDF_VERSION_1_4,
     COMAC_PDF_VERSION_1_5,
     COMAC_PDF_VERSION_1_6,
-    COMAC_PDF_VERSION_1_7
-};
+    COMAC_PDF_VERSION_1_7};
 
 #define COMAC_PDF_VERSION_LAST ARRAY_LENGTH (_comac_pdf_versions)
 
-static const char * _comac_pdf_version_strings[COMAC_PDF_VERSION_LAST] =
-{
-    "PDF 1.4",
-    "PDF 1.5",
-    "PDF 1.6",
-    "PDF 1.7"
-};
+static const char *_comac_pdf_version_strings[COMAC_PDF_VERSION_LAST] = {
+    "PDF 1.4", "PDF 1.5", "PDF 1.6", "PDF 1.7"};
 
-static const char *_comac_pdf_supported_mime_types[] =
-{
+static const char *_comac_pdf_supported_mime_types[] = {
     COMAC_MIME_TYPE_JPEG,
     COMAC_MIME_TYPE_JP2,
     COMAC_MIME_TYPE_UNIQUE_ID,
@@ -234,8 +226,7 @@ static const char *_comac_pdf_supported_mime_types[] =
     COMAC_MIME_TYPE_JBIG2_GLOBAL_ID,
     COMAC_MIME_TYPE_CCITT_FAX,
     COMAC_MIME_TYPE_CCITT_FAX_PARAMS,
-    NULL
-};
+    NULL};
 
 /* PDF cross-reference stream types */
 typedef enum {
@@ -247,8 +238,8 @@ typedef enum {
 typedef struct _comac_pdf_object {
     comac_pdf_object_type_t type;
     union {
-	long long offset; /* type == PDF_OBJECT_UNCOMPRESSED */
-	struct compressed_obj {  /* type == PDF_OBJECT_COMPRESSED */
+	long long offset;	/* type == PDF_OBJECT_UNCOMPRESSED */
+	struct compressed_obj { /* type == PDF_OBJECT_COMPRESSED */
 	    comac_pdf_resource_t xref_stream;
 	    int index;
 	} compressed_obj;
@@ -268,14 +259,14 @@ typedef struct _comac_pdf_font {
 
 typedef struct _comac_pdf_rgb_linear_function {
     comac_pdf_resource_t resource;
-    double               color1[3];
-    double               color2[3];
+    double color1[3];
+    double color2[3];
 } comac_pdf_rgb_linear_function_t;
 
 typedef struct _comac_pdf_alpha_linear_function {
     comac_pdf_resource_t resource;
-    double               alpha1;
-    double               alpha2;
+    double alpha1;
+    double alpha2;
 } comac_pdf_alpha_linear_function_t;
 
 static void
@@ -285,27 +276,27 @@ static void
 _comac_pdf_smask_group_destroy (comac_pdf_smask_group_t *group);
 
 static comac_int_status_t
-_comac_pdf_surface_add_font (unsigned int        font_id,
-			     unsigned int        subset_id,
-			     void		*closure);
+_comac_pdf_surface_add_font (unsigned int font_id,
+			     unsigned int subset_id,
+			     void *closure);
 
 static void
 _comac_pdf_group_resources_init (comac_pdf_group_resources_t *res);
 
 static comac_int_status_t
-_comac_pdf_surface_open_stream (comac_pdf_surface_t	*surface,
-				comac_pdf_resource_t    *resource,
-                                comac_bool_t             compressed,
-				const char		*fmt,
-				...) COMAC_PRINTF_FORMAT(4, 5);
+_comac_pdf_surface_open_stream (comac_pdf_surface_t *surface,
+				comac_pdf_resource_t *resource,
+				comac_bool_t compressed,
+				const char *fmt,
+				...) COMAC_PRINTF_FORMAT (4, 5);
 static comac_int_status_t
-_comac_pdf_surface_close_stream (comac_pdf_surface_t	*surface);
+_comac_pdf_surface_close_stream (comac_pdf_surface_t *surface);
 
 static comac_int_status_t
-_comac_pdf_surface_emit_surface (comac_pdf_surface_t        *surface,
+_comac_pdf_surface_emit_surface (comac_pdf_surface_t *surface,
 				 comac_pdf_source_surface_t *source,
-				 comac_bool_t                test,
-				 comac_bool_t               *is_image);
+				 comac_bool_t test,
+				 comac_bool_t *is_image);
 
 static comac_int_status_t
 _comac_pdf_surface_write_page (comac_pdf_surface_t *surface);
@@ -321,15 +312,15 @@ static long long
 _comac_pdf_surface_write_xref (comac_pdf_surface_t *surface);
 
 static comac_int_status_t
-_comac_pdf_surface_write_xref_stream (comac_pdf_surface_t  *surface,
-				      comac_pdf_resource_t  xref_res,
-				      comac_pdf_resource_t  root_res,
-				      comac_pdf_resource_t  info_res,
-				      long long            *xref_offset);
+_comac_pdf_surface_write_xref_stream (comac_pdf_surface_t *surface,
+				      comac_pdf_resource_t xref_res,
+				      comac_pdf_resource_t root_res,
+				      comac_pdf_resource_t info_res,
+				      long long *xref_offset);
 
 static comac_int_status_t
-_comac_pdf_surface_write_patterns_and_smask_groups (comac_pdf_surface_t *surface,
-						    comac_bool_t         finish);
+_comac_pdf_surface_write_patterns_and_smask_groups (
+    comac_pdf_surface_t *surface, comac_bool_t finish);
 
 static comac_int_status_t
 _comac_pdf_surface_emit_font_subsets (comac_pdf_surface_t *surface);
@@ -338,7 +329,8 @@ static comac_bool_t
 _comac_pdf_source_surface_equal (const void *key_a, const void *key_b);
 
 static const comac_surface_backend_t comac_pdf_surface_backend;
-static const comac_paginated_surface_backend_t comac_pdf_surface_paginated_backend;
+static const comac_paginated_surface_backend_t
+    comac_pdf_surface_paginated_backend;
 
 comac_pdf_resource_t
 _comac_pdf_surface_new_object (comac_pdf_surface_t *surface)
@@ -366,8 +358,8 @@ _comac_pdf_surface_new_object (comac_pdf_surface_t *surface)
 }
 
 void
-_comac_pdf_surface_update_object (comac_pdf_surface_t	*surface,
-				  comac_pdf_resource_t	 resource)
+_comac_pdf_surface_update_object (comac_pdf_surface_t *surface,
+				  comac_pdf_resource_t resource)
 {
     comac_pdf_object_t *object;
 
@@ -377,40 +369,38 @@ _comac_pdf_surface_update_object (comac_pdf_surface_t	*surface,
 
 static void
 _comac_pdf_surface_set_size_internal (comac_pdf_surface_t *surface,
-				      double		  width,
-				      double		  height)
+				      double width,
+				      double height)
 {
     surface->width = width;
     surface->height = height;
     surface->surface_extents.x = 0;
     surface->surface_extents.y = 0;
-    surface->surface_extents.width  = ceil (surface->width);
+    surface->surface_extents.width = ceil (surface->width);
     surface->surface_extents.height = ceil (surface->height);
 }
 
 static comac_bool_t
-_path_covers_bbox (comac_pdf_surface_t *surface,
-		   comac_path_fixed_t *path)
+_path_covers_bbox (comac_pdf_surface_t *surface, comac_path_fixed_t *path)
 {
     comac_box_t box;
 
-    return _comac_path_fixed_is_box (path, &box) &&
-	   box.p1.x <= 0 &&
+    return _comac_path_fixed_is_box (path, &box) && box.p1.x <= 0 &&
 	   box.p1.y <= 0 &&
 	   box.p2.x >= _comac_fixed_from_double (surface->width) &&
 	   box.p2.y >= _comac_fixed_from_double (surface->height);
 }
 
 static comac_status_t
-_comac_pdf_surface_clipper_intersect_clip_path (comac_surface_clipper_t *clipper,
-						comac_path_fixed_t	*path,
-						comac_fill_rule_t	fill_rule,
-						double			tolerance,
-						comac_antialias_t	antialias)
+_comac_pdf_surface_clipper_intersect_clip_path (
+    comac_surface_clipper_t *clipper,
+    comac_path_fixed_t *path,
+    comac_fill_rule_t fill_rule,
+    double tolerance,
+    comac_antialias_t antialias)
 {
-    comac_pdf_surface_t *surface = comac_container_of (clipper,
-						       comac_pdf_surface_t,
-						       clipper);
+    comac_pdf_surface_t *surface =
+	comac_container_of (clipper, comac_pdf_surface_t, clipper);
     comac_int_status_t status;
 
     status = _comac_pdf_operators_flush (&surface->pdf_operators);
@@ -434,9 +424,9 @@ _comac_pdf_surface_clipper_intersect_clip_path (comac_surface_clipper_t *clipper
 }
 
 static comac_surface_t *
-_comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
-					       double			 width,
-					       double			 height)
+_comac_pdf_surface_create_for_stream_internal (comac_output_stream_t *output,
+					       double width,
+					       double height)
 {
     comac_pdf_surface_t *surface;
     comac_status_t status, status_ignored;
@@ -445,7 +435,8 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
     if (unlikely (surface == NULL)) {
 	/* destroy stream on behalf of caller */
 	status = _comac_output_stream_destroy (output);
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     _comac_surface_init (&surface->base,
@@ -461,24 +452,31 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
     surface->in_xobject = FALSE;
     surface->surface_extents.x = 0;
     surface->surface_extents.y = 0;
-    surface->surface_extents.width  = ceil (surface->width);
+    surface->surface_extents.width = ceil (surface->width);
     surface->surface_extents.height = ceil (surface->height);
     surface->surface_bounded = TRUE;
 
     _comac_array_init (&surface->objects, sizeof (comac_pdf_object_t));
     _comac_array_init (&surface->pages, sizeof (comac_pdf_resource_t));
-    _comac_array_init (&surface->rgb_linear_functions, sizeof (comac_pdf_rgb_linear_function_t));
-    _comac_array_init (&surface->alpha_linear_functions, sizeof (comac_pdf_alpha_linear_function_t));
+    _comac_array_init (&surface->rgb_linear_functions,
+		       sizeof (comac_pdf_rgb_linear_function_t));
+    _comac_array_init (&surface->alpha_linear_functions,
+		       sizeof (comac_pdf_alpha_linear_function_t));
     _comac_array_init (&surface->fonts, sizeof (comac_pdf_font_t));
-    _comac_array_init (&surface->smask_groups, sizeof (comac_pdf_smask_group_t *));
+    _comac_array_init (&surface->smask_groups,
+		       sizeof (comac_pdf_smask_group_t *));
     _comac_array_init (&surface->knockout_group, sizeof (comac_pdf_resource_t));
 
     _comac_array_init (&surface->page_patterns, sizeof (comac_pdf_pattern_t));
-    _comac_array_init (&surface->page_surfaces, sizeof (comac_pdf_source_surface_t));
-    _comac_array_init (&surface->doc_surfaces, sizeof (comac_pdf_source_surface_t));
-    _comac_array_init (&surface->jbig2_global, sizeof (comac_pdf_jbig2_global_t));
+    _comac_array_init (&surface->page_surfaces,
+		       sizeof (comac_pdf_source_surface_t));
+    _comac_array_init (&surface->doc_surfaces,
+		       sizeof (comac_pdf_source_surface_t));
+    _comac_array_init (&surface->jbig2_global,
+		       sizeof (comac_pdf_jbig2_global_t));
     _comac_array_init (&surface->page_heights, sizeof (double));
-    surface->all_surfaces = _comac_hash_table_create (_comac_pdf_source_surface_equal);
+    surface->all_surfaces =
+	_comac_hash_table_create (_comac_pdf_source_surface_equal);
     if (unlikely (surface->all_surfaces == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto BAIL0;
@@ -492,13 +490,14 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
 	goto BAIL1;
     }
 
-    _comac_scaled_font_subsets_enable_latin_subset (surface->font_subsets, TRUE);
+    _comac_scaled_font_subsets_enable_latin_subset (surface->font_subsets,
+						    TRUE);
 
     surface->next_available_resource.id = 1;
     surface->pages_resource = _comac_pdf_surface_new_object (surface);
     if (surface->pages_resource.id == 0) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto BAIL2;
+	goto BAIL2;
     }
 
     surface->struct_tree_root.id = 0;
@@ -511,7 +510,8 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
     surface->group_stream.mem_stream = NULL;
     surface->object_stream.active = FALSE;
     surface->object_stream.stream = NULL;
-    _comac_array_init (&surface->object_stream.objects, sizeof (comac_xref_stream_object_t));
+    _comac_array_init (&surface->object_stream.objects,
+		       sizeof (comac_xref_stream_object_t));
 
     surface->paginated_mode = COMAC_PAGINATED_MODE_ANALYZE;
 
@@ -521,8 +521,9 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
     surface->current_operator = COMAC_OPERATOR_OVER;
     surface->header_emitted = FALSE;
 
-    _comac_surface_clipper_init (&surface->clipper,
-				 _comac_pdf_surface_clipper_intersect_clip_path);
+    _comac_surface_clipper_init (
+	&surface->clipper,
+	_comac_pdf_surface_clipper_intersect_clip_path);
 
     _comac_pdf_operators_init (&surface->pdf_operators,
 			       surface->output,
@@ -532,7 +533,7 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
     _comac_pdf_operators_set_font_subsets_callback (&surface->pdf_operators,
 						    _comac_pdf_surface_add_font,
 						    surface);
-    _comac_pdf_operators_enable_actual_text(&surface->pdf_operators, TRUE);
+    _comac_pdf_operators_enable_actual_text (&surface->pdf_operators, TRUE);
 
     status = _comac_pdf_interchange_init (surface);
     if (unlikely (status))
@@ -540,7 +541,8 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
 
     surface->page_parent_tree = -1;
     _comac_array_init (&surface->page_annots, sizeof (comac_pdf_resource_t));
-    _comac_array_init (&surface->forward_links, sizeof (comac_pdf_forward_link_t));
+    _comac_array_init (&surface->forward_links,
+		       sizeof (comac_pdf_forward_link_t));
     surface->tagged = FALSE;
     surface->current_page_label = NULL;
     _comac_array_init (&surface->page_labels, sizeof (char *));
@@ -555,10 +557,10 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t	*output,
     if (getenv ("COMAC_DEBUG_PDF") != NULL)
 	surface->compress_streams = FALSE;
 
-    surface->paginated_surface =  _comac_paginated_surface_create (
-	                                  &surface->base,
-					  COMAC_CONTENT_COLOR_ALPHA,
-					  &comac_pdf_surface_paginated_backend);
+    surface->paginated_surface =
+	_comac_paginated_surface_create (&surface->base,
+					 COMAC_CONTENT_COLOR_ALPHA,
+					 &comac_pdf_surface_paginated_backend);
 
     status = surface->paginated_surface->status;
     if (status == COMAC_STATUS_SUCCESS) {
@@ -605,16 +607,17 @@ BAIL0:
  * Since: 1.2
  **/
 comac_surface_t *
-comac_pdf_surface_create_for_stream (comac_write_func_t		 write_func,
-				     void			*closure,
-				     double			 width_in_points,
-				     double			 height_in_points)
+comac_pdf_surface_create_for_stream (comac_write_func_t write_func,
+				     void *closure,
+				     double width_in_points,
+				     double height_in_points)
 {
     comac_output_stream_t *output;
 
     output = _comac_output_stream_create (write_func, NULL, closure);
     if (_comac_output_stream_get_status (output))
-	return _comac_surface_create_in_error (_comac_output_stream_destroy (output));
+	return _comac_surface_create_in_error (
+	    _comac_output_stream_destroy (output));
 
     return _comac_pdf_surface_create_for_stream_internal (output,
 							  width_in_points,
@@ -644,15 +647,16 @@ comac_pdf_surface_create_for_stream (comac_write_func_t		 write_func,
  * Since: 1.2
  **/
 comac_surface_t *
-comac_pdf_surface_create (const char		*filename,
-			  double		 width_in_points,
-			  double		 height_in_points)
+comac_pdf_surface_create (const char *filename,
+			  double width_in_points,
+			  double height_in_points)
 {
     comac_output_stream_t *output;
 
     output = _comac_output_stream_create_for_filename (filename);
     if (_comac_output_stream_get_status (output))
-	return _comac_surface_create_in_error (_comac_output_stream_destroy (output));
+	return _comac_surface_create_in_error (
+	    _comac_output_stream_destroy (output));
 
     return _comac_pdf_surface_create_for_stream_internal (output,
 							  width_in_points,
@@ -670,8 +674,8 @@ _comac_surface_is_pdf (comac_surface_t *surface)
  * target. Otherwise return FALSE.
  */
 static comac_bool_t
-_extract_pdf_surface (comac_surface_t		 *surface,
-		      comac_pdf_surface_t	**pdf_surface)
+_extract_pdf_surface (comac_surface_t *surface,
+		      comac_pdf_surface_t **pdf_surface)
 {
     comac_surface_t *target;
     comac_status_t status_ignored;
@@ -679,32 +683,35 @@ _extract_pdf_surface (comac_surface_t		 *surface,
     if (surface->status)
 	return FALSE;
     if (surface->finished) {
-	status_ignored = _comac_surface_set_error (surface,
-						   _comac_error (COMAC_STATUS_SURFACE_FINISHED));
-        return FALSE;
+	status_ignored = _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return FALSE;
     }
 
     if (! _comac_surface_is_paginated (surface)) {
-	status_ignored = _comac_surface_set_error (surface,
-						   _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH));
+	status_ignored = _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH));
 	return FALSE;
     }
 
     target = _comac_paginated_surface_get_target (surface);
     if (target->status) {
-	status_ignored = _comac_surface_set_error (surface,
-						   target->status);
+	status_ignored = _comac_surface_set_error (surface, target->status);
 	return FALSE;
     }
     if (target->finished) {
-	status_ignored = _comac_surface_set_error (surface,
-						   _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	status_ignored = _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return FALSE;
     }
 
     if (! _comac_surface_is_pdf (target)) {
-	status_ignored = _comac_surface_set_error (surface,
-						   _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH));
+	status_ignored = _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH));
 	return FALSE;
     }
 
@@ -728,8 +735,8 @@ _extract_pdf_surface (comac_surface_t		 *surface,
  * Since: 1.10
  **/
 void
-comac_pdf_surface_restrict_to_version (comac_surface_t 		*abstract_surface,
-				       comac_pdf_version_t  	 version)
+comac_pdf_surface_restrict_to_version (comac_surface_t *abstract_surface,
+				       comac_pdf_version_t version)
 {
     comac_pdf_surface_t *surface = NULL; /* hide compiler warning */
 
@@ -739,8 +746,8 @@ comac_pdf_surface_restrict_to_version (comac_surface_t 		*abstract_surface,
     if (version < COMAC_PDF_VERSION_LAST)
 	surface->pdf_version = version;
 
-    _comac_pdf_operators_enable_actual_text(&surface->pdf_operators,
-					    version >= COMAC_PDF_VERSION_1_5);
+    _comac_pdf_operators_enable_actual_text (&surface->pdf_operators,
+					     version >= COMAC_PDF_VERSION_1_5);
 }
 
 /**
@@ -754,8 +761,7 @@ comac_pdf_surface_restrict_to_version (comac_surface_t 		*abstract_surface,
  * Since: 1.10
  **/
 void
-comac_pdf_get_versions (comac_pdf_version_t const	**versions,
-                        int                     	 *num_versions)
+comac_pdf_get_versions (comac_pdf_version_t const **versions, int *num_versions)
 {
     if (versions != NULL)
 	*versions = _comac_pdf_versions;
@@ -803,9 +809,9 @@ comac_pdf_version_to_string (comac_pdf_version_t version)
  * Since: 1.2
  **/
 void
-comac_pdf_surface_set_size (comac_surface_t	*surface,
-			    double		 width_in_points,
-			    double		 height_in_points)
+comac_pdf_surface_set_size (comac_surface_t *surface,
+			    double width_in_points,
+			    double height_in_points)
 {
     comac_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
     comac_status_t status;
@@ -851,11 +857,11 @@ comac_pdf_surface_set_size (comac_surface_t	*surface,
  * Since: 1.16
  **/
 int
-comac_pdf_surface_add_outline (comac_surface_t	         *surface,
-			       int                        parent_id,
-			       const char                *utf8,
-			       const char                *link_attribs,
-			       comac_pdf_outline_flags_t  flags)
+comac_pdf_surface_add_outline (comac_surface_t *surface,
+			       int parent_id,
+			       const char *utf8,
+			       const char *link_attribs,
+			       comac_pdf_outline_flags_t flags)
 {
     comac_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
     comac_status_t status;
@@ -897,9 +903,9 @@ comac_pdf_surface_add_outline (comac_surface_t	         *surface,
  * Since: 1.16
  **/
 void
-comac_pdf_surface_set_metadata (comac_surface_t      *surface,
-				comac_pdf_metadata_t  metadata,
-                                const char           *utf8)
+comac_pdf_surface_set_metadata (comac_surface_t *surface,
+				comac_pdf_metadata_t metadata,
+				const char *utf8)
 {
     comac_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
     comac_status_t status;
@@ -933,9 +939,9 @@ comac_pdf_surface_set_metadata (comac_surface_t      *surface,
  * Since: 1.18
  **/
 void
-comac_pdf_surface_set_custom_metadata (comac_surface_t	    *surface,
-                                       const char           *name,
-                                       const char           *value)
+comac_pdf_surface_set_custom_metadata (comac_surface_t *surface,
+				       const char *name,
+				       const char *value)
 {
     comac_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
     comac_status_t status;
@@ -943,7 +949,8 @@ comac_pdf_surface_set_custom_metadata (comac_surface_t	    *surface,
     if (! _extract_pdf_surface (surface, &pdf_surface))
 	return;
 
-    status = _comac_pdf_interchange_set_custom_metadata (pdf_surface, name, value);
+    status =
+	_comac_pdf_interchange_set_custom_metadata (pdf_surface, name, value);
     if (status)
 	status = _comac_surface_set_error (surface, status);
 }
@@ -958,8 +965,7 @@ comac_pdf_surface_set_custom_metadata (comac_surface_t	    *surface,
  * Since: 1.16
  **/
 void
-comac_pdf_surface_set_page_label (comac_surface_t *surface,
-                                  const char      *utf8)
+comac_pdf_surface_set_page_label (comac_surface_t *surface, const char *utf8)
 {
     comac_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
 
@@ -984,8 +990,8 @@ comac_pdf_surface_set_page_label (comac_surface_t *surface,
  **/
 void
 comac_pdf_surface_set_thumbnail_size (comac_surface_t *surface,
-				      int              width,
-				      int              height)
+				      int width,
+				      int height)
 {
     comac_pdf_surface_t *pdf_surface = NULL; /* hide compiler warning */
 
@@ -1006,14 +1012,18 @@ _comac_pdf_surface_clear (comac_pdf_surface_t *surface)
 
     size = _comac_array_num_elements (&surface->page_patterns);
     for (i = 0; i < size; i++) {
-	pattern = (comac_pdf_pattern_t *) _comac_array_index (&surface->page_patterns, i);
+	pattern =
+	    (comac_pdf_pattern_t *) _comac_array_index (&surface->page_patterns,
+							i);
 	comac_pattern_destroy (pattern->pattern);
     }
     _comac_array_truncate (&surface->page_patterns, 0);
 
     size = _comac_array_num_elements (&surface->page_surfaces);
     for (i = 0; i < size; i++) {
-	src_surface = (comac_pdf_source_surface_t *) _comac_array_index (&surface->page_surfaces, i);
+	src_surface = (comac_pdf_source_surface_t *) _comac_array_index (
+	    &surface->page_surfaces,
+	    i);
 	comac_surface_destroy (src_surface->surface);
     }
     _comac_array_truncate (&surface->page_surfaces, 0);
@@ -1077,7 +1087,7 @@ _comac_pdf_group_resources_clear (comac_pdf_group_resources_t *res)
 
 static void
 _comac_pdf_surface_add_operator (comac_pdf_surface_t *surface,
-				 comac_operator_t     op)
+				 comac_operator_t op)
 {
     comac_pdf_group_resources_t *res = &surface->resources;
 
@@ -1086,8 +1096,8 @@ _comac_pdf_surface_add_operator (comac_pdf_surface_t *surface,
 
 static comac_int_status_t
 _comac_pdf_surface_add_alpha (comac_pdf_surface_t *surface,
-			      double               alpha,
-			      int                 *index)
+			      double alpha,
+			      int *index)
 {
     int num_alphas, i;
     double other;
@@ -1113,38 +1123,37 @@ _comac_pdf_surface_add_alpha (comac_pdf_surface_t *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_smask (comac_pdf_surface_t  *surface,
-			      comac_pdf_resource_t  smask)
+_comac_pdf_surface_add_smask (comac_pdf_surface_t *surface,
+			      comac_pdf_resource_t smask)
 {
     return _comac_array_append (&(surface->resources.smasks), &smask);
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_pattern (comac_pdf_surface_t  *surface,
-				comac_pdf_resource_t  pattern)
+_comac_pdf_surface_add_pattern (comac_pdf_surface_t *surface,
+				comac_pdf_resource_t pattern)
 {
     return _comac_array_append (&(surface->resources.patterns), &pattern);
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_shading (comac_pdf_surface_t  *surface,
-				comac_pdf_resource_t  shading)
+_comac_pdf_surface_add_shading (comac_pdf_surface_t *surface,
+				comac_pdf_resource_t shading)
 {
     return _comac_array_append (&(surface->resources.shadings), &shading);
 }
 
-
 static comac_int_status_t
-_comac_pdf_surface_add_xobject (comac_pdf_surface_t  *surface,
-				comac_pdf_resource_t  xobject)
+_comac_pdf_surface_add_xobject (comac_pdf_surface_t *surface,
+				comac_pdf_resource_t xobject)
 {
     return _comac_array_append (&(surface->resources.xobjects), &xobject);
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_font (unsigned int        font_id,
-			     unsigned int        subset_id,
-			     void		*closure)
+_comac_pdf_surface_add_font (unsigned int font_id,
+			     unsigned int subset_id,
+			     void *closure)
 {
     comac_pdf_surface_t *surface = closure;
     comac_pdf_font_t font;
@@ -1155,16 +1164,14 @@ _comac_pdf_surface_add_font (unsigned int        font_id,
     num_fonts = _comac_array_num_elements (&res->fonts);
     for (i = 0; i < num_fonts; i++) {
 	_comac_array_copy_element (&res->fonts, i, &font);
-	if (font.font_id == font_id &&
-	    font.subset_id == subset_id)
+	if (font.font_id == font_id && font.subset_id == subset_id)
 	    return COMAC_STATUS_SUCCESS;
     }
 
     num_fonts = _comac_array_num_elements (&surface->fonts);
     for (i = 0; i < num_fonts; i++) {
 	_comac_array_copy_element (&surface->fonts, i, &font);
-	if (font.font_id == font_id &&
-	    font.subset_id == subset_id)
+	if (font.font_id == font_id && font.subset_id == subset_id)
 	    return _comac_array_append (&res->fonts, &font);
     }
 
@@ -1183,8 +1190,8 @@ _comac_pdf_surface_add_font (unsigned int        font_id,
 
 static comac_pdf_resource_t
 _comac_pdf_surface_get_font_resource (comac_pdf_surface_t *surface,
-				      unsigned int         font_id,
-				      unsigned int         subset_id)
+				      unsigned int font_id,
+				      unsigned int subset_id)
 {
     comac_pdf_font_t font;
     int num_fonts, i;
@@ -1205,21 +1212,36 @@ _comac_operator_to_pdf_blend_mode (comac_operator_t op)
 {
     switch (op) {
     /* The extend blend mode operators */
-    case COMAC_OPERATOR_MULTIPLY:       return "Multiply";
-    case COMAC_OPERATOR_SCREEN:         return "Screen";
-    case COMAC_OPERATOR_OVERLAY:        return "Overlay";
-    case COMAC_OPERATOR_DARKEN:         return "Darken";
-    case COMAC_OPERATOR_LIGHTEN:        return "Lighten";
-    case COMAC_OPERATOR_COLOR_DODGE:    return "ColorDodge";
-    case COMAC_OPERATOR_COLOR_BURN:     return "ColorBurn";
-    case COMAC_OPERATOR_HARD_LIGHT:     return "HardLight";
-    case COMAC_OPERATOR_SOFT_LIGHT:     return "SoftLight";
-    case COMAC_OPERATOR_DIFFERENCE:     return "Difference";
-    case COMAC_OPERATOR_EXCLUSION:      return "Exclusion";
-    case COMAC_OPERATOR_HSL_HUE:        return "Hue";
-    case COMAC_OPERATOR_HSL_SATURATION: return "Saturation";
-    case COMAC_OPERATOR_HSL_COLOR:      return "Color";
-    case COMAC_OPERATOR_HSL_LUMINOSITY: return "Luminosity";
+    case COMAC_OPERATOR_MULTIPLY:
+	return "Multiply";
+    case COMAC_OPERATOR_SCREEN:
+	return "Screen";
+    case COMAC_OPERATOR_OVERLAY:
+	return "Overlay";
+    case COMAC_OPERATOR_DARKEN:
+	return "Darken";
+    case COMAC_OPERATOR_LIGHTEN:
+	return "Lighten";
+    case COMAC_OPERATOR_COLOR_DODGE:
+	return "ColorDodge";
+    case COMAC_OPERATOR_COLOR_BURN:
+	return "ColorBurn";
+    case COMAC_OPERATOR_HARD_LIGHT:
+	return "HardLight";
+    case COMAC_OPERATOR_SOFT_LIGHT:
+	return "SoftLight";
+    case COMAC_OPERATOR_DIFFERENCE:
+	return "Difference";
+    case COMAC_OPERATOR_EXCLUSION:
+	return "Exclusion";
+    case COMAC_OPERATOR_HSL_HUE:
+	return "Hue";
+    case COMAC_OPERATOR_HSL_SATURATION:
+	return "Saturation";
+    case COMAC_OPERATOR_HSL_COLOR:
+	return "Color";
+    case COMAC_OPERATOR_HSL_LUMINOSITY:
+	return "Luminosity";
 
     default:
     /* The original Porter-Duff set */
@@ -1242,9 +1264,9 @@ _comac_operator_to_pdf_blend_mode (comac_operator_t op)
 }
 
 static void
-_comac_pdf_surface_emit_group_resources (comac_pdf_surface_t         *surface,
+_comac_pdf_surface_emit_group_resources (comac_pdf_surface_t *surface,
 					 comac_pdf_group_resources_t *res,
-					 comac_bool_t                 gs0)
+					 comac_bool_t gs0)
 {
     int num_alphas, num_smasks, num_resources, i;
     double alpha;
@@ -1256,19 +1278,21 @@ _comac_pdf_surface_emit_group_resources (comac_pdf_surface_t         *surface,
     num_alphas = _comac_array_num_elements (&res->alphas);
     num_smasks = _comac_array_num_elements (&res->smasks);
     if (num_alphas > 0 || num_smasks > 0) {
-	_comac_output_stream_printf (surface->output,
-				     "   /ExtGState <<\n");
+	_comac_output_stream_printf (surface->output, "   /ExtGState <<\n");
 
 	if (gs0) {
-	    _comac_output_stream_printf (surface->output,
-					 "      /gs0 << /BM /Normal /SMask /None /CA 1.0 /ca 1.0 >>\n");
+	    _comac_output_stream_printf (
+		surface->output,
+		"      /gs0 << /BM /Normal /SMask /None /CA 1.0 /ca 1.0 >>\n");
 	}
 
 	for (i = 0; i < COMAC_NUM_OPERATORS; i++) {
 	    if (res->operators[i]) {
-		_comac_output_stream_printf (surface->output,
-					     "      /b%d << /BM /%s >>\n",
-					     i, _comac_operator_to_pdf_blend_mode(i));
+		_comac_output_stream_printf (
+		    surface->output,
+		    "      /b%d << /BM /%s >>\n",
+		    i,
+		    _comac_operator_to_pdf_blend_mode (i));
 	    }
 	}
 
@@ -1276,69 +1300,68 @@ _comac_pdf_surface_emit_group_resources (comac_pdf_surface_t         *surface,
 	    _comac_array_copy_element (&res->alphas, i, &alpha);
 	    _comac_output_stream_printf (surface->output,
 					 "      /a%d << /CA %f /ca %f >>\n",
-					 i, alpha, alpha);
+					 i,
+					 alpha,
+					 alpha);
 	}
 
 	for (i = 0; i < num_smasks; i++) {
 	    smask = _comac_array_index (&res->smasks, i);
 	    _comac_output_stream_printf (surface->output,
 					 "      /s%d %d 0 R\n",
-					 smask->id, smask->id);
+					 smask->id,
+					 smask->id);
 	}
 
-	_comac_output_stream_printf (surface->output,
-				     "   >>\n");
+	_comac_output_stream_printf (surface->output, "   >>\n");
     }
 
     num_resources = _comac_array_num_elements (&res->patterns);
     if (num_resources > 0) {
-	_comac_output_stream_printf (surface->output,
-				     "   /Pattern <<");
+	_comac_output_stream_printf (surface->output, "   /Pattern <<");
 	for (i = 0; i < num_resources; i++) {
 	    pattern = _comac_array_index (&res->patterns, i);
 	    _comac_output_stream_printf (surface->output,
 					 " /p%d %d 0 R",
-					 pattern->id, pattern->id);
+					 pattern->id,
+					 pattern->id);
 	}
 
-	_comac_output_stream_printf (surface->output,
-				     " >>\n");
+	_comac_output_stream_printf (surface->output, " >>\n");
     }
 
     num_resources = _comac_array_num_elements (&res->shadings);
     if (num_resources > 0) {
-	_comac_output_stream_printf (surface->output,
-				     "   /Shading <<");
+	_comac_output_stream_printf (surface->output, "   /Shading <<");
 	for (i = 0; i < num_resources; i++) {
 	    shading = _comac_array_index (&res->shadings, i);
 	    _comac_output_stream_printf (surface->output,
 					 " /sh%d %d 0 R",
-					 shading->id, shading->id);
+					 shading->id,
+					 shading->id);
 	}
 
-	_comac_output_stream_printf (surface->output,
-				     " >>\n");
+	_comac_output_stream_printf (surface->output, " >>\n");
     }
 
     num_resources = _comac_array_num_elements (&res->xobjects);
     if (num_resources > 0) {
-	_comac_output_stream_printf (surface->output,
-				     "   /XObject <<");
+	_comac_output_stream_printf (surface->output, "   /XObject <<");
 
 	for (i = 0; i < num_resources; i++) {
 	    xobject = _comac_array_index (&res->xobjects, i);
 	    _comac_output_stream_printf (surface->output,
 					 " /x%d %d 0 R",
-					 xobject->id, xobject->id);
+					 xobject->id,
+					 xobject->id);
 	}
 
-	_comac_output_stream_printf (surface->output,
-				     " >>\n");
+	_comac_output_stream_printf (surface->output, " >>\n");
     }
 
     num_resources = _comac_array_num_elements (&res->fonts);
     if (num_resources > 0) {
-	_comac_output_stream_printf (surface->output,"   /Font <<\n");
+	_comac_output_stream_printf (surface->output, "   /Font <<\n");
 	for (i = 0; i < num_resources; i++) {
 	    font = _comac_array_index (&res->fonts, i);
 	    _comac_output_stream_printf (surface->output,
@@ -1350,15 +1373,14 @@ _comac_pdf_surface_emit_group_resources (comac_pdf_surface_t         *surface,
 	_comac_output_stream_printf (surface->output, "   >>\n");
     }
 
-    _comac_output_stream_printf (surface->output,
-				 ">>\n");
+    _comac_output_stream_printf (surface->output, ">>\n");
 }
 
 static comac_pdf_smask_group_t *
-_comac_pdf_surface_create_smask_group (comac_pdf_surface_t	    *surface,
-				       const comac_rectangle_int_t  *extents)
+_comac_pdf_surface_create_smask_group (comac_pdf_surface_t *surface,
+				       const comac_rectangle_int_t *extents)
 {
-    comac_pdf_smask_group_t	*group;
+    comac_pdf_smask_group_t *group;
 
     group = calloc (1, sizeof (comac_pdf_smask_group_t));
     if (unlikely (group == NULL)) {
@@ -1389,7 +1411,7 @@ _comac_pdf_surface_create_smask_group (comac_pdf_surface_t	    *surface,
 static void
 _comac_pdf_smask_group_destroy (comac_pdf_smask_group_t *group)
 {
-    if (group->operation == PDF_FILL ||	group->operation == PDF_STROKE)
+    if (group->operation == PDF_FILL || group->operation == PDF_STROKE)
 	_comac_path_fixed_fini (&group->path);
     if (group->source)
 	comac_pattern_destroy (group->source);
@@ -1404,7 +1426,7 @@ _comac_pdf_smask_group_destroy (comac_pdf_smask_group_t *group)
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_smask_group (comac_pdf_surface_t     *surface,
+_comac_pdf_surface_add_smask_group (comac_pdf_surface_t *surface,
 				    comac_pdf_smask_group_t *group)
 {
     return _comac_array_append (&surface->smask_groups, &group);
@@ -1419,7 +1441,8 @@ _comac_pdf_source_surface_equal (const void *key_a, const void *key_b)
     if (a->interpolate != b->interpolate)
 	return FALSE;
 
-    if (a->unique_id && b->unique_id && a->unique_id_length == b->unique_id_length)
+    if (a->unique_id && b->unique_id &&
+	a->unique_id_length == b->unique_id_length)
 	return (memcmp (a->unique_id, b->unique_id, a->unique_id_length) == 0);
 
     return (a->id == b->id);
@@ -1430,28 +1453,34 @@ _comac_pdf_source_surface_init_key (comac_pdf_source_surface_entry_t *key)
 {
     if (key->unique_id && key->unique_id_length > 0) {
 	key->base.hash = _comac_hash_bytes (_COMAC_HASH_INIT_VALUE,
-					    key->unique_id, key->unique_id_length);
+					    key->unique_id,
+					    key->unique_id_length);
     } else {
 	key->base.hash = key->id;
     }
 }
 
 static comac_int_status_t
-_comac_pdf_surface_acquire_source_image_from_pattern (comac_pdf_surface_t          *surface,
-						      const comac_pattern_t        *pattern,
-						      comac_image_surface_t       **image,
-						      void                        **image_extra)
+_comac_pdf_surface_acquire_source_image_from_pattern (
+    comac_pdf_surface_t *surface,
+    const comac_pattern_t *pattern,
+    comac_image_surface_t **image,
+    void **image_extra)
 {
     switch (pattern->type) {
     case COMAC_PATTERN_TYPE_SURFACE: {
 	comac_surface_pattern_t *surf_pat = (comac_surface_pattern_t *) pattern;
-	return _comac_surface_acquire_source_image (surf_pat->surface, image, image_extra);
+	return _comac_surface_acquire_source_image (surf_pat->surface,
+						    image,
+						    image_extra);
     } break;
 
     case COMAC_PATTERN_TYPE_RASTER_SOURCE: {
 	comac_surface_t *surf;
-	surf = _comac_raster_source_pattern_acquire (pattern, &surface->base, NULL);
-	if (!surf)
+	surf = _comac_raster_source_pattern_acquire (pattern,
+						     &surface->base,
+						     NULL);
+	if (! surf)
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 	assert (_comac_surface_is_image (surf));
 	*image = (comac_image_surface_t *) surf;
@@ -1470,15 +1499,18 @@ _comac_pdf_surface_acquire_source_image_from_pattern (comac_pdf_surface_t       
 }
 
 static void
-_comac_pdf_surface_release_source_image_from_pattern (comac_pdf_surface_t          *surface,
-						      const comac_pattern_t        *pattern,
-						      comac_image_surface_t        *image,
-						      void                         *image_extra)
+_comac_pdf_surface_release_source_image_from_pattern (
+    comac_pdf_surface_t *surface,
+    const comac_pattern_t *pattern,
+    comac_image_surface_t *image,
+    void *image_extra)
 {
     switch (pattern->type) {
     case COMAC_PATTERN_TYPE_SURFACE: {
 	comac_surface_pattern_t *surf_pat = (comac_surface_pattern_t *) pattern;
-	_comac_surface_release_source_image (surf_pat->surface, image, image_extra);
+	_comac_surface_release_source_image (surf_pat->surface,
+					     image,
+					     image_extra);
     } break;
 
     case COMAC_PATTERN_TYPE_RASTER_SOURCE:
@@ -1497,10 +1529,10 @@ _comac_pdf_surface_release_source_image_from_pattern (comac_pdf_surface_t       
 }
 
 static comac_int_status_t
-_get_source_surface_extents (comac_surface_t         *source,
-			     comac_rectangle_int_t   *extents,
-			     comac_bool_t            *bounded,
-			     comac_bool_t            *subsurface)
+_get_source_surface_extents (comac_surface_t *source,
+			     comac_rectangle_int_t *extents,
+			     comac_bool_t *bounded,
+			     comac_bool_t *subsurface)
 {
     comac_int_status_t status;
 
@@ -1513,7 +1545,8 @@ _get_source_surface_extents (comac_surface_t         *source,
 	    free_me = source = _comac_surface_snapshot_get_target (source);
 
 	if (source->backend->type == COMAC_SURFACE_TYPE_SUBSURFACE) {
-	    comac_surface_subsurface_t *sub = (comac_surface_subsurface_t *) source;
+	    comac_surface_subsurface_t *sub =
+		(comac_surface_subsurface_t *) source;
 
 	    *extents = sub->extents;
 	    *subsurface = TRUE;
@@ -1522,8 +1555,10 @@ _get_source_surface_extents (comac_surface_t         *source,
 
 	    *bounded = _comac_surface_get_extents (source, extents);
 	    if (! *bounded) {
-		status = _comac_recording_surface_get_ink_bbox ((comac_recording_surface_t *)source,
-								&box, NULL);
+		status = _comac_recording_surface_get_ink_bbox (
+		    (comac_recording_surface_t *) source,
+		    &box,
+		    NULL);
 		if (unlikely (status)) {
 		    comac_surface_destroy (free_me);
 		    return status;
@@ -1533,7 +1568,7 @@ _get_source_surface_extents (comac_surface_t         *source,
 	}
 	comac_surface_destroy (free_me);
     } else {
-	*bounded =  _comac_surface_get_extents (source, extents);
+	*bounded = _comac_surface_get_extents (source, extents);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -1568,20 +1603,21 @@ _get_source_surface_extents (comac_surface_t         *source,
  * specified. Set the other to NULL.
  **/
 static comac_int_status_t
-_comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
-				       comac_surface_t	                 *source_surface,
-				       const comac_pattern_t	         *source_pattern,
-				       comac_operator_t                   op,
-				       comac_filter_t		          filter,
-				       comac_bool_t                       stencil_mask,
-				       comac_bool_t                       smask,
-				       comac_bool_t                       need_transp_group,
-				       const comac_rectangle_int_t       *extents,
-				       comac_pdf_resource_t	         *smask_res,
-				       comac_pdf_source_surface_entry_t **pdf_source,
-				       double                            *x_offset,
-				       double                            *y_offset,
-				       comac_rectangle_int_t             *source_extents)
+_comac_pdf_surface_add_source_surface (
+    comac_pdf_surface_t *surface,
+    comac_surface_t *source_surface,
+    const comac_pattern_t *source_pattern,
+    comac_operator_t op,
+    comac_filter_t filter,
+    comac_bool_t stencil_mask,
+    comac_bool_t smask,
+    comac_bool_t need_transp_group,
+    const comac_rectangle_int_t *extents,
+    comac_pdf_resource_t *smask_res,
+    comac_pdf_source_surface_entry_t **pdf_source,
+    double *x_offset,
+    double *y_offset,
+    comac_rectangle_int_t *source_extents)
 {
     comac_pdf_source_surface_t src_surface;
     comac_pdf_source_surface_entry_t surface_key;
@@ -1615,14 +1651,18 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
     y = 0;
     if (source_pattern) {
 	if (source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE) {
-	    status = _comac_pdf_surface_acquire_source_image_from_pattern (surface, source_pattern,
-									   &image, &image_extra);
+	    status = _comac_pdf_surface_acquire_source_image_from_pattern (
+		surface,
+		source_pattern,
+		&image,
+		&image_extra);
 	    if (unlikely (status))
 		return status;
 	    source_surface = &image->base;
 	    comac_surface_get_device_offset (source_surface, &x, &y);
 	} else {
-	    comac_surface_pattern_t *surface_pattern = (comac_surface_pattern_t *) source_pattern;
+	    comac_surface_pattern_t *surface_pattern =
+		(comac_surface_pattern_t *) source_pattern;
 	    source_surface = surface_pattern->surface;
 	}
     }
@@ -1633,22 +1673,26 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
 
     /* transform operation extents to pattern space */
     op_extents = *extents;
-    if (source_pattern)
-    {
+    if (source_pattern) {
 	_comac_box_from_rectangle (&box, extents);
-	_comac_matrix_transform_bounding_box_fixed (&source_pattern->matrix, &box, NULL);
+	_comac_matrix_transform_bounding_box_fixed (&source_pattern->matrix,
+						    &box,
+						    NULL);
 	_comac_box_round_to_rectangle (&box, &op_extents);
     }
     if (source_extents)
 	*source_extents = op_extents;
 
-    surface_key.id  = source_surface->unique_id;
+    surface_key.id = source_surface->unique_id;
     surface_key.interpolate = interpolate;
-    comac_surface_get_mime_data (source_surface, COMAC_MIME_TYPE_UNIQUE_ID,
-				 (const unsigned char **) &surface_key.unique_id,
-				 &surface_key.unique_id_length);
+    comac_surface_get_mime_data (
+	source_surface,
+	COMAC_MIME_TYPE_UNIQUE_ID,
+	(const unsigned char **) &surface_key.unique_id,
+	&surface_key.unique_id_length);
     _comac_pdf_source_surface_init_key (&surface_key);
-    surface_entry = _comac_hash_table_lookup (surface->all_surfaces, &surface_key.base);
+    surface_entry =
+	_comac_hash_table_lookup (surface->all_surfaces, &surface_key.base);
     if (surface_entry) {
 	if (pdf_source)
 	    *pdf_source = surface_entry;
@@ -1662,8 +1706,13 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
     }
 
     if (status || surface_entry) {
-	if (source_pattern && source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
-	    _comac_pdf_surface_release_source_image_from_pattern (surface, source_pattern, image, image_extra);
+	if (source_pattern &&
+	    source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
+	    _comac_pdf_surface_release_source_image_from_pattern (
+		surface,
+		source_pattern,
+		image,
+		image_extra);
 	return status;
     }
 
@@ -1675,7 +1724,7 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
 	}
 
 	unique_id_length = surface_key.unique_id_length;
-	    memcpy (unique_id, surface_key.unique_id, unique_id_length);
+	memcpy (unique_id, surface_key.unique_id, unique_id_length);
     } else {
 	unique_id = NULL;
 	unique_id_length = 0;
@@ -1690,7 +1739,7 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
     if (pdf_source)
 	*pdf_source = surface_entry;
     surface_entry->id = surface_key.id;
-    surface_entry->operator = op;
+    surface_entry->operator= op;
     surface_entry->interpolate = interpolate;
     surface_entry->stencil_mask = stencil_mask;
     surface_entry->smask = smask;
@@ -1723,10 +1772,12 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
     _comac_pdf_source_surface_init_key (surface_entry);
 
     src_surface.hash_entry = surface_entry;
-    if (source_pattern && source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE) {
+    if (source_pattern &&
+	source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE) {
 	src_surface.type = COMAC_PATTERN_TYPE_RASTER_SOURCE;
 	src_surface.surface = NULL;
-	status = _comac_pattern_create_copy (&src_surface.raster_pattern, source_pattern);
+	status = _comac_pattern_create_copy (&src_surface.raster_pattern,
+					     source_pattern);
 	if (unlikely (status))
 	    goto fail2;
 
@@ -1743,7 +1794,10 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
     }
 
     /* Test if surface will be emitted as image or recording */
-    status = _comac_pdf_surface_emit_surface (surface, &src_surface, TRUE, &surface_entry->emit_image);
+    status = _comac_pdf_surface_emit_surface (surface,
+					      &src_surface,
+					      TRUE,
+					      &surface_entry->emit_image);
     if (unlikely (status))
 	goto fail3;
 
@@ -1757,18 +1811,23 @@ _comac_pdf_surface_add_source_surface (comac_pdf_surface_t	         *surface,
 	    goto fail3;
     }
 
-    status = _comac_hash_table_insert (surface->all_surfaces,
-				       &surface_entry->base);
-    if (unlikely(status))
+    status =
+	_comac_hash_table_insert (surface->all_surfaces, &surface_entry->base);
+    if (unlikely (status))
 	goto fail3;
 
-    if (source_pattern && source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
-	_comac_pdf_surface_release_source_image_from_pattern (surface, source_pattern, image, image_extra);
+    if (source_pattern &&
+	source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
+	_comac_pdf_surface_release_source_image_from_pattern (surface,
+							      source_pattern,
+							      image,
+							      image_extra);
 
     return COMAC_STATUS_SUCCESS;
 
 fail3:
-    if (source_pattern && source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
+    if (source_pattern &&
+	source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
 	comac_pattern_destroy (src_surface.raster_pattern);
     else
 	comac_surface_destroy (src_surface.surface);
@@ -1780,26 +1839,31 @@ fail1:
     if (unique_id)
 	free (unique_id);
 
-    if (source_pattern && source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
-	_comac_pdf_surface_release_source_image_from_pattern (surface, source_pattern, image, image_extra);
+    if (source_pattern &&
+	source_pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
+	_comac_pdf_surface_release_source_image_from_pattern (surface,
+							      source_pattern,
+							      image,
+							      image_extra);
 
     return status;
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_pdf_pattern_or_shading (comac_pdf_surface_t	   *surface,
-					       const comac_pattern_t	   *pattern,
-					       comac_operator_t	            op,
-					       const comac_rectangle_int_t *extents,
-					       comac_bool_t                 is_shading,
-					       comac_pdf_resource_t	   *pattern_res,
-					       comac_pdf_resource_t	   *gstate_res)
+_comac_pdf_surface_add_pdf_pattern_or_shading (
+    comac_pdf_surface_t *surface,
+    const comac_pattern_t *pattern,
+    comac_operator_t op,
+    const comac_rectangle_int_t *extents,
+    comac_bool_t is_shading,
+    comac_pdf_resource_t *pattern_res,
+    comac_pdf_resource_t *gstate_res)
 {
     comac_pdf_pattern_t pdf_pattern;
     comac_int_status_t status;
 
     pdf_pattern.is_shading = is_shading;
-    pdf_pattern.operator = op;
+    pdf_pattern.operator= op;
 
     /* Solid colors are emitted into the content stream */
     if (pattern->type == COMAC_PATTERN_TYPE_SOLID) {
@@ -1823,28 +1887,27 @@ _comac_pdf_surface_add_pdf_pattern_or_shading (comac_pdf_surface_t	   *surface,
     /* gradient patterns require an smask object to implement transparency */
     if (pattern->type == COMAC_PATTERN_TYPE_LINEAR ||
 	pattern->type == COMAC_PATTERN_TYPE_RADIAL ||
-	pattern->type == COMAC_PATTERN_TYPE_MESH)
-    {
+	pattern->type == COMAC_PATTERN_TYPE_MESH) {
 	double min_alpha;
 
 	_comac_pattern_alpha_range (pattern, &min_alpha, NULL);
 	if (! COMAC_ALPHA_IS_OPAQUE (min_alpha)) {
-            pdf_pattern.gstate_res = _comac_pdf_surface_new_object (surface);
+	    pdf_pattern.gstate_res = _comac_pdf_surface_new_object (surface);
 	    if (pdf_pattern.gstate_res.id == 0) {
 		comac_pattern_destroy (pdf_pattern.pattern);
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	    }
-        }
+	}
     }
 
-    pdf_pattern.width  = surface->width;
+    pdf_pattern.width = surface->width;
     pdf_pattern.height = surface->height;
     if (extents != NULL) {
 	pdf_pattern.extents = *extents;
     } else {
 	pdf_pattern.extents.x = 0;
 	pdf_pattern.extents.y = 0;
-	pdf_pattern.extents.width  = surface->width;
+	pdf_pattern.extents.width = surface->width;
 	pdf_pattern.extents.height = surface->height;
     }
 
@@ -1853,7 +1916,8 @@ _comac_pdf_surface_add_pdf_pattern_or_shading (comac_pdf_surface_t	   *surface,
     /* If the pattern requires a gstate it will be drawn from within
      * an XObject. The initial space of each XObject has an inverted
      * Y-axis. */
-    pdf_pattern.inverted_y_axis = pdf_pattern.gstate_res.id ? TRUE : surface->in_xobject;
+    pdf_pattern.inverted_y_axis =
+	pdf_pattern.gstate_res.id ? TRUE : surface->in_xobject;
 
     status = _comac_array_append (&surface->page_patterns, &pdf_pattern);
     if (unlikely (status)) {
@@ -1866,8 +1930,8 @@ _comac_pdf_surface_add_pdf_pattern_or_shading (comac_pdf_surface_t	   *surface,
 
 /* Get BBox from extents */
 static void
-_get_bbox_from_extents (const comac_rectangle_int_t  *extents,
-			comac_box_double_t           *bbox)
+_get_bbox_from_extents (const comac_rectangle_int_t *extents,
+			comac_box_double_t *bbox)
 {
     bbox->p1.x = extents->x;
     bbox->p1.y = extents->y;
@@ -1876,12 +1940,12 @@ _get_bbox_from_extents (const comac_rectangle_int_t  *extents,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_pdf_shading (comac_pdf_surface_t		*surface,
-				    const comac_pattern_t	*pattern,
-				    comac_operator_t	         op,
-				    const comac_rectangle_int_t	*extents,
-				    comac_pdf_resource_t	*shading_res,
-				    comac_pdf_resource_t	*gstate_res)
+_comac_pdf_surface_add_pdf_shading (comac_pdf_surface_t *surface,
+				    const comac_pattern_t *pattern,
+				    comac_operator_t op,
+				    const comac_rectangle_int_t *extents,
+				    comac_pdf_resource_t *shading_res,
+				    comac_pdf_resource_t *gstate_res)
 {
     return _comac_pdf_surface_add_pdf_pattern_or_shading (surface,
 							  pattern,
@@ -1893,12 +1957,12 @@ _comac_pdf_surface_add_pdf_shading (comac_pdf_surface_t		*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_pdf_pattern (comac_pdf_surface_t		*surface,
-				    const comac_pattern_t	*pattern,
-				    comac_operator_t	         op,
-				    const comac_rectangle_int_t	*extents,
-				    comac_pdf_resource_t	*pattern_res,
-				    comac_pdf_resource_t	*gstate_res)
+_comac_pdf_surface_add_pdf_pattern (comac_pdf_surface_t *surface,
+				    const comac_pattern_t *pattern,
+				    comac_operator_t op,
+				    const comac_rectangle_int_t *extents,
+				    comac_pdf_resource_t *pattern_res,
+				    comac_pdf_resource_t *gstate_res)
 {
     return _comac_pdf_surface_add_pdf_pattern_or_shading (surface,
 							  pattern,
@@ -1910,10 +1974,10 @@ _comac_pdf_surface_add_pdf_pattern (comac_pdf_surface_t		*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_open_stream (comac_pdf_surface_t	*surface,
-				comac_pdf_resource_t    *resource,
-				comac_bool_t             compressed,
-				const char		*fmt,
+_comac_pdf_surface_open_stream (comac_pdf_surface_t *surface,
+				comac_pdf_resource_t *resource,
+				comac_bool_t compressed,
+				const char *fmt,
 				...)
 {
     va_list ap;
@@ -1966,13 +2030,15 @@ _comac_pdf_surface_open_stream (comac_pdf_surface_t	*surface,
 				 ">>\n"
 				 "stream\n");
 
-    surface->pdf_stream.start_offset = _comac_output_stream_get_position (surface->output);
+    surface->pdf_stream.start_offset =
+	_comac_output_stream_get_position (surface->output);
 
     if (compressed) {
 	assert (surface->pdf_stream.old_output == NULL);
-        surface->pdf_stream.old_output = surface->output;
-        surface->output = output;
-	_comac_pdf_operators_set_stream (&surface->pdf_operators, surface->output);
+	surface->pdf_stream.old_output = surface->output;
+	surface->output = output;
+	_comac_pdf_operators_set_stream (&surface->pdf_operators,
+					 surface->output);
     }
     _comac_pdf_operators_reset (&surface->pdf_operators);
 
@@ -1998,19 +2064,19 @@ _comac_pdf_surface_close_stream (comac_pdf_surface_t *surface)
 	    status = status2;
 
 	surface->output = surface->pdf_stream.old_output;
-	_comac_pdf_operators_set_stream (&surface->pdf_operators, surface->output);
+	_comac_pdf_operators_set_stream (&surface->pdf_operators,
+					 surface->output);
 	surface->pdf_stream.old_output = NULL;
     }
 
     length = _comac_output_stream_get_position (surface->output) -
-	surface->pdf_stream.start_offset;
+	     surface->pdf_stream.start_offset;
     _comac_output_stream_printf (surface->output,
 				 "\n"
 				 "endstream\n"
 				 "endobj\n");
 
-    _comac_pdf_surface_update_object (surface,
-				      surface->pdf_stream.length);
+    _comac_pdf_surface_update_object (surface, surface->pdf_stream.length);
     _comac_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
 				 "   %lld\n"
@@ -2027,12 +2093,12 @@ _comac_pdf_surface_close_stream (comac_pdf_surface_t *surface)
 }
 
 static void
-_comac_pdf_surface_write_memory_stream (comac_pdf_surface_t         *surface,
-					comac_output_stream_t       *mem_stream,
-					comac_pdf_resource_t         resource,
+_comac_pdf_surface_write_memory_stream (comac_pdf_surface_t *surface,
+					comac_output_stream_t *mem_stream,
+					comac_pdf_resource_t resource,
 					comac_pdf_group_resources_t *resources,
-					comac_bool_t                 is_knockout_group,
-					const comac_box_double_t    *bbox)
+					comac_bool_t is_knockout_group,
+					const comac_box_double_t *bbox)
 {
     _comac_pdf_surface_update_object (surface, resource);
 
@@ -2056,11 +2122,13 @@ _comac_pdf_surface_write_memory_stream (comac_pdf_surface_t         *surface,
 				 "      /S /Transparency\n"
 				 "      /I true\n"
 				 "      /CS /DeviceRGB\n",
-				 bbox->p1.x, bbox->p1.y, bbox->p2.x, bbox->p2.y);
+				 bbox->p1.x,
+				 bbox->p1.y,
+				 bbox->p2.x,
+				 bbox->p2.y);
 
     if (is_knockout_group)
-        _comac_output_stream_printf (surface->output,
-                                     "      /K true\n");
+	_comac_output_stream_printf (surface->output, "      /K true\n");
 
     _comac_output_stream_printf (surface->output,
 				 "   >>\n"
@@ -2076,9 +2144,9 @@ _comac_pdf_surface_write_memory_stream (comac_pdf_surface_t         *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_open_group (comac_pdf_surface_t         *surface,
-			       const comac_box_double_t    *bbox,
-			       comac_pdf_resource_t        *resource)
+_comac_pdf_surface_open_group (comac_pdf_surface_t *surface,
+			       const comac_box_double_t *bbox,
+			       comac_pdf_resource_t *resource)
 {
     comac_int_status_t status;
 
@@ -2105,7 +2173,8 @@ _comac_pdf_surface_open_group (comac_pdf_surface_t         *surface,
     if (resource) {
 	surface->group_stream.resource = *resource;
     } else {
-	surface->group_stream.resource = _comac_pdf_surface_new_object (surface);
+	surface->group_stream.resource =
+	    _comac_pdf_surface_new_object (surface);
 	if (surface->group_stream.resource.id == 0)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
@@ -2122,8 +2191,8 @@ _comac_pdf_surface_open_group (comac_pdf_surface_t         *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_open_knockout_group (comac_pdf_surface_t         *surface,
-					const comac_box_double_t    *bbox)
+_comac_pdf_surface_open_knockout_group (comac_pdf_surface_t *surface,
+					const comac_box_double_t *bbox)
 {
     comac_int_status_t status;
 
@@ -2153,8 +2222,7 @@ _comac_pdf_surface_close_group (comac_pdf_surface_t *surface,
 	status = _comac_output_stream_destroy (surface->group_stream.stream);
 	surface->group_stream.stream = NULL;
 
-	_comac_output_stream_printf (surface->group_stream.mem_stream,
-				     "\n");
+	_comac_output_stream_printf (surface->group_stream.mem_stream, "\n");
     }
     surface->output = surface->group_stream.old_output;
     _comac_pdf_operators_set_stream (&surface->pdf_operators, surface->output);
@@ -2188,7 +2256,8 @@ _comac_pdf_surface_open_object_stream (comac_pdf_surface_t *surface)
 	assert (surface->group_stream.active == FALSE);
 	surface->object_stream.stream = surface->output;
     } else {
-	surface->object_stream.resource = _comac_pdf_surface_new_object (surface);
+	surface->object_stream.resource =
+	    _comac_pdf_surface_new_object (surface);
 	if (surface->object_stream.resource.id == 0)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -2209,15 +2278,18 @@ _comac_pdf_surface_object_begin (comac_pdf_surface_t *surface,
 
     if (surface->object_stream.active) {
 	xref_obj.resource = resource;
-	xref_obj.offset = _comac_output_stream_get_position (surface->object_stream.stream);
-	status = _comac_array_append (&surface->object_stream.objects, &xref_obj);
+	xref_obj.offset =
+	    _comac_output_stream_get_position (surface->object_stream.stream);
+	status =
+	    _comac_array_append (&surface->object_stream.objects, &xref_obj);
 	if (unlikely (status))
 	    return status;
 
 	object = _comac_array_index (&surface->objects, resource.id - 1);
 	object->type = PDF_OBJECT_COMPRESSED;
 	object->u.compressed_obj.xref_stream = surface->object_stream.resource;
-	object->u.compressed_obj.index = _comac_array_num_elements (&surface->object_stream.objects) - 1;
+	object->u.compressed_obj.index =
+	    _comac_array_num_elements (&surface->object_stream.objects) - 1;
 
     } else {
 	_comac_pdf_surface_update_object (surface, resource);
@@ -2231,13 +2303,13 @@ _comac_pdf_surface_object_begin (comac_pdf_surface_t *surface,
 void
 _comac_pdf_surface_object_end (comac_pdf_surface_t *surface)
 {
-    if (!surface->object_stream.active) {
-	_comac_output_stream_printf (surface->output,
-				     "endobj\n");
+    if (! surface->object_stream.active) {
+	_comac_output_stream_printf (surface->output, "endobj\n");
     }
 }
 
-static int _comac_xref_stream_object_compare (const void *a, const void *b)
+static int
+_comac_xref_stream_object_compare (const void *a, const void *b)
 {
     const comac_xref_stream_object_t *a_obj = a;
     const comac_xref_stream_object_t *b_obj = b;
@@ -2262,21 +2334,23 @@ _comac_pdf_surface_close_object_stream (comac_pdf_surface_t *surface)
     comac_int_status_t status;
     comac_pdf_object_t *object;
 
-    if (!surface->object_stream.active) {
+    if (! surface->object_stream.active) {
 	surface->object_stream.stream = NULL;
 	return COMAC_INT_STATUS_SUCCESS;
     }
 
     num_objects = _comac_array_num_elements (&surface->object_stream.objects);
     if (num_objects == 0) {
-	object = _comac_array_index (&surface->objects, surface->object_stream.resource.id - 1);
+	object = _comac_array_index (&surface->objects,
+				     surface->object_stream.resource.id - 1);
 	object->type = PDF_OBJECT_FREE;
 	return COMAC_INT_STATUS_SUCCESS;
     }
 
     index_stream = _comac_memory_stream_create ();
     /* PDF requires the object id/offset pairs to be sorted by offset. */
-    _comac_array_sort (&surface->object_stream.objects, _comac_xref_stream_object_compare);
+    _comac_array_sort (&surface->object_stream.objects,
+		       _comac_xref_stream_object_compare);
     for (i = 0; i < num_objects; i++) {
 	xref_obj = _comac_array_index (&surface->object_stream.objects, i);
 	_comac_output_stream_printf (index_stream,
@@ -2293,9 +2367,9 @@ _comac_pdf_surface_close_object_stream (comac_pdf_surface_t *surface)
     _comac_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
 				 "<< /Type /ObjStm\n"
-                                 "   /Length %d 0 R\n"
-                                 "   /N %d\n"
-                                 "   /First %d\n",
+				 "   /Length %d 0 R\n"
+				 "   /N %d\n"
+				 "   /First %d\n",
 				 surface->object_stream.resource.id,
 				 length_res.id,
 				 num_objects,
@@ -2314,16 +2388,20 @@ _comac_pdf_surface_close_object_stream (comac_pdf_surface_t *surface)
     if (surface->compress_streams) {
 	deflate_stream = _comac_deflate_stream_create (surface->output);
 	_comac_memory_stream_copy (index_stream, deflate_stream);
-	_comac_memory_stream_copy (surface->object_stream.stream, deflate_stream);
+	_comac_memory_stream_copy (surface->object_stream.stream,
+				   deflate_stream);
 	status = _comac_output_stream_destroy (deflate_stream);
 	if (unlikely (status))
 	    return status;
 
-	length = _comac_output_stream_get_position (surface->output) - start_pos;
+	length =
+	    _comac_output_stream_get_position (surface->output) - start_pos;
     } else {
 	_comac_memory_stream_copy (index_stream, surface->output);
-	_comac_memory_stream_copy (surface->object_stream.stream, surface->output);
-	length = _comac_output_stream_get_position (surface->output) - start_pos;
+	_comac_memory_stream_copy (surface->object_stream.stream,
+				   surface->output);
+	length =
+	    _comac_output_stream_get_position (surface->output) - start_pos;
     }
 
     _comac_output_stream_printf (surface->output,
@@ -2331,8 +2409,7 @@ _comac_pdf_surface_close_object_stream (comac_pdf_surface_t *surface)
 				 "endstream\n"
 				 "endobj\n");
 
-    _comac_pdf_surface_update_object (surface,
-				      length_res);
+    _comac_pdf_surface_update_object (surface, length_res);
     _comac_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
 				 "   %lld\n"
@@ -2355,11 +2432,11 @@ _comac_pdf_surface_close_object_stream (comac_pdf_surface_t *surface)
 }
 
 static comac_int_status_t
-_comac_pdf_surface_open_content_stream (comac_pdf_surface_t       *surface,
-					const comac_box_double_t  *bbox,
-					comac_pdf_resource_t      *resource,
-					comac_bool_t               is_form,
-					comac_bool_t               is_group)
+_comac_pdf_surface_open_content_stream (comac_pdf_surface_t *surface,
+					const comac_box_double_t *bbox,
+					comac_pdf_resource_t *resource,
+					comac_bool_t is_form,
+					comac_bool_t is_group)
 {
     comac_int_status_t status;
 
@@ -2409,11 +2486,10 @@ _comac_pdf_surface_open_content_stream (comac_pdf_surface_t       *surface,
 						surface->content_resources.id);
 	}
     } else {
-	status =
-	    _comac_pdf_surface_open_stream (surface,
-					    resource,
-					    surface->compress_streams,
-					    NULL);
+	status = _comac_pdf_surface_open_stream (surface,
+						 resource,
+						 surface->compress_streams,
+						 NULL);
 	_comac_output_stream_printf (surface->output,
 				     "1 0 0 -1 0 %f cm\n",
 				     surface->height);
@@ -2431,7 +2507,7 @@ _comac_pdf_surface_open_content_stream (comac_pdf_surface_t       *surface,
 
 static comac_int_status_t
 _comac_pdf_surface_close_content_stream (comac_pdf_surface_t *surface,
-					 comac_bool_t         is_form)
+					 comac_bool_t is_form)
 {
     comac_int_status_t status;
 
@@ -2451,9 +2527,10 @@ _comac_pdf_surface_close_content_stream (comac_pdf_surface_t *surface,
     _comac_output_stream_printf (surface->output,
 				 "%d 0 obj\n",
 				 surface->content_resources.id);
-    _comac_pdf_surface_emit_group_resources (surface, &surface->resources, is_form);
-    _comac_output_stream_printf (surface->output,
-				 "endobj\n");
+    _comac_pdf_surface_emit_group_resources (surface,
+					     &surface->resources,
+					     is_form);
+    _comac_output_stream_printf (surface->output, "endobj\n");
 
     return _comac_output_stream_get_status (surface->output);
 }
@@ -2520,8 +2597,7 @@ _comac_pdf_surface_finish (void *abstract_surface)
     if (unlikely (status))
 	return status;
 
-    if (surface->pdf_version >= COMAC_PDF_VERSION_1_5)
-    {
+    if (surface->pdf_version >= COMAC_PDF_VERSION_1_5) {
 	xref_res = _comac_pdf_surface_new_object (surface);
 	status = _comac_pdf_surface_write_xref_stream (surface,
 						       xref_res,
@@ -2546,7 +2622,7 @@ _comac_pdf_surface_finish (void *abstract_surface)
 				 "%%%%EOF\n",
 				 offset);
 
-  CLEANUP:
+CLEANUP:
 
     /* pdf_operators has already been flushed when the last stream was
      * closed so we should never be writing anything here - however,
@@ -2566,7 +2642,8 @@ _comac_pdf_surface_finish (void *abstract_surface)
 	    status = status2;
     }
     if (surface->group_stream.mem_stream != NULL) {
-	status2 = _comac_output_stream_destroy (surface->group_stream.mem_stream);
+	status2 =
+	    _comac_output_stream_destroy (surface->group_stream.mem_stream);
 	if (status == COMAC_STATUS_SUCCESS)
 	    status = status2;
     }
@@ -2613,9 +2690,11 @@ _comac_pdf_surface_finish (void *abstract_surface)
 
     size = _comac_array_num_elements (&surface->jbig2_global);
     for (i = 0; i < size; i++) {
-	global = (comac_pdf_jbig2_global_t *) _comac_array_index (&surface->jbig2_global, i);
-	free(global->id);
-	if (!global->emitted)
+	global = (comac_pdf_jbig2_global_t *) _comac_array_index (
+	    &surface->jbig2_global,
+	    i);
+	free (global->id);
+	if (! global->emitted)
 	    return _comac_error (COMAC_STATUS_JBIG2_GLOBAL_MISSING);
     }
     _comac_array_fini (&surface->jbig2_global);
@@ -2662,10 +2741,13 @@ _comac_pdf_surface_start_page (void *abstract_surface)
 	    break;
 	}
 
+	_comac_output_stream_printf (surface->output, "%%PDF-%s\n", version);
 	_comac_output_stream_printf (surface->output,
-				     "%%PDF-%s\n", version);
-	_comac_output_stream_printf (surface->output,
-				     "%%%c%c%c%c\n", 181, 237, 174, 251);
+				     "%%%c%c%c%c\n",
+				     181,
+				     237,
+				     174,
+				     251);
 	surface->header_emitted = TRUE;
     }
 
@@ -2684,8 +2766,8 @@ _comac_pdf_surface_start_page (void *abstract_surface)
 }
 
 static comac_int_status_t
-_comac_pdf_surface_has_fallback_images (void		*abstract_surface,
-					comac_bool_t	 has_fallbacks)
+_comac_pdf_surface_has_fallback_images (void *abstract_surface,
+					comac_bool_t has_fallbacks)
 {
     comac_int_status_t status;
     comac_pdf_surface_t *surface = abstract_surface;
@@ -2697,7 +2779,11 @@ _comac_pdf_surface_has_fallback_images (void		*abstract_surface,
     bbox.p1.y = 0;
     bbox.p2.x = surface->width;
     bbox.p2.y = surface->height;
-    status = _comac_pdf_surface_open_content_stream (surface, &bbox, NULL, has_fallbacks, has_fallbacks);
+    status = _comac_pdf_surface_open_content_stream (surface,
+						     &bbox,
+						     NULL,
+						     has_fallbacks,
+						     has_fallbacks);
     if (unlikely (status))
 	return status;
 
@@ -2712,8 +2798,8 @@ _comac_pdf_surface_supports_fine_grained_fallbacks (void *abstract_surface)
 
 static comac_bool_t
 _comac_pdf_surface_requires_thumbnail_image (void *abstract_surface,
-					     int  *width,
-					     int  *height)
+					     int *width,
+					     int *height)
 {
     comac_pdf_surface_t *surface = abstract_surface;
 
@@ -2727,24 +2813,26 @@ _comac_pdf_surface_requires_thumbnail_image (void *abstract_surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_set_thumbnail_image (void                  *abstract_surface,
+_comac_pdf_surface_set_thumbnail_image (void *abstract_surface,
 					comac_image_surface_t *image)
 {
     comac_pdf_surface_t *surface = abstract_surface;
 
-    surface->thumbnail_image = 	(comac_image_surface_t *)comac_surface_reference(&image->base);
+    surface->thumbnail_image =
+	(comac_image_surface_t *) comac_surface_reference (&image->base);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_comac_pdf_surface_add_padded_image_surface (comac_pdf_surface_t          *surface,
-					     const comac_pattern_t        *source,
-					     const comac_rectangle_int_t  *extents,
-					     comac_pdf_source_surface_entry_t **pdf_source,
-					     double                       *x_offset,
-					     double                       *y_offset,
-					     comac_rectangle_int_t        *source_extents)
+_comac_pdf_surface_add_padded_image_surface (
+    comac_pdf_surface_t *surface,
+    const comac_pattern_t *source,
+    const comac_rectangle_int_t *extents,
+    comac_pdf_source_surface_entry_t **pdf_source,
+    double *x_offset,
+    double *y_offset,
+    comac_rectangle_int_t *source_extents)
 {
     comac_image_surface_t *image;
     comac_surface_t *pad_image;
@@ -2755,10 +2843,13 @@ _comac_pdf_surface_add_padded_image_surface (comac_pdf_surface_t          *surfa
     comac_rectangle_int_t rect;
     comac_surface_pattern_t pad_pattern;
 
-    status = _comac_pdf_surface_acquire_source_image_from_pattern (surface, source,
-								   &image, &image_extra);
+    status =
+	_comac_pdf_surface_acquire_source_image_from_pattern (surface,
+							      source,
+							      &image,
+							      &image_extra);
     if (unlikely (status))
-        return status;
+	return status;
 
     pad_image = &image->base;
 
@@ -2770,14 +2861,14 @@ _comac_pdf_surface_add_padded_image_surface (comac_pdf_surface_t          *surfa
     /* Check if image needs padding to fill extents */
     w = image->width;
     h = image->height;
-    if (_comac_fixed_integer_ceil(box.p1.x) < 0 ||
-	_comac_fixed_integer_ceil(box.p1.y) < 0 ||
-	_comac_fixed_integer_floor(box.p2.x) > w ||
-	_comac_fixed_integer_floor(box.p2.y) > h)
-    {
-	pad_image = _comac_image_surface_create_with_content (image->base.content,
-							      rect.width,
-							      rect.height);
+    if (_comac_fixed_integer_ceil (box.p1.x) < 0 ||
+	_comac_fixed_integer_ceil (box.p1.y) < 0 ||
+	_comac_fixed_integer_floor (box.p2.x) > w ||
+	_comac_fixed_integer_floor (box.p2.y) > h) {
+	pad_image =
+	    _comac_image_surface_create_with_content (image->base.content,
+						      rect.width,
+						      rect.height);
 	if (pad_image->status) {
 	    status = pad_image->status;
 	    goto BAIL;
@@ -2787,29 +2878,31 @@ _comac_pdf_surface_add_padded_image_surface (comac_pdf_surface_t          *surfa
 	comac_matrix_init_translate (&pad_pattern.base.matrix, rect.x, rect.y);
 	pad_pattern.base.extend = COMAC_EXTEND_PAD;
 	status = _comac_surface_paint (pad_image,
-				       COMAC_OPERATOR_SOURCE, &pad_pattern.base,
+				       COMAC_OPERATOR_SOURCE,
+				       &pad_pattern.base,
 				       NULL);
-        _comac_pattern_fini (&pad_pattern.base);
-        if (unlikely (status))
-            goto BAIL;
+	_comac_pattern_fini (&pad_pattern.base);
+	if (unlikely (status))
+	    goto BAIL;
     }
 
-    status = _comac_pdf_surface_add_source_surface (surface,
-						    pad_image,
-						    NULL,
-						    COMAC_OPERATOR_OVER, /* not used for images */
-						    source->filter,
-						    FALSE, /* stencil mask */
-						    FALSE, /* smask */
-						    FALSE, /* need_transp_group */
-						    extents,
-						    NULL, /* smask_res */
-						    pdf_source,
-						    x_offset,
-						    y_offset,
-						    source_extents);
+    status = _comac_pdf_surface_add_source_surface (
+	surface,
+	pad_image,
+	NULL,
+	COMAC_OPERATOR_OVER, /* not used for images */
+	source->filter,
+	FALSE, /* stencil mask */
+	FALSE, /* smask */
+	FALSE, /* need_transp_group */
+	extents,
+	NULL, /* smask_res */
+	pdf_source,
+	x_offset,
+	y_offset,
+	source_extents);
     if (unlikely (status))
-        goto BAIL;
+	goto BAIL;
 
     if (pad_image != &image->base) {
 	/* If using a padded image, replace _add_source_surface
@@ -2825,9 +2918,12 @@ _comac_pdf_surface_add_padded_image_surface (comac_pdf_surface_t          *surfa
 
 BAIL:
     if (pad_image != &image->base)
-        comac_surface_destroy (pad_image);
+	comac_surface_destroy (pad_image);
 
-    _comac_pdf_surface_release_source_image_from_pattern (surface, source, image, image_extra);
+    _comac_pdf_surface_release_source_image_from_pattern (surface,
+							  source,
+							  image,
+							  image_extra);
 
     return status;
 }
@@ -2835,11 +2931,11 @@ BAIL:
 /* Emit alpha channel from the image into stream_res.
  */
 static comac_int_status_t
-_comac_pdf_surface_emit_smask (comac_pdf_surface_t	*surface,
-			       comac_image_surface_t	*image,
-			       comac_bool_t              stencil_mask,
-			       comac_bool_t              interpolate,
-			       comac_pdf_resource_t	*stream_res)
+_comac_pdf_surface_emit_smask (comac_pdf_surface_t *surface,
+			       comac_image_surface_t *image,
+			       comac_bool_t stencil_mask,
+			       comac_bool_t interpolate,
+			       comac_pdf_resource_t *stream_res)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
     char *alpha;
@@ -2853,7 +2949,7 @@ _comac_pdf_surface_emit_smask (comac_pdf_surface_t	*surface,
     assert (image->format == COMAC_FORMAT_ARGB32 ||
 	    image->format == COMAC_FORMAT_RGB24 ||
 	    image->format == COMAC_FORMAT_A8 ||
-	    image->format == COMAC_FORMAT_A1 );
+	    image->format == COMAC_FORMAT_A1);
 
     transparency = _comac_image_analyze_transparency (image);
     if (stencil_mask) {
@@ -2863,9 +2959,10 @@ _comac_pdf_surface_emit_smask (comac_pdf_surface_t	*surface,
 	assert (transparency != COMAC_IMAGE_IS_OPAQUE);
     }
 
-    if (transparency == COMAC_IMAGE_HAS_BILEVEL_ALPHA || transparency == COMAC_IMAGE_IS_OPAQUE) {
+    if (transparency == COMAC_IMAGE_HAS_BILEVEL_ALPHA ||
+	transparency == COMAC_IMAGE_IS_OPAQUE) {
 	alpha_size = (image->width + 7) / 8 * image->height;
-	alpha = _comac_malloc_ab ((image->width+7) / 8, image->height);
+	alpha = _comac_malloc_ab ((image->width + 7) / 8, image->height);
     } else {
 	alpha_size = image->height * image->width;
 	alpha = _comac_malloc_ab (image->height, image->width);
@@ -2922,33 +3019,37 @@ _comac_pdf_surface_emit_smask (comac_pdf_surface_t	*surface,
     }
 
     if (stencil_mask) {
-	status = _comac_pdf_surface_open_stream (surface,
-						 stream_res,
-						 TRUE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /ImageMask true\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /Interpolate %s\n"
-						 "   /BitsPerComponent 1\n"
-						 "   /Decode [1 0]\n",
-						 image->width, image->height,
-						 interpolate ? "true" : "false");
+	status =
+	    _comac_pdf_surface_open_stream (surface,
+					    stream_res,
+					    TRUE,
+					    "   /Type /XObject\n"
+					    "   /Subtype /Image\n"
+					    "   /ImageMask true\n"
+					    "   /Width %d\n"
+					    "   /Height %d\n"
+					    "   /Interpolate %s\n"
+					    "   /BitsPerComponent 1\n"
+					    "   /Decode [1 0]\n",
+					    image->width,
+					    image->height,
+					    interpolate ? "true" : "false");
     } else {
-	status = _comac_pdf_surface_open_stream (surface,
-						 stream_res,
-						 TRUE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /ColorSpace /DeviceGray\n"
-						 "   /Interpolate %s\n"
-						 "   /BitsPerComponent %d\n",
-						 image->width, image->height,
-						 interpolate ? "true" : "false",
-						 transparency == COMAC_IMAGE_HAS_ALPHA ? 8 : 1);
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    stream_res,
+	    TRUE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /ColorSpace /DeviceGray\n"
+	    "   /Interpolate %s\n"
+	    "   /BitsPerComponent %d\n",
+	    image->width,
+	    image->height,
+	    interpolate ? "true" : "false",
+	    transparency == COMAC_IMAGE_HAS_ALPHA ? 8 : 1);
     }
     if (unlikely (status))
 	goto CLEANUP_ALPHA;
@@ -2956,9 +3057,9 @@ _comac_pdf_surface_emit_smask (comac_pdf_surface_t	*surface,
     _comac_output_stream_write (surface->output, alpha, alpha_size);
     status = _comac_pdf_surface_close_stream (surface);
 
- CLEANUP_ALPHA:
+CLEANUP_ALPHA:
     free (alpha);
- CLEANUP:
+CLEANUP:
     return status;
 }
 
@@ -2974,8 +3075,8 @@ _comac_pdf_surface_emit_smask (comac_pdf_surface_t	*surface,
  * the image is requires one.
  **/
 static comac_int_status_t
-_comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
-                               comac_image_surface_t            *image_surf,
+_comac_pdf_surface_emit_image (comac_pdf_surface_t *surface,
+			       comac_image_surface_t *image_surf,
 			       comac_pdf_source_surface_entry_t *surface_entry)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
@@ -2990,18 +3091,17 @@ _comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
     comac_image_transparency_t transparency;
     char smask_buf[30];
 
-    image  = image_surf;
+    image = image_surf;
     if (image->format != COMAC_FORMAT_RGB24 &&
 	image->format != COMAC_FORMAT_ARGB32 &&
-	image->format != COMAC_FORMAT_A8 &&
-	image->format != COMAC_FORMAT_A1)
-    {
+	image->format != COMAC_FORMAT_A8 && image->format != COMAC_FORMAT_A1) {
 	comac_surface_t *surf;
 	comac_surface_pattern_t pattern;
 
-	surf = _comac_image_surface_create_with_content (image_surf->base.content,
-							 image_surf->width,
-							 image_surf->height);
+	surf =
+	    _comac_image_surface_create_with_content (image_surf->base.content,
+						      image_surf->width,
+						      image_surf->height);
 	image = (comac_image_surface_t *) surf;
 	if (surf->status) {
 	    status = surf->status;
@@ -3010,15 +3110,17 @@ _comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
 
 	_comac_pattern_init_for_surface (&pattern, &image_surf->base);
 	status = _comac_surface_paint (surf,
-				       COMAC_OPERATOR_SOURCE, &pattern.base,
+				       COMAC_OPERATOR_SOURCE,
+				       &pattern.base,
 				       NULL);
-        _comac_pattern_fini (&pattern.base);
-        if (unlikely (status))
-            goto CLEANUP;
+	_comac_pattern_fini (&pattern.base);
+	if (unlikely (status))
+	    goto CLEANUP;
     }
 
     if (surface_entry->smask || surface_entry->stencil_mask) {
-	return _comac_pdf_surface_emit_smask (surface, image,
+	return _comac_pdf_surface_emit_smask (surface,
+					      image,
 					      surface_entry->stencil_mask,
 					      surface_entry->interpolate,
 					      &surface_entry->surface_res);
@@ -3026,22 +3128,22 @@ _comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
 
     color = _comac_image_analyze_color (image);
     switch (color) {
-        default:
-	case COMAC_IMAGE_UNKNOWN_COLOR:
-	    ASSERT_NOT_REACHED;
-	case COMAC_IMAGE_IS_COLOR:
-	    data_size = image->height * image->width * 3;
-	    data = _comac_malloc_abc (image->width, image->height, 3);
-	    break;
+    default:
+    case COMAC_IMAGE_UNKNOWN_COLOR:
+	ASSERT_NOT_REACHED;
+    case COMAC_IMAGE_IS_COLOR:
+	data_size = image->height * image->width * 3;
+	data = _comac_malloc_abc (image->width, image->height, 3);
+	break;
 
-	case COMAC_IMAGE_IS_GRAYSCALE:
-	    data_size = image->height * image->width;
-	    data = _comac_malloc_ab (image->width, image->height);
-	    break;
-	case COMAC_IMAGE_IS_MONOCHROME:
-	    data_size = (image->width + 7) / 8 * image->height;
-	    data = _comac_malloc_ab ((image->width+7) / 8, image->height);
-	    break;
+    case COMAC_IMAGE_IS_GRAYSCALE:
+	data_size = image->height * image->width;
+	data = _comac_malloc_ab (image->width, image->height);
+	break;
+    case COMAC_IMAGE_IS_MONOCHROME:
+	data_size = (image->width + 7) / 8 * image->height;
+	data = _comac_malloc_ab ((image->width + 7) / 8, image->height);
+	break;
     }
     if (unlikely (data == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -3068,40 +3170,40 @@ _comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
 		    r = g = b = 0;
 		} else {
 		    r = (((*pixel & 0xff0000) >> 16) * 255 + a / 2) / a;
-		    g = (((*pixel & 0x00ff00) >>  8) * 255 + a / 2) / a;
-		    b = (((*pixel & 0x0000ff) >>  0) * 255 + a / 2) / a;
+		    g = (((*pixel & 0x00ff00) >> 8) * 255 + a / 2) / a;
+		    b = (((*pixel & 0x0000ff) >> 0) * 255 + a / 2) / a;
 		}
 	    } else if (image->format == COMAC_FORMAT_RGB24) {
 		r = (*pixel & 0x00ff0000) >> 16;
-		g = (*pixel & 0x0000ff00) >>  8;
-		b = (*pixel & 0x000000ff) >>  0;
+		g = (*pixel & 0x0000ff00) >> 8;
+		b = (*pixel & 0x000000ff) >> 0;
 	    } else {
 		r = g = b = 0;
 	    }
 
 	    switch (color) {
-		case COMAC_IMAGE_IS_COLOR:
-		case COMAC_IMAGE_UNKNOWN_COLOR:
-		    data[i++] = r;
-		    data[i++] = g;
-		    data[i++] = b;
-		    break;
+	    case COMAC_IMAGE_IS_COLOR:
+	    case COMAC_IMAGE_UNKNOWN_COLOR:
+		data[i++] = r;
+		data[i++] = g;
+		data[i++] = b;
+		break;
 
-		case COMAC_IMAGE_IS_GRAYSCALE:
-		    data[i++] = r;
-		    break;
+	    case COMAC_IMAGE_IS_GRAYSCALE:
+		data[i++] = r;
+		break;
 
-		case COMAC_IMAGE_IS_MONOCHROME:
-		    if (bit == 7)
-			data[i] = 0;
-		    if (r != 0)
-			data[i] |= (1 << bit);
-		    bit--;
-		    if (bit < 0) {
-			bit = 7;
-			i++;
-		    }
-		    break;
+	    case COMAC_IMAGE_IS_MONOCHROME:
+		if (bit == 7)
+		    data[i] = 0;
+		if (r != 0)
+		    data[i] |= (1 << bit);
+		bit--;
+		if (bit < 0) {
+		    bit = 7;
+		    i++;
+		}
+		break;
 	    }
 	}
 	if (bit != 7)
@@ -3115,8 +3217,7 @@ _comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
 	need_smask = FALSE;
 	if (image->format == COMAC_FORMAT_ARGB32 ||
 	    image->format == COMAC_FORMAT_A8 ||
-	    image->format == COMAC_FORMAT_A1)
-	{
+	    image->format == COMAC_FORMAT_A1) {
 	    transparency = _comac_image_analyze_transparency (image);
 	    if (transparency != COMAC_IMAGE_IS_OPAQUE) {
 		need_smask = TRUE;
@@ -3126,7 +3227,12 @@ _comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
 		    goto CLEANUP_RGB;
 		}
 
-		status = _comac_pdf_surface_emit_smask (surface, image, FALSE, surface_entry->interpolate, &smask);
+		status =
+		    _comac_pdf_surface_emit_smask (surface,
+						   image,
+						   FALSE,
+						   surface_entry->interpolate,
+						   &smask);
 		if (unlikely (status))
 		    goto CLEANUP_RGB;
 	    }
@@ -3134,27 +3240,31 @@ _comac_pdf_surface_emit_image (comac_pdf_surface_t              *surface,
     }
 
     if (need_smask)
-	snprintf(smask_buf, sizeof(smask_buf), "   /SMask %d 0 R\n", smask.id);
+	snprintf (smask_buf,
+		  sizeof (smask_buf),
+		  "   /SMask %d 0 R\n",
+		  smask.id);
     else
 	smask_buf[0] = 0;
 
-    status = _comac_pdf_surface_open_stream (surface,
-					     &surface_entry->surface_res,
-					     TRUE,
-					     "   /Type /XObject\n"
-					     "   /Subtype /Image\n"
-					     "   /Width %d\n"
-					     "   /Height %d\n"
-					     "   /ColorSpace %s\n"
-					     "   /Interpolate %s\n"
-					     "   /BitsPerComponent %d\n"
-					     "%s",
-					     image->width,
-					     image->height,
-					     color == COMAC_IMAGE_IS_COLOR ? "/DeviceRGB" : "/DeviceGray",
-					     surface_entry->interpolate ? "true" : "false",
-					     color == COMAC_IMAGE_IS_MONOCHROME? 1 : 8,
-					     smask_buf);
+    status = _comac_pdf_surface_open_stream (
+	surface,
+	&surface_entry->surface_res,
+	TRUE,
+	"   /Type /XObject\n"
+	"   /Subtype /Image\n"
+	"   /Width %d\n"
+	"   /Height %d\n"
+	"   /ColorSpace %s\n"
+	"   /Interpolate %s\n"
+	"   /BitsPerComponent %d\n"
+	"%s",
+	image->width,
+	image->height,
+	color == COMAC_IMAGE_IS_COLOR ? "/DeviceRGB" : "/DeviceGray",
+	surface_entry->interpolate ? "true" : "false",
+	color == COMAC_IMAGE_IS_MONOCHROME ? 1 : 8,
+	smask_buf);
     if (unlikely (status))
 	goto CLEANUP_RGB;
 
@@ -3173,9 +3283,9 @@ CLEANUP:
 }
 
 static comac_int_status_t
-_comac_pdf_surface_lookup_jbig2_global (comac_pdf_surface_t       *surface,
-					const unsigned char       *global_id,
-					unsigned long              global_id_length,
+_comac_pdf_surface_lookup_jbig2_global (comac_pdf_surface_t *surface,
+					const unsigned char *global_id,
+					unsigned long global_id_length,
 					comac_pdf_jbig2_global_t **entry)
 {
     comac_pdf_jbig2_global_t global;
@@ -3184,9 +3294,12 @@ _comac_pdf_surface_lookup_jbig2_global (comac_pdf_surface_t       *surface,
 
     size = _comac_array_num_elements (&surface->jbig2_global);
     for (i = 0; i < size; i++) {
-	*entry = (comac_pdf_jbig2_global_t *) _comac_array_index (&surface->jbig2_global, i);
-	if ((*entry)->id && global_id && (*entry)->id_length == global_id_length
-	    && memcmp((*entry)->id, global_id, global_id_length) == 0) {
+	*entry = (comac_pdf_jbig2_global_t *) _comac_array_index (
+	    &surface->jbig2_global,
+	    i);
+	if ((*entry)->id && global_id &&
+	    (*entry)->id_length == global_id_length &&
+	    memcmp ((*entry)->id, global_id, global_id_length) == 0) {
 	    return COMAC_STATUS_SUCCESS;
 	}
     }
@@ -3200,25 +3313,28 @@ _comac_pdf_surface_lookup_jbig2_global (comac_pdf_surface_t       *surface,
     global.id_length = global_id_length;
     global.res = _comac_pdf_surface_new_object (surface);
     if (global.res.id == 0) {
-	free(global.id);
+	free (global.id);
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
     global.emitted = FALSE;
     status = _comac_array_append (&surface->jbig2_global, &global);
-    if (unlikely(status))
+    if (unlikely (status))
 	return status;
 
     size = _comac_array_num_elements (&surface->jbig2_global);
-    *entry = (comac_pdf_jbig2_global_t *) _comac_array_index (&surface->jbig2_global, size - 1);
+    *entry =
+	(comac_pdf_jbig2_global_t *) _comac_array_index (&surface->jbig2_global,
+							 size - 1);
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_jbig2_image (comac_pdf_surface_t              *surface,
-				     comac_surface_t	              *source,
-				     comac_pdf_source_surface_entry_t *surface_entry,
-				     comac_bool_t                      test)
+_comac_pdf_surface_emit_jbig2_image (
+    comac_pdf_surface_t *surface,
+    comac_surface_t *source,
+    comac_pdf_source_surface_entry_t *surface_entry,
+    comac_bool_t test)
 {
     comac_int_status_t status;
     const unsigned char *mime_data;
@@ -3232,12 +3348,15 @@ _comac_pdf_surface_emit_jbig2_image (comac_pdf_surface_t              *surface,
     char smask_buf[30];
     char decode_parms_buf[100];
 
-    comac_surface_get_mime_data (source, COMAC_MIME_TYPE_JBIG2,
-				 &mime_data, &mime_data_length);
+    comac_surface_get_mime_data (source,
+				 COMAC_MIME_TYPE_JBIG2,
+				 &mime_data,
+				 &mime_data_length);
     if (mime_data == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    status = _comac_image_info_get_jbig2_info (&info, mime_data, mime_data_length);
+    status =
+	_comac_image_info_get_jbig2_info (&info, mime_data, mime_data_length);
     if (status)
 	return status;
 
@@ -3245,80 +3364,99 @@ _comac_pdf_surface_emit_jbig2_image (comac_pdf_surface_t              *surface,
     if (test)
 	return COMAC_STATUS_SUCCESS;
 
-    comac_surface_get_mime_data (source, COMAC_MIME_TYPE_JBIG2_GLOBAL_ID,
-				 &global_id, &global_id_length);
+    comac_surface_get_mime_data (source,
+				 COMAC_MIME_TYPE_JBIG2_GLOBAL_ID,
+				 &global_id,
+				 &global_id_length);
     if (global_id && global_id_length > 0) {
-	status = _comac_pdf_surface_lookup_jbig2_global (surface, global_id, global_id_length, &global_entry);
-	if (unlikely(status))
+	status = _comac_pdf_surface_lookup_jbig2_global (surface,
+							 global_id,
+							 global_id_length,
+							 &global_entry);
+	if (unlikely (status))
 	    return status;
 
-	if (!global_entry->emitted) {
-	    comac_surface_get_mime_data (source, COMAC_MIME_TYPE_JBIG2_GLOBAL,
-					 &global_data, &global_data_length);
+	if (! global_entry->emitted) {
+	    comac_surface_get_mime_data (source,
+					 COMAC_MIME_TYPE_JBIG2_GLOBAL,
+					 &global_data,
+					 &global_data_length);
 	    if (global_data) {
-		status = _comac_pdf_surface_open_stream (surface, &global_entry->res, FALSE, NULL);
-		if (unlikely(status))
+		status = _comac_pdf_surface_open_stream (surface,
+							 &global_entry->res,
+							 FALSE,
+							 NULL);
+		if (unlikely (status))
 		    return status;
 
-		_comac_output_stream_write (surface->output, global_data, global_data_length);
+		_comac_output_stream_write (surface->output,
+					    global_data,
+					    global_data_length);
 		status = _comac_pdf_surface_close_stream (surface);
-		if (unlikely(status))
+		if (unlikely (status))
 		    return status;
 
 		global_entry->emitted = TRUE;
 	    }
 	}
 
-	snprintf(decode_parms_buf, sizeof(decode_parms_buf),
-		 "   /DecodeParms << /JBIG2Globals %d 0 R >>\n", global_entry->res.id);
+	snprintf (decode_parms_buf,
+		  sizeof (decode_parms_buf),
+		  "   /DecodeParms << /JBIG2Globals %d 0 R >>\n",
+		  global_entry->res.id);
     } else {
 	decode_parms_buf[0] = 0;
     }
 
     if (surface_entry->smask_res.id)
-	snprintf(smask_buf, sizeof(smask_buf), "   /SMask %d 0 R\n", surface_entry->smask_res.id);
+	snprintf (smask_buf,
+		  sizeof (smask_buf),
+		  "   /SMask %d 0 R\n",
+		  surface_entry->smask_res.id);
     else
 	smask_buf[0] = 0;
 
     if (surface_entry->stencil_mask) {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /ImageMask true\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /Interpolate %s\n"
-						 "   /BitsPerComponent 1\n"
-						 "   /Decode [1 0]\n"
-						 "   /Filter /JPXDecode\n"
-						 "%s",
-						 info.width,
-						 info.height,
-						 surface_entry->interpolate ? "true" : "false",
-						 decode_parms_buf);
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /ImageMask true\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /Interpolate %s\n"
+	    "   /BitsPerComponent 1\n"
+	    "   /Decode [1 0]\n"
+	    "   /Filter /JPXDecode\n"
+	    "%s",
+	    info.width,
+	    info.height,
+	    surface_entry->interpolate ? "true" : "false",
+	    decode_parms_buf);
     } else {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /ColorSpace /DeviceGray\n"
-						 "   /BitsPerComponent 1\n"
-						 "   /Interpolate %s\n"
-						 "%s"
-						 "   /Filter /JBIG2Decode\n"
-						 "%s",
-						 info.width,
-						 info.height,
-						 surface_entry->interpolate ? "true" : "false",
-						 smask_buf,
-						 decode_parms_buf);
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /ColorSpace /DeviceGray\n"
+	    "   /BitsPerComponent 1\n"
+	    "   /Interpolate %s\n"
+	    "%s"
+	    "   /Filter /JBIG2Decode\n"
+	    "%s",
+	    info.width,
+	    info.height,
+	    surface_entry->interpolate ? "true" : "false",
+	    smask_buf,
+	    decode_parms_buf);
     }
-    if (unlikely(status))
+    if (unlikely (status))
 	return status;
 
     _comac_output_stream_write (surface->output, mime_data, mime_data_length);
@@ -3328,10 +3466,11 @@ _comac_pdf_surface_emit_jbig2_image (comac_pdf_surface_t              *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_jpx_image (comac_pdf_surface_t              *surface,
-				   comac_surface_t	            *source,
-				   comac_pdf_source_surface_entry_t *surface_entry,
-				   comac_bool_t                      test)
+_comac_pdf_surface_emit_jpx_image (
+    comac_pdf_surface_t *surface,
+    comac_surface_t *source,
+    comac_pdf_source_surface_entry_t *surface_entry,
+    comac_bool_t test)
 {
     comac_int_status_t status;
     const unsigned char *mime_data;
@@ -3342,23 +3481,30 @@ _comac_pdf_surface_emit_jpx_image (comac_pdf_surface_t              *surface,
     if (surface->pdf_version < COMAC_PDF_VERSION_1_5)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    comac_surface_get_mime_data (source, COMAC_MIME_TYPE_JP2,
-				 &mime_data, &mime_data_length);
+    comac_surface_get_mime_data (source,
+				 COMAC_MIME_TYPE_JP2,
+				 &mime_data,
+				 &mime_data_length);
     if (mime_data == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    status = _comac_image_info_get_jpx_info (&info, mime_data, mime_data_length);
+    status =
+	_comac_image_info_get_jpx_info (&info, mime_data, mime_data_length);
     if (status)
 	return status;
 
-    if ((surface_entry->smask || surface_entry->stencil_mask) && info.num_components != 1)
+    if ((surface_entry->smask || surface_entry->stencil_mask) &&
+	info.num_components != 1)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if ((surface_entry->stencil_mask) && info.bits_per_component != 1)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if (surface_entry->smask_res.id)
-	snprintf(smask_buf, sizeof(smask_buf), "   /SMask %d 0 R\n", surface_entry->smask_res.id);
+	snprintf (smask_buf,
+		  sizeof (smask_buf),
+		  "   /SMask %d 0 R\n",
+		  surface_entry->smask_res.id);
     else
 	smask_buf[0] = 0;
 
@@ -3367,36 +3513,38 @@ _comac_pdf_surface_emit_jpx_image (comac_pdf_surface_t              *surface,
 	return COMAC_STATUS_SUCCESS;
 
     if (surface_entry->stencil_mask) {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /ImageMask true\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /Interpolate %s\n"
-						 "   /BitsPerComponent 1\n"
-						 "   /Decode [1 0]\n"
-						 "   /Filter /JPXDecode\n",
-						 info.width,
-						 info.height,
-						 surface_entry->interpolate ? "true" : "false");
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /ImageMask true\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /Interpolate %s\n"
+	    "   /BitsPerComponent 1\n"
+	    "   /Decode [1 0]\n"
+	    "   /Filter /JPXDecode\n",
+	    info.width,
+	    info.height,
+	    surface_entry->interpolate ? "true" : "false");
     } else {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /Interpolate %s\n"
-						 "%s"
-						 "   /Filter /JPXDecode\n",
-						 info.width,
-						 info.height,
-						 surface_entry->interpolate ? "true" : "false",
-						 smask_buf);
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /Interpolate %s\n"
+	    "%s"
+	    "   /Filter /JPXDecode\n",
+	    info.width,
+	    info.height,
+	    surface_entry->interpolate ? "true" : "false",
+	    smask_buf);
     }
     if (status)
 	return status;
@@ -3408,10 +3556,11 @@ _comac_pdf_surface_emit_jpx_image (comac_pdf_surface_t              *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_jpeg_image (comac_pdf_surface_t              *surface,
-				    comac_surface_t	             *source,
-				    comac_pdf_source_surface_entry_t *surface_entry,
-				    comac_bool_t                      test)
+_comac_pdf_surface_emit_jpeg_image (
+    comac_pdf_surface_t *surface,
+    comac_surface_t *source,
+    comac_pdf_source_surface_entry_t *surface_entry,
+    comac_bool_t test)
 {
     comac_int_status_t status;
     const unsigned char *mime_data;
@@ -3420,35 +3569,39 @@ _comac_pdf_surface_emit_jpeg_image (comac_pdf_surface_t              *surface,
     const char *colorspace;
     char smask_buf[30];
 
-    comac_surface_get_mime_data (source, COMAC_MIME_TYPE_JPEG,
-				 &mime_data, &mime_data_length);
+    comac_surface_get_mime_data (source,
+				 COMAC_MIME_TYPE_JPEG,
+				 &mime_data,
+				 &mime_data_length);
     if (unlikely (source->status))
 	return source->status;
     if (mime_data == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    status = _comac_image_info_get_jpeg_info (&info, mime_data, mime_data_length);
+    status =
+	_comac_image_info_get_jpeg_info (&info, mime_data, mime_data_length);
     if (unlikely (status))
 	return status;
 
-    if ((surface_entry->smask || surface_entry->stencil_mask) && info.num_components != 1)
+    if ((surface_entry->smask || surface_entry->stencil_mask) &&
+	info.num_components != 1)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if ((surface_entry->stencil_mask) && info.bits_per_component != 1)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     switch (info.num_components) {
-	case 1:
-	    colorspace = "/DeviceGray";
-	    break;
-	case 3:
-	    colorspace = "/DeviceRGB";
-	    break;
-	case 4:
-	    colorspace = "/DeviceCMYK";
-	    break;
-	default:
-	    return COMAC_INT_STATUS_UNSUPPORTED;
+    case 1:
+	colorspace = "/DeviceGray";
+	break;
+    case 3:
+	colorspace = "/DeviceRGB";
+	break;
+    case 4:
+	colorspace = "/DeviceCMYK";
+	break;
+    default:
+	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
     /* At this point we know emitting jpeg will succeed. */
@@ -3456,45 +3609,50 @@ _comac_pdf_surface_emit_jpeg_image (comac_pdf_surface_t              *surface,
 	return COMAC_STATUS_SUCCESS;
 
     if (surface_entry->smask_res.id)
-	snprintf(smask_buf, sizeof(smask_buf), "   /SMask %d 0 R\n", surface_entry->smask_res.id);
+	snprintf (smask_buf,
+		  sizeof (smask_buf),
+		  "   /SMask %d 0 R\n",
+		  surface_entry->smask_res.id);
     else
 	smask_buf[0] = 0;
 
     if (surface_entry->stencil_mask) {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /ImageMask true\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /Interpolate %s\n"
-						 "   /BitsPerComponent 1\n"
-						 "   /Decode [1 0]\n"
-						 "   /Filter /DCTDecode\n",
-						 info.width,
-						 info.height,
-						 surface_entry->interpolate ? "true" : "false");
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /ImageMask true\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /Interpolate %s\n"
+	    "   /BitsPerComponent 1\n"
+	    "   /Decode [1 0]\n"
+	    "   /Filter /DCTDecode\n",
+	    info.width,
+	    info.height,
+	    surface_entry->interpolate ? "true" : "false");
     } else {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /ColorSpace %s\n"
-						 "   /Interpolate %s\n"
-						 "   /BitsPerComponent %d\n"
-						 "%s"
-						 "   /Filter /DCTDecode\n",
-						 info.width,
-						 info.height,
-						 colorspace,
-						 surface_entry->interpolate ? "true" : "false",
-						 info.bits_per_component,
-						 smask_buf);
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /ColorSpace %s\n"
+	    "   /Interpolate %s\n"
+	    "   /BitsPerComponent %d\n"
+	    "%s"
+	    "   /Filter /DCTDecode\n",
+	    info.width,
+	    info.height,
+	    colorspace,
+	    surface_entry->interpolate ? "true" : "false",
+	    info.bits_per_component,
+	    smask_buf);
     }
     if (unlikely (status))
 	return status;
@@ -3506,10 +3664,11 @@ _comac_pdf_surface_emit_jpeg_image (comac_pdf_surface_t              *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_ccitt_image (comac_pdf_surface_t              *surface,
-				     comac_surface_t	             *source,
-				     comac_pdf_source_surface_entry_t *surface_entry,
-				     comac_bool_t                      test)
+_comac_pdf_surface_emit_ccitt_image (
+    comac_pdf_surface_t *surface,
+    comac_surface_t *source,
+    comac_pdf_source_surface_entry_t *surface_entry,
+    comac_bool_t test)
 {
     comac_status_t status;
     const unsigned char *ccitt_data;
@@ -3520,15 +3679,19 @@ _comac_pdf_surface_emit_ccitt_image (comac_pdf_surface_t              *surface,
     comac_ccitt_params_t ccitt_params;
     char buf[300];
 
-    comac_surface_get_mime_data (source, COMAC_MIME_TYPE_CCITT_FAX,
-				 &ccitt_data, &ccitt_data_len);
+    comac_surface_get_mime_data (source,
+				 COMAC_MIME_TYPE_CCITT_FAX,
+				 &ccitt_data,
+				 &ccitt_data_len);
     if (unlikely (source->status))
 	return source->status;
     if (ccitt_data == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    comac_surface_get_mime_data (source, COMAC_MIME_TYPE_CCITT_FAX_PARAMS,
-				 &ccitt_params_string, &ccitt_params_string_len);
+    comac_surface_get_mime_data (source,
+				 COMAC_MIME_TYPE_CCITT_FAX_PARAMS,
+				 &ccitt_params_string,
+				 &ccitt_params_string_len);
     if (unlikely (source->status))
 	return source->status;
     if (ccitt_params_string == NULL)
@@ -3539,7 +3702,7 @@ _comac_pdf_surface_emit_ccitt_image (comac_pdf_surface_t              *surface,
     memcpy (params, ccitt_params_string, ccitt_params_string_len);
     params[ccitt_params_string_len] = 0;
     status = _comac_tag_parse_ccitt_params (params, &ccitt_params);
-    if (unlikely(status))
+    if (unlikely (status))
 	return source->status;
 
     free (params);
@@ -3550,63 +3713,69 @@ _comac_pdf_surface_emit_ccitt_image (comac_pdf_surface_t              *surface,
 
     p = buf;
     *p = 0;
-    end = buf + sizeof(buf) - 1;
-    p += snprintf (p, end - p, "/Columns %d /Rows %d /K %d",
-				 ccitt_params.columns,
-				 ccitt_params.rows,
-				 ccitt_params.k);
+    end = buf + sizeof (buf) - 1;
+    p += snprintf (p,
+		   end - p,
+		   "/Columns %d /Rows %d /K %d",
+		   ccitt_params.columns,
+		   ccitt_params.rows,
+		   ccitt_params.k);
     if (ccitt_params.end_of_line)
 	p += snprintf (p, end - p, " /EndOfLine true");
 
     if (ccitt_params.encoded_byte_align)
 	p += snprintf (p, end - p, " /EncodedByteAlign true");
 
-    if (!ccitt_params.end_of_block)
+    if (! ccitt_params.end_of_block)
 	p += snprintf (p, end - p, " /EndOfBlock false");
 
     if (ccitt_params.black_is_1)
 	p += snprintf (p, end - p, " /BlackIs1 true");
 
     if (ccitt_params.damaged_rows_before_error > 0) {
-	p += snprintf (p, end - p, " /DamagedRowsBeforeError %d",
+	p += snprintf (p,
+		       end - p,
+		       " /DamagedRowsBeforeError %d",
 		       ccitt_params.damaged_rows_before_error);
     }
 
     if (surface_entry->stencil_mask) {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /ImageMask true\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /Interpolate %s\n"
-						 "   /BitsPerComponent 1\n"
-						 "   /Decode [1 0]\n"
-						 "   /Filter /CCITTFaxDecode\n"
-						 "   /DecodeParms << %s >> ",
-						 ccitt_params.columns,
-						 ccitt_params.rows,
-						 surface_entry->interpolate ? "true" : "false",
-						 buf);
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /ImageMask true\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /Interpolate %s\n"
+	    "   /BitsPerComponent 1\n"
+	    "   /Decode [1 0]\n"
+	    "   /Filter /CCITTFaxDecode\n"
+	    "   /DecodeParms << %s >> ",
+	    ccitt_params.columns,
+	    ccitt_params.rows,
+	    surface_entry->interpolate ? "true" : "false",
+	    buf);
     } else {
-	status = _comac_pdf_surface_open_stream (surface,
-						 &surface_entry->surface_res,
-						 FALSE,
-						 "   /Type /XObject\n"
-						 "   /Subtype /Image\n"
-						 "   /Width %d\n"
-						 "   /Height %d\n"
-						 "   /ColorSpace /DeviceGray\n"
-						 "   /BitsPerComponent 1\n"
-						 "   /Interpolate %s\n"
-						 "   /Filter /CCITTFaxDecode\n"
-						 "   /DecodeParms << %s >> ",
-						 ccitt_params.columns,
-						 ccitt_params.rows,
-						 surface_entry->interpolate ? "true" : "false",
-						 buf);
+	status = _comac_pdf_surface_open_stream (
+	    surface,
+	    &surface_entry->surface_res,
+	    FALSE,
+	    "   /Type /XObject\n"
+	    "   /Subtype /Image\n"
+	    "   /Width %d\n"
+	    "   /Height %d\n"
+	    "   /ColorSpace /DeviceGray\n"
+	    "   /BitsPerComponent 1\n"
+	    "   /Interpolate %s\n"
+	    "   /Filter /CCITTFaxDecode\n"
+	    "   /DecodeParms << %s >> ",
+	    ccitt_params.columns,
+	    ccitt_params.rows,
+	    surface_entry->interpolate ? "true" : "false",
+	    buf);
     }
     if (unlikely (status))
 	return status;
@@ -3618,8 +3787,8 @@ _comac_pdf_surface_emit_ccitt_image (comac_pdf_surface_t              *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_recording_surface (comac_pdf_surface_t        *surface,
-					   comac_pdf_source_surface_t *pdf_source)
+_comac_pdf_surface_emit_recording_surface (
+    comac_pdf_surface_t *surface, comac_pdf_source_surface_t *pdf_source)
 {
     comac_rectangle_int_t old_surface_extents;
     comac_bool_t old_surface_bounded;
@@ -3666,8 +3835,9 @@ _comac_pdf_surface_emit_recording_surface (comac_pdf_surface_t        *surface,
     old_paginated_mode = surface->paginated_mode;
     old_clipper = surface->clipper;
     surface->surface_extents = *extents;
-    _comac_surface_clipper_init (&surface->clipper,
-				 _comac_pdf_surface_clipper_intersect_clip_path);
+    _comac_surface_clipper_init (
+	&surface->clipper,
+	_comac_pdf_surface_clipper_intersect_clip_path);
 
     _comac_pdf_operators_reset (&surface->pdf_operators);
     surface->in_xobject = TRUE;
@@ -3688,16 +3858,18 @@ _comac_pdf_surface_emit_recording_surface (comac_pdf_surface_t        *surface,
      *  - all operators are OVER, and
      *  - the recording contains only opaque and/or clear alpha.
      */
-    transparency_group = pdf_source->hash_entry->need_transp_group ||
-	!(pdf_source->hash_entry->operator == COMAC_OPERATOR_OVER &&
-			   _comac_recording_surface_has_only_bilevel_alpha (recording) &&
-			   _comac_recording_surface_has_only_op_over (recording));
+    transparency_group =
+	pdf_source->hash_entry->need_transp_group ||
+	! (pdf_source->hash_entry->operator== COMAC_OPERATOR_OVER &&
+	   _comac_recording_surface_has_only_bilevel_alpha (recording) &&
+	   _comac_recording_surface_has_only_op_over (recording));
 
-    status = _comac_pdf_surface_open_content_stream (surface,
-						     &bbox,
-						     &pdf_source->hash_entry->surface_res,
-						     TRUE,
-						     transparency_group);
+    status = _comac_pdf_surface_open_content_stream (
+	surface,
+	&bbox,
+	&pdf_source->hash_entry->surface_res,
+	TRUE,
+	transparency_group);
     if (unlikely (status))
 	goto err;
 
@@ -3718,10 +3890,11 @@ _comac_pdf_surface_emit_recording_surface (comac_pdf_surface_t        *surface,
 				     extents->height);
     }
 
-    status = _comac_recording_surface_replay_region (source,
-						     is_subsurface ? extents : NULL,
-						     &surface->base,
-						     COMAC_RECORDING_REGION_NATIVE);
+    status =
+	_comac_recording_surface_replay_region (source,
+						is_subsurface ? extents : NULL,
+						&surface->base,
+						COMAC_RECORDING_REGION_NATIVE);
     assert (status != COMAC_INT_STATUS_UNSUPPORTED);
     if (unlikely (status))
 	goto err;
@@ -3753,10 +3926,10 @@ err:
  * If @test is TRUE, don't emit anything. Set @is_image based on the output that would be emitted.
  **/
 static comac_int_status_t
-_comac_pdf_surface_emit_surface (comac_pdf_surface_t        *surface,
+_comac_pdf_surface_emit_surface (comac_pdf_surface_t *surface,
 				 comac_pdf_source_surface_t *source,
-				 comac_bool_t                test,
-				 comac_bool_t               *is_image)
+				 comac_bool_t test,
+				 comac_bool_t *is_image)
 {
     comac_image_surface_t *image;
     void *image_extra;
@@ -3806,7 +3979,8 @@ _comac_pdf_surface_emit_surface (comac_pdf_surface_t        *surface,
 		*is_image = FALSE;
 		return COMAC_INT_STATUS_SUCCESS;
 	    } else {
-		return _comac_pdf_surface_emit_recording_surface (surface, source);
+		return _comac_pdf_surface_emit_recording_surface (surface,
+								  source);
 	    }
 	}
     }
@@ -3814,12 +3988,15 @@ _comac_pdf_surface_emit_surface (comac_pdf_surface_t        *surface,
     /* The only option left is to emit as an image surface */
 
     if (source->type == COMAC_PATTERN_TYPE_SURFACE) {
-	status = _comac_surface_acquire_source_image (source->surface, &image, &image_extra);
+	status = _comac_surface_acquire_source_image (source->surface,
+						      &image,
+						      &image_extra);
     } else {
-	status = _comac_pdf_surface_acquire_source_image_from_pattern (surface,
-								       source->raster_pattern,
-								       &image,
-								       &image_extra);
+	status = _comac_pdf_surface_acquire_source_image_from_pattern (
+	    surface,
+	    source->raster_pattern,
+	    &image,
+	    &image_extra);
     }
     if (unlikely (status))
 	return status;
@@ -3827,26 +4004,28 @@ _comac_pdf_surface_emit_surface (comac_pdf_surface_t        *surface,
     if (test) {
 	*is_image = TRUE;
     } else {
-	status = _comac_pdf_surface_emit_image (surface,
-						image,
-						source->hash_entry);
+	status =
+	    _comac_pdf_surface_emit_image (surface, image, source->hash_entry);
     }
 
     if (source->type == COMAC_PATTERN_TYPE_SURFACE) {
-	_comac_surface_release_source_image (source->surface, image, image_extra);
+	_comac_surface_release_source_image (source->surface,
+					     image,
+					     image_extra);
     } else {
-	_comac_pdf_surface_release_source_image_from_pattern (surface,
-							      source->raster_pattern,
-							      image,
-							      image_extra);
+	_comac_pdf_surface_release_source_image_from_pattern (
+	    surface,
+	    source->raster_pattern,
+	    image,
+	    image_extra);
     }
 
     return status;
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_surface_pattern (comac_pdf_surface_t	*surface,
-					 comac_pdf_pattern_t	*pdf_pattern)
+_comac_pdf_surface_emit_surface_pattern (comac_pdf_surface_t *surface,
+					 comac_pdf_pattern_t *pdf_pattern)
 {
     comac_pattern_t *pattern = pdf_pattern->pattern;
     comac_int_status_t status;
@@ -3865,43 +4044,43 @@ _comac_pdf_surface_emit_surface_pattern (comac_pdf_surface_t	*surface,
 
     assert (pattern->type == COMAC_PATTERN_TYPE_SURFACE);
     if (pattern->extend == COMAC_EXTEND_PAD) {
-	status = _comac_pdf_surface_add_padded_image_surface (surface,
-							      pattern,
-							      &pdf_pattern->extents,
-							      &pdf_source,
-							      &x_offset,
-							      &y_offset,
-							      &op_extents);
+	status =
+	    _comac_pdf_surface_add_padded_image_surface (surface,
+							 pattern,
+							 &pdf_pattern->extents,
+							 &pdf_source,
+							 &x_offset,
+							 &y_offset,
+							 &op_extents);
     } else {
-	status = _comac_pdf_surface_add_source_surface (surface,
-							NULL,
-							pattern,
-							pdf_pattern->operator,
-							pattern->filter,
-							FALSE, /* stencil mask */
-							FALSE, /* smask */
-							FALSE, /* need_transp_group */
-							&pdf_pattern->extents,
-							NULL, /* smask_res */
-							&pdf_source,
-							&x_offset,
-							&y_offset,
-							&op_extents);
+	status = _comac_pdf_surface_add_source_surface (
+	    surface,
+	    NULL,
+	    pattern,
+	    pdf_pattern->operator,
+	    pattern->filter,
+	    FALSE, /* stencil mask */
+	    FALSE, /* smask */
+	    FALSE, /* need_transp_group */
+	    &pdf_pattern->extents,
+	    NULL, /* smask_res */
+	    &pdf_source,
+	    &x_offset,
+	    &y_offset,
+	    &op_extents);
     }
     if (unlikely (status))
 	return status;
 
     pattern_extents = pdf_source->extents;
-    if (!pdf_source->bounded)
-    {
+    if (! pdf_source->bounded) {
 	extend = COMAC_EXTEND_NONE;
 	_comac_rectangle_intersect (&pattern_extents, &op_extents);
     }
 
     switch (extend) {
     case COMAC_EXTEND_PAD:
-    case COMAC_EXTEND_NONE:
-    {
+    case COMAC_EXTEND_NONE: {
 	/* In PS/PDF, (as far as I can tell), all patterns are
 	 * repeating. So we support comac's EXTEND_NONE semantics
 	 * by setting the repeat step size to a size large enough
@@ -3918,17 +4097,19 @@ _comac_pdf_surface_emit_surface_pattern (comac_pdf_surface_t	*surface,
 	double x2 = surface->surface_extents.width;
 	double y2 = surface->surface_extents.height;
 	_comac_matrix_transform_bounding_box (&pattern->matrix,
-					      &x1, &y1, &x2, &y2,
+					      &x1,
+					      &y1,
+					      &x2,
+					      &y2,
 					      NULL);
 
 	/* Rather than computing precise bounds of the union, just
 	 * add the surface extents unconditionally. We only
 	 * required an answer that's large enough, we don't really
 	 * care if it's not as tight as possible.*/
-	xstep = ystep = ceil ((x2 - x1) + (y2 - y1) +
-			      pattern_extents.width + pattern_extents.height);
-    }
-    break;
+	xstep = ystep = ceil ((x2 - x1) + (y2 - y1) + pattern_extents.width +
+			      pattern_extents.height);
+    } break;
     case COMAC_EXTEND_REPEAT:
 	xstep = pattern_extents.width;
 	ystep = pattern_extents.height;
@@ -3995,79 +4176,97 @@ _comac_pdf_surface_emit_surface_pattern (comac_pdf_surface_t	*surface,
 
     _get_bbox_from_extents (&pattern_extents, &bbox);
     _comac_pdf_surface_update_object (surface, pdf_pattern->pattern_res);
-    status = _comac_pdf_surface_open_stream (surface,
-				             &pdf_pattern->pattern_res,
-					     FALSE,
-					     "   /PatternType 1\n"
-					     "   /BBox [ %f %f %f %f ]\n"
-					     "   /XStep %f\n"
-					     "   /YStep %f\n"
-					     "   /TilingType 1\n"
-					     "   /PaintType 1\n"
-					     "   /Matrix [ %f %f %f %f %f %f ]\n"
-					     "   /Resources << /XObject << /x%d %d 0 R >> >>\n",
-					     bbox.p1.x, bbox.p1.y, bbox.p2.x, bbox.p2.y,
-					     xstep, ystep,
-					     pdf_p2d.xx, pdf_p2d.yx,
-					     pdf_p2d.xy, pdf_p2d.yy,
-					     pdf_p2d.x0, pdf_p2d.y0,
-					     pdf_source->surface_res.id,
-					     pdf_source->surface_res.id);
+    status = _comac_pdf_surface_open_stream (
+	surface,
+	&pdf_pattern->pattern_res,
+	FALSE,
+	"   /PatternType 1\n"
+	"   /BBox [ %f %f %f %f ]\n"
+	"   /XStep %f\n"
+	"   /YStep %f\n"
+	"   /TilingType 1\n"
+	"   /PaintType 1\n"
+	"   /Matrix [ %f %f %f %f %f %f ]\n"
+	"   /Resources << /XObject << /x%d %d 0 R >> >>\n",
+	bbox.p1.x,
+	bbox.p1.y,
+	bbox.p2.x,
+	bbox.p2.y,
+	xstep,
+	ystep,
+	pdf_p2d.xx,
+	pdf_p2d.yx,
+	pdf_p2d.xy,
+	pdf_p2d.yy,
+	pdf_p2d.x0,
+	pdf_p2d.y0,
+	pdf_source->surface_res.id,
+	pdf_source->surface_res.id);
     if (unlikely (status))
 	return status;
 
     if (pdf_source->emit_image) {
-	snprintf(draw_surface,
-		 sizeof (draw_surface),
-		 "q %d 0 0 %d 0 0 cm /x%d Do Q",
-		 pdf_source->extents.width,
-		 pdf_source->extents.height,
-		 pdf_source->surface_res.id);
+	snprintf (draw_surface,
+		  sizeof (draw_surface),
+		  "q %d 0 0 %d 0 0 cm /x%d Do Q",
+		  pdf_source->extents.width,
+		  pdf_source->extents.height,
+		  pdf_source->surface_res.id);
     } else {
-	snprintf(draw_surface,
-		 sizeof (draw_surface),
-		 "/x%d Do",
-		 pdf_source->surface_res.id);
+	snprintf (draw_surface,
+		  sizeof (draw_surface),
+		  "/x%d Do",
+		  pdf_source->surface_res.id);
     }
 
     if (extend == COMAC_EXTEND_REFLECT) {
 	comac_rectangle_int_t p_extents = pdf_source->extents;
-	snprintf(draw_surface2,
-		 sizeof (draw_surface2),
-		 "%d %d %d %d re W n %s",
-		 p_extents.x, p_extents.y,
-		 p_extents.width, p_extents.height,
-		 draw_surface);
+	snprintf (draw_surface2,
+		  sizeof (draw_surface2),
+		  "%d %d %d %d re W n %s",
+		  p_extents.x,
+		  p_extents.y,
+		  p_extents.width,
+		  p_extents.height,
+		  draw_surface);
 
-	_comac_output_stream_printf (surface->output, "q %s Q\n", draw_surface2);
+	_comac_output_stream_printf (surface->output,
+				     "q %s Q\n",
+				     draw_surface2);
 
 	comac_matrix_init_translate (&mat, p_extents.x, p_extents.y);
 	comac_matrix_scale (&mat, -1, 1);
-	comac_matrix_translate (&mat, -2*p_extents.width, 0);
+	comac_matrix_translate (&mat, -2 * p_extents.width, 0);
 	comac_matrix_translate (&mat, -p_extents.x, -p_extents.y);
 	_comac_output_stream_printf (surface->output, "q ");
 	_comac_output_stream_print_matrix (surface->output, &mat);
-	_comac_output_stream_printf (surface->output, " cm %s Q\n", draw_surface2);
+	_comac_output_stream_printf (surface->output,
+				     " cm %s Q\n",
+				     draw_surface2);
 
 	comac_matrix_init_translate (&mat, p_extents.x, p_extents.y);
 	comac_matrix_scale (&mat, 1, -1);
-	comac_matrix_translate (&mat, 0, -2*p_extents.height);
+	comac_matrix_translate (&mat, 0, -2 * p_extents.height);
 	comac_matrix_translate (&mat, -p_extents.x, -p_extents.y);
 	_comac_output_stream_printf (surface->output, "q ");
 	_comac_output_stream_print_matrix (surface->output, &mat);
-	_comac_output_stream_printf (surface->output, " cm %s Q\n", draw_surface2);
+	_comac_output_stream_printf (surface->output,
+				     " cm %s Q\n",
+				     draw_surface2);
 
 	comac_matrix_init_translate (&mat, p_extents.x, p_extents.y);
 	comac_matrix_scale (&mat, -1, -1);
-	comac_matrix_translate (&mat, -2*p_extents.width, -2*p_extents.height);
+	comac_matrix_translate (&mat,
+				-2 * p_extents.width,
+				-2 * p_extents.height);
 	comac_matrix_translate (&mat, -p_extents.x, -p_extents.y);
 	_comac_output_stream_printf (surface->output, "q ");
 	_comac_output_stream_print_matrix (surface->output, &mat);
-	_comac_output_stream_printf (surface->output, " cm %s Q\n", draw_surface2);
-    } else {
 	_comac_output_stream_printf (surface->output,
-				     " %s \n",
-				     draw_surface);
+				     " cm %s Q\n",
+				     draw_surface2);
+    } else {
+	_comac_output_stream_printf (surface->output, " %s \n", draw_surface);
     }
 
     status = _comac_pdf_surface_close_stream (surface);
@@ -4084,10 +4283,10 @@ typedef struct _comac_pdf_color_stop {
 } comac_pdf_color_stop_t;
 
 static comac_int_status_t
-comac_pdf_surface_emit_rgb_linear_function (comac_pdf_surface_t    *surface,
-                                            comac_pdf_color_stop_t *stop1,
-                                            comac_pdf_color_stop_t *stop2,
-                                            comac_pdf_resource_t   *function)
+comac_pdf_surface_emit_rgb_linear_function (comac_pdf_surface_t *surface,
+					    comac_pdf_color_stop_t *stop1,
+					    comac_pdf_color_stop_t *stop2,
+					    comac_pdf_resource_t *function)
 {
     int num_elems, i;
     comac_pdf_rgb_linear_function_t elem;
@@ -4097,12 +4296,14 @@ comac_pdf_surface_emit_rgb_linear_function (comac_pdf_surface_t    *surface,
     num_elems = _comac_array_num_elements (&surface->rgb_linear_functions);
     for (i = 0; i < num_elems; i++) {
 	_comac_array_copy_element (&surface->rgb_linear_functions, i, &elem);
-        if (memcmp (&elem.color1[0], &stop1->color[0], sizeof (double)*3) != 0)
-            continue;
-        if (memcmp (&elem.color2[0], &stop2->color[0], sizeof (double)*3) != 0)
-            continue;
-        *function =  elem.resource;
-        return COMAC_STATUS_SUCCESS;
+	if (memcmp (&elem.color1[0], &stop1->color[0], sizeof (double) * 3) !=
+	    0)
+	    continue;
+	if (memcmp (&elem.color2[0], &stop2->color[0], sizeof (double) * 3) !=
+	    0)
+	    continue;
+	*function = elem.resource;
+	return COMAC_STATUS_SUCCESS;
     }
 
     res = _comac_pdf_surface_new_object (surface);
@@ -4119,16 +4320,16 @@ comac_pdf_surface_emit_rgb_linear_function (comac_pdf_surface_t    *surface,
 				 ">>\n"
 				 "endobj\n",
 				 res.id,
-                                 stop1->color[0],
-                                 stop1->color[1],
-                                 stop1->color[2],
-                                 stop2->color[0],
-                                 stop2->color[1],
-                                 stop2->color[2]);
+				 stop1->color[0],
+				 stop1->color[1],
+				 stop1->color[2],
+				 stop2->color[0],
+				 stop2->color[1],
+				 stop2->color[2]);
 
     elem.resource = res;
-    memcpy (&elem.color1[0], &stop1->color[0], sizeof (double)*3);
-    memcpy (&elem.color2[0], &stop2->color[0], sizeof (double)*3);
+    memcpy (&elem.color1[0], &stop1->color[0], sizeof (double) * 3);
+    memcpy (&elem.color2[0], &stop2->color[0], sizeof (double) * 3);
 
     status = _comac_array_append (&surface->rgb_linear_functions, &elem);
     *function = res;
@@ -4137,10 +4338,10 @@ comac_pdf_surface_emit_rgb_linear_function (comac_pdf_surface_t    *surface,
 }
 
 static comac_int_status_t
-comac_pdf_surface_emit_alpha_linear_function (comac_pdf_surface_t    *surface,
-                                              comac_pdf_color_stop_t *stop1,
-                                              comac_pdf_color_stop_t *stop2,
-                                              comac_pdf_resource_t   *function)
+comac_pdf_surface_emit_alpha_linear_function (comac_pdf_surface_t *surface,
+					      comac_pdf_color_stop_t *stop1,
+					      comac_pdf_color_stop_t *stop2,
+					      comac_pdf_resource_t *function)
 {
     int num_elems, i;
     comac_pdf_alpha_linear_function_t elem;
@@ -4150,12 +4351,12 @@ comac_pdf_surface_emit_alpha_linear_function (comac_pdf_surface_t    *surface,
     num_elems = _comac_array_num_elements (&surface->alpha_linear_functions);
     for (i = 0; i < num_elems; i++) {
 	_comac_array_copy_element (&surface->alpha_linear_functions, i, &elem);
-        if (elem.alpha1 != stop1->color[3])
-            continue;
-        if (elem.alpha2 != stop2->color[3])
-            continue;
-        *function =  elem.resource;
-        return COMAC_STATUS_SUCCESS;
+	if (elem.alpha1 != stop1->color[3])
+	    continue;
+	if (elem.alpha2 != stop2->color[3])
+	    continue;
+	*function = elem.resource;
+	return COMAC_STATUS_SUCCESS;
     }
 
     res = _comac_pdf_surface_new_object (surface);
@@ -4172,8 +4373,8 @@ comac_pdf_surface_emit_alpha_linear_function (comac_pdf_surface_t    *surface,
 				 ">>\n"
 				 "endobj\n",
 				 res.id,
-                                 stop1->color[3],
-                                 stop2->color[3]);
+				 stop1->color[3],
+				 stop2->color[3]);
 
     elem.resource = res;
     elem.alpha1 = stop1->color[3];
@@ -4186,33 +4387,35 @@ comac_pdf_surface_emit_alpha_linear_function (comac_pdf_surface_t    *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_stitched_colorgradient (comac_pdf_surface_t    *surface,
-                                                unsigned int	        n_stops,
-                                                comac_pdf_color_stop_t *stops,
-                                                comac_bool_t	        is_alpha,
-                                                comac_pdf_resource_t   *function)
+_comac_pdf_surface_emit_stitched_colorgradient (comac_pdf_surface_t *surface,
+						unsigned int n_stops,
+						comac_pdf_color_stop_t *stops,
+						comac_bool_t is_alpha,
+						comac_pdf_resource_t *function)
 {
     comac_pdf_resource_t res;
     unsigned int i;
     comac_int_status_t status;
 
     /* emit linear gradients between pairs of subsequent stops... */
-    for (i = 0; i < n_stops-1; i++) {
-        if (is_alpha) {
-            status = comac_pdf_surface_emit_alpha_linear_function (surface,
-                                                                   &stops[i],
-                                                                   &stops[i+1],
-                                                                   &stops[i].resource);
-            if (unlikely (status))
-                return status;
-        } else {
-            status = comac_pdf_surface_emit_rgb_linear_function (surface,
-                                                                 &stops[i],
-                                                                 &stops[i+1],
-                                                                 &stops[i].resource);
-            if (unlikely (status))
-                return status;
-        }
+    for (i = 0; i < n_stops - 1; i++) {
+	if (is_alpha) {
+	    status = comac_pdf_surface_emit_alpha_linear_function (
+		surface,
+		&stops[i],
+		&stops[i + 1],
+		&stops[i].resource);
+	    if (unlikely (status))
+		return status;
+	} else {
+	    status =
+		comac_pdf_surface_emit_rgb_linear_function (surface,
+							    &stops[i],
+							    &stops[i + 1],
+							    &stops[i].resource);
+	    if (unlikely (status))
+		return status;
+	}
     }
 
     /* ... and stitch them together */
@@ -4225,32 +4428,25 @@ _comac_pdf_surface_emit_stitched_colorgradient (comac_pdf_surface_t    *surface,
 				 "<< /FunctionType 3\n"
 				 "   /Domain [ %f %f ]\n",
 				 res.id,
-                                 stops[0].offset,
-                                 stops[n_stops - 1].offset);
+				 stops[0].offset,
+				 stops[n_stops - 1].offset);
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Functions [ ");
-    for (i = 0; i < n_stops-1; i++)
-        _comac_output_stream_printf (surface->output,
-                                     "%d 0 R ", stops[i].resource.id);
-    _comac_output_stream_printf (surface->output,
-				 "]\n");
+    _comac_output_stream_printf (surface->output, "   /Functions [ ");
+    for (i = 0; i < n_stops - 1; i++)
+	_comac_output_stream_printf (surface->output,
+				     "%d 0 R ",
+				     stops[i].resource.id);
+    _comac_output_stream_printf (surface->output, "]\n");
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Bounds [ ");
-    for (i = 1; i < n_stops-1; i++)
-        _comac_output_stream_printf (surface->output,
-				     "%f ", stops[i].offset);
-    _comac_output_stream_printf (surface->output,
-				 "]\n");
+    _comac_output_stream_printf (surface->output, "   /Bounds [ ");
+    for (i = 1; i < n_stops - 1; i++)
+	_comac_output_stream_printf (surface->output, "%f ", stops[i].offset);
+    _comac_output_stream_printf (surface->output, "]\n");
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Encode [ ");
+    _comac_output_stream_printf (surface->output, "   /Encode [ ");
     for (i = 1; i < n_stops; i++)
-        _comac_output_stream_printf (surface->output,
-				     "0 1 ");
-    _comac_output_stream_printf (surface->output,
-				 "]\n");
+	_comac_output_stream_printf (surface->output, "0 1 ");
+    _comac_output_stream_printf (surface->output, "]\n");
 
     _comac_output_stream_printf (surface->output,
 				 ">>\n"
@@ -4261,7 +4457,6 @@ _comac_pdf_surface_emit_stitched_colorgradient (comac_pdf_surface_t    *surface,
     return _comac_output_stream_get_status (surface->output);
 }
 
-
 static void
 calc_gradient_color (comac_pdf_color_stop_t *new_stop,
 		     comac_pdf_color_stop_t *stop1,
@@ -4271,16 +4466,17 @@ calc_gradient_color (comac_pdf_color_stop_t *new_stop,
     double offset = stop1->offset / (stop1->offset + 1.0 - stop2->offset);
 
     for (i = 0; i < 4; i++)
-	new_stop->color[i] = stop1->color[i] + offset*(stop2->color[i] - stop1->color[i]);
+	new_stop->color[i] =
+	    stop1->color[i] + offset * (stop2->color[i] - stop1->color[i]);
 }
 
 #define COLOR_STOP_EPSILON 1e-6
 
 static comac_int_status_t
-_comac_pdf_surface_emit_pattern_stops (comac_pdf_surface_t      *surface,
-                                       comac_gradient_pattern_t *pattern,
-                                       comac_pdf_resource_t     *color_function,
-                                       comac_pdf_resource_t     *alpha_function)
+_comac_pdf_surface_emit_pattern_stops (comac_pdf_surface_t *surface,
+				       comac_gradient_pattern_t *pattern,
+				       comac_pdf_resource_t *color_function,
+				       comac_pdf_resource_t *alpha_function)
 {
     comac_pdf_color_stop_t *allstops, *stops;
     unsigned int n_stops;
@@ -4291,7 +4487,8 @@ _comac_pdf_surface_emit_pattern_stops (comac_pdf_surface_t      *surface,
     color_function->id = 0;
     alpha_function->id = 0;
 
-    allstops = _comac_malloc_ab ((pattern->n_stops + 2), sizeof (comac_pdf_color_stop_t));
+    allstops = _comac_malloc_ab ((pattern->n_stops + 2),
+				 sizeof (comac_pdf_color_stop_t));
     if (unlikely (allstops == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -4303,8 +4500,8 @@ _comac_pdf_surface_emit_pattern_stops (comac_pdf_surface_t      *surface,
 	stops[i].color[1] = pattern->stops[i].color.green;
 	stops[i].color[2] = pattern->stops[i].color.blue;
 	stops[i].color[3] = pattern->stops[i].color.alpha;
-        if (!COMAC_ALPHA_IS_OPAQUE (stops[i].color[3]))
-            emit_alpha = TRUE;
+	if (! COMAC_ALPHA_IS_OPAQUE (stops[i].color[3]))
+	    emit_alpha = TRUE;
 	stops[i].offset = pattern->stops[i].offset;
     }
 
@@ -4314,23 +4511,27 @@ _comac_pdf_surface_emit_pattern_stops (comac_pdf_surface_t      *surface,
 	    if (pattern->base.extend == COMAC_EXTEND_REFLECT)
 		memcpy (allstops, stops, sizeof (comac_pdf_color_stop_t));
 	    else
-		calc_gradient_color (&allstops[0], &stops[0], &stops[n_stops-1]);
+		calc_gradient_color (&allstops[0],
+				     &stops[0],
+				     &stops[n_stops - 1]);
 	    stops = allstops;
 	    n_stops++;
 	}
 	stops[0].offset = 0.0;
 
-	if (stops[n_stops-1].offset < 1.0 - COLOR_STOP_EPSILON) {
+	if (stops[n_stops - 1].offset < 1.0 - COLOR_STOP_EPSILON) {
 	    if (pattern->base.extend == COMAC_EXTEND_REFLECT) {
 		memcpy (&stops[n_stops],
 			&stops[n_stops - 1],
 			sizeof (comac_pdf_color_stop_t));
 	    } else {
-		calc_gradient_color (&stops[n_stops], &stops[0], &stops[n_stops-1]);
+		calc_gradient_color (&stops[n_stops],
+				     &stops[0],
+				     &stops[n_stops - 1]);
 	    }
 	    n_stops++;
 	}
-	stops[n_stops-1].offset = 1.0;
+	stops[n_stops - 1].offset = 1.0;
     }
 
     if (stops[0].offset == stops[n_stops - 1].offset) {
@@ -4359,60 +4560,66 @@ _comac_pdf_surface_emit_pattern_stops (comac_pdf_surface_t      *surface,
 	pad_stops[0].offset = 0;
 	pad_stops[3].offset = 1;
 
-        status = _comac_pdf_surface_emit_stitched_colorgradient (surface,
-                                                                 4,
-                                                                 pad_stops,
-                                                                 FALSE,
-                                                                 color_function);
-        if (unlikely (status))
-            goto BAIL;
+	status =
+	    _comac_pdf_surface_emit_stitched_colorgradient (surface,
+							    4,
+							    pad_stops,
+							    FALSE,
+							    color_function);
+	if (unlikely (status))
+	    goto BAIL;
 
-        if (emit_alpha) {
-            status = _comac_pdf_surface_emit_stitched_colorgradient (surface,
-                                                                     4,
-                                                                     pad_stops,
-                                                                     TRUE,
-                                                                     alpha_function);
-            if (unlikely (status))
-                goto BAIL;
-        }
+	if (emit_alpha) {
+	    status =
+		_comac_pdf_surface_emit_stitched_colorgradient (surface,
+								4,
+								pad_stops,
+								TRUE,
+								alpha_function);
+	    if (unlikely (status))
+		goto BAIL;
+	}
     } else if (n_stops == 2) {
-        /* no need for stitched function */
-        status = comac_pdf_surface_emit_rgb_linear_function (surface,
-                                                             &stops[0],
-                                                             &stops[n_stops - 1],
-                                                             color_function);
-        if (unlikely (status))
-            goto BAIL;
+	/* no need for stitched function */
+	status =
+	    comac_pdf_surface_emit_rgb_linear_function (surface,
+							&stops[0],
+							&stops[n_stops - 1],
+							color_function);
+	if (unlikely (status))
+	    goto BAIL;
 
-        if (emit_alpha) {
-            status = comac_pdf_surface_emit_alpha_linear_function (surface,
-                                                                   &stops[0],
-                                                                   &stops[n_stops - 1],
-                                                                   alpha_function);
-            if (unlikely (status))
-                goto BAIL;
-        }
+	if (emit_alpha) {
+	    status = comac_pdf_surface_emit_alpha_linear_function (
+		surface,
+		&stops[0],
+		&stops[n_stops - 1],
+		alpha_function);
+	    if (unlikely (status))
+		goto BAIL;
+	}
     } else {
-        /* multiple stops: stitch. XXX possible optimization: regularly spaced
+	/* multiple stops: stitch. XXX possible optimization: regularly spaced
          * stops do not require stitching. XXX */
-        status = _comac_pdf_surface_emit_stitched_colorgradient (surface,
-                                                                 n_stops,
-                                                                 stops,
-                                                                 FALSE,
-                                                                 color_function);
-        if (unlikely (status))
-            goto BAIL;
+	status =
+	    _comac_pdf_surface_emit_stitched_colorgradient (surface,
+							    n_stops,
+							    stops,
+							    FALSE,
+							    color_function);
+	if (unlikely (status))
+	    goto BAIL;
 
-        if (emit_alpha) {
-            status = _comac_pdf_surface_emit_stitched_colorgradient (surface,
-                                                                     n_stops,
-                                                                     stops,
-                                                                     TRUE,
-                                                                     alpha_function);
-            if (unlikely (status))
-                goto BAIL;
-        }
+	if (emit_alpha) {
+	    status =
+		_comac_pdf_surface_emit_stitched_colorgradient (surface,
+								n_stops,
+								stops,
+								TRUE,
+								alpha_function);
+	    if (unlikely (status))
+		goto BAIL;
+	}
     }
 
 BAIL:
@@ -4421,11 +4628,11 @@ BAIL:
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_repeating_function (comac_pdf_surface_t      *surface,
+_comac_pdf_surface_emit_repeating_function (comac_pdf_surface_t *surface,
 					    comac_gradient_pattern_t *pattern,
-					    comac_pdf_resource_t     *function,
-					    int                       begin,
-					    int                       end)
+					    comac_pdf_resource_t *function,
+					    int begin,
+					    int end)
 {
     comac_pdf_resource_t res;
     int i;
@@ -4439,38 +4646,28 @@ _comac_pdf_surface_emit_repeating_function (comac_pdf_surface_t      *surface,
 				 "<< /FunctionType 3\n"
 				 "   /Domain [ %d %d ]\n",
 				 res.id,
-                                 begin,
-                                 end);
+				 begin,
+				 end);
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Functions [ ");
+    _comac_output_stream_printf (surface->output, "   /Functions [ ");
     for (i = begin; i < end; i++)
-        _comac_output_stream_printf (surface->output,
-                                     "%d 0 R ", function->id);
-    _comac_output_stream_printf (surface->output,
-				 "]\n");
+	_comac_output_stream_printf (surface->output, "%d 0 R ", function->id);
+    _comac_output_stream_printf (surface->output, "]\n");
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Bounds [ ");
+    _comac_output_stream_printf (surface->output, "   /Bounds [ ");
     for (i = begin + 1; i < end; i++)
-        _comac_output_stream_printf (surface->output,
-				     "%d ", i);
-    _comac_output_stream_printf (surface->output,
-				 "]\n");
+	_comac_output_stream_printf (surface->output, "%d ", i);
+    _comac_output_stream_printf (surface->output, "]\n");
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Encode [ ");
+    _comac_output_stream_printf (surface->output, "   /Encode [ ");
     for (i = begin; i < end; i++) {
 	if ((i % 2) && pattern->base.extend == COMAC_EXTEND_REFLECT) {
-	    _comac_output_stream_printf (surface->output,
-					 "1 0 ");
+	    _comac_output_stream_printf (surface->output, "1 0 ");
 	} else {
-	    _comac_output_stream_printf (surface->output,
-					 "0 1 ");
+	    _comac_output_stream_printf (surface->output, "0 1 ");
 	}
     }
-    _comac_output_stream_printf (surface->output,
-				 "]\n");
+    _comac_output_stream_printf (surface->output, "]\n");
 
     _comac_output_stream_printf (surface->output,
 				 ">>\n"
@@ -4482,10 +4679,10 @@ _comac_pdf_surface_emit_repeating_function (comac_pdf_surface_t      *surface,
 }
 
 static comac_int_status_t
-comac_pdf_surface_emit_transparency_group (comac_pdf_surface_t  *surface,
-					   comac_pdf_pattern_t  *pdf_pattern,
-					   comac_pdf_resource_t  gstate_resource,
-					   comac_pdf_resource_t  gradient_mask)
+comac_pdf_surface_emit_transparency_group (comac_pdf_surface_t *surface,
+					   comac_pdf_pattern_t *pdf_pattern,
+					   comac_pdf_resource_t gstate_resource,
+					   comac_pdf_resource_t gradient_mask)
 {
     comac_pdf_resource_t smask_resource;
     comac_int_status_t status;
@@ -4493,17 +4690,19 @@ comac_pdf_surface_emit_transparency_group (comac_pdf_surface_t  *surface,
     double x1, y1, x2, y2;
 
     if (pdf_pattern->is_shading) {
-	snprintf(buf, sizeof(buf),
-		 "         /Shading\n"
-		 "            << /sh%d %d 0 R >>\n",
-		 gradient_mask.id,
-		 gradient_mask.id);
+	snprintf (buf,
+		  sizeof (buf),
+		  "         /Shading\n"
+		  "            << /sh%d %d 0 R >>\n",
+		  gradient_mask.id,
+		  gradient_mask.id);
     } else {
-	snprintf(buf, sizeof(buf),
-		 "         /Pattern\n"
-		 "            << /p%d %d 0 R >>\n",
-		 gradient_mask.id,
-		 gradient_mask.id);
+	snprintf (buf,
+		  sizeof (buf),
+		  "         /Pattern\n"
+		  "            << /p%d %d 0 R >>\n",
+		  gradient_mask.id,
+		  gradient_mask.id);
     }
 
     if (pdf_pattern->is_shading) {
@@ -4515,7 +4714,12 @@ comac_pdf_surface_emit_transparency_group (comac_pdf_surface_t  *surface,
 	 * pdf to comac coordinates) */
 	_comac_box_from_rectangle (&box, &pdf_pattern->extents);
 	_comac_box_to_doubles (&box, &x1, &y1, &x2, &y2);
-	_comac_matrix_transform_bounding_box (&pdf_pattern->pattern->matrix, &x1, &y1, &x2, &y2, NULL);
+	_comac_matrix_transform_bounding_box (&pdf_pattern->pattern->matrix,
+					      &x1,
+					      &y1,
+					      &x2,
+					      &y2,
+					      NULL);
     } else {
 	comac_box_double_t box;
 
@@ -4529,27 +4733,31 @@ comac_pdf_surface_emit_transparency_group (comac_pdf_surface_t  *surface,
 	x2 = box.p2.x;
 	y2 = box.p2.y;
     }
-    status = _comac_pdf_surface_open_stream (surface,
-					     NULL,
-					     surface->compress_streams,
-					     "   /Type /XObject\n"
-					     "   /Subtype /Form\n"
-					     "   /FormType 1\n"
-					     "   /BBox [ %f %f %f %f ]\n"
-					     "   /Resources\n"
-					     "      << /ExtGState\n"
-					     "            << /a0 << /ca 1 /CA 1 >>"
-					     "      >>\n"
-					     "%s"
-					     "      >>\n"
-					     "   /Group\n"
-					     "      << /Type /Group\n"
-					     "         /S /Transparency\n"
-					     "         /I true\n"
-					     "         /CS /DeviceGray\n"
-					     "      >>\n",
-					     x1,y1,x2,y2,
-					     buf);
+    status =
+	_comac_pdf_surface_open_stream (surface,
+					NULL,
+					surface->compress_streams,
+					"   /Type /XObject\n"
+					"   /Subtype /Form\n"
+					"   /FormType 1\n"
+					"   /BBox [ %f %f %f %f ]\n"
+					"   /Resources\n"
+					"      << /ExtGState\n"
+					"            << /a0 << /ca 1 /CA 1 >>"
+					"      >>\n"
+					"%s"
+					"      >>\n"
+					"   /Group\n"
+					"      << /Type /Group\n"
+					"         /S /Transparency\n"
+					"         /I true\n"
+					"         /CS /DeviceGray\n"
+					"      >>\n",
+					x1,
+					y1,
+					x2,
+					y2,
+					buf);
     if (unlikely (status))
 	return status;
 
@@ -4579,49 +4787,49 @@ comac_pdf_surface_emit_transparency_group (comac_pdf_surface_t  *surface,
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     _comac_output_stream_printf (surface->output,
-                                 "%d 0 obj\n"
-                                 "<< /Type /Mask\n"
-                                 "   /S /Luminosity\n"
-                                 "   /G %d 0 R\n"
-                                 ">>\n"
-                                 "endobj\n",
-                                 smask_resource.id,
-                                 surface->pdf_stream.self.id);
+				 "%d 0 obj\n"
+				 "<< /Type /Mask\n"
+				 "   /S /Luminosity\n"
+				 "   /G %d 0 R\n"
+				 ">>\n"
+				 "endobj\n",
+				 smask_resource.id,
+				 surface->pdf_stream.self.id);
 
     /* Create GState which uses the transparency group as an SMask. */
     _comac_pdf_surface_update_object (surface, gstate_resource);
 
     _comac_output_stream_printf (surface->output,
-                                 "%d 0 obj\n"
-                                 "<< /Type /ExtGState\n"
-                                 "   /SMask %d 0 R\n"
-                                 "   /ca 1\n"
-                                 "   /CA 1\n"
-                                 "   /AIS false\n"
-                                 ">>\n"
-                                 "endobj\n",
-                                 gstate_resource.id,
-                                 smask_resource.id);
+				 "%d 0 obj\n"
+				 "<< /Type /ExtGState\n"
+				 "   /SMask %d 0 R\n"
+				 "   /ca 1\n"
+				 "   /CA 1\n"
+				 "   /AIS false\n"
+				 ">>\n"
+				 "endobj\n",
+				 gstate_resource.id,
+				 smask_resource.id);
 
     return _comac_output_stream_get_status (surface->output);
 }
 
 static void
-_comac_pdf_surface_output_gradient (comac_pdf_surface_t        *surface,
-				    const comac_pdf_pattern_t  *pdf_pattern,
-				    comac_pdf_resource_t        pattern_resource,
-				    const comac_matrix_t       *pat_to_pdf,
-				    const comac_circle_double_t*start,
-				    const comac_circle_double_t*end,
-				    const double               *domain,
-				    const char                 *colorspace,
-				    comac_pdf_resource_t        color_function)
+_comac_pdf_surface_output_gradient (comac_pdf_surface_t *surface,
+				    const comac_pdf_pattern_t *pdf_pattern,
+				    comac_pdf_resource_t pattern_resource,
+				    const comac_matrix_t *pat_to_pdf,
+				    const comac_circle_double_t *start,
+				    const comac_circle_double_t *end,
+				    const double *domain,
+				    const char *colorspace,
+				    comac_pdf_resource_t color_function)
 {
     _comac_output_stream_printf (surface->output,
-                                 "%d 0 obj\n",
+				 "%d 0 obj\n",
 				 pattern_resource.id);
 
-    if (!pdf_pattern->is_shading) {
+    if (! pdf_pattern->is_shading) {
 	_comac_output_stream_printf (surface->output,
 				     "<< /Type /Pattern\n"
 				     "   /PatternType 2\n"
@@ -4638,51 +4846,55 @@ _comac_pdf_surface_output_gradient (comac_pdf_surface_t        *surface,
 				     "         /ColorSpace %s\n"
 				     "         /Coords [ %f %f %f %f ]\n",
 				     colorspace,
-				     start->center.x, start->center.y,
-				     end->center.x, end->center.y);
+				     start->center.x,
+				     start->center.y,
+				     end->center.x,
+				     end->center.y);
     } else {
 	_comac_output_stream_printf (surface->output,
 				     "      << /ShadingType 3\n"
 				     "         /ColorSpace %s\n"
 				     "         /Coords [ %f %f %f %f %f %f ]\n",
 				     colorspace,
-				     start->center.x, start->center.y,
+				     start->center.x,
+				     start->center.y,
 				     MAX (start->radius, 0),
-				     end->center.x, end->center.y,
+				     end->center.x,
+				     end->center.y,
 				     MAX (end->radius, 0));
     }
 
     _comac_output_stream_printf (surface->output,
 				 "         /Domain [ %f %f ]\n",
-				 domain[0], domain[1]);
+				 domain[0],
+				 domain[1]);
 
     if (pdf_pattern->pattern->extend != COMAC_EXTEND_NONE) {
-        _comac_output_stream_printf (surface->output,
-                                     "         /Extend [ true true ]\n");
+	_comac_output_stream_printf (surface->output,
+				     "         /Extend [ true true ]\n");
     } else {
-        _comac_output_stream_printf (surface->output,
-                                     "         /Extend [ false false ]\n");
+	_comac_output_stream_printf (surface->output,
+				     "         /Extend [ false false ]\n");
     }
 
     _comac_output_stream_printf (surface->output,
 				 "         /Function %d 0 R\n"
-                                 "      >>\n",
+				 "      >>\n",
 				 color_function.id);
 
-    if (!pdf_pattern->is_shading) {
-	_comac_output_stream_printf (surface->output,
-				     ">>\n");
+    if (! pdf_pattern->is_shading) {
+	_comac_output_stream_printf (surface->output, ">>\n");
     }
 
-    _comac_output_stream_printf (surface->output,
-				     "endobj\n");
+    _comac_output_stream_printf (surface->output, "endobj\n");
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
-				  comac_pdf_pattern_t    *pdf_pattern)
+_comac_pdf_surface_emit_gradient (comac_pdf_surface_t *surface,
+				  comac_pdf_pattern_t *pdf_pattern)
 {
-    comac_gradient_pattern_t *pattern = (comac_gradient_pattern_t *) pdf_pattern->pattern;
+    comac_gradient_pattern_t *pattern =
+	(comac_gradient_pattern_t *) pdf_pattern->pattern;
     comac_pdf_resource_t color_function, alpha_function;
     comac_matrix_t pat_to_pdf;
     comac_circle_double_t start, end;
@@ -4693,9 +4905,9 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
     assert (pattern->n_stops != 0);
 
     status = _comac_pdf_surface_emit_pattern_stops (surface,
-                                                    pattern,
-                                                    &color_function,
-                                                    &alpha_function);
+						    pattern,
+						    &color_function,
+						    &alpha_function);
     if (unlikely (status))
 	return status;
 
@@ -4705,15 +4917,14 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
     assert (status == COMAC_INT_STATUS_SUCCESS);
 
     if (pdf_pattern->inverted_y_axis)
-       comac_matrix_init (&mat, 1, 0, 0, 1, 0, 0);
+	comac_matrix_init (&mat, 1, 0, 0, 1, 0, 0);
     else
-       comac_matrix_init (&mat, 1, 0, 0, -1, 0, surface->height);
+	comac_matrix_init (&mat, 1, 0, 0, -1, 0, surface->height);
 
     comac_matrix_multiply (&pat_to_pdf, &pat_to_pdf, &mat);
 
     if (pattern->base.extend == COMAC_EXTEND_REPEAT ||
-	pattern->base.extend == COMAC_EXTEND_REFLECT)
-    {
+	pattern->base.extend == COMAC_EXTEND_REFLECT) {
 	double bounds_x1, bounds_x2, bounds_y1, bounds_y2;
 	double x_scale, y_scale, tolerance;
 
@@ -4723,22 +4934,33 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
 	bounds_x2 = surface->width;
 	bounds_y2 = surface->height;
 	_comac_matrix_transform_bounding_box (&pattern->base.matrix,
-					      &bounds_x1, &bounds_y1,
-					      &bounds_x2, &bounds_y2,
+					      &bounds_x1,
+					      &bounds_y1,
+					      &bounds_x2,
+					      &bounds_y2,
 					      NULL);
 
-	x_scale = surface->base.x_resolution / surface->base.x_fallback_resolution;
-	y_scale = surface->base.y_resolution / surface->base.y_fallback_resolution;
+	x_scale =
+	    surface->base.x_resolution / surface->base.x_fallback_resolution;
+	y_scale =
+	    surface->base.y_resolution / surface->base.y_fallback_resolution;
 
-	tolerance = fabs (_comac_matrix_compute_determinant (&pattern->base.matrix));
-	tolerance /= _comac_matrix_transformed_circle_major_axis (&pattern->base.matrix, 1);
+	tolerance =
+	    fabs (_comac_matrix_compute_determinant (&pattern->base.matrix));
+	tolerance /=
+	    _comac_matrix_transformed_circle_major_axis (&pattern->base.matrix,
+							 1);
 	tolerance *= MIN (x_scale, y_scale);
 
 	_comac_gradient_pattern_box_to_parameter (pattern,
-						  bounds_x1, bounds_y1,
-						  bounds_x2, bounds_y2,
-						  tolerance, domain);
-    } else if (pattern->stops[0].offset == pattern->stops[pattern->n_stops - 1].offset) {
+						  bounds_x1,
+						  bounds_y1,
+						  bounds_x2,
+						  bounds_y2,
+						  tolerance,
+						  domain);
+    } else if (pattern->stops[0].offset ==
+	       pattern->stops[pattern->n_stops - 1].offset) {
 	/*
 	 * If the first and the last stop offset are the same, then
 	 * the color function is a step function.
@@ -4767,8 +4989,7 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
     _comac_gradient_pattern_interpolate (pattern, domain[1], &end);
 
     if (pattern->base.extend == COMAC_EXTEND_REPEAT ||
-	pattern->base.extend == COMAC_EXTEND_REFLECT)
-    {
+	pattern->base.extend == COMAC_EXTEND_REFLECT) {
 	int repeat_begin, repeat_end;
 
 	repeat_begin = floor (domain[0]);
@@ -4783,11 +5004,12 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
 	    return status;
 
 	if (alpha_function.id != 0) {
-	    status = _comac_pdf_surface_emit_repeating_function (surface,
-								 pattern,
-								 &alpha_function,
-								 repeat_begin,
-								 repeat_end);
+	    status =
+		_comac_pdf_surface_emit_repeating_function (surface,
+							    pattern,
+							    &alpha_function,
+							    repeat_begin,
+							    repeat_end);
 	    if (unlikely (status))
 		return status;
 	}
@@ -4800,30 +5022,41 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
     }
 
     _comac_pdf_surface_update_object (surface, pdf_pattern->pattern_res);
-    _comac_pdf_surface_output_gradient (surface, pdf_pattern,
+    _comac_pdf_surface_output_gradient (surface,
+					pdf_pattern,
 					pdf_pattern->pattern_res,
-					&pat_to_pdf, &start, &end, domain,
-					"/DeviceRGB", color_function);
+					&pat_to_pdf,
+					&start,
+					&end,
+					domain,
+					"/DeviceRGB",
+					color_function);
 
     if (alpha_function.id != 0) {
 	comac_pdf_resource_t mask_resource;
 
 	assert (pdf_pattern->gstate_res.id != 0);
 
-        /* Create pattern for SMask. */
-        mask_resource = _comac_pdf_surface_new_object (surface);
+	/* Create pattern for SMask. */
+	mask_resource = _comac_pdf_surface_new_object (surface);
 	if (mask_resource.id == 0)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	_comac_pdf_surface_output_gradient (surface, pdf_pattern,
+	_comac_pdf_surface_output_gradient (surface,
+					    pdf_pattern,
 					    mask_resource,
-					    &pat_to_pdf, &start, &end, domain,
-					    "/DeviceGray", alpha_function);
+					    &pat_to_pdf,
+					    &start,
+					    &end,
+					    domain,
+					    "/DeviceGray",
+					    alpha_function);
 
-	status = comac_pdf_surface_emit_transparency_group (surface,
-							    pdf_pattern,
-						            pdf_pattern->gstate_res,
-							    mask_resource);
+	status =
+	    comac_pdf_surface_emit_transparency_group (surface,
+						       pdf_pattern,
+						       pdf_pattern->gstate_res,
+						       mask_resource);
 	if (unlikely (status))
 	    return status;
     }
@@ -4832,8 +5065,8 @@ _comac_pdf_surface_emit_gradient (comac_pdf_surface_t    *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
-				      comac_pdf_pattern_t    *pdf_pattern)
+_comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t *surface,
+				      comac_pdf_pattern_t *pdf_pattern)
 {
     comac_matrix_t pat_to_pdf;
     comac_int_status_t status;
@@ -4855,7 +5088,8 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 
     comac_matrix_multiply (&pat_to_pdf, &pat_to_pdf, &mat);
 
-    status = _comac_pdf_shading_init_color (&shading, (comac_mesh_pattern_t *) pattern);
+    status = _comac_pdf_shading_init_color (&shading,
+					    (comac_mesh_pattern_t *) pattern);
     if (unlikely (status))
 	return status;
 
@@ -4865,8 +5099,8 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 
     _comac_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
-                                 "<< /ShadingType %d\n"
-                                 "   /ColorSpace /DeviceRGB\n"
+				 "<< /ShadingType %d\n"
+				 "   /ColorSpace /DeviceRGB\n"
 				 "   /BitsPerCoordinate %d\n"
 				 "   /BitsPerComponent %d\n"
 				 "   /BitsPerFlag %d\n"
@@ -4878,7 +5112,9 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 				 shading.bits_per_flag);
 
     for (i = 0; i < shading.decode_array_length; i++)
-	_comac_output_stream_printf (surface->output, "%f ", shading.decode_array[i]);
+	_comac_output_stream_printf (surface->output,
+				     "%f ",
+				     shading.decode_array[i]);
 
     _comac_output_stream_printf (surface->output,
 				 "]\n"
@@ -4887,7 +5123,9 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 				 "stream\n",
 				 shading.data_length);
 
-    _comac_output_stream_write (surface->output, shading.data, shading.data_length);
+    _comac_output_stream_write (surface->output,
+				shading.data,
+				shading.data_length);
 
     _comac_output_stream_printf (surface->output,
 				 "\nendstream\n"
@@ -4897,15 +5135,15 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 
     _comac_pdf_surface_update_object (surface, pdf_pattern->pattern_res);
     _comac_output_stream_printf (surface->output,
-                                 "%d 0 obj\n"
-                                 "<< /Type /Pattern\n"
-                                 "   /PatternType 2\n"
-                                 "   /Matrix [ ",
+				 "%d 0 obj\n"
+				 "<< /Type /Pattern\n"
+				 "   /PatternType 2\n"
+				 "   /Matrix [ ",
 				 pdf_pattern->pattern_res.id);
     _comac_output_stream_print_matrix (surface->output, &pat_to_pdf);
     _comac_output_stream_printf (surface->output,
-                                 " ]\n"
-                                 "   /Shading %d 0 R\n"
+				 " ]\n"
+				 "   /Shading %d 0 R\n"
 				 ">>\n"
 				 "endobj\n",
 				 res.id);
@@ -4914,30 +5152,34 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 	comac_pdf_resource_t mask_resource;
 
 	/* Create pattern for SMask. */
-        res = _comac_pdf_surface_new_object (surface);
+	res = _comac_pdf_surface_new_object (surface);
 	if (unlikely (res.id == 0))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	status = _comac_pdf_shading_init_alpha (&shading, (comac_mesh_pattern_t *) pattern);
+	status =
+	    _comac_pdf_shading_init_alpha (&shading,
+					   (comac_mesh_pattern_t *) pattern);
 	if (unlikely (status))
 	    return status;
 
 	_comac_output_stream_printf (surface->output,
-				 "%d 0 obj\n"
-                                 "<< /ShadingType %d\n"
-                                 "   /ColorSpace /DeviceGray\n"
-				 "   /BitsPerCoordinate %d\n"
-				 "   /BitsPerComponent %d\n"
-				 "   /BitsPerFlag %d\n"
-				 "   /Decode [",
-				 res.id,
-				 shading.shading_type,
-				 shading.bits_per_coordinate,
-				 shading.bits_per_component,
-				 shading.bits_per_flag);
+				     "%d 0 obj\n"
+				     "<< /ShadingType %d\n"
+				     "   /ColorSpace /DeviceGray\n"
+				     "   /BitsPerCoordinate %d\n"
+				     "   /BitsPerComponent %d\n"
+				     "   /BitsPerFlag %d\n"
+				     "   /Decode [",
+				     res.id,
+				     shading.shading_type,
+				     shading.bits_per_coordinate,
+				     shading.bits_per_component,
+				     shading.bits_per_flag);
 
 	for (i = 0; i < shading.decode_array_length; i++)
-	    _comac_output_stream_printf (surface->output, "%f ", shading.decode_array[i]);
+	    _comac_output_stream_printf (surface->output,
+					 "%f ",
+					 shading.decode_array[i]);
 
 	_comac_output_stream_printf (surface->output,
 				     "]\n"
@@ -4946,14 +5188,16 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 				     "stream\n",
 				     shading.data_length);
 
-	_comac_output_stream_write (surface->output, shading.data, shading.data_length);
+	_comac_output_stream_write (surface->output,
+				    shading.data,
+				    shading.data_length);
 
 	_comac_output_stream_printf (surface->output,
 				     "\nendstream\n"
 				     "endobj\n");
 	_comac_pdf_shading_fini (&shading);
 
-        mask_resource = _comac_pdf_surface_new_object (surface);
+	mask_resource = _comac_pdf_surface_new_object (surface);
 	if (unlikely (mask_resource.id == 0))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -4971,10 +5215,11 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 				     "endobj\n",
 				     res.id);
 
-	status = comac_pdf_surface_emit_transparency_group (surface,
-							    pdf_pattern,
-						            pdf_pattern->gstate_res,
-							    mask_resource);
+	status =
+	    comac_pdf_surface_emit_transparency_group (surface,
+						       pdf_pattern,
+						       pdf_pattern->gstate_res,
+						       mask_resource);
 	if (unlikely (status))
 	    return status;
     }
@@ -4983,7 +5228,8 @@ _comac_pdf_surface_emit_mesh_pattern (comac_pdf_surface_t    *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_pattern (comac_pdf_surface_t *surface, comac_pdf_pattern_t *pdf_pattern)
+_comac_pdf_surface_emit_pattern (comac_pdf_surface_t *surface,
+				 comac_pdf_pattern_t *pdf_pattern)
 {
     comac_int_status_t status;
 
@@ -5017,13 +5263,13 @@ _comac_pdf_surface_emit_pattern (comac_pdf_surface_t *surface, comac_pdf_pattern
 }
 
 static comac_int_status_t
-_comac_pdf_surface_paint_surface_pattern (comac_pdf_surface_t          *surface,
-					  comac_operator_t              op,
-					  const comac_pattern_t        *source,
-					  const comac_rectangle_int_t  *extents,
-					  double                        alpha,
-					  comac_pdf_resource_t	       *smask_res,
-					  comac_bool_t                  stencil_mask)
+_comac_pdf_surface_paint_surface_pattern (comac_pdf_surface_t *surface,
+					  comac_operator_t op,
+					  const comac_pattern_t *source,
+					  const comac_rectangle_int_t *extents,
+					  double alpha,
+					  comac_pdf_resource_t *smask_res,
+					  comac_bool_t stencil_mask)
 {
     comac_matrix_t comac_p2d, pdf_p2d;
     comac_int_status_t status;
@@ -5033,9 +5279,9 @@ _comac_pdf_surface_paint_surface_pattern (comac_pdf_surface_t          *surface,
     comac_pdf_source_surface_entry_t *pdf_source;
 
     if (source->extend == COMAC_EXTEND_PAD &&
-	!(source->type == COMAC_PATTERN_TYPE_SURFACE &&
-	  ((comac_surface_pattern_t *)source)->surface->type == COMAC_SURFACE_TYPE_RECORDING))
-    {
+	! (source->type == COMAC_PATTERN_TYPE_SURFACE &&
+	   ((comac_surface_pattern_t *) source)->surface->type ==
+	       COMAC_SURFACE_TYPE_RECORDING)) {
 	status = _comac_pdf_surface_add_padded_image_surface (surface,
 							      source,
 							      extents,
@@ -5044,20 +5290,21 @@ _comac_pdf_surface_paint_surface_pattern (comac_pdf_surface_t          *surface,
 							      &y_offset,
 							      NULL);
     } else {
-	status = _comac_pdf_surface_add_source_surface (surface,
-							NULL,
-							source,
-							op,
-							source->filter,
-							stencil_mask,
-							FALSE, /* smask */
-							alpha != 1.0, /* need_transp_group */
-							extents,
-							smask_res,
-							&pdf_source,
-							&x_offset,
-							&y_offset,
-							NULL);
+	status = _comac_pdf_surface_add_source_surface (
+	    surface,
+	    NULL,
+	    source,
+	    op,
+	    source->filter,
+	    stencil_mask,
+	    FALSE,	  /* smask */
+	    alpha != 1.0, /* need_transp_group */
+	    extents,
+	    smask_res,
+	    &pdf_source,
+	    &x_offset,
+	    &y_offset,
+	    NULL);
     }
     if (unlikely (status))
 	return status;
@@ -5115,20 +5362,23 @@ _comac_pdf_surface_paint_surface_pattern (comac_pdf_surface_t          *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_paint_gradient (comac_pdf_surface_t         *surface,
-				   comac_operator_t             op,
-				   const comac_pattern_t       *source,
+_comac_pdf_surface_paint_gradient (comac_pdf_surface_t *surface,
+				   comac_operator_t op,
+				   const comac_pattern_t *source,
 				   const comac_rectangle_int_t *extents,
-				   double                       alpha)
+				   double alpha)
 {
     comac_pdf_resource_t shading_res, gstate_res;
     comac_matrix_t pat_to_pdf;
     comac_int_status_t status;
     int alpha_id;
 
-    status = _comac_pdf_surface_add_pdf_shading (surface, source,
-						 op, extents,
-						 &shading_res, &gstate_res);
+    status = _comac_pdf_surface_add_pdf_shading (surface,
+						 source,
+						 op,
+						 extents,
+						 &shading_res,
+						 &gstate_res);
     if (unlikely (status == COMAC_INT_STATUS_NOTHING_TO_DO))
 	return COMAC_INT_STATUS_SUCCESS;
     if (unlikely (status))
@@ -5177,12 +5427,12 @@ _comac_pdf_surface_paint_gradient (comac_pdf_surface_t         *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_paint_pattern (comac_pdf_surface_t          *surface,
-				  comac_operator_t              op,
-				  const comac_pattern_t        *source,
-				  const comac_rectangle_int_t  *extents,
-				  double                        alpha,
-				  comac_bool_t                  mask)
+_comac_pdf_surface_paint_pattern (comac_pdf_surface_t *surface,
+				  comac_operator_t op,
+				  const comac_pattern_t *source,
+				  const comac_rectangle_int_t *extents,
+				  double alpha,
+				  comac_bool_t mask)
 {
     switch (source->type) {
     case COMAC_PATTERN_TYPE_SURFACE:
@@ -5237,7 +5487,7 @@ _can_paint_pattern (const comac_pattern_t *pattern)
 
 static comac_int_status_t
 _comac_pdf_surface_select_operator (comac_pdf_surface_t *surface,
-				    comac_operator_t     op)
+				    comac_operator_t op)
 {
     comac_int_status_t status;
 
@@ -5248,8 +5498,7 @@ _comac_pdf_surface_select_operator (comac_pdf_surface_t *surface,
     if (unlikely (status))
 	return status;
 
-    _comac_output_stream_printf (surface->output,
-				 "/b%d gs\n", op);
+    _comac_output_stream_printf (surface->output, "/b%d gs\n", op);
     surface->current_operator = op;
     _comac_pdf_surface_add_operator (surface, op);
 
@@ -5258,16 +5507,17 @@ _comac_pdf_surface_select_operator (comac_pdf_surface_t *surface,
 
 static comac_int_status_t
 _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
-				   const comac_pattern_t     *pattern,
+				   const comac_pattern_t *pattern,
 				   comac_pdf_resource_t pattern_res,
-				   comac_bool_t         is_stroke)
+				   comac_bool_t is_stroke)
 {
     comac_int_status_t status;
     int alpha;
     const comac_color_t *solid_color = NULL;
 
     if (pattern->type == COMAC_PATTERN_TYPE_SOLID) {
-	const comac_solid_pattern_t *solid = (const comac_solid_pattern_t *) pattern;
+	const comac_solid_pattern_t *solid =
+	    (const comac_solid_pattern_t *) pattern;
 
 	solid_color = &solid->color;
     }
@@ -5277,8 +5527,7 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 	    surface->current_color_red != solid_color->red ||
 	    surface->current_color_green != solid_color->green ||
 	    surface->current_color_blue != solid_color->blue ||
-	    surface->current_color_is_stroke != is_stroke)
-	{
+	    surface->current_color_is_stroke != is_stroke) {
 	    status = _comac_pdf_operators_flush (&surface->pdf_operators);
 	    if (unlikely (status))
 		return status;
@@ -5301,9 +5550,10 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 	}
 
 	if (surface->current_pattern_is_solid_color == FALSE ||
-	    surface->current_color_alpha != solid_color->alpha)
-	{
-	    status = _comac_pdf_surface_add_alpha (surface, solid_color->alpha, &alpha);
+	    surface->current_color_alpha != solid_color->alpha) {
+	    status = _comac_pdf_surface_add_alpha (surface,
+						   solid_color->alpha,
+						   &alpha);
 	    if (unlikely (status))
 		return status;
 
@@ -5311,9 +5561,7 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 	    if (unlikely (status))
 		return status;
 
-	    _comac_output_stream_printf (surface->output,
-					 "/a%d gs\n",
-					 alpha);
+	    _comac_output_stream_printf (surface->output, "/a%d gs\n", alpha);
 	    surface->current_color_alpha = solid_color->alpha;
 	}
 
@@ -5333,7 +5581,7 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 
 	/* fill-stroke calls select_pattern twice. Don't save if the
 	 * gstate is already saved. */
-	if (!surface->select_pattern_gstate_saved)
+	if (! surface->select_pattern_gstate_saved)
 	    _comac_output_stream_printf (surface->output, "q ");
 
 	if (is_stroke) {
@@ -5345,9 +5593,7 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 					 "/Pattern cs /p%d scn ",
 					 pattern_res.id);
 	}
-	_comac_output_stream_printf (surface->output,
-				     "/a%d gs\n",
-				     alpha);
+	_comac_output_stream_printf (surface->output, "/a%d gs\n", alpha);
 	surface->select_pattern_gstate_saved = TRUE;
 	surface->current_pattern_is_solid_color = FALSE;
     }
@@ -5384,7 +5630,8 @@ _comac_pdf_surface_show_page (void *abstract_surface)
     if (unlikely (status))
 	return status;
 
-    status = _comac_array_append (&surface->page_labels, &surface->current_page_label);
+    status = _comac_array_append (&surface->page_labels,
+				  &surface->current_page_label);
     if (unlikely (status))
 	return status;
 
@@ -5410,8 +5657,8 @@ _comac_pdf_surface_show_page (void *abstract_surface)
 }
 
 static comac_bool_t
-_comac_pdf_surface_get_extents (void		        *abstract_surface,
-				comac_rectangle_int_t   *rectangle)
+_comac_pdf_surface_get_extents (void *abstract_surface,
+				comac_rectangle_int_t *rectangle)
 {
     comac_pdf_surface_t *surface = abstract_surface;
 
@@ -5422,15 +5669,16 @@ _comac_pdf_surface_get_extents (void		        *abstract_surface,
 }
 
 static void
-_comac_pdf_surface_get_font_options (void                  *abstract_surface,
-				     comac_font_options_t  *options)
+_comac_pdf_surface_get_font_options (void *abstract_surface,
+				     comac_font_options_t *options)
 {
     _comac_font_options_init_default (options);
 
     comac_font_options_set_hint_style (options, COMAC_HINT_STYLE_NONE);
     comac_font_options_set_hint_metrics (options, COMAC_HINT_METRICS_OFF);
     comac_font_options_set_antialias (options, COMAC_ANTIALIAS_GRAY);
-    _comac_font_options_set_round_glyph_positions (options, COMAC_ROUND_GLYPH_POS_OFF);
+    _comac_font_options_set_round_glyph_positions (options,
+						   COMAC_ROUND_GLYPH_POS_OFF);
 }
 
 static comac_int_status_t
@@ -5451,17 +5699,19 @@ _comac_pdf_surface_write_pages (comac_pdf_surface_t *surface)
     num_pages = _comac_array_num_elements (&surface->pages);
     for (i = 0; i < num_pages; i++) {
 	_comac_array_copy_element (&surface->pages, i, &page);
-	_comac_output_stream_printf (surface->object_stream.stream, "%d 0 R ", page.id);
+	_comac_output_stream_printf (surface->object_stream.stream,
+				     "%d 0 R ",
+				     page.id);
     }
 
     _comac_output_stream_printf (surface->object_stream.stream, "]\n");
-    _comac_output_stream_printf (surface->object_stream.stream, "   /Count %d\n", num_pages);
-
+    _comac_output_stream_printf (surface->object_stream.stream,
+				 "   /Count %d\n",
+				 num_pages);
 
     /* TODO: Figure out which other defaults to be inherited by /Page
      * objects. */
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 ">>\n");
+    _comac_output_stream_printf (surface->object_stream.stream, ">>\n");
     _comac_pdf_surface_object_end (surface);
 
     return COMAC_INT_STATUS_SUCCESS;
@@ -5478,7 +5728,7 @@ _comac_utf8_to_pdf_string (const char *utf8, char **str_out)
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
 
     ascii = TRUE;
-    p = (unsigned char *)utf8;
+    p = (unsigned char *) utf8;
     len = 0;
     while (*p) {
 	if (*p < 32 || *p > 126) {
@@ -5498,7 +5748,7 @@ _comac_utf8_to_pdf_string (const char *utf8, char **str_out)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	str[0] = '(';
-	p = (unsigned char *)utf8;
+	p = (unsigned char *) utf8;
 	i = 1;
 	while (*p) {
 	    if (*p == '(' || *p == ')' || *p == '\\')
@@ -5516,7 +5766,7 @@ _comac_utf8_to_pdf_string (const char *utf8, char **str_out)
 	if (unlikely (status))
 	    return status;
 
-	str = _comac_malloc (utf16_len*4 + 7);
+	str = _comac_malloc (utf16_len * 4 + 7);
 	if (str == NULL) {
 	    free (utf16);
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -5524,7 +5774,7 @@ _comac_utf8_to_pdf_string (const char *utf8, char **str_out)
 
 	strcpy (str, "<FEFF");
 	for (i = 0; i < utf16_len; i++)
-	    snprintf (str + 4*i + 5, 5, "%04X", utf16[i]);
+	    snprintf (str + 4 * i + 5, 5, "%04X", utf16[i]);
 
 	strcat (str, ">");
 	free (utf16);
@@ -5535,8 +5785,8 @@ _comac_utf8_to_pdf_string (const char *utf8, char **str_out)
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_unicode_for_glyph (comac_pdf_surface_t	*surface,
-					   const char 		*utf8)
+_comac_pdf_surface_emit_unicode_for_glyph (comac_pdf_surface_t *surface,
+					   const char *utf8)
 {
     uint16_t *utf16 = NULL;
     int utf16_len = 0;
@@ -5561,12 +5811,12 @@ _comac_pdf_surface_emit_unicode_for_glyph (comac_pdf_surface_t	*surface,
 	 * Glyphs that do not map to a Unicode code point must be
 	 * mapped to 0xfffd "REPLACEMENT CHARACTER".
 	 */
-	_comac_output_stream_printf (surface->output,
-				     "fffd");
+	_comac_output_stream_printf (surface->output, "fffd");
     } else {
 	for (i = 0; i < utf16_len; i++)
 	    _comac_output_stream_printf (surface->output,
-					 "%04x", (int) (utf16[i]));
+					 "%04x",
+					 (int) (utf16[i]));
     }
     _comac_output_stream_printf (surface->output, ">");
 
@@ -5581,18 +5831,36 @@ _comac_pdf_surface_emit_unicode_for_glyph (comac_pdf_surface_t	*surface,
  *   http://burtleburtle.net/bob/hash/doobs.html
  */
 
-#define HASH_MIX(a,b,c) 		\
-{ 					\
-    a -= b; a -= c; a ^= (c>>13);	\
-    b -= c; b -= a; b ^= (a<<8);	\
-    c -= a; c -= b; c ^= (b>>13);	\
-    a -= b; a -= c; a ^= (c>>12);	\
-    b -= c; b -= a; b ^= (a<<16);	\
-    c -= a; c -= b; c ^= (b>>5);	\
-    a -= b; a -= c; a ^= (c>>3);	\
-    b -= c; b -= a; b ^= (a<<10);	\
-    c -= a; c -= b; c ^= (b>>15);	\
-}
+#define HASH_MIX(a, b, c)                                                      \
+    {                                                                          \
+	a -= b;                                                                \
+	a -= c;                                                                \
+	a ^= (c >> 13);                                                        \
+	b -= c;                                                                \
+	b -= a;                                                                \
+	b ^= (a << 8);                                                         \
+	c -= a;                                                                \
+	c -= b;                                                                \
+	c ^= (b >> 13);                                                        \
+	a -= b;                                                                \
+	a -= c;                                                                \
+	a ^= (c >> 12);                                                        \
+	b -= c;                                                                \
+	b -= a;                                                                \
+	b ^= (a << 16);                                                        \
+	c -= a;                                                                \
+	c -= b;                                                                \
+	c ^= (b >> 5);                                                         \
+	a -= b;                                                                \
+	a -= c;                                                                \
+	a ^= (c >> 3);                                                         \
+	b -= c;                                                                \
+	b -= a;                                                                \
+	b ^= (a << 10);                                                        \
+	c -= a;                                                                \
+	c -= b;                                                                \
+	c ^= (b >> 15);                                                        \
+    }
 
 static uint32_t
 _hash_data (const unsigned char *data, int length, uint32_t initval)
@@ -5600,48 +5868,63 @@ _hash_data (const unsigned char *data, int length, uint32_t initval)
     uint32_t a, b, c, len;
 
     len = length;
-    a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
-    c = initval;         /* the previous hash value */
+    a = b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+    c = initval;	/* the previous hash value */
 
     while (len >= 12) {
-	a += (data[0] + ((uint32_t)data[1]<<8) + ((uint32_t)data[2]<<16) + ((uint32_t)data[3]<<24));
-	b += (data[4] + ((uint32_t)data[5]<<8) + ((uint32_t)data[6]<<16) + ((uint32_t)data[7]<<24));
-	c += (data[8] + ((uint32_t)data[9]<<8) + ((uint32_t)data[10]<<16)+ ((uint32_t)data[11]<<24));
-	HASH_MIX (a,b,c);
+	a += (data[0] + ((uint32_t) data[1] << 8) + ((uint32_t) data[2] << 16) +
+	      ((uint32_t) data[3] << 24));
+	b += (data[4] + ((uint32_t) data[5] << 8) + ((uint32_t) data[6] << 16) +
+	      ((uint32_t) data[7] << 24));
+	c += (data[8] + ((uint32_t) data[9] << 8) +
+	      ((uint32_t) data[10] << 16) + ((uint32_t) data[11] << 24));
+	HASH_MIX (a, b, c);
 	data += 12;
 	len -= 12;
     }
 
     c += length;
-    switch(len) {
-    case 11: c+= ((uint32_t) data[10] << 24); /* fall through */
-    case 10: c+= ((uint32_t) data[9] << 16);  /* fall through */
-    case 9 : c+= ((uint32_t) data[8] << 8);   /* fall through */
-    case 8 : b+= ((uint32_t) data[7] << 24);  /* fall through */
-    case 7 : b+= ((uint32_t) data[6] << 16);  /* fall through */
-    case 6 : b+= ((uint32_t) data[5] << 8);   /* fall through */
-    case 5 : b+= data[4];		      /* fall through */
-    case 4 : a+= ((uint32_t) data[3] << 24);  /* fall through */
-    case 3 : a+= ((uint32_t) data[2] << 16);  /* fall through */
-    case 2 : a+= ((uint32_t) data[1] << 8);   /* fall through */
-    case 1 : a+= data[0];
+    switch (len) {
+    case 11:
+	c += ((uint32_t) data[10] << 24); /* fall through */
+    case 10:
+	c += ((uint32_t) data[9] << 16); /* fall through */
+    case 9:
+	c += ((uint32_t) data[8] << 8); /* fall through */
+    case 8:
+	b += ((uint32_t) data[7] << 24); /* fall through */
+    case 7:
+	b += ((uint32_t) data[6] << 16); /* fall through */
+    case 6:
+	b += ((uint32_t) data[5] << 8); /* fall through */
+    case 5:
+	b += data[4]; /* fall through */
+    case 4:
+	a += ((uint32_t) data[3] << 24); /* fall through */
+    case 3:
+	a += ((uint32_t) data[2] << 16); /* fall through */
+    case 2:
+	a += ((uint32_t) data[1] << 8); /* fall through */
+    case 1:
+	a += data[0];
     }
-    HASH_MIX (a,b,c);
+    HASH_MIX (a, b, c);
 
     return c;
 }
 
 static void
-_create_font_subset_tag (comac_scaled_font_subset_t	*font_subset,
-			 const char 			*font_name,
-			 char				*tag)
+_create_font_subset_tag (comac_scaled_font_subset_t *font_subset,
+			 const char *font_name,
+			 char *tag)
 {
     uint32_t hash;
     int i;
 
-    hash = _hash_data ((unsigned char *) font_name, strlen(font_name), 0);
+    hash = _hash_data ((unsigned char *) font_name, strlen (font_name), 0);
     hash = _hash_data ((unsigned char *) (font_subset->glyphs),
-		       font_subset->num_glyphs * sizeof(unsigned long), hash);
+		       font_subset->num_glyphs * sizeof (unsigned long),
+		       hash);
 
     for (i = 0; i < 6; i++) {
 	tag[i] = 'A' + (hash % 26);
@@ -5651,9 +5934,10 @@ _create_font_subset_tag (comac_scaled_font_subset_t	*font_subset,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_to_unicode_stream (comac_pdf_surface_t		*surface,
-					   comac_scaled_font_subset_t	*font_subset,
-					   comac_pdf_resource_t         *stream)
+_comac_pdf_surface_emit_to_unicode_stream (
+    comac_pdf_surface_t *surface,
+    comac_scaled_font_subset_t *font_subset,
+    comac_pdf_resource_t *stream)
 {
     unsigned int i, num_bfchar;
     comac_int_status_t status;
@@ -5661,35 +5945,32 @@ _comac_pdf_surface_emit_to_unicode_stream (comac_pdf_surface_t		*surface,
     stream->id = 0;
 
     status = _comac_pdf_surface_open_stream (surface,
-					      NULL,
-					      surface->compress_streams,
-					      NULL);
+					     NULL,
+					     surface->compress_streams,
+					     NULL);
     if (unlikely (status))
 	return status;
 
     _comac_output_stream_printf (surface->output,
-                                 "/CIDInit /ProcSet findresource begin\n"
-                                 "12 dict begin\n"
-                                 "begincmap\n"
-                                 "/CIDSystemInfo\n"
-                                 "<< /Registry (Adobe)\n"
-                                 "   /Ordering (UCS)\n"
-                                 "   /Supplement 0\n"
-                                 ">> def\n"
-                                 "/CMapName /Adobe-Identity-UCS def\n"
-                                 "/CMapType 2 def\n"
-                                 "1 begincodespacerange\n");
+				 "/CIDInit /ProcSet findresource begin\n"
+				 "12 dict begin\n"
+				 "begincmap\n"
+				 "/CIDSystemInfo\n"
+				 "<< /Registry (Adobe)\n"
+				 "   /Ordering (UCS)\n"
+				 "   /Supplement 0\n"
+				 ">> def\n"
+				 "/CMapName /Adobe-Identity-UCS def\n"
+				 "/CMapType 2 def\n"
+				 "1 begincodespacerange\n");
 
-    if (font_subset->is_composite && !font_subset->is_latin) {
-        _comac_output_stream_printf (surface->output,
-                                     "<0000> <ffff>\n");
+    if (font_subset->is_composite && ! font_subset->is_latin) {
+	_comac_output_stream_printf (surface->output, "<0000> <ffff>\n");
     } else {
-        _comac_output_stream_printf (surface->output,
-                                     "<00> <ff>\n");
+	_comac_output_stream_printf (surface->output, "<00> <ff>\n");
     }
 
-    _comac_output_stream_printf (surface->output,
-                                  "endcodespacerange\n");
+    _comac_output_stream_printf (surface->output, "endcodespacerange\n");
 
     if (font_subset->is_scaled) {
 	/* Type 3 fonts include glyph 0 in the subset */
@@ -5702,19 +5983,20 @@ _comac_pdf_surface_emit_to_unicode_stream (comac_pdf_surface_t		*surface,
 
 	for (i = 0; i < num_bfchar; i++) {
 	    if (i != 0 && i % 100 == 0) {
-		_comac_output_stream_printf (surface->output,
-					     "endbfchar\n"
-					     "%d beginbfchar\n",
-					     num_bfchar - i > 100 ? 100 : num_bfchar - i);
+		_comac_output_stream_printf (
+		    surface->output,
+		    "endbfchar\n"
+		    "%d beginbfchar\n",
+		    num_bfchar - i > 100 ? 100 : num_bfchar - i);
 	    }
 	    _comac_output_stream_printf (surface->output, "<%02x> ", i);
-	    status = _comac_pdf_surface_emit_unicode_for_glyph (surface,
-								font_subset->utf8[i]);
+	    status = _comac_pdf_surface_emit_unicode_for_glyph (
+		surface,
+		font_subset->utf8[i]);
 	    if (unlikely (status))
 		return status;
 
-	    _comac_output_stream_printf (surface->output,
-					 "\n");
+	    _comac_output_stream_printf (surface->output, "\n");
 	}
     } else {
 	/* Other fonts reserve glyph 0 for .notdef. Omit glyph 0 from the /ToUnicode map */
@@ -5727,36 +6009,39 @@ _comac_pdf_surface_emit_to_unicode_stream (comac_pdf_surface_t		*surface,
 
 	for (i = 0; i < num_bfchar; i++) {
 	    if (i != 0 && i % 100 == 0) {
-		_comac_output_stream_printf (surface->output,
-					     "endbfchar\n"
-					     "%d beginbfchar\n",
-					     num_bfchar - i > 100 ? 100 : num_bfchar - i);
+		_comac_output_stream_printf (
+		    surface->output,
+		    "endbfchar\n"
+		    "%d beginbfchar\n",
+		    num_bfchar - i > 100 ? 100 : num_bfchar - i);
 	    }
 	    if (font_subset->is_latin)
-		_comac_output_stream_printf (surface->output, "<%02x> ", font_subset->to_latin_char[i + 1]);
+		_comac_output_stream_printf (surface->output,
+					     "<%02x> ",
+					     font_subset->to_latin_char[i + 1]);
 	    else if (font_subset->is_composite)
 		_comac_output_stream_printf (surface->output, "<%04x> ", i + 1);
 	    else
 		_comac_output_stream_printf (surface->output, "<%02x> ", i + 1);
 
-	    status = _comac_pdf_surface_emit_unicode_for_glyph (surface,
-								font_subset->utf8[i + 1]);
+	    status = _comac_pdf_surface_emit_unicode_for_glyph (
+		surface,
+		font_subset->utf8[i + 1]);
 	    if (unlikely (status))
 		return status;
 
-	    _comac_output_stream_printf (surface->output,
-					 "\n");
+	    _comac_output_stream_printf (surface->output, "\n");
 	}
     }
 
-    _comac_output_stream_printf (surface->output,
-                                 "endbfchar\n");
+    _comac_output_stream_printf (surface->output, "endbfchar\n");
 
-    _comac_output_stream_printf (surface->output,
-                                 "endcmap\n"
-                                 "CMapName currentdict /CMap defineresource pop\n"
-                                 "end\n"
-                                 "end\n");
+    _comac_output_stream_printf (
+	surface->output,
+	"endcmap\n"
+	"CMapName currentdict /CMap defineresource pop\n"
+	"end\n"
+	"end\n");
 
     *stream = surface->pdf_stream.self;
     return _comac_pdf_surface_close_stream (surface);
@@ -5765,9 +6050,9 @@ _comac_pdf_surface_emit_to_unicode_stream (comac_pdf_surface_t		*surface,
 #define PDF_UNITS_PER_EM 1000
 
 static comac_int_status_t
-_comac_pdf_surface_emit_cff_font (comac_pdf_surface_t		*surface,
-                                  comac_scaled_font_subset_t	*font_subset,
-                                  comac_cff_subset_t            *subset)
+_comac_pdf_surface_emit_cff_font (comac_pdf_surface_t *surface,
+				  comac_scaled_font_subset_t *font_subset,
+				  comac_cff_subset_t *subset)
 {
     comac_pdf_resource_t stream, descriptor, cidfont_dict;
     comac_pdf_resource_t subset_resource, to_unicode_stream;
@@ -5778,30 +6063,32 @@ _comac_pdf_surface_emit_cff_font (comac_pdf_surface_t		*surface,
 
     _create_font_subset_tag (font_subset, subset->ps_name, tag);
 
-    subset_resource = _comac_pdf_surface_get_font_resource (surface,
-							    font_subset->font_id,
-							    font_subset->subset_id);
+    subset_resource =
+	_comac_pdf_surface_get_font_resource (surface,
+					      font_subset->font_id,
+					      font_subset->subset_id);
     if (subset_resource.id == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    status = _comac_pdf_surface_open_stream (surface,
-					     NULL,
-					     TRUE,
-					     font_subset->is_latin ?
-					     "   /Subtype /Type1C\n" :
-					     "   /Subtype /CIDFontType0C\n");
+    status = _comac_pdf_surface_open_stream (
+	surface,
+	NULL,
+	TRUE,
+	font_subset->is_latin ? "   /Subtype /Type1C\n"
+			      : "   /Subtype /CIDFontType0C\n");
     if (unlikely (status))
 	return status;
 
     stream = surface->pdf_stream.self;
     _comac_output_stream_write (surface->output,
-				subset->data, subset->data_length);
+				subset->data,
+				subset->data_length);
     status = _comac_pdf_surface_close_stream (surface);
     if (unlikely (status))
 	return status;
 
     status = _comac_pdf_surface_emit_to_unicode_stream (surface,
-	                                                font_subset,
+							font_subset,
 							&to_unicode_stream);
     if (_comac_int_status_is_error (status))
 	return status;
@@ -5844,13 +6131,13 @@ _comac_pdf_surface_emit_cff_font (comac_pdf_surface_t		*surface,
 				 "   /FontFile3 %u 0 R\n"
 				 ">>\n"
 				 "endobj\n",
-				 (long)(subset->x_min*PDF_UNITS_PER_EM),
-				 (long)(subset->y_min*PDF_UNITS_PER_EM),
-				 (long)(subset->x_max*PDF_UNITS_PER_EM),
-				 (long)(subset->y_max*PDF_UNITS_PER_EM),
-				 (long)(subset->ascent*PDF_UNITS_PER_EM),
-				 (long)(subset->descent*PDF_UNITS_PER_EM),
-				 (long)(subset->y_max*PDF_UNITS_PER_EM),
+				 (long) (subset->x_min * PDF_UNITS_PER_EM),
+				 (long) (subset->y_min * PDF_UNITS_PER_EM),
+				 (long) (subset->x_max * PDF_UNITS_PER_EM),
+				 (long) (subset->y_max * PDF_UNITS_PER_EM),
+				 (long) (subset->ascent * PDF_UNITS_PER_EM),
+				 (long) (subset->descent * PDF_UNITS_PER_EM),
+				 (long) (subset->y_max * PDF_UNITS_PER_EM),
 				 stream.id);
 
     if (font_subset->is_latin) {
@@ -5880,16 +6167,16 @@ _comac_pdf_surface_emit_cff_font (comac_pdf_surface_t		*surface,
 	for (i = 32; i < last_glyph + 1; i++) {
 	    int glyph = font_subset->latin_to_subset_glyph_index[i];
 	    if (glyph > 0) {
-		_comac_output_stream_printf (surface->output,
-					     " %f",
-					     (subset->widths[glyph]*PDF_UNITS_PER_EM));
+		_comac_output_stream_printf (
+		    surface->output,
+		    " %f",
+		    (subset->widths[glyph] * PDF_UNITS_PER_EM));
 	    } else {
 		_comac_output_stream_printf (surface->output, " 0");
 	    }
 	}
 
-	_comac_output_stream_printf (surface->output,
-				     " ]\n");
+	_comac_output_stream_printf (surface->output, " ]\n");
 
 	if (to_unicode_stream.id != 0)
 	    _comac_output_stream_printf (surface->output,
@@ -5922,9 +6209,10 @@ _comac_pdf_surface_emit_cff_font (comac_pdf_surface_t		*surface,
 				     descriptor.id);
 
 	for (i = 0; i < font_subset->num_glyphs; i++)
-	    _comac_output_stream_printf (surface->output,
-					 " %f",
-					 (subset->widths[i]*PDF_UNITS_PER_EM));
+	    _comac_output_stream_printf (
+		surface->output,
+		" %f",
+		(subset->widths[i] * PDF_UNITS_PER_EM));
 
 	_comac_output_stream_printf (surface->output,
 				     " ]]\n"
@@ -5963,18 +6251,21 @@ _comac_pdf_surface_emit_cff_font (comac_pdf_surface_t		*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_cff_font_subset (comac_pdf_surface_t	     *surface,
-                                         comac_scaled_font_subset_t  *font_subset)
+_comac_pdf_surface_emit_cff_font_subset (
+    comac_pdf_surface_t *surface, comac_scaled_font_subset_t *font_subset)
 {
     comac_int_status_t status;
     comac_cff_subset_t subset;
     char name[64];
 
-    snprintf (name, sizeof name, "ComacFont-%d-%d",
-              font_subset->font_id, font_subset->subset_id);
+    snprintf (name,
+	      sizeof name,
+	      "ComacFont-%d-%d",
+	      font_subset->font_id,
+	      font_subset->subset_id);
     status = _comac_cff_subset_init (&subset, name, font_subset);
     if (unlikely (status))
-        return status;
+	return status;
 
     status = _comac_pdf_surface_emit_cff_font (surface, font_subset, &subset);
 
@@ -5984,8 +6275,8 @@ _comac_pdf_surface_emit_cff_font_subset (comac_pdf_surface_t	     *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_cff_fallback_font (comac_pdf_surface_t	       *surface,
-                                           comac_scaled_font_subset_t  *font_subset)
+_comac_pdf_surface_emit_cff_fallback_font (
+    comac_pdf_surface_t *surface, comac_scaled_font_subset_t *font_subset)
 {
     comac_int_status_t status;
     comac_cff_subset_t subset;
@@ -5993,14 +6284,17 @@ _comac_pdf_surface_emit_cff_fallback_font (comac_pdf_surface_t	       *surface,
 
     /* CFF fallback subsetting does not work with 8-bit glyphs unless
      * they are a latin subset */
-    if (!font_subset->is_composite && !font_subset->is_latin)
+    if (! font_subset->is_composite && ! font_subset->is_latin)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    snprintf (name, sizeof name, "ComacFont-%d-%d",
-              font_subset->font_id, font_subset->subset_id);
+    snprintf (name,
+	      sizeof name,
+	      "ComacFont-%d-%d",
+	      font_subset->font_id,
+	      font_subset->subset_id);
     status = _comac_cff_fallback_init (&subset, name, font_subset);
     if (unlikely (status))
-        return status;
+	return status;
 
     status = _comac_pdf_surface_emit_cff_font (surface, font_subset, &subset);
 
@@ -6010,9 +6304,9 @@ _comac_pdf_surface_emit_cff_fallback_font (comac_pdf_surface_t	       *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_type1_font (comac_pdf_surface_t		*surface,
-                                    comac_scaled_font_subset_t	*font_subset,
-                                    comac_type1_subset_t        *subset)
+_comac_pdf_surface_emit_type1_font (comac_pdf_surface_t *surface,
+				    comac_scaled_font_subset_t *font_subset,
+				    comac_type1_subset_t *subset)
 {
     comac_pdf_resource_t stream, descriptor, subset_resource, to_unicode_stream;
     comac_pdf_font_t font;
@@ -6023,13 +6317,15 @@ _comac_pdf_surface_emit_type1_font (comac_pdf_surface_t		*surface,
 
     _create_font_subset_tag (font_subset, subset->base_font, tag);
 
-    subset_resource = _comac_pdf_surface_get_font_resource (surface,
-							    font_subset->font_id,
-							    font_subset->subset_id);
+    subset_resource =
+	_comac_pdf_surface_get_font_resource (surface,
+					      font_subset->font_id,
+					      font_subset->subset_id);
     if (subset_resource.id == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    length = subset->header_length + subset->data_length + subset->trailer_length;
+    length =
+	subset->header_length + subset->data_length + subset->trailer_length;
     status = _comac_pdf_surface_open_stream (surface,
 					     NULL,
 					     TRUE,
@@ -6049,7 +6345,7 @@ _comac_pdf_surface_emit_type1_font (comac_pdf_surface_t		*surface,
 	return status;
 
     status = _comac_pdf_surface_emit_to_unicode_stream (surface,
-	                                                font_subset,
+							font_subset,
 							&to_unicode_stream);
     if (_comac_int_status_is_error (status))
 	return status;
@@ -6086,13 +6382,13 @@ _comac_pdf_surface_emit_type1_font (comac_pdf_surface_t		*surface,
 				 descriptor.id,
 				 tag,
 				 subset->base_font,
-				 (long)(subset->x_min*PDF_UNITS_PER_EM),
-				 (long)(subset->y_min*PDF_UNITS_PER_EM),
-				 (long)(subset->x_max*PDF_UNITS_PER_EM),
-				 (long)(subset->y_max*PDF_UNITS_PER_EM),
-				 (long)(subset->ascent*PDF_UNITS_PER_EM),
-				 (long)(subset->descent*PDF_UNITS_PER_EM),
-				 (long)(subset->y_max*PDF_UNITS_PER_EM),
+				 (long) (subset->x_min * PDF_UNITS_PER_EM),
+				 (long) (subset->y_min * PDF_UNITS_PER_EM),
+				 (long) (subset->x_max * PDF_UNITS_PER_EM),
+				 (long) (subset->y_max * PDF_UNITS_PER_EM),
+				 (long) (subset->ascent * PDF_UNITS_PER_EM),
+				 (long) (subset->descent * PDF_UNITS_PER_EM),
+				 (long) (subset->y_max * PDF_UNITS_PER_EM),
 				 stream.id);
 
     _comac_pdf_surface_update_object (surface, subset_resource);
@@ -6112,34 +6408,36 @@ _comac_pdf_surface_emit_type1_font (comac_pdf_surface_t		*surface,
 				 descriptor.id);
 
     if (font_subset->is_latin)
-	_comac_output_stream_printf (surface->output, "   /Encoding /WinAnsiEncoding\n");
+	_comac_output_stream_printf (surface->output,
+				     "   /Encoding /WinAnsiEncoding\n");
 
     _comac_output_stream_printf (surface->output, "   /Widths [");
     if (font_subset->is_latin) {
 	for (i = 32; i < last_glyph + 1; i++) {
 	    int glyph = font_subset->latin_to_subset_glyph_index[i];
 	    if (glyph > 0) {
-		_comac_output_stream_printf (surface->output,
-					     " %f",
-					     (subset->widths[glyph]*PDF_UNITS_PER_EM));
+		_comac_output_stream_printf (
+		    surface->output,
+		    " %f",
+		    (subset->widths[glyph] * PDF_UNITS_PER_EM));
 	    } else {
 		_comac_output_stream_printf (surface->output, " 0");
 	    }
 	}
     } else {
 	for (i = 0; i < font_subset->num_glyphs; i++)
-	    _comac_output_stream_printf (surface->output,
-					 " %f",
-					 (subset->widths[i]*PDF_UNITS_PER_EM));
+	    _comac_output_stream_printf (
+		surface->output,
+		" %f",
+		(subset->widths[i] * PDF_UNITS_PER_EM));
     }
 
-    _comac_output_stream_printf (surface->output,
-				 " ]\n");
+    _comac_output_stream_printf (surface->output, " ]\n");
 
     if (to_unicode_stream.id != 0)
-        _comac_output_stream_printf (surface->output,
-                                     "    /ToUnicode %d 0 R\n",
-                                     to_unicode_stream.id);
+	_comac_output_stream_printf (surface->output,
+				     "    /ToUnicode %d 0 R\n",
+				     to_unicode_stream.id);
 
     _comac_output_stream_printf (surface->output,
 				 ">>\n"
@@ -6152,19 +6450,22 @@ _comac_pdf_surface_emit_type1_font (comac_pdf_surface_t		*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_type1_font_subset (comac_pdf_surface_t		*surface,
-					   comac_scaled_font_subset_t	*font_subset)
+_comac_pdf_surface_emit_type1_font_subset (
+    comac_pdf_surface_t *surface, comac_scaled_font_subset_t *font_subset)
 {
     comac_int_status_t status;
     comac_type1_subset_t subset;
     char name[64];
 
     /* 16-bit glyphs not compatible with Type 1 fonts */
-    if (font_subset->is_composite && !font_subset->is_latin)
+    if (font_subset->is_composite && ! font_subset->is_latin)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    snprintf (name, sizeof name, "ComacFont-%d-%d",
-	      font_subset->font_id, font_subset->subset_id);
+    snprintf (name,
+	      sizeof name,
+	      "ComacFont-%d-%d",
+	      font_subset->font_id,
+	      font_subset->subset_id);
     status = _comac_type1_subset_init (&subset, name, font_subset, FALSE);
     if (unlikely (status))
 	return status;
@@ -6176,19 +6477,22 @@ _comac_pdf_surface_emit_type1_font_subset (comac_pdf_surface_t		*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_type1_fallback_font (comac_pdf_surface_t	*surface,
-                                             comac_scaled_font_subset_t	*font_subset)
+_comac_pdf_surface_emit_type1_fallback_font (
+    comac_pdf_surface_t *surface, comac_scaled_font_subset_t *font_subset)
 {
     comac_int_status_t status;
     comac_type1_subset_t subset;
     char name[64];
 
     /* 16-bit glyphs not compatible with Type 1 fonts */
-    if (font_subset->is_composite && !font_subset->is_latin)
+    if (font_subset->is_composite && ! font_subset->is_latin)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    snprintf (name, sizeof name, "ComacFont-%d-%d",
-	      font_subset->font_id, font_subset->subset_id);
+    snprintf (name,
+	      sizeof name,
+	      "ComacFont-%d-%d",
+	      font_subset->font_id,
+	      font_subset->subset_id);
     status = _comac_type1_fallback_init_binary (&subset, name, font_subset);
     if (unlikely (status))
 	return status;
@@ -6200,8 +6504,8 @@ _comac_pdf_surface_emit_type1_fallback_font (comac_pdf_surface_t	*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
-					      comac_scaled_font_subset_t	*font_subset)
+_comac_pdf_surface_emit_truetype_font_subset (
+    comac_pdf_surface_t *surface, comac_scaled_font_subset_t *font_subset)
 {
     comac_pdf_resource_t stream, descriptor, cidfont_dict;
     comac_pdf_resource_t subset_resource, to_unicode_stream;
@@ -6211,9 +6515,10 @@ _comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
     unsigned int i, last_glyph;
     char tag[10];
 
-    subset_resource = _comac_pdf_surface_get_font_resource (surface,
-							    font_subset->font_id,
-							    font_subset->subset_id);
+    subset_resource =
+	_comac_pdf_surface_get_font_resource (surface,
+					      font_subset->font_id,
+					      font_subset->subset_id);
     if (subset_resource.id == 0)
 	return COMAC_STATUS_SUCCESS;
 
@@ -6235,7 +6540,8 @@ _comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
 
     stream = surface->pdf_stream.self;
     _comac_output_stream_write (surface->output,
-				subset.data, subset.data_length);
+				subset.data,
+				subset.data_length);
     status = _comac_pdf_surface_close_stream (surface);
     if (unlikely (status)) {
 	_comac_truetype_subset_fini (&subset);
@@ -6243,7 +6549,7 @@ _comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
     }
 
     status = _comac_pdf_surface_emit_to_unicode_stream (surface,
-	                                                font_subset,
+							font_subset,
 							&to_unicode_stream);
     if (_comac_int_status_is_error (status)) {
 	_comac_truetype_subset_fini (&subset);
@@ -6291,13 +6597,13 @@ _comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
 				 ">>\n"
 				 "endobj\n",
 				 font_subset->is_latin ? 32 : 4,
-				 (long)(subset.x_min*PDF_UNITS_PER_EM),
-				 (long)(subset.y_min*PDF_UNITS_PER_EM),
-                                 (long)(subset.x_max*PDF_UNITS_PER_EM),
-				 (long)(subset.y_max*PDF_UNITS_PER_EM),
-				 (long)(subset.ascent*PDF_UNITS_PER_EM),
-				 (long)(subset.descent*PDF_UNITS_PER_EM),
-				 (long)(subset.y_max*PDF_UNITS_PER_EM),
+				 (long) (subset.x_min * PDF_UNITS_PER_EM),
+				 (long) (subset.y_min * PDF_UNITS_PER_EM),
+				 (long) (subset.x_max * PDF_UNITS_PER_EM),
+				 (long) (subset.y_max * PDF_UNITS_PER_EM),
+				 (long) (subset.ascent * PDF_UNITS_PER_EM),
+				 (long) (subset.descent * PDF_UNITS_PER_EM),
+				 (long) (subset.y_max * PDF_UNITS_PER_EM),
 				 stream.id);
 
     if (font_subset->is_latin) {
@@ -6327,16 +6633,16 @@ _comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
 	for (i = 32; i < last_glyph + 1; i++) {
 	    int glyph = font_subset->latin_to_subset_glyph_index[i];
 	    if (glyph > 0) {
-		_comac_output_stream_printf (surface->output,
-					     " %f",
-					     (subset.widths[glyph]*PDF_UNITS_PER_EM));
+		_comac_output_stream_printf (
+		    surface->output,
+		    " %f",
+		    (subset.widths[glyph] * PDF_UNITS_PER_EM));
 	    } else {
 		_comac_output_stream_printf (surface->output, " 0");
 	    }
 	}
 
-	_comac_output_stream_printf (surface->output,
-				     " ]\n");
+	_comac_output_stream_printf (surface->output, " ]\n");
 
 	if (to_unicode_stream.id != 0)
 	    _comac_output_stream_printf (surface->output,
@@ -6373,7 +6679,7 @@ _comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
 	for (i = 0; i < font_subset->num_glyphs; i++)
 	    _comac_output_stream_printf (surface->output,
 					 " %f",
-					 (subset.widths[i]*PDF_UNITS_PER_EM));
+					 (subset.widths[i] * PDF_UNITS_PER_EM));
 
 	_comac_output_stream_printf (surface->output,
 				     " ]]\n"
@@ -6415,7 +6721,7 @@ _comac_pdf_surface_emit_truetype_font_subset (comac_pdf_surface_t		*surface,
 
 static comac_int_status_t
 _comac_pdf_emit_imagemask (comac_image_surface_t *image,
-			     comac_output_stream_t *stream)
+			   comac_output_stream_t *stream)
 {
     uint8_t *byte, output_byte;
     int row, col, num_cols;
@@ -6434,8 +6740,7 @@ _comac_pdf_emit_imagemask (comac_image_surface_t *image,
 				 image->width,
 				 image->height);
 
-    _comac_output_stream_printf (stream,
-				 "ID ");
+    _comac_output_stream_printf (stream, "ID ");
 
     num_cols = (image->width + 7) / 8;
     for (row = 0; row < image->height; row++) {
@@ -6447,15 +6752,14 @@ _comac_pdf_emit_imagemask (comac_image_surface_t *image,
 	}
     }
 
-    _comac_output_stream_printf (stream,
-				 "\nEI\n");
+    _comac_output_stream_printf (stream, "\nEI\n");
 
     return _comac_output_stream_get_status (stream);
 }
 
 static comac_int_status_t
-_comac_pdf_surface_analyze_user_font_subset (comac_scaled_font_subset_t *font_subset,
-					     void		        *closure)
+_comac_pdf_surface_analyze_user_font_subset (
+    comac_scaled_font_subset_t *font_subset, void *closure)
 {
     comac_pdf_surface_t *surface = closure;
     comac_int_status_t status = COMAC_INT_STATUS_SUCCESS;
@@ -6465,23 +6769,26 @@ _comac_pdf_surface_analyze_user_font_subset (comac_scaled_font_subset_t *font_su
     comac_output_stream_t *null_stream;
 
     null_stream = _comac_null_stream_create ();
-    type3_surface = _comac_type3_glyph_surface_create (font_subset->scaled_font,
-						       null_stream,
-						       _comac_pdf_emit_imagemask,
-						       surface->font_subsets,
-						       FALSE);
+    type3_surface =
+	_comac_type3_glyph_surface_create (font_subset->scaled_font,
+					   null_stream,
+					   _comac_pdf_emit_imagemask,
+					   surface->font_subsets,
+					   FALSE);
     if (unlikely (type3_surface->status)) {
 	status2 = _comac_output_stream_destroy (null_stream);
 	return type3_surface->status;
     }
 
-    _comac_type3_glyph_surface_set_font_subsets_callback (type3_surface,
-							  _comac_pdf_surface_add_font,
-							  surface);
+    _comac_type3_glyph_surface_set_font_subsets_callback (
+	type3_surface,
+	_comac_pdf_surface_add_font,
+	surface);
 
     for (i = 0; i < font_subset->num_glyphs; i++) {
-	status = _comac_type3_glyph_surface_analyze_glyph (type3_surface,
-							   font_subset->glyphs[i]);
+	status =
+	    _comac_type3_glyph_surface_analyze_glyph (type3_surface,
+						      font_subset->glyphs[i]);
 	if (unlikely (status))
 	    break;
     }
@@ -6495,52 +6802,57 @@ _comac_pdf_surface_analyze_user_font_subset (comac_scaled_font_subset_t *font_su
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_type3_font_subset (comac_pdf_surface_t		*surface,
-					   comac_scaled_font_subset_t	*font_subset)
+_comac_pdf_surface_emit_type3_font_subset (
+    comac_pdf_surface_t *surface, comac_scaled_font_subset_t *font_subset)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
-    comac_pdf_resource_t *glyphs, encoding, char_procs, subset_resource, to_unicode_stream;
+    comac_pdf_resource_t *glyphs, encoding, char_procs, subset_resource,
+	to_unicode_stream;
     comac_pdf_font_t font;
     double *widths;
     unsigned int i;
-    comac_box_t font_bbox = {{0,0},{0,0}};
-    comac_box_t bbox = {{0,0},{0,0}};
+    comac_box_t font_bbox = {{0, 0}, {0, 0}};
+    comac_box_t bbox = {{0, 0}, {0, 0}};
     comac_surface_t *type3_surface;
 
     if (font_subset->num_glyphs == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    subset_resource = _comac_pdf_surface_get_font_resource (surface,
-							    font_subset->font_id,
-							    font_subset->subset_id);
+    subset_resource =
+	_comac_pdf_surface_get_font_resource (surface,
+					      font_subset->font_id,
+					      font_subset->subset_id);
     if (subset_resource.id == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    glyphs = _comac_malloc_ab (font_subset->num_glyphs, sizeof (comac_pdf_resource_t));
+    glyphs = _comac_malloc_ab (font_subset->num_glyphs,
+			       sizeof (comac_pdf_resource_t));
     if (unlikely (glyphs == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     widths = _comac_malloc_ab (font_subset->num_glyphs, sizeof (double));
     if (unlikely (widths == NULL)) {
-        free (glyphs);
+	free (glyphs);
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
     _comac_pdf_group_resources_clear (&surface->resources);
-    type3_surface = _comac_type3_glyph_surface_create (font_subset->scaled_font,
-						       NULL,
-						       _comac_pdf_emit_imagemask,
-						       surface->font_subsets,
-						       FALSE);
+    type3_surface =
+	_comac_type3_glyph_surface_create (font_subset->scaled_font,
+					   NULL,
+					   _comac_pdf_emit_imagemask,
+					   surface->font_subsets,
+					   FALSE);
     if (unlikely (type3_surface->status)) {
-        free (glyphs);
-        free (widths);
+	free (glyphs);
+	free (widths);
 	return type3_surface->status;
     }
 
-    _comac_type3_glyph_surface_set_font_subsets_callback (type3_surface,
-							  _comac_pdf_surface_add_font,
-							  surface);
+    _comac_type3_glyph_surface_set_font_subsets_callback (
+	type3_surface,
+	_comac_pdf_surface_add_font,
+	surface);
 
     for (i = 0; i < font_subset->num_glyphs; i++) {
 	status = _comac_pdf_surface_open_stream (surface,
@@ -6563,21 +6875,21 @@ _comac_pdf_surface_emit_type3_font_subset (comac_pdf_surface_t		*surface,
 	if (unlikely (status))
 	    break;
 
-        if (i == 0) {
-            font_bbox.p1.x = bbox.p1.x;
-            font_bbox.p1.y = bbox.p1.y;
-            font_bbox.p2.x = bbox.p2.x;
-            font_bbox.p2.y = bbox.p2.y;
-        } else {
-            if (bbox.p1.x < font_bbox.p1.x)
-                font_bbox.p1.x = bbox.p1.x;
-            if (bbox.p1.y < font_bbox.p1.y)
-                font_bbox.p1.y = bbox.p1.y;
-            if (bbox.p2.x > font_bbox.p2.x)
-                font_bbox.p2.x = bbox.p2.x;
-            if (bbox.p2.y > font_bbox.p2.y)
-                font_bbox.p2.y = bbox.p2.y;
-        }
+	if (i == 0) {
+	    font_bbox.p1.x = bbox.p1.x;
+	    font_bbox.p1.y = bbox.p1.y;
+	    font_bbox.p2.x = bbox.p2.x;
+	    font_bbox.p2.y = bbox.p2.y;
+	} else {
+	    if (bbox.p1.x < font_bbox.p1.x)
+		font_bbox.p1.x = bbox.p1.x;
+	    if (bbox.p1.y < font_bbox.p1.y)
+		font_bbox.p1.y = bbox.p1.y;
+	    if (bbox.p2.x > font_bbox.p2.x)
+		font_bbox.p2.x = bbox.p2.x;
+	    if (bbox.p2.y > font_bbox.p2.y)
+		font_bbox.p2.y = bbox.p2.y;
+	}
     }
     comac_surface_destroy (type3_surface);
     if (unlikely (status)) {
@@ -6596,10 +6908,10 @@ _comac_pdf_surface_emit_type3_font_subset (comac_pdf_surface_t		*surface,
     _comac_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
 				 "<< /Type /Encoding\n"
-				 "   /Differences [0", encoding.id);
+				 "   /Differences [0",
+				 encoding.id);
     for (i = 0; i < font_subset->num_glyphs; i++)
-	_comac_output_stream_printf (surface->output,
-				     " /%d", i);
+	_comac_output_stream_printf (surface->output, " /%d", i);
     _comac_output_stream_printf (surface->output,
 				 "]\n"
 				 ">>\n"
@@ -6614,11 +6926,13 @@ _comac_pdf_surface_emit_type3_font_subset (comac_pdf_surface_t		*surface,
 
     _comac_output_stream_printf (surface->output,
 				 "%d 0 obj\n"
-				 "<<\n", char_procs.id);
+				 "<<\n",
+				 char_procs.id);
     for (i = 0; i < font_subset->num_glyphs; i++)
 	_comac_output_stream_printf (surface->output,
 				     " /%d %d 0 R\n",
-				     i, glyphs[i].id);
+				     i,
+				     glyphs[i].id);
     _comac_output_stream_printf (surface->output,
 				 ">>\n"
 				 "endobj\n");
@@ -6626,7 +6940,7 @@ _comac_pdf_surface_emit_type3_font_subset (comac_pdf_surface_t		*surface,
     free (glyphs);
 
     status = _comac_pdf_surface_emit_to_unicode_stream (surface,
-	                                                font_subset,
+							font_subset,
 							&to_unicode_stream);
     if (_comac_int_status_is_error (status)) {
 	free (widths);
@@ -6653,22 +6967,21 @@ _comac_pdf_surface_emit_type3_font_subset (comac_pdf_surface_t		*surface,
 				 char_procs.id,
 				 font_subset->num_glyphs - 1);
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Widths [");
+    _comac_output_stream_printf (surface->output, "   /Widths [");
     for (i = 0; i < font_subset->num_glyphs; i++)
 	_comac_output_stream_printf (surface->output, " %f", widths[i]);
-    _comac_output_stream_printf (surface->output,
-				 "]\n");
+    _comac_output_stream_printf (surface->output, "]\n");
     free (widths);
 
-    _comac_output_stream_printf (surface->output,
-				 "   /Resources\n");
-    _comac_pdf_surface_emit_group_resources (surface, &surface->resources, FALSE);
+    _comac_output_stream_printf (surface->output, "   /Resources\n");
+    _comac_pdf_surface_emit_group_resources (surface,
+					     &surface->resources,
+					     FALSE);
 
     if (to_unicode_stream.id != 0)
-        _comac_output_stream_printf (surface->output,
-                                     "    /ToUnicode %d 0 R\n",
-                                     to_unicode_stream.id);
+	_comac_output_stream_printf (surface->output,
+				     "    /ToUnicode %d 0 R\n",
+				     to_unicode_stream.id);
 
     _comac_output_stream_printf (surface->output,
 				 ">>\n"
@@ -6681,8 +6994,8 @@ _comac_pdf_surface_emit_type3_font_subset (comac_pdf_surface_t		*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_unscaled_font_subset (comac_scaled_font_subset_t *font_subset,
-                                              void			 *closure)
+_comac_pdf_surface_emit_unscaled_font_subset (
+    comac_scaled_font_subset_t *font_subset, void *closure)
 {
     comac_pdf_surface_t *surface = closure;
     comac_int_status_t status;
@@ -6691,7 +7004,8 @@ _comac_pdf_surface_emit_unscaled_font_subset (comac_scaled_font_subset_t *font_s
     if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	return status;
 
-    status = _comac_pdf_surface_emit_truetype_font_subset (surface, font_subset);
+    status =
+	_comac_pdf_surface_emit_truetype_font_subset (surface, font_subset);
     if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	return status;
 
@@ -6712,8 +7026,8 @@ _comac_pdf_surface_emit_unscaled_font_subset (comac_scaled_font_subset_t *font_s
 }
 
 static comac_int_status_t
-_comac_pdf_surface_emit_scaled_font_subset (comac_scaled_font_subset_t *font_subset,
-                                            void		       *closure)
+_comac_pdf_surface_emit_scaled_font_subset (
+    comac_scaled_font_subset_t *font_subset, void *closure)
 {
     comac_pdf_surface_t *surface = closure;
     comac_int_status_t status;
@@ -6731,27 +7045,31 @@ _comac_pdf_surface_emit_font_subsets (comac_pdf_surface_t *surface)
 {
     comac_int_status_t status;
 
-    status = _comac_scaled_font_subsets_foreach_user (surface->font_subsets,
-						      _comac_pdf_surface_analyze_user_font_subset,
-						      surface);
+    status = _comac_scaled_font_subsets_foreach_user (
+	surface->font_subsets,
+	_comac_pdf_surface_analyze_user_font_subset,
+	surface);
     if (unlikely (status))
 	goto BAIL;
 
-    status = _comac_scaled_font_subsets_foreach_unscaled (surface->font_subsets,
-                                                          _comac_pdf_surface_emit_unscaled_font_subset,
-                                                          surface);
+    status = _comac_scaled_font_subsets_foreach_unscaled (
+	surface->font_subsets,
+	_comac_pdf_surface_emit_unscaled_font_subset,
+	surface);
     if (unlikely (status))
 	goto BAIL;
 
-    status = _comac_scaled_font_subsets_foreach_scaled (surface->font_subsets,
-                                                        _comac_pdf_surface_emit_scaled_font_subset,
-                                                        surface);
+    status = _comac_scaled_font_subsets_foreach_scaled (
+	surface->font_subsets,
+	_comac_pdf_surface_emit_scaled_font_subset,
+	surface);
     if (unlikely (status))
 	goto BAIL;
 
-    status = _comac_scaled_font_subsets_foreach_user (surface->font_subsets,
-						      _comac_pdf_surface_emit_scaled_font_subset,
-						      surface);
+    status = _comac_scaled_font_subsets_foreach_user (
+	surface->font_subsets,
+	_comac_pdf_surface_emit_scaled_font_subset,
+	surface);
 
 BAIL:
     _comac_scaled_font_subsets_destroy (surface->font_subsets);
@@ -6803,8 +7121,7 @@ _comac_pdf_surface_write_catalog (comac_pdf_surface_t *surface,
 				     surface->names_dict_res.id);
     }
 
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 ">>\n");
+    _comac_output_stream_printf (surface->object_stream.stream, ">>\n");
     _comac_pdf_surface_object_end (surface);
 
     return status;
@@ -6823,14 +7140,15 @@ _comac_pdf_surface_write_xref (comac_pdf_surface_t *surface)
     _comac_output_stream_printf (surface->output,
 				 "xref\n"
 				 "%d %d\n",
-				 0, num_objects + 1);
+				 0,
+				 num_objects + 1);
 
-    _comac_output_stream_printf (surface->output,
-				 "0000000000 65535 f \n");
+    _comac_output_stream_printf (surface->output, "0000000000 65535 f \n");
     for (i = 0; i < num_objects; i++) {
 	object = _comac_array_index (&surface->objects, i);
 	_comac_output_stream_printf (surface->output,
-				     "%010lld 00000 n \n", object->u.offset);
+				     "%010lld 00000 n \n",
+				     object->u.offset);
     }
 
     return offset;
@@ -6838,18 +7156,23 @@ _comac_pdf_surface_write_xref (comac_pdf_surface_t *surface)
 
 static void
 _comac_write_xref_stream_entry (comac_output_stream_t *stream,
-				int                    id,
-				int                    type,
-				int                    field2_size,
-				long long              field2,
-				int                    field3,
-				comac_bool_t           write_as_comments)
+				int id,
+				int type,
+				int field2_size,
+				long long field2,
+				int field3,
+				comac_bool_t write_as_comments)
 {
     char buf[20];
     int i;
 
     if (write_as_comments) {
-	_comac_output_stream_printf (stream, "%% %5d %2d %10lld  %d\n", id, type, field2, field3);
+	_comac_output_stream_printf (stream,
+				     "%% %5d %2d %10lld  %d\n",
+				     id,
+				     type,
+				     field2,
+				     field3);
     } else {
 	/* Each field is big endian */
 	buf[0] = type; /* field 1 */
@@ -6864,10 +7187,10 @@ _comac_write_xref_stream_entry (comac_output_stream_t *stream,
 }
 
 static void
-_comac_write_xref_stream_entries (comac_pdf_surface_t   *surface,
+_comac_write_xref_stream_entries (comac_pdf_surface_t *surface,
 				  comac_output_stream_t *stream,
-				  int                    field2_size,
-				  comac_bool_t           write_as_comments)
+				  int field2_size,
+				  comac_bool_t write_as_comments)
 {
     comac_pdf_object_t *object;
     int num_objects, i;
@@ -6877,7 +7200,7 @@ _comac_write_xref_stream_entries (comac_pdf_surface_t   *surface,
 				    0,
 				    PDF_OBJECT_FREE,
 				    field2_size,
-				    0, /* next free object number */
+				    0,	    /* next free object number */
 				    0xffff, /* next generation number */
 				    write_as_comments);
 
@@ -6893,13 +7216,14 @@ _comac_write_xref_stream_entries (comac_pdf_surface_t   *surface,
 					    0, /* generation number */
 					    write_as_comments);
 	} else if (object->type == PDF_OBJECT_COMPRESSED) {
-	    _comac_write_xref_stream_entry (stream,
-					    i + 1,
-					    object->type,
-					    field2_size,
-					    object->u.compressed_obj.xref_stream.id,
-					    object->u.compressed_obj.index,
-					    write_as_comments);
+	    _comac_write_xref_stream_entry (
+		stream,
+		i + 1,
+		object->type,
+		field2_size,
+		object->u.compressed_obj.xref_stream.id,
+		object->u.compressed_obj.index,
+		write_as_comments);
 	} else {
 	    _comac_write_xref_stream_entry (stream,
 					    i + 1,
@@ -6913,11 +7237,11 @@ _comac_write_xref_stream_entries (comac_pdf_surface_t   *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_write_xref_stream (comac_pdf_surface_t  *surface,
-				      comac_pdf_resource_t  xref_res,
-				      comac_pdf_resource_t  root_res,
-				      comac_pdf_resource_t  info_res,
-				      long long            *xref_offset)
+_comac_pdf_surface_write_xref_stream (comac_pdf_surface_t *surface,
+				      comac_pdf_resource_t xref_res,
+				      comac_pdf_resource_t root_res,
+				      comac_pdf_resource_t info_res,
+				      long long *xref_offset)
 {
     comac_output_stream_t *mem_stream;
     comac_output_stream_t *xref_stream;
@@ -6937,7 +7261,10 @@ _comac_pdf_surface_write_xref_stream (comac_pdf_surface_t  *surface,
 
     mem_stream = _comac_memory_stream_create ();
     xref_stream = _comac_deflate_stream_create (mem_stream);
-    _comac_write_xref_stream_entries (surface, xref_stream, offset_bytes, FALSE);
+    _comac_write_xref_stream_entries (surface,
+				      xref_stream,
+				      offset_bytes,
+				      FALSE);
 
     status = _comac_output_stream_destroy (xref_stream);
     if (unlikely (status))
@@ -6961,7 +7288,7 @@ _comac_pdf_surface_write_xref_stream (comac_pdf_surface_t  *surface,
 				 root_res.id,
 				 info_res.id);
 
-    if (!surface->compress_streams) {
+    if (! surface->compress_streams) {
 	/* Adobe Reader requires xref streams to be flate encoded (PDF
 	 * Reference 1.7, implementation note 20). This means
 	 * compression must always be enabled on this stream. To
@@ -6970,11 +7297,13 @@ _comac_pdf_surface_write_xref_stream (comac_pdf_surface_t  *surface,
 	 */
 	_comac_output_stream_printf (surface->output,
 				     "%%   id   type  offset/obj  gen/index\n");
-	_comac_write_xref_stream_entries (surface, surface->output, offset_bytes, TRUE);
+	_comac_write_xref_stream_entries (surface,
+					  surface->output,
+					  offset_bytes,
+					  TRUE);
     }
 
-    _comac_output_stream_printf (surface->output,
-				 "stream\n");
+    _comac_output_stream_printf (surface->output, "stream\n");
     _comac_memory_stream_copy (mem_stream, surface->output);
     status = _comac_output_stream_destroy (mem_stream);
     if (unlikely (status))
@@ -6989,8 +7318,8 @@ _comac_pdf_surface_write_xref_stream (comac_pdf_surface_t  *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
-				     comac_pdf_smask_group_t	*group)
+_comac_pdf_surface_write_mask_group (comac_pdf_surface_t *surface,
+				     comac_pdf_smask_group_t *group)
 {
     comac_pdf_resource_t mask_group;
     comac_pdf_resource_t smask;
@@ -7011,7 +7340,7 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
 						   COMAC_OPERATOR_OVER,
 						   group->mask,
 						   &group->extents,
-						   1.0, /* alpha */
+						   1.0,	   /* alpha */
 						   FALSE); /* mask */
 	if (unlikely (status))
 	    return status;
@@ -7020,15 +7349,19 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
     } else {
 	pattern_res.id = 0;
 	gstate_res.id = 0;
-	status = _comac_pdf_surface_add_pdf_pattern (surface, group->mask,
+	status = _comac_pdf_surface_add_pdf_pattern (surface,
+						     group->mask,
 						     COMAC_OPERATOR_OVER,
 						     NULL,
-						     &pattern_res, &gstate_res);
+						     &pattern_res,
+						     &gstate_res);
 	if (unlikely (status))
 	    return status;
 
 	if (gstate_res.id != 0) {
-	    smask_group = _comac_pdf_surface_create_smask_group (surface, &group->extents);
+	    smask_group =
+		_comac_pdf_surface_create_smask_group (surface,
+						       &group->extents);
 	    if (unlikely (smask_group == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -7047,7 +7380,8 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
 	    if (unlikely (status))
 		return status;
 
-	    status = _comac_pdf_surface_add_xobject (surface, smask_group->group_res);
+	    status = _comac_pdf_surface_add_xobject (surface,
+						     smask_group->group_res);
 	    if (unlikely (status))
 		return status;
 
@@ -7056,7 +7390,10 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
 					 gstate_res.id,
 					 smask_group->group_res.id);
 	} else {
-	    status = _comac_pdf_surface_select_pattern (surface, group->mask, pattern_res, FALSE);
+	    status = _comac_pdf_surface_select_pattern (surface,
+							group->mask,
+							pattern_res,
+							FALSE);
 	    if (unlikely (status))
 		return status;
 
@@ -7088,7 +7425,7 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
 						   COMAC_OPERATOR_OVER,
 						   group->source,
 						   &group->extents,
-						   1.0, /* alpha */
+						   1.0,	   /* alpha */
 						   FALSE); /* mask */
 	if (unlikely (status))
 	    return status;
@@ -7097,15 +7434,19 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
     } else {
 	pattern_res.id = 0;
 	gstate_res.id = 0;
-	status = _comac_pdf_surface_add_pdf_pattern (surface, group->source,
+	status = _comac_pdf_surface_add_pdf_pattern (surface,
+						     group->source,
 						     COMAC_OPERATOR_OVER,
 						     NULL,
-						     &pattern_res, &gstate_res);
+						     &pattern_res,
+						     &gstate_res);
 	if (unlikely (status))
 	    return status;
 
 	if (gstate_res.id != 0) {
-	    smask_group = _comac_pdf_surface_create_smask_group (surface, &group->extents);
+	    smask_group =
+		_comac_pdf_surface_create_smask_group (surface,
+						       &group->extents);
 	    if (unlikely (smask_group == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -7122,7 +7463,8 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
 	    if (unlikely (status))
 		return status;
 
-	    status = _comac_pdf_surface_add_xobject (surface, smask_group->group_res);
+	    status = _comac_pdf_surface_add_xobject (surface,
+						     smask_group->group_res);
 	    if (unlikely (status))
 		return status;
 
@@ -7131,7 +7473,10 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
 					 gstate_res.id,
 					 smask_group->group_res.id);
 	} else {
-	    status = _comac_pdf_surface_select_pattern (surface, group->source, pattern_res, FALSE);
+	    status = _comac_pdf_surface_select_pattern (surface,
+							group->source,
+							pattern_res,
+							FALSE);
 	    if (unlikely (status))
 		return status;
 
@@ -7185,7 +7530,7 @@ _comac_pdf_surface_write_mask_group (comac_pdf_surface_t	*surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_write_smask_group (comac_pdf_surface_t     *surface,
+_comac_pdf_surface_write_smask_group (comac_pdf_surface_t *surface,
 				      comac_pdf_smask_group_t *group)
 {
     double old_width, old_height;
@@ -7199,9 +7544,7 @@ _comac_pdf_surface_write_smask_group (comac_pdf_surface_t     *surface,
     old_surface_extents = surface->surface_extents;
     old_in_xobject = surface->in_xobject;
     surface->in_xobject = TRUE;
-    _comac_pdf_surface_set_size_internal (surface,
-					  group->width,
-					  group->height);
+    _comac_pdf_surface_set_size_internal (surface, group->width, group->height);
     _comac_pdf_operators_reset (&surface->pdf_operators);
     /* _mask is a special case that requires two groups - source
      * and mask as well as a smask and gstate dictionary */
@@ -7226,7 +7569,8 @@ _comac_pdf_surface_write_smask_group (comac_pdf_surface_t     *surface,
     case PDF_PAINT:
 	_comac_output_stream_printf (surface->output,
 				     "0 0 %f %f re f\n",
-				     surface->width, surface->height);
+				     surface->width,
+				     surface->height);
 	break;
     case PDF_MASK:
 	ASSERT_NOT_REACHED;
@@ -7245,9 +7589,12 @@ _comac_pdf_surface_write_smask_group (comac_pdf_surface_t     *surface,
 	break;
     case PDF_SHOW_GLYPHS:
 	status = _comac_pdf_operators_show_text_glyphs (&surface->pdf_operators,
-							group->utf8, group->utf8_len,
-							group->glyphs, group->num_glyphs,
-							group->clusters, group->num_clusters,
+							group->utf8,
+							group->utf8_len,
+							group->glyphs,
+							group->num_glyphs,
+							group->clusters,
+							group->num_clusters,
 							group->cluster_flags,
 							group->scaled_font);
 	break;
@@ -7263,9 +7610,7 @@ _comac_pdf_surface_write_smask_group (comac_pdf_surface_t     *surface,
 
 RESTORE_SIZE:
     surface->in_xobject = old_in_xobject;
-    _comac_pdf_surface_set_size_internal (surface,
-					  old_width,
-					  old_height);
+    _comac_pdf_surface_set_size_internal (surface, old_width, old_height);
     surface->surface_extents = old_surface_extents;
     _comac_pdf_operators_reset (&surface->pdf_operators);
 
@@ -7273,8 +7618,8 @@ RESTORE_SIZE:
 }
 
 static comac_int_status_t
-_comac_pdf_surface_write_patterns_and_smask_groups (comac_pdf_surface_t *surface,
-						    comac_bool_t         finish)
+_comac_pdf_surface_write_patterns_and_smask_groups (
+    comac_pdf_surface_t *surface, comac_bool_t finish)
 {
     comac_pdf_pattern_t pattern;
     comac_pdf_smask_group_t *group;
@@ -7294,36 +7639,58 @@ _comac_pdf_surface_write_patterns_and_smask_groups (comac_pdf_surface_t *surface
     group_index = 0;
     surface_index = 0;
     doc_surface_index = 0;
-    while ((pattern_index < _comac_array_num_elements (&surface->page_patterns)) ||
-	   (group_index < _comac_array_num_elements (&surface->smask_groups)) ||
-	   (surface_index < _comac_array_num_elements (&surface->page_surfaces)) ||
-	   (finish && (doc_surface_index < _comac_array_num_elements (&surface->doc_surfaces))))
-    {
-	for (; group_index < _comac_array_num_elements (&surface->smask_groups); group_index++) {
-	    _comac_array_copy_element (&surface->smask_groups, group_index, &group);
+    while (
+	(pattern_index < _comac_array_num_elements (&surface->page_patterns)) ||
+	(group_index < _comac_array_num_elements (&surface->smask_groups)) ||
+	(surface_index < _comac_array_num_elements (&surface->page_surfaces)) ||
+	(finish && (doc_surface_index <
+		    _comac_array_num_elements (&surface->doc_surfaces)))) {
+	for (; group_index < _comac_array_num_elements (&surface->smask_groups);
+	     group_index++) {
+	    _comac_array_copy_element (&surface->smask_groups,
+				       group_index,
+				       &group);
 	    status = _comac_pdf_surface_write_smask_group (surface, group);
 	    if (unlikely (status))
 		return status;
 	}
 
-	for (; pattern_index < _comac_array_num_elements (&surface->page_patterns); pattern_index++) {
-	    _comac_array_copy_element (&surface->page_patterns, pattern_index, &pattern);
+	for (; pattern_index <
+	       _comac_array_num_elements (&surface->page_patterns);
+	     pattern_index++) {
+	    _comac_array_copy_element (&surface->page_patterns,
+				       pattern_index,
+				       &pattern);
 	    status = _comac_pdf_surface_emit_pattern (surface, &pattern);
 	    if (unlikely (status))
 		return status;
 	}
 
-	for (; surface_index < _comac_array_num_elements (&surface->page_surfaces); surface_index++) {
-	    _comac_array_copy_element (&surface->page_surfaces, surface_index, &src_surface);
-	    status = _comac_pdf_surface_emit_surface (surface, &src_surface, FALSE, &is_image);
+	for (; surface_index <
+	       _comac_array_num_elements (&surface->page_surfaces);
+	     surface_index++) {
+	    _comac_array_copy_element (&surface->page_surfaces,
+				       surface_index,
+				       &src_surface);
+	    status = _comac_pdf_surface_emit_surface (surface,
+						      &src_surface,
+						      FALSE,
+						      &is_image);
 	    if (unlikely (status))
 		return status;
 	}
 
 	if (finish) {
-	    for (; doc_surface_index < _comac_array_num_elements (&surface->doc_surfaces); doc_surface_index++) {
-		_comac_array_copy_element (&surface->doc_surfaces, doc_surface_index, &src_surface);
-		status = _comac_pdf_surface_emit_surface (surface, &src_surface, FALSE, &is_image);
+	    for (; doc_surface_index <
+		   _comac_array_num_elements (&surface->doc_surfaces);
+		 doc_surface_index++) {
+		_comac_array_copy_element (&surface->doc_surfaces,
+					   doc_surface_index,
+					   &src_surface);
+		status = _comac_pdf_surface_emit_surface (surface,
+							  &src_surface,
+							  FALSE,
+							  &is_image);
 		if (unlikely (status))
 		    return status;
 	    }
@@ -7352,7 +7719,7 @@ _comac_pdf_surface_write_page (comac_pdf_surface_t *surface)
     _comac_pdf_group_resources_clear (&surface->resources);
     if (surface->has_fallback_images) {
 	comac_rectangle_int_t extents;
-	comac_box_double_t    bbox;
+	comac_box_double_t bbox;
 
 	extents.x = 0;
 	extents.y = 0;
@@ -7366,9 +7733,7 @@ _comac_pdf_surface_write_page (comac_pdf_surface_t *surface)
 	len = _comac_array_num_elements (&surface->knockout_group);
 	for (i = 0; i < len; i++) {
 	    _comac_array_copy_element (&surface->knockout_group, i, &res);
-	    _comac_output_stream_printf (surface->output,
-					 "/x%d Do\n",
-					 res.id);
+	    _comac_output_stream_printf (surface->output, "/x%d Do\n", res.id);
 	    status = _comac_pdf_surface_add_xobject (surface, res);
 	    if (unlikely (status))
 		return status;
@@ -7385,13 +7750,15 @@ _comac_pdf_surface_write_page (comac_pdf_surface_t *surface)
 	    return status;
 
 	_comac_pdf_group_resources_clear (&surface->resources);
-	status = _comac_pdf_surface_open_content_stream (surface, NULL, NULL, FALSE, FALSE);
+	status = _comac_pdf_surface_open_content_stream (surface,
+							 NULL,
+							 NULL,
+							 FALSE,
+							 FALSE);
 	if (unlikely (status))
 	    return status;
 
-	_comac_output_stream_printf (surface->output,
-				     "/x%d Do\n",
-				     knockout.id);
+	_comac_output_stream_printf (surface->output, "/x%d Do\n", knockout.id);
 	status = _comac_pdf_surface_add_xobject (surface, knockout);
 	if (unlikely (status))
 	    return status;
@@ -7408,7 +7775,9 @@ _comac_pdf_surface_write_page (comac_pdf_surface_t *surface)
 	memset (&entry, 0, sizeof (entry));
 	thumbnail_res = _comac_pdf_surface_new_object (surface);
 	entry.surface_res = thumbnail_res;
-	_comac_pdf_surface_emit_image (surface, surface->thumbnail_image, &entry);
+	_comac_pdf_surface_emit_image (surface,
+				       surface->thumbnail_image,
+				       &entry);
     }
 
     page_num = _comac_array_num_elements (&surface->pages);
@@ -7462,11 +7831,11 @@ _comac_pdf_surface_write_page (comac_pdf_surface_t *surface)
 				     thumbnail_res.id);
     }
 
-    _comac_output_stream_printf (surface->object_stream.stream,
-				 ">>\n");
+    _comac_output_stream_printf (surface->object_stream.stream, ">>\n");
     _comac_pdf_surface_object_end (surface);
 
-    status = _comac_pdf_surface_write_patterns_and_smask_groups (surface, FALSE);
+    status =
+	_comac_pdf_surface_write_patterns_and_smask_groups (surface, FALSE);
     if (unlikely (status))
 	return status;
 
@@ -7474,12 +7843,12 @@ _comac_pdf_surface_write_page (comac_pdf_surface_t *surface)
 }
 
 static comac_int_status_t
-_comac_pdf_surface_analyze_surface_pattern_transparency (comac_pdf_surface_t      *surface,
-							 comac_surface_pattern_t  *pattern)
+_comac_pdf_surface_analyze_surface_pattern_transparency (
+    comac_pdf_surface_t *surface, comac_surface_pattern_t *pattern)
 {
-    comac_image_surface_t  *image;
-    void		   *image_extra;
-    comac_int_status_t      status;
+    comac_image_surface_t *image;
+    void *image_extra;
+    comac_int_status_t status;
     comac_image_transparency_t transparency;
 
     status = _comac_surface_acquire_source_image (pattern->surface,
@@ -7516,7 +7885,7 @@ _surface_pattern_supported (comac_surface_pattern_t *pattern)
     /* Does an ALPHA-only source surface even make sense? Maybe, but I
      * don't think it's worth the extra code to support it. */
 
-/* XXX: Need to write this function here...
+    /* XXX: Need to write this function here...
     if (pattern->surface->content == COMAC_CONTENT_ALPHA)
 	return FALSE;
 */
@@ -7597,14 +7966,13 @@ _pdf_operator_supported (comac_operator_t op)
 }
 
 static comac_int_status_t
-_comac_pdf_surface_analyze_operation (comac_pdf_surface_t  *surface,
-				      comac_operator_t      op,
-				      const comac_pattern_t      *pattern,
-				      const comac_rectangle_int_t	 *extents)
+_comac_pdf_surface_analyze_operation (comac_pdf_surface_t *surface,
+				      comac_operator_t op,
+				      const comac_pattern_t *pattern,
+				      const comac_rectangle_int_t *extents)
 {
     if (surface->force_fallbacks &&
-	surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE)
-    {
+	surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
@@ -7613,9 +7981,11 @@ _comac_pdf_surface_analyze_operation (comac_pdf_surface_t  *surface,
 
     if (_pdf_operator_supported (op)) {
 	if (pattern->type == COMAC_PATTERN_TYPE_SURFACE) {
-	    comac_surface_pattern_t *surface_pattern = (comac_surface_pattern_t *) pattern;
+	    comac_surface_pattern_t *surface_pattern =
+		(comac_surface_pattern_t *) pattern;
 
-	    if (surface_pattern->surface->type == COMAC_SURFACE_TYPE_RECORDING) {
+	    if (surface_pattern->surface->type ==
+		COMAC_SURFACE_TYPE_RECORDING) {
 		if (pattern->extend == COMAC_EXTEND_PAD) {
 		    comac_box_t box;
 		    comac_rectangle_int_t rect;
@@ -7623,16 +7993,23 @@ _comac_pdf_surface_analyze_operation (comac_pdf_surface_t  *surface,
 
 		    /* get the operation extents in pattern space */
 		    _comac_box_from_rectangle (&box, extents);
-		    _comac_matrix_transform_bounding_box_fixed (&pattern->matrix, &box, NULL);
+		    _comac_matrix_transform_bounding_box_fixed (
+			&pattern->matrix,
+			&box,
+			NULL);
 		    _comac_box_round_to_rectangle (&box, &rect);
 
 		    /* Check if surface needs padding to fill extents */
-		    if (_comac_surface_get_extents (surface_pattern->surface, &rec_extents)) {
-			if (_comac_fixed_integer_ceil(box.p1.x) < rec_extents.x ||
-			    _comac_fixed_integer_ceil(box.p1.y) < rec_extents.y ||
-			    _comac_fixed_integer_floor(box.p2.y) > rec_extents.x + rec_extents.width ||
-			    _comac_fixed_integer_floor(box.p2.y) > rec_extents.y + rec_extents.height)
-			{
+		    if (_comac_surface_get_extents (surface_pattern->surface,
+						    &rec_extents)) {
+			if (_comac_fixed_integer_ceil (box.p1.x) <
+				rec_extents.x ||
+			    _comac_fixed_integer_ceil (box.p1.y) <
+				rec_extents.y ||
+			    _comac_fixed_integer_floor (box.p2.y) >
+				rec_extents.x + rec_extents.width ||
+			    _comac_fixed_integer_floor (box.p2.y) >
+				rec_extents.y + rec_extents.height) {
 			    return COMAC_INT_STATUS_UNSUPPORTED;
 			}
 		    }
@@ -7644,14 +8021,15 @@ _comac_pdf_surface_analyze_operation (comac_pdf_surface_t  *surface,
 	return COMAC_STATUS_SUCCESS;
     }
 
-
     /* The SOURCE operator is supported if the pattern is opaque or if
      * there is nothing painted underneath. */
     if (op == COMAC_OPERATOR_SOURCE) {
 	if (pattern->type == COMAC_PATTERN_TYPE_SURFACE) {
-	    comac_surface_pattern_t *surface_pattern = (comac_surface_pattern_t *) pattern;
+	    comac_surface_pattern_t *surface_pattern =
+		(comac_surface_pattern_t *) pattern;
 
-	    if (surface_pattern->surface->type == COMAC_SURFACE_TYPE_RECORDING) {
+	    if (surface_pattern->surface->type ==
+		COMAC_SURFACE_TYPE_RECORDING) {
 		if (_comac_pattern_is_opaque (pattern, extents)) {
 		    return COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN;
 		} else {
@@ -7666,8 +8044,9 @@ _comac_pdf_surface_analyze_operation (comac_pdf_surface_t  *surface,
 		    return COMAC_INT_STATUS_UNSUPPORTED;
 		}
 	    } else {
-		return _comac_pdf_surface_analyze_surface_pattern_transparency (surface,
-										surface_pattern);
+		return _comac_pdf_surface_analyze_surface_pattern_transparency (
+		    surface,
+		    surface_pattern);
 	    }
 	}
 
@@ -7681,12 +8060,16 @@ _comac_pdf_surface_analyze_operation (comac_pdf_surface_t  *surface,
 }
 
 static comac_bool_t
-_comac_pdf_surface_operation_supported (comac_pdf_surface_t  *surface,
-					comac_operator_t      op,
-					const comac_pattern_t      *pattern,
+_comac_pdf_surface_operation_supported (comac_pdf_surface_t *surface,
+					comac_operator_t op,
+					const comac_pattern_t *pattern,
 					const comac_rectangle_int_t *extents)
 {
-    return _comac_pdf_surface_analyze_operation (surface, op, pattern, extents) != COMAC_INT_STATUS_UNSUPPORTED;
+    return _comac_pdf_surface_analyze_operation (surface,
+						 op,
+						 pattern,
+						 extents) !=
+	   COMAC_INT_STATUS_UNSUPPORTED;
 }
 
 static comac_int_status_t
@@ -7708,7 +8091,11 @@ _comac_pdf_surface_start_fallback (comac_pdf_surface_t *surface)
     bbox.p1.y = 0;
     bbox.p2.x = surface->width;
     bbox.p2.y = surface->height;
-    status = _comac_pdf_surface_open_content_stream (surface, &bbox, NULL, TRUE, TRUE);
+    status = _comac_pdf_surface_open_content_stream (surface,
+						     &bbox,
+						     NULL,
+						     TRUE,
+						     TRUE);
     if (unlikely (status))
 	return status;
 
@@ -7719,15 +8106,15 @@ _comac_pdf_surface_start_fallback (comac_pdf_surface_t *surface)
  * have the same bounding box we can emit them as a image/smask pair.
  */
 static comac_int_status_t
-_comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
-					comac_operator_t	     op,
-					const comac_pattern_t       *source,
-					const comac_pattern_t       *mask,
+_comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t *surface,
+					comac_operator_t op,
+					const comac_pattern_t *source,
+					const comac_pattern_t *mask,
 					const comac_rectangle_int_t *extents)
 {
     comac_int_status_t status;
-    comac_image_surface_t  *image;
-    void		   *image_extra;
+    comac_image_surface_t *image;
+    void *image_extra;
     comac_image_transparency_t transparency;
     int src_width, src_height;
     int mask_width, mask_height;
@@ -7742,29 +8129,35 @@ _comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
 
     /* Check that source and mask are images */
 
-    if (!((source->type == COMAC_PATTERN_TYPE_SURFACE || source->type == COMAC_PATTERN_TYPE_RASTER_SOURCE) &&
-	  (mask->type == COMAC_PATTERN_TYPE_SURFACE || mask->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)))
+    if (! ((source->type == COMAC_PATTERN_TYPE_SURFACE ||
+	    source->type == COMAC_PATTERN_TYPE_RASTER_SOURCE) &&
+	   (mask->type == COMAC_PATTERN_TYPE_SURFACE ||
+	    mask->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if (source->type == COMAC_PATTERN_TYPE_SURFACE &&
-	((comac_surface_pattern_t *) source)->surface->type == COMAC_SURFACE_TYPE_RECORDING)
-    {
+	((comac_surface_pattern_t *) source)->surface->type ==
+	    COMAC_SURFACE_TYPE_RECORDING) {
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
     if (mask->type == COMAC_PATTERN_TYPE_SURFACE &&
-	((comac_surface_pattern_t *) mask)->surface->type == COMAC_SURFACE_TYPE_RECORDING)
-    {
+	((comac_surface_pattern_t *) mask)->surface->type ==
+	    COMAC_SURFACE_TYPE_RECORDING) {
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
-    if (source->extend != COMAC_EXTEND_NONE || mask->extend != COMAC_EXTEND_NONE)
+    if (source->extend != COMAC_EXTEND_NONE ||
+	mask->extend != COMAC_EXTEND_NONE)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Check that source is opaque and get image sizes */
 
-    status = _comac_pdf_surface_acquire_source_image_from_pattern (surface, source,
-								   &image, &image_extra);
+    status =
+	_comac_pdf_surface_acquire_source_image_from_pattern (surface,
+							      source,
+							      &image,
+							      &image_extra);
     if (unlikely (status))
 	return status;
 
@@ -7774,20 +8167,28 @@ _comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
     src_width = image->width;
     src_height = image->height;
     if (source->type == COMAC_PATTERN_TYPE_RASTER_SOURCE) {
-	comac_surface_get_device_offset (&image->base, &src_x_offset, &src_y_offset);
+	comac_surface_get_device_offset (&image->base,
+					 &src_x_offset,
+					 &src_y_offset);
     } else {
 	src_x_offset = 0;
 	src_y_offset = 0;
     }
 
     transparency = _comac_image_analyze_transparency (image);
-    _comac_pdf_surface_release_source_image_from_pattern (surface, source, image, image_extra);
+    _comac_pdf_surface_release_source_image_from_pattern (surface,
+							  source,
+							  image,
+							  image_extra);
 
     if (transparency != COMAC_IMAGE_IS_OPAQUE)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    status = _comac_pdf_surface_acquire_source_image_from_pattern (surface, mask,
-								   &image, &image_extra);
+    status =
+	_comac_pdf_surface_acquire_source_image_from_pattern (surface,
+							      mask,
+							      &image,
+							      &image_extra);
     if (unlikely (status))
 	return status;
 
@@ -7797,7 +8198,9 @@ _comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
     mask_width = image->width;
     mask_height = image->height;
     if (mask->type == COMAC_PATTERN_TYPE_RASTER_SOURCE) {
-	comac_surface_get_device_offset (&image->base, &mask_x_offset, &mask_y_offset);
+	comac_surface_get_device_offset (&image->base,
+					 &mask_x_offset,
+					 &mask_y_offset);
     } else {
 	mask_x_offset = 0;
 	mask_y_offset = 0;
@@ -7806,7 +8209,10 @@ _comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
     transparency = _comac_image_analyze_transparency (image);
     need_smask = transparency != COMAC_IMAGE_IS_OPAQUE;
 
-    _comac_pdf_surface_release_source_image_from_pattern (surface, mask, image, image_extra);
+    _comac_pdf_surface_release_source_image_from_pattern (surface,
+							  mask,
+							  image,
+							  image_extra);
 
     /* Check that both images have the same extents with a tolerance
      * of half the smallest source pixel. */
@@ -7840,32 +8246,31 @@ _comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
     else
 	e = mask_radius;
 
-    if (fabs(src_x1 - mask_x1) > e ||
-	fabs(src_x2 - mask_x2) > e ||
-	fabs(src_y1 - mask_y1) > e ||
-	fabs(src_y2 - mask_y2) > e)
+    if (fabs (src_x1 - mask_x1) > e || fabs (src_x2 - mask_x2) > e ||
+	fabs (src_y1 - mask_y1) > e || fabs (src_y2 - mask_y2) > e)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Check both images have same device offset */
-    if (fabs(src_x_offset - mask_x_offset) > e ||
-	fabs(src_y_offset - mask_y_offset) > e)
+    if (fabs (src_x_offset - mask_x_offset) > e ||
+	fabs (src_y_offset - mask_y_offset) > e)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if (need_smask) {
-	status = _comac_pdf_surface_add_source_surface (surface,
-							NULL,
-							mask,
-							op,
-							source->filter,
-							FALSE, /* stencil mask */
-							TRUE, /* smask */
-							FALSE, /* need_transp_group */
-							extents,
-							NULL, /* smask_res */
-							&pdf_source,
-							NULL,
-							NULL,
-							NULL);
+	status = _comac_pdf_surface_add_source_surface (
+	    surface,
+	    NULL,
+	    mask,
+	    op,
+	    source->filter,
+	    FALSE, /* stencil mask */
+	    TRUE,  /* smask */
+	    FALSE, /* need_transp_group */
+	    extents,
+	    NULL, /* smask_res */
+	    &pdf_source,
+	    NULL,
+	    NULL,
+	    NULL);
 	if (unlikely (status))
 	    return status;
     }
@@ -7875,10 +8280,14 @@ _comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
 	return status;
 
     _comac_output_stream_printf (surface->output, "q\n");
-    status = _comac_pdf_surface_paint_surface_pattern (surface, op, source, extents,
-						       1.0, /* alpha */
-						       need_smask ? &pdf_source->surface_res : NULL,
-						       FALSE);
+    status = _comac_pdf_surface_paint_surface_pattern (
+	surface,
+	op,
+	source,
+	extents,
+	1.0, /* alpha */
+	need_smask ? &pdf_source->surface_res : NULL,
+	FALSE);
     if (unlikely (status))
 	return status;
 
@@ -7886,36 +8295,39 @@ _comac_pdf_surface_emit_combined_smask (comac_pdf_surface_t         *surface,
 
     status = _comac_output_stream_get_status (surface->output);
 
-
     return status;
 }
 
 /* A PDF stencil mask is an A1 mask used with the current color */
 static comac_int_status_t
-_comac_pdf_surface_emit_stencil_mask (comac_pdf_surface_t         *surface,
-				      comac_operator_t	           op,
-				      const comac_pattern_t       *source,
-				      const comac_pattern_t       *mask,
+_comac_pdf_surface_emit_stencil_mask (comac_pdf_surface_t *surface,
+				      comac_operator_t op,
+				      const comac_pattern_t *source,
+				      const comac_pattern_t *mask,
 				      const comac_rectangle_int_t *extents)
 {
     comac_int_status_t status;
-    comac_image_surface_t  *image;
-    void		   *image_extra;
+    comac_image_surface_t *image;
+    void *image_extra;
     comac_image_transparency_t transparency;
     comac_pdf_resource_t pattern_res = {0};
 
     if (! (source->type == COMAC_PATTERN_TYPE_SOLID &&
-	   (mask->type == COMAC_PATTERN_TYPE_SURFACE || mask->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)))
+	   (mask->type == COMAC_PATTERN_TYPE_SURFACE ||
+	    mask->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if (mask->type == COMAC_PATTERN_TYPE_SURFACE &&
-	((comac_surface_pattern_t *) mask)->surface->type == COMAC_SURFACE_TYPE_RECORDING)
-    {
+	((comac_surface_pattern_t *) mask)->surface->type ==
+	    COMAC_SURFACE_TYPE_RECORDING) {
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
-    status = _comac_pdf_surface_acquire_source_image_from_pattern (surface, mask,
-								   &image, &image_extra);
+    status =
+	_comac_pdf_surface_acquire_source_image_from_pattern (surface,
+							      mask,
+							      &image,
+							      &image_extra);
     if (unlikely (status))
 	return status;
 
@@ -7924,14 +8336,13 @@ _comac_pdf_surface_emit_stencil_mask (comac_pdf_surface_t         *surface,
 
     transparency = _comac_image_analyze_transparency (image);
     if (transparency != COMAC_IMAGE_IS_OPAQUE &&
-	transparency != COMAC_IMAGE_HAS_BILEVEL_ALPHA)
-    {
+	transparency != COMAC_IMAGE_HAS_BILEVEL_ALPHA) {
 	status = COMAC_INT_STATUS_UNSUPPORTED;
 	goto cleanup;
     }
 
-    status = _comac_pdf_surface_select_pattern (surface, source,
-						pattern_res, FALSE);
+    status =
+	_comac_pdf_surface_select_pattern (surface, source, pattern_res, FALSE);
     if (unlikely (status))
 	return status;
 
@@ -7940,7 +8351,13 @@ _comac_pdf_surface_emit_stencil_mask (comac_pdf_surface_t         *surface,
 	return status;
 
     _comac_output_stream_printf (surface->output, "q\n");
-    status = _comac_pdf_surface_paint_surface_pattern (surface, op, mask, extents, 1.0, NULL, TRUE);
+    status = _comac_pdf_surface_paint_surface_pattern (surface,
+						       op,
+						       mask,
+						       extents,
+						       1.0,
+						       NULL,
+						       TRUE);
     if (unlikely (status))
 	return status;
 
@@ -7949,7 +8366,10 @@ _comac_pdf_surface_emit_stencil_mask (comac_pdf_surface_t         *surface,
     status = _comac_output_stream_get_status (surface->output);
 
 cleanup:
-    _comac_pdf_surface_release_source_image_from_pattern (surface, mask, image, image_extra);
+    _comac_pdf_surface_release_source_image_from_pattern (surface,
+							  mask,
+							  image,
+							  image_extra);
 
     return status;
 }
@@ -7973,10 +8393,10 @@ _comac_pdf_surface_set_clip (comac_pdf_surface_t *surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_paint (void			*abstract_surface,
-			  comac_operator_t	 op,
-			  const comac_pattern_t	*source,
-			  const comac_clip_t	*clip)
+_comac_pdf_surface_paint (void *abstract_surface,
+			  comac_operator_t op,
+			  const comac_pattern_t *source,
+			  const comac_clip_t *clip)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_pdf_smask_group_t *group;
@@ -7986,24 +8406,33 @@ _comac_pdf_surface_paint (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_paint (&extents,
 							 &surface->base,
-							 op, source, clip);
+							 op,
+							 source,
+							 clip);
     if (unlikely (status))
 	return status;
 
-    status = _comac_pdf_interchange_add_operation_extents (surface, &extents.bounded);
+    status = _comac_pdf_interchange_add_operation_extents (surface,
+							   &extents.bounded);
     if (unlikely (status))
 	return status;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
-	status = _comac_pdf_surface_analyze_operation (surface, op, source, &extents.bounded);
+	status = _comac_pdf_surface_analyze_operation (surface,
+						       op,
+						       source,
+						       &extents.bounded);
 	goto cleanup;
     } else if (surface->paginated_mode == COMAC_PAGINATED_MODE_FALLBACK) {
-	status = _comac_pdf_surface_start_fallback  (surface);
+	status = _comac_pdf_surface_start_fallback (surface);
 	if (unlikely (status))
 	    goto cleanup;
     }
 
-    assert (_comac_pdf_surface_operation_supported (surface, op, source, &extents.bounded));
+    assert (_comac_pdf_surface_operation_supported (surface,
+						    op,
+						    source,
+						    &extents.bounded));
 
     status = _comac_pdf_surface_set_clip (surface, &extents);
     if (unlikely (status))
@@ -8023,7 +8452,7 @@ _comac_pdf_surface_paint (void			*abstract_surface,
 						   op,
 						   source,
 						   &extents.bounded,
-						   1.0, /* alpha */
+						   1.0,	   /* alpha */
 						   FALSE); /* mask */
 	if (unlikely (status))
 	    goto cleanup;
@@ -8035,14 +8464,18 @@ _comac_pdf_surface_paint (void			*abstract_surface,
 
     pattern_res.id = 0;
     gstate_res.id = 0;
-    status = _comac_pdf_surface_add_pdf_pattern (surface, source, op,
+    status = _comac_pdf_surface_add_pdf_pattern (surface,
+						 source,
+						 op,
 						 &extents.bounded,
-						 &pattern_res, &gstate_res);
+						 &pattern_res,
+						 &gstate_res);
     if (unlikely (status))
 	goto cleanup;
 
     if (gstate_res.id != 0) {
-	group = _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
+	group =
+	    _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
 	if (unlikely (group == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto cleanup;
@@ -8074,8 +8507,10 @@ _comac_pdf_surface_paint (void			*abstract_surface,
 				     gstate_res.id,
 				     group->group_res.id);
     } else {
-	status = _comac_pdf_surface_select_pattern (surface, source,
-						    pattern_res, FALSE);
+	status = _comac_pdf_surface_select_pattern (surface,
+						    source,
+						    pattern_res,
+						    FALSE);
 	if (unlikely (status))
 	    goto cleanup;
 
@@ -8100,11 +8535,11 @@ cleanup:
 }
 
 static comac_int_status_t
-_comac_pdf_surface_mask (void			*abstract_surface,
-			 comac_operator_t	 op,
-			 const comac_pattern_t	*source,
-			 const comac_pattern_t	*mask,
-			 const comac_clip_t	*clip)
+_comac_pdf_surface_mask (void *abstract_surface,
+			 comac_operator_t op,
+			 const comac_pattern_t *source,
+			 const comac_pattern_t *mask,
+			 const comac_clip_t *clip)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_pdf_smask_group_t *group;
@@ -8116,18 +8551,25 @@ _comac_pdf_surface_mask (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_mask (&extents,
 							&surface->base,
-							op, source, mask, clip);
+							op,
+							source,
+							mask,
+							clip);
     if (unlikely (status))
 	return status;
 
-    status = _comac_pdf_interchange_add_operation_extents (surface, &extents.bounded);
+    status = _comac_pdf_interchange_add_operation_extents (surface,
+							   &extents.bounded);
     if (unlikely (status))
 	return status;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
 	comac_int_status_t source_status, mask_status;
 
-	status = _comac_pdf_surface_analyze_operation (surface, op, source, &extents.bounded);
+	status = _comac_pdf_surface_analyze_operation (surface,
+						       op,
+						       source,
+						       &extents.bounded);
 	if (_comac_int_status_is_error (status))
 	    goto cleanup;
 	source_status = status;
@@ -8135,7 +8577,10 @@ _comac_pdf_surface_mask (void			*abstract_surface,
 	if (mask->has_component_alpha) {
 	    status = COMAC_INT_STATUS_UNSUPPORTED;
 	} else {
-	    status = _comac_pdf_surface_analyze_operation (surface, op, mask, &extents.bounded);
+	    status = _comac_pdf_surface_analyze_operation (surface,
+							   op,
+							   mask,
+							   &extents.bounded);
 	    if (_comac_int_status_is_error (status))
 		goto cleanup;
 	}
@@ -8150,8 +8595,14 @@ _comac_pdf_surface_mask (void			*abstract_surface,
 	    goto cleanup;
     }
 
-    assert (_comac_pdf_surface_operation_supported (surface, op, source, &extents.bounded));
-    assert (_comac_pdf_surface_operation_supported (surface, op, mask, &extents.bounded));
+    assert (_comac_pdf_surface_operation_supported (surface,
+						    op,
+						    source,
+						    &extents.bounded));
+    assert (_comac_pdf_surface_operation_supported (surface,
+						    op,
+						    mask,
+						    &extents.bounded));
 
     /* get the accurate extents */
     status = _comac_pattern_get_ink_extents (source, &r);
@@ -8160,8 +8611,8 @@ _comac_pdf_surface_mask (void			*abstract_surface,
 
     /* XXX slight impedance mismatch */
     _comac_box_from_rectangle (&box, &r);
-    status = _comac_composite_rectangles_intersect_source_extents (&extents,
-								   &box);
+    status =
+	_comac_composite_rectangles_intersect_source_extents (&extents, &box);
     if (unlikely (status))
 	goto cleanup;
 
@@ -8170,8 +8621,8 @@ _comac_pdf_surface_mask (void			*abstract_surface,
 	goto cleanup;
 
     _comac_box_from_rectangle (&box, &r);
-    status = _comac_composite_rectangles_intersect_mask_extents (&extents,
-								 &box);
+    status =
+	_comac_composite_rectangles_intersect_mask_extents (&extents, &box);
     if (unlikely (status))
 	goto cleanup;
 
@@ -8184,12 +8635,20 @@ _comac_pdf_surface_mask (void			*abstract_surface,
 	goto cleanup;
 
     /* Check if we can combine source and mask into a smask image */
-    status = _comac_pdf_surface_emit_combined_smask (surface, op, source, mask, &extents.bounded);
+    status = _comac_pdf_surface_emit_combined_smask (surface,
+						     op,
+						     source,
+						     mask,
+						     &extents.bounded);
     if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	goto cleanup;
 
     /* Check if we can use a stencil mask */
-    status = _comac_pdf_surface_emit_stencil_mask (surface, op, source, mask, &extents.bounded);
+    status = _comac_pdf_surface_emit_stencil_mask (surface,
+						   op,
+						   source,
+						   mask,
+						   &extents.bounded);
     if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	goto cleanup;
 
@@ -8274,16 +8733,16 @@ cleanup:
 }
 
 static comac_int_status_t
-_comac_pdf_surface_stroke (void			*abstract_surface,
-			   comac_operator_t	 op,
+_comac_pdf_surface_stroke (void *abstract_surface,
+			   comac_operator_t op,
 			   const comac_pattern_t *source,
-			   const comac_path_fixed_t	*path,
-			   const comac_stroke_style_t	*style,
-			   const comac_matrix_t	*ctm,
-			   const comac_matrix_t	*ctm_inverse,
-			   double		 tolerance,
-			   comac_antialias_t	 antialias,
-			   const comac_clip_t	*clip)
+			   const comac_path_fixed_t *path,
+			   const comac_stroke_style_t *style,
+			   const comac_matrix_t *ctm,
+			   const comac_matrix_t *ctm_inverse,
+			   double tolerance,
+			   comac_antialias_t antialias,
+			   const comac_clip_t *clip)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_pdf_smask_group_t *group;
@@ -8293,8 +8752,11 @@ _comac_pdf_surface_stroke (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_stroke (&extents,
 							  &surface->base,
-							  op, source,
-							  path, style, ctm,
+							  op,
+							  source,
+							  path,
+							  style,
+							  ctm,
 							  clip);
     if (unlikely (status))
 	return status;
@@ -8304,30 +8766,39 @@ _comac_pdf_surface_stroke (void			*abstract_surface,
 	comac_rectangle_int_t mask;
 	comac_box_t box;
 
-	status = _comac_path_fixed_stroke_extents (path, style,
-						   ctm, ctm_inverse,
+	status = _comac_path_fixed_stroke_extents (path,
+						   style,
+						   ctm,
+						   ctm_inverse,
 						   tolerance,
 						   &mask);
 	if (unlikely (status))
 	    goto cleanup;
 
 	_comac_box_from_rectangle (&box, &mask);
-	status = _comac_composite_rectangles_intersect_mask_extents (&extents,
-								     &box);
+	status =
+	    _comac_composite_rectangles_intersect_mask_extents (&extents, &box);
 	if (unlikely (status))
 	    goto cleanup;
     }
 
-    status = _comac_pdf_interchange_add_operation_extents (surface, &extents.bounded);
+    status = _comac_pdf_interchange_add_operation_extents (surface,
+							   &extents.bounded);
     if (unlikely (status))
 	goto cleanup;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
-	status = _comac_pdf_surface_analyze_operation (surface, op, source, &extents.bounded);
+	status = _comac_pdf_surface_analyze_operation (surface,
+						       op,
+						       source,
+						       &extents.bounded);
 	goto cleanup;
     }
 
-    assert (_comac_pdf_surface_operation_supported (surface, op, source, &extents.bounded));
+    assert (_comac_pdf_surface_operation_supported (surface,
+						    op,
+						    source,
+						    &extents.bounded));
 
     status = _comac_pdf_surface_set_clip (surface, &extents);
     if (unlikely (status))
@@ -8335,9 +8806,12 @@ _comac_pdf_surface_stroke (void			*abstract_surface,
 
     pattern_res.id = 0;
     gstate_res.id = 0;
-    status = _comac_pdf_surface_add_pdf_pattern (surface, source, op,
+    status = _comac_pdf_surface_add_pdf_pattern (surface,
+						 source,
+						 op,
 						 &extents.bounded,
-						 &pattern_res, &gstate_res);
+						 &pattern_res,
+						 &gstate_res);
     if (unlikely (status))
 	goto cleanup;
 
@@ -8346,7 +8820,8 @@ _comac_pdf_surface_stroke (void			*abstract_surface,
 	goto cleanup;
 
     if (gstate_res.id != 0) {
-	group = _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
+	group =
+	    _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
 	if (unlikely (group == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto cleanup;
@@ -8391,7 +8866,10 @@ _comac_pdf_surface_stroke (void			*abstract_surface,
 				     gstate_res.id,
 				     group->group_res.id);
     } else {
-	status = _comac_pdf_surface_select_pattern (surface, source, pattern_res, TRUE);
+	status = _comac_pdf_surface_select_pattern (surface,
+						    source,
+						    pattern_res,
+						    TRUE);
 	if (unlikely (status))
 	    goto cleanup;
 
@@ -8417,14 +8895,14 @@ cleanup:
 }
 
 static comac_int_status_t
-_comac_pdf_surface_fill (void			*abstract_surface,
-			 comac_operator_t	 op,
-			 const comac_pattern_t	*source,
-			 const comac_path_fixed_t*path,
-			 comac_fill_rule_t	 fill_rule,
-			 double			 tolerance,
-			 comac_antialias_t	 antialias,
-			 const comac_clip_t	*clip)
+_comac_pdf_surface_fill (void *abstract_surface,
+			 comac_operator_t op,
+			 const comac_pattern_t *source,
+			 const comac_path_fixed_t *path,
+			 comac_fill_rule_t fill_rule,
+			 double tolerance,
+			 comac_antialias_t antialias,
+			 const comac_clip_t *clip)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_int_status_t status;
@@ -8434,7 +8912,9 @@ _comac_pdf_surface_fill (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_fill (&extents,
 							&surface->base,
-							op, source, path,
+							op,
+							source,
+							path,
 							clip);
     if (unlikely (status))
 	return status;
@@ -8444,24 +8924,25 @@ _comac_pdf_surface_fill (void			*abstract_surface,
 	comac_rectangle_int_t mask;
 	comac_box_t box;
 
-	_comac_path_fixed_fill_extents (path,
-					fill_rule,
-					tolerance,
-					&mask);
+	_comac_path_fixed_fill_extents (path, fill_rule, tolerance, &mask);
 
 	_comac_box_from_rectangle (&box, &mask);
-	status = _comac_composite_rectangles_intersect_mask_extents (&extents,
-								     &box);
+	status =
+	    _comac_composite_rectangles_intersect_mask_extents (&extents, &box);
 	if (unlikely (status))
 	    goto cleanup;
     }
 
-    status = _comac_pdf_interchange_add_operation_extents (surface, &extents.bounded);
+    status = _comac_pdf_interchange_add_operation_extents (surface,
+							   &extents.bounded);
     if (unlikely (status))
 	goto cleanup;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
-	status = _comac_pdf_surface_analyze_operation (surface, op, source, &extents.bounded);
+	status = _comac_pdf_surface_analyze_operation (surface,
+						       op,
+						       source,
+						       &extents.bounded);
 	goto cleanup;
     } else if (surface->paginated_mode == COMAC_PAGINATED_MODE_FALLBACK) {
 	status = _comac_pdf_surface_start_fallback (surface);
@@ -8469,7 +8950,10 @@ _comac_pdf_surface_fill (void			*abstract_surface,
 	    goto cleanup;
     }
 
-    assert (_comac_pdf_surface_operation_supported (surface, op, source, &extents.bounded));
+    assert (_comac_pdf_surface_operation_supported (surface,
+						    op,
+						    source,
+						    &extents.bounded));
 
     status = _comac_pdf_surface_set_clip (surface, &extents);
     if (unlikely (status))
@@ -8485,9 +8969,9 @@ _comac_pdf_surface_fill (void			*abstract_surface,
 	    goto cleanup;
 
 	_comac_output_stream_printf (surface->output, "q\n");
-	status =  _comac_pdf_operators_clip (&surface->pdf_operators,
-					     path,
-					     fill_rule);
+	status = _comac_pdf_operators_clip (&surface->pdf_operators,
+					    path,
+					    fill_rule);
 	if (unlikely (status))
 	    goto cleanup;
 
@@ -8495,7 +8979,7 @@ _comac_pdf_surface_fill (void			*abstract_surface,
 						   op,
 						   source,
 						   &extents.bounded,
-						   1.0, /* alpha */
+						   1.0,	   /* alpha */
 						   FALSE); /* mask */
 	if (unlikely (status))
 	    goto cleanup;
@@ -8507,14 +8991,18 @@ _comac_pdf_surface_fill (void			*abstract_surface,
 
     pattern_res.id = 0;
     gstate_res.id = 0;
-    status = _comac_pdf_surface_add_pdf_pattern (surface, source, op,
+    status = _comac_pdf_surface_add_pdf_pattern (surface,
+						 source,
+						 op,
 						 &extents.bounded,
-						 &pattern_res, &gstate_res);
+						 &pattern_res,
+						 &gstate_res);
     if (unlikely (status))
 	goto cleanup;
 
     if (gstate_res.id != 0) {
-	group = _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
+	group =
+	    _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
 	if (unlikely (group == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto cleanup;
@@ -8557,7 +9045,10 @@ _comac_pdf_surface_fill (void			*abstract_surface,
 				     gstate_res.id,
 				     group->group_res.id);
     } else {
-	status = _comac_pdf_surface_select_pattern (surface, source, pattern_res, FALSE);
+	status = _comac_pdf_surface_select_pattern (surface,
+						    source,
+						    pattern_res,
+						    FALSE);
 	if (unlikely (status))
 	    goto cleanup;
 
@@ -8581,21 +9072,21 @@ cleanup:
 }
 
 static comac_int_status_t
-_comac_pdf_surface_fill_stroke (void			*abstract_surface,
-				comac_operator_t	 fill_op,
-				const comac_pattern_t	*fill_source,
-				comac_fill_rule_t	 fill_rule,
-				double			 fill_tolerance,
-				comac_antialias_t	 fill_antialias,
-				const comac_path_fixed_t*path,
-				comac_operator_t	 stroke_op,
-				const comac_pattern_t	*stroke_source,
+_comac_pdf_surface_fill_stroke (void *abstract_surface,
+				comac_operator_t fill_op,
+				const comac_pattern_t *fill_source,
+				comac_fill_rule_t fill_rule,
+				double fill_tolerance,
+				comac_antialias_t fill_antialias,
+				const comac_path_fixed_t *path,
+				comac_operator_t stroke_op,
+				const comac_pattern_t *stroke_source,
 				const comac_stroke_style_t *stroke_style,
-				const comac_matrix_t	*stroke_ctm,
-				const comac_matrix_t	*stroke_ctm_inverse,
-				double			 stroke_tolerance,
-				comac_antialias_t	 stroke_antialias,
-				const comac_clip_t	*clip)
+				const comac_matrix_t *stroke_ctm,
+				const comac_matrix_t *stroke_ctm_inverse,
+				double stroke_tolerance,
+				comac_antialias_t stroke_antialias,
+				const comac_clip_t *clip)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_int_status_t status;
@@ -8615,9 +9106,8 @@ _comac_pdf_surface_fill_stroke (void			*abstract_surface,
     /* PDF rendering of fill-stroke is not the same as comac when
      * either the fill or stroke is not opaque.
      */
-    if ( !_comac_pattern_is_opaque (fill_source, NULL) ||
-	 !_comac_pattern_is_opaque (stroke_source, NULL))
-    {
+    if (! _comac_pattern_is_opaque (fill_source, NULL) ||
+	! _comac_pattern_is_opaque (stroke_source, NULL)) {
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
@@ -8629,8 +9119,11 @@ _comac_pdf_surface_fill_stroke (void			*abstract_surface,
      */
     status = _comac_composite_rectangles_init_for_stroke (&extents,
 							  &surface->base,
-							  stroke_op, stroke_source,
-							  path, stroke_style, stroke_ctm,
+							  stroke_op,
+							  stroke_source,
+							  path,
+							  stroke_style,
+							  stroke_ctm,
 							  clip);
     if (unlikely (status))
 	return status;
@@ -8640,16 +9133,18 @@ _comac_pdf_surface_fill_stroke (void			*abstract_surface,
 	comac_rectangle_int_t mask;
 	comac_box_t box;
 
-	status = _comac_path_fixed_stroke_extents (path, stroke_style,
-						   stroke_ctm, stroke_ctm_inverse,
+	status = _comac_path_fixed_stroke_extents (path,
+						   stroke_style,
+						   stroke_ctm,
+						   stroke_ctm_inverse,
 						   stroke_tolerance,
 						   &mask);
 	if (unlikely (status))
 	    goto cleanup;
 
 	_comac_box_from_rectangle (&box, &mask);
-	status = _comac_composite_rectangles_intersect_mask_extents (&extents,
-								     &box);
+	status =
+	    _comac_composite_rectangles_intersect_mask_extents (&extents, &box);
 	if (unlikely (status))
 	    goto cleanup;
     }
@@ -8667,25 +9162,24 @@ _comac_pdf_surface_fill_stroke (void			*abstract_surface,
 	comac_rectangle_int_t mask;
 	comac_box_t box;
 
-	_comac_path_fixed_fill_extents (path,
-					fill_rule,
-					fill_tolerance,
-					&mask);
+	_comac_path_fixed_fill_extents (path, fill_rule, fill_tolerance, &mask);
 
 	_comac_box_from_rectangle (&box, &mask);
-	status = _comac_composite_rectangles_intersect_mask_extents (&extents,
-								     &box);
+	status =
+	    _comac_composite_rectangles_intersect_mask_extents (&extents, &box);
 	if (unlikely (status))
 	    goto cleanup;
     }
 
-    status = _comac_pdf_interchange_add_operation_extents (surface, &extents.bounded);
+    status = _comac_pdf_interchange_add_operation_extents (surface,
+							   &extents.bounded);
     if (unlikely (status))
 	goto cleanup;
 
     fill_pattern_res.id = 0;
     gstate_res.id = 0;
-    status = _comac_pdf_surface_add_pdf_pattern (surface, fill_source,
+    status = _comac_pdf_surface_add_pdf_pattern (surface,
+						 fill_source,
 						 fill_op,
 						 &extents.bounded,
 						 &fill_pattern_res,
@@ -8710,13 +9204,17 @@ _comac_pdf_surface_fill_stroke (void			*abstract_surface,
 
     /* As PDF has separate graphics state for fill and stroke we can
      * select both at the same time */
-    status = _comac_pdf_surface_select_pattern (surface, fill_source,
-						fill_pattern_res, FALSE);
+    status = _comac_pdf_surface_select_pattern (surface,
+						fill_source,
+						fill_pattern_res,
+						FALSE);
     if (unlikely (status))
 	goto cleanup;
 
-    status = _comac_pdf_surface_select_pattern (surface, stroke_source,
-						stroke_pattern_res, TRUE);
+    status = _comac_pdf_surface_select_pattern (surface,
+						stroke_source,
+						stroke_pattern_res,
+						TRUE);
     if (unlikely (status))
 	goto cleanup;
 
@@ -8742,24 +9240,24 @@ cleanup:
 }
 
 static comac_bool_t
-_comac_pdf_surface_has_show_text_glyphs	(void			*abstract_surface)
+_comac_pdf_surface_has_show_text_glyphs (void *abstract_surface)
 {
     return TRUE;
 }
 
 static comac_int_status_t
-_comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
-				     comac_operator_t		 op,
-				     const comac_pattern_t	*source,
-				     const char                 *utf8,
-				     int                         utf8_len,
-				     comac_glyph_t		*glyphs,
-				     int			 num_glyphs,
+_comac_pdf_surface_show_text_glyphs (void *abstract_surface,
+				     comac_operator_t op,
+				     const comac_pattern_t *source,
+				     const char *utf8,
+				     int utf8_len,
+				     comac_glyph_t *glyphs,
+				     int num_glyphs,
 				     const comac_text_cluster_t *clusters,
-				     int                         num_clusters,
-				     comac_text_cluster_flags_t  cluster_flags,
-				     comac_scaled_font_t	*scaled_font,
-				     const comac_clip_t		*clip)
+				     int num_clusters,
+				     comac_text_cluster_flags_t cluster_flags,
+				     comac_scaled_font_t *scaled_font,
+				     const comac_clip_t *clip)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_pdf_smask_group_t *group;
@@ -8770,24 +9268,33 @@ _comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_glyphs (&extents,
 							  &surface->base,
-							  op, source,
+							  op,
+							  source,
 							  scaled_font,
-							  glyphs, num_glyphs,
+							  glyphs,
+							  num_glyphs,
 							  clip,
 							  &overlap);
     if (unlikely (status))
 	return status;
 
-    status = _comac_pdf_interchange_add_operation_extents (surface, &extents.bounded);
+    status = _comac_pdf_interchange_add_operation_extents (surface,
+							   &extents.bounded);
     if (unlikely (status))
 	return status;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE) {
-	status = _comac_pdf_surface_analyze_operation (surface, op, source, &extents.bounded);
+	status = _comac_pdf_surface_analyze_operation (surface,
+						       op,
+						       source,
+						       &extents.bounded);
 	goto cleanup;
     }
 
-    assert (_comac_pdf_surface_operation_supported (surface, op, source, &extents.bounded));
+    assert (_comac_pdf_surface_operation_supported (surface,
+						    op,
+						    source,
+						    &extents.bounded));
 
     status = _comac_pdf_surface_set_clip (surface, &extents);
     if (unlikely (status))
@@ -8795,9 +9302,12 @@ _comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
 
     pattern_res.id = 0;
     gstate_res.id = 0;
-    status = _comac_pdf_surface_add_pdf_pattern (surface, source, op,
+    status = _comac_pdf_surface_add_pdf_pattern (surface,
+						 source,
+						 op,
 						 &extents.bounded,
-						 &pattern_res, &gstate_res);
+						 &pattern_res,
+						 &gstate_res);
     if (unlikely (status))
 	goto cleanup;
 
@@ -8806,7 +9316,8 @@ _comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
 	goto cleanup;
 
     if (gstate_res.id != 0) {
-	group = _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
+	group =
+	    _comac_pdf_surface_create_smask_group (surface, &extents.bounded);
 	if (unlikely (group == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto cleanup;
@@ -8832,7 +9343,8 @@ _comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
 	group->utf8_len = utf8_len;
 
 	if (num_glyphs) {
-	    group->glyphs = _comac_malloc_ab (num_glyphs, sizeof (comac_glyph_t));
+	    group->glyphs =
+		_comac_malloc_ab (num_glyphs, sizeof (comac_glyph_t));
 	    if (unlikely (group->glyphs == NULL)) {
 		_comac_pdf_smask_group_destroy (group);
 		status = _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -8843,13 +9355,16 @@ _comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
 	group->num_glyphs = num_glyphs;
 
 	if (num_clusters) {
-	    group->clusters = _comac_malloc_ab (num_clusters, sizeof (comac_text_cluster_t));
+	    group->clusters =
+		_comac_malloc_ab (num_clusters, sizeof (comac_text_cluster_t));
 	    if (unlikely (group->clusters == NULL)) {
 		_comac_pdf_smask_group_destroy (group);
 		status = _comac_error (COMAC_STATUS_NO_MEMORY);
 		goto cleanup;
 	    }
-	    memcpy (group->clusters, clusters, sizeof (comac_text_cluster_t) * num_clusters);
+	    memcpy (group->clusters,
+		    clusters,
+		    sizeof (comac_text_cluster_t) * num_clusters);
 	}
 	group->num_clusters = num_clusters;
 
@@ -8877,7 +9392,10 @@ _comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
 				     gstate_res.id,
 				     group->group_res.id);
     } else {
-	status = _comac_pdf_surface_select_pattern (surface, source, pattern_res, FALSE);
+	status = _comac_pdf_surface_select_pattern (surface,
+						    source,
+						    pattern_res,
+						    FALSE);
 	if (unlikely (status))
 	    goto cleanup;
 
@@ -8892,9 +9410,12 @@ _comac_pdf_surface_show_text_glyphs (void			*abstract_surface,
 	}
 
 	status = _comac_pdf_operators_show_text_glyphs (&surface->pdf_operators,
-							utf8, utf8_len,
-							glyphs, num_glyphs,
-							clusters, num_clusters,
+							utf8,
+							utf8_len,
+							glyphs,
+							num_glyphs,
+							clusters,
+							num_clusters,
 							cluster_flags,
 							scaled_font);
 	if (unlikely (status))
@@ -8914,22 +9435,23 @@ cleanup:
 }
 
 static const char **
-_comac_pdf_surface_get_supported_mime_types (void		 *abstract_surface)
+_comac_pdf_surface_get_supported_mime_types (void *abstract_surface)
 {
     return _comac_pdf_supported_mime_types;
 }
 
 static comac_int_status_t
-_comac_pdf_surface_tag (void			   *abstract_surface,
-			comac_bool_t                begin,
-			const char                 *tag_name,
-			const char                 *attributes)
+_comac_pdf_surface_tag (void *abstract_surface,
+			comac_bool_t begin,
+			const char *tag_name,
+			const char *attributes)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_int_status_t status = 0;
 
     if (begin)
-	status = _comac_pdf_interchange_tag_begin (surface, tag_name, attributes);
+	status =
+	    _comac_pdf_interchange_tag_begin (surface, tag_name, attributes);
     else
 	status = _comac_pdf_interchange_tag_end (surface, tag_name);
 
@@ -8937,8 +9459,8 @@ _comac_pdf_surface_tag (void			   *abstract_surface,
 }
 
 static comac_int_status_t
-_comac_pdf_surface_set_paginated_mode (void			*abstract_surface,
-				       comac_paginated_mode_t	 paginated_mode)
+_comac_pdf_surface_set_paginated_mode (void *abstract_surface,
+				       comac_paginated_mode_t paginated_mode)
 {
     comac_pdf_surface_t *surface = abstract_surface;
     comac_int_status_t status;
@@ -8951,7 +9473,7 @@ _comac_pdf_surface_set_paginated_mode (void			*abstract_surface,
     if (paginated_mode == COMAC_PAGINATED_MODE_RENDER) {
 	surface->surface_extents.x = 0;
 	surface->surface_extents.y = 0;
-	surface->surface_extents.width  = ceil (surface->width);
+	surface->surface_extents.width = ceil (surface->width);
 	surface->surface_extents.height = ceil (surface->height);
     }
 
@@ -8974,7 +9496,7 @@ static const comac_surface_backend_t comac_pdf_surface_backend = {
     NULL, /* release_source_image */
     NULL, /* snapshot */
 
-    NULL,  /* _comac_pdf_surface_copy_page */
+    NULL, /* _comac_pdf_surface_copy_page */
     _comac_pdf_surface_show_page,
 
     _comac_pdf_surface_get_extents,
@@ -8997,12 +9519,12 @@ static const comac_surface_backend_t comac_pdf_surface_backend = {
 };
 
 static const comac_paginated_surface_backend_t
-comac_pdf_surface_paginated_backend = {
-    _comac_pdf_surface_start_page,
-    _comac_pdf_surface_set_paginated_mode,
-    NULL, /* set_bounding_box */
-    _comac_pdf_surface_has_fallback_images,
-    _comac_pdf_surface_supports_fine_grained_fallbacks,
-    _comac_pdf_surface_requires_thumbnail_image,
-    _comac_pdf_surface_set_thumbnail_image,
+    comac_pdf_surface_paginated_backend = {
+	_comac_pdf_surface_start_page,
+	_comac_pdf_surface_set_paginated_mode,
+	NULL, /* set_bounding_box */
+	_comac_pdf_surface_has_fallback_images,
+	_comac_pdf_surface_supports_fine_grained_fallbacks,
+	_comac_pdf_surface_requires_thumbnail_image,
+	_comac_pdf_surface_set_thumbnail_image,
 };

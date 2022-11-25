@@ -32,10 +32,7 @@
 static void
 draw_square (comac_t *cr)
 {
-    comac_rectangle (cr,
-		     PAD, PAD,
-		     SIZE - 2 * PAD,
-		     SIZE - 2 * PAD);
+    comac_rectangle (cr, PAD, PAD, SIZE - 2 * PAD, SIZE - 2 * PAD);
     comac_fill (cr);
 }
 
@@ -53,7 +50,8 @@ draw (comac_t *cr, int width, int height)
     target = comac_get_group_target (cr);
     surface = comac_surface_create_similar (target,
 					    comac_surface_get_content (target),
-					    SIZE / 2, SIZE / 2);
+					    SIZE / 2,
+					    SIZE / 2);
     cr2 = comac_create (surface);
     comac_surface_destroy (surface);
 
@@ -65,7 +63,7 @@ draw (comac_t *cr, int width, int height)
      * quarter red. */
     surface = comac_surface_reference (comac_get_target (cr2));
     comac_destroy (cr2);
-    comac_surface_set_device_offset (surface, + SIZE / 2, + SIZE / 2);
+    comac_surface_set_device_offset (surface, +SIZE / 2, +SIZE / 2);
     comac_set_source_surface (cr, surface, SIZE / 2, SIZE / 2);
     comac_surface_destroy (surface);
 
@@ -74,9 +72,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (device_offset_positive,
-	    "Simple test using a surface with a positive device-offset as a source.",
-	    "device-offset", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    device_offset_positive,
+    "Simple test using a surface with a positive device-offset as a source.",
+    "device-offset", /* keywords */
+    NULL,	     /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

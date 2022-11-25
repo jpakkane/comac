@@ -46,21 +46,18 @@ comac_public comac_surface_t *
 comac_tee_surface_create (comac_surface_t *master);
 
 comac_public void
-comac_tee_surface_add (comac_surface_t *surface,
-		       comac_surface_t *target);
+comac_tee_surface_add (comac_surface_t *surface, comac_surface_t *target);
 
 comac_public void
-comac_tee_surface_remove (comac_surface_t *surface,
-			  comac_surface_t *target);
+comac_tee_surface_remove (comac_surface_t *surface, comac_surface_t *target);
 
 comac_public comac_surface_t *
-comac_tee_surface_index (comac_surface_t *surface,
-			 unsigned int index);
+comac_tee_surface_index (comac_surface_t *surface, unsigned int index);
 
 COMAC_END_DECLS
 
-#else  /*COMAC_HAS_TEE_SURFACE*/
-# error Comac was not compiled with support for the TEE backend
+#else /*COMAC_HAS_TEE_SURFACE*/
+#error Comac was not compiled with support for the TEE backend
 #endif /*COMAC_HAS_TEE_SURFACE*/
 
 #endif /*COMAC_TEE_H*/

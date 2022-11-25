@@ -42,9 +42,11 @@ _comac_create_similar (comac_t *cr, int width, int height)
 {
     comac_surface_t *similar;
 
-    similar = comac_surface_create_similar (comac_get_target (cr),
-	                                    comac_surface_get_content (comac_get_target (cr)),
-				            width, height);
+    similar = comac_surface_create_similar (
+	comac_get_target (cr),
+	comac_surface_get_content (comac_get_target (cr)),
+	width,
+	height);
     cr = comac_create (similar);
     comac_surface_destroy (similar);
 
@@ -77,10 +79,7 @@ _propagate_status (comac_t *dst, comac_t *src)
 }
 
 static void
-_draw (comac_t *cr,
-       double red,
-       double green,
-       double blue)
+_draw (comac_t *cr, double red, double green, double blue)
 {
     comac_text_extents_t extents;
 
@@ -96,16 +95,13 @@ _draw (comac_t *cr,
     comac_set_scaled_font (cr, scaled_font);
     comac_text_extents (cr, "comac", &extents);
     comac_move_to (cr,
-	           -extents.x_bearing - .5 * extents.width,
+		   -extents.x_bearing - .5 * extents.width,
 		   -extents.y_bearing - .5 * extents.height);
     comac_show_text (cr, "comac");
 }
 
 static void
-use_similar (comac_t *cr,
-	    double red,
-	    double green,
-	    double blue)
+use_similar (comac_t *cr, double red, double green, double blue)
 {
     comac_t *cr2;
 
@@ -121,11 +117,8 @@ use_similar (comac_t *cr,
 }
 
 static void
-use_image (comac_t *cr,
-	   comac_format_t format,
-	   double red,
-	   double green,
-	   double blue)
+use_image (
+    comac_t *cr, comac_format_t format, double red, double green, double blue)
 {
     comac_t *cr2;
 
@@ -141,10 +134,7 @@ use_image (comac_t *cr,
 }
 
 static void
-use_solid (comac_t *cr,
-	   double red,
-	   double green,
-	   double blue)
+use_solid (comac_t *cr, double red, double green, double blue)
 {
     /* mix in dissimilar solids */
     use_image (cr, COMAC_FORMAT_A1, red, green, blue);
@@ -163,14 +153,14 @@ draw (comac_t *cr, int width, int height)
     const comac_test_context_t *ctx = comac_test_get_context (cr);
     comac_status_t status;
     const double colors[8][3] = {
-	{ 1.0, 0.0, 0.0 }, /* red */
-	{ 0.0, 1.0, 0.0 }, /* green */
-	{ 1.0, 1.0, 0.0 }, /* yellow */
-	{ 0.0, 0.0, 1.0 }, /* blue */
-	{ 1.0, 0.0, 1.0 }, /* magenta */
-	{ 0.0, 1.0, 1.0 }, /* cyan */
-	{ 1.0, 1.0, 1.0 }, /* white */
-	{ 0.0, 0.0, 0.0 }, /* black */
+	{1.0, 0.0, 0.0}, /* red */
+	{0.0, 1.0, 0.0}, /* green */
+	{1.0, 1.0, 0.0}, /* yellow */
+	{0.0, 0.0, 1.0}, /* blue */
+	{1.0, 0.0, 1.0}, /* magenta */
+	{0.0, 1.0, 1.0}, /* cyan */
+	{1.0, 1.0, 1.0}, /* white */
+	{0.0, 0.0, 0.0}, /* black */
     };
     int i, j, loop;
 
@@ -205,6 +195,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (solid_pattern_cache_stress,
 	    "Stress the solid pattern cache and ensure it behaves",
 	    "stress", /* keywords */
-	    NULL, /* requirements */
-	    1, 1,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    1,
+	    1,
+	    NULL,
+	    draw)

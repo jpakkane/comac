@@ -48,7 +48,6 @@ typedef struct _comac_histogram {
     int *columns;
 } comac_histogram_t;
 
-
 /* timers */
 
 void
@@ -57,12 +56,11 @@ comac_perf_timer_start (void);
 void
 comac_perf_timer_stop (void);
 
-typedef void
-(*comac_perf_timer_synchronize_t) (void *closure);
+typedef void (*comac_perf_timer_synchronize_t) (void *closure);
 
 void
-comac_perf_timer_set_synchronize (comac_perf_timer_synchronize_t  synchronize,
-				  void				 *closure);
+comac_perf_timer_set_synchronize (comac_perf_timer_synchronize_t synchronize,
+				  void *closure);
 
 comac_time_t
 comac_perf_timer_elapsed (void);
@@ -105,28 +103,29 @@ typedef struct _comac_perf {
     comac_t *cr;
 } comac_perf_t;
 
-typedef comac_time_t
-(*comac_perf_func_t) (comac_t *cr, int width, int height, int loops);
+typedef comac_time_t (*comac_perf_func_t) (comac_t *cr,
+					   int width,
+					   int height,
+					   int loops);
 
-typedef double
-(*comac_count_func_t) (comac_t *cr, int width, int height);
+typedef double (*comac_count_func_t) (comac_t *cr, int width, int height);
 
 comac_bool_t
 comac_perf_can_run (comac_perf_t *perf,
-		    const char	 *name,
+		    const char *name,
 		    comac_bool_t *is_explicit);
 
 void
-comac_perf_run (comac_perf_t	   *perf,
-		const char	   *name,
-		comac_perf_func_t   perf_func,
-		comac_count_func_t  count_func);
+comac_perf_run (comac_perf_t *perf,
+		const char *name,
+		comac_perf_func_t perf_func,
+		comac_count_func_t count_func);
 
 void
-comac_perf_cover_sources_and_operators (comac_perf_t	   *perf,
-					const char	   *name,
-					comac_perf_func_t   perf_func,
-					comac_count_func_t  count_func);
+comac_perf_cover_sources_and_operators (comac_perf_t *perf,
+					const char *name,
+					comac_perf_func_t perf_func,
+					comac_count_func_t count_func);
 
 /* reporter convenience routines */
 
@@ -175,25 +174,29 @@ typedef enum {
 
 void
 comac_perf_report_load (comac_perf_report_t *report,
-			const char *filename, int id,
+			const char *filename,
+			int id,
 			int (*cmp) (const void *, const void *));
 
 void
 comac_perf_report_sort_and_compute_stats (comac_perf_report_t *report,
-					  int (*cmp) (const void *, const void *));
+					  int (*cmp) (const void *,
+						      const void *));
 
 int
-test_report_cmp_backend_then_name (const void *a,
-				   const void *b);
+test_report_cmp_backend_then_name (const void *a, const void *b);
 
 int
-test_report_cmp_name (const void *a,
-		      const void *b);
+test_report_cmp_name (const void *a, const void *b);
 
-#define COMAC_PERF_ENABLED_DECL(func) comac_bool_t (func ## _enabled) (comac_perf_t *perf)
-#define COMAC_PERF_RUN_DECL(func) void (func) (comac_perf_t *perf, comac_t *cr, int width, int height)
+#define COMAC_PERF_ENABLED_DECL(func)                                          \
+    comac_bool_t (func##_enabled) (comac_perf_t * perf)
+#define COMAC_PERF_RUN_DECL(func)                                              \
+    void (func) (comac_perf_t * perf, comac_t * cr, int width, int height)
 
-#define COMAC_PERF_DECL(func) COMAC_PERF_RUN_DECL(func); COMAC_PERF_ENABLED_DECL(func)
+#define COMAC_PERF_DECL(func)                                                  \
+    COMAC_PERF_RUN_DECL (func);                                                \
+    COMAC_PERF_ENABLED_DECL (func)
 
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

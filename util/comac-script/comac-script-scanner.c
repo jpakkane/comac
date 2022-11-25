@@ -37,8 +37,8 @@
 #include "comac-script-private.h"
 
 #include <limits.h> /* INT_MAX */
-#include <math.h> /* pow */
-#include <stdio.h> /* EOF */
+#include <math.h>   /* pow */
+#include <stdio.h>  /* EOF */
 #include <stdint.h> /* for {INT,UINT}*_{MIN,MAX} */
 #include <stdlib.h> /* malloc/free */
 #include <string.h> /* memset */
@@ -86,71 +86,76 @@ static void
 fprintf_obj (FILE *stream, csi_t *ctx, const csi_object_t *obj)
 {
     switch (csi_object_get_type (obj)) {
-	case CSI_OBJECT_TYPE_NULL:
-	    fprintf (stream, "NULL\n");
-	    break;
+    case CSI_OBJECT_TYPE_NULL:
+	fprintf (stream, "NULL\n");
+	break;
 
-	    /* atomics */
-	case CSI_OBJECT_TYPE_BOOLEAN:
-	    fprintf (stream, "boolean: %s\n",
-		    obj->datum.boolean ? "true" : "false");
-	    break;
-	case CSI_OBJECT_TYPE_INTEGER:
-	    fprintf (stream, "integer: %ld\n", obj->datum.integer);
-	    break;
-	case CSI_OBJECT_TYPE_MARK:
-	    fprintf (stream, "mark\n");
-	    break;
-	case CSI_OBJECT_TYPE_NAME:
-	    fprintf (stream, "name: %s\n", (char *) obj->datum.name);
-	    break;
-	case CSI_OBJECT_TYPE_OPERATOR:
-	    fprintf (stream, "operator: %p\n", obj->datum.ptr);
-	    break;
-	case CSI_OBJECT_TYPE_REAL:
-	    fprintf (stream, "real: %g\n", obj->datum.real);
-	    break;
+	/* atomics */
+    case CSI_OBJECT_TYPE_BOOLEAN:
+	fprintf (stream,
+		 "boolean: %s\n",
+		 obj->datum.boolean ? "true" : "false");
+	break;
+    case CSI_OBJECT_TYPE_INTEGER:
+	fprintf (stream, "integer: %ld\n", obj->datum.integer);
+	break;
+    case CSI_OBJECT_TYPE_MARK:
+	fprintf (stream, "mark\n");
+	break;
+    case CSI_OBJECT_TYPE_NAME:
+	fprintf (stream, "name: %s\n", (char *) obj->datum.name);
+	break;
+    case CSI_OBJECT_TYPE_OPERATOR:
+	fprintf (stream, "operator: %p\n", obj->datum.ptr);
+	break;
+    case CSI_OBJECT_TYPE_REAL:
+	fprintf (stream, "real: %g\n", obj->datum.real);
+	break;
 
-	    /* compound */
-	case CSI_OBJECT_TYPE_ARRAY:
-	    fprintf (stream, "array\n");
-	    break;
-	case CSI_OBJECT_TYPE_DICTIONARY:
-	    fprintf (stream, "dictionary\n");
-	    break;
-	case CSI_OBJECT_TYPE_FILE:
-	    fprintf (stream, "file\n");
-	    break;
-	case CSI_OBJECT_TYPE_MATRIX:
-	    fprintf (stream, "matrix: [%g %g %g %g %g %g]\n",
-		    obj->datum.matrix->matrix.xx,
-		    obj->datum.matrix->matrix.yx,
-		    obj->datum.matrix->matrix.xy,
-		    obj->datum.matrix->matrix.yy,
-		    obj->datum.matrix->matrix.x0,
-		    obj->datum.matrix->matrix.y0);
-	    break;
-	case CSI_OBJECT_TYPE_STRING:
-	    fprintf (stream, "string: len=%ld, defate=%ld, method=%d\n",
-		     obj->datum.string->len, obj->datum.string->deflate, obj->datum.string->method);
-	    break;
+	/* compound */
+    case CSI_OBJECT_TYPE_ARRAY:
+	fprintf (stream, "array\n");
+	break;
+    case CSI_OBJECT_TYPE_DICTIONARY:
+	fprintf (stream, "dictionary\n");
+	break;
+    case CSI_OBJECT_TYPE_FILE:
+	fprintf (stream, "file\n");
+	break;
+    case CSI_OBJECT_TYPE_MATRIX:
+	fprintf (stream,
+		 "matrix: [%g %g %g %g %g %g]\n",
+		 obj->datum.matrix->matrix.xx,
+		 obj->datum.matrix->matrix.yx,
+		 obj->datum.matrix->matrix.xy,
+		 obj->datum.matrix->matrix.yy,
+		 obj->datum.matrix->matrix.x0,
+		 obj->datum.matrix->matrix.y0);
+	break;
+    case CSI_OBJECT_TYPE_STRING:
+	fprintf (stream,
+		 "string: len=%ld, defate=%ld, method=%d\n",
+		 obj->datum.string->len,
+		 obj->datum.string->deflate,
+		 obj->datum.string->method);
+	break;
 
-	    /* comac */
-	case CSI_OBJECT_TYPE_CONTEXT:
-	    fprintf (stream, "context\n");
-	    break;
-	case CSI_OBJECT_TYPE_FONT:
-	    fprintf (stream, "font\n");
-	    break;
-	case CSI_OBJECT_TYPE_PATTERN:
-	    fprintf (stream, "pattern\n");
-	    break;
-	case CSI_OBJECT_TYPE_SCALED_FONT:
-	    fprintf (stream, "scaled-font\n");
-	    break;
-	case CSI_OBJECT_TYPE_SURFACE:
-	    fprintf (stream, "surface\n");
-	    break;
+	/* comac */
+    case CSI_OBJECT_TYPE_CONTEXT:
+	fprintf (stream, "context\n");
+	break;
+    case CSI_OBJECT_TYPE_FONT:
+	fprintf (stream, "font\n");
+	break;
+    case CSI_OBJECT_TYPE_PATTERN:
+	fprintf (stream, "pattern\n");
+	break;
+    case CSI_OBJECT_TYPE_SCALED_FONT:
+	fprintf (stream, "scaled-font\n");
+	break;
+    case CSI_OBJECT_TYPE_SURFACE:
+	fprintf (stream, "surface\n");
+	break;
     }
 }
 
@@ -199,17 +204,17 @@ _buffer_grow (csi_t *ctx, csi_scanner_t *scan)
     char *base;
 
     if (_csi_unlikely (scan->buffer.size > INT_MAX / 2))
-	longjmp (scan->jump_buffer,  _csi_error (CSI_STATUS_NO_MEMORY));
+	longjmp (scan->jump_buffer, _csi_error (CSI_STATUS_NO_MEMORY));
 
     offset = scan->buffer.ptr - scan->buffer.base;
     newsize = scan->buffer.size * 2;
     base = _csi_realloc (ctx, scan->buffer.base, newsize);
     if (_csi_unlikely (base == NULL))
-	longjmp (scan->jump_buffer,  _csi_error (CSI_STATUS_NO_MEMORY));
+	longjmp (scan->jump_buffer, _csi_error (CSI_STATUS_NO_MEMORY));
 
     scan->buffer.base = base;
-    scan->buffer.ptr  = base + offset;
-    scan->buffer.end  = base + newsize;
+    scan->buffer.ptr = base + offset;
+    scan->buffer.end = base + newsize;
     scan->buffer.size = newsize;
 }
 
@@ -260,7 +265,7 @@ _csi_parse_number (csi_object_t *obj, const char *s, int len)
     int sign = 1;
     int decimal = -1;
     int exponent_sign = 0;
-    const char * const end = s + len;
+    const char *const end = s + len;
 
     switch (*s) {
     case '0':
@@ -327,7 +332,7 @@ _csi_parse_number (csi_object_t *obj, const char *s, int len)
 		if (decimal != -1)
 		    decimal++;
 	    }
-	} else if (*s == 'E' || * s== 'e') {
+	} else if (*s == 'E' || *s == 'e') {
 	    if (radix == 0) {
 		if (_csi_unlikely (s + 1 == end))
 		    return FALSE;
@@ -382,23 +387,50 @@ _csi_parse_number (csi_object_t *obj, const char *s, int len)
 	    if (decimal != -1)
 		e -= decimal;
 	    switch (e) {
-	    case -7: v *= 0.0000001; break;
-	    case -6: v *= 0.000001; break;
-	    case -5: v *= 0.00001; break;
-	    case -4: v *= 0.0001; break;
-	    case -3: v *= 0.001; break;
-	    case -2: v *= 0.01; break;
-	    case -1: v *= 0.1; break;
-	    case  0: break;
-	    case  1: v *= 10; break;
-	    case  2: v *= 100; break;
-	    case  3: v *= 1000; break;
-	    case  4: v *= 10000; break;
-	    case  5: v *= 100000; break;
-	    case  6: v *= 1000000; break;
+	    case -7:
+		v *= 0.0000001;
+		break;
+	    case -6:
+		v *= 0.000001;
+		break;
+	    case -5:
+		v *= 0.00001;
+		break;
+	    case -4:
+		v *= 0.0001;
+		break;
+	    case -3:
+		v *= 0.001;
+		break;
+	    case -2:
+		v *= 0.01;
+		break;
+	    case -1:
+		v *= 0.1;
+		break;
+	    case 0:
+		break;
+	    case 1:
+		v *= 10;
+		break;
+	    case 2:
+		v *= 100;
+		break;
+	    case 3:
+		v *= 1000;
+		break;
+	    case 4:
+		v *= 10000;
+		break;
+	    case 5:
+		v *= 100000;
+		break;
+	    case 6:
+		v *= 1000000;
+		break;
 	    default:
-		    v *= pow (10, e); /* XXX */
-		    break;
+		v *= pow (10, e); /* XXX */
+		break;
 	    }
 
 	    obj->type = CSI_OBJECT_TYPE_REAL;
@@ -451,17 +483,18 @@ token_end (csi_t *ctx, csi_scanner_t *scan, csi_file_t *src)
 	    scan->build_procedure.type |= CSI_OBJECT_ATTR_EXECUTABLE;
 	    return;
 	} else if (s[0] == '}') {
-	    if (_csi_unlikely
-		(scan->build_procedure.type == CSI_OBJECT_TYPE_NULL))
-	    {
-		longjmp (scan->jump_buffer, _csi_error (CSI_STATUS_INVALID_SCRIPT));
+	    if (_csi_unlikely (scan->build_procedure.type ==
+			       CSI_OBJECT_TYPE_NULL)) {
+		longjmp (scan->jump_buffer,
+			 _csi_error (CSI_STATUS_INVALID_SCRIPT));
 	    }
 
 	    if (scan->procedure_stack.len) {
 		csi_object_t *next;
 
 		next = _csi_stack_peek (&scan->procedure_stack, 0);
-		status = csi_array_append (ctx, next->datum.array,
+		status = csi_array_append (ctx,
+					   next->datum.array,
 					   &scan->build_procedure);
 		scan->build_procedure = *next;
 		scan->procedure_stack.len--;
@@ -500,9 +533,8 @@ token_end (csi_t *ctx, csi_scanner_t *scan, csi_file_t *src)
 
     /* consume whitespace after token, before calling the interpreter */
     if (scan->build_procedure.type != CSI_OBJECT_TYPE_NULL) {
-	status = csi_array_append (ctx,
-				   scan->build_procedure.datum.array,
-				   &obj);
+	status =
+	    csi_array_append (ctx, scan->build_procedure.datum.array, &obj);
     } else if (obj.type & CSI_OBJECT_ATTR_EXECUTABLE) {
 	status = scan_execute (ctx, &obj);
 	csi_object_free (ctx, &obj);
@@ -534,9 +566,8 @@ string_end (csi_t *ctx, csi_scanner_t *scan)
 	longjmp (scan->jump_buffer, status);
 
     if (scan->build_procedure.type != CSI_OBJECT_TYPE_NULL)
-	status = csi_array_append (ctx,
-				   scan->build_procedure.datum.array,
-				   &obj);
+	status =
+	    csi_array_append (ctx, scan->build_procedure.datum.array, &obj);
     else
 	status = scan_push (ctx, &obj);
     if (_csi_unlikely (status))
@@ -591,9 +622,8 @@ hex_end (csi_t *ctx, csi_scanner_t *scan)
 	longjmp (scan->jump_buffer, status);
 
     if (scan->build_procedure.type != CSI_OBJECT_TYPE_NULL)
-	status = csi_array_append (ctx,
-				   scan->build_procedure.datum.array,
-				   &obj);
+	status =
+	    csi_array_append (ctx, scan->build_procedure.datum.array, &obj);
     else
 	status = scan_push (ctx, &obj);
     if (_csi_unlikely (status))
@@ -615,13 +645,13 @@ base85_add (csi_t *ctx, csi_scanner_t *scan, int c)
     } else if (_csi_unlikely (c < '!' || c > 'u')) {
 	longjmp (scan->jump_buffer, _csi_error (CSI_STATUS_INVALID_SCRIPT));
     } else {
-	scan->accumulator = scan->accumulator*85 + c - '!';
+	scan->accumulator = scan->accumulator * 85 + c - '!';
 	if (++scan->accumulator_count == 5) {
 	    buffer_check (ctx, scan, 4);
 	    buffer_add (&scan->buffer, (scan->accumulator >> 24) & 0xff);
 	    buffer_add (&scan->buffer, (scan->accumulator >> 16) & 0xff);
-	    buffer_add (&scan->buffer, (scan->accumulator >>  8) & 0xff);
-	    buffer_add (&scan->buffer, (scan->accumulator >>  0) & 0xff);
+	    buffer_add (&scan->buffer, (scan->accumulator >> 8) & 0xff);
+	    buffer_add (&scan->buffer, (scan->accumulator >> 0) & 0xff);
 
 	    scan->accumulator = 0;
 	    scan->accumulator_count = 0;
@@ -645,11 +675,12 @@ base85_end (csi_t *ctx, csi_scanner_t *scan, comac_bool_t deflate)
 	break;
 
     case 2:
-	scan->accumulator = scan->accumulator * (85*85*85) + 85*85*85 -1;
+	scan->accumulator =
+	    scan->accumulator * (85 * 85 * 85) + 85 * 85 * 85 - 1;
 	buffer_add (&scan->buffer, (scan->accumulator >> 24) & 0xff);
 	break;
     case 3:
-	scan->accumulator = scan->accumulator * (85*85) + 85*85 -1;
+	scan->accumulator = scan->accumulator * (85 * 85) + 85 * 85 - 1;
 	buffer_add (&scan->buffer, (scan->accumulator >> 24) & 0xff);
 	buffer_add (&scan->buffer, (scan->accumulator >> 16) & 0xff);
 	break;
@@ -657,15 +688,16 @@ base85_end (csi_t *ctx, csi_scanner_t *scan, comac_bool_t deflate)
 	scan->accumulator = scan->accumulator * 85 + 84;
 	buffer_add (&scan->buffer, (scan->accumulator >> 24) & 0xff);
 	buffer_add (&scan->buffer, (scan->accumulator >> 16) & 0xff);
-	buffer_add (&scan->buffer, (scan->accumulator >>  8) & 0xff);
+	buffer_add (&scan->buffer, (scan->accumulator >> 8) & 0xff);
 	break;
     }
 
     if (deflate) {
-        uLongf len = be32 (*(uint32_t *) scan->buffer.base);
+	uLongf len = be32 (*(uint32_t *) scan->buffer.base);
 	Bytef *source = (Bytef *) (scan->buffer.base + sizeof (uint32_t));
 
-	status = csi_string_deflate_new (ctx, &obj,
+	status = csi_string_deflate_new (ctx,
+					 &obj,
 					 source,
 					 (Bytef *) scan->buffer.ptr - source,
 					 len);
@@ -681,9 +713,8 @@ base85_end (csi_t *ctx, csi_scanner_t *scan, comac_bool_t deflate)
     }
 
     if (scan->build_procedure.type != CSI_OBJECT_TYPE_NULL)
-	status = csi_array_append (ctx,
-				   scan->build_procedure.datum.array,
-				   &obj);
+	status =
+	    csi_array_append (ctx, scan->build_procedure.datum.array, &obj);
     else
 	status = scan_push (ctx, &obj);
     if (_csi_unlikely (status))
@@ -697,16 +728,16 @@ base64_add (csi_t *ctx, csi_scanner_t *scan, int c)
 
     /* Convert Base64 character to its 6 bit nibble */
     val = scan->accumulator;
-    if (c =='/') {
+    if (c == '/') {
 	val = (val << 6) | 63;
-    } else if (c =='+') {
+    } else if (c == '+') {
 	val = (val << 6) | 62;
-    } else if (c >='A' && c <='Z') {
-	val = (val << 6) | (c -'A');
-    } else if (c >='a' && c <='z') {
-	val = (val << 6) | (c -'a' + 26);
-    } else if (c >='0' && c <='9') {
-	val = (val << 6) | (c -'0' + 52);
+    } else if (c >= 'A' && c <= 'Z') {
+	val = (val << 6) | (c - 'A');
+    } else if (c >= 'a' && c <= 'z') {
+	val = (val << 6) | (c - 'a' + 26);
+    } else if (c >= '0' && c <= '9') {
+	val = (val << 6) | (c - '0' + 52);
     }
 
     buffer_check (ctx, scan, 1);
@@ -731,12 +762,12 @@ base64_add (csi_t *ctx, csi_scanner_t *scan, int c)
 	break;
     }
 
-     if (c == '=') {
+    if (c == '=') {
 	scan->accumulator_count = 0;
 	scan->accumulator = 0;
-     } else {
-	 scan->accumulator = val;
-     }
+    } else {
+	scan->accumulator = val;
+    }
 }
 
 static void
@@ -767,9 +798,8 @@ base64_end (csi_t *ctx, csi_scanner_t *scan)
 	longjmp (scan->jump_buffer, status);
 
     if (scan->build_procedure.type != CSI_OBJECT_TYPE_NULL)
-	status = csi_array_append (ctx,
-				   scan->build_procedure.datum.array,
-				   &obj);
+	status =
+	    csi_array_append (ctx, scan->build_procedure.datum.array, &obj);
     else
 	status = scan_push (ctx, &obj);
     if (_csi_unlikely (status))
@@ -834,7 +864,7 @@ _scan_file (csi_t *ctx, csi_file_t *src)
 
 scan_none:
     while ((c = csi_file_getc (src)) != EOF) {
-	csi_object_t obj = { CSI_OBJECT_TYPE_NULL };
+	csi_object_t obj = {CSI_OBJECT_TYPE_NULL};
 
 	switch (c) {
 	case 0xa:
@@ -973,22 +1003,42 @@ scan_none:
 	case STRING_2_MSB:
 	case STRING_2_MSB | STRING_DEFLATE:
 	    scan_read (scan, src, &u.u16, 2);
-	    string_read (ctx, scan, src, be16 (u.u16),  c & STRING_DEFLATE, &obj);
+	    string_read (ctx,
+			 scan,
+			 src,
+			 be16 (u.u16),
+			 c & STRING_DEFLATE,
+			 &obj);
 	    break;
 	case STRING_2_LSB:
 	case STRING_2_LSB | STRING_DEFLATE:
 	    scan_read (scan, src, &u.u16, 2);
-	    string_read (ctx, scan, src, le16 (u.u16), c & STRING_DEFLATE, &obj);
+	    string_read (ctx,
+			 scan,
+			 src,
+			 le16 (u.u16),
+			 c & STRING_DEFLATE,
+			 &obj);
 	    break;
 	case STRING_4_MSB:
 	case STRING_4_MSB | STRING_DEFLATE:
 	    scan_read (scan, src, &u.u32, 4);
-	    string_read (ctx, scan, src, be32 (u.u32), c & STRING_DEFLATE, &obj);
+	    string_read (ctx,
+			 scan,
+			 src,
+			 be32 (u.u32),
+			 c & STRING_DEFLATE,
+			 &obj);
 	    break;
 	case STRING_4_LSB:
 	case STRING_4_LSB | STRING_DEFLATE:
 	    scan_read (scan, src, &u.u32, 4);
-	    string_read (ctx, scan, src, le32 (u.u32), c & STRING_DEFLATE, &obj);
+	    string_read (ctx,
+			 scan,
+			 src,
+			 le32 (u.u32),
+			 c & STRING_DEFLATE,
+			 &obj);
 	    break;
 
 #define OPCODE 152
@@ -1018,11 +1068,11 @@ scan_none:
 	    longjmp (scan->jump_buffer, _csi_error (CSI_STATUS_INVALID_SCRIPT));
 
 	case '#': /* PDF 1.2 escape code */
-	    {
-		int c_hi = csi_file_getc (src);
-		int c_lo = csi_file_getc (src);
-		c = (hex_value (c_hi) << 4) | hex_value (c_lo);
-	    }
+	{
+	    int c_hi = csi_file_getc (src);
+	    int c_lo = csi_file_getc (src);
+	    c = (hex_value (c_hi) << 4) | hex_value (c_lo);
+	}
 	    /* fall-through */
 	default:
 	    token_start (scan);
@@ -1077,9 +1127,8 @@ scan_token:
 	    goto scan_none;
 	case '/':
 	    /* need to special case '^//?' */
-	    if (scan->buffer.ptr > scan->buffer.base+1 ||
-		scan->buffer.base[0] != '/')
-	    {
+	    if (scan->buffer.ptr > scan->buffer.base + 1 ||
+		scan->buffer.base[0] != '/') {
 		token_end (ctx, scan, src);
 		token_start (scan);
 	    }
@@ -1101,11 +1150,11 @@ scan_token:
 	    goto scan_none;
 
 	case '#': /* PDF 1.2 escape code */
-	    {
-		int c_hi = csi_file_getc (src);
-		int c_lo = csi_file_getc (src);
-		c = (hex_value (c_hi) << 4) | hex_value (c_lo);
-	    }
+	{
+	    int c_hi = csi_file_getc (src);
+	    int c_lo = csi_file_getc (src);
+	    c = (hex_value (c_hi) << 4) | hex_value (c_lo);
+	}
 	    /* fall-through */
 	default:
 	    token_add (ctx, scan, c);
@@ -1136,7 +1185,8 @@ scan_string:
 	    next = csi_file_getc (src);
 	    switch (next) {
 	    case EOF:
-		longjmp (scan->jump_buffer, _csi_error (CSI_STATUS_INVALID_SCRIPT));
+		longjmp (scan->jump_buffer,
+			 _csi_error (CSI_STATUS_INVALID_SCRIPT));
 
 	    case 'n':
 		string_add (ctx, scan, '\n');
@@ -1163,33 +1213,43 @@ scan_string:
 		string_add (ctx, scan, ')');
 		break;
 
-	    case '0': case '1': case '2': case '3':
-	    case '4': case '5': case '6': case '7':
-		{ /* octal code: \d{1,3} */
-		    int i;
+	    case '0':
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7': { /* octal code: \d{1,3} */
+		int i;
 
-		    c = next - '0';
+		c = next - '0';
 
-		    for (i = 0; i < 2; i++) {
-			next = csi_file_getc (src);
-			switch (next) {
-			case EOF:
-			    return;
+		for (i = 0; i < 2; i++) {
+		    next = csi_file_getc (src);
+		    switch (next) {
+		    case EOF:
+			return;
 
-			case '0': case '1': case '2': case '3':
-			case '4': case '5': case '6': case '7':
-			    c = 8*c + next-'0';
-			    break;
+		    case '0':
+		    case '1':
+		    case '2':
+		    case '3':
+		    case '4':
+		    case '5':
+		    case '6':
+		    case '7':
+			c = 8 * c + next - '0';
+			break;
 
-			default:
-			    csi_file_putc (src, next);
-			    goto octal_code_done;
-			}
+		    default:
+			csi_file_putc (src, next);
+			goto octal_code_done;
 		    }
-  octal_code_done:
-		    string_add (ctx, scan, c);
 		}
-		break;
+	    octal_code_done:
+		string_add (ctx, scan, c);
+	    } break;
 
 	    case 0xa:
 		/* skip the newline */
@@ -1422,7 +1482,7 @@ struct _translate_closure {
 
 static csi_status_t
 _translate_name (csi_t *ctx,
-	         csi_name_t name,
+		 csi_name_t name,
 		 csi_boolean_t executable,
 		 struct _translate_closure *closure)
 {
@@ -1434,7 +1494,7 @@ _translate_name (csi_t *ctx,
 	 * XXX This may break some scripts that overload system operators.
 	 */
 	entry = _csi_hash_table_lookup (&closure->opcodes->hash_table,
-		                        (csi_hash_entry_t *) &name);
+					(csi_hash_entry_t *) &name);
 	if (entry == NULL)
 	    goto STRING;
 
@@ -1443,9 +1503,9 @@ _translate_name (csi_t *ctx,
 	closure->write_func (closure->closure, (unsigned char *) &u16, 2);
     } else {
 	closure->write_func (closure->closure, (unsigned char *) "/", 1);
-STRING:
+    STRING:
 	closure->write_func (closure->closure,
-		             (unsigned char *) name,
+			     (unsigned char *) name,
 			     strlen ((char *) name));
 	closure->write_func (closure->closure, (unsigned char *) "\n", 1);
     }
@@ -1455,7 +1515,7 @@ STRING:
 
 static csi_status_t
 _translate_operator (csi_t *ctx,
-	             csi_operator_t op,
+		     csi_operator_t op,
 		     csi_boolean_t executable,
 		     struct _translate_closure *closure)
 {
@@ -1463,7 +1523,7 @@ _translate_operator (csi_t *ctx,
     uint16_t u16;
 
     entry = _csi_hash_table_lookup (&closure->opcodes->hash_table,
-	                            (csi_hash_entry_t *) &op);
+				    (csi_hash_entry_t *) &op);
     if (entry == NULL)
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
@@ -1478,7 +1538,7 @@ _translate_operator (csi_t *ctx,
 
 static csi_status_t
 _translate_integer (csi_t *ctx,
-	            csi_integer_t i,
+		    csi_integer_t i,
 		    struct _translate_closure *closure)
 {
     uint8_t hdr;
@@ -1554,7 +1614,7 @@ _translate_integer (csi_t *ctx,
 
 static csi_status_t
 _translate_real (csi_t *ctx,
-	         csi_real_t real,
+		 csi_real_t real,
 		 struct _translate_closure *closure)
 {
     uint8_t hdr;
@@ -1575,7 +1635,7 @@ _translate_real (csi_t *ctx,
 
 static csi_status_t
 _translate_string (csi_t *ctx,
-	           csi_string_t *string,
+		   csi_string_t *string,
 		   struct _translate_closure *closure)
 {
     uint8_t hdr;
@@ -1595,22 +1655,23 @@ _translate_string (csi_t *ctx,
 
 #if HAVE_LZO
     if (method == NONE && buf_len > 16) {
-	unsigned long mem_len = 2*string->len > LZO2A_999_MEM_COMPRESS ? 2*string->len : LZO2A_999_MEM_COMPRESS;
+	unsigned long mem_len = 2 * string->len > LZO2A_999_MEM_COMPRESS
+				    ? 2 * string->len
+				    : LZO2A_999_MEM_COMPRESS;
 	void *mem = malloc (mem_len);
-	void *work = malloc(LZO2A_999_MEM_COMPRESS);
+	void *work = malloc (LZO2A_999_MEM_COMPRESS);
 
-	if (lzo2a_999_compress ((lzo_bytep) buf, buf_len,
-				(lzo_bytep) mem, &mem_len,
+	if (lzo2a_999_compress ((lzo_bytep) buf,
+				buf_len,
+				(lzo_bytep) mem,
+				&mem_len,
 				work) == 0 &&
-	    8+2*mem_len < buf_len)
-	{
+	    8 + 2 * mem_len < buf_len) {
 	    method = LZO;
 	    deflate = buf_len;
 	    buf_len = mem_len;
 	    buf = mem;
-	}
-	else
-	{
+	} else {
 	    free (mem);
 	}
 
@@ -1620,22 +1681,24 @@ _translate_string (csi_t *ctx,
     if (method == ZLIB) {
 	buf_len = string->deflate;
 	buf = malloc (string->deflate);
-	if (uncompress ((Bytef *) buf, &buf_len,
-			(Bytef *) string->string, string->len) == Z_OK)
-	{
-	    assert(string->len > 0);
-	    if (buf_len <= 8 + 2*((unsigned long)string->len)) {
+	if (uncompress ((Bytef *) buf,
+			&buf_len,
+			(Bytef *) string->string,
+			string->len) == Z_OK) {
+	    assert (string->len > 0);
+	    if (buf_len <= 8 + 2 * ((unsigned long) string->len)) {
 		method = NONE;
 		deflate = 0;
 	    } else {
-		unsigned long mem_len = 2*string->deflate;
+		unsigned long mem_len = 2 * string->deflate;
 		void *mem = malloc (mem_len);
-		void *work = malloc(LZO2A_999_MEM_COMPRESS);
+		void *work = malloc (LZO2A_999_MEM_COMPRESS);
 
-		if (lzo2a_999_compress ((lzo_bytep) buf, buf_len,
-					(lzo_bytep) mem, &mem_len,
-					work) == 0)
-		{
+		if (lzo2a_999_compress ((lzo_bytep) buf,
+					buf_len,
+					(lzo_bytep) mem,
+					&mem_len,
+					work) == 0) {
 		    if (8 + mem_len > buf_len) {
 			method = NONE;
 			deflate = 0;
@@ -1645,11 +1708,9 @@ _translate_string (csi_t *ctx,
 			deflate = buf_len;
 			buf_len = mem_len;
 			buf = mem;
-			assert(deflate);
+			assert (deflate);
 		    }
-		}
-		else
-		{
+		} else {
 		    free (buf);
 		    buf = string->string;
 		    buf_len = string->len;
@@ -1657,9 +1718,7 @@ _translate_string (csi_t *ctx,
 
 		free (work);
 	    }
-	}
-	else
-	{
+	} else {
 	    free (buf);
 	    buf = string->string;
 	    buf_len = string->len;
@@ -1760,7 +1819,8 @@ _translate_push (csi_t *ctx, csi_object_t *obj)
     case CSI_OBJECT_TYPE_PATTERN:
     case CSI_OBJECT_TYPE_SCALED_FONT:
     case CSI_OBJECT_TYPE_SURFACE:
-	longjmp (ctx->scanner.jump_buffer,  _csi_error (CSI_STATUS_INVALID_SCRIPT));
+	longjmp (ctx->scanner.jump_buffer,
+		 _csi_error (CSI_STATUS_INVALID_SCRIPT));
 	break;
     }
 
@@ -1806,7 +1866,8 @@ _translate_execute (csi_t *ctx, csi_object_t *obj)
     case CSI_OBJECT_TYPE_PATTERN:
     case CSI_OBJECT_TYPE_SCALED_FONT:
     case CSI_OBJECT_TYPE_SURFACE:
-	longjmp (ctx->scanner.jump_buffer,  _csi_error (CSI_STATUS_INVALID_SCRIPT));
+	longjmp (ctx->scanner.jump_buffer,
+		 _csi_error (CSI_STATUS_INVALID_SCRIPT));
 	break;
     }
 
@@ -1839,7 +1900,7 @@ build_opcodes (csi_t *ctx, csi_dictionary_t **out)
 	int code;
 
 	entry = _csi_hash_table_lookup (&dict->hash_table,
-		                        (csi_hash_entry_t *) &def->op);
+					(csi_hash_entry_t *) &def->op);
 	if (entry == NULL) {
 	    code = opcode++;
 	    csi_integer_new (&obj, code);
@@ -1871,7 +1932,7 @@ FAIL:
 
 csi_status_t
 _csi_translate_file (csi_t *ctx,
-	             csi_file_t *file,
+		     csi_file_t *file,
 		     comac_write_func_t write_func,
 		     void *closure)
 {

@@ -43,9 +43,7 @@ _comac_observers_notify (comac_list_t *observers, void *arg)
 {
     comac_observer_t *obs, *next;
 
-    comac_list_foreach_entry_safe (obs, next,
-				   comac_observer_t,
-				   observers, link)
+    comac_list_foreach_entry_safe (obs, next, comac_observer_t, observers, link)
     {
 	obs->callback (obs, arg);
     }

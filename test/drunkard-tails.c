@@ -26,9 +26,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(3 * LINE_WIDTH)
+#define LINE_WIDTH 10.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (3 * LINE_WIDTH)
 
 static uint32_t state;
 
@@ -37,8 +37,8 @@ uniform_random (double minval, double maxval)
 {
     static uint32_t const poly = 0x9a795537U;
     uint32_t n = 32;
-    while (n-->0)
-	state = 2*state < state ? (2*state ^ poly) : 2*state;
+    while (n-- > 0)
+	state = 2 * state < state ? (2 * state ^ poly) : 2 * state;
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
@@ -49,7 +49,7 @@ make_path (comac_t *cr)
 
     state = 0xdeadbeef;
 
-    comac_move_to (cr, SIZE/2, SIZE/2);
+    comac_move_to (cr, SIZE / 2, SIZE / 2);
     for (i = 0; i < 200; i++) {
 	double theta = uniform_random (-M_PI, M_PI);
 	comac_rel_line_to (cr,
@@ -128,8 +128,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (drunkard_tails,
 	    "Test caps and joins on short tail segments",
 	    "stroke, cap, join", /* keywords */
-	    NULL, /* requirements */
+	    NULL,		 /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    2 * (PAD + SIZE) + PAD,
-	    NULL, draw)
-
+	    NULL,
+	    draw)

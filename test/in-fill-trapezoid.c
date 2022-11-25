@@ -49,35 +49,47 @@ preamble (comac_test_context_t *ctx)
 
     /* rectangular boundary tests */
     if (! comac_in_fill (cr, -10, -10)) {
-	comac_test_log (ctx, "Error: Failed to find top-left vertex inside rectangle\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find top-left vertex inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, -10, 10)) {
-	comac_test_log (ctx, "Error: Failed to find bottom-left vertex inside rectangle\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find bottom-left vertex inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, 10, -10)) {
-	comac_test_log (ctx, "Error: Failed to find top-right vertex inside rectangle\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find top-right vertex inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, 10, 10)) {
-	comac_test_log (ctx, "Error: Failed to find bottom-right vertex inside rectangle\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find bottom-right vertex inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, -10, 0)) {
-	comac_test_log (ctx, "Error: Failed to find left edge inside rectangle\n");
+	comac_test_log (ctx,
+			"Error: Failed to find left edge inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, 0, -10)) {
-	comac_test_log (ctx, "Error: Failed to find top edge inside rectangle\n");
+	comac_test_log (ctx,
+			"Error: Failed to find top edge inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, 10, 0)) {
-	comac_test_log (ctx, "Error: Failed to find right edge inside rectangle\n");
+	comac_test_log (ctx,
+			"Error: Failed to find right edge inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, 0, 10)) {
-	comac_test_log (ctx, "Error: Failed to find bottom edge inside rectangle\n");
+	comac_test_log (ctx,
+			"Error: Failed to find bottom edge inside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -85,7 +97,9 @@ preamble (comac_test_context_t *ctx)
     comac_new_path (cr);
     comac_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     if (! comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Failed to find point inside circle [even-odd]\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find point inside circle [even-odd]\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -94,7 +108,9 @@ preamble (comac_test_context_t *ctx)
     comac_rectangle (cr, -10, -10, 20, 20);
     comac_rectangle (cr, -5, -5, 10, 10);
     if (comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Found an unexpected point inside rectangular eo-hole\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Found an unexpected point inside rectangular eo-hole\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -103,10 +119,11 @@ preamble (comac_test_context_t *ctx)
     comac_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     comac_arc (cr, 0, 0, 5, 0, 2 * M_PI);
     if (comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Found an unexpected point inside circular eo-hole\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Found an unexpected point inside circular eo-hole\n");
 	ret = COMAC_TEST_FAILURE;
     }
-
 
     comac_set_fill_rule (cr, COMAC_FILL_RULE_WINDING);
 
@@ -122,7 +139,9 @@ preamble (comac_test_context_t *ctx)
     comac_new_path (cr);
     comac_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     if (! comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Failed to find point inside circle [nonzero]\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find point inside circle [nonzero]\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -132,7 +151,9 @@ preamble (comac_test_context_t *ctx)
     comac_new_sub_path (cr);
     comac_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     if (! comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Failed to find point inside circle+rectangle\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find point inside circle+rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -141,7 +162,9 @@ preamble (comac_test_context_t *ctx)
     comac_rectangle (cr, -10, -10, 20, 20);
     comac_rectangle (cr, 5, -5, -10, 10);
     if (comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Found an unexpected point inside rectangular non-zero-hole\n");
+	comac_test_log (ctx,
+			"Error: Found an unexpected point inside rectangular "
+			"non-zero-hole\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -150,7 +173,9 @@ preamble (comac_test_context_t *ctx)
     comac_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     comac_arc_negative (cr, 0, 0, 5, 0, -2 * M_PI);
     if (comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Found an unexpected point inside circular non-zero-hole\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Found an unexpected point inside circular non-zero-hole\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -159,7 +184,8 @@ preamble (comac_test_context_t *ctx)
     comac_arc (cr, 0, 0, 10, 0, 2 * M_PI);
     comac_arc (cr, 0, 0, 5, 0, 2 * M_PI);
     if (! comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Failed to find point inside two circles\n");
+	comac_test_log (ctx,
+			"Error: Failed to find point inside two circles\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -168,26 +194,34 @@ preamble (comac_test_context_t *ctx)
     comac_arc (cr, 7.5, 0, 10, 0, 2 * M_PI);
     comac_arc_negative (cr, 7.5, 0, 5, 0, -2 * M_PI);
     if (comac_in_fill (cr, 7.5, 0)) {
-	comac_test_log (ctx, "Error: Found an unexpected point inside off-centre-x circular non-zero-hole\n");
+	comac_test_log (ctx,
+			"Error: Found an unexpected point inside off-centre-x "
+			"circular non-zero-hole\n");
 	ret = COMAC_TEST_FAILURE;
     }
     comac_new_path (cr);
     comac_arc (cr, 0, 7.5, 10, 0, 2 * M_PI);
     comac_arc_negative (cr, 0, 7.5, 5, 0, -2 * M_PI);
     if (comac_in_fill (cr, 0, 7.5)) {
-	comac_test_log (ctx, "Error: Found an unexpected point inside off-centre-y circular non-zero-hole\n");
+	comac_test_log (ctx,
+			"Error: Found an unexpected point inside off-centre-y "
+			"circular non-zero-hole\n");
 	ret = COMAC_TEST_FAILURE;
     }
     comac_new_path (cr);
     comac_arc (cr, 15, 0, 10, 0, 2 * M_PI);
     if (! comac_in_fill (cr, 15, 0)) {
-	comac_test_log (ctx, "Error: Failed to find point inside off-centre-x circle\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find point inside off-centre-x circle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     comac_new_path (cr);
     comac_arc (cr, 0, 15, 10, 0, 2 * M_PI);
     if (! comac_in_fill (cr, 0, 15)) {
-	comac_test_log (ctx, "Error: Failed to find point inside off-centre-y circle\n");
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to find point inside off-centre-y circle\n");
 	ret = COMAC_TEST_FAILURE;
     }
 
@@ -195,11 +229,13 @@ preamble (comac_test_context_t *ctx)
     comac_new_path (cr);
     comac_rectangle (cr, 10, 0, 5, 5);
     if (comac_in_fill (cr, 0, 0)) {
-	comac_test_log (ctx, "Error: Found an unexpected point outside rectangle\n");
+	comac_test_log (ctx,
+			"Error: Found an unexpected point outside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (comac_in_fill (cr, 20, 20)) {
-	comac_test_log (ctx, "Error: Found an unexpected point outside rectangle\n");
+	comac_test_log (ctx,
+			"Error: Found an unexpected point outside rectangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
     if (! comac_in_fill (cr, 12.5, 2.5)) {
@@ -213,16 +249,11 @@ preamble (comac_test_context_t *ctx)
     comac_line_to (cr, 15, 5);
     comac_line_to (cr, 5, 5);
     comac_close_path (cr);
-    if (comac_in_fill (cr, 0, 0) ||
-	comac_in_fill (cr, 5, 0) ||
-	comac_in_fill (cr, 15, 0) ||
-	comac_in_fill (cr, 20, 0) ||
-	comac_in_fill (cr, 0, 10) ||
-	comac_in_fill (cr, 10, 10) ||
-	comac_in_fill (cr, 20, 10) ||
-	comac_in_fill (cr, 7, 2.5) ||
-	comac_in_fill (cr, 13, 2.5))
-    {
+    if (comac_in_fill (cr, 0, 0) || comac_in_fill (cr, 5, 0) ||
+	comac_in_fill (cr, 15, 0) || comac_in_fill (cr, 20, 0) ||
+	comac_in_fill (cr, 0, 10) || comac_in_fill (cr, 10, 10) ||
+	comac_in_fill (cr, 20, 10) || comac_in_fill (cr, 7, 2.5) ||
+	comac_in_fill (cr, 13, 2.5)) {
 	comac_test_log (ctx,
 			"Error: Found an unexpected point outside triangle\n"
 			"\t(0, 0) -> %s\n"
@@ -245,10 +276,8 @@ preamble (comac_test_context_t *ctx)
 			comac_in_fill (cr, 13, 2.5) ? "inside" : "outside");
 	ret = COMAC_TEST_FAILURE;
     }
-    if (! comac_in_fill (cr, 7.5, 2.5) ||
-	! comac_in_fill (cr, 12.5, 2.5) ||
-	! comac_in_fill (cr, 10, 5))
-    {
+    if (! comac_in_fill (cr, 7.5, 2.5) || ! comac_in_fill (cr, 12.5, 2.5) ||
+	! comac_in_fill (cr, 10, 5)) {
 	comac_test_log (ctx,
 			"Error: Failed to find point on triangle edge\n"
 			"\t(7.5, 2.5) -> %s\n"
@@ -259,9 +288,7 @@ preamble (comac_test_context_t *ctx)
 			comac_in_fill (cr, 10, 5) ? "inside" : "outside");
 	ret = COMAC_TEST_FAILURE;
     }
-    if (! comac_in_fill (cr, 8, 2.5) ||
-	! comac_in_fill (cr, 12, 2.5))
-    {
+    if (! comac_in_fill (cr, 8, 2.5) || ! comac_in_fill (cr, 12, 2.5)) {
 	comac_test_log (ctx, "Error: Failed to find point inside triangle\n");
 	ret = COMAC_TEST_FAILURE;
     }
@@ -274,6 +301,8 @@ preamble (comac_test_context_t *ctx)
 COMAC_TEST (in_fill_trapezoid,
 	    "Test comac_in_fill",
 	    "in, trap", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,	/* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

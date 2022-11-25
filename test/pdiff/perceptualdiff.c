@@ -24,7 +24,8 @@
 #include "args.h"
 #include "pdiff.h"
 
-static bool Yee_Compare(args_t *args)
+static bool
+Yee_Compare (args_t *args)
 {
     unsigned int width_a, height_a, stride_a;
     unsigned char *data_a, *row_a;
@@ -70,8 +71,10 @@ static bool Yee_Compare(args_t *args)
 	return true;
     }
 
-    pixels_failed = pdiff_compare (args->surface_a, args->surface_b,
-				   args->Gamma, args->Luminance,
+    pixels_failed = pdiff_compare (args->surface_a,
+				   args->surface_b,
+				   args->Gamma,
+				   args->Luminance,
 				   args->FieldOfView);
 
     if (pixels_failed < args->ThresholdPixels) {
@@ -79,23 +82,25 @@ static bool Yee_Compare(args_t *args)
 	return true;
     }
 
-    printf("FAIL: Images are visibly different\n"
-	   "%d pixels are different\n", pixels_failed);
+    printf ("FAIL: Images are visibly different\n"
+	    "%d pixels are different\n",
+	    pixels_failed);
 
     return false;
 }
 
-int main(int argc, char **argv)
+int
+main (int argc, char **argv)
 {
     args_t args;
 
     args_init (&args);
 
-    if (!args_parse (&args, argc, argv)) {
+    if (! args_parse (&args, argc, argv)) {
 	return -1;
     } else {
 	if (args.Verbose)
 	    args_print (&args);
     }
-    return ! Yee_Compare(&args);
+    return ! Yee_Compare (&args);
 }

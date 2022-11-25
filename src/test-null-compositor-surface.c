@@ -33,7 +33,6 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-
 #include "comacint.h"
 
 #include "test-null-compositor-surface.h"
@@ -54,9 +53,9 @@ static const comac_surface_backend_t test_compositor_surface_backend;
 
 static comac_surface_t *
 test_compositor_surface_create (const comac_compositor_t *compositor,
-				comac_content_t	content,
-				int		width,
-				int		height)
+				comac_content_t content,
+				int width,
+				int height)
 {
     test_compositor_surface_t *surface;
     pixman_image_t *pixman_image;
@@ -73,18 +72,21 @@ test_compositor_surface_create (const comac_compositor_t *compositor,
 	pixman_format = PIXMAN_a8r8g8b8;
 	break;
     default:
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_CONTENT));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_CONTENT));
     }
 
-    pixman_image = pixman_image_create_bits (pixman_format, width, height,
-					     NULL, 0);
+    pixman_image =
+	pixman_image_create_bits (pixman_format, width, height, NULL, 0);
     if (unlikely (pixman_image == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     surface = _comac_malloc (sizeof (test_compositor_surface_t));
     if (unlikely (surface == NULL)) {
 	pixman_image_unref (pixman_image);
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     _comac_surface_init (&surface->base.base,
@@ -100,92 +102,114 @@ test_compositor_surface_create (const comac_compositor_t *compositor,
 }
 
 static comac_surface_t *
-test_compositor_surface_create_similar (void		*abstract_surface,
-					comac_content_t	 content,
-					int		 width,
-					int		 height)
+test_compositor_surface_create_similar (void *abstract_surface,
+					comac_content_t content,
+					int width,
+					int height)
 {
     test_compositor_surface_t *surface = abstract_surface;
 
     return test_compositor_surface_create (surface->base.compositor,
-					   content, width, height);
+					   content,
+					   width,
+					   height);
 }
 
 static comac_int_status_t
-test_compositor_surface_paint (void			*_surface,
-			       comac_operator_t		 op,
-			       const comac_pattern_t	*source,
-			       const comac_clip_t	*clip)
+test_compositor_surface_paint (void *_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_clip_t *clip)
 {
     test_compositor_surface_t *surface = _surface;
     return _comac_compositor_paint (surface->base.compositor,
-				    _surface, op, source,
+				    _surface,
+				    op,
+				    source,
 				    clip);
 }
 
 static comac_int_status_t
-test_compositor_surface_mask (void			*_surface,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_pattern_t	*mask,
-			      const comac_clip_t	*clip)
+test_compositor_surface_mask (void *_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_pattern_t *mask,
+			      const comac_clip_t *clip)
 {
     test_compositor_surface_t *surface = _surface;
     return _comac_compositor_mask (surface->base.compositor,
-				   _surface, op, source, mask,
-				    clip);
-}
-
-static comac_int_status_t
-test_compositor_surface_stroke (void				*_surface,
-				comac_operator_t		 op,
-				const comac_pattern_t		*source,
-				const comac_path_fixed_t	*path,
-				const comac_stroke_style_t	*style,
-				const comac_matrix_t		*ctm,
-				const comac_matrix_t		*ctm_inverse,
-				double				 tolerance,
-				comac_antialias_t		 antialias,
-				const comac_clip_t		*clip)
-{
-    test_compositor_surface_t *surface = _surface;
-    return _comac_compositor_stroke (surface->base.compositor,
-				     _surface, op, source,
-				     path, style, ctm, ctm_inverse,
-				     tolerance, antialias,
-				     clip);
-}
-
-static comac_int_status_t
-test_compositor_surface_fill (void			*_surface,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_path_fixed_t	*path,
-			      comac_fill_rule_t		 fill_rule,
-			      double			 tolerance,
-			      comac_antialias_t		 antialias,
-			      const comac_clip_t	*clip)
-{
-    test_compositor_surface_t *surface = _surface;
-    return _comac_compositor_fill (surface->base.compositor,
-				   _surface, op, source,
-				   path, fill_rule, tolerance, antialias,
+				   _surface,
+				   op,
+				   source,
+				   mask,
 				   clip);
 }
 
 static comac_int_status_t
-test_compositor_surface_glyphs (void			*_surface,
-				comac_operator_t	 op,
-				const comac_pattern_t	*source,
-				comac_glyph_t		*glyphs,
-				int			 num_glyphs,
-				comac_scaled_font_t	*scaled_font,
-				const comac_clip_t	*clip)
+test_compositor_surface_stroke (void *_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_path_fixed_t *path,
+				const comac_stroke_style_t *style,
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias,
+				const comac_clip_t *clip)
+{
+    test_compositor_surface_t *surface = _surface;
+    return _comac_compositor_stroke (surface->base.compositor,
+				     _surface,
+				     op,
+				     source,
+				     path,
+				     style,
+				     ctm,
+				     ctm_inverse,
+				     tolerance,
+				     antialias,
+				     clip);
+}
+
+static comac_int_status_t
+test_compositor_surface_fill (void *_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip)
+{
+    test_compositor_surface_t *surface = _surface;
+    return _comac_compositor_fill (surface->base.compositor,
+				   _surface,
+				   op,
+				   source,
+				   path,
+				   fill_rule,
+				   tolerance,
+				   antialias,
+				   clip);
+}
+
+static comac_int_status_t
+test_compositor_surface_glyphs (void *_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				comac_glyph_t *glyphs,
+				int num_glyphs,
+				comac_scaled_font_t *scaled_font,
+				const comac_clip_t *clip)
 {
     test_compositor_surface_t *surface = _surface;
     return _comac_compositor_glyphs (surface->base.compositor,
-				     _surface, op, source,
-				     glyphs, num_glyphs, scaled_font,
+				     _surface,
+				     op,
+				     source,
+				     glyphs,
+				     num_glyphs,
+				     scaled_font,
 				     clip);
 }
 
@@ -234,8 +258,7 @@ release (void *abstract_dst)
 }
 
 static comac_int_status_t
-set_clip_region (void *_surface,
-		 comac_region_t *region)
+set_clip_region (void *_surface, comac_region_t *region)
 {
     return COMAC_STATUS_SUCCESS;
 }
@@ -246,16 +269,17 @@ pattern_to_surface (comac_surface_t *dst,
 		    comac_bool_t is_mask,
 		    const comac_rectangle_int_t *extents,
 		    const comac_rectangle_int_t *sample,
-		    int *src_x, int *src_y)
+		    int *src_x,
+		    int *src_y)
 {
     return comac_image_surface_create (COMAC_FORMAT_ARGB32, 0, 0);
 }
 
 static comac_int_status_t
-fill_boxes (void		*_dst,
-	    comac_operator_t	 op,
-	    const comac_color_t	*color,
-	    comac_boxes_t	*boxes)
+fill_boxes (void *_dst,
+	    comac_operator_t op,
+	    const comac_color_t *color,
+	    comac_boxes_t *boxes)
 {
     return COMAC_STATUS_SUCCESS;
 }
@@ -264,72 +288,73 @@ static comac_int_status_t
 draw_image_boxes (void *_dst,
 		  comac_image_surface_t *image,
 		  comac_boxes_t *boxes,
-		  int dx, int dy)
+		  int dx,
+		  int dy)
 {
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-composite (void			*_dst,
-	   comac_operator_t	op,
-	   comac_surface_t	*abstract_src,
-	   comac_surface_t	*abstract_mask,
-	   int			src_x,
-	   int			src_y,
-	   int			mask_x,
-	   int			mask_y,
-	   int			dst_x,
-	   int			dst_y,
-	   unsigned int		width,
-	   unsigned int		height)
+composite (void *_dst,
+	   comac_operator_t op,
+	   comac_surface_t *abstract_src,
+	   comac_surface_t *abstract_mask,
+	   int src_x,
+	   int src_y,
+	   int mask_x,
+	   int mask_y,
+	   int dst_x,
+	   int dst_y,
+	   unsigned int width,
+	   unsigned int height)
 {
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-lerp (void			*_dst,
-      comac_surface_t		*abstract_src,
-      comac_surface_t		*abstract_mask,
-      int			src_x,
-      int			src_y,
-      int			mask_x,
-      int			mask_y,
-      int			dst_x,
-      int			dst_y,
-      unsigned int		width,
-      unsigned int		height)
+lerp (void *_dst,
+      comac_surface_t *abstract_src,
+      comac_surface_t *abstract_mask,
+      int src_x,
+      int src_y,
+      int mask_x,
+      int mask_y,
+      int dst_x,
+      int dst_y,
+      unsigned int width,
+      unsigned int height)
 {
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-composite_boxes (void			*_dst,
-		 comac_operator_t	op,
-		 comac_surface_t	*abstract_src,
-		 comac_surface_t	*abstract_mask,
-		 int			src_x,
-		 int			src_y,
-		 int			mask_x,
-		 int			mask_y,
-		 int			dst_x,
-		 int			dst_y,
-		 comac_boxes_t		*boxes,
-		 const comac_rectangle_int_t  *extents)
+composite_boxes (void *_dst,
+		 comac_operator_t op,
+		 comac_surface_t *abstract_src,
+		 comac_surface_t *abstract_mask,
+		 int src_x,
+		 int src_y,
+		 int mask_x,
+		 int mask_y,
+		 int dst_x,
+		 int dst_y,
+		 comac_boxes_t *boxes,
+		 const comac_rectangle_int_t *extents)
 {
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-composite_traps (void			*_dst,
-		 comac_operator_t	op,
-		 comac_surface_t	*abstract_src,
-		 int			src_x,
-		 int			src_y,
-		 int			dst_x,
-		 int			dst_y,
+composite_traps (void *_dst,
+		 comac_operator_t op,
+		 comac_surface_t *abstract_src,
+		 int src_x,
+		 int src_y,
+		 int dst_x,
+		 int dst_y,
 		 const comac_rectangle_int_t *extents,
-		 comac_antialias_t	antialias,
-		 comac_traps_t		*traps)
+		 comac_antialias_t antialias,
+		 comac_traps_t *traps)
 {
     return COMAC_STATUS_SUCCESS;
 }
@@ -344,13 +369,13 @@ check_composite_glyphs (const comac_composite_rectangles_t *extents,
 }
 
 static comac_int_status_t
-composite_glyphs (void				*_dst,
-		  comac_operator_t		 op,
-		  comac_surface_t		*_src,
-		  int				 src_x,
-		  int				 src_y,
-		  int				 dst_x,
-		  int				 dst_y,
+composite_glyphs (void *_dst,
+		  comac_operator_t op,
+		  comac_surface_t *_src,
+		  int src_x,
+		  int src_y,
+		  int dst_x,
+		  int dst_y,
 		  comac_composite_glyphs_info_t *info)
 {
     return COMAC_STATUS_SUCCESS;
@@ -358,7 +383,8 @@ composite_glyphs (void				*_dst,
 
 static comac_status_t
 spans (void *abstract_renderer,
-       int y, int height,
+       int y,
+       int height,
        const comac_half_open_span_t *spans,
        unsigned num_spans)
 {
@@ -372,12 +398,12 @@ finish_spans (void *abstract_renderer)
 }
 
 static comac_int_status_t
-span_renderer_init (comac_abstract_span_renderer_t	*_r,
+span_renderer_init (comac_abstract_span_renderer_t *_r,
 		    const comac_composite_rectangles_t *composite,
-		    comac_antialias_t			antialias,
-		    comac_bool_t			needs_clip)
+		    comac_antialias_t antialias,
+		    comac_bool_t needs_clip)
 {
-    comac_span_renderer_t *r = (comac_span_renderer_t *)_r;
+    comac_span_renderer_t *r = (comac_span_renderer_t *) _r;
     r->render_rows = spans;
     r->finish = finish_spans;
     return COMAC_STATUS_SUCCESS;
@@ -407,7 +433,7 @@ no_traps_compositor_get (void)
     static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
     static comac_traps_compositor_t compositor;
 
-    if (_comac_atomic_init_once_enter(&once)) {
+    if (_comac_atomic_init_once_enter (&once)) {
 	_comac_traps_compositor_init (&compositor,
 				      no_fallback_compositor_get ());
 
@@ -428,7 +454,7 @@ no_traps_compositor_get (void)
 	compositor.check_composite_glyphs = check_composite_glyphs;
 	compositor.composite_glyphs = composite_glyphs;
 
-	_comac_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave (&once);
     }
 
     return &compositor.base;
@@ -440,9 +466,8 @@ no_spans_compositor_get (void)
     static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
     static comac_spans_compositor_t compositor;
 
-    if (_comac_atomic_init_once_enter(&once)) {
-	_comac_spans_compositor_init (&compositor,
-				      no_traps_compositor_get());
+    if (_comac_atomic_init_once_enter (&once)) {
+	_comac_spans_compositor_init (&compositor, no_traps_compositor_get ());
 
 	//compositor.acquire = acquire;
 	//compositor.release = release;
@@ -453,35 +478,41 @@ no_spans_compositor_get (void)
 	compositor.renderer_init = span_renderer_init;
 	compositor.renderer_fini = span_renderer_fini;
 
-	_comac_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave (&once);
     }
 
     return &compositor.base;
 }
 
 comac_surface_t *
-_comac_test_no_fallback_compositor_surface_create (comac_content_t	content,
-						   int		width,
-						   int		height)
+_comac_test_no_fallback_compositor_surface_create (comac_content_t content,
+						   int width,
+						   int height)
 {
-    return test_compositor_surface_create (no_fallback_compositor_get(),
-					   content, width, height);
+    return test_compositor_surface_create (no_fallback_compositor_get (),
+					   content,
+					   width,
+					   height);
 }
 
 comac_surface_t *
-_comac_test_no_traps_compositor_surface_create (comac_content_t	content,
-						int		width,
-						int		height)
+_comac_test_no_traps_compositor_surface_create (comac_content_t content,
+						int width,
+						int height)
 {
-    return test_compositor_surface_create (no_traps_compositor_get(),
-					   content, width, height);
+    return test_compositor_surface_create (no_traps_compositor_get (),
+					   content,
+					   width,
+					   height);
 }
 
 comac_surface_t *
-_comac_test_no_spans_compositor_surface_create (comac_content_t	content,
-					     int		width,
-					     int		height)
+_comac_test_no_spans_compositor_surface_create (comac_content_t content,
+						int width,
+						int height)
 {
-    return test_compositor_surface_create (no_spans_compositor_get(),
-					   content, width, height);
+    return test_compositor_surface_create (no_spans_compositor_get (),
+					   content,
+					   width,
+					   height);
 }

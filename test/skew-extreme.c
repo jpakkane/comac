@@ -48,12 +48,13 @@
  * d.x instead of b.x to d.x .
  */
 
-#define PAD		2
-#define LINE_WIDTH	10
-#define LINE_LENGTH	(2 * LINE_WIDTH)
-#define SKEW_FACTOR	5.0
-#define WIDTH		(PAD + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
-#define HEIGHT		(PAD + LINE_WIDTH + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
+#define PAD 2
+#define LINE_WIDTH 10
+#define LINE_LENGTH (2 * LINE_WIDTH)
+#define SKEW_FACTOR 5.0
+#define WIDTH (PAD + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
+#define HEIGHT                                                                 \
+    (PAD + LINE_WIDTH + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -71,11 +72,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_save (cr);
     {
-	comac_matrix_t skew_x = {
-	    1.0, 0.0,
-	    SKEW_FACTOR, 1.0,
-	    0.0, 0.0
-	};
+	comac_matrix_t skew_x = {1.0, 0.0, SKEW_FACTOR, 1.0, 0.0, 0.0};
 
 	comac_translate (cr, LINE_WIDTH / 2.0, 0.0);
 
@@ -91,11 +88,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_save (cr);
     {
-	comac_matrix_t skew_y = {
-	    1.0, SKEW_FACTOR,
-	    0.0, 1.0,
-	    0.0, 0.0
-	};
+	comac_matrix_t skew_y = {1.0, SKEW_FACTOR, 0.0, 1.0, 0.0, 0.0};
 
 	comac_translate (cr, 0.0, LINE_WIDTH / 2.0);
 
@@ -113,6 +106,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (skew_extreme,
 	    "Test cases of extreme skew.",
 	    "transform, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,		 /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

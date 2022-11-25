@@ -79,7 +79,7 @@ struct _comac_image_surface {
     unsigned transparency : 2;
     unsigned color : 2;
 };
-#define to_image_surface(S) ((comac_image_surface_t *)(S))
+#define to_image_surface(S) ((comac_image_surface_t *) (S))
 
 /* A wrapper for holding pixman images returned by create_for_pattern */
 typedef struct _comac_image_source {
@@ -104,59 +104,59 @@ _comac_image_spans_compositor_get (void);
 #define _comac_image_default_compositor_get _comac_image_spans_compositor_get
 
 comac_private comac_int_status_t
-_comac_image_surface_paint (void			*abstract_surface,
-			    comac_operator_t		 op,
-			    const comac_pattern_t	*source,
-			    const comac_clip_t		*clip);
+_comac_image_surface_paint (void *abstract_surface,
+			    comac_operator_t op,
+			    const comac_pattern_t *source,
+			    const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_image_surface_mask (void				*abstract_surface,
-			   comac_operator_t		 op,
-			   const comac_pattern_t	*source,
-			   const comac_pattern_t	*mask,
-			   const comac_clip_t		*clip);
+_comac_image_surface_mask (void *abstract_surface,
+			   comac_operator_t op,
+			   const comac_pattern_t *source,
+			   const comac_pattern_t *mask,
+			   const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_image_surface_stroke (void			*abstract_surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     const comac_path_fixed_t	*path,
-			     const comac_stroke_style_t	*style,
-			     const comac_matrix_t	*ctm,
-			     const comac_matrix_t	*ctm_inverse,
-			     double			 tolerance,
-			     comac_antialias_t		 antialias,
-			     const comac_clip_t		*clip);
+_comac_image_surface_stroke (void *abstract_surface,
+			     comac_operator_t op,
+			     const comac_pattern_t *source,
+			     const comac_path_fixed_t *path,
+			     const comac_stroke_style_t *style,
+			     const comac_matrix_t *ctm,
+			     const comac_matrix_t *ctm_inverse,
+			     double tolerance,
+			     comac_antialias_t antialias,
+			     const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_image_surface_fill (void				*abstract_surface,
-			   comac_operator_t		 op,
-			   const comac_pattern_t	*source,
-			   const comac_path_fixed_t	*path,
-			   comac_fill_rule_t		 fill_rule,
-			   double			 tolerance,
-			   comac_antialias_t		 antialias,
-			   const comac_clip_t		*clip);
+_comac_image_surface_fill (void *abstract_surface,
+			   comac_operator_t op,
+			   const comac_pattern_t *source,
+			   const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule,
+			   double tolerance,
+			   comac_antialias_t antialias,
+			   const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_image_surface_glyphs (void			*abstract_surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     comac_glyph_t		*glyphs,
-			     int			 num_glyphs,
-			     comac_scaled_font_t	*scaled_font,
-			     const comac_clip_t		*clip);
+_comac_image_surface_glyphs (void *abstract_surface,
+			     comac_operator_t op,
+			     const comac_pattern_t *source,
+			     comac_glyph_t *glyphs,
+			     int num_glyphs,
+			     comac_scaled_font_t *scaled_font,
+			     const comac_clip_t *clip);
 
 comac_private void
 _comac_image_surface_init (comac_image_surface_t *surface,
-			   pixman_image_t	*pixman_image,
-			   pixman_format_code_t	 pixman_format);
+			   pixman_image_t *pixman_image,
+			   pixman_format_code_t pixman_format);
 
 comac_private comac_surface_t *
-_comac_image_surface_create_similar (void	       *abstract_other,
-				     comac_content_t	content,
-				     int		width,
-				     int		height);
+_comac_image_surface_create_similar (void *abstract_other,
+				     comac_content_t content,
+				     int width,
+				     int height);
 
 comac_private comac_image_surface_t *
 _comac_image_surface_map_to_image (void *abstract_other,
@@ -167,29 +167,29 @@ _comac_image_surface_unmap_image (void *abstract_surface,
 				  comac_image_surface_t *image);
 
 comac_private comac_surface_t *
-_comac_image_surface_source (void			*abstract_surface,
-			     comac_rectangle_int_t	*extents);
+_comac_image_surface_source (void *abstract_surface,
+			     comac_rectangle_int_t *extents);
 
 comac_private comac_status_t
-_comac_image_surface_acquire_source_image (void                    *abstract_surface,
-					   comac_image_surface_t  **image_out,
-					   void                   **image_extra);
+_comac_image_surface_acquire_source_image (void *abstract_surface,
+					   comac_image_surface_t **image_out,
+					   void **image_extra);
 
 comac_private void
-_comac_image_surface_release_source_image (void                   *abstract_surface,
-					   comac_image_surface_t  *image,
-					   void                   *image_extra);
+_comac_image_surface_release_source_image (void *abstract_surface,
+					   comac_image_surface_t *image,
+					   void *image_extra);
 
 comac_private comac_surface_t *
 _comac_image_surface_snapshot (void *abstract_surface);
 
 comac_private_no_warn comac_bool_t
-_comac_image_surface_get_extents (void			  *abstract_surface,
-				  comac_rectangle_int_t   *rectangle);
+_comac_image_surface_get_extents (void *abstract_surface,
+				  comac_rectangle_int_t *rectangle);
 
 comac_private void
-_comac_image_surface_get_font_options (void                  *abstract_surface,
-				       comac_font_options_t  *options);
+_comac_image_surface_get_font_options (void *abstract_surface,
+				       comac_font_options_t *options);
 
 comac_private comac_surface_t *
 _comac_image_source_create_for_pattern (comac_surface_t *dst,
@@ -197,7 +197,8 @@ _comac_image_source_create_for_pattern (comac_surface_t *dst,
 					comac_bool_t is_mask,
 					const comac_rectangle_int_t *extents,
 					const comac_rectangle_int_t *sample,
-					int *src_x, int *src_y);
+					int *src_x,
+					int *src_y);
 
 comac_private comac_status_t
 _comac_image_surface_finish (void *abstract_surface);
@@ -211,27 +212,33 @@ _pixman_image_for_pattern (comac_image_surface_t *dst,
 			   comac_bool_t is_mask,
 			   const comac_rectangle_int_t *extents,
 			   const comac_rectangle_int_t *sample,
-			   int *tx, int *ty);
+			   int *tx,
+			   int *ty);
 
 comac_private void
 _pixman_image_add_traps (pixman_image_t *image,
-			 int dst_x, int dst_y,
+			 int dst_x,
+			 int dst_y,
 			 comac_traps_t *traps);
 
 comac_private void
 _pixman_image_add_tristrip (pixman_image_t *image,
-			    int dst_x, int dst_y,
+			    int dst_x,
+			    int dst_y,
 			    comac_tristrip_t *strip);
 
 comac_private comac_image_surface_t *
-_comac_image_surface_clone_subimage (comac_surface_t             *surface,
+_comac_image_surface_clone_subimage (comac_surface_t *surface,
 				     const comac_rectangle_int_t *extents);
 
 /* Similar to clone; but allow format conversion */
 comac_private comac_image_surface_t *
 _comac_image_surface_create_from_image (comac_image_surface_t *other,
 					pixman_format_code_t format,
-					int x, int y, int width, int height,
+					int x,
+					int y,
+					int width,
+					int height,
 					int stride);
 
 COMAC_END_DECLS

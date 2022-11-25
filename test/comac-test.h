@@ -32,12 +32,12 @@
 
 COMAC_BEGIN_DECLS
 
-#if   HAVE_STDINT_H
-# include <stdint.h>
+#if HAVE_STDINT_H
+#include <stdint.h>
 #elif HAVE_INTTYPES_H
-# include <inttypes.h>
+#include <inttypes.h>
 #elif HAVE_SYS_INT_TYPES_H
-# include <sys/int_types.h>
+#include <sys/int_types.h>
 #elif defined(_MSC_VER)
 typedef __int8 int8_t;
 typedef unsigned __int8 uint8_t;
@@ -47,9 +47,9 @@ typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
 typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
-# ifndef HAVE_UINT64_T
-#  define HAVE_UINT64_T 1
-# endif
+#ifndef HAVE_UINT64_T
+#define HAVE_UINT64_T 1
+#endif
 #else
 #error Cannot find definitions for fixed-width integral types (uint8_t, uint32_t, \etc.)
 #endif
@@ -59,13 +59,13 @@ typedef unsigned __int64 uint64_t;
 
 #include <float.h>
 #if _MSC_VER <= 1600
-#define isnan(x) _isnan(x)
+#define isnan(x) _isnan (x)
 #endif
 
 #endif
 
 #if HAVE_FENV_H
-# include <fenv.h>
+#include <fenv.h>
 #endif
 /* The following are optional in C99, so define them if they aren't yet */
 #ifndef FE_DIVBYZERO
@@ -97,7 +97,7 @@ comac_test_NaN (void)
     } nan = {{0xffffffff, 0x7fffffff}};
     return nan.d;
 #else
-    return strtod("NaN", NULL);
+    return strtod ("NaN", NULL);
 #endif
 }
 
@@ -164,11 +164,12 @@ typedef enum comac_test_status {
 typedef struct _comac_test_context comac_test_context_t;
 typedef struct _comac_test comac_test_t;
 
-typedef comac_test_status_t
-(comac_test_preamble_function_t) (comac_test_context_t *ctx);
+typedef comac_test_status_t (comac_test_preamble_function_t) (
+    comac_test_context_t *ctx);
 
-typedef comac_test_status_t
-(comac_test_draw_function_t) (comac_t *cr, int width, int height);
+typedef comac_test_status_t (comac_test_draw_function_t) (comac_t *cr,
+							  int width,
+							  int height);
 
 struct _comac_test {
     const char *name;
@@ -207,17 +208,27 @@ struct _comac_test {
  * one backend that is tested and if all tested backend pass according
  * to the four criteria above.
  */
-#define COMAC_TEST(name, description, keywords, requirements, width, height, preamble, draw) \
-void _register_##name (void); \
-void _register_##name (void) { \
-    static comac_test_t test = { \
-	#name, description, \
-	keywords, requirements, \
-	width, height, \
-	preamble, draw \
-    }; \
-    comac_test_register (&test); \
-}
+#define COMAC_TEST(name,                                                       \
+		   description,                                                \
+		   keywords,                                                   \
+		   requirements,                                               \
+		   width,                                                      \
+		   height,                                                     \
+		   preamble,                                                   \
+		   draw)                                                       \
+    void _register_##name (void);                                              \
+    void _register_##name (void)                                               \
+    {                                                                          \
+	static comac_test_t test = {#name,                                     \
+				    description,                               \
+				    keywords,                                  \
+				    requirements,                              \
+				    width,                                     \
+				    height,                                    \
+				    preamble,                                  \
+				    draw};                                     \
+	comac_test_register (&test);                                           \
+    }
 
 void
 comac_test_register (comac_test_t *test);
@@ -260,14 +271,13 @@ struct _comac_test_context {
 const comac_test_context_t *
 comac_test_get_context (comac_t *cr);
 
-
 /* Print a message to the log file, ala printf. */
 void
-comac_test_log (const comac_test_context_t *ctx,
-	        const char *fmt, ...) COMAC_BOILERPLATE_PRINTF_FORMAT(2, 3);
+comac_test_log (const comac_test_context_t *ctx, const char *fmt, ...)
+    COMAC_BOILERPLATE_PRINTF_FORMAT (2, 3);
 void
-comac_test_logv (const comac_test_context_t *ctx,
-	        const char *fmt, va_list ap) COMAC_BOILERPLATE_PRINTF_FORMAT(2, 0);
+comac_test_logv (const comac_test_context_t *ctx, const char *fmt, va_list ap)
+    COMAC_BOILERPLATE_PRINTF_FORMAT (2, 0);
 
 /* Helper functions that take care of finding source images even when
  * building in a non-srcdir manner, (i.e. the tests will be run in a
@@ -275,27 +285,27 @@ comac_test_logv (const comac_test_context_t *ctx,
  * exists). */
 comac_surface_t *
 comac_test_create_surface_from_png (const comac_test_context_t *ctx,
-	                            const char *filename);
+				    const char *filename);
 
 comac_pattern_t *
 comac_test_create_pattern_from_png (const comac_test_context_t *ctx,
-	                            const char *filename);
+				    const char *filename);
 
 void
 comac_test_paint_checkered (comac_t *cr);
 
-#define COMAC_TEST_DOUBLE_EQUALS(a,b)  (fabs((a)-(b)) < 0.00001)
+#define COMAC_TEST_DOUBLE_EQUALS(a, b) (fabs ((a) - (b)) < 0.00001)
 
 comac_bool_t
 comac_test_is_target_enabled (const comac_test_context_t *ctx,
-	                      const char *target);
+			      const char *target);
 
 char *
 comac_test_get_name (const comac_test_t *test);
 
 comac_bool_t
 comac_test_malloc_failure (const comac_test_context_t *ctx,
-	                   comac_status_t status);
+			   comac_status_t status);
 
 comac_test_status_t
 comac_test_status_from_status (const comac_test_context_t *ctx,
@@ -320,8 +330,7 @@ comac_bool_t
 comac_test_mkdir (const char *path);
 
 comac_t *
-comac_test_create (comac_surface_t *surface,
-		   const comac_test_context_t *ctx);
+comac_test_create (comac_surface_t *surface, const comac_test_context_t *ctx);
 
 COMAC_END_DECLS
 

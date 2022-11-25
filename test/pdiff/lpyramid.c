@@ -31,27 +31,31 @@ static void
 convolve (lpyramid_t *pyramid, float *a, const float *b)
 /* convolves image b with the filter kernel and stores it in a */
 {
-    int y,x,i,j;
+    int y, x, i, j;
     const float Kernel[] = {0.05f, 0.25f, 0.4f, 0.25f, 0.05f};
     int width = pyramid->width;
     int height = pyramid->height;
 
-    for (y=0; y<height; y++) {
-	for (x=0; x<width; x++) {
+    for (y = 0; y < height; y++) {
+	for (x = 0; x < width; x++) {
 	    float sum = 0.f;
-	    for (j=-2; j<=2; j++) {
+	    for (j = -2; j <= 2; j++) {
 		float sum_i = 0.f;
-		int ny=y+j;
-		if (ny<0) ny=-ny;
-		if (ny>=height) ny=2*height - ny - 1;
+		int ny = y + j;
+		if (ny < 0)
+		    ny = -ny;
+		if (ny >= height)
+		    ny = 2 * height - ny - 1;
 		ny *= width;
-		for (i=-2; i<=2; i++) {
-		    int nx=x+i;
-		    if (nx<0) nx=-nx;
-		    if (nx>=width) nx=2*width - nx - 1;
-		    sum_i += Kernel[i+2] * b[ny + nx];
+		for (i = -2; i <= 2; i++) {
+		    int nx = x + i;
+		    if (nx < 0)
+			nx = -nx;
+		    if (nx >= width)
+			nx = 2 * width - nx - 1;
+		    sum_i += Kernel[i + 2] * b[ny + nx];
 		}
-		sum += sum_i * Kernel[j+2];
+		sum += sum_i * Kernel[j + 2];
 	    }
 	    *a++ = sum;
 	}
@@ -78,7 +82,7 @@ lpyramid_create (float *image, int width, int height)
 
     /* Make the Laplacian pyramid by successively
      * copying the earlier levels and blurring them */
-    for (i=0; i<MAX_PYR_LEVELS; i++) {
+    for (i = 0; i < MAX_PYR_LEVELS; i++) {
 	pyramid->levels[i] = malloc (width * height * sizeof (float));
 	if (pyramid->levels[i] == NULL) {
 	    fprintf (stderr, "Out of memory.\n");
@@ -87,7 +91,7 @@ lpyramid_create (float *image, int width, int height)
 	if (i == 0) {
 	    memcpy (pyramid->levels[i], image, width * height * sizeof (float));
 	} else {
-	    convolve(pyramid, pyramid->levels[i], pyramid->levels[i - 1]);
+	    convolve (pyramid, pyramid->levels[i], pyramid->levels[i - 1]);
 	}
     }
 
@@ -99,7 +103,7 @@ lpyramid_destroy (lpyramid_t *pyramid)
 {
     int i;
 
-    for (i=0; i<MAX_PYR_LEVELS; i++)
+    for (i = 0; i < MAX_PYR_LEVELS; i++)
 	free (pyramid->levels[i]);
 
     free (pyramid);
@@ -111,6 +115,6 @@ lpyramid_get_value (lpyramid_t *pyramid, int x, int y, int level)
     int index = x + y * pyramid->width;
     int l = level;
     if (l > MAX_PYR_LEVELS)
-        l = MAX_PYR_LEVELS;
+	l = MAX_PYR_LEVELS;
     return pyramid->levels[l][index];
 }

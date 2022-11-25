@@ -33,10 +33,14 @@
 
 static void
 draw_quad (comac_t *cr,
-	   double x1, double y1,
-	   double x2, double y2,
-	   double x3, double y3,
-	   double x4, double y4)
+	   double x1,
+	   double y1,
+	   double x2,
+	   double y2,
+	   double x3,
+	   double y3,
+	   double x4,
+	   double y4)
 {
     comac_move_to (cr, x1, y1);
     comac_line_to (cr, x2, y2);
@@ -51,7 +55,11 @@ draw_quad (comac_t *cr,
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    int position[5] = {0, HEIGHT/2-10, HEIGHT/2-5, HEIGHT/2, HEIGHT-10 };
+    int position[5] = {0,
+		       HEIGHT / 2 - 10,
+		       HEIGHT / 2 - 5,
+		       HEIGHT / 2,
+		       HEIGHT - 10};
     int i;
 
     comac_set_source_rgb (cr, 0, 0, 0);
@@ -60,8 +68,8 @@ draw (comac_t *cr, int width, int height)
     for (i = 0; i < 5; i++) {
 	comac_reset_clip (cr);
 	comac_set_source_rgb (cr, 1, 1, 1);
-	comac_rectangle (cr, 0, 0, WIDTH/2, HEIGHT/2);
-	comac_rectangle (cr, WIDTH/2, position[i], WIDTH/2, 10);
+	comac_rectangle (cr, 0, 0, WIDTH / 2, HEIGHT / 2);
+	comac_rectangle (cr, WIDTH / 2, position[i], WIDTH / 2, 10);
 	comac_fill_preserve (cr);
 	comac_clip (cr);
 
@@ -69,7 +77,7 @@ draw (comac_t *cr, int width, int height)
 	draw_quad (cr, 50, 50, 75, 75, 50, 150, 25, 75);
 	comac_fill (cr);
 
-	comac_translate(cr, WIDTH, 0);
+	comac_translate (cr, WIDTH, 0);
     }
 
     return COMAC_TEST_SUCCESS;
@@ -78,6 +86,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_disjoint_quad,
 	    "Tests a simple fill through two disjoint clips.",
 	    "clip, fill", /* keywords */
-	    NULL, /* requirements */
-	    5*WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    5 * WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

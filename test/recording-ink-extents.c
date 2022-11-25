@@ -29,28 +29,32 @@
 
 /* Check comac_recording_surface_ink_extents() returns correct extents. */
 
-
 static comac_test_status_t
 check_extents (comac_test_context_t *cr,
 	       comac_surface_t *recording_surface,
-	       const char * func_name,
-	       double expected_x, double expected_y, double expected_w, double expected_h)
+	       const char *func_name,
+	       double expected_x,
+	       double expected_y,
+	       double expected_w,
+	       double expected_h)
 {
     double x, y, w, h;
     comac_recording_surface_ink_extents (recording_surface, &x, &y, &w, &h);
-    if (x != expected_x ||
-	y != expected_y ||
-	w != expected_w ||
-	h != expected_h)
-    {
+    if (x != expected_x || y != expected_y || w != expected_w ||
+	h != expected_h) {
 	comac_test_log (cr,
 			"%s: x: %f, y: %f, w: %f, h: %f\n"
 			"    expected: x: %f, y: %f, w: %f, h: %f\n",
 			func_name,
-			x, y, w, h,
-			expected_x, expected_y,
-			expected_w, expected_h);
-       return COMAC_TEST_ERROR;
+			x,
+			y,
+			w,
+			h,
+			expected_x,
+			expected_y,
+			expected_w,
+			expected_h);
+	return COMAC_TEST_ERROR;
     }
     return COMAC_TEST_SUCCESS;
 }
@@ -68,10 +72,9 @@ unbounded_fill (comac_test_context_t *test_cr)
     comac_rectangle (cr, -300, -150, 900, 600);
     comac_fill (cr);
 
-    comac_destroy(cr);
+    comac_destroy (cr);
 
-    status = check_extents (test_cr, surface,  __func__,
-			    -300, -150, 900, 600);
+    status = check_extents (test_cr, surface, __func__, -300, -150, 900, 600);
     comac_surface_destroy (surface);
     return status;
 }
@@ -82,18 +85,18 @@ bounded_fill (comac_test_context_t *test_cr)
     comac_test_status_t status;
     comac_surface_t *surface;
     comac_t *cr;
-    comac_rectangle_t extents = { -150, -100, 300, 200 };
+    comac_rectangle_t extents = {-150, -100, 300, 200};
 
-    surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+    surface =
+	comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
     cr = comac_create (surface);
 
     comac_rectangle (cr, -300, -300, 650, 600);
     comac_fill (cr);
 
-    comac_destroy(cr);
+    comac_destroy (cr);
 
-    status = check_extents (test_cr, surface,  __func__,
-			    -150, -100, 300, 200);
+    status = check_extents (test_cr, surface, __func__, -150, -100, 300, 200);
     comac_surface_destroy (surface);
     return status;
 }
@@ -110,10 +113,15 @@ unbounded_paint (comac_test_context_t *test_cr)
 
     comac_paint (cr);
 
-    comac_destroy(cr);
+    comac_destroy (cr);
 
-    status = check_extents (test_cr, surface,  __func__,
-			    -(1 << 23), -(1 << 23), -1, -1);
+    status = check_extents (test_cr,
+			    surface,
+			    __func__,
+			    -(1 << 23),
+			    -(1 << 23),
+			    -1,
+			    -1);
     comac_surface_destroy (surface);
     return status;
 }
@@ -124,17 +132,17 @@ bounded_paint (comac_test_context_t *test_cr)
     comac_test_status_t status;
     comac_surface_t *surface;
     comac_t *cr;
-    comac_rectangle_t extents = { -150, -100, 300, 200 };
+    comac_rectangle_t extents = {-150, -100, 300, 200};
 
-    surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+    surface =
+	comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
     cr = comac_create (surface);
 
     comac_paint (cr);
 
-    comac_destroy(cr);
+    comac_destroy (cr);
 
-    status = check_extents (test_cr, surface,  __func__,
-			    -150, -100, 300, 200);
+    status = check_extents (test_cr, surface, __func__, -150, -100, 300, 200);
     comac_surface_destroy (surface);
     return status;
 }
@@ -163,10 +171,11 @@ preamble (comac_test_context_t *cr)
     return COMAC_TEST_SUCCESS;
 }
 
-
 COMAC_TEST (recording_ink_extents,
 	    "Test comac_recording_surface_ink_extents()",
 	    "api,recording,extents", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,		     /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

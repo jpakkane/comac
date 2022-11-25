@@ -26,7 +26,7 @@
 
 #include "comac-test.h"
 
-#define WIDTH  2
+#define WIDTH 2
 #define HEIGHT 2
 
 static comac_test_status_t
@@ -35,13 +35,13 @@ draw (comac_t *cr, int width, int height)
     comac_surface_t *surface;
     /* Four green pixels with different "alpha" values, (but which
      * should be entirely ignored). */
-    uint32_t colors[4] = {
-	0xff00ff00, 0x8800ff00,
-	0x4400ff00, 0x0000ff00
-    };
+    uint32_t colors[4] = {0xff00ff00, 0x8800ff00, 0x4400ff00, 0x0000ff00};
 
     surface = comac_image_surface_create_for_data ((unsigned char *) colors,
-						   COMAC_FORMAT_RGB24, 2, 2, 8);
+						   COMAC_FORMAT_RGB24,
+						   2,
+						   2,
+						   8);
 
     comac_set_source_surface (cr, surface, 0, 0);
     comac_paint (cr);
@@ -53,8 +53,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (rgb24_ignore_alpha,
-	    "Test that when using an RGB24 image as a source, there is no alpha channel",
+	    "Test that when using an RGB24 image as a source, there is no "
+	    "alpha channel",
 	    "image, alpha", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

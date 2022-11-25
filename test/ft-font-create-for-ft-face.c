@@ -35,14 +35,14 @@ _load_font (FT_Face ft_face, int flags, comac_t *cr, int lvl)
     comac_font_face_t *font_face;
     comac_font_extents_t font_extents;
 
-    _stress_font_cache (ft_face, cr, lvl+1);
+    _stress_font_cache (ft_face, cr, lvl + 1);
 
     font_face = comac_ft_font_face_create_for_ft_face (ft_face, flags);
 
     comac_set_font_face (cr, font_face);
     comac_font_extents (cr, &font_extents);
 
-    _stress_font_cache (ft_face, cr, lvl+1);
+    _stress_font_cache (ft_face, cr, lvl + 1);
 
     return font_face;
 }
@@ -58,22 +58,28 @@ _stress_font_cache (FT_Face ft_face, comac_t *cr, int lvl)
     comac_font_face_t *font_face[4];
 
     while (lvl++ < 5) {
-	font_face[0] = A; font_face[1] = A;
-	font_face[2] = A; font_face[3] = A;
+	font_face[0] = A;
+	font_face[1] = A;
+	font_face[2] = A;
+	font_face[3] = A;
 	comac_font_face_destroy (font_face[0]);
 	comac_font_face_destroy (font_face[1]);
 	comac_font_face_destroy (font_face[2]);
 	comac_font_face_destroy (font_face[3]);
 
-	font_face[0] = A; font_face[1] = B;
-	font_face[2] = C; font_face[3] = D;
+	font_face[0] = A;
+	font_face[1] = B;
+	font_face[2] = C;
+	font_face[3] = D;
 	comac_font_face_destroy (font_face[0]);
 	comac_font_face_destroy (font_face[1]);
 	comac_font_face_destroy (font_face[2]);
 	comac_font_face_destroy (font_face[3]);
 
-	font_face[0] = A; font_face[1] = B;
-	font_face[2] = C; font_face[3] = D;
+	font_face[0] = A;
+	font_face[1] = B;
+	font_face[2] = C;
+	font_face[3] = D;
 	comac_font_face_destroy (font_face[3]);
 	comac_font_face_destroy (font_face[2]);
 	comac_font_face_destroy (font_face[1]);
@@ -142,12 +148,17 @@ draw (comac_t *cr, int width, int height)
     if (comac_font_face_status (font_face)) {
 	FcPatternDestroy (resolved);
 	FcPatternDestroy (pattern);
-	return comac_test_status_from_status (ctx, comac_font_face_status (font_face));
+	return comac_test_status_from_status (
+	    ctx,
+	    comac_font_face_status (font_face));
     }
 
     if (comac_font_face_get_type (font_face) != COMAC_FONT_TYPE_FT) {
-	comac_test_log (ctx, "Unexpected value from comac_font_face_get_type: %d (expected %d)\n",
-			comac_font_face_get_type (font_face), COMAC_FONT_TYPE_FT);
+	comac_test_log (ctx,
+			"Unexpected value from comac_font_face_get_type: %d "
+			"(expected %d)\n",
+			comac_font_face_get_type (font_face),
+			COMAC_FONT_TYPE_FT);
 	comac_font_face_destroy (font_face);
 	FcPatternDestroy (resolved);
 	FcPatternDestroy (pattern);
@@ -162,10 +173,8 @@ draw (comac_t *cr, int width, int height)
 
     comac_get_font_options (cr, font_options);
 
-    scaled_font = comac_scaled_font_create (font_face,
-					    &font_matrix,
-					    &ctm,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &font_matrix, &ctm, font_options);
 
     comac_font_options_destroy (font_options);
     comac_font_face_destroy (font_face);
@@ -173,20 +182,26 @@ draw (comac_t *cr, int width, int height)
     FcPatternDestroy (resolved);
 
     if (comac_scaled_font_status (scaled_font)) {
-	return comac_test_status_from_status (ctx,
-					      comac_scaled_font_status (scaled_font));
+	return comac_test_status_from_status (
+	    ctx,
+	    comac_scaled_font_status (scaled_font));
     }
 
     if (comac_scaled_font_get_type (scaled_font) != COMAC_FONT_TYPE_FT) {
-	comac_test_log (ctx, "Unexpected value from comac_scaled_font_get_type: %d (expected %d)\n",
-			comac_scaled_font_get_type (scaled_font), COMAC_FONT_TYPE_FT);
+	comac_test_log (ctx,
+			"Unexpected value from comac_scaled_font_get_type: %d "
+			"(expected %d)\n",
+			comac_scaled_font_get_type (scaled_font),
+			COMAC_FONT_TYPE_FT);
 	comac_scaled_font_destroy (scaled_font);
 	return COMAC_TEST_FAILURE;
     }
 
     ft_face = comac_ft_scaled_font_lock_face (scaled_font);
     if (ft_face == NULL) {
-	comac_test_log (ctx, "Failed to get an ft_face with comac_ft_scaled_font_lock_face\n");
+	comac_test_log (
+	    ctx,
+	    "Failed to get an ft_face with comac_ft_scaled_font_lock_face\n");
 	comac_scaled_font_destroy (scaled_font);
 	return COMAC_TEST_FAILURE;
     }
@@ -220,9 +235,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (ft_font_create_for_ft_face,
-	    "Simple test to verify that comac_ft_font_create_for_ft_face doesn't crash.",
+	    "Simple test to verify that comac_ft_font_create_for_ft_face "
+	    "doesn't crash.",
 	    "ft, font", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
-
+	    NULL,	/* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

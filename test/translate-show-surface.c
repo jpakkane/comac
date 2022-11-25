@@ -47,16 +47,16 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
-    uint32_t colors[4] = {
-	0xffffffff, 0xffff0000,
-	0xff00ff00, 0xff0000ff
-    };
+    uint32_t colors[4] = {0xffffffff, 0xffff0000, 0xff00ff00, 0xff0000ff};
     int i;
 
-    for (i=0; i < 4; i++) {
-	surface = comac_image_surface_create_for_data ((unsigned char *) &colors[i],
-						       COMAC_FORMAT_RGB24,
-						       1, 1, 4);
+    for (i = 0; i < 4; i++) {
+	surface =
+	    comac_image_surface_create_for_data ((unsigned char *) &colors[i],
+						 COMAC_FORMAT_RGB24,
+						 1,
+						 1,
+						 4);
 	comac_save (cr);
 	{
 	    comac_translate (cr, i % 2, i / 2);
@@ -74,6 +74,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (translate_show_surface,
 	    "Tests calls to comac_show_surface after comac_translate",
 	    "transform", /* keywords */
-	    NULL, /* requirements */
-	    2, 2,
-	    NULL, draw)
+	    NULL,	 /* requirements */
+	    2,
+	    2,
+	    NULL,
+	    draw)

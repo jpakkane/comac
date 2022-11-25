@@ -42,9 +42,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (large_clip,
-	    "Incorrect clipping when the clip rectangle doesn't fit in 16 bits signed",
-	    "clip, stress", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    large_clip,
+    "Incorrect clipping when the clip rectangle doesn't fit in 16 bits signed",
+    "clip, stress", /* keywords */
+    NULL,	    /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

@@ -55,8 +55,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1, 0, 0); /* red */
 
     /* First draw the desired shape with a fill */
-    comac_rectangle (cr, 0.5, 0.5,  4.0, 4.0);
-    comac_rectangle (cr, 3.5, 3.5,  4.0, 4.0);
+    comac_rectangle (cr, 0.5, 0.5, 4.0, 4.0);
+    comac_rectangle (cr, 3.5, 3.5, 4.0, 4.0);
     comac_rectangle (cr, 3.5, 1.5, -2.0, 2.0);
     comac_rectangle (cr, 6.5, 4.5, -2.0, 2.0);
 
@@ -65,11 +65,11 @@ draw (comac_t *cr, int width, int height)
     /* Then try the same thing with a stroke */
     comac_translate (cr, 0, 10);
     comac_move_to (cr, 1.0, 1.0);
-    comac_rel_line_to (cr,  3.0,  0.0);
-    comac_rel_line_to (cr,  0.0,  6.0);
-    comac_rel_line_to (cr,  3.0,  0.0);
-    comac_rel_line_to (cr,  0.0, -3.0);
-    comac_rel_line_to (cr, -6.0,  0.0);
+    comac_rel_line_to (cr, 3.0, 0.0);
+    comac_rel_line_to (cr, 0.0, 6.0);
+    comac_rel_line_to (cr, 3.0, 0.0);
+    comac_rel_line_to (cr, 0.0, -3.0);
+    comac_rel_line_to (cr, -6.0, 0.0);
     comac_close_path (cr);
 
     comac_set_line_width (cr, 1.0);
@@ -80,8 +80,11 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (self_intersecting,
 	    "Test strokes of self-intersecting paths"
-	    "\nSelf-intersecting strokes are wrong due to incremental trapezoidization.",
+	    "\nSelf-intersecting strokes are wrong due to incremental "
+	    "trapezoidization.",
 	    "stroke, trap", /* keywords */
-	    NULL, /* requirements */
-	    10, 20,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    10,
+	    20,
+	    NULL,
+	    draw)

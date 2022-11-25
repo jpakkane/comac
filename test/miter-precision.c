@@ -36,16 +36,15 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    double  xscale, yscale;
+    double xscale, yscale;
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_set_miter_limit (cr, 100000);
     for (xscale = 1; xscale <= 1000; xscale += 999)
-	for (yscale = 1; yscale <= 1000; yscale += 999)
-	{
-	    double  max_scale = xscale > yscale ? xscale : yscale;
+	for (yscale = 1; yscale <= 1000; yscale += 999) {
+	    double max_scale = xscale > yscale ? xscale : yscale;
 	    comac_save (cr);
 	    if (xscale > 1)
 		comac_translate (cr, 50, 0);
@@ -67,6 +66,8 @@ COMAC_TEST (miter_precision,
 	    "test how comac deals with small miters"
 	    "\ncurrent code draws inappropriate bevels at times",
 	    "stoke, stress", /* keywords */
-	    NULL, /* requirements */
-	    120, 100,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    120,
+	    100,
+	    NULL,
+	    draw)

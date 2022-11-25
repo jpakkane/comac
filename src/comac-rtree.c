@@ -40,12 +40,12 @@
 #include "comac-rtree-private.h"
 
 comac_rtree_node_t *
-_comac_rtree_node_create (comac_rtree_t		 *rtree,
-		          comac_rtree_node_t	 *parent,
-			  int			  x,
-			  int			  y,
-			  int			  width,
-			  int			  height)
+_comac_rtree_node_create (comac_rtree_t *rtree,
+			  comac_rtree_node_t *parent,
+			  int x,
+			  int y,
+			  int width,
+			  int height)
 {
     comac_rtree_node_t *node;
 
@@ -57,11 +57,11 @@ _comac_rtree_node_create (comac_rtree_t		 *rtree,
 
     node->children[0] = NULL;
     node->parent = parent;
-    node->state  = COMAC_RTREE_NODE_AVAILABLE;
+    node->state = COMAC_RTREE_NODE_AVAILABLE;
     node->pinned = FALSE;
-    node->x	 = x;
-    node->y	 = y;
-    node->width  = width;
+    node->x = x;
+    node->y = y;
+    node->width = width;
     node->height = height;
 
     comac_list_add (&node->link, &rtree->available);
@@ -94,7 +94,7 @@ _comac_rtree_node_collapse (comac_rtree_t *rtree, comac_rtree_node_t *node)
     do {
 	assert (node->state == COMAC_RTREE_NODE_DIVIDED);
 
-	for (i = 0;  i < 4 && node->children[i] != NULL; i++)
+	for (i = 0; i < 4 && node->children[i] != NULL; i++)
 	    if (node->children[i]->state != COMAC_RTREE_NODE_AVAILABLE)
 		return;
 
@@ -109,7 +109,7 @@ _comac_rtree_node_collapse (comac_rtree_t *rtree, comac_rtree_node_t *node)
 
 comac_status_t
 _comac_rtree_node_insert (comac_rtree_t *rtree,
-	                  comac_rtree_node_t *node,
+			  comac_rtree_node_t *node,
 			  int width,
 			  int height,
 			  comac_rtree_node_t **out)
@@ -119,44 +119,52 @@ _comac_rtree_node_insert (comac_rtree_t *rtree,
     assert (node->state == COMAC_RTREE_NODE_AVAILABLE);
     assert (node->pinned == FALSE);
 
-    if (node->width  - width  > rtree->min_size ||
-	node->height - height > rtree->min_size)
-    {
-	w = node->width  - width;
+    if (node->width - width > rtree->min_size ||
+	node->height - height > rtree->min_size) {
+	w = node->width - width;
 	h = node->height - height;
 
 	i = 0;
-	node->children[i] = _comac_rtree_node_create (rtree, node,
-						      node->x, node->y,
-						      width, height);
+	node->children[i] = _comac_rtree_node_create (rtree,
+						      node,
+						      node->x,
+						      node->y,
+						      width,
+						      height);
 	if (unlikely (node->children[i] == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 	i++;
 
 	if (w > rtree->min_size) {
-	    node->children[i] = _comac_rtree_node_create (rtree, node,
+	    node->children[i] = _comac_rtree_node_create (rtree,
+							  node,
 							  node->x + width,
 							  node->y,
-							  w, height);
+							  w,
+							  height);
 	    if (unlikely (node->children[i] == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	    i++;
 	}
 
 	if (h > rtree->min_size) {
-	    node->children[i] = _comac_rtree_node_create (rtree, node,
+	    node->children[i] = _comac_rtree_node_create (rtree,
+							  node,
 							  node->x,
 							  node->y + height,
-							  width, h);
+							  width,
+							  h);
 	    if (unlikely (node->children[i] == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	    i++;
 
 	    if (w > rtree->min_size) {
-		node->children[i] = _comac_rtree_node_create (rtree, node,
+		node->children[i] = _comac_rtree_node_create (rtree,
+							      node,
 							      node->x + width,
 							      node->y + height,
-							      w, h);
+							      w,
+							      h);
 		if (unlikely (node->children[i] == NULL))
 		    return _comac_error (COMAC_STATUS_NO_MEMORY);
 		i++;
@@ -193,15 +201,14 @@ _comac_rtree_node_remove (comac_rtree_t *rtree, comac_rtree_node_t *node)
 }
 
 comac_int_status_t
-_comac_rtree_insert (comac_rtree_t	     *rtree,
-		     int		      width,
-	             int		      height,
-	             comac_rtree_node_t	    **out)
+_comac_rtree_insert (comac_rtree_t *rtree,
+		     int width,
+		     int height,
+		     comac_rtree_node_t **out)
 {
     comac_rtree_node_t *node;
 
-    comac_list_foreach_entry (node, comac_rtree_node_t,
-			      &rtree->available, link)
+    comac_list_foreach_entry (node, comac_rtree_node_t, &rtree->available, link)
     {
 	if (node->width >= width && node->height >= height)
 	    return _comac_rtree_node_insert (rtree, node, width, height, out);
@@ -213,17 +220,17 @@ _comac_rtree_insert (comac_rtree_t	     *rtree,
 static uint32_t
 hars_petruska_f54_1_random (void)
 {
-#define rol(x,k) ((x << k) | (x >> (32-k)))
+#define rol(x, k) ((x << k) | (x >> (32 - k)))
     static uint32_t x;
     return x = (x ^ rol (x, 5) ^ rol (x, 24)) + 0x37798849;
 #undef rol
 }
 
 comac_int_status_t
-_comac_rtree_evict_random (comac_rtree_t	 *rtree,
-		           int			  width,
-		           int			  height,
-		           comac_rtree_node_t		**out)
+_comac_rtree_evict_random (comac_rtree_t *rtree,
+			   int width,
+			   int height,
+			   comac_rtree_node_t **out)
 {
     comac_int_status_t ret = COMAC_INT_STATUS_UNSUPPORTED;
     comac_rtree_node_t *node, *next;
@@ -233,8 +240,12 @@ _comac_rtree_evict_random (comac_rtree_t	 *rtree,
     comac_list_init (&tmp_pinned);
 
     /* propagate pinned from children to root */
-    comac_list_foreach_entry_safe (node, next,
-				   comac_rtree_node_t, &rtree->pinned, link) {
+    comac_list_foreach_entry_safe (node,
+				   next,
+				   comac_rtree_node_t,
+				   &rtree->pinned,
+				   link)
+    {
 	node = node->parent;
 	while (node && ! node->pinned) {
 	    node->pinned = 1;
@@ -244,8 +255,7 @@ _comac_rtree_evict_random (comac_rtree_t	 *rtree,
     }
 
     cnt = 0;
-    comac_list_foreach_entry (node, comac_rtree_node_t,
-			      &rtree->evictable, link)
+    comac_list_foreach_entry (node, comac_rtree_node_t, &rtree->evictable, link)
     {
 	if (node->width >= width && node->height >= height)
 	    cnt++;
@@ -255,8 +265,7 @@ _comac_rtree_evict_random (comac_rtree_t	 *rtree,
 	goto out;
 
     cnt = hars_petruska_f54_1_random () % cnt;
-    comac_list_foreach_entry (node, comac_rtree_node_t,
-			      &rtree->evictable, link)
+    comac_list_foreach_entry (node, comac_rtree_node_t, &rtree->evictable, link)
     {
 	if (node->width >= width && node->height >= height && cnt-- == 0) {
 	    if (node->state == COMAC_RTREE_NODE_OCCUPIED) {
@@ -289,20 +298,19 @@ void
 _comac_rtree_unpin (comac_rtree_t *rtree)
 {
     while (! comac_list_is_empty (&rtree->pinned)) {
-	comac_rtree_node_t *node = comac_list_first_entry (&rtree->pinned,
-							   comac_rtree_node_t,
-							   link);
+	comac_rtree_node_t *node =
+	    comac_list_first_entry (&rtree->pinned, comac_rtree_node_t, link);
 	node->pinned = 0;
 	comac_list_move (&node->link, &rtree->evictable);
     }
 }
 
 void
-_comac_rtree_init (comac_rtree_t	*rtree,
-	           int			 width,
-		   int			 height,
-		   int			 min_size,
-		   int			 node_size,
+_comac_rtree_init (comac_rtree_t *rtree,
+		   int width,
+		   int height,
+		   int min_size,
+		   int node_size,
 		   void (*destroy) (comac_rtree_node_t *))
 {
     assert (node_size >= (int) sizeof (comac_rtree_node_t));
@@ -346,26 +354,26 @@ _comac_rtree_reset (comac_rtree_t *rtree)
 
 static void
 _comac_rtree_node_foreach (comac_rtree_node_t *node,
-			   void (*func)(comac_rtree_node_t *, void *data),
+			   void (*func) (comac_rtree_node_t *, void *data),
 			   void *data)
 {
     int i;
 
     for (i = 0; i < 4 && node->children[i] != NULL; i++)
-	_comac_rtree_node_foreach(node->children[i], func, data);
+	_comac_rtree_node_foreach (node->children[i], func, data);
 
-    func(node, data);
+    func (node, data);
 }
 
 void
 _comac_rtree_foreach (comac_rtree_t *rtree,
-		      void (*func)(comac_rtree_node_t *, void *data),
+		      void (*func) (comac_rtree_node_t *, void *data),
 		      void *data)
 {
     int i;
 
     if (rtree->root.state == COMAC_RTREE_NODE_OCCUPIED) {
-	func(&rtree->root, data);
+	func (&rtree->root, data);
     } else {
 	for (i = 0; i < 4 && rtree->root.children[i] != NULL; i++)
 	    _comac_rtree_node_foreach (rtree->root.children[i], func, data);

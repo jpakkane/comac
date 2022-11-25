@@ -35,11 +35,11 @@ typedef struct {
 static void
 paint_curve (comac_t *cr)
 {
-    const point_t points[] = {
-	{ 100, 320 }, { 110, -80 },
-	{ 180, 60 }, { 300, 170 },
-	{ 300, -40 }
-    };
+    const point_t points[] = {{100, 320},
+			      {110, -80},
+			      {180, 60},
+			      {300, 170},
+			      {300, -40}};
     unsigned i;
 
     comac_set_line_width (cr, 2);
@@ -47,9 +47,12 @@ paint_curve (comac_t *cr)
 
     for (i = 1; i < ARRAY_LENGTH (points) - 2; i += 3) {
 	comac_curve_to (cr,
-			points[i].x, points[i].y,
-			points[i + 1].x, points[i + 1].y,
-			points[i + 2].x, points[i + 2].y);
+			points[i].x,
+			points[i].y,
+			points[i + 1].x,
+			points[i + 1].y,
+			points[i + 2].x,
+			points[i + 2].y);
     }
     comac_set_line_width (cr, 5);
     comac_stroke (cr);
@@ -85,6 +88,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_disjoint,
 	    "Tests stroking through two disjoint clips.",
 	    "clip, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

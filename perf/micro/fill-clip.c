@@ -33,8 +33,8 @@
 static comac_time_t
 clip_paint (comac_t *cr, int width, int height, int loops)
 {
-    int x = width/4, w = width/2;
-    int y = height/4, h = height/2;
+    int x = width / 4, w = width / 2;
+    int y = height / 4, h = height / 2;
 
     comac_perf_timer_start ();
 
@@ -53,8 +53,8 @@ clip_paint (comac_t *cr, int width, int height, int loops)
 static comac_time_t
 rect_fill (comac_t *cr, int width, int height, int loops)
 {
-    int x = width/4, w = width/2;
-    int y = height/4, h = height/2;
+    int x = width / 4, w = width / 2;
+    int y = height / 4, h = height / 2;
 
     comac_perf_timer_start ();
 
@@ -71,12 +71,11 @@ rect_fill (comac_t *cr, int width, int height, int loops)
 static comac_time_t
 direct (comac_t *cr, int width, int height, int loops)
 {
-    int x = width/4, w = width/2;
-    int y = height/4, h = height/2;
+    int x = width / 4, w = width / 2;
+    int y = height / 4, h = height / 2;
     comac_surface_t *surface, *image;
     uint8_t *data;
     int stride, bpp;
-
 
     surface = comac_get_target (cr);
     image = comac_surface_map_to_image (surface, NULL);
@@ -86,21 +85,38 @@ direct (comac_t *cr, int width, int height, int loops)
     switch (comac_image_surface_get_format (image)) {
     default:
     case COMAC_FORMAT_INVALID:
-    case COMAC_FORMAT_A1: bpp = 0; break;
-    case COMAC_FORMAT_A8: bpp = 8; break;
-    case COMAC_FORMAT_RGB16_565: bpp = 16; break;
+    case COMAC_FORMAT_A1:
+	bpp = 0;
+	break;
+    case COMAC_FORMAT_A8:
+	bpp = 8;
+	break;
+    case COMAC_FORMAT_RGB16_565:
+	bpp = 16;
+	break;
     case COMAC_FORMAT_RGB24:
     case COMAC_FORMAT_RGB30:
-    case COMAC_FORMAT_ARGB32: bpp = 32; break;
-    case COMAC_FORMAT_RGB96F: bpp = 96; break;
-    case COMAC_FORMAT_RGBA128F: bpp = 128; break;
+    case COMAC_FORMAT_ARGB32:
+	bpp = 32;
+	break;
+    case COMAC_FORMAT_RGB96F:
+	bpp = 96;
+	break;
+    case COMAC_FORMAT_RGBA128F:
+	bpp = 128;
+	break;
     }
 
     comac_perf_timer_start ();
 
     while (loops--) {
-	pixman_fill ((uint32_t *)data, stride / sizeof(uint32_t), bpp,
-		     x, y, w, h,
+	pixman_fill ((uint32_t *) data,
+		     stride / sizeof (uint32_t),
+		     bpp,
+		     x,
+		     y,
+		     w,
+		     h,
 		     -1);
     }
 

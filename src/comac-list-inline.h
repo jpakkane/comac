@@ -39,39 +39,39 @@
 
 #include "comac-list-private.h"
 
-#define comac_list_entry(ptr, type, member) \
-	comac_container_of(ptr, type, member)
+#define comac_list_entry(ptr, type, member)                                    \
+    comac_container_of (ptr, type, member)
 
-#define comac_list_first_entry(ptr, type, member) \
-	comac_list_entry((ptr)->next, type, member)
+#define comac_list_first_entry(ptr, type, member)                              \
+    comac_list_entry ((ptr)->next, type, member)
 
-#define comac_list_last_entry(ptr, type, member) \
-	comac_list_entry((ptr)->prev, type, member)
+#define comac_list_last_entry(ptr, type, member)                               \
+    comac_list_entry ((ptr)->prev, type, member)
 
-#define comac_list_foreach(pos, head)			\
-	for (pos = (head)->next; pos != (head);	pos = pos->next)
+#define comac_list_foreach(pos, head)                                          \
+    for (pos = (head)->next; pos != (head); pos = pos->next)
 
-#define comac_list_foreach_entry(pos, type, head, member)		\
-	for (pos = comac_list_entry((head)->next, type, member);\
-	     &pos->member != (head);					\
-	     pos = comac_list_entry(pos->member.next, type, member))
+#define comac_list_foreach_entry(pos, type, head, member)                      \
+    for (pos = comac_list_entry ((head)->next, type, member);                  \
+	 &pos->member != (head);                                               \
+	 pos = comac_list_entry (pos->member.next, type, member))
 
-#define comac_list_foreach_entry_safe(pos, n, type, head, member)	\
-	for (pos = comac_list_entry ((head)->next, type, member),\
-	     n = comac_list_entry (pos->member.next, type, member);\
-	     &pos->member != (head);					\
-	     pos = n, n = comac_list_entry (n->member.next, type, member))
+#define comac_list_foreach_entry_safe(pos, n, type, head, member)              \
+    for (pos = comac_list_entry ((head)->next, type, member),                  \
+	n = comac_list_entry (pos->member.next, type, member);                 \
+	 &pos->member != (head);                                               \
+	 pos = n, n = comac_list_entry (n->member.next, type, member))
 
-#define comac_list_foreach_entry_reverse(pos, type, head, member)	\
-	for (pos = comac_list_entry((head)->prev, type, member);\
-	     &pos->member != (head);					\
-	     pos = comac_list_entry(pos->member.prev, type, member))
+#define comac_list_foreach_entry_reverse(pos, type, head, member)              \
+    for (pos = comac_list_entry ((head)->prev, type, member);                  \
+	 &pos->member != (head);                                               \
+	 pos = comac_list_entry (pos->member.prev, type, member))
 
-#define comac_list_foreach_entry_reverse_safe(pos, n, type, head, member)	\
-	for (pos = comac_list_entry((head)->prev, type, member),\
-	     n = comac_list_entry (pos->member.prev, type, member);\
-	     &pos->member != (head);					\
-	     pos = n, n = comac_list_entry (n->member.prev, type, member))
+#define comac_list_foreach_entry_reverse_safe(pos, n, type, head, member)      \
+    for (pos = comac_list_entry ((head)->prev, type, member),                  \
+	n = comac_list_entry (pos->member.prev, type, member);                 \
+	 &pos->member != (head);                                               \
+	 pos = n, n = comac_list_entry (n->member.prev, type, member))
 
 #ifdef COMAC_LIST_DEBUG
 static inline void
@@ -85,15 +85,15 @@ comac_list_validate (const comac_list_t *head)
 {
     comac_list_t *link;
 
-    comac_list_foreach (link, head)
-	_comac_list_validate (link);
+    comac_list_foreach (link, head) _comac_list_validate (link);
 }
 static inline comac_bool_t
 comac_list_is_empty (const comac_list_t *head);
 static inline void
 comac_list_validate_is_empty (const comac_list_t *head)
 {
-    assert (head->next == NULL || (comac_list_is_empty (head) && head->next == head->prev));
+    assert (head->next == NULL ||
+	    (comac_list_is_empty (head) && head->next == head->prev));
 }
 #else
 #define _comac_list_validate(link)
@@ -109,9 +109,7 @@ comac_list_init (comac_list_t *entry)
 }
 
 static inline void
-__comac_list_add (comac_list_t *entry,
-	          comac_list_t *prev,
-		  comac_list_t *next)
+__comac_list_add (comac_list_t *entry, comac_list_t *prev, comac_list_t *next)
 {
     next->prev = entry;
     entry->next = next;
@@ -183,16 +181,14 @@ comac_list_swap (comac_list_t *entry, comac_list_t *other)
 }
 
 static inline comac_bool_t
-comac_list_is_first (const comac_list_t *entry,
-	             const comac_list_t *head)
+comac_list_is_first (const comac_list_t *entry, const comac_list_t *head)
 {
     comac_list_validate (head);
     return entry->prev == head;
 }
 
 static inline comac_bool_t
-comac_list_is_last (const comac_list_t *entry,
-	            const comac_list_t *head)
+comac_list_is_last (const comac_list_t *entry, const comac_list_t *head)
 {
     comac_list_validate (head);
     return entry->next == head;

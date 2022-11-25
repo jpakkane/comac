@@ -48,7 +48,8 @@ preamble (comac_test_context_t *ctx)
 
     dpy = XOpenDisplay (NULL);
     if (! dpy) {
-	comac_test_log (ctx, "Error: Cannot open display: %s, skipping.\n",
+	comac_test_log (ctx,
+			"Error: Cannot open display: %s, skipping.\n",
 			XDisplayName (NULL));
 	goto CLEANUP_TEST;
     }
@@ -71,15 +72,22 @@ preamble (comac_test_context_t *ctx)
 
     comac_test_log (ctx, "Testing with non-xrender xlib surface.\n");
 
-    pixmap = XCreatePixmap (dpy, DefaultRootWindow (dpy),
-			    1, 1, DefaultDepth (dpy, screen));
-    surface = comac_xlib_surface_create (dpy, pixmap,
+    pixmap = XCreatePixmap (dpy,
+			    DefaultRootWindow (dpy),
+			    1,
+			    1,
+			    DefaultDepth (dpy, screen));
+    surface = comac_xlib_surface_create (dpy,
+					 pixmap,
 					 DefaultVisual (dpy, screen),
-					 1, 1);
+					 1,
+					 1);
     orig_format = XRenderFindVisualFormat (dpy, DefaultVisual (dpy, screen));
     format = comac_xlib_surface_get_xrender_format (surface);
     if (format != orig_format) {
-	comac_test_log (ctx, "Error: did not receive the same format as XRenderFindVisualFormat\n");
+	comac_test_log (ctx,
+			"Error: did not receive the same format as "
+			"XRenderFindVisualFormat\n");
 	goto CLEANUP_PIXMAP;
     }
     comac_surface_destroy (surface);
@@ -88,35 +96,40 @@ preamble (comac_test_context_t *ctx)
     comac_test_log (ctx, "Testing with xlib xrender surface.\n");
 
     orig_format = XRenderFindStandardFormat (dpy, PictStandardARGB32);
-    pixmap = XCreatePixmap (dpy, DefaultRootWindow (dpy),
-			    1, 1, 32);
-    surface = comac_xlib_surface_create_with_xrender_format (dpy,
-							     pixmap,
-							     DefaultScreenOfDisplay (dpy),
-							     orig_format,
-							     1, 1);
+    pixmap = XCreatePixmap (dpy, DefaultRootWindow (dpy), 1, 1, 32);
+    surface = comac_xlib_surface_create_with_xrender_format (
+	dpy,
+	pixmap,
+	DefaultScreenOfDisplay (dpy),
+	orig_format,
+	1,
+	1);
     format = comac_xlib_surface_get_xrender_format (surface);
     if (format != orig_format) {
-	comac_test_log (ctx, "Error: did not receive the same format originally set\n");
+	comac_test_log (
+	    ctx,
+	    "Error: did not receive the same format originally set\n");
 	goto CLEANUP_PIXMAP;
     }
 
     result = COMAC_TEST_SUCCESS;
 
-  CLEANUP_PIXMAP:
+CLEANUP_PIXMAP:
     XFreePixmap (dpy, pixmap);
-  CLEANUP_SURFACE:
+CLEANUP_SURFACE:
     comac_surface_destroy (surface);
 
     XCloseDisplay (dpy);
 
-  CLEANUP_TEST:
+CLEANUP_TEST:
     return result;
 }
 
 COMAC_TEST (get_xrender_format,
 	    "Check XRender specific API",
 	    "xrender, api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,	    /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

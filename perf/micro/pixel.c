@@ -45,14 +45,26 @@ pixel_direct (comac_t *cr, int width, int height, int loops)
     switch (comac_image_surface_get_format (image)) {
     default:
     case COMAC_FORMAT_INVALID:
-    case COMAC_FORMAT_A1: bpp = 0; break;
-    case COMAC_FORMAT_A8: bpp = 8; break;
-    case COMAC_FORMAT_RGB16_565: bpp = 16; break;
+    case COMAC_FORMAT_A1:
+	bpp = 0;
+	break;
+    case COMAC_FORMAT_A8:
+	bpp = 8;
+	break;
+    case COMAC_FORMAT_RGB16_565:
+	bpp = 16;
+	break;
     case COMAC_FORMAT_RGB24:
     case COMAC_FORMAT_RGB30:
-    case COMAC_FORMAT_ARGB32: bpp = 32; break;
-    case COMAC_FORMAT_RGB96F: bpp = 96; break;
-    case COMAC_FORMAT_RGBA128F: bpp = 128; break;
+    case COMAC_FORMAT_ARGB32:
+	bpp = 32;
+	break;
+    case COMAC_FORMAT_RGB96F:
+	bpp = 96;
+	break;
+    case COMAC_FORMAT_RGBA128F:
+	bpp = 128;
+	break;
     }
 
     comac_perf_timer_start ();
@@ -88,9 +100,10 @@ pixel_mask (comac_t *cr, int width, int height, int loops)
 
     mask = comac_surface_create_similar (comac_get_target (cr),
 					 COMAC_CONTENT_ALPHA,
-					 1, 1);
+					 1,
+					 1);
     cr2 = comac_create (mask);
-    comac_set_source_rgb (cr2, 1,1,1);
+    comac_set_source_rgb (cr2, 1, 1, 1);
     comac_paint (cr2);
     comac_destroy (cr2);
 

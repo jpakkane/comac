@@ -26,23 +26,22 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(8 * LINE_WIDTH)
-#define PAD		(1 * LINE_WIDTH)
-
+#define LINE_WIDTH 10.
+#define SIZE (8 * LINE_WIDTH)
+#define PAD (1 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
 {
 #define PROTRUSION 20
-    comac_move_to (cr, SIZE/2-PROTRUSION, LINE_WIDTH);
-    comac_line_to (cr, SIZE-LINE_WIDTH, SIZE/2+PROTRUSION);
-    comac_line_to (cr, SIZE-LINE_WIDTH, SIZE/2-PROTRUSION);
-    comac_line_to (cr, SIZE/2-PROTRUSION, SIZE-LINE_WIDTH);
-    comac_line_to (cr, SIZE/2+PROTRUSION, SIZE-LINE_WIDTH);
-    comac_line_to (cr, LINE_WIDTH, SIZE/2-PROTRUSION);
-    comac_line_to (cr, LINE_WIDTH, SIZE/2+PROTRUSION);
-    comac_line_to (cr, SIZE/2+PROTRUSION, LINE_WIDTH);
+    comac_move_to (cr, SIZE / 2 - PROTRUSION, LINE_WIDTH);
+    comac_line_to (cr, SIZE - LINE_WIDTH, SIZE / 2 + PROTRUSION);
+    comac_line_to (cr, SIZE - LINE_WIDTH, SIZE / 2 - PROTRUSION);
+    comac_line_to (cr, SIZE / 2 - PROTRUSION, SIZE - LINE_WIDTH);
+    comac_line_to (cr, SIZE / 2 + PROTRUSION, SIZE - LINE_WIDTH);
+    comac_line_to (cr, LINE_WIDTH, SIZE / 2 - PROTRUSION);
+    comac_line_to (cr, LINE_WIDTH, SIZE / 2 + PROTRUSION);
+    comac_line_to (cr, SIZE / 2 + PROTRUSION, LINE_WIDTH);
     comac_close_path (cr);
 }
 
@@ -93,7 +92,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (joins_star,
 	    "A nice and simple concave shape",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    3*(SIZE+PAD)+PAD, 2*(SIZE+PAD)+PAD,
-	    NULL, draw)
-
+	    NULL,     /* requirements */
+	    3 * (SIZE + PAD) + PAD,
+	    2 * (SIZE + PAD) + PAD,
+	    NULL,
+	    draw)

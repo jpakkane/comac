@@ -48,7 +48,8 @@ draw (comac_t *cr, int width, int height)
     /* and exercise the bug found by Jeff Muizelaar */
     mask = comac_surface_create_similar (comac_get_target (cr),
 					 COMAC_CONTENT_ALPHA,
-					 width-20, height-20);
+					 width - 20,
+					 height - 20);
     cr2 = comac_create (mask);
     comac_surface_destroy (mask);
 
@@ -65,6 +66,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_twice_rectangle,
 	    "Tests clipping twice using rectangles",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    100, 100,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw)

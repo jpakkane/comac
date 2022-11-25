@@ -34,7 +34,9 @@ create_source (comac_surface_t *target)
     comac_t *cr;
 
     similar = comac_surface_create_similar (target,
-					    COMAC_CONTENT_COLOR, SIZE/2, SIZE);
+					    COMAC_CONTENT_COLOR,
+					    SIZE / 2,
+					    SIZE);
     cr = comac_create (similar);
     comac_surface_destroy (similar);
 
@@ -55,14 +57,14 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_paint (cr);
 
-    comac_rectangle (cr, 0, 0, SIZE/2, SIZE);
+    comac_rectangle (cr, 0, 0, SIZE / 2, SIZE);
     comac_clip (cr);
 
     /* Draw a source rectangle outside the image, the effect should be to
      * clear only within the clip region.
      */
     source = create_source (comac_get_target (cr));
-    comac_set_source_surface (cr, source, SIZE/2, 0);
+    comac_set_source_surface (cr, source, SIZE / 2, 0);
     comac_surface_destroy (source);
 
     comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
@@ -74,7 +76,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_unbounded,
 	    "Test handling of an unbounded fill outside the clip region",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
-
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

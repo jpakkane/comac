@@ -37,7 +37,8 @@ draw (comac_t *cr, int width, int height)
 
     similar = comac_surface_create_similar (comac_get_target (cr),
 					    COMAC_CONTENT_COLOR,
-					    60, 60);
+					    60,
+					    60);
     cr_region = comac_create (similar);
     comac_surface_destroy (similar);
 
@@ -78,9 +79,13 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (subsurface_similar_repeat,
-	    "Tests source clipping through an intermediate with repeat",
-	    "subsurface, repeat", /* keywords */
-	    "target=raster", /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
-	    60, 60,
-	    NULL, draw)
+COMAC_TEST (
+    subsurface_similar_repeat,
+    "Tests source clipping through an intermediate with repeat",
+    "subsurface, repeat", /* keywords */
+    "target=raster",
+    /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
+    60,
+    60,
+    NULL,
+    draw)

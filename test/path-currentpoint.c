@@ -26,31 +26,33 @@
 #include <assert.h>
 
 static void
-assert_point (comac_t *cr, double expected_x, double expected_y) {
-  double x, y;
-  assert (comac_has_current_point (cr));
-  comac_get_current_point (cr, &x, &y);
-  assert (x == expected_x);
-  assert (y == expected_y);
+assert_point (comac_t *cr, double expected_x, double expected_y)
+{
+    double x, y;
+    assert (comac_has_current_point (cr));
+    comac_get_current_point (cr, &x, &y);
+    assert (x == expected_x);
+    assert (y == expected_y);
 }
 
 static void
-assert_point_maintained (comac_t *cr, double expected_x, double expected_y) {
-  comac_path_t *path;
+assert_point_maintained (comac_t *cr, double expected_x, double expected_y)
+{
+    comac_path_t *path;
 
-  assert_point (cr, expected_x, expected_y);
+    assert_point (cr, expected_x, expected_y);
 
-  path = comac_copy_path (cr);
+    path = comac_copy_path (cr);
 
-  comac_new_path (cr);
-  comac_rectangle (cr, 5, 5, 10, 20);
-  comac_stroke (cr);
+    comac_new_path (cr);
+    comac_rectangle (cr, 5, 5, 10, 20);
+    comac_stroke (cr);
 
-  comac_new_path (cr);
-  comac_append_path (cr, path);
-  comac_path_destroy (path);
+    comac_new_path (cr);
+    comac_append_path (cr, path);
+    comac_path_destroy (path);
 
-  assert_point (cr, expected_x, expected_y);
+    assert_point (cr, expected_x, expected_y);
 }
 
 static comac_test_status_t
@@ -84,6 +86,8 @@ preamble (comac_test_context_t *ctx)
 COMAC_TEST (path_currentpoint,
 	    "Test save/restore path maintains current point",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,  /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

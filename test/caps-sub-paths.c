@@ -42,13 +42,13 @@ draw (comac_t *cr, int width, int height)
     comac_set_line_width (cr, 4);
     comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
 
-    comac_move_to (cr,  4,  4);
-    comac_line_to (cr,  4, 16);
+    comac_move_to (cr, 4, 4);
+    comac_line_to (cr, 4, 16);
 
-    comac_move_to (cr, 10,  4);
+    comac_move_to (cr, 10, 4);
     comac_line_to (cr, 10, 16);
 
-    comac_move_to (cr, 16,  4);
+    comac_move_to (cr, 16, 4);
     comac_line_to (cr, 16, 16);
 
     comac_stroke (cr);
@@ -59,7 +59,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (caps_sub_paths,
 	    "Test that sub-paths receive caps.",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    20, 20,
-	    NULL, draw)
-
+	    NULL,     /* requirements */
+	    20,
+	    20,
+	    NULL,
+	    draw)

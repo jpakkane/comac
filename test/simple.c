@@ -37,26 +37,27 @@
 #if GENERATE_REFERENCE
 #include <assert.h>
 struct coverage {
-	int width, height;
-	struct {
-		int uncovered_area;
-		int covered_height;
-	} cells[0];
+    int width, height;
+    struct {
+	int uncovered_area;
+	int covered_height;
+    } cells[0];
 };
 
-static int pfloor (int v)
+static int
+pfloor (int v)
 {
     return v >> COMAC_FIXED_FRAC_BITS;
 }
 
-static int pfrac (int v)
+static int
+pfrac (int v)
 {
     return v & ((1 << COMAC_FIXED_FRAC_BITS) - 1);
 }
 
-static void add_edge (struct coverage *coverage,
-		      int x1, int y1, int x2, int y2,
-		      int sign)
+static void
+add_edge (struct coverage *coverage, int x1, int y1, int x2, int y2, int sign)
 {
     int dx, dy;
     int dxdy_quo, dxdy_rem;
@@ -82,8 +83,8 @@ static void add_edge (struct coverage *coverage,
 
     dy *= 2;
 
-    dxdy_quo = 2*dx / dy;
-    dxdy_rem = 2*dx % dy;
+    dxdy_quo = 2 * dx / dy;
+    dxdy_rem = 2 * dx % dy;
 
     xq = x1 + dxdy_quo / 2;
     xr = dxdy_rem / 2;
@@ -92,16 +93,16 @@ static void add_edge (struct coverage *coverage,
 	xr += dy;
     }
 
-    for (y = MAX(0, y1); y < MIN(y2, 256*coverage->height); y++) {
-	int x = xq + (xr >= dy/2);
+    for (y = MAX (0, y1); y < MIN (y2, 256 * coverage->height); y++) {
+	int x = xq + (xr >= dy / 2);
 
-	if (x < 256*coverage->width) {
-		int i = pfloor (y) * coverage->width;
-		if (x > 0) {
-			i += pfloor (x);
-			coverage->cells[i].uncovered_area += sign * pfrac(x);
-		}
-		coverage->cells[i].covered_height += sign;
+	if (x < 256 * coverage->width) {
+	    int i = pfloor (y) * coverage->width;
+	    if (x > 0) {
+		i += pfloor (x);
+		coverage->cells[i].uncovered_area += sign * pfrac (x);
+	    }
+	    coverage->cells[i].covered_height += sign;
 	}
 
 	xq += dxdy_quo;
@@ -129,7 +130,7 @@ coverage_create (int width, int height)
     if (c == NULL)
 	return c;
 
-    memset(c, 0, size);
+    memset (c, 0, size);
     c->width = width;
     c->height = height;
 
@@ -150,10 +151,10 @@ coverage_to_alpha (struct coverage *c)
 
     comac_surface_flush (image);
     for (y = 0; y < c->height; y++) {
-	uint8_t *row = data + y *stride;
+	uint8_t *row = data + y * stride;
 	int cover = 0;
 	for (x = 0; x < c->width; x++) {
-	    int v = y*c->width + x;
+	    int v = y * c->width + x;
 
 	    cover += c->cells[v].covered_height * 256;
 	    v = cover - c->cells[v].uncovered_area;
@@ -187,45 +188,85 @@ edge (comac_t *cr, int width, int height)
 	comac_set_source_rgb (cr, 1, 0, 0);
 
 	c = coverage_create (width, height);
-	add_edge (c, 128*256, 129*256, 129*256,   1*256, 1);
-	add_edge (c, 128*256, 129*256, 128*256, 131*256, -1);
-	add_edge (c, 128*256, 131*256, 129*256, 259*256, -1);
-	add_edge (c, 130*256, 129*256, 129*256,   1*256, -1);
-	add_edge (c, 130*256, 129*256, 130*256, 131*256, 1);
-	add_edge (c, 130*256, 131*256, 129*256, 259*256, 1);
+	add_edge (c, 128 * 256, 129 * 256, 129 * 256, 1 * 256, 1);
+	add_edge (c, 128 * 256, 129 * 256, 128 * 256, 131 * 256, -1);
+	add_edge (c, 128 * 256, 131 * 256, 129 * 256, 259 * 256, -1);
+	add_edge (c, 130 * 256, 129 * 256, 129 * 256, 1 * 256, -1);
+	add_edge (c, 130 * 256, 129 * 256, 130 * 256, 131 * 256, 1);
+	add_edge (c, 130 * 256, 131 * 256, 129 * 256, 259 * 256, 1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
-	add_edge (c, 128*256/2, 129*256/2, 129*256/2,   1*256/2, 1);
-	add_edge (c, 128*256/2, 129*256/2, 128*256/2, 131*256/2, -1);
-	add_edge (c, 128*256/2, 131*256/2, 129*256/2, 259*256/2, -1);
-	add_edge (c, 130*256/2, 129*256/2, 129*256/2,   1*256/2, -1);
-	add_edge (c, 130*256/2, 129*256/2, 130*256/2, 131*256/2, 1);
-	add_edge (c, 130*256/2, 131*256/2, 129*256/2, 259*256/2, 1);
+	add_edge (c,
+		  128 * 256 / 2,
+		  129 * 256 / 2,
+		  129 * 256 / 2,
+		  1 * 256 / 2,
+		  1);
+	add_edge (c,
+		  128 * 256 / 2,
+		  129 * 256 / 2,
+		  128 * 256 / 2,
+		  131 * 256 / 2,
+		  -1);
+	add_edge (c,
+		  128 * 256 / 2,
+		  131 * 256 / 2,
+		  129 * 256 / 2,
+		  259 * 256 / 2,
+		  -1);
+	add_edge (c,
+		  130 * 256 / 2,
+		  129 * 256 / 2,
+		  129 * 256 / 2,
+		  1 * 256 / 2,
+		  -1);
+	add_edge (c,
+		  130 * 256 / 2,
+		  129 * 256 / 2,
+		  130 * 256 / 2,
+		  131 * 256 / 2,
+		  1);
+	add_edge (c,
+		  130 * 256 / 2,
+		  131 * 256 / 2,
+		  129 * 256 / 2,
+		  259 * 256 / 2,
+		  1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
-	add_edge (c, (192-2)*256, 129*256, 192*256,   1*256, 1);
-	add_edge (c, (192-2)*256, 129*256, (192-2)*256, 131*256, -1);
-	add_edge (c, (192-2)*256, 131*256, 192*256, 259*256, -1);
-	add_edge (c, (192+2)*256, 129*256, 192*256,   1*256, -1);
-	add_edge (c, (192+2)*256, 129*256, (192+2)*256, 131*256, 1);
-	add_edge (c, (192+2)*256, 131*256, 192*256, 259*256, 1);
+	add_edge (c, (192 - 2) * 256, 129 * 256, 192 * 256, 1 * 256, 1);
+	add_edge (c,
+		  (192 - 2) * 256,
+		  129 * 256,
+		  (192 - 2) * 256,
+		  131 * 256,
+		  -1);
+	add_edge (c, (192 - 2) * 256, 131 * 256, 192 * 256, 259 * 256, -1);
+	add_edge (c, (192 + 2) * 256, 129 * 256, 192 * 256, 1 * 256, -1);
+	add_edge (c, (192 + 2) * 256, 129 * 256, (192 + 2) * 256, 131 * 256, 1);
+	add_edge (c, (192 + 2) * 256, 131 * 256, 192 * 256, 259 * 256, 1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
-	add_edge (c, (256-4)*256, 129*256, 256*256,   1*256, 1);
-	add_edge (c, (256-4)*256, 129*256, (256-4)*256, 131*256, -1);
-	add_edge (c, (256-4)*256, 131*256, 256*256, 259*256, -1);
-	add_edge (c, (256+4)*256, 129*256, 256*256,   1*256, -1);
-	add_edge (c, (256+4)*256, 129*256, (256+4)*256, 131*256, 1);
-	add_edge (c, (256+4)*256, 131*256, 256*256, 259*256, 1);
+	add_edge (c, (256 - 4) * 256, 129 * 256, 256 * 256, 1 * 256, 1);
+	add_edge (c,
+		  (256 - 4) * 256,
+		  129 * 256,
+		  (256 - 4) * 256,
+		  131 * 256,
+		  -1);
+	add_edge (c, (256 - 4) * 256, 131 * 256, 256 * 256, 259 * 256, -1);
+	add_edge (c, (256 + 4) * 256, 129 * 256, 256 * 256, 1 * 256, -1);
+	add_edge (c, (256 + 4) * 256, 129 * 256, (256 + 4) * 256, 131 * 256, 1);
+	add_edge (c, (256 + 4) * 256, 131 * 256, 256 * 256, 259 * 256, 1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
@@ -233,44 +274,74 @@ edge (comac_t *cr, int width, int height)
 	comac_set_source_rgb (cr, 0, 1, 0);
 
 	c = coverage_create (width, height);
-	add_edge (c,   1*256, 129*256, 129*256, 128*256, 1);
-	add_edge (c, 131*256, 128*256, 259*256, 129*256, 1);
-	add_edge (c,   1*256, 129*256, 129*256, 130*256, -1);
-	add_edge (c, 131*256, 130*256, 259*256, 129*256, -1);
+	add_edge (c, 1 * 256, 129 * 256, 129 * 256, 128 * 256, 1);
+	add_edge (c, 131 * 256, 128 * 256, 259 * 256, 129 * 256, 1);
+	add_edge (c, 1 * 256, 129 * 256, 129 * 256, 130 * 256, -1);
+	add_edge (c, 131 * 256, 130 * 256, 259 * 256, 129 * 256, -1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
-	add_edge (c,   1*256/2, 129*256/2, 129*256/2, 128*256/2, 1);
-	add_edge (c, 131*256/2, 128*256/2, 259*256/2, 129*256/2, 1);
-	add_edge (c,   1*256/2, 129*256/2, 129*256/2, 130*256/2, -1);
-	add_edge (c, 131*256/2, 130*256/2, 259*256/2, 129*256/2, -1);
+	add_edge (c,
+		  1 * 256 / 2,
+		  129 * 256 / 2,
+		  129 * 256 / 2,
+		  128 * 256 / 2,
+		  1);
+	add_edge (c,
+		  131 * 256 / 2,
+		  128 * 256 / 2,
+		  259 * 256 / 2,
+		  129 * 256 / 2,
+		  1);
+	add_edge (c,
+		  1 * 256 / 2,
+		  129 * 256 / 2,
+		  129 * 256 / 2,
+		  130 * 256 / 2,
+		  -1);
+	add_edge (c,
+		  131 * 256 / 2,
+		  130 * 256 / 2,
+		  259 * 256 / 2,
+		  129 * 256 / 2,
+		  -1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
-	add_edge (c,   1*256, (192-0)*256, 129*256, (192-2)*256, 1);
-	add_edge (c, 131*256, (192-2)*256, 259*256, (192-0)*256, 1);
-	add_edge (c,   1*256, (192+0)*256, 129*256, (192+2)*256, -1);
-	add_edge (c, 131*256, (192+2)*256, 259*256, (192+0)*256, -1);
+	add_edge (c, 1 * 256, (192 - 0) * 256, 129 * 256, (192 - 2) * 256, 1);
+	add_edge (c, 131 * 256, (192 - 2) * 256, 259 * 256, (192 - 0) * 256, 1);
+	add_edge (c, 1 * 256, (192 + 0) * 256, 129 * 256, (192 + 2) * 256, -1);
+	add_edge (c,
+		  131 * 256,
+		  (192 + 2) * 256,
+		  259 * 256,
+		  (192 + 0) * 256,
+		  -1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
-	add_edge (c,   1*256, (256-0)*256, 129*256, (256-4)*256, 1);
-	add_edge (c, 131*256, (256-4)*256, 259*256, (256-0)*256, 1);
-	add_edge (c,   1*256, (256+0)*256, 129*256, (256+4)*256, -1);
-	add_edge (c, 131*256, (256+4)*256, 259*256, (256+0)*256, -1);
+	add_edge (c, 1 * 256, (256 - 0) * 256, 129 * 256, (256 - 4) * 256, 1);
+	add_edge (c, 131 * 256, (256 - 4) * 256, 259 * 256, (256 - 0) * 256, 1);
+	add_edge (c, 1 * 256, (256 + 0) * 256, 129 * 256, (256 + 4) * 256, -1);
+	add_edge (c,
+		  131 * 256,
+		  (256 + 4) * 256,
+		  259 * 256,
+		  (256 + 0) * 256,
+		  -1);
 	mask = coverage_to_alpha (c);
 	comac_mask_surface (cr, mask, 0, 0);
 	comac_surface_destroy (mask);
     }
 #else
     comac_set_source_rgb (cr, 1, 0, 0);
-    comac_move_to (cr, 129,   1);
+    comac_move_to (cr, 129, 1);
     comac_line_to (cr, 128, 129);
     comac_line_to (cr, 128, 131);
     comac_line_to (cr, 129, 259);
@@ -278,32 +349,32 @@ edge (comac_t *cr, int width, int height)
     comac_line_to (cr, 130, 129);
     comac_fill (cr);
 
-    comac_move_to (cr, 129/2.,   1/2.);
-    comac_line_to (cr, 128/2., 129/2.);
-    comac_line_to (cr, 128/2., 131/2.);
-    comac_line_to (cr, 129/2., 259/2.);
-    comac_line_to (cr, 130/2., 131/2.);
-    comac_line_to (cr, 130/2., 129/2.);
+    comac_move_to (cr, 129 / 2., 1 / 2.);
+    comac_line_to (cr, 128 / 2., 129 / 2.);
+    comac_line_to (cr, 128 / 2., 131 / 2.);
+    comac_line_to (cr, 129 / 2., 259 / 2.);
+    comac_line_to (cr, 130 / 2., 131 / 2.);
+    comac_line_to (cr, 130 / 2., 129 / 2.);
     comac_fill (cr);
 
-    comac_move_to (cr, 192,   1);
-    comac_line_to (cr, 192-2, 129);
-    comac_line_to (cr, 192-2, 131);
+    comac_move_to (cr, 192, 1);
+    comac_line_to (cr, 192 - 2, 129);
+    comac_line_to (cr, 192 - 2, 131);
     comac_line_to (cr, 192, 259);
-    comac_line_to (cr, 192+2, 131);
-    comac_line_to (cr, 192+2, 129);
+    comac_line_to (cr, 192 + 2, 131);
+    comac_line_to (cr, 192 + 2, 129);
     comac_fill (cr);
 
-    comac_move_to (cr, 256,   1);
-    comac_line_to (cr, 256-4, 129);
-    comac_line_to (cr, 256-4, 131);
+    comac_move_to (cr, 256, 1);
+    comac_line_to (cr, 256 - 4, 129);
+    comac_line_to (cr, 256 - 4, 131);
     comac_line_to (cr, 256, 259);
-    comac_line_to (cr, 256+4, 131);
-    comac_line_to (cr, 256+4, 129);
+    comac_line_to (cr, 256 + 4, 131);
+    comac_line_to (cr, 256 + 4, 129);
     comac_fill (cr);
 
     comac_set_source_rgb (cr, 0, 1, 0);
-    comac_move_to (cr,   1, 129);
+    comac_move_to (cr, 1, 129);
     comac_line_to (cr, 129, 128);
     comac_line_to (cr, 131, 128);
     comac_line_to (cr, 259, 129);
@@ -311,28 +382,28 @@ edge (comac_t *cr, int width, int height)
     comac_line_to (cr, 129, 130);
     comac_fill (cr);
 
-    comac_move_to (cr,   1/2., 129/2.);
-    comac_line_to (cr, 129/2., 128/2.);
-    comac_line_to (cr, 131/2., 128/2.);
-    comac_line_to (cr, 259/2., 129/2.);
-    comac_line_to (cr, 131/2., 130/2.);
-    comac_line_to (cr, 129/2., 130/2.);
+    comac_move_to (cr, 1 / 2., 129 / 2.);
+    comac_line_to (cr, 129 / 2., 128 / 2.);
+    comac_line_to (cr, 131 / 2., 128 / 2.);
+    comac_line_to (cr, 259 / 2., 129 / 2.);
+    comac_line_to (cr, 131 / 2., 130 / 2.);
+    comac_line_to (cr, 129 / 2., 130 / 2.);
     comac_fill (cr);
 
-    comac_move_to (cr,   1, 192);
-    comac_line_to (cr, 129, 192-2);
-    comac_line_to (cr, 131, 192-2);
+    comac_move_to (cr, 1, 192);
+    comac_line_to (cr, 129, 192 - 2);
+    comac_line_to (cr, 131, 192 - 2);
     comac_line_to (cr, 259, 192);
-    comac_line_to (cr, 131, 192+2);
-    comac_line_to (cr, 129, 192+2);
+    comac_line_to (cr, 131, 192 + 2);
+    comac_line_to (cr, 129, 192 + 2);
     comac_fill (cr);
 
-    comac_move_to (cr,   1, 256);
-    comac_line_to (cr, 129, 256-4);
-    comac_line_to (cr, 131, 256-4);
+    comac_move_to (cr, 1, 256);
+    comac_line_to (cr, 129, 256 - 4);
+    comac_line_to (cr, 131, 256 - 4);
     comac_line_to (cr, 259, 256);
-    comac_line_to (cr, 131, 256+4);
-    comac_line_to (cr, 129, 256+4);
+    comac_line_to (cr, 131, 256 + 4);
+    comac_line_to (cr, 129, 256 + 4);
     comac_fill (cr);
 #endif
 
@@ -341,7 +412,9 @@ edge (comac_t *cr, int width, int height)
 
 COMAC_TEST (simple_edge,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    260, 260,
-	    NULL, edge)
+	    260,
+	    260,
+	    NULL,
+	    edge)

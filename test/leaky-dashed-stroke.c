@@ -158,9 +158,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (leaky_dashed_stroke,
-	    "Exercises bug in which a dashed stroke leaks in from outside the surface",
-	    "dash, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    leaky_dashed_stroke,
+    "Exercises bug in which a dashed stroke leaks in from outside the surface",
+    "dash, stroke", /* keywords */
+    NULL,	    /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

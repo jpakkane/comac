@@ -50,10 +50,10 @@ typedef struct _comac_scaled_font_subsets_glyph {
     comac_bool_t is_scaled;
     comac_bool_t is_composite;
     comac_bool_t is_latin;
-    double       x_advance;
-    double       y_advance;
+    double x_advance;
+    double y_advance;
     comac_bool_t utf8_is_mapped;
-    uint32_t 	 unicode;
+    uint32_t unicode;
 } comac_scaled_font_subsets_glyph_t;
 
 /**
@@ -136,8 +136,8 @@ _comac_scaled_font_subsets_destroy (comac_scaled_font_subsets_t *font_subsets);
  * 8-bit latin subset.
  **/
 comac_private void
-_comac_scaled_font_subsets_enable_latin_subset (comac_scaled_font_subsets_t *font_subsets,
-						comac_bool_t                 use_latin);
+_comac_scaled_font_subsets_enable_latin_subset (
+    comac_scaled_font_subsets_t *font_subsets, comac_bool_t use_latin);
 
 /**
  * _comac_scaled_font_subsets_map_glyph:
@@ -215,16 +215,16 @@ _comac_scaled_font_subsets_enable_latin_subset (comac_scaled_font_subsets_t *fon
  * %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_scaled_font_subsets_map_glyph (comac_scaled_font_subsets_t	*font_subsets,
-				      comac_scaled_font_t		*scaled_font,
-				      unsigned long			 scaled_font_glyph_index,
-				      const char *			 utf8,
-				      int				 utf8_len,
-                                      comac_scaled_font_subsets_glyph_t *subset_glyph_ret);
+_comac_scaled_font_subsets_map_glyph (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_t *scaled_font,
+    unsigned long scaled_font_glyph_index,
+    const char *utf8,
+    int utf8_len,
+    comac_scaled_font_subsets_glyph_t *subset_glyph_ret);
 
-typedef comac_int_status_t
-(*comac_scaled_font_subset_callback_func_t) (comac_scaled_font_subset_t	*font_subset,
-					     void			*closure);
+typedef comac_int_status_t (*comac_scaled_font_subset_callback_func_t) (
+    comac_scaled_font_subset_t *font_subset, void *closure);
 
 /**
  * _comac_scaled_font_subsets_foreach_scaled:
@@ -257,9 +257,10 @@ typedef comac_int_status_t
  * %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_scaled_font_subsets_foreach_scaled (comac_scaled_font_subsets_t		    *font_subsets,
-				           comac_scaled_font_subset_callback_func_t  font_subset_callback,
-				           void					    *closure);
+_comac_scaled_font_subsets_foreach_scaled (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_subset_callback_func_t font_subset_callback,
+    void *closure);
 
 /**
  * _comac_scaled_font_subsets_foreach_unscaled:
@@ -292,9 +293,10 @@ _comac_scaled_font_subsets_foreach_scaled (comac_scaled_font_subsets_t		    *fon
  * %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_scaled_font_subsets_foreach_unscaled (comac_scaled_font_subsets_t              *font_subsets,
-                                             comac_scaled_font_subset_callback_func_t  font_subset_callback,
-				             void				      *closure);
+_comac_scaled_font_subsets_foreach_unscaled (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_subset_callback_func_t font_subset_callback,
+    void *closure);
 
 /**
  * _comac_scaled_font_subsets_foreach_user:
@@ -327,9 +329,10 @@ _comac_scaled_font_subsets_foreach_unscaled (comac_scaled_font_subsets_t        
  * %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_scaled_font_subsets_foreach_user (comac_scaled_font_subsets_t		  *font_subsets,
-					 comac_scaled_font_subset_callback_func_t  font_subset_callback,
-					 void					  *closure);
+_comac_scaled_font_subsets_foreach_user (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_subset_callback_func_t font_subset_callback,
+    void *closure);
 
 /**
  * _comac_scaled_font_subset_create_glyph_names:
@@ -344,7 +347,8 @@ _comac_scaled_font_subsets_foreach_user (comac_scaled_font_subsets_t		  *font_su
  * include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_int_status_t
-_comac_scaled_font_subset_create_glyph_names (comac_scaled_font_subset_t *subset);
+_comac_scaled_font_subset_create_glyph_names (
+    comac_scaled_font_subset_t *subset);
 
 typedef struct _comac_cff_subset {
     char *family_name_utf8;
@@ -373,9 +377,9 @@ typedef struct _comac_cff_subset {
  * errors include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_cff_subset_init (comac_cff_subset_t          *cff_subset,
-                        const char                  *name,
-                        comac_scaled_font_subset_t  *font_subset);
+_comac_cff_subset_init (comac_cff_subset_t *cff_subset,
+			const char *name,
+			comac_scaled_font_subset_t *font_subset);
 
 /**
  * _comac_cff_subset_fini:
@@ -413,9 +417,9 @@ _comac_cff_scaled_font_is_cid_cff (comac_scaled_font_t *scaled_font);
  * errors include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_cff_fallback_init (comac_cff_subset_t          *cff_subset,
-                          const char                  *name,
-                          comac_scaled_font_subset_t  *font_subset);
+_comac_cff_fallback_init (comac_cff_subset_t *cff_subset,
+			  const char *name,
+			  comac_scaled_font_subset_t *font_subset);
 
 /**
  * _comac_cff_fallback_fini:
@@ -458,7 +462,7 @@ typedef struct _comac_truetype_subset {
  * errors include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_truetype_subset_init_ps (comac_truetype_subset_t    *truetype_subset,
+_comac_truetype_subset_init_ps (comac_truetype_subset_t *truetype_subset,
 				comac_scaled_font_subset_t *font_subset);
 
 /**
@@ -479,7 +483,7 @@ _comac_truetype_subset_init_ps (comac_truetype_subset_t    *truetype_subset,
  * errors include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_truetype_subset_init_pdf (comac_truetype_subset_t    *truetype_subset,
+_comac_truetype_subset_init_pdf (comac_truetype_subset_t *truetype_subset,
 				 comac_scaled_font_subset_t *font_subset);
 
 /**
@@ -513,7 +517,6 @@ typedef struct _comac_type1_subset {
     unsigned long trailer_length;
 } comac_type1_subset_t;
 
-
 /**
  * _comac_type1_subset_init:
  * @type1_subset: a #comac_type1_subset_t to initialize
@@ -531,10 +534,10 @@ typedef struct _comac_type1_subset {
  * include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_type1_subset_init (comac_type1_subset_t		*type_subset,
-			  const char			*name,
-			  comac_scaled_font_subset_t	*font_subset,
-                          comac_bool_t                   hex_encode);
+_comac_type1_subset_init (comac_type1_subset_t *type_subset,
+			  const char *name,
+			  comac_scaled_font_subset_t *font_subset,
+			  comac_bool_t hex_encode);
 
 /**
  * _comac_type1_subset_fini:
@@ -554,7 +557,7 @@ _comac_type1_subset_fini (comac_type1_subset_t *subset);
  * Return %TRUE if @scaled_font is a Type 1 font, otherwise return %FALSE.
  **/
 comac_private comac_bool_t
-_comac_type1_scaled_font_is_type1 (comac_scaled_font_t	*scaled_font);
+_comac_type1_scaled_font_is_type1 (comac_scaled_font_t *scaled_font);
 
 /**
  * _comac_type1_fallback_init_binary:
@@ -573,9 +576,9 @@ _comac_type1_scaled_font_is_type1 (comac_scaled_font_t	*scaled_font);
  * include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_type1_fallback_init_binary (comac_type1_subset_t	      *type_subset,
-                                   const char		      *name,
-                                   comac_scaled_font_subset_t *font_subset);
+_comac_type1_fallback_init_binary (comac_type1_subset_t *type_subset,
+				   const char *name,
+				   comac_scaled_font_subset_t *font_subset);
 
 /**
  * _comac_type1_fallback_init_hex:
@@ -594,9 +597,9 @@ _comac_type1_fallback_init_binary (comac_type1_subset_t	      *type_subset,
  * include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_type1_fallback_init_hex (comac_type1_subset_t	   *type_subset,
-                                const char		   *name,
-                                comac_scaled_font_subset_t *font_subset);
+_comac_type1_fallback_init_hex (comac_type1_subset_t *type_subset,
+				const char *name,
+				comac_scaled_font_subset_t *font_subset);
 
 /**
  * _comac_type1_fallback_fini:
@@ -632,8 +635,8 @@ typedef struct _comac_type2_charstrings {
  * include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_type2_charstrings_init (comac_type2_charstrings_t   *charstrings,
-                               comac_scaled_font_subset_t  *font_subset);
+_comac_type2_charstrings_init (comac_type2_charstrings_t *charstrings,
+			       comac_scaled_font_subset_t *font_subset);
 
 /**
  * _comac_type2_charstrings_fini:
@@ -665,8 +668,8 @@ _comac_type2_charstrings_fini (comac_type2_charstrings_t *charstrings);
  **/
 comac_private comac_int_status_t
 _comac_truetype_index_to_ucs4 (comac_scaled_font_t *scaled_font,
-                               unsigned long        index,
-                               uint32_t            *ucs4);
+			       unsigned long index,
+			       uint32_t *ucs4);
 
 /**
  * _comac_truetype_read_font_name:
@@ -690,9 +693,9 @@ _comac_truetype_index_to_ucs4 (comac_scaled_font_t *scaled_font,
  * %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_int_status_t
-_comac_truetype_read_font_name (comac_scaled_font_t   *scaled_font,
-				char		     **ps_name,
-				char		     **font_name);
+_comac_truetype_read_font_name (comac_scaled_font_t *scaled_font,
+				char **ps_name,
+				char **font_name);
 
 /**
  * _comac_truetype_get_style:
@@ -712,10 +715,10 @@ _comac_truetype_read_font_name (comac_scaled_font_t   *scaled_font,
  * or the OS/2 table is not present.
  **/
 comac_private comac_int_status_t
-_comac_truetype_get_style (comac_scaled_font_t  	 *scaled_font,
-			   int				 *weight,
-			   comac_bool_t			 *bold,
-			   comac_bool_t			 *italic);
+_comac_truetype_get_style (comac_scaled_font_t *scaled_font,
+			   int *weight,
+			   comac_bool_t *bold,
+			   comac_bool_t *italic);
 
 /**
  * _comac_escape_ps_name:
@@ -738,7 +741,6 @@ dump_scaled_font_subsets (comac_scaled_font_subsets_t *font_subsets);
 #endif
 
 COMAC_END_DECLS
-
 
 #endif /* COMAC_HAS_FONT_SUBSET */
 

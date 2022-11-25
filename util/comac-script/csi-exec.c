@@ -43,7 +43,8 @@
 static comac_surface_t *
 _surface_create (void *closure,
 		 comac_content_t content,
-		 double width, double height,
+		 double width,
+		 double height,
 		 long uid)
 {
     return comac_image_surface_create (COMAC_FORMAT_ARGB32, width, height);
@@ -52,9 +53,8 @@ _surface_create (void *closure,
 int
 main (int argc, char **argv)
 {
-    const comac_script_interpreter_hooks_t hooks = {
-	.surface_create = _surface_create
-    };
+    const comac_script_interpreter_hooks_t hooks = {.surface_create =
+							_surface_create};
     comac_script_interpreter_t *csi;
     int i;
 
@@ -67,8 +67,11 @@ main (int argc, char **argv)
 	line = comac_script_interpreter_get_line_number (csi);
 	status = comac_script_interpreter_destroy (csi);
 	if (status) {
-	    fprintf (stderr, "Error during replay of '%s', line %d: %d\n",
-		     argv[i], line, status);
+	    fprintf (stderr,
+		     "Error during replay of '%s', line %d: %d\n",
+		     argv[i],
+		     line,
+		     status);
 	    return 1;
 	}
     }

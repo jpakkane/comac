@@ -47,8 +47,11 @@ draw (comac_t *cr, int width, int height)
  */
 COMAC_TEST (self_copy_overlap,
 	    "Tests painting to itself using itself as the source"
-	    "\nBackends treat this case inconsistently---vector backends are creating snapshots.",
+	    "\nBackends treat this case inconsistently---vector backends are "
+	    "creating snapshots.",
 	    "self-copy", /* keywords */
-	    NULL, /* requirements */
-	    200, 200,
-	    NULL, draw)
+	    NULL,	 /* requirements */
+	    200,
+	    200,
+	    NULL,
+	    draw)

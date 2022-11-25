@@ -32,18 +32,21 @@
 #define OFFSET 50
 #define SIZE 1000
 
-static void mark_point(comac_t *ct, double x, double y)
+static void
+mark_point (comac_t *ct, double x, double y)
 {
-    comac_rectangle(ct, x-2, y-2, 4, 4);
-    comac_set_source_rgb(ct, 1,0,0);
-    comac_fill(ct);
+    comac_rectangle (ct, x - 2, y - 2, 4, 4);
+    comac_set_source_rgb (ct, 1, 0, 0);
+    comac_fill (ct);
 }
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_pattern_t *gr = comac_pattern_create_linear (SIZE - OFFSET, OFFSET,
-                                                       OFFSET, SIZE - OFFSET);
+    comac_pattern_t *gr = comac_pattern_create_linear (SIZE - OFFSET,
+						       OFFSET,
+						       OFFSET,
+						       SIZE - OFFSET);
 
     comac_pattern_add_color_stop_rgb (gr, 0.0, 1, 1, 1);
     comac_pattern_add_color_stop_rgb (gr, 0.0, 0, 0, 0);
@@ -54,15 +57,18 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_destroy (gr);
     comac_paint (cr);
 
-    mark_point(cr, SIZE - OFFSET, OFFSET);
-    mark_point(cr, OFFSET, SIZE - OFFSET);
+    mark_point (cr, SIZE - OFFSET, OFFSET);
+    mark_point (cr, OFFSET, SIZE - OFFSET);
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (linear_gradient_large,
-	    "Tests that large linear gradients get rendered at the correct place",
-	    "linear, pattern", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    linear_gradient_large,
+    "Tests that large linear gradients get rendered at the correct place",
+    "linear, pattern", /* keywords */
+    NULL,	       /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

@@ -50,37 +50,48 @@ draw (comac_t *cr, int width, int height)
 
     /* First check simple rectangles */
     comac_set_source_rgb (cr, 0., 0., 0);
-    comac_rectangle (cr, -WIDTH/4, -HEIGHT/4, WIDTH, HEIGHT);
+    comac_rectangle (cr, -WIDTH / 4, -HEIGHT / 4, WIDTH, HEIGHT);
     comac_stroke (cr);
-    comac_rectangle (cr, WIDTH+WIDTH/4, -HEIGHT/4, -WIDTH, HEIGHT);
+    comac_rectangle (cr, WIDTH + WIDTH / 4, -HEIGHT / 4, -WIDTH, HEIGHT);
     comac_stroke (cr);
-    comac_rectangle (cr, -WIDTH/4, HEIGHT+HEIGHT/4, WIDTH, -HEIGHT);
+    comac_rectangle (cr, -WIDTH / 4, HEIGHT + HEIGHT / 4, WIDTH, -HEIGHT);
     comac_stroke (cr);
-    comac_rectangle (cr, WIDTH+WIDTH/4, HEIGHT+HEIGHT/4, -WIDTH, -HEIGHT);
+    comac_rectangle (cr,
+		     WIDTH + WIDTH / 4,
+		     HEIGHT + HEIGHT / 4,
+		     -WIDTH,
+		     -HEIGHT);
     comac_stroke (cr);
 
     comac_set_dash (cr, dash, 2, 0);
 
     /* And now dashed. */
     comac_set_source_rgb (cr, 1., 0., 0);
-    comac_rectangle (cr, -WIDTH/4, -HEIGHT/4, WIDTH, HEIGHT);
+    comac_rectangle (cr, -WIDTH / 4, -HEIGHT / 4, WIDTH, HEIGHT);
     comac_stroke (cr);
     comac_set_source_rgb (cr, 0., 1., 0);
-    comac_rectangle (cr, WIDTH+WIDTH/4, -HEIGHT/4, -WIDTH, HEIGHT);
+    comac_rectangle (cr, WIDTH + WIDTH / 4, -HEIGHT / 4, -WIDTH, HEIGHT);
     comac_stroke (cr);
     comac_set_source_rgb (cr, 0., 0., 1);
-    comac_rectangle (cr, -WIDTH/4, HEIGHT+HEIGHT/4, WIDTH, -HEIGHT);
+    comac_rectangle (cr, -WIDTH / 4, HEIGHT + HEIGHT / 4, WIDTH, -HEIGHT);
     comac_stroke (cr);
     comac_set_source_rgb (cr, 1., 1., 0);
-    comac_rectangle (cr, WIDTH+WIDTH/4, HEIGHT+HEIGHT/4, -WIDTH, -HEIGHT);
+    comac_rectangle (cr,
+		     WIDTH + WIDTH / 4,
+		     HEIGHT + HEIGHT / 4,
+		     -WIDTH,
+		     -HEIGHT);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (leaky_dashed_rectangle,
-	    "Exercises bug in which a dashed stroke leaks in from outside the surface",
-	    "dash, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    leaky_dashed_rectangle,
+    "Exercises bug in which a dashed stroke leaks in from outside the surface",
+    "dash, stroke", /* keywords */
+    NULL,	    /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

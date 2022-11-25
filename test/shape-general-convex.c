@@ -28,7 +28,7 @@
 
 #include "comac-test.h"
 
-#define SIZE		(100)
+#define SIZE (100)
 #define PAD 4
 
 static void
@@ -56,10 +56,10 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     comac_save (cr);
-    comac_translate (cr, 2*PAD, PAD);
+    comac_translate (cr, 2 * PAD, PAD);
 
-    comac_translate (cr, SIZE/2, SIZE/2);
-    limacon (cr, 1, .5, SIZE/3); /* trivia, this is a trisectrix */
+    comac_translate (cr, SIZE / 2, SIZE / 2);
+    limacon (cr, 1, .5, SIZE / 3); /* trivia, this is a trisectrix */
 
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_fill_preserve (cr);
@@ -69,7 +69,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_scale (cr, -1, 1);
 
-    limacon (cr, 1, .5, SIZE/3); /* trivia, this is a trisectrix */
+    limacon (cr, 1, .5, SIZE / 3); /* trivia, this is a trisectrix */
 
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_fill_preserve (cr);
@@ -83,6 +83,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (shape_general_convex,
 	    "A general shape that is not as convex as it first appears",
 	    "fill,stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE+4*PAD, SIZE+4*PAD,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    SIZE + 4 * PAD,
+	    SIZE + 4 * PAD,
+	    NULL,
+	    draw)

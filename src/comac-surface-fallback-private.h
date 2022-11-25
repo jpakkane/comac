@@ -47,48 +47,48 @@
 COMAC_BEGIN_DECLS
 
 comac_private comac_int_status_t
-_comac_surface_fallback_paint (void			*abstract_surface,
-			       comac_operator_t		 op,
-			       const comac_pattern_t	*source,
-			       const comac_clip_t	*clip);
+_comac_surface_fallback_paint (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_surface_fallback_mask (void			*abstract_surface,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_pattern_t	*mask,
-			      const comac_clip_t	*clip);
+_comac_surface_fallback_mask (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_pattern_t *mask,
+			      const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_surface_fallback_stroke (void			*abstract_surface,
-				comac_operator_t		 op,
-				const comac_pattern_t	*source,
-				const comac_path_fixed_t	*path,
-				const comac_stroke_style_t*style,
-				const comac_matrix_t	*ctm,
-				const comac_matrix_t	*ctm_inverse,
-				double			 tolerance,
-				comac_antialias_t	 antialias,
-				const comac_clip_t	*clip);
+_comac_surface_fallback_stroke (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_path_fixed_t *path,
+				const comac_stroke_style_t *style,
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias,
+				const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_surface_fallback_fill (void			*abstract_surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     const comac_path_fixed_t	*path,
-			     comac_fill_rule_t		 fill_rule,
-			     double			 tolerance,
-			     comac_antialias_t		 antialias,
-			     const comac_clip_t		*clip);
+_comac_surface_fallback_fill (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_surface_fallback_glyphs (void			*abstract_surface,
-				comac_operator_t		 op,
-				const comac_pattern_t	*source,
-				comac_glyph_t		*glyphs,
-				int			 num_glyphs,
-				comac_scaled_font_t	*scaled_font,
-				const comac_clip_t	*clip);
+_comac_surface_fallback_glyphs (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				comac_glyph_t *glyphs,
+				int num_glyphs,
+				comac_scaled_font_t *scaled_font,
+				const comac_clip_t *clip);
 
 COMAC_END_DECLS
 

@@ -29,20 +29,33 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
-    uint32_t data[16] = {
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
+    uint32_t data[16] = {0xffffffff,
+			 0xffffffff,
+			 0xffff0000,
+			 0xffff0000,
+			 0xffffffff,
+			 0xffffffff,
+			 0xffff0000,
+			 0xffff0000,
 
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff,
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
-    };
+			 0xff00ff00,
+			 0xff00ff00,
+			 0xff0000ff,
+			 0xff0000ff,
+			 0xff00ff00,
+			 0xff00ff00,
+			 0xff0000ff,
+			 0xff0000ff};
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_scale (cr, 2, 2);
 
-    comac_set_source_surface (cr, surface, 1 , 1);
+    comac_set_source_surface (cr, surface, 1, 1);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint (cr);
 
@@ -52,9 +65,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (scale_source_surface_paint,
-	    "Test call sequence: comac_scale; comac_set_source_surface; comac_paint",
-	    "paint, transform", /* keywords */
-	    NULL, /* requirements */
-	    12, 12,
-	    NULL, draw)
+COMAC_TEST (
+    scale_source_surface_paint,
+    "Test call sequence: comac_scale; comac_set_source_surface; comac_paint",
+    "paint, transform", /* keywords */
+    NULL,		/* requirements */
+    12,
+    12,
+    NULL,
+    draw)

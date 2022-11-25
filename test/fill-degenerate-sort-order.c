@@ -72,6 +72,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (fill_degenerate_sort_order,
 	    "Tests the tessellator's event comparator with degenerate input",
 	    "degenerate, fill", /* keywords */
-	    NULL, /* requirements */
-	    190, 120,
-	    NULL, draw)
+	    NULL,		/* requirements */
+	    190,
+	    120,
+	    NULL,
+	    draw)

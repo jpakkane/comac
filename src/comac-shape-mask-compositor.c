@@ -46,12 +46,12 @@
 static comac_int_status_t
 _comac_shape_mask_compositor_stroke (const comac_compositor_t *_compositor,
 				     comac_composite_rectangles_t *extents,
-				     const comac_path_fixed_t	*path,
-				     const comac_stroke_style_t	*style,
-				     const comac_matrix_t	*ctm,
-				     const comac_matrix_t	*ctm_inverse,
-				     double		 tolerance,
-				     comac_antialias_t	 antialias)
+				     const comac_path_fixed_t *path,
+				     const comac_stroke_style_t *style,
+				     const comac_matrix_t *ctm,
+				     const comac_matrix_t *ctm_inverse,
+				     double tolerance,
+				     comac_antialias_t antialias)
 {
     comac_surface_t *mask;
     comac_surface_pattern_t pattern;
@@ -90,14 +90,19 @@ _comac_shape_mask_compositor_stroke (const comac_compositor_t *_compositor,
 					   extents->bounded.y,
 					   COMAC_OPERATOR_ADD,
 					   &_comac_pattern_white.base,
-					   path, style, ctm, ctm_inverse,
-					   tolerance, antialias,
+					   path,
+					   style,
+					   ctm,
+					   ctm_inverse,
+					   tolerance,
+					   antialias,
 					   clip);
     if (unlikely (status))
 	goto error;
 
     if (clip != extents->clip) {
-	status = _comac_clip_combine_with_surface (extents->clip, mask,
+	status = _comac_clip_combine_with_surface (extents->clip,
+						   mask,
 						   extents->bounded.x,
 						   extents->bounded.y);
 	if (unlikely (status))
@@ -142,10 +147,10 @@ error:
 static comac_int_status_t
 _comac_shape_mask_compositor_fill (const comac_compositor_t *_compositor,
 				   comac_composite_rectangles_t *extents,
-				   const comac_path_fixed_t	*path,
-				   comac_fill_rule_t	 fill_rule,
-				   double			 tolerance,
-				   comac_antialias_t	 antialias)
+				   const comac_path_fixed_t *path,
+				   comac_fill_rule_t fill_rule,
+				   double tolerance,
+				   comac_antialias_t antialias)
 {
     comac_surface_t *mask;
     comac_surface_pattern_t pattern;
@@ -185,13 +190,17 @@ _comac_shape_mask_compositor_fill (const comac_compositor_t *_compositor,
 					 extents->bounded.y,
 					 COMAC_OPERATOR_ADD,
 					 &_comac_pattern_white.base,
-					 path, fill_rule, tolerance, antialias,
+					 path,
+					 fill_rule,
+					 tolerance,
+					 antialias,
 					 clip);
     if (unlikely (status))
 	goto error;
 
     if (clip != extents->clip) {
-	status = _comac_clip_combine_with_surface (extents->clip, mask,
+	status = _comac_clip_combine_with_surface (extents->clip,
+						   mask,
 						   extents->bounded.x,
 						   extents->bounded.y);
 	if (unlikely (status))
@@ -236,10 +245,10 @@ error:
 static comac_int_status_t
 _comac_shape_mask_compositor_glyphs (const comac_compositor_t *_compositor,
 				     comac_composite_rectangles_t *extents,
-				     comac_scaled_font_t	*scaled_font,
-				     comac_glyph_t		*glyphs,
-				     int			 num_glyphs,
-				     comac_bool_t		 overlap)
+				     comac_scaled_font_t *scaled_font,
+				     comac_glyph_t *glyphs,
+				     int num_glyphs,
+				     comac_bool_t overlap)
 {
     comac_surface_t *mask;
     comac_surface_pattern_t pattern;
@@ -278,13 +287,16 @@ _comac_shape_mask_compositor_glyphs (const comac_compositor_t *_compositor,
 					   extents->bounded.y,
 					   COMAC_OPERATOR_ADD,
 					   &_comac_pattern_white.base,
-					   scaled_font, glyphs, num_glyphs,
+					   scaled_font,
+					   glyphs,
+					   num_glyphs,
 					   clip);
     if (unlikely (status))
 	goto error;
 
     if (clip != extents->clip) {
-	status = _comac_clip_combine_with_surface (extents->clip, mask,
+	status = _comac_clip_combine_with_surface (extents->clip,
+						   mask,
 						   extents->bounded.x,
 						   extents->bounded.y);
 	if (unlikely (status))
@@ -328,13 +340,13 @@ error:
 
 void
 _comac_shape_mask_compositor_init (comac_compositor_t *compositor,
-				   const comac_compositor_t  *delegate)
+				   const comac_compositor_t *delegate)
 {
     compositor->delegate = delegate;
 
-    compositor->paint  = NULL;
-    compositor->mask   = NULL;
-    compositor->fill   = _comac_shape_mask_compositor_fill;
+    compositor->paint = NULL;
+    compositor->mask = NULL;
+    compositor->fill = _comac_shape_mask_compositor_fill;
     compositor->stroke = _comac_shape_mask_compositor_stroke;
     compositor->glyphs = _comac_shape_mask_compositor_glyphs;
 }

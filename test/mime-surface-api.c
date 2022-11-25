@@ -34,8 +34,10 @@ mime_data_destroy_func (void *data)
 }
 
 static comac_test_status_t
-check_mime_data (comac_test_context_t *ctx, comac_surface_t *surface,
-		 const char *mimetype, const unsigned char *data,
+check_mime_data (comac_test_context_t *ctx,
+		 comac_surface_t *surface,
+		 const char *mimetype,
+		 const unsigned char *data,
 		 unsigned long length)
 {
     const unsigned char *data_ret;
@@ -46,27 +48,37 @@ check_mime_data (comac_test_context_t *ctx, comac_surface_t *surface,
 	comac_test_log (ctx,
 			"Surface has mime data %p with length %lu, "
 			"but expected %p with length %lu\n",
-			data_ret, length_ret, data, length);
-       return COMAC_TEST_ERROR;
+			data_ret,
+			length_ret,
+			data,
+			length);
+	return COMAC_TEST_ERROR;
     }
 
     return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
-set_and_check_mime_data (comac_test_context_t *ctx, comac_surface_t *surface,
-			 const char *mimetype, const unsigned char *data,
-			 unsigned long length, comac_bool_t *destroy_called)
+set_and_check_mime_data (comac_test_context_t *ctx,
+			 comac_surface_t *surface,
+			 const char *mimetype,
+			 const unsigned char *data,
+			 unsigned long length,
+			 comac_bool_t *destroy_called)
 {
     comac_status_t status;
 
-    status = comac_surface_set_mime_data (surface, mimetype,
-					  data, length,
+    status = comac_surface_set_mime_data (surface,
+					  mimetype,
+					  data,
+					  length,
 					  mime_data_destroy_func,
 					  destroy_called);
     if (status) {
-	comac_test_log (ctx, "Could not set mime data to %s: %s\n",
-			data, comac_status_to_string(status));
+	comac_test_log (ctx,
+			"Could not set mime data to %s: %s\n",
+			data,
+			comac_status_to_string (status));
 	return COMAC_TEST_ERROR;
     }
 
@@ -95,7 +107,9 @@ preamble (comac_test_context_t *ctx)
     if (test_status)
 	goto out;
 
-    test_status = set_and_check_mime_data (ctx, surface, mimetype,
+    test_status = set_and_check_mime_data (ctx,
+					   surface,
+					   mimetype,
 					   (const unsigned char *) data1,
 					   strlen (data1),
 					   &destroy1_called);
@@ -108,14 +122,16 @@ preamble (comac_test_context_t *ctx)
 	goto out;
     }
 
-    test_status = set_and_check_mime_data (ctx, surface, mimetype,
+    test_status = set_and_check_mime_data (ctx,
+					   surface,
+					   mimetype,
 					   (const unsigned char *) data2,
 					   strlen (data2),
 					   &destroy2_called);
     if (test_status)
 	goto out;
 
-    if (!destroy1_called) {
+    if (! destroy1_called) {
 	comac_test_log (ctx, "MIME data 1 destroy callback not called\n");
 	test_status = COMAC_TEST_ERROR;
 	goto out;
@@ -126,12 +142,12 @@ preamble (comac_test_context_t *ctx)
 	goto out;
     }
 
-    test_status = set_and_check_mime_data (ctx, surface, mimetype,
-					   NULL, 0, NULL);
+    test_status =
+	set_and_check_mime_data (ctx, surface, mimetype, NULL, 0, NULL);
     if (test_status)
 	goto out;
 
-    if (!destroy2_called) {
+    if (! destroy2_called) {
 	comac_test_log (ctx, "MIME data destroy callback not called\n");
 	test_status = COMAC_TEST_ERROR;
 	goto out;
@@ -146,6 +162,8 @@ out:
 COMAC_TEST (mime_surface_api,
 	    "Check the mime data API",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,  /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

@@ -50,9 +50,9 @@ rectangles (comac_t *cr, int width, int height)
 	comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
 	comac_clip (cr);
 
-	comac_scale (cr, 1./SIZE, 1./SIZE);
-	for (x = -i; x < SIZE*WIDTH; x += 2*i) {
-	    for (y = -i; y < SIZE*HEIGHT; y += 2*i) {
+	comac_scale (cr, 1. / SIZE, 1. / SIZE);
+	for (x = -i; x < SIZE * WIDTH; x += 2 * i) {
+	    for (y = -i; y < SIZE * HEIGHT; y += 2 * i) {
 		/* Add a little tile composed of two non-overlapping squares
 		 *   +--+
 		 *   |  |
@@ -62,7 +62,7 @@ rectangles (comac_t *cr, int width, int height)
 		 *      +--+
 		 */
 		comac_rectangle (cr, x, y, i, i);
-		comac_rectangle (cr, x+i, y+i, i, i);
+		comac_rectangle (cr, x + i, y + i, i, i);
 	    }
 	}
 	comac_fill (cr);
@@ -90,9 +90,9 @@ triangles (comac_t *cr, int width, int height)
 	comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
 	comac_clip (cr);
 
-	comac_scale (cr, 1./SIZE, 1./SIZE);
-	for (x = -i; x < SIZE*WIDTH; x += 2*i) {
-	    for (y = -i; y < SIZE*HEIGHT; y += 2*i) {
+	comac_scale (cr, 1. / SIZE, 1. / SIZE);
+	for (x = -i; x < SIZE * WIDTH; x += 2 * i) {
+	    for (y = -i; y < SIZE * HEIGHT; y += 2 * i) {
 		/* Add a tile composed of four non-overlapping
 		 * triangles.  The plus and minus signs inside the
 		 * triangles denote the orientation of the triangle's
@@ -108,26 +108,26 @@ triangles (comac_t *cr, int width, int height)
 
 		/* top left triangle */
 		comac_move_to (cr, x, y);
-		comac_line_to (cr, x+i, y+i);
-		comac_line_to (cr, x+i, y);
+		comac_line_to (cr, x + i, y + i);
+		comac_line_to (cr, x + i, y);
 		comac_close_path (cr);
 
 		/* top right triangle */
-		comac_move_to (cr, x+i, y);
-		comac_line_to (cr, x+2*i, y);
-		comac_line_to (cr, x+i, y+i);
+		comac_move_to (cr, x + i, y);
+		comac_line_to (cr, x + 2 * i, y);
+		comac_line_to (cr, x + i, y + i);
 		comac_close_path (cr);
 
 		/* bottom left triangle */
-		comac_move_to (cr, x+i, y+i);
-		comac_line_to (cr, x, y+2*i);
-		comac_line_to (cr, x+i, y+2*i);
+		comac_move_to (cr, x + i, y + i);
+		comac_line_to (cr, x, y + 2 * i);
+		comac_line_to (cr, x + i, y + 2 * i);
 		comac_close_path (cr);
 
 		/* bottom right triangle */
-		comac_move_to (cr, x+i, y+i);
-		comac_line_to (cr, x+i, y+2*i);
-		comac_line_to (cr, x+2*i, y+2*i);
+		comac_move_to (cr, x + i, y + i);
+		comac_line_to (cr, x + i, y + 2 * i);
+		comac_line_to (cr, x + 2 * i, y + 2 * i);
 		comac_close_path (cr);
 	    }
 	}
@@ -142,14 +142,18 @@ triangles (comac_t *cr, int width, int height)
 
 COMAC_TEST (half_coverage_rectangles,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,		  /* keywords */
 	    "target=raster slow", /* requirements */
-	    WIDTH * SIZE, HEIGHT,
-	    NULL, rectangles)
+	    WIDTH *SIZE,
+	    HEIGHT,
+	    NULL,
+	    rectangles)
 
 COMAC_TEST (half_coverage_triangles,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,		  /* keywords */
 	    "target=raster slow", /* requirements */
-	    WIDTH * SIZE, HEIGHT,
-	    NULL, triangles)
+	    WIDTH *SIZE,
+	    HEIGHT,
+	    NULL,
+	    triangles)

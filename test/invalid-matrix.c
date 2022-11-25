@@ -24,12 +24,12 @@
  * Author: Carl Worth <cworth@cworth.org>
  */
 
-#define _ISOC99_SOURCE	/* for INFINITY */
+#define _ISOC99_SOURCE /* for INFINITY */
 
 #include "config.h"
 #include "comac-test.h"
 
-#if !defined(INFINITY)
+#if ! defined(INFINITY)
 #define INFINITY HUGE_VAL
 #endif
 
@@ -44,25 +44,25 @@ draw (comac_t *cr, int width, int height)
     comac_scaled_font_t *scaled_font;
     comac_pattern_t *pattern;
     comac_t *cr2;
-    comac_matrix_t identity, bogus, inf, invalid = {
-	4.0, 4.0,
-	4.0, 4.0,
-	4.0, 4.0
-    };
+    comac_matrix_t identity, bogus, inf,
+	invalid = {4.0, 4.0, 4.0, 4.0, 4.0, 4.0};
 
-#define CHECK_STATUS(status, function_name)						\
-if ((status) == COMAC_STATUS_SUCCESS) {							\
-    comac_test_log (ctx, "Error: %s with invalid matrix passed\n",				\
-		    (function_name));							\
-    return COMAC_TEST_FAILURE;								\
-} else if ((status) != COMAC_STATUS_INVALID_MATRIX) {					\
-    comac_test_log (ctx, "Error: %s with invalid matrix returned unexpected status "	\
-		    "(%d): %s\n",							\
-		    (function_name),							\
-		    status,								\
-		    comac_status_to_string (status));					\
-    return COMAC_TEST_FAILURE;								\
-}
+#define CHECK_STATUS(status, function_name)                                    \
+    if ((status) == COMAC_STATUS_SUCCESS) {                                    \
+	comac_test_log (ctx,                                                   \
+			"Error: %s with invalid matrix passed\n",              \
+			(function_name));                                      \
+	return COMAC_TEST_FAILURE;                                             \
+    } else if ((status) != COMAC_STATUS_INVALID_MATRIX) {                      \
+	comac_test_log (                                                       \
+	    ctx,                                                               \
+	    "Error: %s with invalid matrix returned unexpected status "        \
+	    "(%d): %s\n",                                                      \
+	    (function_name),                                                   \
+	    status,                                                            \
+	    comac_status_to_string (status));                                  \
+	return COMAC_TEST_FAILURE;                                             \
+    }
 
     /* clear floating point exceptions (added by comac_test_init()) */
 #if HAVE_FEDISABLEEXCEPT
@@ -83,7 +83,6 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     /* test comac_matrix_invert with invalid matrix */
     status = comac_matrix_invert (&invalid);
     CHECK_STATUS (status, "comac_matrix_invert(invalid)");
-
 
     comac_matrix_init_identity (&identity);
 
@@ -113,7 +112,6 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     comac_destroy (cr2);
     CHECK_STATUS (status, "comac_transform(infinity)");
 
-
     /* test comac_set_matrix with invalid matrix */
     cr2 = comac_create (target);
     comac_set_matrix (cr2, &invalid);
@@ -137,7 +135,6 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     status = comac_status (cr2);
     comac_destroy (cr2);
     CHECK_STATUS (status, "comac_set_matrix(infinity)");
-
 
     /* test comac_set_font_matrix with invalid matrix */
     cr2 = comac_create (target);
@@ -172,25 +169,20 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     comac_destroy (cr2);
     CHECK_STATUS (status, "comac_set_font_matrix(infinity)");
 
-
     /* test comac_scaled_font_create with invalid matrix */
     cr2 = comac_create (target);
     font_face = comac_get_font_face (cr2);
     font_options = comac_font_options_create ();
     comac_get_font_options (cr, font_options);
-    scaled_font = comac_scaled_font_create (font_face,
-					    &invalid,
-					    &identity,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &invalid, &identity, font_options);
     status = comac_scaled_font_status (scaled_font);
     CHECK_STATUS (status, "comac_scaled_font_create(invalid)");
 
     comac_scaled_font_destroy (scaled_font);
 
-    scaled_font = comac_scaled_font_create (font_face,
-					    &identity,
-					    &invalid,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &identity, &invalid, font_options);
     status = comac_scaled_font_status (scaled_font);
     CHECK_STATUS (status, "comac_scaled_font_create(invalid)");
 
@@ -203,19 +195,15 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     font_face = comac_get_font_face (cr2);
     font_options = comac_font_options_create ();
     comac_get_font_options (cr, font_options);
-    scaled_font = comac_scaled_font_create (font_face,
-					    &bogus,
-					    &identity,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &bogus, &identity, font_options);
     status = comac_scaled_font_status (scaled_font);
     CHECK_STATUS (status, "comac_scaled_font_create(NaN)");
 
     comac_scaled_font_destroy (scaled_font);
 
-    scaled_font = comac_scaled_font_create (font_face,
-					    &identity,
-					    &bogus,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &identity, &bogus, font_options);
     status = comac_scaled_font_status (scaled_font);
     CHECK_STATUS (status, "comac_scaled_font_create(NaN)");
 
@@ -228,26 +216,21 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     font_face = comac_get_font_face (cr2);
     font_options = comac_font_options_create ();
     comac_get_font_options (cr, font_options);
-    scaled_font = comac_scaled_font_create (font_face,
-					    &inf,
-					    &identity,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &inf, &identity, font_options);
     status = comac_scaled_font_status (scaled_font);
     CHECK_STATUS (status, "comac_scaled_font_create(infinity)");
 
     comac_scaled_font_destroy (scaled_font);
 
-    scaled_font = comac_scaled_font_create (font_face,
-					    &identity,
-					    &inf,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &identity, &inf, font_options);
     status = comac_scaled_font_status (scaled_font);
     CHECK_STATUS (status, "comac_scaled_font_create(infinity)");
 
     comac_scaled_font_destroy (scaled_font);
     comac_font_options_destroy (font_options);
     comac_destroy (cr2);
-
 
     /* test comac_pattern_set_matrix with invalid matrix */
     pattern = comac_pattern_create_rgb (1.0, 1.0, 1.0);
@@ -269,7 +252,6 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     status = comac_pattern_status (pattern);
     CHECK_STATUS (status, "comac_pattern_set_matrix(infinity)");
     comac_pattern_destroy (pattern);
-
 
     /* test invalid transformations */
     cr2 = comac_create (target);
@@ -301,7 +283,6 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     comac_translate (cr2, inf.xx, 0);
     CHECK_STATUS (status, "comac_translate(∞, 0)");
     comac_destroy (cr2);
-
 
     cr2 = comac_create (target);
     comac_scale (cr2, bogus.xx, bogus.yy);
@@ -348,7 +329,6 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
     CHECK_STATUS (status, "comac_scale(0, 1)");
     comac_destroy (cr2);
 
-
     cr2 = comac_create (target);
     comac_rotate (cr2, bogus.xx);
     CHECK_STATUS (status, "comac_rotate(NaN)");
@@ -367,8 +347,11 @@ if ((status) == COMAC_STATUS_SUCCESS) {							\
 }
 
 COMAC_TEST (invalid_matrix,
-	    "Test that all relevant public functions return COMAC_STATUS_INVALID_MATRIX as appropriate",
+	    "Test that all relevant public functions return "
+	    "COMAC_STATUS_INVALID_MATRIX as appropriate",
 	    "api, matrix", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

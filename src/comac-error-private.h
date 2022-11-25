@@ -112,20 +112,22 @@ enum _comac_int_status {
 
 typedef enum _comac_int_status comac_int_status_t;
 
-#define _comac_status_is_error(status) \
+#define _comac_status_is_error(status)                                         \
     ((status) != COMAC_STATUS_SUCCESS && (status) < COMAC_STATUS_LAST_STATUS)
 
-#define _comac_int_status_is_error(status) \
-    ((status) != COMAC_INT_STATUS_SUCCESS && (status) < COMAC_INT_STATUS_LAST_STATUS)
+#define _comac_int_status_is_error(status)                                     \
+    ((status) != COMAC_INT_STATUS_SUCCESS &&                                   \
+     (status) < COMAC_INT_STATUS_LAST_STATUS)
 
 comac_private comac_status_t
 _comac_error (comac_status_t status);
 
 /* hide compiler warnings when discarding the return value */
-#define _comac_error_throw(status) do { \
-    comac_status_t status__ = _comac_error (status); \
-    (void) status__; \
-} while (0)
+#define _comac_error_throw(status)                                             \
+    do {                                                                       \
+	comac_status_t status__ = _comac_error (status);                       \
+	(void) status__;                                                       \
+    } while (0)
 
 COMAC_END_DECLS
 

@@ -102,19 +102,17 @@ struct _comac_cache {
     int freeze_count;
 };
 
-typedef comac_bool_t
-(*comac_cache_keys_equal_func_t) (const void *key_a, const void *key_b);
+typedef comac_bool_t (*comac_cache_keys_equal_func_t) (const void *key_a,
+						       const void *key_b);
 
-typedef void
-(*comac_cache_callback_func_t) (void *entry,
-				void *closure);
+typedef void (*comac_cache_callback_func_t) (void *entry, void *closure);
 
 comac_private comac_status_t
 _comac_cache_init (comac_cache_t *cache,
-	           comac_cache_keys_equal_func_t keys_equal,
-		   comac_cache_predicate_func_t  predicate,
-		   comac_destroy_func_t	   entry_destroy,
-		   unsigned long		   max_size);
+		   comac_cache_keys_equal_func_t keys_equal,
+		   comac_cache_predicate_func_t predicate,
+		   comac_destroy_func_t entry_destroy,
+		   unsigned long max_size);
 
 comac_private void
 _comac_cache_fini (comac_cache_t *cache);
@@ -126,20 +124,17 @@ comac_private void
 _comac_cache_thaw (comac_cache_t *cache);
 
 comac_private void *
-_comac_cache_lookup (comac_cache_t	  *cache,
-		     comac_cache_entry_t  *key);
+_comac_cache_lookup (comac_cache_t *cache, comac_cache_entry_t *key);
 
 comac_private comac_status_t
-_comac_cache_insert (comac_cache_t	 *cache,
-		     comac_cache_entry_t *entry);
+_comac_cache_insert (comac_cache_t *cache, comac_cache_entry_t *entry);
 
 comac_private void
-_comac_cache_remove (comac_cache_t	 *cache,
-		     comac_cache_entry_t *entry);
+_comac_cache_remove (comac_cache_t *cache, comac_cache_entry_t *entry);
 
 comac_private void
-_comac_cache_foreach (comac_cache_t		 *cache,
+_comac_cache_foreach (comac_cache_t *cache,
 		      comac_cache_callback_func_t cache_callback,
-		      void			 *closure);
+		      void *closure);
 
 #endif

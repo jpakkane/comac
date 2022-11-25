@@ -47,8 +47,8 @@
 
 #define LINE_WIDTH 13
 #define SPLINE 50.0
-#define XSCALE  0.5
-#define YSCALE  2.0
+#define XSCALE 0.5
+#define YSCALE 2.0
 #define WIDTH (XSCALE * SPLINE * 6.0)
 #define HEIGHT (YSCALE * SPLINE * 2.0)
 
@@ -57,12 +57,14 @@ spline_path (comac_t *cr)
 {
     comac_save (cr);
     {
-	comac_move_to (cr,
-		       - SPLINE, 0);
+	comac_move_to (cr, -SPLINE, 0);
 	comac_curve_to (cr,
-			- SPLINE / 4, - SPLINE,
-			  SPLINE / 4,   SPLINE,
-			  SPLINE, 0);
+			-SPLINE / 4,
+			-SPLINE,
+			SPLINE / 4,
+			SPLINE,
+			SPLINE,
+			0);
     }
     comac_restore (cr);
 }
@@ -147,12 +149,11 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     int i;
-    void (* const figures[4]) (comac_t *cr) = {
-	scale_then_set_line_width_and_stroke,
-	scale_path_and_line_width,
-	set_line_width_then_scale_and_stroke,
-	scale_path_not_line_width
-    };
+    void (*const figures[4]) (comac_t *
+			      cr) = {scale_then_set_line_width_and_stroke,
+				     scale_path_and_line_width,
+				     set_line_width_then_scale_and_stroke,
+				     scale_path_not_line_width};
 
     comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
     comac_paint (cr);
@@ -161,8 +162,8 @@ draw (comac_t *cr, int width, int height)
     for (i = 0; i < 4; i++) {
 	comac_save (cr);
 	comac_translate (cr,
-			 WIDTH/4  + (i % 2) * WIDTH/2,
-			 HEIGHT/4 + (i / 2) * HEIGHT/2);
+			 WIDTH / 4 + (i % 2) * WIDTH / 2,
+			 HEIGHT / 4 + (i / 2) * HEIGHT / 2);
 	(figures[i]) (cr);
 	comac_restore (cr);
     }
@@ -173,6 +174,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (line_width_scale,
 	    "Tests interaction of comac_set_line_width with comac_scale",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

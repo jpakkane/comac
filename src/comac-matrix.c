@@ -38,7 +38,9 @@
 #include "comac-error-private.h"
 #include <float.h>
 
-#define PIXMAN_MAX_INT ((pixman_fixed_1 >> 1) - pixman_fixed_e) /* need to ensure deltas also fit */
+#define PIXMAN_MAX_INT                                                         \
+    ((pixman_fixed_1 >> 1) -                                                   \
+     pixman_fixed_e) /* need to ensure deltas also fit */
 
 /**
  * SECTION:comac-matrix
@@ -80,10 +82,7 @@ _comac_matrix_compute_adjoint (comac_matrix_t *matrix);
 void
 comac_matrix_init_identity (comac_matrix_t *matrix)
 {
-    comac_matrix_init (matrix,
-		       1, 0,
-		       0, 1,
-		       0, 0);
+    comac_matrix_init (matrix, 1, 0, 0, 1, 0, 0);
 }
 
 /**
@@ -108,14 +107,20 @@ comac_matrix_init_identity (comac_matrix_t *matrix)
  **/
 void
 comac_matrix_init (comac_matrix_t *matrix,
-		   double xx, double yx,
+		   double xx,
+		   double yx,
 
-		   double xy, double yy,
-		   double x0, double y0)
+		   double xy,
+		   double yy,
+		   double x0,
+		   double y0)
 {
-    matrix->xx = xx; matrix->yx = yx;
-    matrix->xy = xy; matrix->yy = yy;
-    matrix->x0 = x0; matrix->y0 = y0;
+    matrix->xx = xx;
+    matrix->yx = yx;
+    matrix->xy = xy;
+    matrix->yy = yy;
+    matrix->x0 = x0;
+    matrix->y0 = y0;
 }
 
 /**
@@ -140,15 +145,18 @@ comac_matrix_init (comac_matrix_t *matrix,
  **/
 void
 _comac_matrix_get_affine (const comac_matrix_t *matrix,
-			  double *xx, double *yx,
-			  double *xy, double *yy,
-			  double *x0, double *y0)
+			  double *xx,
+			  double *yx,
+			  double *xy,
+			  double *yy,
+			  double *x0,
+			  double *y0)
 {
-    *xx  = matrix->xx;
-    *yx  = matrix->yx;
+    *xx = matrix->xx;
+    *yx = matrix->yx;
 
-    *xy  = matrix->xy;
-    *yy  = matrix->yy;
+    *xy = matrix->xy;
+    *yy = matrix->yy;
 
     if (x0)
 	*x0 = matrix->x0;
@@ -168,13 +176,9 @@ _comac_matrix_get_affine (const comac_matrix_t *matrix,
  * Since: 1.0
  **/
 void
-comac_matrix_init_translate (comac_matrix_t *matrix,
-			     double tx, double ty)
+comac_matrix_init_translate (comac_matrix_t *matrix, double tx, double ty)
 {
-    comac_matrix_init (matrix,
-		       1, 0,
-		       0, 1,
-		       tx, ty);
+    comac_matrix_init (matrix, 1, 0, 0, 1, tx, ty);
 }
 
 /**
@@ -212,13 +216,9 @@ comac_matrix_translate (comac_matrix_t *matrix, double tx, double ty)
  * Since: 1.0
  **/
 void
-comac_matrix_init_scale (comac_matrix_t *matrix,
-			 double sx, double sy)
+comac_matrix_init_scale (comac_matrix_t *matrix, double sx, double sy)
 {
-    comac_matrix_init (matrix,
-		       sx,  0,
-		       0, sy,
-		       0, 0);
+    comac_matrix_init (matrix, sx, 0, 0, sy, 0, 0);
 }
 
 /**
@@ -257,19 +257,15 @@ comac_matrix_scale (comac_matrix_t *matrix, double sx, double sy)
  * Since: 1.0
  **/
 void
-comac_matrix_init_rotate (comac_matrix_t *matrix,
-			  double radians)
+comac_matrix_init_rotate (comac_matrix_t *matrix, double radians)
 {
-    double  s;
-    double  c;
+    double s;
+    double c;
 
     s = sin (radians);
     c = cos (radians);
 
-    comac_matrix_init (matrix,
-		       c, s,
-		       -s, c,
-		       0, 0);
+    comac_matrix_init (matrix, c, s, -s, c, 0, 0);
 }
 
 /**
@@ -321,7 +317,9 @@ comac_matrix_rotate (comac_matrix_t *matrix, double radians)
  *      uses.
  */
 void
-comac_matrix_multiply (comac_matrix_t *result, const comac_matrix_t *a, const comac_matrix_t *b)
+comac_matrix_multiply (comac_matrix_t *result,
+		       const comac_matrix_t *a,
+		       const comac_matrix_t *b)
 {
     comac_matrix_t r;
 
@@ -376,7 +374,9 @@ _comac_matrix_multiply (comac_matrix_t *r,
  * Since: 1.0
  **/
 void
-comac_matrix_transform_distance (const comac_matrix_t *matrix, double *dx, double *dy)
+comac_matrix_transform_distance (const comac_matrix_t *matrix,
+				 double *dx,
+				 double *dy)
 {
     double new_x, new_y;
 
@@ -398,7 +398,9 @@ comac_matrix_transform_distance (const comac_matrix_t *matrix, double *dx, doubl
  * Since: 1.0
  **/
 void
-comac_matrix_transform_point (const comac_matrix_t *matrix, double *x, double *y)
+comac_matrix_transform_point (const comac_matrix_t *matrix,
+			      double *x,
+			      double *y)
 {
     comac_matrix_transform_distance (matrix, x, y);
 
@@ -408,8 +410,10 @@ comac_matrix_transform_point (const comac_matrix_t *matrix, double *x, double *y
 
 void
 _comac_matrix_transform_bounding_box (const comac_matrix_t *matrix,
-				      double *x1, double *y1,
-				      double *x2, double *y2,
+				      double *x1,
+				      double *y1,
+				      double *x2,
+				      double *y2,
 				      comac_bool_t *is_tight)
 {
     int i;
@@ -478,7 +482,7 @@ _comac_matrix_transform_bounding_box (const comac_matrix_t *matrix,
     min_x = max_x = quad_x[0];
     min_y = max_y = quad_y[0];
 
-    for (i=1; i < 4; i++) {
+    for (i = 1; i < 4; i++) {
 	if (quad_x[i] < min_x)
 	    min_x = quad_x[i];
 	if (quad_x[i] > max_x)
@@ -496,24 +500,23 @@ _comac_matrix_transform_bounding_box (const comac_matrix_t *matrix,
     *y2 = max_y;
 
     if (is_tight) {
-        /* it's tight if and only if the four corner points form an axis-aligned
+	/* it's tight if and only if the four corner points form an axis-aligned
            rectangle.
            And that's true if and only if we can derive corners 0 and 3 from
            corners 1 and 2 in one of two straightforward ways...
            We could use a tolerance here but for now we'll fall back to FALSE in the case
            of floating point error.
         */
-        *is_tight =
-            (quad_x[1] == quad_x[0] && quad_y[1] == quad_y[3] &&
-             quad_x[2] == quad_x[3] && quad_y[2] == quad_y[0]) ||
-            (quad_x[1] == quad_x[3] && quad_y[1] == quad_y[0] &&
-             quad_x[2] == quad_x[0] && quad_y[2] == quad_y[3]);
+	*is_tight = (quad_x[1] == quad_x[0] && quad_y[1] == quad_y[3] &&
+		     quad_x[2] == quad_x[3] && quad_y[2] == quad_y[0]) ||
+		    (quad_x[1] == quad_x[3] && quad_y[1] == quad_y[0] &&
+		     quad_x[2] == quad_x[0] && quad_y[2] == quad_y[3]);
     }
 }
 
 comac_private void
 _comac_matrix_transform_bounding_box_fixed (const comac_matrix_t *matrix,
-					    comac_box_t          *bbox,
+					    comac_box_t *bbox,
 					    comac_bool_t *is_tight)
 {
     double x1, y1, x2, y2;
@@ -546,15 +549,9 @@ _comac_matrix_compute_adjoint (comac_matrix_t *matrix)
     /* adj (A) = transpose (C:cofactor (A,i,j)) */
     double a, b, c, d, tx, ty;
 
-    _comac_matrix_get_affine (matrix,
-			      &a,  &b,
-			      &c,  &d,
-			      &tx, &ty);
+    _comac_matrix_get_affine (matrix, &a, &b, &c, &d, &tx, &ty);
 
-    comac_matrix_init (matrix,
-		       d, -b,
-		       -c, a,
-		       c*ty - d*tx, b*tx - a*ty);
+    comac_matrix_init (matrix, d, -b, -c, a, c * ty - d * tx, b * tx - a * ty);
 }
 
 /**
@@ -629,10 +626,8 @@ _comac_matrix_is_invertible (const comac_matrix_t *matrix)
 comac_bool_t
 _comac_matrix_is_scale_0 (const comac_matrix_t *matrix)
 {
-    return matrix->xx == 0. &&
-           matrix->xy == 0. &&
-           matrix->yx == 0. &&
-           matrix->yy == 0.;
+    return matrix->xx == 0. && matrix->xy == 0. && matrix->yx == 0. &&
+	   matrix->yy == 0.;
 }
 
 double
@@ -640,10 +635,12 @@ _comac_matrix_compute_determinant (const comac_matrix_t *matrix)
 {
     double a, b, c, d;
 
-    a = matrix->xx; b = matrix->yx;
-    c = matrix->xy; d = matrix->yy;
+    a = matrix->xx;
+    b = matrix->yx;
+    c = matrix->xy;
+    d = matrix->yy;
 
-    return a*d - b*c;
+    return a * d - b * c;
 }
 
 /**
@@ -661,7 +658,8 @@ _comac_matrix_compute_determinant (const comac_matrix_t *matrix)
  **/
 comac_status_t
 _comac_matrix_compute_basis_scale_factors (const comac_matrix_t *matrix,
-					   double *basis_scale, double *normal_scale,
+					   double *basis_scale,
+					   double *normal_scale,
 					   comac_bool_t x_basis)
 {
     double det;
@@ -671,12 +669,9 @@ _comac_matrix_compute_basis_scale_factors (const comac_matrix_t *matrix,
     if (! ISFINITE (det))
 	return _comac_error (COMAC_STATUS_INVALID_MATRIX);
 
-    if (det == 0)
-    {
+    if (det == 0) {
 	*basis_scale = *normal_scale = 0;
-    }
-    else
-    {
+    } else {
 	double x = x_basis != 0;
 	double y = x == 0;
 	double major, minor;
@@ -692,13 +687,10 @@ _comac_matrix_compute_basis_scale_factors (const comac_matrix_t *matrix,
 	    minor = det / major;
 	else
 	    minor = 0.0;
-	if (x_basis)
-	{
+	if (x_basis) {
 	    *basis_scale = major;
 	    *normal_scale = minor;
-	}
-	else
-	{
+	} else {
 	    *basis_scale = minor;
 	    *normal_scale = major;
 	}
@@ -709,29 +701,28 @@ _comac_matrix_compute_basis_scale_factors (const comac_matrix_t *matrix,
 
 comac_bool_t
 _comac_matrix_is_integer_translation (const comac_matrix_t *matrix,
-				      int *itx, int *ity)
+				      int *itx,
+				      int *ity)
 {
-    if (_comac_matrix_is_translation (matrix))
-    {
-        comac_fixed_t x0_fixed = _comac_fixed_from_double (matrix->x0);
-        comac_fixed_t y0_fixed = _comac_fixed_from_double (matrix->y0);
+    if (_comac_matrix_is_translation (matrix)) {
+	comac_fixed_t x0_fixed = _comac_fixed_from_double (matrix->x0);
+	comac_fixed_t y0_fixed = _comac_fixed_from_double (matrix->y0);
 
-        if (_comac_fixed_is_integer (x0_fixed) &&
-            _comac_fixed_is_integer (y0_fixed))
-        {
-            if (itx)
-                *itx = _comac_fixed_integer_part (x0_fixed);
-            if (ity)
-                *ity = _comac_fixed_integer_part (y0_fixed);
+	if (_comac_fixed_is_integer (x0_fixed) &&
+	    _comac_fixed_is_integer (y0_fixed)) {
+	    if (itx)
+		*itx = _comac_fixed_integer_part (x0_fixed);
+	    if (ity)
+		*ity = _comac_fixed_integer_part (y0_fixed);
 
-            return TRUE;
-        }
+	    return TRUE;
+	}
     }
 
     return FALSE;
 }
 
-#define SCALING_EPSILON _comac_fixed_to_double(1)
+#define SCALING_EPSILON _comac_fixed_to_double (1)
 
 /* This only returns true if the matrix is 90 degree rotations or
  * flips. It appears calling code is relying on this. It will return
@@ -746,10 +737,10 @@ _comac_matrix_has_unity_scale (const comac_matrix_t *matrix)
     double det = _comac_matrix_compute_determinant (matrix);
     if (fabs (det * det - 1.0) < SCALING_EPSILON) {
 	/* check that one axis is close to zero */
-	if (fabs (matrix->xy) < SCALING_EPSILON  &&
+	if (fabs (matrix->xy) < SCALING_EPSILON &&
 	    fabs (matrix->yx) < SCALING_EPSILON)
 	    return TRUE;
-	if (fabs (matrix->xx) < SCALING_EPSILON  &&
+	if (fabs (matrix->xx) < SCALING_EPSILON &&
 	    fabs (matrix->yy) < SCALING_EPSILON)
 	    return TRUE;
 	/* If rotations are allowed then it must instead test for
@@ -775,7 +766,8 @@ _comac_matrix_is_pixel_exact (const comac_matrix_t *matrix)
     x0_fixed = _comac_fixed_from_double (matrix->x0);
     y0_fixed = _comac_fixed_from_double (matrix->y0);
 
-    return _comac_fixed_is_integer (x0_fixed) && _comac_fixed_is_integer (y0_fixed);
+    return _comac_fixed_is_integer (x0_fixed) &&
+	   _comac_fixed_is_integer (y0_fixed);
 }
 
 /*
@@ -903,22 +895,19 @@ double
 _comac_matrix_transformed_circle_major_axis (const comac_matrix_t *matrix,
 					     double radius)
 {
-    double  a, b, c, d, f, g, h, i, j;
+    double a, b, c, d, f, g, h, i, j;
 
     if (_comac_matrix_has_unity_scale (matrix))
 	return radius;
 
-    _comac_matrix_get_affine (matrix,
-                              &a, &b,
-                              &c, &d,
-                              NULL, NULL);
+    _comac_matrix_get_affine (matrix, &a, &b, &c, &d, NULL, NULL);
 
-    i = a*a + b*b;
-    j = c*c + d*d;
+    i = a * a + b * b;
+    j = c * c + d * d;
 
     f = 0.5 * (i + j);
     g = 0.5 * (i - j);
-    h = a*c + b*d;
+    h = a * c + b * d;
 
     return radius * sqrt (f + hypot (g, h));
 
@@ -928,28 +917,31 @@ _comac_matrix_transformed_circle_major_axis (const comac_matrix_t *matrix,
      */
 }
 
-static const pixman_transform_t pixman_identity_transform = {{
-        {1 << 16,        0,       0},
-        {       0, 1 << 16,       0},
-        {       0,       0, 1 << 16}
-    }};
+static const pixman_transform_t pixman_identity_transform = {
+    {{1 << 16, 0, 0}, {0, 1 << 16, 0}, {0, 0, 1 << 16}}};
 
 static comac_status_t
-_comac_matrix_to_pixman_matrix (const comac_matrix_t	*matrix,
-				pixman_transform_t	*pixman_transform,
+_comac_matrix_to_pixman_matrix (const comac_matrix_t *matrix,
+				pixman_transform_t *pixman_transform,
 				double xc,
 				double yc)
 {
     comac_matrix_t inv;
     unsigned max_iterations;
 
-    pixman_transform->matrix[0][0] = _comac_fixed_16_16_from_double (matrix->xx);
-    pixman_transform->matrix[0][1] = _comac_fixed_16_16_from_double (matrix->xy);
-    pixman_transform->matrix[0][2] = _comac_fixed_16_16_from_double (matrix->x0);
+    pixman_transform->matrix[0][0] =
+	_comac_fixed_16_16_from_double (matrix->xx);
+    pixman_transform->matrix[0][1] =
+	_comac_fixed_16_16_from_double (matrix->xy);
+    pixman_transform->matrix[0][2] =
+	_comac_fixed_16_16_from_double (matrix->x0);
 
-    pixman_transform->matrix[1][0] = _comac_fixed_16_16_from_double (matrix->yx);
-    pixman_transform->matrix[1][1] = _comac_fixed_16_16_from_double (matrix->yy);
-    pixman_transform->matrix[1][2] = _comac_fixed_16_16_from_double (matrix->y0);
+    pixman_transform->matrix[1][0] =
+	_comac_fixed_16_16_from_double (matrix->yx);
+    pixman_transform->matrix[1][1] =
+	_comac_fixed_16_16_from_double (matrix->yy);
+    pixman_transform->matrix[1][2] =
+	_comac_fixed_16_16_from_double (matrix->y0);
 
     pixman_transform->matrix[2][0] = 0;
     pixman_transform->matrix[2][1] = 0;
@@ -974,8 +966,7 @@ _comac_matrix_to_pixman_matrix (const comac_matrix_t	*matrix,
 		  fabs (matrix->x0) > PIXMAN_MAX_INT ||
 		  fabs (matrix->yx) > PIXMAN_MAX_INT ||
 		  fabs (matrix->yy) > PIXMAN_MAX_INT ||
-		  fabs (matrix->y0) > PIXMAN_MAX_INT))
-    {
+		  fabs (matrix->y0) > PIXMAN_MAX_INT)) {
 	return _comac_error (COMAC_STATUS_INVALID_MATRIX);
     }
 
@@ -987,7 +978,7 @@ _comac_matrix_to_pixman_matrix (const comac_matrix_t	*matrix,
     /* find the pattern space coordinate that maps to (xc, yc) */
     max_iterations = 5;
     do {
-	double x,y;
+	double x, y;
 	pixman_vector_t vector;
 	comac_fixed_16_16_t dx, dy;
 
@@ -1052,14 +1043,14 @@ _pixman_nearest_sample (double d)
  * translation, %FALSE otherwise.
  **/
 comac_bool_t
-_comac_matrix_is_pixman_translation (const comac_matrix_t     *matrix,
-				     comac_filter_t            filter,
-				     int                      *x_offset,
-				     int                      *y_offset)
+_comac_matrix_is_pixman_translation (const comac_matrix_t *matrix,
+				     comac_filter_t filter,
+				     int *x_offset,
+				     int *y_offset)
 {
     double tx, ty;
 
-    if (!_comac_matrix_is_translation (matrix))
+    if (! _comac_matrix_is_translation (matrix))
 	return FALSE;
 
     if (matrix->x0 == 0. && matrix->y0 == 0.)
@@ -1116,13 +1107,13 @@ _comac_matrix_is_pixman_translation (const comac_matrix_t     *matrix,
  * overflows, %COMAC_STATUS_SUCCESS otherwise.
  **/
 comac_status_t
-_comac_matrix_to_pixman_matrix_offset (const comac_matrix_t	*matrix,
-				       comac_filter_t            filter,
-				       double                    xc,
-				       double                    yc,
-				       pixman_transform_t	*out_transform,
-				       int                      *x_offset,
-				       int                      *y_offset)
+_comac_matrix_to_pixman_matrix_offset (const comac_matrix_t *matrix,
+				       comac_filter_t filter,
+				       double xc,
+				       double yc,
+				       pixman_transform_t *out_transform,
+				       int *x_offset,
+				       int *y_offset)
 {
     comac_bool_t is_pixman_translation;
 
@@ -1156,8 +1147,8 @@ _comac_matrix_to_pixman_matrix_offset (const comac_matrix_t	*matrix,
 	    ty = m.y0;
 	    norm = MAX (fabs (tx), fabs (ty));
 
-	    for (i = -1; i < 2; i+=2) {
-		for (j = -1; j < 2; j+=2) {
+	    for (i = -1; i < 2; i += 2) {
+		for (j = -1; j < 2; j += 2) {
 		    double x, y, den, new_norm;
 
 		    den = (m.xx + i) * (m.yy + j) - m.xy * m.yx;

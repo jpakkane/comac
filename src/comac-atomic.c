@@ -37,9 +37,9 @@
 #include "comac-mutex-private.h"
 
 #ifdef HAS_ATOMIC_OPS
-COMPILE_TIME_ASSERT(sizeof(void*) == sizeof(int) ||
-		    sizeof(void*) == sizeof(long) ||
-		    sizeof(void*) == sizeof(long long));
+COMPILE_TIME_ASSERT (sizeof (void *) == sizeof (int) ||
+		     sizeof (void *) == sizeof (long) ||
+		     sizeof (void *) == sizeof (long long));
 #else
 void
 _comac_atomic_int_inc (comac_atomic_intptr_t *x)
@@ -62,7 +62,9 @@ _comac_atomic_int_dec_and_test (comac_atomic_intptr_t *x)
 }
 
 comac_atomic_intptr_t
-_comac_atomic_int_cmpxchg_return_old_impl (comac_atomic_intptr_t *x, comac_atomic_intptr_t oldv, comac_atomic_intptr_t newv)
+_comac_atomic_int_cmpxchg_return_old_impl (comac_atomic_intptr_t *x,
+					   comac_atomic_intptr_t oldv,
+					   comac_atomic_intptr_t newv)
 {
     comac_atomic_intptr_t ret;
 
@@ -109,7 +111,8 @@ _comac_atomic_int_get_relaxed (comac_atomic_intptr_t *x)
 }
 
 void
-_comac_atomic_int_set_relaxed (comac_atomic_intptr_t *x, comac_atomic_intptr_t val)
+_comac_atomic_int_set_relaxed (comac_atomic_intptr_t *x,
+			       comac_atomic_intptr_t val)
 {
     COMAC_MUTEX_LOCK (_comac_atomic_mutex);
     *x = val;

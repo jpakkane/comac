@@ -92,10 +92,11 @@
 #undef Cursor
 #endif
 
-#define surface_has_type(surface,type) (comac_surface_get_type (surface) == (type))
+#define surface_has_type(surface, type)                                        \
+    (comac_surface_get_type (surface) == (type))
 
-typedef comac_test_status_t (* surface_test_func_t) (comac_surface_t *surface);
-typedef comac_test_status_t (* context_test_func_t) (comac_t *cr);
+typedef comac_test_status_t (*surface_test_func_t) (comac_surface_t *surface);
+typedef comac_test_status_t (*context_test_func_t) (comac_t *cr);
 
 static comac_test_status_t
 test_comac_reference (comac_t *cr)
@@ -110,7 +111,7 @@ test_comac_get_reference_count (comac_t *cr)
 {
     unsigned int refcount = comac_get_reference_count (cr);
     if (refcount > 0)
-        return COMAC_TEST_SUCCESS;
+	return COMAC_TEST_SUCCESS;
     /* inert error context have a refcount of 0 */
     return comac_status (cr) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
 }
@@ -123,12 +124,12 @@ test_comac_set_user_data (comac_t *cr)
 
     status = comac_set_user_data (cr, &key, &key, NULL);
     if (status == COMAC_STATUS_NO_MEMORY)
-        return COMAC_TEST_NO_MEMORY;
+	return COMAC_TEST_NO_MEMORY;
     else if (status)
-        return COMAC_TEST_SUCCESS;
+	return COMAC_TEST_SUCCESS;
 
     if (comac_get_user_data (cr, &key) != &key)
-        return COMAC_TEST_ERROR;
+	return COMAC_TEST_ERROR;
 
     return COMAC_TEST_SUCCESS;
 }
@@ -153,7 +154,9 @@ test_comac_push_group (comac_t *cr)
     status = comac_pattern_status (pattern);
     comac_pattern_destroy (pattern);
 
-    return status == COMAC_STATUS_SUCCESS || status == comac_status (cr) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return status == COMAC_STATUS_SUCCESS || status == comac_status (cr)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
@@ -202,7 +205,8 @@ test_comac_set_source_rgba (comac_t *cr)
 static comac_test_status_t
 test_comac_set_source_surface (comac_t *cr)
 {
-    comac_surface_t *surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
+    comac_surface_t *surface =
+	comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
     comac_set_source_surface (cr, surface, 0, 0);
     comac_surface_destroy (surface);
 
@@ -646,7 +650,10 @@ test_comac_copy_clip_rectangle_list (comac_t *cr)
 static comac_test_status_t
 test_comac_select_font_face (comac_t *cr)
 {
-    comac_select_font_face (cr, "Arial", COMAC_FONT_SLANT_ITALIC, COMAC_FONT_WEIGHT_BOLD);
+    comac_select_font_face (cr,
+			    "Arial",
+			    COMAC_FONT_SLANT_ITALIC,
+			    COMAC_FONT_WEIGHT_BOLD);
 
     return COMAC_TEST_SUCCESS;
 }
@@ -972,7 +979,7 @@ test_comac_append_path (comac_t *cr)
 
     path.status = COMAC_STATUS_SUCCESS;
     path.data = &data[0];
-    path.num_data = ARRAY_LENGTH(data);
+    path.num_data = ARRAY_LENGTH (data);
 
     data[0].header.type = COMAC_PATH_MOVE_TO;
     data[0].header.length = 2;
@@ -990,9 +997,10 @@ static comac_test_status_t
 test_comac_surface_create_similar (comac_surface_t *surface)
 {
     comac_surface_t *similar;
-    
-    similar = comac_surface_create_similar (surface, COMAC_CONTENT_ALPHA, 100, 100);
-    
+
+    similar =
+	comac_surface_create_similar (surface, COMAC_CONTENT_ALPHA, 100, 100);
+
     comac_surface_destroy (similar);
     return COMAC_TEST_SUCCESS;
 }
@@ -1001,9 +1009,9 @@ static comac_test_status_t
 test_comac_surface_create_for_rectangle (comac_surface_t *surface)
 {
     comac_surface_t *similar;
-    
+
     similar = comac_surface_create_for_rectangle (surface, 1, 1, 8, 8);
-    
+
     comac_surface_destroy (similar);
     return COMAC_TEST_SUCCESS;
 }
@@ -1025,7 +1033,7 @@ test_comac_surface_finish (comac_surface_t *surface)
 static comac_test_status_t
 test_comac_surface_get_device (comac_surface_t *surface)
 {
-    /* comac_device_t *device = */comac_surface_get_device (surface);
+    /* comac_device_t *device = */ comac_surface_get_device (surface);
     return COMAC_TEST_SUCCESS;
 }
 
@@ -1034,22 +1042,24 @@ test_comac_surface_get_reference_count (comac_surface_t *surface)
 {
     unsigned int refcount = comac_surface_get_reference_count (surface);
     if (refcount > 0)
-        return COMAC_TEST_SUCCESS;
+	return COMAC_TEST_SUCCESS;
     /* inert error surfaces have a refcount of 0 */
-    return comac_surface_status (surface) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return comac_surface_status (surface) ? COMAC_TEST_SUCCESS
+					  : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_surface_status (comac_surface_t *surface)
 {
     comac_status_t status = comac_surface_status (surface);
-    return status < COMAC_STATUS_LAST_STATUS ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return status < COMAC_STATUS_LAST_STATUS ? COMAC_TEST_SUCCESS
+					     : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_surface_get_type (comac_surface_t *surface)
 {
-    /* comac_surface_type_t type = */comac_surface_get_type (surface);
+    /* comac_surface_type_t type = */ comac_surface_get_type (surface);
     return COMAC_TEST_SUCCESS;
 }
 
@@ -1062,9 +1072,9 @@ test_comac_surface_get_content (comac_surface_t *surface)
     case COMAC_CONTENT_COLOR:
     case COMAC_CONTENT_ALPHA:
     case COMAC_CONTENT_COLOR_ALPHA:
-        return COMAC_TEST_SUCCESS;
+	return COMAC_TEST_SUCCESS;
     default:
-        return COMAC_TEST_ERROR;
+	return COMAC_TEST_ERROR;
     }
 }
 
@@ -1076,12 +1086,12 @@ test_comac_surface_set_user_data (comac_surface_t *surface)
 
     status = comac_surface_set_user_data (surface, &key, &key, NULL);
     if (status == COMAC_STATUS_NO_MEMORY)
-        return COMAC_TEST_NO_MEMORY;
+	return COMAC_TEST_NO_MEMORY;
     else if (status)
-        return COMAC_TEST_SUCCESS;
+	return COMAC_TEST_SUCCESS;
 
     if (comac_surface_get_user_data (surface, &key) != &key)
-        return COMAC_TEST_ERROR;
+	return COMAC_TEST_ERROR;
 
     return COMAC_TEST_SUCCESS;
 }
@@ -1094,10 +1104,11 @@ test_comac_surface_set_mime_data (comac_surface_t *surface)
     comac_status_t status;
 
     status = comac_surface_set_mime_data (surface,
-                                          mimetype,
-                                          (const unsigned char *) data,
+					  mimetype,
+					  (const unsigned char *) data,
 					  strlen (data),
-                                          NULL, NULL);
+					  NULL,
+					  NULL);
     return status ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
 }
 
@@ -1119,8 +1130,8 @@ test_comac_surface_get_font_options (comac_surface_t *surface)
     comac_status_t status;
 
     options = comac_font_options_create ();
-    if (likely (!comac_font_options_status (options)))
-        comac_surface_get_font_options (surface, options);
+    if (likely (! comac_font_options_status (options)))
+	comac_surface_get_font_options (surface, options);
     status = comac_font_options_status (options);
     comac_font_options_destroy (options);
     return status ? COMAC_TEST_ERROR : COMAC_TEST_SUCCESS;
@@ -1204,35 +1215,46 @@ static comac_test_status_t
 test_comac_image_surface_get_data (comac_surface_t *surface)
 {
     unsigned char *data = comac_image_surface_get_data (surface);
-    return data == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return data == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_image_surface_get_format (comac_surface_t *surface)
 {
     comac_format_t format = comac_image_surface_get_format (surface);
-    return format == COMAC_FORMAT_INVALID || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return format == COMAC_FORMAT_INVALID ||
+		   surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_image_surface_get_width (comac_surface_t *surface)
 {
     unsigned int width = comac_image_surface_get_width (surface);
-    return width == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return width == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_image_surface_get_height (comac_surface_t *surface)
 {
     unsigned int height = comac_image_surface_get_height (surface);
-    return height == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return height == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_image_surface_get_stride (comac_surface_t *surface)
 {
     unsigned int stride = comac_image_surface_get_stride (surface);
-    return stride == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return stride == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_IMAGE)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 #if COMAC_HAS_PNG_FUNCTIONS
@@ -1242,13 +1264,17 @@ test_comac_surface_write_to_png (comac_surface_t *surface)
 {
     comac_status_t status;
 
-    status = comac_surface_write_to_png (surface, "/this/file/will/definitely/not/exist.png");
-    
+    status =
+	comac_surface_write_to_png (surface,
+				    "/this/file/will/definitely/not/exist.png");
+
     return status ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
 }
 
 static comac_status_t
-write_func_that_always_fails (void *closure, const unsigned char *data, unsigned int length)
+write_func_that_always_fails (void *closure,
+			      const unsigned char *data,
+			      unsigned int length)
 {
     return COMAC_STATUS_WRITE_ERROR;
 }
@@ -1259,10 +1285,11 @@ test_comac_surface_write_to_png_stream (comac_surface_t *surface)
     comac_status_t status;
 
     status = comac_surface_write_to_png_stream (surface,
-                                                write_func_that_always_fails,
-                                                NULL);
-    
-    return status && status != COMAC_STATUS_WRITE_ERROR ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+						write_func_that_always_fails,
+						NULL);
+
+    return status && status != COMAC_STATUS_WRITE_ERROR ? COMAC_TEST_SUCCESS
+							: COMAC_TEST_ERROR;
 }
 
 #endif /* COMAC_HAS_PNG_FUNCTIONS */
@@ -1273,7 +1300,8 @@ test_comac_recording_surface_ink_extents (comac_surface_t *surface)
     double x, y, w, h;
 
     comac_recording_surface_ink_extents (surface, &x, &y, &w, &h);
-    return x == 0 && y == 0 && w == 0 && h == 0 ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return x == 0 && y == 0 && w == 0 && h == 0 ? COMAC_TEST_SUCCESS
+						: COMAC_TEST_ERROR;
 }
 
 #if COMAC_HAS_TEE_SURFACE
@@ -1281,7 +1309,8 @@ test_comac_recording_surface_ink_extents (comac_surface_t *surface)
 static comac_test_status_t
 test_comac_tee_surface_add (comac_surface_t *surface)
 {
-    comac_surface_t *image = comac_image_surface_create (COMAC_FORMAT_A8, 10, 10);
+    comac_surface_t *image =
+	comac_image_surface_create (COMAC_FORMAT_A8, 10, 10);
 
     comac_tee_surface_add (surface, image);
     comac_surface_destroy (image);
@@ -1291,7 +1320,8 @@ test_comac_tee_surface_add (comac_surface_t *surface)
 static comac_test_status_t
 test_comac_tee_surface_remove (comac_surface_t *surface)
 {
-    comac_surface_t *image = comac_image_surface_create (COMAC_FORMAT_A8, 10, 10);
+    comac_surface_t *image =
+	comac_image_surface_create (COMAC_FORMAT_A8, 10, 10);
 
     comac_tee_surface_remove (surface, image);
     comac_surface_destroy (image);
@@ -1325,14 +1355,18 @@ static comac_test_status_t
 test_comac_gl_surface_get_width (comac_surface_t *surface)
 {
     unsigned int width = comac_gl_surface_get_width (surface);
-    return width == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_GL) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return width == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_GL)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_gl_surface_get_height (comac_surface_t *surface)
 {
     unsigned int height = comac_gl_surface_get_height (surface);
-    return height == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_GL) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return height == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_GL)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
@@ -1421,7 +1455,10 @@ static comac_test_status_t
 test_comac_quartz_surface_get_cg_context (comac_surface_t *surface)
 {
     CGContextRef context = comac_quartz_surface_get_cg_context (surface);
-    return context == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_QUARTZ) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return context == NULL ||
+		   surface_has_type (surface, COMAC_SURFACE_TYPE_QUARTZ)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 #endif /* COMAC_HAS_QUARTZ_SURFACE */
@@ -1475,54 +1512,72 @@ static comac_test_status_t
 test_comac_xlib_surface_get_display (comac_surface_t *surface)
 {
     Display *display = comac_xlib_surface_get_display (surface);
-    return display == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return display == NULL ||
+		   surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_xlib_surface_get_screen (comac_surface_t *surface)
 {
     Screen *screen = comac_xlib_surface_get_screen (surface);
-    return screen == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return screen == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_xlib_surface_get_visual (comac_surface_t *surface)
 {
     Visual *visual = comac_xlib_surface_get_visual (surface);
-    return visual == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return visual == NULL || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_xlib_surface_get_drawable (comac_surface_t *surface)
 {
     Drawable drawable = comac_xlib_surface_get_drawable (surface);
-    return drawable == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return drawable == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_xlib_surface_get_depth (comac_surface_t *surface)
 {
     int depth = comac_xlib_surface_get_depth (surface);
-    return depth == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return depth == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_xlib_surface_get_width (comac_surface_t *surface)
 {
     int width = comac_xlib_surface_get_width (surface);
-    return width == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return width == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 static comac_test_status_t
 test_comac_xlib_surface_get_height (comac_surface_t *surface)
 {
     int height = comac_xlib_surface_get_height (surface);
-    return height == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB) ? COMAC_TEST_SUCCESS : COMAC_TEST_ERROR;
+    return height == 0 || surface_has_type (surface, COMAC_SURFACE_TYPE_XLIB)
+	       ? COMAC_TEST_SUCCESS
+	       : COMAC_TEST_ERROR;
 }
 
 #endif
 
-#define TEST(name) { #name, test_ ## name }
+#define TEST(name)                                                             \
+    {                                                                          \
+#name, test_##name                                                     \
+    }
 
 struct {
     const char *name;
@@ -1629,7 +1684,10 @@ struct {
 
 #undef TEST
 
-#define TEST(name, surface_type, sets_status) { #name, test_ ## name, surface_type, sets_status }
+#define TEST(name, surface_type, sets_status)                                  \
+    {                                                                          \
+#name, test_##name, surface_type, sets_status                          \
+    }
 
 struct {
     const char *name;
@@ -1669,7 +1727,9 @@ struct {
     TEST (comac_surface_write_to_png, -1, FALSE),
     TEST (comac_surface_write_to_png_stream, -1, FALSE),
 #endif
-    TEST (comac_recording_surface_ink_extents, COMAC_SURFACE_TYPE_RECORDING, FALSE),
+    TEST (comac_recording_surface_ink_extents,
+	  COMAC_SURFACE_TYPE_RECORDING,
+	  FALSE),
 #if COMAC_HAS_TEE_SURFACE
     TEST (comac_tee_surface_add, COMAC_SURFACE_TYPE_TEE, TRUE),
     TEST (comac_tee_surface_remove, COMAC_SURFACE_TYPE_TEE, TRUE),
@@ -1695,7 +1755,8 @@ struct {
     TEST (comac_ps_surface_dsc_begin_page_setup, COMAC_SURFACE_TYPE_PS, TRUE),
 #endif
 #if COMAC_HAS_QUARTZ_SURFACE
-    TEST (comac_quartz_surface_get_cg_context, COMAC_SURFACE_TYPE_QUARTZ, FALSE),
+    TEST (
+	comac_quartz_surface_get_cg_context, COMAC_SURFACE_TYPE_QUARTZ, FALSE),
 #endif
 #if COMAC_HAS_SVG_SURFACE
     TEST (comac_svg_surface_restrict_to_version, COMAC_SURFACE_TYPE_SVG, TRUE),
@@ -1728,95 +1789,112 @@ preamble (comac_test_context_t *ctx)
 
     /* Test an error surface */
     for (i = 0; i < ARRAY_LENGTH (surface_tests); i++) {
-        surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, INT_MAX, INT_MAX);
-        status_before = comac_surface_status (surface);
-        assert (status_before);
+	surface =
+	    comac_image_surface_create (COMAC_FORMAT_ARGB32, INT_MAX, INT_MAX);
+	status_before = comac_surface_status (surface);
+	assert (status_before);
 
-        test_status = surface_tests[i].func (surface);
+	test_status = surface_tests[i].func (surface);
 
-        status_after = comac_surface_status (surface);
-        comac_surface_destroy (surface);
+	status_after = comac_surface_status (surface);
+	comac_surface_destroy (surface);
 
-        if (test_status != COMAC_TEST_SUCCESS) {
-            comac_test_log (ctx,
-                            "Failed test %s with %d\n",
-                            surface_tests[i].name, (int) test_status);
-            return test_status;
-        }
+	if (test_status != COMAC_TEST_SUCCESS) {
+	    comac_test_log (ctx,
+			    "Failed test %s with %d\n",
+			    surface_tests[i].name,
+			    (int) test_status);
+	    return test_status;
+	}
 
-        if (status_before != status_after) {
-            comac_test_log (ctx,
-                            "Failed test %s: Modified surface status from %u (%s) to %u (%s)\n",
-                            surface_tests[i].name,
-                            status_before, comac_status_to_string (status_before),
-                            status_after, comac_status_to_string (status_after));
-            return COMAC_TEST_ERROR;
-        }
+	if (status_before != status_after) {
+	    comac_test_log (ctx,
+			    "Failed test %s: Modified surface status from %u "
+			    "(%s) to %u (%s)\n",
+			    surface_tests[i].name,
+			    status_before,
+			    comac_status_to_string (status_before),
+			    status_after,
+			    comac_status_to_string (status_after));
+	    return COMAC_TEST_ERROR;
+	}
     }
 
     /* Test an error context */
     for (i = 0; i < ARRAY_LENGTH (context_tests); i++) {
-        cr = comac_create (NULL);
-        status_before = comac_status (cr);
-        assert (status_before);
+	cr = comac_create (NULL);
+	status_before = comac_status (cr);
+	assert (status_before);
 
-        test_status = context_tests[i].func (cr);
+	test_status = context_tests[i].func (cr);
 
-        status_after = comac_status (cr);
-        comac_destroy (cr);
+	status_after = comac_status (cr);
+	comac_destroy (cr);
 
-        if (test_status != COMAC_TEST_SUCCESS) {
-            comac_test_log (ctx,
-                            "Failed test %s with %d\n",
-                            context_tests[i].name, (int) test_status);
-            return test_status;
-        }
+	if (test_status != COMAC_TEST_SUCCESS) {
+	    comac_test_log (ctx,
+			    "Failed test %s with %d\n",
+			    context_tests[i].name,
+			    (int) test_status);
+	    return test_status;
+	}
 
-        if (status_before != status_after) {
-            comac_test_log (ctx,
-                            "Failed test %s: Modified context status from %u (%s) to %u (%s)\n",
-                            context_tests[i].name,
-                            status_before, comac_status_to_string (status_before),
-                            status_after, comac_status_to_string (status_after));
-            return COMAC_TEST_ERROR;
-        }
+	if (status_before != status_after) {
+	    comac_test_log (ctx,
+			    "Failed test %s: Modified context status from %u "
+			    "(%s) to %u (%s)\n",
+			    context_tests[i].name,
+			    status_before,
+			    comac_status_to_string (status_before),
+			    status_after,
+			    comac_status_to_string (status_after));
+	    return COMAC_TEST_ERROR;
+	}
     }
 
     /* Test a context for an error surface */
     for (i = 0; i < ARRAY_LENGTH (context_tests); i++) {
-        surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, INT_MAX, INT_MAX);
-        cr = comac_create (surface);
-        comac_surface_destroy (surface);
-        status_before = comac_status (cr);
-        assert (status_before);
+	surface =
+	    comac_image_surface_create (COMAC_FORMAT_ARGB32, INT_MAX, INT_MAX);
+	cr = comac_create (surface);
+	comac_surface_destroy (surface);
+	status_before = comac_status (cr);
+	assert (status_before);
 
-        test_status = context_tests[i].func (cr);
+	test_status = context_tests[i].func (cr);
 
-        status_after = comac_status (cr);
-        comac_destroy (cr);
+	status_after = comac_status (cr);
+	comac_destroy (cr);
 
-        if (test_status != COMAC_TEST_SUCCESS) {
-            comac_test_log (ctx,
-                            "Failed test %s with %d\n",
-                            context_tests[i].name, (int) test_status);
-            return test_status;
-        }
+	if (test_status != COMAC_TEST_SUCCESS) {
+	    comac_test_log (ctx,
+			    "Failed test %s with %d\n",
+			    context_tests[i].name,
+			    (int) test_status);
+	    return test_status;
+	}
 
-        if (status_before != status_after) {
-            comac_test_log (ctx,
-                            "Failed test %s: Modified context status from %u (%s) to %u (%s)\n",
-                            context_tests[i].name,
-                            status_before, comac_status_to_string (status_before),
-                            status_after, comac_status_to_string (status_after));
-            return COMAC_TEST_ERROR;
-        }
+	if (status_before != status_after) {
+	    comac_test_log (ctx,
+			    "Failed test %s: Modified context status from %u "
+			    "(%s) to %u (%s)\n",
+			    context_tests[i].name,
+			    status_before,
+			    comac_status_to_string (status_before),
+			    status_after,
+			    comac_status_to_string (status_after));
+	    return COMAC_TEST_ERROR;
+	}
     }
 
     return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
-test_context (const comac_test_context_t *ctx, comac_t *cr, const char *name, unsigned int i)
+test_context (const comac_test_context_t *ctx,
+	      comac_t *cr,
+	      const char *name,
+	      unsigned int i)
 {
     comac_test_status_t test_status;
     comac_status_t status_before, status_after;
@@ -1829,19 +1907,26 @@ test_context (const comac_test_context_t *ctx, comac_t *cr, const char *name, un
     status_after = comac_status (cr);
 
     if (test_status != COMAC_TEST_SUCCESS) {
-        comac_test_log (ctx,
-                        "Failed test %s on %s with %d\n",
-                        context_tests[i].name, name, (int) test_status);
-        return test_status;
+	comac_test_log (ctx,
+			"Failed test %s on %s with %d\n",
+			context_tests[i].name,
+			name,
+			(int) test_status);
+	return test_status;
     }
 
-    if (status_after != COMAC_STATUS_SURFACE_FINISHED && status_before != status_after) {
-        comac_test_log (ctx,
-                        "Failed test %s on %s: Modified context status from %u (%s) to %u (%s)\n",
-                        context_tests[i].name, name,
-                        status_before, comac_status_to_string (status_before),
-                        status_after, comac_status_to_string (status_after));
-        return COMAC_TEST_ERROR;
+    if (status_after != COMAC_STATUS_SURFACE_FINISHED &&
+	status_before != status_after) {
+	comac_test_log (ctx,
+			"Failed test %s on %s: Modified context status from %u "
+			"(%s) to %u (%s)\n",
+			context_tests[i].name,
+			name,
+			status_before,
+			comac_status_to_string (status_before),
+			status_after,
+			comac_status_to_string (status_after));
+	return COMAC_TEST_ERROR;
     }
 
     return COMAC_TEST_SUCCESS;
@@ -1861,112 +1946,132 @@ draw (comac_t *cr, int width, int height)
 
     /* Test a finished similar surface */
     for (i = 0; i < ARRAY_LENGTH (surface_tests); i++) {
-        similar = comac_surface_create_similar (target,
-                                                comac_surface_get_content (target),
-                                                10, 10);
-        comac_surface_finish (similar);
-        test_status = surface_tests[i].func (similar);
-        status = comac_surface_status (similar);
-        comac_surface_destroy (similar);
+	similar =
+	    comac_surface_create_similar (target,
+					  comac_surface_get_content (target),
+					  10,
+					  10);
+	comac_surface_finish (similar);
+	test_status = surface_tests[i].func (similar);
+	status = comac_surface_status (similar);
+	comac_surface_destroy (similar);
 
-        if (test_status != COMAC_TEST_SUCCESS) {
-            comac_test_log (ctx,
-                            "Failed test %s with %d\n",
-                            surface_tests[i].name, (int) test_status);
-            return test_status;
-        }
+	if (test_status != COMAC_TEST_SUCCESS) {
+	    comac_test_log (ctx,
+			    "Failed test %s with %d\n",
+			    surface_tests[i].name,
+			    (int) test_status);
+	    return test_status;
+	}
 
-        if (surface_tests[i].modifies_surface &&
-            strcmp (surface_tests[i].name, "comac_surface_finish") &&
-            strcmp (surface_tests[i].name, "comac_surface_flush") &&
-            status != COMAC_STATUS_SURFACE_FINISHED) {
-            comac_test_log (ctx,
-                            "Failed test %s: Finished surface not set into error state\n",
-                            surface_tests[i].name);
-            return COMAC_TEST_ERROR;
-        }
+	if (surface_tests[i].modifies_surface &&
+	    strcmp (surface_tests[i].name, "comac_surface_finish") &&
+	    strcmp (surface_tests[i].name, "comac_surface_flush") &&
+	    status != COMAC_STATUS_SURFACE_FINISHED) {
+	    comac_test_log (
+		ctx,
+		"Failed test %s: Finished surface not set into error state\n",
+		surface_tests[i].name);
+	    return COMAC_TEST_ERROR;
+	}
     }
 
     /* Test a context for a finished similar surface */
     for (i = 0; i < ARRAY_LENGTH (context_tests); i++) {
-        similar = comac_surface_create_similar (target,
-                                                comac_surface_get_content (target),
-                                                10, 10);
-        comac_surface_finish (similar);
-        cr2 = comac_create (similar);
-        test_status = test_context (ctx, cr2, "finished surface", i);
-        comac_surface_destroy (similar);
-        comac_destroy (cr2);
+	similar =
+	    comac_surface_create_similar (target,
+					  comac_surface_get_content (target),
+					  10,
+					  10);
+	comac_surface_finish (similar);
+	cr2 = comac_create (similar);
+	test_status = test_context (ctx, cr2, "finished surface", i);
+	comac_surface_destroy (similar);
+	comac_destroy (cr2);
 
-        if (test_status != COMAC_TEST_SUCCESS)
-            return test_status;
+	if (test_status != COMAC_TEST_SUCCESS)
+	    return test_status;
     }
 
     /* Test a context for a similar surface finished later */
     for (i = 0; i < ARRAY_LENGTH (context_tests); i++) {
-        similar = comac_surface_create_similar (target,
-                                                comac_surface_get_content (target),
-                                                10, 10);
-        cr2 = comac_create (similar);
-        comac_surface_finish (similar);
-        test_status = test_context (ctx, cr2, "finished surface after create", i);
-        comac_surface_destroy (similar);
-        comac_destroy (cr2);
+	similar =
+	    comac_surface_create_similar (target,
+					  comac_surface_get_content (target),
+					  10,
+					  10);
+	cr2 = comac_create (similar);
+	comac_surface_finish (similar);
+	test_status =
+	    test_context (ctx, cr2, "finished surface after create", i);
+	comac_surface_destroy (similar);
+	comac_destroy (cr2);
 
-        if (test_status != COMAC_TEST_SUCCESS)
-            return test_status;
+	if (test_status != COMAC_TEST_SUCCESS)
+	    return test_status;
     }
 
     /* Test a context for a similar surface finished later with a path */
     for (i = 0; i < ARRAY_LENGTH (context_tests); i++) {
-        similar = comac_surface_create_similar (target,
-                                                comac_surface_get_content (target),
-                                                10, 10);
-        cr2 = comac_create (similar);
-        comac_rectangle (cr2, 2, 2, 4, 4);
-        comac_surface_finish (similar);
-        test_status = test_context (ctx, cr2, "finished surface with path", i);
-        comac_surface_destroy (similar);
-        comac_destroy (cr2);
+	similar =
+	    comac_surface_create_similar (target,
+					  comac_surface_get_content (target),
+					  10,
+					  10);
+	cr2 = comac_create (similar);
+	comac_rectangle (cr2, 2, 2, 4, 4);
+	comac_surface_finish (similar);
+	test_status = test_context (ctx, cr2, "finished surface with path", i);
+	comac_surface_destroy (similar);
+	comac_destroy (cr2);
 
-        if (test_status != COMAC_TEST_SUCCESS)
-            return test_status;
+	if (test_status != COMAC_TEST_SUCCESS)
+	    return test_status;
     }
 
     /* Test a normal surface for functions that have the wrong type */
     for (i = 0; i < ARRAY_LENGTH (surface_tests); i++) {
-        comac_status_t desired_status;
+	comac_status_t desired_status;
 
-        if (surface_tests[i].surface_type == -1)
-            continue;
-        similar = comac_surface_create_similar (target,
-                                                comac_surface_get_content (target),
-                                                10, 10);
-        if (comac_surface_get_type (similar) == (comac_surface_type_t) surface_tests[i].surface_type) {
-            comac_surface_destroy (similar);
-            continue;
-        }
+	if (surface_tests[i].surface_type == -1)
+	    continue;
+	similar =
+	    comac_surface_create_similar (target,
+					  comac_surface_get_content (target),
+					  10,
+					  10);
+	if (comac_surface_get_type (similar) ==
+	    (comac_surface_type_t) surface_tests[i].surface_type) {
+	    comac_surface_destroy (similar);
+	    continue;
+	}
 
-        test_status = surface_tests[i].func (similar);
-        status = comac_surface_status (similar);
-        comac_surface_destroy (similar);
+	test_status = surface_tests[i].func (similar);
+	status = comac_surface_status (similar);
+	comac_surface_destroy (similar);
 
-        if (test_status != COMAC_TEST_SUCCESS) {
-            comac_test_log (ctx,
-                            "Failed test %s with %d\n",
-                            surface_tests[i].name, (int) test_status);
-            return test_status;
-        }
+	if (test_status != COMAC_TEST_SUCCESS) {
+	    comac_test_log (ctx,
+			    "Failed test %s with %d\n",
+			    surface_tests[i].name,
+			    (int) test_status);
+	    return test_status;
+	}
 
-        desired_status = surface_tests[i].modifies_surface ? COMAC_STATUS_SURFACE_TYPE_MISMATCH : COMAC_STATUS_SUCCESS;
-        if (status != desired_status) {
-            comac_test_log (ctx,
-                            "Failed test %s: Surface status should be %u (%s), but is %u (%s)\n",
-                            surface_tests[i].name,
-                            desired_status, comac_status_to_string (desired_status),
-                            status, comac_status_to_string (status));
-            return COMAC_TEST_ERROR;
-        }
+	desired_status = surface_tests[i].modifies_surface
+			     ? COMAC_STATUS_SURFACE_TYPE_MISMATCH
+			     : COMAC_STATUS_SUCCESS;
+	if (status != desired_status) {
+	    comac_test_log (ctx,
+			    "Failed test %s: Surface status should be %u (%s), "
+			    "but is %u (%s)\n",
+			    surface_tests[i].name,
+			    desired_status,
+			    comac_status_to_string (desired_status),
+			    status,
+			    comac_status_to_string (status));
+	    return COMAC_TEST_ERROR;
+	}
     }
 
     /* 565-compatible gray background */
@@ -1979,6 +2084,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (api_special_cases,
 	    "Check surface functions properly handle wrong surface arguments",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    10, 10,
-	    preamble, draw)
+	    NULL,  /* requirements */
+	    10,
+	    10,
+	    preamble,
+	    draw)

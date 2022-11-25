@@ -34,30 +34,30 @@ draw (comac_t *cr, int width, int height)
     comac_matrix_t identity;
     comac_matrix_t zero;
 
-    comac_matrix_init_identity(&identity);
+    comac_matrix_init_identity (&identity);
 
     zero = identity;
-    comac_matrix_scale(&zero, 0, 0);
+    comac_matrix_scale (&zero, 0, 0);
 
     font_face = comac_get_font_face (cr);
     font_options = comac_font_options_create ();
     comac_get_font_options (cr, font_options);
-    scaled_font = comac_scaled_font_create (font_face,
-	    &identity,
-	    &zero,
-	    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &identity, &zero, font_options);
     comac_set_scaled_font (cr, scaled_font);
     comac_show_text (cr, "Hello");
     comac_scaled_font_destroy (scaled_font);
     comac_font_options_destroy (font_options);
 
     return comac_test_status_from_status (comac_test_get_context (cr),
-                                          comac_status(cr));
+					  comac_status (cr));
 }
 
 COMAC_TEST (scaled_font_zero_matrix,
 	    "Test that scaled fonts with a degenerate matrix work",
 	    "zero, matrix, degenerate, scaled-font", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,				     /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

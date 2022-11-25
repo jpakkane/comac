@@ -55,7 +55,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
     comac_rectangle (cr, 0, 0, SIZE, SIZE);
     comac_rectangle (cr, 0, 0, SIZE, SIZE);
-    comac_rectangle (cr, SIZE/2 - 20, SIZE/2 - 20, 40, 40);
+    comac_rectangle (cr, SIZE / 2 - 20, SIZE / 2 - 20, 40, 40);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -64,6 +64,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (big_little_box,
 	    "Tests that we tighten the bounds after tessellation.",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

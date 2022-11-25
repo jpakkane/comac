@@ -27,7 +27,7 @@
 
 #include "config.h"
 
-#define _GETDELIM 1/* for getline() on AIX */
+#define _GETDELIM 1 /* for getline() on AIX */
 
 #include "comac-perf.h"
 #include "comac-missing.h"
@@ -48,9 +48,7 @@
 #ifdef _MSC_VER
 #if _MSC_VER < 1800
 static long long
-strtoll (const char  *nptr,
-	 char	    **endptr,
-	 int	      base);
+strtoll (const char *nptr, char **endptr, int base);
 #endif
 
 static char *
@@ -60,62 +58,66 @@ basename (char *path);
 /* Ad-hoc parsing, macros with a strong dependence on the calling
  * context, and plenty of other ugliness is here.  But at least it's
  * not perl... */
-#define parse_error(...) fprintf(stderr, __VA_ARGS__); return TEST_REPORT_STATUS_ERROR;
-#define skip_char(c)							\
-do {									\
-    if (*s && *s == (c)) {						\
-	s++;								\
-    } else {								\
-	 parse_error ("expected '%c' but found '%c'", c, *s);		\
-    }									\
-} while (0)
-#define skip_space() while (*s && (*s == ' ' || *s == '\t')) s++;
-#define parse_int(result)						\
-do {									\
-    (result) = strtol (s, &end, 10);					\
-    if (*s && end != s) {						\
-	s = end;							\
-    } else {								\
-	parse_error("expected integer but found %s", s);		\
-    }									\
-} while (0)
-#define parse_long_long(result) 					\
-do {									\
-    (result) = strtoll (s, &end, 10);					\
-    if (*s && end != s) {						\
-	s = end;							\
-    } else {								\
-	parse_error("expected integer but found %s", s);		\
-    }									\
-} while (0)
-#define parse_double(result)						\
-do {									\
-    (result) = strtod (s, &end);					\
-    if (*s && end != s) {						\
-	s = end;							\
-    } else {								\
-	parse_error("expected floating-point value but found %s", s);	\
-    }									\
-} while (0)
+#define parse_error(...)                                                       \
+    fprintf (stderr, __VA_ARGS__);                                             \
+    return TEST_REPORT_STATUS_ERROR;
+#define skip_char(c)                                                           \
+    do {                                                                       \
+	if (*s && *s == (c)) {                                                 \
+	    s++;                                                               \
+	} else {                                                               \
+	    parse_error ("expected '%c' but found '%c'", c, *s);               \
+	}                                                                      \
+    } while (0)
+#define skip_space()                                                           \
+    while (*s && (*s == ' ' || *s == '\t'))                                    \
+	s++;
+#define parse_int(result)                                                      \
+    do {                                                                       \
+	(result) = strtol (s, &end, 10);                                       \
+	if (*s && end != s) {                                                  \
+	    s = end;                                                           \
+	} else {                                                               \
+	    parse_error ("expected integer but found %s", s);                  \
+	}                                                                      \
+    } while (0)
+#define parse_long_long(result)                                                \
+    do {                                                                       \
+	(result) = strtoll (s, &end, 10);                                      \
+	if (*s && end != s) {                                                  \
+	    s = end;                                                           \
+	} else {                                                               \
+	    parse_error ("expected integer but found %s", s);                  \
+	}                                                                      \
+    } while (0)
+#define parse_double(result)                                                   \
+    do {                                                                       \
+	(result) = strtod (s, &end);                                           \
+	if (*s && end != s) {                                                  \
+	    s = end;                                                           \
+	} else {                                                               \
+	    parse_error ("expected floating-point value but found %s", s);     \
+	}                                                                      \
+    } while (0)
 /* Here a string is simply a sequence of non-whitespace */
-#define parse_string(result)						\
-do {									\
-    for (end = s; *end; end++)						\
-	if (_comac_isspace (*end))					\
-	    break;							\
-    (result) = strndup (s, end - s);					\
-    if ((result) == NULL) {						\
-	fprintf (stderr, "Out of memory.\n");				\
-	exit (1);							\
-    }									\
-    s = end;								\
-} while (0)
+#define parse_string(result)                                                   \
+    do {                                                                       \
+	for (end = s; *end; end++)                                             \
+	    if (_comac_isspace (*end))                                         \
+		break;                                                         \
+	(result) = strndup (s, end - s);                                       \
+	if ((result) == NULL) {                                                \
+	    fprintf (stderr, "Out of memory.\n");                              \
+	    exit (1);                                                          \
+	}                                                                      \
+	s = end;                                                               \
+    } while (0)
 
 static test_report_status_t
 test_report_parse (test_report_t *report,
 		   int fileno,
-		   char 	 *line,
-		   char 	 *configuration)
+		   char *line,
+		   char *configuration)
 {
     char *end;
     char *s = line;
@@ -168,20 +170,22 @@ test_report_parse (test_report_t *report,
 	skip_space ();
 
 	report->samples_size = 5;
-	report->samples = xmalloc (report->samples_size * sizeof (comac_time_t));
+	report->samples =
+	    xmalloc (report->samples_size * sizeof (comac_time_t));
 	report->stats.min_ticks = 0;
 	do {
 	    if (report->samples_count == report->samples_size) {
 		report->samples_size *= 2;
-		report->samples = xrealloc (report->samples,
-					    report->samples_size * sizeof (comac_time_t));
+		report->samples =
+		    xrealloc (report->samples,
+			      report->samples_size * sizeof (comac_time_t));
 	    }
 	    parse_long_long (report->samples[report->samples_count]);
 	    if (report->samples_count == 0) {
 		report->stats.min_ticks =
 		    report->samples[report->samples_count];
 	    } else if (report->stats.min_ticks >
-		       report->samples[report->samples_count]){
+		       report->samples[report->samples_count]) {
 		report->stats.min_ticks =
 		    report->samples[report->samples_count];
 	    }
@@ -189,7 +193,8 @@ test_report_parse (test_report_t *report,
 	    skip_space ();
 	} while (*s && *s != '\n');
 	report->stats.iterations = 0;
-	if (*s) skip_char ('\n');
+	if (*s)
+	    skip_char ('\n');
     } else {
 	parse_double (report->stats.min_ticks);
 	skip_space ();
@@ -227,11 +232,9 @@ test_report_parse (test_report_t *report,
 
 #if _MSC_VER < 1800
 long long
-strtoll (const char  *nptr,
-	 char	    **endptr,
-	 int	      base)
+strtoll (const char *nptr, char **endptr, int base)
 {
-    return _atoi64(nptr);
+    return _atoi64 (nptr);
 }
 #endif
 
@@ -240,18 +243,18 @@ basename (char *path)
 {
     char *end, *s;
 
-    end = (path + strlen(path) - 1);
+    end = (path + strlen (path) - 1);
     while (end && (end >= path + 1) && (*end == '/')) {
 	*end = '\0';
 	end--;
     }
 
-    s = strrchr(path, '/');
+    s = strrchr (path, '/');
     if (s) {
 	if (s == end) {
 	    return s;
 	} else {
-	    return s+1;
+	    return s + 1;
 	}
     } else {
 	return path;
@@ -260,8 +263,7 @@ basename (char *path)
 #endif /* ifndef _MSC_VER */
 
 int
-test_report_cmp_backend_then_name (const void *a,
-				   const void *b)
+test_report_cmp_backend_then_name (const void *a, const void *b)
 {
     const test_report_t *a_test = a;
     const test_report_t *b_test = b;
@@ -298,8 +300,7 @@ test_report_cmp_backend_then_name (const void *a,
 }
 
 int
-test_report_cmp_name (const void *a,
-		      const void *b)
+test_report_cmp_name (const void *a, const void *b)
 {
     const test_report_t *a_test = a;
     const test_report_t *b_test = b;
@@ -329,7 +330,8 @@ test_report_cmp_name (const void *a,
 
 void
 comac_perf_report_sort_and_compute_stats (comac_perf_report_t *report,
-					  int (*cmp) (const void*, const void*))
+					  int (*cmp) (const void *,
+						      const void *))
 {
     test_report_t *base, *next, *last, *t;
 
@@ -346,11 +348,10 @@ comac_perf_report_sort_and_compute_stats (comac_perf_report_t *report,
     base = &report->tests[0];
     last = &report->tests[report->tests_count - 1];
     while (base <= last) {
-	next = base+1;
+	next = base + 1;
 	if (next <= last) {
 	    while (next <= last &&
-		   test_report_cmp_backend_then_name (base, next) == 0)
-	    {
+		   test_report_cmp_backend_then_name (base, next) == 0) {
 		next++;
 	    }
 	    if (next != base) {
@@ -359,25 +360,30 @@ comac_perf_report_sort_and_compute_stats (comac_perf_report_t *report,
 		    new_samples_count += t->samples_count;
 		if (new_samples_count > base->samples_size) {
 		    base->samples_size = new_samples_count;
-		    base->samples = xrealloc (base->samples,
-					      base->samples_size * sizeof (comac_time_t));
+		    base->samples =
+			xrealloc (base->samples,
+				  base->samples_size * sizeof (comac_time_t));
 		}
 		for (t = base + 1; t < next; t++) {
-		    memcpy (&base->samples[base->samples_count], t->samples,
+		    memcpy (&base->samples[base->samples_count],
+			    t->samples,
 			    t->samples_count * sizeof (comac_time_t));
 		    base->samples_count += t->samples_count;
 		}
 	    }
 	}
 	if (base->samples)
-	    _comac_stats_compute (&base->stats, base->samples, base->samples_count);
+	    _comac_stats_compute (&base->stats,
+				  base->samples,
+				  base->samples_count);
 	base = next;
     }
 }
 
 void
 comac_perf_report_load (comac_perf_report_t *report,
-			const char *filename, int id,
+			const char *filename,
+			int id,
 			int (*cmp) (const void *, const void *))
 {
     FILE *file;
@@ -414,8 +420,10 @@ comac_perf_report_load (comac_perf_report_t *report,
     } else {
 	file = fopen (filename, "r");
 	if (file == NULL) {
-	    fprintf (stderr, "Failed to open %s: %s\n",
-		     filename, strerror (errno));
+	    fprintf (stderr,
+		     "Failed to open %s: %s\n",
+		     filename,
+		     strerror (errno));
 	    exit (1);
 	}
     }
@@ -423,8 +431,9 @@ comac_perf_report_load (comac_perf_report_t *report,
     while (1) {
 	if (report->tests_count == report->tests_size) {
 	    report->tests_size *= 2;
-	    report->tests = xrealloc (report->tests,
-				      report->tests_size * sizeof (test_report_t));
+	    report->tests =
+		xrealloc (report->tests,
+			  report->tests_size * sizeof (test_report_t));
 	}
 
 	line_number++;
@@ -432,10 +441,15 @@ comac_perf_report_load (comac_perf_report_t *report,
 	    break;
 
 	status = test_report_parse (&report->tests[report->tests_count],
-				    id, line, report->configuration);
+				    id,
+				    line,
+				    report->configuration);
 	if (status == TEST_REPORT_STATUS_ERROR)
-	    fprintf (stderr, "Ignoring unrecognized line %d of %s:\n%s",
-		     line_number, filename, line);
+	    fprintf (stderr,
+		     "Ignoring unrecognized line %d of %s:\n%s",
+		     line_number,
+		     filename,
+		     line);
 	if (status == TEST_REPORT_STATUS_SUCCESS)
 	    report->tests_count++;
 	/* Do nothing on TEST_REPORT_STATUS_COMMENT */

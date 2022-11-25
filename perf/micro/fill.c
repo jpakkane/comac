@@ -28,10 +28,7 @@
 static comac_time_t
 do_fill (comac_t *cr, int width, int height, int loops)
 {
-    comac_arc (cr,
-	       width/2.0, height/2.0,
-	       width/3.0,
-	       0, 2 * M_PI);
+    comac_arc (cr, width / 2.0, height / 2.0, width / 3.0, 0, 2 * M_PI);
 
     comac_perf_timer_start ();
 
@@ -49,28 +46,26 @@ static comac_time_t
 do_fill_annuli (comac_t *cr, int width, int height, int loops)
 {
     comac_new_sub_path (cr);
-    comac_arc (cr,
-	       width/2.0, height/2.0,
-	       width/3.0,
-	       0, 2 * M_PI);
+    comac_arc (cr, width / 2.0, height / 2.0, width / 3.0, 0, 2 * M_PI);
 
     comac_new_sub_path (cr);
     comac_arc_negative (cr,
-	       width/2.0, height/2.0,
-	       width/4.0,
-	       2 * M_PI, 0);
+			width / 2.0,
+			height / 2.0,
+			width / 4.0,
+			2 * M_PI,
+			0);
 
     comac_new_sub_path (cr);
-    comac_arc (cr,
-	       width/2.0, height/2.0,
-	       width/6.0,
-	       0, 2 * M_PI);
+    comac_arc (cr, width / 2.0, height / 2.0, width / 6.0, 0, 2 * M_PI);
 
     comac_new_sub_path (cr);
     comac_arc_negative (cr,
-	       width/2.0, height/2.0,
-	       width/8.0,
-	       2 * M_PI, 0);
+			width / 2.0,
+			height / 2.0,
+			width / 8.0,
+			2 * M_PI,
+			0);
 
     comac_perf_timer_start ();
 
@@ -90,10 +85,7 @@ do_fill_eo_noaa (comac_t *cr, int width, int height, int loops)
     comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
-    comac_arc (cr,
-	       width/2.0, height/2.0,
-	       width/3.0,
-	       0, 2 * M_PI);
+    comac_arc (cr, width / 2.0, height / 2.0, width / 3.0, 0, 2 * M_PI);
 
     comac_perf_timer_start ();
 
@@ -117,6 +109,12 @@ void
 fill (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     comac_perf_cover_sources_and_operators (perf, "fill", do_fill, NULL);
-    comac_perf_cover_sources_and_operators (perf, "fill-annuli", do_fill_annuli, NULL);
-    comac_perf_cover_sources_and_operators (perf, "fill-eo-noaa", do_fill_eo_noaa, NULL);
+    comac_perf_cover_sources_and_operators (perf,
+					    "fill-annuli",
+					    do_fill_annuli,
+					    NULL);
+    comac_perf_cover_sources_and_operators (perf,
+					    "fill-eo-noaa",
+					    do_fill_eo_noaa,
+					    NULL);
 }

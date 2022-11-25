@@ -30,17 +30,18 @@ create_pattern (comac_surface_t *target)
     comac_t *cr;
     comac_matrix_t m;
 
-    surface = comac_surface_create_similar(target,
-					   comac_surface_get_content (target),
-					   1000, 600);
+    surface = comac_surface_create_similar (target,
+					    comac_surface_get_content (target),
+					    1000,
+					    600);
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
     comac_set_source_rgb (cr, 0, 1, 0);
-    comac_paint(cr);
+    comac_paint (cr);
 
     pattern = comac_pattern_create_for_surface (comac_get_target (cr));
-    comac_destroy(cr);
+    comac_destroy (cr);
 
     comac_matrix_init_translate (&m, 0, 0.1); // y offset must be non-integer
     comac_pattern_set_matrix (pattern, &m);
@@ -61,21 +62,24 @@ draw (comac_t *cr, int width, int height)
     comac_move_to (cr, 10, 400.1);
     comac_line_to (cr, 990, 400.1);
     comac_line_to (cr, 990, 600);
-    comac_line_to (cr, 10,  600);
+    comac_line_to (cr, 10, 600);
     comac_close_path (cr);
 
     pattern = create_pattern (comac_get_target (cr));
     comac_set_source (cr, pattern);
     comac_pattern_destroy (pattern);
 
-    comac_fill(cr);
+    comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (bug_source_cu,
-	    "Exercises a bug discovered in the tracking of unbounded source extents",
-	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    1000, 600,
-	    NULL, draw)
+COMAC_TEST (
+    bug_source_cu,
+    "Exercises a bug discovered in the tracking of unbounded source extents",
+    "fill", /* keywords */
+    NULL,   /* requirements */
+    1000,
+    600,
+    NULL,
+    draw)

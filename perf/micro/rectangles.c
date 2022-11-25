@@ -48,8 +48,11 @@ do_rectangles (comac_t *cr, int width, int height, int loops)
 
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
-	    comac_rectangle (cr, rects[i].x, rects[i].y,
-			     rects[i].width, rects[i].height);
+	    comac_rectangle (cr,
+			     rects[i].x,
+			     rects[i].y,
+			     rects[i].width,
+			     rects[i].height);
 	    comac_fill (cr);
 	}
     }
@@ -68,8 +71,11 @@ do_rectangles_once (comac_t *cr, int width, int height, int loops)
 
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
-	    comac_rectangle (cr, rects[i].x, rects[i].y,
-			     rects[i].width, rects[i].height);
+	    comac_rectangle (cr,
+			     rects[i].x,
+			     rects[i].y,
+			     rects[i].width,
+			     rects[i].height);
 	}
 
 	comac_fill (cr);
@@ -107,12 +113,11 @@ rectangles (comac_perf_t *perf, comac_t *cr, int width, int height)
     int i;
 
     srand (8478232);
-    for (i = 0; i < RECTANGLE_COUNT; i++)
-    {
-        rects[i].x = rand () % width;
-        rects[i].y = rand () % height;
-        rects[i].width  = (rand () % (width / 10)) + 1;
-        rects[i].height = (rand () % (height / 10)) + 1;
+    for (i = 0; i < RECTANGLE_COUNT; i++) {
+	rects[i].x = rand () % width;
+	rects[i].y = rand () % height;
+	rects[i].width = (rand () % (width / 10)) + 1;
+	rects[i].height = (rand () % (height / 10)) + 1;
     }
 
     MODE (perf, "one-rectangle", do_rectangle, NULL);

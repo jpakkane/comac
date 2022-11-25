@@ -71,11 +71,11 @@ _comac_slope_compare (const comac_slope_t *a, const comac_slope_t *b)
      * zero vectors all compare equal, and more positive than any
      * non-zero vector.
      */
-    if (a->dx == 0 && a->dy == 0 && b->dx == 0 && b->dy ==0)
+    if (a->dx == 0 && a->dy == 0 && b->dx == 0 && b->dy == 0)
 	return 0;
     if (a->dx == 0 && a->dy == 0)
 	return 1;
-    if (b->dx == 0 && b->dy ==0)
+    if (b->dx == 0 && b->dy == 0)
 	return -1;
 
     /* Finally, we're looking at two vectors that are either equal or

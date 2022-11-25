@@ -39,22 +39,26 @@ draw (comac_t *cr, int width, int height)
     for (i = 0; i < 5; i++) {
 	comac_t *cr_region;
 	comac_text_extents_t extents;
-	char buf[2] = { text[i], '\0' };
+	char buf[2] = {text[i], '\0'};
 
-        region[i] = comac_surface_create_for_rectangle (comac_get_target (cr),
-                                                        20 * i, 0, 20, 20);
+	region[i] = comac_surface_create_for_rectangle (comac_get_target (cr),
+							20 * i,
+							0,
+							20,
+							20);
 
 	cr_region = comac_create (region[i]);
 	comac_surface_destroy (region[i]);
 
-	comac_select_font_face (cr_region, "@comac:",
+	comac_select_font_face (cr_region,
+				"@comac:",
 				COMAC_FONT_SLANT_NORMAL,
-                                COMAC_FONT_WEIGHT_NORMAL);
+				COMAC_FONT_WEIGHT_NORMAL);
 	comac_set_font_size (cr_region, 20);
 	comac_text_extents (cr_region, buf, &extents);
 	comac_move_to (cr_region,
-		       10 - (extents.width/2 + extents.x_bearing),
-		       10 - (extents.height/2 + extents.y_bearing));
+		       10 - (extents.width / 2 + extents.x_bearing),
+		       10 - (extents.height / 2 + extents.y_bearing));
 	comac_show_text (cr_region, buf);
 
 	region[i] = comac_surface_reference (comac_get_target (cr_region));
@@ -62,12 +66,12 @@ draw (comac_t *cr, int width, int height)
     }
 
     for (i = 0; i < 5; i++) {
-	comac_set_source_surface (cr, region[5-i-1], 20 * i, 20);
+	comac_set_source_surface (cr, region[5 - i - 1], 20 * i, 20);
 	comac_paint (cr);
     }
 
     for (i = 0; i < 5; i++) {
-	comac_set_source_surface (cr, region[5-i-1], 20 * i, 40);
+	comac_set_source_surface (cr, region[5 - i - 1], 20 * i, 40);
 	comac_paint_with_alpha (cr, .5);
     }
 
@@ -77,9 +81,13 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (subsurface,
-	    "Tests clipping of both source and destination using subsurfaces",
-	    "subsurface", /* keywords */
-	    "target=raster", /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
-	    100, 60,
-	    NULL, draw)
+COMAC_TEST (
+    subsurface,
+    "Tests clipping of both source and destination using subsurfaces",
+    "subsurface", /* keywords */
+    "target=raster",
+    /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
+    100,
+    60,
+    NULL,
+    draw)

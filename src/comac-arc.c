@@ -63,7 +63,7 @@
 static double
 _arc_error_normalized (double angle)
 {
-    return 2.0/27.0 * pow (sin (angle / 4), 6) / pow (cos (angle / 4), 2);
+    return 2.0 / 27.0 * pow (sin (angle / 4), 6) / pow (cos (angle / 4), 2);
 }
 
 static double
@@ -77,20 +77,21 @@ _arc_max_angle_for_tolerance_normalized (double tolerance)
 	double angle;
 	double error;
     } table[] = {
-	{ M_PI / 1.0,   0.0185185185185185036127 },
-	{ M_PI / 2.0,   0.000272567143730179811158 },
-	{ M_PI / 3.0,   2.38647043651461047433e-05 },
-	{ M_PI / 4.0,   4.2455377443222443279e-06 },
-	{ M_PI / 5.0,   1.11281001494389081528e-06 },
-	{ M_PI / 6.0,   3.72662000942734705475e-07 },
-	{ M_PI / 7.0,   1.47783685574284411325e-07 },
-	{ M_PI / 8.0,   6.63240432022601149057e-08 },
-	{ M_PI / 9.0,   3.2715520137536980553e-08 },
-	{ M_PI / 10.0,  1.73863223499021216974e-08 },
-	{ M_PI / 11.0,  9.81410988043554039085e-09 },
+	{M_PI / 1.0, 0.0185185185185185036127},
+	{M_PI / 2.0, 0.000272567143730179811158},
+	{M_PI / 3.0, 2.38647043651461047433e-05},
+	{M_PI / 4.0, 4.2455377443222443279e-06},
+	{M_PI / 5.0, 1.11281001494389081528e-06},
+	{M_PI / 6.0, 3.72662000942734705475e-07},
+	{M_PI / 7.0, 1.47783685574284411325e-07},
+	{M_PI / 8.0, 6.63240432022601149057e-08},
+	{M_PI / 9.0, 3.2715520137536980553e-08},
+	{M_PI / 10.0, 1.73863223499021216974e-08},
+	{M_PI / 11.0, 9.81410988043554039085e-09},
     };
     int table_size = ARRAY_LENGTH (table);
-    const int max_segments = 1000; /* this value is chosen arbitrarily. this gives an error of about 1.74909e-20 */
+    const int max_segments =
+	1000; /* this value is chosen arbitrarily. this gives an error of about 1.74909e-20 */
 
     for (i = 0; i < table_size; i++)
 	if (table[i].error < tolerance)
@@ -107,10 +108,10 @@ _arc_max_angle_for_tolerance_normalized (double tolerance)
 }
 
 static int
-_arc_segments_needed (double	      angle,
-		      double	      radius,
+_arc_segments_needed (double angle,
+		      double radius,
 		      comac_matrix_t *ctm,
-		      double	      tolerance)
+		      double tolerance)
 {
     double major_axis, max_angle;
 
@@ -118,7 +119,8 @@ _arc_segments_needed (double	      angle,
      * major axis of the circle; see comac-pen.c for a more detailed analysis
      * of this. */
     major_axis = _comac_matrix_transformed_circle_major_axis (ctm, radius);
-    max_angle = _arc_max_angle_for_tolerance_normalized (tolerance / major_axis);
+    max_angle =
+	_arc_max_angle_for_tolerance_normalized (tolerance / major_axis);
 
     return ceil (fabs (angle) / max_angle);
 }
@@ -150,11 +152,11 @@ _arc_segments_needed (double	      angle,
 */
 static void
 _comac_arc_segment (comac_t *cr,
-		    double   xc,
-		    double   yc,
-		    double   radius,
-		    double   angle_A,
-		    double   angle_B)
+		    double xc,
+		    double yc,
+		    double radius,
+		    double angle_A,
+		    double angle_B)
 {
     double r_sin_A, r_cos_A;
     double r_sin_B, r_cos_B;
@@ -165,7 +167,7 @@ _comac_arc_segment (comac_t *cr,
     r_sin_B = radius * sin (angle_B);
     r_cos_B = radius * cos (angle_B);
 
-    h = 4.0/3.0 * tan ((angle_B - angle_A) / 4.0);
+    h = 4.0 / 3.0 * tan ((angle_B - angle_A) / 4.0);
 
     comac_curve_to (cr,
 		    xc + r_cos_A - h * r_sin_A,
@@ -177,16 +179,16 @@ _comac_arc_segment (comac_t *cr,
 }
 
 static void
-_comac_arc_in_direction (comac_t	  *cr,
-			 double		   xc,
-			 double		   yc,
-			 double		   radius,
-			 double		   angle_min,
-			 double		   angle_max,
+_comac_arc_in_direction (comac_t *cr,
+			 double xc,
+			 double yc,
+			 double radius,
+			 double angle_min,
+			 double angle_max,
 			 comac_direction_t dir)
 {
     if (comac_status (cr))
-        return;
+	return;
 
     assert (angle_max >= angle_min);
 
@@ -200,20 +202,36 @@ _comac_arc_in_direction (comac_t	  *cr,
     if (angle_max - angle_min > M_PI) {
 	double angle_mid = angle_min + (angle_max - angle_min) / 2.0;
 	if (dir == COMAC_DIRECTION_FORWARD) {
-	    _comac_arc_in_direction (cr, xc, yc, radius,
-				     angle_min, angle_mid,
+	    _comac_arc_in_direction (cr,
+				     xc,
+				     yc,
+				     radius,
+				     angle_min,
+				     angle_mid,
 				     dir);
 
-	    _comac_arc_in_direction (cr, xc, yc, radius,
-				     angle_mid, angle_max,
+	    _comac_arc_in_direction (cr,
+				     xc,
+				     yc,
+				     radius,
+				     angle_mid,
+				     angle_max,
 				     dir);
 	} else {
-	    _comac_arc_in_direction (cr, xc, yc, radius,
-				     angle_mid, angle_max,
+	    _comac_arc_in_direction (cr,
+				     xc,
+				     yc,
+				     radius,
+				     angle_mid,
+				     angle_max,
 				     dir);
 
-	    _comac_arc_in_direction (cr, xc, yc, radius,
-				     angle_min, angle_mid,
+	    _comac_arc_in_direction (cr,
+				     xc,
+				     yc,
+				     radius,
+				     angle_min,
+				     angle_mid,
 				     dir);
 	}
     } else if (angle_max != angle_min) {
@@ -223,7 +241,8 @@ _comac_arc_in_direction (comac_t	  *cr,
 
 	comac_get_matrix (cr, &ctm);
 	segments = _arc_segments_needed (angle_max - angle_min,
-					 radius, &ctm,
+					 radius,
+					 &ctm,
 					 comac_get_tolerance (cr));
 	step = (angle_max - angle_min) / segments;
 	segments -= 1;
@@ -243,12 +262,15 @@ _comac_arc_in_direction (comac_t	  *cr,
 		       yc + radius * sin (angle_min));
 
 	for (i = 0; i < segments; i++, angle_min += step) {
-	    _comac_arc_segment (cr, xc, yc, radius,
-				angle_min, angle_min + step);
+	    _comac_arc_segment (cr,
+				xc,
+				yc,
+				radius,
+				angle_min,
+				angle_min + step);
 	}
 
-	_comac_arc_segment (cr, xc, yc, radius,
-			    angle_min, angle_max);
+	_comac_arc_segment (cr, xc, yc, radius, angle_min, angle_max);
     } else {
 	comac_line_to (cr,
 		       xc + radius * cos (angle_min),
@@ -271,15 +293,18 @@ _comac_arc_in_direction (comac_t	  *cr,
  **/
 void
 _comac_arc_path (comac_t *cr,
-		 double	  xc,
-		 double	  yc,
-		 double	  radius,
-		 double	  angle1,
-		 double	  angle2)
+		 double xc,
+		 double yc,
+		 double radius,
+		 double angle1,
+		 double angle2)
 {
-    _comac_arc_in_direction (cr, xc, yc,
+    _comac_arc_in_direction (cr,
+			     xc,
+			     yc,
 			     radius,
-			     angle1, angle2,
+			     angle1,
+			     angle2,
 			     COMAC_DIRECTION_FORWARD);
 }
 
@@ -301,14 +326,17 @@ _comac_arc_path (comac_t *cr,
  **/
 void
 _comac_arc_path_negative (comac_t *cr,
-			  double   xc,
-			  double   yc,
-			  double   radius,
-			  double   angle1,
-			  double   angle2)
+			  double xc,
+			  double yc,
+			  double radius,
+			  double angle1,
+			  double angle2)
 {
-    _comac_arc_in_direction (cr, xc, yc,
+    _comac_arc_in_direction (cr,
+			     xc,
+			     yc,
 			     radius,
-			     angle2, angle1,
+			     angle2,
+			     angle1,
 			     COMAC_DIRECTION_REVERSE);
 }

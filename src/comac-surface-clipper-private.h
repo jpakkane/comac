@@ -44,12 +44,12 @@ COMAC_BEGIN_DECLS
 
 typedef struct _comac_surface_clipper comac_surface_clipper_t;
 
-typedef comac_status_t
-(*comac_surface_clipper_intersect_clip_path_func_t) (comac_surface_clipper_t *,
-						     comac_path_fixed_t *,
-						     comac_fill_rule_t,
-						     double,
-						     comac_antialias_t);
+typedef comac_status_t (*comac_surface_clipper_intersect_clip_path_func_t) (
+    comac_surface_clipper_t *,
+    comac_path_fixed_t *,
+    comac_fill_rule_t,
+    double,
+    comac_antialias_t);
 struct _comac_surface_clipper {
     comac_clip_t *clip;
     comac_surface_clipper_intersect_clip_path_func_t intersect_clip_path;
@@ -60,8 +60,9 @@ _comac_surface_clipper_set_clip (comac_surface_clipper_t *clipper,
 				 const comac_clip_t *clip);
 
 comac_private void
-_comac_surface_clipper_init (comac_surface_clipper_t *clipper,
-			     comac_surface_clipper_intersect_clip_path_func_t intersect);
+_comac_surface_clipper_init (
+    comac_surface_clipper_t *clipper,
+    comac_surface_clipper_intersect_clip_path_func_t intersect);
 
 comac_private void
 _comac_surface_clipper_reset (comac_surface_clipper_t *clipper);

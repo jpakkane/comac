@@ -52,7 +52,7 @@ __comac_surface_flush (comac_surface_t *surface, unsigned flags)
 static inline comac_surface_t *
 _comac_surface_reference (comac_surface_t *surface)
 {
-    if (!COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
+    if (! COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
 	_comac_reference_count_inc (&surface->ref_count);
     return surface;
 }

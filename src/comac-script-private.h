@@ -52,7 +52,6 @@ comac_private void
 _comac_script_context_attach_snapshots (comac_device_t *device,
 					comac_bool_t enable);
 
-
 COMAC_END_DECLS
 
 #endif /* COMAC_SCRIPT_PRIVATE_H */

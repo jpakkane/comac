@@ -38,16 +38,17 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_t *pattern;
     unsigned int j;
 
-    comac_extend_t extend[NUM_EXTEND] = {
-	COMAC_EXTEND_NONE,
-	COMAC_EXTEND_REPEAT,
-	COMAC_EXTEND_REFLECT,
-	COMAC_EXTEND_PAD
-    };
+    comac_extend_t extend[NUM_EXTEND] = {COMAC_EXTEND_NONE,
+					 COMAC_EXTEND_REPEAT,
+					 COMAC_EXTEND_REFLECT,
+					 COMAC_EXTEND_PAD};
 
     comac_test_paint_checkered (cr);
 
-    pattern = comac_pattern_create_linear (WIDTH/2, HEIGHT/2, WIDTH/2, HEIGHT/2);
+    pattern = comac_pattern_create_linear (WIDTH / 2,
+					   HEIGHT / 2,
+					   WIDTH / 2,
+					   HEIGHT / 2);
 
     comac_pattern_add_color_stop_rgba (pattern, 0, 1, 0, 0, 1);
     comac_pattern_add_color_stop_rgba (pattern, sqrt (1.0 / 2.0), 0, 1, 0, 0);
@@ -59,13 +60,13 @@ draw (comac_t *cr, int width, int height)
 	comac_reset_clip (cr);
 	comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
 	comac_clip (cr);
-	
+
 	comac_pattern_set_extend (pattern, extend[j]);
-	
+
 	comac_set_source (cr, pattern);
 	comac_paint (cr);
-	
-	comac_translate (cr, WIDTH+PAD, 0);
+
+	comac_translate (cr, WIDTH + PAD, 0);
     }
 
     comac_pattern_destroy (pattern);
@@ -76,6 +77,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (degenerate_linear_gradient,
 	    "Tests degenerate linear gradients",
 	    "linear, pattern, extend", /* keywords */
-	    NULL, /* requirements */
-	    (WIDTH+PAD) * NUM_EXTEND + PAD, 1*(HEIGHT + PAD) + PAD,
-	    NULL, draw)
+	    NULL,		       /* requirements */
+	    (WIDTH + PAD) * NUM_EXTEND + PAD,
+	    1 * (HEIGHT + PAD) + PAD,
+	    NULL,
+	    draw)

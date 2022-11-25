@@ -26,11 +26,7 @@
 
 #include "comac-test.h"
 
-typedef enum {
-  CLEAR,
-  CLEARED,
-  PAINTED
-} surface_type_t;
+typedef enum { CLEAR, CLEARED, PAINTED } surface_type_t;
 
 #define SIZE 10
 #define SPACE 5
@@ -43,7 +39,8 @@ create_surface (comac_t *target, comac_content_t content, surface_type_t type)
 
     surface = comac_surface_create_similar (comac_get_target (target),
 					    content,
-					    SIZE, SIZE);
+					    SIZE,
+					    SIZE);
 
     if (type == CLEAR)
 	return surface;
@@ -118,20 +115,16 @@ glyphs (comac_t *cr, comac_surface_t *surface)
     comac_show_text (cr, "C");
 }
 
-typedef void (* operation_t) (comac_t *cr, comac_surface_t *surface);
+typedef void (*operation_t) (comac_t *cr, comac_surface_t *surface);
 static operation_t operations[] = {
-    paint,
-    fill,
-    stroke,
-    mask,
-    mask_self,
-    glyphs
-};
+    paint, fill, stroke, mask, mask_self, glyphs};
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_content_t contents[] = { COMAC_CONTENT_COLOR_ALPHA, COMAC_CONTENT_COLOR, COMAC_CONTENT_ALPHA };
+    comac_content_t contents[] = {COMAC_CONTENT_COLOR_ALPHA,
+				  COMAC_CONTENT_COLOR,
+				  COMAC_CONTENT_ALPHA};
     unsigned int content, type, ops;
 
     comac_set_source_rgb (cr, 0.5, 0.5, 0.5);
@@ -144,18 +137,18 @@ draw (comac_t *cr, int width, int height)
 
 	    surface = create_surface (cr, contents[content], type);
 
-            comac_save (cr);
-            for (ops = 0; ops < ARRAY_LENGTH (operations); ops++) {
-                comac_save (cr);
-                operations[ops] (cr, surface);
-                comac_restore (cr);
-                comac_translate (cr, 0, SIZE + SPACE);
-            }
-            comac_restore (cr);
-            comac_translate (cr, SIZE + SPACE, 0);
+	    comac_save (cr);
+	    for (ops = 0; ops < ARRAY_LENGTH (operations); ops++) {
+		comac_save (cr);
+		operations[ops](cr, surface);
+		comac_restore (cr);
+		comac_translate (cr, 0, SIZE + SPACE);
+	    }
+	    comac_restore (cr);
+	    comac_translate (cr, SIZE + SPACE, 0);
 
 	    comac_surface_destroy (surface);
-        }
+	}
     }
 
     return COMAC_TEST_SUCCESS;
@@ -165,5 +158,7 @@ COMAC_TEST (clear_source,
 	    "Check painting with cleared surfaces works as expected",
 	    NULL, /* keywords */
 	    NULL, /* requirements */
-	    (SIZE + SPACE) * 9 + SPACE, ARRAY_LENGTH (operations) * (SIZE + SPACE) + SPACE,
-	    NULL, draw)
+	    (SIZE + SPACE) * 9 + SPACE,
+	    ARRAY_LENGTH (operations) * (SIZE + SPACE) + SPACE,
+	    NULL,
+	    draw)

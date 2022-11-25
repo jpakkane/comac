@@ -31,20 +31,20 @@
 static comac_user_data_key_t script_closure_key;
 
 typedef struct _script_target_closure {
-    char		*filename;
-    double		 width;
-    double		 height;
+    char *filename;
+    double width;
+    double height;
 } script_target_closure_t;
 
 static comac_surface_t *
-_comac_boilerplate_script_create_surface (const char		    *name,
-					  comac_content_t	     content,
-					  double		     width,
-					  double		     height,
-					  double		     max_width,
-					  double		     max_height,
-					  comac_boilerplate_mode_t   mode,
-					  void			   **closure)
+_comac_boilerplate_script_create_surface (const char *name,
+					  comac_content_t content,
+					  double width,
+					  double height,
+					  double max_width,
+					  double max_height,
+					  comac_boilerplate_mode_t mode,
+					  void **closure)
 {
     script_target_closure_t *ptc;
     comac_device_t *ctx;
@@ -63,8 +63,8 @@ _comac_boilerplate_script_create_surface (const char		    *name,
     surface = comac_script_surface_create (ctx, content, width, height);
     comac_device_destroy (ctx);
 
-    status = comac_surface_set_user_data (surface,
-					  &script_closure_key, ptc, NULL);
+    status =
+	comac_surface_set_user_data (surface, &script_closure_key, ptc, NULL);
     if (status == COMAC_STATUS_SUCCESS)
 	return surface;
 
@@ -85,32 +85,32 @@ _comac_boilerplate_script_finish_surface (comac_surface_t *surface)
 
 static comac_status_t
 _comac_boilerplate_script_surface_write_to_png (comac_surface_t *surface,
-						const char	*filename)
+						const char *filename)
 {
     return COMAC_STATUS_WRITE_ERROR;
 }
 
 static comac_surface_t *
-_comac_boilerplate_script_convert_to_image (comac_surface_t *surface,
-					    int 	     page)
+_comac_boilerplate_script_convert_to_image (comac_surface_t *surface, int page)
 {
-    script_target_closure_t *ptc = comac_surface_get_user_data (surface,
-								&script_closure_key);
+    script_target_closure_t *ptc =
+	comac_surface_get_user_data (surface, &script_closure_key);
     return comac_boilerplate_convert_to_image (ptc->filename, page);
 }
 
 static comac_surface_t *
 _comac_boilerplate_script_get_image_surface (comac_surface_t *surface,
-					     int	      page,
-					     int	      width,
-					     int	      height)
+					     int page,
+					     int width,
+					     int height)
 {
     comac_surface_t *image;
 
     image = _comac_boilerplate_script_convert_to_image (surface, page);
-    comac_surface_set_device_offset (image,
-				     comac_image_surface_get_width (image) - width,
-				     comac_image_surface_get_height (image) - height);
+    comac_surface_set_device_offset (
+	image,
+	comac_image_surface_get_width (image) - width,
+	comac_image_surface_get_height (image) - height);
     surface = _comac_boilerplate_get_image_surface (image, 0, width, height);
     comac_surface_destroy (image);
 
@@ -125,17 +125,25 @@ _comac_boilerplate_script_cleanup (void *closure)
     free (ptc);
 }
 
-static const comac_boilerplate_target_t target[] = {{
-    "script", "script", ".cs", NULL,
-    COMAC_SURFACE_TYPE_SCRIPT, COMAC_CONTENT_COLOR_ALPHA, 0,
-    "comac_script_surface_create",
-    _comac_boilerplate_script_create_surface,
-    comac_surface_create_similar,
-    NULL,
-    _comac_boilerplate_script_finish_surface,
-    _comac_boilerplate_script_get_image_surface,
-    _comac_boilerplate_script_surface_write_to_png,
-    _comac_boilerplate_script_cleanup,
-    NULL, NULL, FALSE, FALSE, FALSE
-}};
+static const comac_boilerplate_target_t target[] = {
+    {"script",
+     "script",
+     ".cs",
+     NULL,
+     COMAC_SURFACE_TYPE_SCRIPT,
+     COMAC_CONTENT_COLOR_ALPHA,
+     0,
+     "comac_script_surface_create",
+     _comac_boilerplate_script_create_surface,
+     comac_surface_create_similar,
+     NULL,
+     _comac_boilerplate_script_finish_surface,
+     _comac_boilerplate_script_get_image_surface,
+     _comac_boilerplate_script_surface_write_to_png,
+     _comac_boilerplate_script_cleanup,
+     NULL,
+     NULL,
+     FALSE,
+     FALSE,
+     FALSE}};
 COMAC_BOILERPLATE (script, target)

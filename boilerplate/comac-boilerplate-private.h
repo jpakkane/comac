@@ -35,18 +35,21 @@ _comac_boilerplate_register_all (void);
 
 void
 _comac_boilerplate_register_backend (const comac_boilerplate_target_t *targets,
-				     unsigned int		       count);
+				     unsigned int count);
 
-#define COMAC_BOILERPLATE(name__, targets__) \
-void _register_##name__ (void); \
-void _register_##name__ (void) { \
-    _comac_boilerplate_register_backend (targets__, \
-					 ARRAY_LENGTH(targets__)); \
-}
+#define COMAC_BOILERPLATE(name__, targets__)                                   \
+    void _register_##name__ (void);                                            \
+    void _register_##name__ (void)                                             \
+    {                                                                          \
+	_comac_boilerplate_register_backend (targets__,                        \
+					     ARRAY_LENGTH (targets__));        \
+    }
 
-#define COMAC_NO_BOILERPLATE(name__) \
-void _register_##name__ (void); \
-void _register_##name__ (void) { }
+#define COMAC_NO_BOILERPLATE(name__)                                           \
+    void _register_##name__ (void);                                            \
+    void _register_##name__ (void)                                             \
+    {                                                                          \
+    }
 
 COMAC_END_DECLS
 

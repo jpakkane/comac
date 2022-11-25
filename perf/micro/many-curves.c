@@ -33,8 +33,8 @@ uniform_random (double minval, double maxval)
 {
     static uint32_t const poly = 0x9a795537U;
     uint32_t n = 32;
-    while (n-->0)
-	state = 2*state < state ? (2*state ^ poly) : 2*state;
+    while (n-- > 0)
+	state = 2 * state < state ? (2 * state ^ poly) : 2 * state;
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
@@ -129,7 +129,13 @@ many_curves (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     comac_set_source_rgb (cr, 1., 1., 1.);
 
-    comac_perf_run (perf, "many-curves-hair-stroked", do_many_curves_hair_stroked, NULL);
-    comac_perf_run (perf, "many-curves-wide-stroked", do_many_curves_wide_stroked, NULL);
+    comac_perf_run (perf,
+		    "many-curves-hair-stroked",
+		    do_many_curves_hair_stroked,
+		    NULL);
+    comac_perf_run (perf,
+		    "many-curves-wide-stroked",
+		    do_many_curves_wide_stroked,
+		    NULL);
     comac_perf_run (perf, "many-curves-filled", do_many_curves_filled, NULL);
 }

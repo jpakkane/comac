@@ -71,8 +71,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (stroke_ctm_caps,
-	    "Test that the stroker correctly passes the device-space vector to the stroker for endcaps",
+	    "Test that the stroker correctly passes the device-space vector to "
+	    "the stroker for endcaps",
 	    "stroke, transform", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,		 /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

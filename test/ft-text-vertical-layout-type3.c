@@ -29,13 +29,12 @@
 #include "comac-test.h"
 #include <comac-ft.h>
 
-#define WIDTH  80
+#define WIDTH 80
 #define HEIGHT 200
 #define TEXT_SIZE 30
 
 static comac_status_t
-create_scaled_font (comac_t * cr,
-		    comac_scaled_font_t **out)
+create_scaled_font (comac_t *cr, comac_scaled_font_t **out)
 {
     FcPattern *pattern, *resolved;
     FcResult result;
@@ -54,7 +53,9 @@ create_scaled_font (comac_t * cr,
     if (pattern == NULL)
 	return COMAC_STATUS_NO_MEMORY;
 
-    FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *)COMAC_TEST_FONT_FAMILY " Sans");
+    FcPatternAddString (pattern,
+			FC_FAMILY,
+			(FcChar8 *) COMAC_TEST_FONT_FAMILY " Sans");
     FcPatternAddDouble (pattern, FC_PIXEL_SIZE, TEXT_SIZE);
     FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
@@ -76,15 +77,13 @@ create_scaled_font (comac_t * cr,
     font_face = comac_ft_font_face_create_for_pattern (resolved);
 
     comac_matrix_init_translate (&font_matrix, 10, 30);
-    comac_matrix_rotate (&font_matrix, M_PI_2/3);
+    comac_matrix_rotate (&font_matrix, M_PI_2 / 3);
     comac_matrix_scale (&font_matrix, pixel_size, pixel_size);
 
     comac_get_matrix (cr, &ctm);
 
-    scaled_font = comac_scaled_font_create (font_face,
-					    &font_matrix,
-					    &ctm,
-					    font_options);
+    scaled_font =
+	comac_scaled_font_create (font_face, &font_matrix, &ctm, font_options);
 
     comac_font_options_destroy (font_options);
     comac_font_face_destroy (font_face);
@@ -130,14 +129,14 @@ draw (comac_t *cr, int width, int height)
     comac_set_line_width (cr, 1.0);
     comac_set_source_rgb (cr, 0, 0, 0); /* black */
     comac_text_extents (cr, text, &extents);
-    x = width  - (extents.width  + extents.x_bearing) - 5;
+    x = width - (extents.width + extents.x_bearing) - 5;
     y = height - (extents.height + extents.y_bearing) - 5;
     comac_move_to (cr, x, y);
     comac_show_text (cr, text);
     comac_rectangle (cr,
 		     x + extents.x_bearing - line_width / 2,
 		     y + extents.y_bearing - line_width / 2,
-		     extents.width  + line_width,
+		     extents.width + line_width,
 		     extents.height + line_width);
     comac_stroke (cr);
 
@@ -151,7 +150,7 @@ draw (comac_t *cr, int width, int height)
     comac_rectangle (cr,
 		     x + extents.x_bearing - line_width / 2,
 		     y + extents.y_bearing - line_width / 2,
-		     extents.width  + line_width,
+		     extents.width + line_width,
 		     extents.height + line_width);
     comac_stroke (cr);
 
@@ -161,6 +160,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (ft_text_vertical_layout_type3,
 	    "Tests text rendering for vertical layout with TrueType fonts",
 	    "ft, fc, text", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

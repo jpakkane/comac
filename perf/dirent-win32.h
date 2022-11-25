@@ -31,7 +31,7 @@
 
 #define stat _stat
 
-#define S_ISDIR(s) ((s) & _S_IFDIR)
+#define S_ISDIR(s) ((s) &_S_IFDIR)
 
 struct dirent {
     ino_t d_ino;
@@ -46,7 +46,7 @@ typedef struct _DIR {
 } DIR;
 
 static DIR *
-opendir(const char *dirname)
+opendir (const char *dirname)
 {
     DIR *dirp;
 
@@ -54,14 +54,15 @@ opendir(const char *dirname)
     if (unlikely (dirp == NULL))
 	return NULL;
 
-    dirp->handle = FindFirstFile(dirname, &dirp->data);
+    dirp->handle = FindFirstFile (dirname, &dirp->data);
 
     if (unlikely (dirp->handle == INVALID_HANDLE_VALUE)) {
 	free (dirp);
 	return NULL;
     }
 
-    memcpy (dirp->de.d_name, dirp->data.cFileName,
+    memcpy (dirp->de.d_name,
+	    dirp->data.cFileName,
 	    sizeof (dirp->data.cFileName));
     dirp->de.d_name[FILENAME_MAX] = '\0';
 
@@ -71,7 +72,7 @@ opendir(const char *dirname)
 }
 
 static int
-closedir(DIR *dirp)
+closedir (DIR *dirp)
 {
     int ret;
 
@@ -85,14 +86,15 @@ closedir(DIR *dirp)
 }
 
 static struct dirent *
-readdir(DIR *dirp)
+readdir (DIR *dirp)
 {
     if (! dirp->has_next)
 	return NULL;
 
     /* COMPILE_TIME_ASSERT (FILENAME_MAX == sizeof (dirp->data.cFileName)); */
 
-    memcpy (dirp->de.d_name, dirp->data.cFileName,
+    memcpy (dirp->de.d_name,
+	    dirp->data.cFileName,
 	    sizeof (dirp->data.cFileName));
     dirp->de.d_name[FILENAME_MAX] = '\0';
 

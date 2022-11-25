@@ -28,13 +28,10 @@
 static comac_time_t
 do_stroke (comac_t *cr, int width, int height, int loops)
 {
-    comac_arc (cr,
-	       width/2.0, height/2.0,
-	       width/3.0,
-	       0, 2 * M_PI);
+    comac_arc (cr, width / 2.0, height / 2.0, width / 3.0, 0, 2 * M_PI);
     comac_close_path (cr);
 
-    comac_set_line_width (cr, width/5.0);
+    comac_set_line_width (cr, width / 5.0);
 
     comac_perf_timer_start ();
 
@@ -49,27 +46,31 @@ do_stroke (comac_t *cr, int width, int height, int loops)
 }
 
 static void
-rounded_rectangle (comac_t *cr,
-		   double x, double y, double w, double h,
-		   double radius)
+rounded_rectangle (
+    comac_t *cr, double x, double y, double w, double h, double radius)
 {
-    comac_move_to (cr, x+radius, y);
-    comac_arc (cr, x+w-radius, y+radius,   radius, M_PI + M_PI / 2, M_PI * 2        );
-    comac_arc (cr, x+w-radius, y+h-radius, radius, 0,               M_PI / 2        );
-    comac_arc (cr, x+radius,   y+h-radius, radius, M_PI/2,          M_PI            );
-    comac_arc (cr, x+radius,   y+radius,   radius, M_PI,            270 * M_PI / 180);
+    comac_move_to (cr, x + radius, y);
+    comac_arc (cr,
+	       x + w - radius,
+	       y + radius,
+	       radius,
+	       M_PI + M_PI / 2,
+	       M_PI * 2);
+    comac_arc (cr, x + w - radius, y + h - radius, radius, 0, M_PI / 2);
+    comac_arc (cr, x + radius, y + h - radius, radius, M_PI / 2, M_PI);
+    comac_arc (cr, x + radius, y + radius, radius, M_PI, 270 * M_PI / 180);
 }
 
 static comac_time_t
 do_strokes (comac_t *cr, int width, int height, int loops)
 {
     /* a pair of overlapping rectangles */
+    rounded_rectangle (cr, 2, 2, width / 2. + 10, height / 2. + 10, 10);
     rounded_rectangle (cr,
-		       2, 2, width/2. + 10, height/2. + 10,
-		       10);
-    rounded_rectangle (cr,
-		       width/2. - 10, height/2. - 10,
-		       width/2. - 2, height/2. - 2,
+		       width / 2. - 10,
+		       height / 2. - 10,
+		       width / 2. - 2,
+		       height / 2. - 2,
 		       10);
 
     comac_set_line_width (cr, 2.);

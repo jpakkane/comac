@@ -45,8 +45,7 @@
 #include "comac-contour-private.h"
 
 void
-_comac_contour_init (comac_contour_t *contour,
-		     int direction)
+_comac_contour_init (comac_contour_t *contour, int direction)
 {
     contour->direction = direction;
     contour->chain.points = contour->embedded_points;
@@ -57,23 +56,22 @@ _comac_contour_init (comac_contour_t *contour,
 }
 
 comac_int_status_t
-__comac_contour_add_point (comac_contour_t *contour,
-			  const comac_point_t *point)
+__comac_contour_add_point (comac_contour_t *contour, const comac_point_t *point)
 {
     comac_contour_chain_t *tail = contour->tail;
     comac_contour_chain_t *next;
 
     assert (tail->next == NULL);
 
-    next = _comac_malloc_ab_plus_c (tail->size_points*2,
+    next = _comac_malloc_ab_plus_c (tail->size_points * 2,
 				    sizeof (comac_point_t),
 				    sizeof (comac_contour_chain_t));
     if (unlikely (next == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    next->size_points = tail->size_points*2;
+    next->size_points = tail->size_points * 2;
     next->num_points = 1;
-    next->points = (comac_point_t *)(next+1);
+    next->points = (comac_point_t *) (next + 1);
     next->next = NULL;
     tail->next = next;
     contour->tail = next;
@@ -106,7 +104,7 @@ last_dec (comac_contour_t *contour,
 	for (prev = &contour->chain; prev->next != *chain; prev = prev->next)
 	    ;
 	*chain = prev;
-	*p = &(*chain)->points[(*chain)->num_points-1];
+	*p = &(*chain)->points[(*chain)->num_points - 1];
     } else
 	--*p;
 }
@@ -126,7 +124,7 @@ _comac_contour_reverse (comac_contour_t *contour)
     last_chain = contour->tail;
 
     first = &first_chain->points[0];
-    last = &last_chain->points[last_chain->num_points-1];
+    last = &last_chain->points[last_chain->num_points - 1];
 
     while (first != last) {
 	comac_point_t p;
@@ -141,8 +139,7 @@ _comac_contour_reverse (comac_contour_t *contour)
 }
 
 comac_int_status_t
-_comac_contour_add (comac_contour_t *dst,
-		    const comac_contour_t *src)
+_comac_contour_add (comac_contour_t *dst, const comac_contour_t *src)
 {
     const comac_contour_chain_t *chain;
     comac_int_status_t status;
@@ -162,7 +159,7 @@ _comac_contour_add (comac_contour_t *dst,
 static inline comac_bool_t
 iter_next (comac_contour_iter_t *iter)
 {
-    if (iter->point == &iter->chain->points[iter->chain->size_points-1]) {
+    if (iter->point == &iter->chain->points[iter->chain->size_points - 1]) {
 	iter->chain = iter->chain->next;
 	if (iter->chain == NULL)
 	    return FALSE;
@@ -176,8 +173,7 @@ iter_next (comac_contour_iter_t *iter)
 }
 
 static comac_bool_t
-iter_equal (const comac_contour_iter_t *i1,
-	    const comac_contour_iter_t *i2)
+iter_equal (const comac_contour_iter_t *i1, const comac_contour_iter_t *i2)
 {
     return i1->chain == i2->chain && i1->point == i2->point;
 }
@@ -193,11 +189,12 @@ static void
 iter_init_last (comac_contour_iter_t *iter, comac_contour_t *contour)
 {
     iter->chain = contour->tail;
-    iter->point = &contour->tail->points[contour->tail->num_points-1];
+    iter->point = &contour->tail->points[contour->tail->num_points - 1];
 }
 
-static const comac_contour_chain_t *prev_const_chain(const comac_contour_t *contour,
-						     const comac_contour_chain_t *chain)
+static const comac_contour_chain_t *
+prev_const_chain (const comac_contour_t *contour,
+		  const comac_contour_chain_t *chain)
 {
     const comac_contour_chain_t *prev;
 
@@ -211,8 +208,7 @@ static const comac_contour_chain_t *prev_const_chain(const comac_contour_t *cont
 }
 
 comac_int_status_t
-_comac_contour_add_reversed (comac_contour_t *dst,
-			     const comac_contour_t *src)
+_comac_contour_add_reversed (comac_contour_t *dst, const comac_contour_t *src)
 {
     const comac_contour_chain_t *last;
     comac_int_status_t status;
@@ -222,7 +218,7 @@ _comac_contour_add_reversed (comac_contour_t *dst,
 	return COMAC_INT_STATUS_SUCCESS;
 
     for (last = src->tail; last; last = prev_const_chain (src, last)) {
-	for (i = last->num_points-1; i >= 0; i--) {
+	for (i = last->num_points - 1; i >= 0; i--) {
 	    status = _comac_contour_add_point (dst, &last->points[i]);
 	    if (unlikely (status))
 		return status;
@@ -233,8 +229,7 @@ _comac_contour_add_reversed (comac_contour_t *dst,
 }
 
 static comac_uint64_t
-point_distance_sq (const comac_point_t *p1,
-		   const comac_point_t *p2)
+point_distance_sq (const comac_point_t *p1, const comac_point_t *p2)
 {
     int32_t dx = p1->x - p2->x;
     int32_t dy = p1->y - p2->y;
@@ -245,7 +240,8 @@ point_distance_sq (const comac_point_t *p1,
 #define MARK_DELETED(p) ((p)->x = INT_MIN, (p)->y = INT_MAX)
 
 static comac_bool_t
-_comac_contour_simplify_chain (comac_contour_t *contour, const double tolerance,
+_comac_contour_simplify_chain (comac_contour_t *contour,
+			       const double tolerance,
 			       const comac_contour_iter_t *first,
 			       const comac_contour_iter_t *last)
 {
@@ -269,8 +265,9 @@ _comac_contour_simplify_chain (comac_contour_t *contour, const double tolerance,
     max_error = 0;
     do {
 	comac_point_t *p = iter.point;
-	if (! DELETED(p)) {
-	    uint64_t d = (uint64_t)nx * (x0 - p->x) + (uint64_t)ny * (y0 - p->y);
+	if (! DELETED (p)) {
+	    uint64_t d =
+		(uint64_t) nx * (x0 - p->x) + (uint64_t) ny * (y0 - p->y);
 	    if (d * d > max_error) {
 		max_error = d * d;
 		furthest = iter;
@@ -282,14 +279,16 @@ _comac_contour_simplify_chain (comac_contour_t *contour, const double tolerance,
     if (count == 0)
 	return FALSE;
 
-    if (max_error > tolerance * ((uint64_t)nx * nx + (uint64_t)ny * ny)) {
+    if (max_error > tolerance * ((uint64_t) nx * nx + (uint64_t) ny * ny)) {
 	comac_bool_t simplified;
 
 	simplified = FALSE;
-	simplified |= _comac_contour_simplify_chain (contour, tolerance,
-						     first, &furthest);
-	simplified |= _comac_contour_simplify_chain (contour, tolerance,
-						     &furthest, last);
+	simplified |= _comac_contour_simplify_chain (contour,
+						     tolerance,
+						     first,
+						     &furthest);
+	simplified |=
+	    _comac_contour_simplify_chain (contour, tolerance, &furthest, last);
 	return simplified;
     } else {
 	iter = *first;
@@ -355,13 +354,17 @@ _comac_contour_simplify (comac_contour_t *contour, double tolerance)
 
 	simplified = FALSE;
 	iter_init (&iter, contour);
-	simplified |= _comac_contour_simplify_chain (contour, tolerance,
-						     &iter, &furthest);
+	simplified |= _comac_contour_simplify_chain (contour,
+						     tolerance,
+						     &iter,
+						     &furthest);
 
 	iter_init_last (&iter, contour);
 	if (! iter_equal (&furthest, &iter))
-	    simplified |= _comac_contour_simplify_chain (contour, tolerance,
-							 &furthest, &iter);
+	    simplified |= _comac_contour_simplify_chain (contour,
+							 tolerance,
+							 &furthest,
+							 &iter);
     } while (simplified);
 
     iter_init (&iter, contour);
@@ -369,7 +372,7 @@ _comac_contour_simplify (comac_contour_t *contour, double tolerance)
 	int num_points = chain->num_points;
 	chain->num_points = 0;
 	for (i = 0; i < num_points; i++) {
-	    if (! DELETED(&chain->points[i])) {
+	    if (! DELETED (&chain->points[i])) {
 		if (iter.point != &chain->points[i])
 		    *iter.point = chain->points[i];
 		iter.chain->num_points++;
@@ -423,13 +426,17 @@ _comac_debug_print_contour (FILE *file, comac_contour_t *contour)
 	size_points += chain->size_points;
     }
 
-    fprintf (file, "contour: direction=%d, num_points=%d / %d\n",
-	     contour->direction, num_points, size_points);
+    fprintf (file,
+	     "contour: direction=%d, num_points=%d / %d\n",
+	     contour->direction,
+	     num_points,
+	     size_points);
 
     num_points = 0;
     for (chain = &contour->chain; chain; chain = chain->next) {
 	for (i = 0; i < chain->num_points; i++) {
-	    fprintf (file, "  [%d] = (%f, %f)\n",
+	    fprintf (file,
+		     "  [%d] = (%f, %f)\n",
 		     num_points++,
 		     _comac_fixed_to_double (chain->points[i].x),
 		     _comac_fixed_to_double (chain->points[i].y));
@@ -445,7 +452,8 @@ __comac_contour_remove_last_chain (comac_contour_t *contour)
     if (contour->tail == &contour->chain)
 	return;
 
-    for (chain = &contour->chain; chain->next != contour->tail; chain = chain->next)
+    for (chain = &contour->chain; chain->next != contour->tail;
+	 chain = chain->next)
 	;
     free (contour->tail);
     contour->tail = chain;

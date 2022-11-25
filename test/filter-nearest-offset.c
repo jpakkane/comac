@@ -25,26 +25,36 @@
 
 #include "comac-test.h"
 
-#define STAMP_WIDTH  4
+#define STAMP_WIDTH 4
 #define STAMP_HEIGHT 4
-#define PAD          1
+#define PAD 1
 
-#define STEPS	     10
+#define STEPS 10
 
-#define IMAGE_WIDTH  (PAD + STEPS * (STAMP_WIDTH  + PAD) + PAD)
+#define IMAGE_WIDTH (PAD + STEPS * (STAMP_WIDTH + PAD) + PAD)
 #define IMAGE_HEIGHT (PAD + STEPS * (STAMP_HEIGHT + PAD) + PAD)
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
-    uint32_t data[STAMP_WIDTH * STAMP_HEIGHT] = {
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
+    uint32_t data[STAMP_WIDTH * STAMP_HEIGHT] = {0xffffffff,
+						 0xffffffff,
+						 0xffff0000,
+						 0xffff0000,
+						 0xffffffff,
+						 0xffffffff,
+						 0xffff0000,
+						 0xffff0000,
 
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff,
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
-    };
+						 0xff00ff00,
+						 0xff00ff00,
+						 0xff0000ff,
+						 0xff0000ff,
+						 0xff00ff00,
+						 0xff00ff00,
+						 0xff0000ff,
+						 0xff0000ff};
     int i, j;
 
     /* fill with off-white to avoid a separate rgb24 ref image */
@@ -67,10 +77,10 @@ draw (comac_t *cr, int width, int height)
 						   STAMP_HEIGHT,
 						   STAMP_WIDTH * 4);
 
-    for (j=0; j < STEPS; j++) {
+    for (j = 0; j < STEPS; j++) {
 	double j_step;
 
-	for (i=0; i < STEPS; i++) {
+	for (i = 0; i < STEPS; i++) {
 	    double i_step;
 
 #define GENERATE_REFERENCE_IMAGE 0
@@ -84,10 +94,12 @@ draw (comac_t *cr, int width, int height)
 
 	    comac_save (cr);
 
-	    comac_set_source_surface (cr, surface,
-				      PAD + i * (STAMP_WIDTH  + PAD) + i_step,
+	    comac_set_source_surface (cr,
+				      surface,
+				      PAD + i * (STAMP_WIDTH + PAD) + i_step,
 				      PAD + j * (STAMP_HEIGHT + PAD) + j_step);
-	    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+	    comac_pattern_set_filter (comac_get_source (cr),
+				      COMAC_FILTER_NEAREST);
 	    comac_paint (cr);
 
 	    comac_restore (cr);
@@ -102,8 +114,11 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (filter_nearest_offset,
 	    "Test sampling offset of COMAC_FILTER_NEAREST"
-	    "\nwrong sampling location for nearest-neighbor filter in libpixman and Render",
+	    "\nwrong sampling location for nearest-neighbor filter in "
+	    "libpixman and Render",
 	    "filter", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

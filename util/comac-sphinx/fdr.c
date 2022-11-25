@@ -30,31 +30,35 @@
 #include <dlfcn.h>
 
 static void *_dlhandle = RTLD_NEXT;
-#define DLCALL(name, args...) ({ \
-    static typeof (&name) name##_real; \
-    if (name##_real == NULL) { \
-	name##_real = dlsym (_dlhandle, #name); \
-	if (name##_real == NULL && _dlhandle == RTLD_NEXT) { \
-	    _dlhandle = dlopen ("libcomac.so", RTLD_LAZY); \
-	    name##_real = dlsym (_dlhandle, #name); \
-	    assert (name##_real != NULL); \
-	} \
-    } \
-    (*name##_real) (args);  \
-})
+#define DLCALL(name, args...)                                                  \
+    ({                                                                         \
+	static typeof (&name) name##_real;                                     \
+	if (name##_real == NULL) {                                             \
+	    name##_real = dlsym (_dlhandle, #name);                            \
+	    if (name##_real == NULL && _dlhandle == RTLD_NEXT) {               \
+		_dlhandle = dlopen ("libcomac.so", RTLD_LAZY);                 \
+		name##_real = dlsym (_dlhandle, #name);                        \
+		assert (name##_real != NULL);                                  \
+	    }                                                                  \
+	}                                                                      \
+	(*name##_real) (args);                                                 \
+    })
 
 static comac_device_t *fdr_context;
 static const comac_user_data_key_t fdr_key;
 
 static void
-fdr_get_extents (comac_surface_t *surface,
-		 comac_rectangle_t *extents)
+fdr_get_extents (comac_surface_t *surface, comac_rectangle_t *extents)
 {
     comac_t *cr;
 
     cr = DLCALL (comac_create, surface);
-    DLCALL (comac_clip_extents, cr,
-	    &extents->x, &extents->y, &extents->width, &extents->height);
+    DLCALL (comac_clip_extents,
+	    cr,
+	    &extents->x,
+	    &extents->y,
+	    &extents->width,
+	    &extents->height);
     DLCALL (comac_destroy, cr);
 
     extents->width -= extents->x;
@@ -124,7 +128,8 @@ comac_create (comac_surface_t *surface)
 	    const char *env = getenv ("COMAC_SPHINX_FD");
 	    int fd = env ? atoi (env) : 1;
 	    fdr_context = DLCALL (comac_script_create_for_stream,
-				  fdr_write, (void *) (intptr_t) fd);
+				  fdr_write,
+				  (void *) (intptr_t) fd);
 	}
 
 	fdr_get_extents (surface, &extents);
@@ -132,11 +137,17 @@ comac_create (comac_surface_t *surface)
 
 	tee = DLCALL (comac_tee_surface_create, surface);
 	script = DLCALL (comac_script_surface_create,
-			 fdr_context, content, extents.width, extents.height);
+			 fdr_context,
+			 content,
+			 extents.width,
+			 extents.height);
 	DLCALL (comac_tee_surface_add, tee, script);
 
-	DLCALL (comac_surface_set_user_data, surface,
-		&fdr_key, tee, fdr_surface_destroy);
+	DLCALL (comac_surface_set_user_data,
+		surface,
+		&fdr_key,
+		tee,
+		fdr_surface_destroy);
     }
 
     return DLCALL (comac_create, tee);
@@ -165,13 +176,15 @@ comac_destroy (comac_t *cr)
 void
 comac_pattern_destroy (comac_pattern_t *pattern)
 {
-    if (DLCALL (comac_pattern_get_type, pattern) == COMAC_PATTERN_TYPE_SURFACE) {
+    if (DLCALL (comac_pattern_get_type, pattern) ==
+	COMAC_PATTERN_TYPE_SURFACE) {
 	comac_surface_t *surface;
 
-	if (DLCALL (comac_pattern_get_surface, pattern, &surface) == COMAC_STATUS_SUCCESS &&
-	    DLCALL (comac_surface_get_type, surface) == COMAC_SURFACE_TYPE_TEE &&
-	    DLCALL (comac_surface_get_reference_count, surface) == 2)
-	{
+	if (DLCALL (comac_pattern_get_surface, pattern, &surface) ==
+		COMAC_STATUS_SUCCESS &&
+	    DLCALL (comac_surface_get_type, surface) ==
+		COMAC_SURFACE_TYPE_TEE &&
+	    DLCALL (comac_surface_get_reference_count, surface) == 2) {
 	    fdr_remove_tee (fdr_tee_surface_index (surface, 0));
 	}
     }
@@ -210,8 +223,7 @@ comac_pattern_create_for_surface (comac_surface_t *surface)
 }
 
 comac_status_t
-comac_pattern_get_surface (comac_pattern_t *pattern,
-			   comac_surface_t **surface)
+comac_pattern_get_surface (comac_pattern_t *pattern, comac_surface_t **surface)
 {
     comac_status_t status;
     comac_surface_t *tee;
@@ -230,7 +242,8 @@ comac_pattern_get_surface (comac_pattern_t *pattern,
 void
 comac_set_source_surface (comac_t *cr,
 			  comac_surface_t *surface,
-			  double x, double y)
+			  double x,
+			  double y)
 {
     comac_surface_t *tee;
 
@@ -244,7 +257,8 @@ comac_set_source_surface (comac_t *cr,
 comac_surface_t *
 comac_surface_create_similar (comac_surface_t *surface,
 			      comac_content_t content,
-			      int width, int height)
+			      int width,
+			      int height)
 {
     comac_surface_t *tee;
 
@@ -253,5 +267,8 @@ comac_surface_create_similar (comac_surface_t *surface,
 	surface = tee;
 
     return DLCALL (comac_surface_create_similar,
-		   surface, content, width, height);
+		   surface,
+		   content,
+		   width,
+		   height);
 }

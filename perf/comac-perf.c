@@ -43,15 +43,14 @@
 #include <sched.h>
 #endif
 
-
 /* timers */
 static comac_time_t timer;
 static comac_perf_timer_synchronize_t comac_perf_timer_synchronize = NULL;
 static void *comac_perf_timer_synchronize_closure = NULL;
 
 void
-comac_perf_timer_set_synchronize (comac_perf_timer_synchronize_t  synchronize,
-				  void				 *closure)
+comac_perf_timer_set_synchronize (comac_perf_timer_synchronize_t synchronize,
+				  void *closure)
 {
     comac_perf_timer_synchronize = synchronize;
     comac_perf_timer_synchronize_closure = closure;
@@ -84,7 +83,7 @@ comac_perf_yield (void)
     /* try to deactivate this thread until the scheduler calls it again */
 
 #if defined(_WIN32)
-    SleepEx(0, TRUE);
+    SleepEx (0, TRUE);
 #elif defined(_POSIX_PRIORITY_SCHEDULING)
     sched_yield ();
 #else

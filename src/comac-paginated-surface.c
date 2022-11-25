@@ -58,10 +58,10 @@ static comac_int_status_t
 _comac_paginated_surface_show_page (void *abstract_surface);
 
 static comac_surface_t *
-_comac_paginated_surface_create_similar (void			*abstract_surface,
-					 comac_content_t	 content,
-					 int			 width,
-					 int			 height)
+_comac_paginated_surface_create_similar (void *abstract_surface,
+					 comac_content_t content,
+					 int width,
+					 int height)
 {
     comac_rectangle_t rect;
     rect.x = rect.y = 0.;
@@ -91,9 +91,10 @@ _create_recording_surface_for_target (comac_surface_t *target,
 }
 
 comac_surface_t *
-_comac_paginated_surface_create (comac_surface_t				*target,
-				 comac_content_t				 content,
-				 const comac_paginated_surface_backend_t	*backend)
+_comac_paginated_surface_create (
+    comac_surface_t *target,
+    comac_content_t content,
+    const comac_paginated_surface_backend_t *backend)
 {
     comac_paginated_surface_t *surface;
     comac_status_t status;
@@ -119,7 +120,8 @@ _comac_paginated_surface_create (comac_surface_t				*target,
     surface->content = content;
     surface->backend = backend;
 
-    surface->recording_surface = _create_recording_surface_for_target (target, content);
+    surface->recording_surface =
+	_create_recording_surface_for_target (target, content);
     status = surface->recording_surface->status;
     if (unlikely (status))
 	goto FAIL_CLEANUP_SURFACE;
@@ -129,10 +131,10 @@ _comac_paginated_surface_create (comac_surface_t				*target,
 
     return &surface->base;
 
-  FAIL_CLEANUP_SURFACE:
+FAIL_CLEANUP_SURFACE:
     comac_surface_destroy (target);
     free (surface);
-  FAIL:
+FAIL:
     return _comac_surface_create_in_error (status);
 }
 
@@ -165,9 +167,9 @@ _comac_paginated_surface_get_recording (comac_surface_t *surface)
 }
 
 comac_status_t
-_comac_paginated_surface_set_size (comac_surface_t	*surface,
-				   int			 width,
-				   int			 height)
+_comac_paginated_surface_set_size (comac_surface_t *surface,
+				   int width,
+				   int height)
 {
     comac_paginated_surface_t *paginated_surface;
     comac_status_t status;
@@ -183,8 +185,9 @@ _comac_paginated_surface_set_size (comac_surface_t	*surface,
     recording_extents.height = height;
 
     comac_surface_destroy (paginated_surface->recording_surface);
-    paginated_surface->recording_surface = comac_recording_surface_create (paginated_surface->content,
-									   &recording_extents);
+    paginated_surface->recording_surface =
+	comac_recording_surface_create (paginated_surface->content,
+					&recording_extents);
     status = paginated_surface->recording_surface->status;
     if (unlikely (status))
 	return _comac_surface_set_error (surface, status);
@@ -205,7 +208,7 @@ _comac_paginated_surface_finish (void *abstract_surface)
 	status = _comac_paginated_surface_show_page (surface);
     }
 
-     /* XXX We want to propagate any errors from destroy(), but those are not
+    /* XXX We want to propagate any errors from destroy(), but those are not
       * returned via the api. So we need to explicitly finish the target,
       * and check the status afterwards. However, we can only call finish()
       * on the target, if we own it.
@@ -225,9 +228,9 @@ _comac_paginated_surface_finish (void *abstract_surface)
 }
 
 static comac_surface_t *
-_comac_paginated_surface_create_image_surface (void	       *abstract_surface,
-					       int		width,
-					       int		height)
+_comac_paginated_surface_create_image_surface (void *abstract_surface,
+					       int width,
+					       int height)
 {
     comac_paginated_surface_t *surface = abstract_surface;
     comac_surface_t *image;
@@ -244,7 +247,7 @@ _comac_paginated_surface_create_image_surface (void	       *abstract_surface,
 }
 
 static comac_surface_t *
-_comac_paginated_surface_source (void	       *abstract_surface,
+_comac_paginated_surface_source (void *abstract_surface,
 				 comac_rectangle_int_t *extents)
 {
     comac_paginated_surface_t *surface = abstract_surface;
@@ -252,9 +255,10 @@ _comac_paginated_surface_source (void	       *abstract_surface,
 }
 
 static comac_status_t
-_comac_paginated_surface_acquire_source_image (void	       *abstract_surface,
-					       comac_image_surface_t **image_out,
-					       void		   **image_extra)
+_comac_paginated_surface_acquire_source_image (
+    void *abstract_surface,
+    comac_image_surface_t **image_out,
+    void **image_extra)
 {
     comac_paginated_surface_t *surface = abstract_surface;
     comac_bool_t is_bounded;
@@ -270,30 +274,31 @@ _comac_paginated_surface_acquire_source_image (void	       *abstract_surface,
 							   extents.width,
 							   extents.height);
 
-    status = _comac_recording_surface_replay (surface->recording_surface, image);
+    status =
+	_comac_recording_surface_replay (surface->recording_surface, image);
     if (unlikely (status)) {
 	comac_surface_destroy (image);
 	return status;
     }
 
-    *image_out = (comac_image_surface_t*) image;
+    *image_out = (comac_image_surface_t *) image;
     *image_extra = NULL;
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static void
-_comac_paginated_surface_release_source_image (void	  *abstract_surface,
+_comac_paginated_surface_release_source_image (void *abstract_surface,
 					       comac_image_surface_t *image,
-					       void	       *image_extra)
+					       void *image_extra)
 {
     comac_surface_destroy (&image->base);
 }
 
 static comac_int_status_t
 _paint_thumbnail_image (comac_paginated_surface_t *surface,
-			int                        width,
-			int                        height)
+			int width,
+			int height)
 {
     comac_surface_pattern_t pattern;
     comac_rectangle_int_t extents;
@@ -304,13 +309,17 @@ _paint_thumbnail_image (comac_paginated_surface_t *surface,
     comac_status_t status = COMAC_STATUS_SUCCESS;
 
     _comac_surface_get_extents (surface->target, &extents);
-    x_scale = (double)width / extents.width;
-    y_scale = (double)height / extents.height;
+    x_scale = (double) width / extents.width;
+    y_scale = (double) height / extents.height;
 
-    image = _comac_paginated_surface_create_image_surface (surface, width, height);
+    image =
+	_comac_paginated_surface_create_image_surface (surface, width, height);
     comac_surface_set_device_scale (image, x_scale, y_scale);
-    comac_surface_set_device_offset (image, -extents.x*x_scale, -extents.y*y_scale);
-    status = _comac_recording_surface_replay (surface->recording_surface, image);
+    comac_surface_set_device_offset (image,
+				     -extents.x * x_scale,
+				     -extents.y * y_scale);
+    status =
+	_comac_recording_surface_replay (surface->recording_surface, image);
     if (unlikely (status))
 	goto cleanup;
 
@@ -331,14 +340,17 @@ _paint_thumbnail_image (comac_paginated_surface_t *surface,
 
     _comac_pattern_init_for_surface (&pattern, image);
     pattern.base.filter = COMAC_FILTER_NEAREST;
-    status = _comac_surface_paint (opaque, COMAC_OPERATOR_OVER, &pattern.base, NULL);
+    status =
+	_comac_surface_paint (opaque, COMAC_OPERATOR_OVER, &pattern.base, NULL);
     _comac_pattern_fini (&pattern.base);
     if (unlikely (status))
 	goto cleanup;
 
-    status = surface->backend->set_thumbnail_image (surface->target, (comac_image_surface_t *)opaque);
+    status = surface->backend->set_thumbnail_image (
+	surface->target,
+	(comac_image_surface_t *) opaque);
 
-  cleanup:
+cleanup:
     if (image)
 	comac_surface_destroy (image);
     if (opaque)
@@ -349,10 +361,12 @@ _paint_thumbnail_image (comac_paginated_surface_t *surface,
 
 static comac_int_status_t
 _paint_fallback_image (comac_paginated_surface_t *surface,
-		       comac_rectangle_int_t     *rect)
+		       comac_rectangle_int_t *rect)
 {
-    double x_scale = surface->base.x_fallback_resolution / surface->target->x_resolution;
-    double y_scale = surface->base.y_fallback_resolution / surface->target->y_resolution;
+    double x_scale =
+	surface->base.x_fallback_resolution / surface->target->x_resolution;
+    double y_scale =
+	surface->base.y_fallback_resolution / surface->target->y_resolution;
     int x, y, width, height;
     comac_status_t status;
     comac_surface_t *image;
@@ -363,21 +377,28 @@ _paint_fallback_image (comac_paginated_surface_t *surface,
     y = rect->y;
     width = rect->width;
     height = rect->height;
-    image = _comac_paginated_surface_create_image_surface (surface,
-							   ceil (width  * x_scale),
-							   ceil (height * y_scale));
+    image =
+	_comac_paginated_surface_create_image_surface (surface,
+						       ceil (width * x_scale),
+						       ceil (height * y_scale));
     comac_surface_set_device_scale (image, x_scale, y_scale);
     /* set_device_offset just sets the x0/y0 components of the matrix;
      * so we have to do the scaling manually. */
-    comac_surface_set_device_offset (image, -x*x_scale, -y*y_scale);
+    comac_surface_set_device_offset (image, -x * x_scale, -y * y_scale);
 
-    status = _comac_recording_surface_replay (surface->recording_surface, image);
+    status =
+	_comac_recording_surface_replay (surface->recording_surface, image);
     if (unlikely (status))
 	goto CLEANUP_IMAGE;
 
     _comac_pattern_init_for_surface (&pattern, image);
     comac_matrix_init (&pattern.base.matrix,
-		       x_scale, 0, 0, y_scale, -x*x_scale, -y*y_scale);
+		       x_scale,
+		       0,
+		       0,
+		       y_scale,
+		       -x * x_scale,
+		       -y * y_scale);
     /* the fallback should be rendered at native resolution, so disable
      * filtering (if possible) to avoid introducing potential artifacts. */
     pattern.base.filter = COMAC_FILTER_NEAREST;
@@ -385,7 +406,8 @@ _paint_fallback_image (comac_paginated_surface_t *surface,
     clip = _comac_clip_intersect_rectangle (NULL, rect);
     status = _comac_surface_paint (surface->target,
 				   COMAC_OPERATOR_SOURCE,
-				   &pattern.base, clip);
+				   &pattern.base,
+				   clip);
     _comac_clip_destroy (clip);
     _comac_pattern_fini (&pattern.base);
 
@@ -409,32 +431,38 @@ _paint_page (comac_paginated_surface_t *surface)
     if (unlikely (analysis->status))
 	return _comac_surface_set_error (surface->target, analysis->status);
 
-    status = surface->backend->set_paginated_mode (surface->target,
-	                                  COMAC_PAGINATED_MODE_ANALYZE);
+    status =
+	surface->backend->set_paginated_mode (surface->target,
+					      COMAC_PAGINATED_MODE_ANALYZE);
     if (unlikely (status))
 	goto FAIL;
 
-    status = _comac_recording_surface_replay_and_create_regions (surface->recording_surface,
-								 NULL, analysis, FALSE);
+    status = _comac_recording_surface_replay_and_create_regions (
+	surface->recording_surface,
+	NULL,
+	analysis,
+	FALSE);
     if (status)
 	goto FAIL;
 
     assert (analysis->status == COMAC_STATUS_SUCCESS);
 
-     if (surface->backend->set_bounding_box) {
-	 comac_box_t bbox;
+    if (surface->backend->set_bounding_box) {
+	comac_box_t bbox;
 
-	 _comac_analysis_surface_get_bounding_box (analysis, &bbox);
-	 status = surface->backend->set_bounding_box (surface->target, &bbox);
-	 if (unlikely (status))
-	     goto FAIL;
-     }
+	_comac_analysis_surface_get_bounding_box (analysis, &bbox);
+	status = surface->backend->set_bounding_box (surface->target, &bbox);
+	if (unlikely (status))
+	    goto FAIL;
+    }
 
     if (surface->backend->set_fallback_images_required) {
-	comac_bool_t has_fallbacks = _comac_analysis_surface_has_unsupported (analysis);
+	comac_bool_t has_fallbacks =
+	    _comac_analysis_surface_has_unsupported (analysis);
 
-	status = surface->backend->set_fallback_images_required (surface->target,
-								 has_fallbacks);
+	status =
+	    surface->backend->set_fallback_images_required (surface->target,
+							    has_fallbacks);
 	if (unlikely (status))
 	    goto FAIL;
     }
@@ -442,14 +470,12 @@ _paint_page (comac_paginated_surface_t *surface)
     /* Finer grained fallbacks are currently only supported for some
      * surface types */
     if (surface->backend->supports_fine_grained_fallbacks != NULL &&
-	surface->backend->supports_fine_grained_fallbacks (surface->target))
-    {
+	surface->backend->supports_fine_grained_fallbacks (surface->target)) {
 	has_supported = _comac_analysis_surface_has_supported (analysis);
 	has_page_fallback = FALSE;
-	has_finegrained_fallback = _comac_analysis_surface_has_unsupported (analysis);
-    }
-    else
-    {
+	has_finegrained_fallback =
+	    _comac_analysis_surface_has_unsupported (analysis);
+    } else {
 	if (_comac_analysis_surface_has_unsupported (analysis)) {
 	    has_supported = FALSE;
 	    has_page_fallback = TRUE;
@@ -461,15 +487,17 @@ _paint_page (comac_paginated_surface_t *surface)
     }
 
     if (has_supported) {
-	status = surface->backend->set_paginated_mode (surface->target,
-						       COMAC_PAGINATED_MODE_RENDER);
+	status =
+	    surface->backend->set_paginated_mode (surface->target,
+						  COMAC_PAGINATED_MODE_RENDER);
 	if (unlikely (status))
 	    goto FAIL;
 
-	status = _comac_recording_surface_replay_region (surface->recording_surface,
-							 NULL,
-							 surface->target,
-							 COMAC_RECORDING_REGION_NATIVE);
+	status = _comac_recording_surface_replay_region (
+	    surface->recording_surface,
+	    NULL,
+	    surface->target,
+	    COMAC_RECORDING_REGION_NATIVE);
 	assert (status != COMAC_INT_STATUS_UNSUPPORTED);
 	if (unlikely (status))
 	    goto FAIL;
@@ -479,8 +507,9 @@ _paint_page (comac_paginated_surface_t *surface)
 	comac_rectangle_int_t extents;
 	comac_bool_t is_bounded;
 
-	status = surface->backend->set_paginated_mode (surface->target,
-						       COMAC_PAGINATED_MODE_FALLBACK);
+	status = surface->backend->set_paginated_mode (
+	    surface->target,
+	    COMAC_PAGINATED_MODE_FALLBACK);
 	if (unlikely (status))
 	    goto FAIL;
 
@@ -496,11 +525,12 @@ _paint_page (comac_paginated_surface_t *surface)
     }
 
     if (has_finegrained_fallback) {
-        comac_region_t *region;
-        int num_rects, i;
+	comac_region_t *region;
+	int num_rects, i;
 
-	status = surface->backend->set_paginated_mode (surface->target,
-		                              COMAC_PAGINATED_MODE_FALLBACK);
+	status = surface->backend->set_paginated_mode (
+	    surface->target,
+	    COMAC_PAGINATED_MODE_FALLBACK);
 	if (unlikely (status))
 	    goto FAIL;
 
@@ -520,11 +550,13 @@ _paint_page (comac_paginated_surface_t *surface)
     if (surface->backend->requires_thumbnail_image) {
 	int width, height;
 
-	if (surface->backend->requires_thumbnail_image (surface->target, &width, &height))
+	if (surface->backend->requires_thumbnail_image (surface->target,
+							&width,
+							&height))
 	    _paint_thumbnail_image (surface, width, height);
     }
 
-  FAIL:
+FAIL:
     comac_surface_destroy (analysis);
 
     return _comac_surface_set_error (surface->target, status);
@@ -539,8 +571,9 @@ _start_page (comac_paginated_surface_t *surface)
     if (! surface->backend->start_page)
 	return COMAC_STATUS_SUCCESS;
 
-    return _comac_surface_set_error (surface->target,
-	                        surface->backend->start_page (surface->target));
+    return _comac_surface_set_error (
+	surface->target,
+	surface->backend->start_page (surface->target));
 }
 
 static comac_int_status_t
@@ -596,8 +629,9 @@ _comac_paginated_surface_show_page (void *abstract_surface)
     if (! surface->base.finished) {
 	comac_surface_destroy (surface->recording_surface);
 
-	surface->recording_surface = _create_recording_surface_for_target (surface->target,
-									   surface->content);
+	surface->recording_surface =
+	    _create_recording_surface_for_target (surface->target,
+						  surface->content);
 	status = surface->recording_surface->status;
 	if (unlikely (status))
 	    return status;
@@ -610,8 +644,8 @@ _comac_paginated_surface_show_page (void *abstract_surface)
 }
 
 static comac_bool_t
-_comac_paginated_surface_get_extents (void	              *abstract_surface,
-				      comac_rectangle_int_t   *rectangle)
+_comac_paginated_surface_get_extents (void *abstract_surface,
+				      comac_rectangle_int_t *rectangle)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
@@ -619,8 +653,8 @@ _comac_paginated_surface_get_extents (void	              *abstract_surface,
 }
 
 static void
-_comac_paginated_surface_get_font_options (void                  *abstract_surface,
-					   comac_font_options_t  *options)
+_comac_paginated_surface_get_font_options (void *abstract_surface,
+					   comac_font_options_t *options)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
@@ -628,10 +662,10 @@ _comac_paginated_surface_get_font_options (void                  *abstract_surfa
 }
 
 static comac_int_status_t
-_comac_paginated_surface_paint (void			*abstract_surface,
-				comac_operator_t	 op,
-				const comac_pattern_t	*source,
-				const comac_clip_t	*clip)
+_comac_paginated_surface_paint (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_clip_t *clip)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
@@ -639,53 +673,66 @@ _comac_paginated_surface_paint (void			*abstract_surface,
 }
 
 static comac_int_status_t
-_comac_paginated_surface_mask (void		*abstract_surface,
-			       comac_operator_t	 op,
-			       const comac_pattern_t	*source,
-			       const comac_pattern_t	*mask,
-			       const comac_clip_t		*clip)
+_comac_paginated_surface_mask (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_pattern_t *mask,
+			       const comac_clip_t *clip)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
-    return _comac_surface_mask (surface->recording_surface, op, source, mask, clip);
+    return _comac_surface_mask (surface->recording_surface,
+				op,
+				source,
+				mask,
+				clip);
 }
 
 static comac_int_status_t
-_comac_paginated_surface_stroke (void			*abstract_surface,
-				 comac_operator_t	 op,
-				 const comac_pattern_t	*source,
-				 const comac_path_fixed_t	*path,
-				 const comac_stroke_style_t	*style,
-				 const comac_matrix_t		*ctm,
-				 const comac_matrix_t		*ctm_inverse,
-				 double			 tolerance,
-				 comac_antialias_t	 antialias,
-				 const comac_clip_t		*clip)
+_comac_paginated_surface_stroke (void *abstract_surface,
+				 comac_operator_t op,
+				 const comac_pattern_t *source,
+				 const comac_path_fixed_t *path,
+				 const comac_stroke_style_t *style,
+				 const comac_matrix_t *ctm,
+				 const comac_matrix_t *ctm_inverse,
+				 double tolerance,
+				 comac_antialias_t antialias,
+				 const comac_clip_t *clip)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
-    return _comac_surface_stroke (surface->recording_surface, op, source,
-				  path, style,
-				  ctm, ctm_inverse,
-				  tolerance, antialias,
+    return _comac_surface_stroke (surface->recording_surface,
+				  op,
+				  source,
+				  path,
+				  style,
+				  ctm,
+				  ctm_inverse,
+				  tolerance,
+				  antialias,
 				  clip);
 }
 
 static comac_int_status_t
-_comac_paginated_surface_fill (void			*abstract_surface,
-			       comac_operator_t		 op,
-			       const comac_pattern_t	*source,
-			       const comac_path_fixed_t	*path,
-			       comac_fill_rule_t	 fill_rule,
-			       double			 tolerance,
-			       comac_antialias_t	 antialias,
-			       const comac_clip_t		*clip)
+_comac_paginated_surface_fill (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_path_fixed_t *path,
+			       comac_fill_rule_t fill_rule,
+			       double tolerance,
+			       comac_antialias_t antialias,
+			       const comac_clip_t *clip)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
-    return _comac_surface_fill (surface->recording_surface, op, source,
-				path, fill_rule,
-				tolerance, antialias,
+    return _comac_surface_fill (surface->recording_surface,
+				op,
+				source,
+				path,
+				fill_rule,
+				tolerance,
+				antialias,
 				clip);
 }
 
@@ -698,25 +745,31 @@ _comac_paginated_surface_has_show_text_glyphs (void *abstract_surface)
 }
 
 static comac_int_status_t
-_comac_paginated_surface_show_text_glyphs (void			      *abstract_surface,
-					   comac_operator_t	       op,
-					   const comac_pattern_t      *source,
-					   const char		      *utf8,
-					   int			       utf8_len,
-					   comac_glyph_t	      *glyphs,
-					   int			       num_glyphs,
-					   const comac_text_cluster_t *clusters,
-					   int			       num_clusters,
-					   comac_text_cluster_flags_t  cluster_flags,
-					   comac_scaled_font_t	      *scaled_font,
-					   const comac_clip_t		      *clip)
+_comac_paginated_surface_show_text_glyphs (
+    void *abstract_surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const char *utf8,
+    int utf8_len,
+    comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_text_cluster_t *clusters,
+    int num_clusters,
+    comac_text_cluster_flags_t cluster_flags,
+    comac_scaled_font_t *scaled_font,
+    const comac_clip_t *clip)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
-    return _comac_surface_show_text_glyphs (surface->recording_surface, op, source,
-					    utf8, utf8_len,
-					    glyphs, num_glyphs,
-					    clusters, num_clusters,
+    return _comac_surface_show_text_glyphs (surface->recording_surface,
+					    op,
+					    source,
+					    utf8,
+					    utf8_len,
+					    glyphs,
+					    num_glyphs,
+					    clusters,
+					    num_clusters,
 					    cluster_flags,
 					    scaled_font,
 					    clip);
@@ -728,21 +781,24 @@ _comac_paginated_surface_get_supported_mime_types (void *abstract_surface)
     comac_paginated_surface_t *surface = abstract_surface;
 
     if (surface->target->backend->get_supported_mime_types)
-	return surface->target->backend->get_supported_mime_types (surface->target);
+	return surface->target->backend->get_supported_mime_types (
+	    surface->target);
 
     return NULL;
 }
 
 static comac_int_status_t
-_comac_paginated_surface_tag (void			 *abstract_surface,
-			      comac_bool_t                begin,
-			      const char                 *tag_name,
-			      const char                 *attributes)
+_comac_paginated_surface_tag (void *abstract_surface,
+			      comac_bool_t begin,
+			      const char *tag_name,
+			      const char *attributes)
 {
     comac_paginated_surface_t *surface = abstract_surface;
 
     return _comac_surface_tag (surface->recording_surface,
-			       begin, tag_name, attributes);
+			       begin,
+			       tag_name,
+			       attributes);
 }
 
 static comac_surface_t *
@@ -750,7 +806,8 @@ _comac_paginated_surface_snapshot (void *abstract_other)
 {
     comac_paginated_surface_t *other = abstract_other;
 
-    return other->recording_surface->backend->snapshot (other->recording_surface);
+    return other->recording_surface->backend->snapshot (
+	other->recording_surface);
 }
 
 static comac_t *
@@ -759,8 +816,9 @@ _comac_paginated_context_create (void *target)
     comac_paginated_surface_t *surface = target;
 
     if (_comac_surface_is_subsurface (&surface->base))
-	surface = (comac_paginated_surface_t *)
-	    _comac_surface_subsurface_get_target (&surface->base);
+	surface =
+	    (comac_paginated_surface_t *) _comac_surface_subsurface_get_target (
+		&surface->base);
 
     return surface->recording_surface->backend->create_context (target);
 }

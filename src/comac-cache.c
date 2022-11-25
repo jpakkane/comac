@@ -41,14 +41,13 @@
 
 static void
 _comac_cache_shrink_to_accommodate (comac_cache_t *cache,
-				    unsigned long  additional);
+				    unsigned long additional);
 
 static comac_bool_t
 _comac_cache_entry_is_non_zero (const void *entry)
 {
     return ((const comac_cache_entry_t *) entry)->size;
 }
-
 
 /**
  * _comac_cache_init:
@@ -86,11 +85,11 @@ _comac_cache_entry_is_non_zero (const void *entry)
  * entries will occur.
  **/
 comac_status_t
-_comac_cache_init (comac_cache_t		*cache,
+_comac_cache_init (comac_cache_t *cache,
 		   comac_cache_keys_equal_func_t keys_equal,
-		   comac_cache_predicate_func_t  predicate,
-		   comac_destroy_func_t		 entry_destroy,
-		   unsigned long		 max_size)
+		   comac_cache_predicate_func_t predicate,
+		   comac_destroy_func_t entry_destroy,
+		   unsigned long max_size)
 {
     cache->hash_table = _comac_hash_table_create (keys_equal);
     if (unlikely (cache->hash_table == NULL))
@@ -127,9 +126,7 @@ _comac_cache_pluck (void *entry, void *closure)
 void
 _comac_cache_fini (comac_cache_t *cache)
 {
-    _comac_hash_table_foreach (cache->hash_table,
-			       _comac_cache_pluck,
-			       cache);
+    _comac_hash_table_foreach (cache->hash_table, _comac_cache_pluck, cache);
     assert (cache->size == 0);
     _comac_hash_table_destroy (cache->hash_table);
 }
@@ -194,8 +191,7 @@ _comac_cache_thaw (comac_cache_t *cache)
  * which case *entry_return will be %NULL).
  **/
 void *
-_comac_cache_lookup (comac_cache_t	  *cache,
-		     comac_cache_entry_t  *key)
+_comac_cache_lookup (comac_cache_t *cache, comac_cache_entry_t *key)
 {
     return _comac_hash_table_lookup (cache->hash_table,
 				     (comac_hash_entry_t *) key);
@@ -215,8 +211,8 @@ _comac_cache_remove_random (comac_cache_t *cache)
 {
     comac_cache_entry_t *entry;
 
-    entry = _comac_hash_table_random_entry (cache->hash_table,
-					    cache->predicate);
+    entry =
+	_comac_hash_table_random_entry (cache->hash_table, cache->predicate);
     if (unlikely (entry == NULL))
 	return FALSE;
 
@@ -237,7 +233,7 @@ _comac_cache_remove_random (comac_cache_t *cache)
  **/
 static void
 _comac_cache_shrink_to_accommodate (comac_cache_t *cache,
-				    unsigned long  additional)
+				    unsigned long additional)
 {
     while (cache->size + additional > cache->max_size) {
 	if (! _comac_cache_remove_random (cache))
@@ -258,8 +254,7 @@ _comac_cache_shrink_to_accommodate (comac_cache_t *cache,
  * %COMAC_STATUS_NO_MEMORY if insufficient memory is available.
  **/
 comac_status_t
-_comac_cache_insert (comac_cache_t	 *cache,
-		     comac_cache_entry_t *entry)
+_comac_cache_insert (comac_cache_t *cache, comac_cache_entry_t *entry)
 {
     comac_status_t status;
 
@@ -284,13 +279,11 @@ _comac_cache_insert (comac_cache_t	 *cache,
  * Remove an existing entry from the cache.
  **/
 void
-_comac_cache_remove (comac_cache_t	 *cache,
-		     comac_cache_entry_t *entry)
+_comac_cache_remove (comac_cache_t *cache, comac_cache_entry_t *entry)
 {
     cache->size -= entry->size;
 
-    _comac_hash_table_remove (cache->hash_table,
-			      (comac_hash_entry_t *) entry);
+    _comac_hash_table_remove (cache->hash_table, (comac_hash_entry_t *) entry);
 
     if (cache->entry_destroy)
 	cache->entry_destroy (entry);
@@ -306,13 +299,11 @@ _comac_cache_remove (comac_cache_t	 *cache,
  * non-specified order.
  **/
 void
-_comac_cache_foreach (comac_cache_t		      *cache,
-		      comac_cache_callback_func_t      cache_callback,
-		      void			      *closure)
+_comac_cache_foreach (comac_cache_t *cache,
+		      comac_cache_callback_func_t cache_callback,
+		      void *closure)
 {
-    _comac_hash_table_foreach (cache->hash_table,
-			       cache_callback,
-			       closure);
+    _comac_hash_table_foreach (cache->hash_table, cache_callback, closure);
 }
 
 uintptr_t
@@ -326,9 +317,7 @@ _comac_hash_string (const char *c)
 }
 
 uintptr_t
-_comac_hash_bytes (uintptr_t hash,
-		   const void *ptr,
-		   unsigned int length)
+_comac_hash_bytes (uintptr_t hash, const void *ptr, unsigned int length)
 {
     const uint8_t *bytes = ptr;
     /* This is the djb2 hash. */

@@ -28,13 +28,16 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    const char *text =
-"This needs to be a very long string, wider than the surface, and yet wider."
-"Ideally it should overflow the stack buffers, but do you really want to read "
-"a message that long. No. So we compromise with around 300 glyphs that is "
-"long enough to trigger the conditions as stated in "
-"https://lists.comacgraphics.org/archives/comac/2008-December/015976.html. "
-"Happy now?";
+    const char *text = "This needs to be a very long string, wider than the "
+		       "surface, and yet wider."
+		       "Ideally it should overflow the stack buffers, but do "
+		       "you really want to read "
+		       "a message that long. No. So we compromise with around "
+		       "300 glyphs that is "
+		       "long enough to trigger the conditions as stated in "
+		       "https://lists.comacgraphics.org/archives/comac/"
+		       "2008-December/015976.html. "
+		       "Happy now?";
     comac_text_extents_t extents;
 
     comac_set_source_rgb (cr, 1, 1, 1);
@@ -43,7 +46,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_font_size (cr, 16);
     comac_text_extents (cr, text, &extents);
-    comac_move_to (cr, -extents.width/2, 18);
+    comac_move_to (cr, -extents.width / 2, 18);
     comac_show_text (cr, text);
 
     /* XXX we should exercise comac_show_text_glyphs() as well,
@@ -56,7 +59,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (culled_glyphs,
 	    "Tests culling of glyphs and text clusters",
 	    "glyphs", /* keywords */
-	    NULL, /* requirements */
-	    20, 20,
-	    NULL, draw)
-
+	    NULL,     /* requirements */
+	    20,
+	    20,
+	    NULL,
+	    draw)

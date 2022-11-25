@@ -29,8 +29,8 @@
 
 void
 _comac_stats_compute (comac_stats_t *stats,
-		      comac_time_t  *values,
-		      int	     num_values)
+		      comac_time_t *values,
+		      int num_values)
 {
     comac_time_t sum, mean, q1, q3, iqr;
     comac_time_t outlier_min, outlier_max;
@@ -62,8 +62,8 @@ _comac_stats_compute (comac_stats_t *stats,
 	num_values = num_valid;
 	qsort (values, num_values, sizeof (comac_time_t), _comac_time_cmp);
 
-	q1 = values[1*num_values/4];
-	q3 = values[3*num_values/4];
+	q1 = values[1 * num_values / 4];
+	q3 = values[3 * num_values / 4];
 
 	/* XXX assumes we have native uint64_t */
 	iqr = q3 - q1;
@@ -77,7 +77,7 @@ _comac_stats_compute (comac_stats_t *stats,
 	for (i = 0; i < num_values && values[i] <= outlier_max; i++)
 	    ;
 	num_valid = i - min_valid;
-	assert(num_valid);
+	assert (num_valid);
 	values += min_valid;
     } while (num_valid != num_values);
 
@@ -94,15 +94,14 @@ _comac_stats_compute (comac_stats_t *stats,
     /* Let's use a normalized std. deviation for easier comparison. */
     s = 0;
     for (i = 0; i < num_valid; i++) {
-	double delta = (values[i] - mean) / (double)mean;
+	double delta = (values[i] - mean) / (double) mean;
 	s += delta * delta;
     }
-    stats->std_dev = sqrt(s / num_valid);
+    stats->std_dev = sqrt (s / num_valid);
 }
 
 comac_bool_t
-_comac_histogram_init (comac_histogram_t *h,
-		       int width, int height)
+_comac_histogram_init (comac_histogram_t *h, int width, int height)
 {
     h->width = width;
     h->height = height;
@@ -111,7 +110,7 @@ _comac_histogram_init (comac_histogram_t *h,
 
     h->num_columns = width - 2;
     h->num_rows = height - 1;
-    h->columns = malloc (sizeof(int)*h->num_columns);
+    h->columns = malloc (sizeof (int) * h->num_columns);
     return h->columns != NULL;
 }
 
@@ -140,11 +139,12 @@ _comac_histogram_compute (comac_histogram_t *h,
     if (delta == 0)
 	return FALSE;
 
-    memset(h->columns, 0, sizeof(int)*h->num_columns);
+    memset (h->columns, 0, sizeof (int) * h->num_columns);
     h->max_count = 0;
 
     for (i = 0; i < num_values; i++) {
-	int count = h->columns[(values[i] - h->min_value) * (h->num_columns - 1) / delta]++;
+	int count = h->columns[(values[i] - h->min_value) *
+			       (h->num_columns - 1) / delta]++;
 	if (count > h->max_count)
 	    h->max_count = count;
     }
@@ -153,8 +153,7 @@ _comac_histogram_compute (comac_histogram_t *h,
 }
 
 void
-_comac_histogram_printf (comac_histogram_t *h,
-			 FILE *file)
+_comac_histogram_printf (comac_histogram_t *h, FILE *file)
 {
     int x, y, num_rows;
 
@@ -162,14 +161,15 @@ _comac_histogram_printf (comac_histogram_t *h,
     if (h->max_count < num_rows)
 	num_rows = h->max_count;
     for (y = 0; y < num_rows; y++) {
-	int min_count = ((num_rows - y - 1) * h->max_count) / num_rows + h->max_count / (2*num_rows);
+	int min_count = ((num_rows - y - 1) * h->max_count) / num_rows +
+			h->max_count / (2 * num_rows);
 	fprintf (file, "|");
 	for (x = 0; x < h->num_columns; x++)
 	    fprintf (file, "%c", h->columns[x] > min_count ? 'x' : ' ');
 	fprintf (file, "|\n");
     }
 
-    fprintf(file, ".");
+    fprintf (file, ".");
     for (x = 0; x < h->num_columns; x++)
 	fprintf (file, "-");
     fprintf (file, ".\n");
@@ -178,5 +178,5 @@ _comac_histogram_printf (comac_histogram_t *h,
 void
 _comac_histogram_fini (comac_histogram_t *h)
 {
-    free(h->columns);
+    free (h->columns);
 }

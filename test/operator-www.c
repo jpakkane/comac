@@ -32,7 +32,9 @@ static void
 example (comac_t *cr, const char *name)
 {
     comac_save (cr);
-    comac_push_group_with_content (cr, comac_surface_get_content (comac_get_target (cr)));
+    comac_push_group_with_content (
+	cr,
+	comac_surface_get_content (comac_get_target (cr)));
 
     comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
     comac_clip (cr);
@@ -111,7 +113,8 @@ example (comac_t *cr, const char *name)
     comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
     comac_clip (cr);
     // Make problems with COMAC_CONTENT_COLOR visible
-    if (comac_surface_get_content (comac_get_target (cr)) == COMAC_CONTENT_COLOR) {
+    if (comac_surface_get_content (comac_get_target (cr)) ==
+	COMAC_CONTENT_COLOR) {
 	comac_set_source_rgb (cr, 1, 1, 1);
 	comac_paint (cr);
     }
@@ -120,7 +123,8 @@ example (comac_t *cr, const char *name)
     comac_paint (cr);
     comac_restore (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, 17);
@@ -174,6 +178,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (operator_www,
 	    "Operator samples from https://comacgraphics.org/operators/",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH * 2, HEIGHT * OPERATORS_COUNT,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    WIDTH * 2,
+	    HEIGHT *OPERATORS_COUNT,
+	    NULL,
+	    draw)

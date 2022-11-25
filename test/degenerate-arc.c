@@ -60,7 +60,7 @@ draw (comac_t *cr, int width, int height)
     comac_stroke (cr);
 
     comac_set_source_rgb (cr, 1, 0, 0);
-    comac_arc (cr, 20, 20, 2, 0, 2*M_PI);
+    comac_arc (cr, 20, 20, 2, 0, 2 * M_PI);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -69,6 +69,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (degenerate_arc,
 	    "Tests the behaviour of degenerate arcs",
 	    "degenerate", /* keywords */
-	    NULL, /* requirements */
-	    40, 40,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    40,
+	    40,
+	    NULL,
+	    draw)

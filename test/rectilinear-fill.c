@@ -34,24 +34,24 @@ draw_rectangles (comac_t *cr)
     comac_save (cr);
 
     /* test constructing single rectangles */
-    comac_rectangle (cr, 0, 0, SIZE/2, 2);
+    comac_rectangle (cr, 0, 0, SIZE / 2, 2);
     comac_fill (cr);
 
-    comac_rectangle (cr, 0, 5, SIZE/2, -2);
+    comac_rectangle (cr, 0, 5, SIZE / 2, -2);
     comac_fill (cr);
 
-    comac_rectangle (cr, SIZE/2, 6, -SIZE/2, 2);
+    comac_rectangle (cr, SIZE / 2, 6, -SIZE / 2, 2);
     comac_fill (cr);
 
-    comac_rectangle (cr, SIZE/2, 11, -SIZE/2, -2);
+    comac_rectangle (cr, SIZE / 2, 11, -SIZE / 2, -2);
     comac_fill (cr);
 
     /* test constructing multiple rectangles */
     comac_translate (cr, 0, 12);
-    comac_rectangle (cr, 0, 0, SIZE/2, 2);
-    comac_rectangle (cr, 0, 5, SIZE/2, -2);
-    comac_rectangle (cr, SIZE/2, 6, -SIZE/2, 2);
-    comac_rectangle (cr, SIZE/2, 11, -SIZE/2, -2);
+    comac_rectangle (cr, 0, 0, SIZE / 2, 2);
+    comac_rectangle (cr, 0, 5, SIZE / 2, -2);
+    comac_rectangle (cr, SIZE / 2, 6, -SIZE / 2, 2);
+    comac_rectangle (cr, SIZE / 2, 11, -SIZE / 2, -2);
     comac_fill (cr);
 
     comac_restore (cr);
@@ -79,6 +79,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (rectilinear_fill,
 	    "Test rectilinear fill operations (covering only whole pixels)",
 	    "fill, rectilinear", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, 2 * SIZE,
-	    NULL, draw)
+	    NULL,		 /* requirements */
+	    SIZE,
+	    2 * SIZE,
+	    NULL,
+	    draw)

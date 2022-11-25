@@ -27,36 +27,38 @@
 #include "comac-perf.h"
 #include <assert.h>
 
-#define STEP	5
+#define STEP 5
 
-static void path (comac_t *cr, int width, int height)
+static void
+path (comac_t *cr, int width, int height)
 {
     int i;
 
     comac_rectangle (cr, 0, 0, width, height);
     comac_clip (cr);
 
-    comac_translate (cr, width/2, height/2);
-    comac_rotate (cr, M_PI/4);
-    comac_translate (cr, -width/2, -height/2);
+    comac_translate (cr, width / 2, height / 2);
+    comac_rotate (cr, M_PI / 4);
+    comac_translate (cr, -width / 2, -height / 2);
 
     for (i = 0; i < width; i += STEP) {
-	comac_rectangle (cr, i, -2, 1, height+4);
-	comac_rectangle (cr, -2, i, width+4, 1);
+	comac_rectangle (cr, i, -2, 1, height + 4);
+	comac_rectangle (cr, -2, i, width + 4, 1);
     }
 }
 
-static void clip (comac_t *cr, int width, int height)
+static void
+clip (comac_t *cr, int width, int height)
 {
     int i, j;
 
-    for (j = 0; j < height; j += 2*STEP) {
-	for (i = 0; i < width; i += 2*STEP)
+    for (j = 0; j < height; j += 2 * STEP) {
+	for (i = 0; i < width; i += 2 * STEP)
 	    comac_rectangle (cr, i, j, STEP, STEP);
 
-	j += 2*STEP;
-	for (i = 0; i < width; i += 2*STEP)
-	    comac_rectangle (cr, i+STEP/2, j, STEP, STEP);
+	j += 2 * STEP;
+	for (i = 0; i < width; i += 2 * STEP)
+	    comac_rectangle (cr, i + STEP / 2, j, STEP, STEP);
     }
 
     comac_clip (cr);

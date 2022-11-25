@@ -47,11 +47,11 @@
  * make sure it looks happy.
  */
 
-#define WIDTH_IN_INCHES  3
+#define WIDTH_IN_INCHES 3
 #define HEIGHT_IN_INCHES 3
-#define WIDTH_IN_POINTS  (WIDTH_IN_INCHES  * 72.0)
+#define WIDTH_IN_POINTS (WIDTH_IN_INCHES * 72.0)
 #define HEIGHT_IN_POINTS (HEIGHT_IN_INCHES * 72.0)
-#define BASENAME         "multi-page.out"
+#define BASENAME "multi-page.out"
 
 static void
 draw_smiley (comac_t *cr, double width, double height, double smile_ratio)
@@ -92,12 +92,14 @@ draw_smiley (comac_t *cr, double width, double height, double smile_ratio)
     comac_fill (cr);
 
     /* Mouth */
-    comac_move_to (cr,
-		   0.35 - dx, 0.75 - dy);
+    comac_move_to (cr, 0.35 - dx, 0.75 - dy);
     comac_curve_to (cr,
-		    0.35 + dx, 0.75 + dy,
-		    0.65 - dx, 0.75 + dy,
-		    0.65 + dx, 0.75 - dy);
+		    0.35 + dx,
+		    0.75 + dy,
+		    0.65 - dx,
+		    0.75 + dy,
+		    0.65 + dx,
+		    0.75 - dy);
     comac_stroke (cr);
 
     comac_restore (cr);
@@ -112,9 +114,11 @@ draw_some_pages (comac_surface_t *surface)
     cr = comac_create (surface);
 
 #define NUM_FRAMES 5
-    for (i=0; i < NUM_FRAMES; i++) {
-	draw_smiley (cr, WIDTH_IN_POINTS, HEIGHT_IN_POINTS,
-	             (double) i / (NUM_FRAMES - 1));
+    for (i = 0; i < NUM_FRAMES; i++) {
+	draw_smiley (cr,
+		     WIDTH_IN_POINTS,
+		     HEIGHT_IN_POINTS,
+		     (double) i / (NUM_FRAMES - 1));
 
 	/* Duplicate the last frame onto another page. (This is just a
 	 * way to sneak comac_copy_page into the test).
@@ -135,22 +139,25 @@ preamble (comac_test_context_t *ctx)
     comac_status_t status;
     char *filename;
     comac_test_status_t result = COMAC_TEST_UNTESTED;
-    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
+    const char *path =
+	comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
 #if COMAC_HAS_PS_SURFACE
     if (comac_test_is_target_enabled (ctx, "ps2") ||
-        comac_test_is_target_enabled (ctx, "ps3"))
-    {
+	comac_test_is_target_enabled (ctx, "ps3")) {
 	if (result == COMAC_TEST_UNTESTED)
 	    result = COMAC_TEST_SUCCESS;
 
 	xasprintf (&filename, "%s/%s", path, BASENAME ".ps");
 	surface = comac_ps_surface_create (filename,
-					   WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
+					   WIDTH_IN_POINTS,
+					   HEIGHT_IN_POINTS);
 	status = comac_surface_status (surface);
 	if (status) {
-	    comac_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
-			    filename, comac_status_to_string (status));
+	    comac_test_log (ctx,
+			    "Failed to create ps surface for file %s: %s\n",
+			    filename,
+			    comac_status_to_string (status));
 	    result = COMAC_TEST_FAILURE;
 	}
 
@@ -158,7 +165,8 @@ preamble (comac_test_context_t *ctx)
 
 	comac_surface_destroy (surface);
 
-	printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
+	printf ("multi-page: Please check %s to ensure it looks happy.\n",
+		filename);
 	free (filename);
     }
 #endif
@@ -170,11 +178,14 @@ preamble (comac_test_context_t *ctx)
 
 	xasprintf (&filename, "%s/%s", path, BASENAME ".pdf");
 	surface = comac_pdf_surface_create (filename,
-					    WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
+					    WIDTH_IN_POINTS,
+					    HEIGHT_IN_POINTS);
 	status = comac_surface_status (surface);
 	if (status) {
-	    comac_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
-			    filename, comac_status_to_string (status));
+	    comac_test_log (ctx,
+			    "Failed to create pdf surface for file %s: %s\n",
+			    filename,
+			    comac_status_to_string (status));
 	    result = COMAC_TEST_FAILURE;
 	}
 
@@ -182,7 +193,8 @@ preamble (comac_test_context_t *ctx)
 
 	comac_surface_destroy (surface);
 
-	printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
+	printf ("multi-page: Please check %s to ensure it looks happy.\n",
+		filename);
 	free (filename);
     }
 #endif
@@ -192,7 +204,9 @@ preamble (comac_test_context_t *ctx)
 
 COMAC_TEST (multi_page,
 	    "Check the paginated surfaces handle multiple pages.",
-	    "paginated", /* keywords */
+	    "paginated",     /* keywords */
 	    "target=vector", /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    0,
+	    0,
+	    preamble,
+	    NULL)

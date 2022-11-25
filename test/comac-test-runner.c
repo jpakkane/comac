@@ -28,7 +28,7 @@
 
 #include <pixman.h> /* for version information */
 
-#define SHOULD_FORK HAVE_FORK && HAVE_WAITPID
+#define SHOULD_FORK HAVE_FORK &&HAVE_WAITPID
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -95,17 +95,12 @@ typedef struct _comac_test_runner {
     comac_bool_t force_pass;
 } comac_test_runner_t;
 
-typedef enum {
-    GE,
-    GT
-} comac_test_compare_op_t;
+typedef enum { GE, GT } comac_test_compare_op_t;
 
 static comac_test_list_t *tests;
 
-static void COMAC_BOILERPLATE_PRINTF_FORMAT(2,3)
-_log (comac_test_context_t *ctx,
-      const char *fmt,
-      ...)
+static void COMAC_BOILERPLATE_PRINTF_FORMAT (2, 3)
+    _log (comac_test_context_t *ctx, const char *fmt, ...)
 {
     va_list ap;
 
@@ -159,14 +154,12 @@ static comac_bool_t
 is_running_under_debugger (void)
 {
 #if HAVE_UNISTD_H && HAVE_LIBGEN_H && __linux__
-    char buf[1024] = { 0 };
-    char buf2[1024] = { 0 };
+    char buf[1024] = {0};
+    char buf2[1024] = {0};
 
     sprintf (buf, "/proc/%d/exe", getppid ());
-    if (readlink (buf, buf2, sizeof (buf2)) != -1 &&
-	buf2[1023] == 0 &&
-	strncmp (basename (buf2), "gdb", 3) == 0)
-    {
+    if (readlink (buf, buf2, sizeof (buf2)) != -1 && buf2[1023] == 0 &&
+	strncmp (basename (buf2), "gdb", 3) == 0) {
 	return TRUE;
     }
 #endif
@@ -233,7 +226,8 @@ _comac_test_runner_draw (comac_test_runner_t *runner,
 			 comac_test_context_t *ctx,
 			 const comac_boilerplate_target_t *target,
 			 comac_bool_t similar,
-			 int device_offset, int device_scale)
+			 int device_offset,
+			 int device_scale)
 {
 #if SHOULD_FORK
     if (! runner->foreground) {
@@ -247,16 +241,22 @@ _comac_test_runner_draw (comac_test_runner_t *runner,
 	    return COMAC_TEST_UNTESTED;
 
 	case 0: /* child */
-	    exit (_comac_test_context_run_for_target (ctx, target,
-						      similar, device_offset, device_scale));
+	    exit (_comac_test_context_run_for_target (ctx,
+						      target,
+						      similar,
+						      device_offset,
+						      device_scale));
 
 	default:
 	    return _comac_test_wait (pid);
 	}
     }
 #endif
-    return _comac_test_context_run_for_target (ctx, target,
-					       similar, device_offset, device_scale);
+    return _comac_test_context_run_for_target (ctx,
+					       target,
+					       similar,
+					       device_offset,
+					       device_scale);
 }
 
 static void
@@ -328,25 +328,31 @@ append_argv (int *argc, char ***argv, const char *str)
 static void
 usage (const char *argv0)
 {
-    fprintf (stderr,
-	     "Usage: %s [-afkxsl] [test-names|keywords ...]\n"
-	     "\n"
-	     "Run the comac conformance test suite over the given tests (all by default)\n"
-	     "The command-line arguments are interpreted as follows:\n"
-	     "\n"
-	     "  -a	all; run the full set of tests. By default the test suite\n"
-	     "          skips similar surface and device offset testing.\n"
-	     "  -f	foreground; do not fork\n"
-	     "  -k	match tests by keyword\n"
-	     "  -l	list only; just list selected test case names without executing\n"
-	     "  -s	include slow, long running tests\n"
-	     "  -x	exit on first failure\n"
-	     "\n"
-	     "If test names are given they are used as matches either to a specific\n"
-	     "test case or to a keyword, so a command such as\n"
-	     "\"%s -k text\" can be used to run all text test cases, and\n"
-	     "\"%s text-transform\" to run the individual case.\n",
-	     argv0, argv0, argv0);
+    fprintf (
+	stderr,
+	"Usage: %s [-afkxsl] [test-names|keywords ...]\n"
+	"\n"
+	"Run the comac conformance test suite over the given tests (all by "
+	"default)\n"
+	"The command-line arguments are interpreted as follows:\n"
+	"\n"
+	"  -a	all; run the full set of tests. By default the test suite\n"
+	"          skips similar surface and device offset testing.\n"
+	"  -f	foreground; do not fork\n"
+	"  -k	match tests by keyword\n"
+	"  -l	list only; just list selected test case names without "
+	"executing\n"
+	"  -s	include slow, long running tests\n"
+	"  -x	exit on first failure\n"
+	"\n"
+	"If test names are given they are used as matches either to a "
+	"specific\n"
+	"test case or to a keyword, so a command such as\n"
+	"\"%s -k text\" can be used to run all text test cases, and\n"
+	"\"%s text-transform\" to run the individual case.\n",
+	argv0,
+	argv0,
+	argv0);
 }
 
 static void
@@ -402,29 +408,31 @@ _runner_init (comac_test_runner_t *runner)
     runner->crashes_preamble = NULL;
     runner->errors_preamble = NULL;
 
-    runner->fails_per_target = xcalloc (sizeof (comac_test_list_t *),
-					runner->base.num_targets);
-    runner->crashes_per_target = xcalloc (sizeof (comac_test_list_t *),
-					  runner->base.num_targets);
-    runner->errors_per_target = xcalloc (sizeof (comac_test_list_t *),
-					  runner->base.num_targets);
-    runner->num_failed_per_target = xcalloc (sizeof (int),
-					     runner->base.num_targets);
-    runner->num_error_per_target = xcalloc (sizeof (int),
-					     runner->base.num_targets);
-    runner->num_crashed_per_target = xcalloc (sizeof (int),
-					      runner->base.num_targets);
+    runner->fails_per_target =
+	xcalloc (sizeof (comac_test_list_t *), runner->base.num_targets);
+    runner->crashes_per_target =
+	xcalloc (sizeof (comac_test_list_t *), runner->base.num_targets);
+    runner->errors_per_target =
+	xcalloc (sizeof (comac_test_list_t *), runner->base.num_targets);
+    runner->num_failed_per_target =
+	xcalloc (sizeof (int), runner->base.num_targets);
+    runner->num_error_per_target =
+	xcalloc (sizeof (int), runner->base.num_targets);
+    runner->num_crashed_per_target =
+	xcalloc (sizeof (int), runner->base.num_targets);
 }
 
 static void
 _runner_print_versions (comac_test_runner_t *runner)
 {
     _log (&runner->base,
-	 "Compiled against comac %s, running on %s.\n",
-	 COMAC_VERSION_STRING, comac_version_string ());
+	  "Compiled against comac %s, running on %s.\n",
+	  COMAC_VERSION_STRING,
+	  comac_version_string ());
     _log (&runner->base,
-	 "Compiled against pixman %s, running on %s.\n",
-	 PIXMAN_VERSION_STRING, pixman_version_string ());
+	  "Compiled against pixman %s, running on %s.\n",
+	  PIXMAN_VERSION_STRING,
+	  pixman_version_string ());
 
     fflush (runner->base.log_file);
 }
@@ -443,7 +451,8 @@ _runner_print_summary (comac_test_runner_t *runner)
 	  runner->num_skipped);
     if (runner->num_ignored_via_env) {
 	_log (&runner->base,
-	      "%d expected failure due to special request via environment variables!\n",
+	      "%d expected failure due to special request via environment "
+	      "variables!\n",
 	      runner->num_ignored_via_env);
     }
 }
@@ -505,15 +514,14 @@ _runner_print_details (comac_test_runner_t *runner)
 
 	target = runner->base.targets_to_test[n];
 	if (runner->num_crashed_per_target[n]) {
-	    _log (&runner->base, "%s (%s): %d crashed! -",
+	    _log (&runner->base,
+		  "%s (%s): %d crashed! -",
 		  target->name,
 		  comac_boilerplate_content_name (target->content),
 		  runner->num_crashed_per_target[n]);
 
-	    for (list = runner->crashes_per_target[n];
-		 list != NULL;
-		 list = list->next)
-	    {
+	    for (list = runner->crashes_per_target[n]; list != NULL;
+		 list = list->next) {
 		char *name = comac_test_get_name (list->test);
 		_log (&runner->base, " %s", name);
 		free (name);
@@ -521,15 +529,14 @@ _runner_print_details (comac_test_runner_t *runner)
 	    _log (&runner->base, "\n");
 	}
 	if (runner->num_error_per_target[n]) {
-	    _log (&runner->base, "%s (%s): %d error -",
+	    _log (&runner->base,
+		  "%s (%s): %d error -",
 		  target->name,
 		  comac_boilerplate_content_name (target->content),
 		  runner->num_error_per_target[n]);
 
-	    for (list = runner->errors_per_target[n];
-		 list != NULL;
-		 list = list->next)
-	    {
+	    for (list = runner->errors_per_target[n]; list != NULL;
+		 list = list->next) {
 		char *name = comac_test_get_name (list->test);
 		_log (&runner->base, " %s", name);
 		free (name);
@@ -538,15 +545,14 @@ _runner_print_details (comac_test_runner_t *runner)
 	}
 
 	if (runner->num_failed_per_target[n]) {
-	    _log (&runner->base, "%s (%s): %d failed -",
+	    _log (&runner->base,
+		  "%s (%s): %d failed -",
 		  target->name,
 		  comac_boilerplate_content_name (target->content),
 		  runner->num_failed_per_target[n]);
 
-	    for (list = runner->fails_per_target[n];
-		 list != NULL;
-		 list = list->next)
-	    {
+	    for (list = runner->fails_per_target[n]; list != NULL;
+		 list = list->next) {
 		char *name = comac_test_get_name (list->test);
 		_log (&runner->base, " %s", name);
 		free (name);
@@ -564,9 +570,10 @@ _runner_print_results (comac_test_runner_t *runner)
 
     if (! runner->passed && ! runner->num_crashed) {
 	_log (&runner->base,
-"\n"
-"Note: These failures may be due to external factors.\n"
-"Please read test/README -- \"Getting the elusive zero failures\".\n");
+	      "\n"
+	      "Note: These failures may be due to external factors.\n"
+	      "Please read test/README -- \"Getting the elusive zero "
+	      "failures\".\n");
     }
 }
 
@@ -597,15 +604,14 @@ _runner_fini (comac_test_runner_t *runner)
     if (runner->force_pass)
 	return COMAC_TEST_SUCCESS;
 
-    return runner->num_failed + runner->num_crashed ?
-	COMAC_TEST_FAILURE :
-	runner->num_passed + runner->num_xfailed ?
-	COMAC_TEST_SUCCESS : COMAC_TEST_UNTESTED;
+    return runner->num_failed + runner->num_crashed   ? COMAC_TEST_FAILURE
+	   : runner->num_passed + runner->num_xfailed ? COMAC_TEST_SUCCESS
+						      : COMAC_TEST_UNTESTED;
 }
 
 static comac_bool_t
 expect_fail_due_to_env_var (comac_test_context_t *ctx,
-                            const comac_boilerplate_target_t *target)
+			    const comac_boilerplate_target_t *target)
 {
     const char *prefix = "COMAC_TEST_IGNORE_";
     const char *content = comac_boilerplate_content_name (target->content);
@@ -615,10 +621,19 @@ expect_fail_due_to_env_var (comac_test_context_t *ctx,
     char *to_replace;
 
     /* Construct the name of the env var */
-    env_name = malloc (strlen (prefix) + strlen (target->name) + 1 + strlen (content) + 1);
+    env_name = malloc (strlen (prefix) + strlen (target->name) + 1 +
+		       strlen (content) + 1);
     if (env_name == NULL) {
-	fprintf(stderr, "Malloc failed, cannot check $%s%s_%s\n", prefix, target->name, content);
-	comac_test_log(ctx, "Malloc failed, cannot check $%s%s_%s\n", prefix, target->name, content);
+	fprintf (stderr,
+		 "Malloc failed, cannot check $%s%s_%s\n",
+		 prefix,
+		 target->name,
+		 content);
+	comac_test_log (ctx,
+			"Malloc failed, cannot check $%s%s_%s\n",
+			prefix,
+			target->name,
+			content);
 	return FALSE;
     }
     strcpy (env_name, prefix);
@@ -627,10 +642,10 @@ expect_fail_due_to_env_var (comac_test_context_t *ctx,
     strcat (env_name, content);
 
     /* Deal with some invalid characters: Replace '-' and '&' with '_' */
-    while ((to_replace = strchr(env_name, '-')) != NULL) {
+    while ((to_replace = strchr (env_name, '-')) != NULL) {
 	*to_replace = '_';
     }
-    while ((to_replace = strchr(env_name, '&')) != NULL) {
+    while ((to_replace = strchr (env_name, '&')) != NULL) {
 	*to_replace = '_';
     }
 
@@ -639,43 +654,45 @@ expect_fail_due_to_env_var (comac_test_context_t *ctx,
     /* Look for the test name in the env var (comma separated) */
     if (env) {
 	for (size_t start = 0;; start += strlen (ctx->test_name)) {
-	   char *match = strstr (env + start, ctx->test_name);
-	   if (!match)
-	       break;
+	    char *match = strstr (env + start, ctx->test_name);
+	    if (! match)
+		break;
 
-	   /* Make sure that "foo" does not match in "barfoo,foobaz"
+	    /* Make sure that "foo" does not match in "barfoo,foobaz"
 	    * There must be commas around the test name (or string begin/end)
 	    */
-	   if (env == match || match[-1] == ',') {
-	       char *end = match + strlen (ctx->test_name);
-	       if (*end == '\0' || *end == ',') {
-		   result = TRUE;
-		   break;
-	       }
-	   }
+	    if (env == match || match[-1] == ',') {
+		char *end = match + strlen (ctx->test_name);
+		if (*end == '\0' || *end == ',') {
+		    result = TRUE;
+		    break;
+		}
+	    }
 	}
     }
     if (result)
-       comac_test_log (ctx,
-                       "Expecting '%s' to fail because it appears in $%s\n",
-                       ctx->test_name, env_name);
+	comac_test_log (ctx,
+			"Expecting '%s' to fail because it appears in $%s\n",
+			ctx->test_name,
+			env_name);
 
     free (env_name);
 
     return result;
 }
 
-
 static comac_bool_t
 _version_compare (int a, comac_test_compare_op_t op, int b)
 {
     switch (op) {
-    case GT: return a > b;
-    case GE: return a >= b;
-    default: return FALSE;
+    case GT:
+	return a > b;
+    case GE:
+	return a >= b;
+    default:
+	return FALSE;
     }
 }
-
 
 static comac_bool_t
 _get_required_version (const char *str,
@@ -715,8 +732,10 @@ _has_required_comac_version (const char *str)
     int major, minor, micro;
 
     if (! _get_required_version (str + 5 /* advance over "comac" */,
-				 &op, &major, &minor, &micro))
-    {
+				 &op,
+				 &major,
+				 &minor,
+				 &micro)) {
 	fprintf (stderr, "unrecognised comac version requirement '%s'\n", str);
 	return FALSE;
     }
@@ -762,9 +781,9 @@ _has_required_rsvg_version (const char *str)
     return TRUE;
 }
 
-#define TEST_SIMILAR	0x1
-#define TEST_OFFSET	0x2
-#define TEST_SCALE	0x4
+#define TEST_SIMILAR 0x1
+#define TEST_OFFSET 0x2
+#define TEST_SCALE 0x4
 int
 main (int argc, char **argv)
 {
@@ -778,8 +797,8 @@ main (int argc, char **argv)
 
 #ifdef _MSC_VER
     /* We don't want an assert dialog, we want stderr */
-    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-    _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
+    _CrtSetReportMode (_CRT_ERROR, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile (_CRT_ERROR, _CRTDBG_FILE_STDERR);
 #endif
 
     _comac_test_runner_register_tests ();
@@ -823,7 +842,7 @@ main (int argc, char **argv)
 
     _parse_cmdline (&runner, &argc, &argv);
 
-    comac_tests_env = getenv("COMAC_TESTS");
+    comac_tests_env = getenv ("COMAC_TESTS");
     append_argv (&argc, &argv, comac_tests_env);
 
     if (runner.full_test & TEST_OFFSET) {
@@ -837,15 +856,16 @@ main (int argc, char **argv)
     if (! runner.list_only) {
 	_runner_init (&runner);
 	_runner_print_versions (&runner);
-	target_status = xmalloc (sizeof (comac_test_status_t) *
-				 runner.base.num_targets);
+	target_status =
+	    xmalloc (sizeof (comac_test_status_t) * runner.base.num_targets);
     }
 
     for (test_list = tests; test_list != NULL; test_list = test_list->next) {
 	const comac_test_t *test = test_list->test;
 	comac_test_context_t ctx;
 	comac_test_status_t status;
-	comac_bool_t failed = FALSE, xfailed = FALSE, error = FALSE, crashed = FALSE, skipped = TRUE;
+	comac_bool_t failed = FALSE, xfailed = FALSE, error = FALSE,
+		     crashed = FALSE, skipped = TRUE;
 	comac_bool_t in_preamble = FALSE;
 	char *name = comac_test_get_name (test);
 	int i;
@@ -937,7 +957,8 @@ main (int argc, char **argv)
 	}
 
 	_comac_test_context_init_for_test (&ctx, &runner.base, test);
-	memset (target_status, 0,
+	memset (target_status,
+		0,
 		sizeof (comac_test_status_t) * ctx.num_targets);
 
 	if (ctx.test->preamble != NULL) {
@@ -955,23 +976,23 @@ main (int argc, char **argv)
 
 	    case COMAC_TEST_NEW:
 	    case COMAC_TEST_FAILURE:
-		runner.fails_preamble = _list_prepend (runner.fails_preamble,
-						       test);
+		runner.fails_preamble =
+		    _list_prepend (runner.fails_preamble, test);
 		in_preamble = TRUE;
 		failed = TRUE;
 		goto TEST_DONE;
 
 	    case COMAC_TEST_ERROR:
-		runner.errors_preamble = _list_prepend (runner.errors_preamble,
-							 test);
+		runner.errors_preamble =
+		    _list_prepend (runner.errors_preamble, test);
 		in_preamble = TRUE;
 		failed = TRUE;
 		goto TEST_DONE;
 
 	    case COMAC_TEST_NO_MEMORY:
 	    case COMAC_TEST_CRASHED:
-		runner.crashes_preamble = _list_prepend (runner.crashes_preamble,
-							 test);
+		runner.crashes_preamble =
+		    _list_prepend (runner.crashes_preamble, test);
 		in_preamble = TRUE;
 		failed = TRUE;
 		goto TEST_DONE;
@@ -986,18 +1007,16 @@ main (int argc, char **argv)
 
 	for (n = 0; n < ctx.num_targets; n++) {
 	    const comac_boilerplate_target_t *target;
-	    comac_bool_t target_failed = FALSE,
-			 target_xfailed = FALSE,
-			 target_error = FALSE,
-			 target_crashed = FALSE,
+	    comac_bool_t target_failed = FALSE, target_xfailed = FALSE,
+			 target_error = FALSE, target_crashed = FALSE,
 			 target_skipped = TRUE;
 	    comac_test_similar_t has_similar;
 
 	    target = ctx.targets_to_test[n];
 
-	    has_similar = runner.full_test & TEST_SIMILAR ?
-			  comac_test_target_has_similar (&ctx, target) :
-			  DIRECT;
+	    has_similar = runner.full_test & TEST_SIMILAR
+			      ? comac_test_target_has_similar (&ctx, target)
+			      : DIRECT;
 	    for (m = 0; m < runner.num_device_offsets; m++) {
 		for (k = 0; k < runner.num_device_scales; k++) {
 		    int dev_offset = m * 25;
@@ -1005,35 +1024,68 @@ main (int argc, char **argv)
 		    comac_test_similar_t similar;
 
 		    for (similar = DIRECT; similar <= has_similar; similar++) {
-			status = _comac_test_runner_draw (&runner, &ctx, target,
-							  similar, dev_offset, dev_scale);
+			status = _comac_test_runner_draw (&runner,
+							  &ctx,
+							  target,
+							  similar,
+							  dev_offset,
+							  dev_scale);
 
 			if (expect_fail_due_to_env_var (&ctx, target)) {
 			    if (status == COMAC_TEST_FAILURE) {
-				comac_test_log (&ctx, "Turning FAIL into XFAIL due to env\n");
-				fprintf (stderr, "Turning FAIL into XFAIL due to env\n");
+				comac_test_log (
+				    &ctx,
+				    "Turning FAIL into XFAIL due to env\n");
+				fprintf (
+				    stderr,
+				    "Turning FAIL into XFAIL due to env\n");
 				runner.num_ignored_via_env++;
 				status = COMAC_TEST_XFAILURE;
 			    } else {
-				fprintf (stderr, "Test was expected to fail due to an environment variable, but did not!\n");
-				fprintf (stderr, "Please update the corresponding COMAC_TEST_IGNORE_* variable.\n");
+				fprintf (
+				    stderr,
+				    "Test was expected to fail due to an "
+				    "environment variable, but did not!\n");
+				fprintf (stderr,
+					 "Please update the corresponding "
+					 "COMAC_TEST_IGNORE_* variable.\n");
 				status = COMAC_TEST_ERROR;
 			    }
 			}
-			if (getenv ("COMAC_TEST_UGLY_HACK_TO_SOMETIMES_IGNORE_SCRIPT_XCB_HUGE_IMAGE_SHM")) {
-			    if (strcmp (target->name, "script") == 0 && strcmp (ctx.test_name, "xcb-huge-image-shm") == 0) {
+			if (getenv ("COMAC_TEST_UGLY_HACK_TO_SOMETIMES_IGNORE_"
+				    "SCRIPT_XCB_HUGE_IMAGE_SHM")) {
+			    if (strcmp (target->name, "script") == 0 &&
+				strcmp (ctx.test_name, "xcb-huge-image-shm") ==
+				    0) {
 				if (status == COMAC_TEST_FAILURE) {
-				    fprintf (stderr, "This time the xcb-huge-image-shm test on script surface failed.\n");
-				    comac_test_log (&ctx, "Turning FAIL into XFAIL due to env\n");
-				    fprintf (stderr, "Turning FAIL into XFAIL due to env\n");
+				    fprintf (
+					stderr,
+					"This time the xcb-huge-image-shm test "
+					"on script surface failed.\n");
+				    comac_test_log (
+					&ctx,
+					"Turning FAIL into XFAIL due to env\n");
+				    fprintf (
+					stderr,
+					"Turning FAIL into XFAIL due to env\n");
 				    runner.num_ignored_via_env++;
 				} else {
-				    fprintf (stderr, "This time the xcb-huge-image-shm test on script surface did not fail.\n");
-				    comac_test_log (&ctx, "Turning the status into XFAIL due to env\n");
-				    fprintf (stderr, "Turning the status into XFAIL due to env\n");
+				    fprintf (
+					stderr,
+					"This time the xcb-huge-image-shm test "
+					"on script surface did not fail.\n");
+				    comac_test_log (&ctx,
+						    "Turning the status into "
+						    "XFAIL due to env\n");
+				    fprintf (stderr,
+					     "Turning the status into XFAIL "
+					     "due to env\n");
 				}
 				status = COMAC_TEST_XFAILURE;
-				fprintf (stderr, "If you are were getting one of the outcomes for some time, please update this code.\n");
+				fprintf (stderr,
+					 "If you are were getting one of the "
+					 "outcomes for some time, please "
+					 "update this code.\n");
 			    }
 			}
 			switch (status) {
@@ -1064,21 +1116,21 @@ main (int argc, char **argv)
 	    if (target_crashed) {
 		target_status[n] = COMAC_TEST_CRASHED;
 		runner.num_crashed_per_target[n]++;
-		runner.crashes_per_target[n] = _list_prepend (runner.crashes_per_target[n],
-							      test);
+		runner.crashes_per_target[n] =
+		    _list_prepend (runner.crashes_per_target[n], test);
 		crashed = TRUE;
 	    } else if (target_error) {
 		target_status[n] = COMAC_TEST_ERROR;
 		runner.num_error_per_target[n]++;
-		runner.errors_per_target[n] = _list_prepend (runner.errors_per_target[n],
-							     test);
+		runner.errors_per_target[n] =
+		    _list_prepend (runner.errors_per_target[n], test);
 
 		error = TRUE;
 	    } else if (target_failed) {
 		target_status[n] = COMAC_TEST_FAILURE;
 		runner.num_failed_per_target[n]++;
-		runner.fails_per_target[n] = _list_prepend (runner.fails_per_target[n],
-							    test);
+		runner.fails_per_target[n] =
+		    _list_prepend (runner.fails_per_target[n], test);
 
 		failed = TRUE;
 	    } else if (target_xfailed) {
@@ -1092,25 +1144,27 @@ main (int argc, char **argv)
 	    }
 	}
 
-  TEST_DONE:
+    TEST_DONE:
 	comac_test_fini (&ctx);
-  TEST_SKIPPED:
+    TEST_SKIPPED:
 	targets[0] = '\0';
 	if (crashed) {
 	    if (! in_preamble) {
 		len = 0;
-		for (n = 0 ; n < runner.base.num_targets; n++) {
+		for (n = 0; n < runner.base.num_targets; n++) {
 		    if (target_status[n] == COMAC_TEST_CRASHED) {
 			if (strstr (targets,
-				    runner.base.targets_to_test[n]->name) == NULL)
-			{
-			    len += snprintf (targets + len, sizeof (targets) - len,
-					     "%s, ",
-					     runner.base.targets_to_test[n]->name);
+				    runner.base.targets_to_test[n]->name) ==
+			    NULL) {
+			    len +=
+				snprintf (targets + len,
+					  sizeof (targets) - len,
+					  "%s, ",
+					  runner.base.targets_to_test[n]->name);
 			}
 		    }
 		}
-		targets[len-2] = '\0';
+		targets[len - 2] = '\0';
 		_log (&runner.base, "\n%s: CRASH! (%s)\n", name, targets);
 	    } else {
 		_log (&runner.base, "\n%s: CRASH!\n", name);
@@ -1120,19 +1174,20 @@ main (int argc, char **argv)
 	} else if (error) {
 	    if (! in_preamble) {
 		len = 0;
-		for (n = 0 ; n < runner.base.num_targets; n++) {
+		for (n = 0; n < runner.base.num_targets; n++) {
 		    if (target_status[n] == COMAC_TEST_ERROR) {
 			if (strstr (targets,
-				    runner.base.targets_to_test[n]->name) == NULL)
-			{
-			    len += snprintf (targets + len,
-					     sizeof (targets) - len,
-					     "%s, ",
-					     runner.base.targets_to_test[n]->name);
+				    runner.base.targets_to_test[n]->name) ==
+			    NULL) {
+			    len +=
+				snprintf (targets + len,
+					  sizeof (targets) - len,
+					  "%s, ",
+					  runner.base.targets_to_test[n]->name);
 			}
 		    }
 		}
-		targets[len-2] = '\0';
+		targets[len - 2] = '\0';
 		_log (&runner.base, "%s: ERROR (%s)\n", name, targets);
 	    } else {
 		_log (&runner.base, "%s: ERROR\n", name);
@@ -1142,19 +1197,20 @@ main (int argc, char **argv)
 	} else if (failed) {
 	    if (! in_preamble) {
 		len = 0;
-		for (n = 0 ; n < runner.base.num_targets; n++) {
+		for (n = 0; n < runner.base.num_targets; n++) {
 		    if (target_status[n] == COMAC_TEST_FAILURE) {
 			if (strstr (targets,
-				    runner.base.targets_to_test[n]->name) == NULL)
-			{
-			    len += snprintf (targets + len,
-					     sizeof (targets) - len,
-					     "%s, ",
-					     runner.base.targets_to_test[n]->name);
+				    runner.base.targets_to_test[n]->name) ==
+			    NULL) {
+			    len +=
+				snprintf (targets + len,
+					  sizeof (targets) - len,
+					  "%s, ",
+					  runner.base.targets_to_test[n]->name);
 			}
 		    }
 		}
-		targets[len-2] = '\0';
+		targets[len - 2] = '\0';
 		_log (&runner.base, "%s: FAIL (%s)\n", name, targets);
 	    } else {
 		_log (&runner.base, "%s: FAIL\n", name);
@@ -1173,24 +1229,25 @@ main (int argc, char **argv)
 	}
 	fflush (runner.base.log_file);
 
-  TEST_NEXT:
+    TEST_NEXT:
 	free (name);
 	if (runner.exit_on_failure && ! runner.passed)
 	    break;
-
     }
 
     if (comac_tests_env)
-	free(argv);
+	free (argv);
 
     if (runner.list_only) {
 	printf ("\n");
 	return COMAC_TEST_SUCCESS;
     }
 
-    for (n = 0 ; n < runner.base.num_targets; n++) {
-	runner.crashes_per_target[n] = _list_reverse (runner.crashes_per_target[n]);
-	runner.errors_per_target[n] = _list_reverse (runner.errors_per_target[n]);
+    for (n = 0; n < runner.base.num_targets; n++) {
+	runner.crashes_per_target[n] =
+	    _list_reverse (runner.crashes_per_target[n]);
+	runner.errors_per_target[n] =
+	    _list_reverse (runner.errors_per_target[n]);
 	runner.fails_per_target[n] = _list_reverse (runner.fails_per_target[n]);
     }
 

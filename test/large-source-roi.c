@@ -35,7 +35,7 @@ create_large_source (int width, int height)
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
-    comac_set_source_rgb (cr, 1,0,0); /* red */
+    comac_set_source_rgb (cr, 1, 0, 0); /* red */
     comac_paint (cr);
     surface = comac_surface_reference (comac_get_target (cr));
     comac_destroy (cr);
@@ -51,7 +51,7 @@ draw (comac_t *cr, int width, int height)
      * paint on the source surface if source_width > 30582. */
     double source_width = 30000.0;
 
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
     /* Create an excessively wide source image, all red. */
@@ -60,7 +60,7 @@ draw (comac_t *cr, int width, int height)
     /* Set a transform so that the source is scaled down to fit in the
      * destination horizontally and then paint the entire source to
      * the context. */
-    comac_scale (cr, width/source_width, 1.0);
+    comac_scale (cr, width / source_width, 1.0);
     comac_set_source_surface (cr, source, 0, 0);
     comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
     comac_paint (cr);
@@ -73,6 +73,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (large_source_roi,
 	    "Uses a all of a large source image.",
 	    "stress, source", /* keywords */
-	    NULL, /* requirements */
-	    7, 7,
-	    NULL, draw)
+	    NULL,	      /* requirements */
+	    7,
+	    7,
+	    NULL,
+	    draw)

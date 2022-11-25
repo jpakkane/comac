@@ -54,8 +54,7 @@ typedef struct comac_filler {
 } comac_filler_t;
 
 static comac_status_t
-_comac_filler_line_to (void *closure,
-		       const comac_point_t *point)
+_comac_filler_line_to (void *closure, const comac_point_t *point)
 {
     comac_filler_t *filler = closure;
     comac_status_t status;
@@ -87,8 +86,7 @@ _comac_filler_close (void *closure)
 }
 
 static comac_status_t
-_comac_filler_move_to (void *closure,
-		       const comac_point_t *point)
+_comac_filler_move_to (void *closure, const comac_point_t *point)
 {
     comac_filler_t *filler = closure;
     comac_status_t status;
@@ -98,7 +96,7 @@ _comac_filler_move_to (void *closure,
     if (unlikely (status))
 	return status;
 
-        /* make sure that the closure represents a degenerate path */
+    /* make sure that the closure represents a degenerate path */
     filler->current_point = *point;
     filler->last_move_to = *point;
 
@@ -106,24 +104,30 @@ _comac_filler_move_to (void *closure,
 }
 
 static comac_status_t
-_comac_filler_curve_to (void		*closure,
-			const comac_point_t	*p1,
-			const comac_point_t	*p2,
-			const comac_point_t	*p3)
+_comac_filler_curve_to (void *closure,
+			const comac_point_t *p1,
+			const comac_point_t *p2,
+			const comac_point_t *p3)
 {
     comac_filler_t *filler = closure;
     comac_spline_t spline;
 
     if (filler->has_limits) {
-	if (! _comac_spline_intersects (&filler->current_point, p1, p2, p3,
+	if (! _comac_spline_intersects (&filler->current_point,
+					p1,
+					p2,
+					p3,
 					&filler->limit))
 	    return _comac_filler_line_to (filler, p3);
     }
 
     if (! _comac_spline_init (&spline,
-			      _comac_filler_add_point, filler,
-			      &filler->current_point, p1, p2, p3))
-    {
+			      _comac_filler_add_point,
+			      filler,
+			      &filler->current_point,
+			      p1,
+			      p2,
+			      p3)) {
 	return _comac_filler_line_to (closure, p3);
     }
 
@@ -172,8 +176,7 @@ typedef struct comac_filler_rectilinear_aligned {
 } comac_filler_ra_t;
 
 static comac_status_t
-_comac_filler_ra_line_to (void *closure,
-			  const comac_point_t *point)
+_comac_filler_ra_line_to (void *closure, const comac_point_t *point)
 {
     comac_filler_ra_t *filler = closure;
     comac_status_t status;
@@ -199,8 +202,7 @@ _comac_filler_ra_close (void *closure)
 }
 
 static comac_status_t
-_comac_filler_ra_move_to (void *closure,
-			  const comac_point_t *point)
+_comac_filler_ra_move_to (void *closure, const comac_point_t *point)
 {
     comac_filler_ra_t *filler = closure;
     comac_status_t status;
@@ -268,19 +270,20 @@ _comac_path_fixed_fill_to_traps (const comac_path_fixed_t *path,
     if (unlikely (status || polygon.num_edges == 0))
 	goto CLEANUP;
 
-    status = _comac_bentley_ottmann_tessellate_polygon (traps,
-							&polygon, fill_rule);
+    status =
+	_comac_bentley_ottmann_tessellate_polygon (traps, &polygon, fill_rule);
 
-  CLEANUP:
+CLEANUP:
     _comac_polygon_fini (&polygon);
     return status;
 }
 
 static comac_status_t
-_comac_path_fixed_fill_rectilinear_tessellate_to_boxes (const comac_path_fixed_t *path,
-							comac_fill_rule_t fill_rule,
-							comac_antialias_t antialias,
-							comac_boxes_t *boxes)
+_comac_path_fixed_fill_rectilinear_tessellate_to_boxes (
+    const comac_path_fixed_t *path,
+    comac_fill_rule_t fill_rule,
+    comac_antialias_t antialias,
+    comac_boxes_t *boxes)
 {
     comac_polygon_t polygon;
     comac_status_t status;
@@ -289,12 +292,15 @@ _comac_path_fixed_fill_rectilinear_tessellate_to_boxes (const comac_path_fixed_t
     boxes->num_limits = 0;
 
     /* tolerance will be ignored as the path is rectilinear */
-    status = _comac_path_fixed_fill_rectilinear_to_polygon (path, antialias, &polygon);
+    status = _comac_path_fixed_fill_rectilinear_to_polygon (path,
+							    antialias,
+							    &polygon);
     if (likely (status == COMAC_STATUS_SUCCESS)) {
 	status =
-	    _comac_bentley_ottmann_tessellate_rectilinear_polygon_to_boxes (&polygon,
-									    fill_rule,
-									    boxes);
+	    _comac_bentley_ottmann_tessellate_rectilinear_polygon_to_boxes (
+		&polygon,
+		fill_rule,
+		boxes);
     }
 
     _comac_polygon_fini (&polygon);
@@ -338,7 +344,9 @@ _comac_path_fixed_fill_rectilinear_to_boxes (const comac_path_fixed_t *path,
     }
 
     if (_comac_path_fixed_iter_at_end (&iter))
-	return _comac_bentley_ottmann_tessellate_boxes (boxes, fill_rule, boxes);
+	return _comac_bentley_ottmann_tessellate_boxes (boxes,
+							fill_rule,
+							boxes);
 
     /* path is not rectangular, try extracting clipped rectilinear edges */
     _comac_boxes_clear (boxes);

@@ -82,6 +82,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_double_free,
 	    "Test a double free bug in the clipping code",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

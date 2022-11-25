@@ -27,9 +27,9 @@
 #include "comac-test.h"
 
 static void
-circle (comac_t* cr, double xc, double yc, double radius)
+circle (comac_t *cr, double xc, double yc, double radius)
 {
-    comac_arc (cr, xc, yc, radius, 0.0, 2*M_PI);
+    comac_arc (cr, xc, yc, radius, 0.0, 2 * M_PI);
 }
 
 static comac_test_status_t
@@ -55,6 +55,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (group_unaligned,
 	    "test non-integer sized sub-surface",
 	    "group", /* keywords */
-	    NULL, /* requirements */
-	    35.5, 35.5,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    35.5,
+	    35.5,
+	    NULL,
+	    draw)

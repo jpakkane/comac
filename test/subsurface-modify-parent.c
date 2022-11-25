@@ -35,7 +35,10 @@ draw (comac_t *cr, int width, int height)
 
     /* fill the centre, but through the *original* surface */
     region = comac_surface_create_for_rectangle (comac_get_target (cr),
-						 20, 20, 20, 20);
+						 20,
+						 20,
+						 20,
+						 20);
 
     /* first trigger a snapshot of the region... */
     comac_set_source_surface (cr, region, 20, 20);
@@ -70,9 +73,13 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (subsurface_modify_parent,
-	    "Tests source clipping with later modifications",
-	    "subsurface", /* keywords */
-	    "target=raster", /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
-	    60, 60,
-	    NULL, draw)
+COMAC_TEST (
+    subsurface_modify_parent,
+    "Tests source clipping with later modifications",
+    "subsurface", /* keywords */
+    "target=raster",
+    /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
+    60,
+    60,
+    NULL,
+    draw)

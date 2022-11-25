@@ -35,15 +35,18 @@ draw (comac_t *cr, int width, int height)
     comac_restore (cr);
 
     comac_rectangle (cr, 5, 5, 20, 20);
-    comac_rotate (cr, M_PI/4);
+    comac_rotate (cr, M_PI / 4);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
 COMAC_TEST (rotate_stroke_box,
-	    "Ensure rectangle path optimization works when the stroking transform is non rectilinear",
+	    "Ensure rectangle path optimization works when the stroking "
+	    "transform is non rectilinear",
 	    "path", /* keywords */
-	    NULL, /* requirements */
-	    30, 30,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    30,
+	    30,
+	    NULL,
+	    draw)

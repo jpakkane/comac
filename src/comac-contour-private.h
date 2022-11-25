@@ -86,8 +86,7 @@ _comac_shape_reduce (comac_shape_t *shape, double tolerance);
 #endif
 
 comac_private void
-_comac_contour_init (comac_contour_t *contour,
-		     int direction);
+_comac_contour_init (comac_contour_t *contour, int direction);
 
 comac_private comac_int_status_t
 __comac_contour_add_point (comac_contour_t *contour,
@@ -100,12 +99,10 @@ comac_private void
 _comac_contour_reverse (comac_contour_t *contour);
 
 comac_private comac_int_status_t
-_comac_contour_add (comac_contour_t *dst,
-		    const comac_contour_t *src);
+_comac_contour_add (comac_contour_t *dst, const comac_contour_t *src);
 
 comac_private comac_int_status_t
-_comac_contour_add_reversed (comac_contour_t *dst,
-			     const comac_contour_t *src);
+_comac_contour_add_reversed (comac_contour_t *dst, const comac_contour_t *src);
 
 comac_private void
 __comac_contour_remove_last_chain (comac_contour_t *contour);

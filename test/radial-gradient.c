@@ -32,8 +32,8 @@
 #define WIDTH (SIZE * NUM_GRADIENTS)
 #define HEIGHT (SIZE * NUM_EXTEND)
 
-typedef void (*composite_t)(comac_t *cr, comac_pattern_t *pattern);
-typedef void (*add_stops_t)(comac_pattern_t *pattern);
+typedef void (*composite_t) (comac_t *cr, comac_pattern_t *pattern);
+typedef void (*add_stops_t) (comac_pattern_t *pattern);
 
 /*
  * We want to test all the possible relative positions of the start
@@ -79,14 +79,7 @@ typedef void (*add_stops_t)(comac_pattern_t *pattern);
  */
 
 static const double radiuses[NUM_GRADIENTS] = {
-    0.25,
-    0.50,
-    0.50,
-    1.00,
-    1.00,
-    1.50,
-    1.75
-};
+    0.25, 0.50, 0.50, 1.00, 1.00, 1.50, 1.75};
 
 static comac_pattern_t *
 create_pattern (int index)
@@ -117,9 +110,9 @@ create_pattern (int index)
 static void
 pattern_add_stops (comac_pattern_t *pattern)
 {
-    comac_pattern_add_color_stop_rgba (pattern, 0.0,        1, 0, 0, 0.75);
+    comac_pattern_add_color_stop_rgba (pattern, 0.0, 1, 0, 0, 0.75);
     comac_pattern_add_color_stop_rgba (pattern, sqrt (0.5), 0, 1, 0, 0);
-    comac_pattern_add_color_stop_rgba (pattern, 1.0,        0, 0, 1, 1);
+    comac_pattern_add_color_stop_rgba (pattern, 1.0, 0, 0, 1, 1);
 }
 
 static void
@@ -128,17 +121,14 @@ pattern_add_single_stop (comac_pattern_t *pattern)
     comac_pattern_add_color_stop_rgba (pattern, 0.25, 1, 0, 0, 1);
 }
 
-
 static comac_test_status_t
 draw (comac_t *cr, add_stops_t add_stops, composite_t composite)
 {
     int i, j;
-    comac_extend_t extend[NUM_EXTEND] = {
-	COMAC_EXTEND_NONE,
-	COMAC_EXTEND_REPEAT,
-	COMAC_EXTEND_REFLECT,
-	COMAC_EXTEND_PAD
-    };
+    comac_extend_t extend[NUM_EXTEND] = {COMAC_EXTEND_NONE,
+					 COMAC_EXTEND_REPEAT,
+					 COMAC_EXTEND_REFLECT,
+					 COMAC_EXTEND_PAD};
 
     comac_scale (cr, SIZE, SIZE);
     comac_translate (cr, 0.5, 0.5);
@@ -168,7 +158,6 @@ draw (comac_t *cr, add_stops_t add_stops, composite_t composite)
     return COMAC_TEST_SUCCESS;
 }
 
-
 static void
 composite_simple (comac_t *cr, comac_pattern_t *pattern)
 {
@@ -182,7 +171,6 @@ composite_mask (comac_t *cr, comac_pattern_t *pattern)
     comac_set_source_rgb (cr, 1, 0, 1);
     comac_mask (cr, pattern);
 }
-
 
 static comac_test_status_t
 draw_simple (comac_t *cr, int width, int height)
@@ -205,7 +193,6 @@ draw_source (comac_t *cr, int width, int height)
     return draw (cr, pattern_add_stops, composite_simple);
 }
 
-
 static comac_test_status_t
 draw_mask_source (comac_t *cr, int width, int height)
 {
@@ -223,34 +210,45 @@ draw_one_stop (comac_t *cr, int width, int height)
 COMAC_TEST (radial_gradient,
 	    "Simple test of radial gradients",
 	    "gradient", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_simple)
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_simple)
 
 COMAC_TEST (radial_gradient_mask,
 	    "Simple test of radial gradients using a MASK",
 	    "gradient,mask", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_mask)
+	    NULL,	     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_mask)
 
 COMAC_TEST (radial_gradient_source,
 	    "Simple test of radial gradients using the SOURCE operator",
 	    "gradient,source", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_source)
+	    NULL,	       /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_source)
 
-COMAC_TEST (radial_gradient_mask_source,
-	    "Simple test of radial gradients using a MASK with a SOURCE operator",
-	    "gradient,mask,source", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_mask_source)
+COMAC_TEST (
+    radial_gradient_mask_source,
+    "Simple test of radial gradients using a MASK with a SOURCE operator",
+    "gradient,mask,source", /* keywords */
+    NULL,		    /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw_mask_source)
 
 COMAC_TEST (radial_gradient_one_stop,
 	    "Tests radial gradients with a single stop",
 	    "gradient,radial", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_one_stop)
+	    NULL,	       /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_one_stop)

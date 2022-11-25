@@ -25,7 +25,8 @@
 
 #include "comac-test.h"
 
-static comac_surface_t *create_source_surface (int size);
+static comac_surface_t *
+create_source_surface (int size);
 
 /* We use a relatively large source to exercise bug:
  *   Bug 7360 painting huge surfaces fails
@@ -40,7 +41,7 @@ static void
 draw_pattern (comac_surface_t **surface_inout, int surface_size)
 {
     comac_t *cr;
-    int mid = surface_size/2;
+    int mid = surface_size / 2;
 
     cr = comac_create (*surface_inout);
     comac_surface_destroy (*surface_inout);
@@ -50,57 +51,64 @@ draw_pattern (comac_surface_t **surface_inout, int surface_size)
     comac_paint (cr);
 
     comac_rectangle (cr, 0, 0, surface_size, surface_size);
-    comac_rectangle (cr, mid - SIZE/4, mid + SIZE/4, SIZE/2, -SIZE/2);
+    comac_rectangle (cr, mid - SIZE / 4, mid + SIZE / 4, SIZE / 2, -SIZE / 2);
     comac_clip (cr);
 
     /* outside squares -> opaque */
     comac_set_source_rgb (cr, 1, 1, 1);
-    comac_rectangle (cr,
-		     0, 0,
-		     surface_size / 2, surface_size / 2);
+    comac_rectangle (cr, 0, 0, surface_size / 2, surface_size / 2);
     comac_fill (cr);
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_rectangle (cr,
-		     surface_size / 2, 0,
-		     surface_size / 2, surface_size / 2);
+		     surface_size / 2,
+		     0,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr);
     comac_set_source_rgb (cr, 0, 1, 0);
     comac_rectangle (cr,
-		     0, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
+		     0,
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr);
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_rectangle (cr,
-		     surface_size / 2, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr);
 
     comac_reset_clip (cr);
-    comac_rectangle (cr, mid - SIZE/4, mid - SIZE/4, SIZE/2, SIZE/2);
+    comac_rectangle (cr, mid - SIZE / 4, mid - SIZE / 4, SIZE / 2, SIZE / 2);
     comac_clip (cr);
 
     /* inside squares -> translucent */
     comac_set_source_rgba (cr, 0, 0, 1, .5);
-    comac_rectangle (cr,
-		     0, 0,
-		     surface_size / 2, surface_size / 2);
+    comac_rectangle (cr, 0, 0, surface_size / 2, surface_size / 2);
     comac_fill (cr);
     comac_set_source_rgba (cr, 0, 1, 0, .5);
     comac_rectangle (cr,
-		     surface_size / 2, 0,
-		     surface_size / 2, surface_size / 2);
+		     surface_size / 2,
+		     0,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr);
     comac_set_source_rgba (cr, 1, 0, 0, .5);
     comac_rectangle (cr,
-		     0, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
+		     0,
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr);
     comac_set_source_rgba (cr, 1, 1, 1, .5);
     comac_rectangle (cr,
-		     surface_size / 2, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr);
-
 
     *surface_inout = comac_surface_reference (comac_get_target (cr));
     comac_destroy (cr);
@@ -126,18 +134,21 @@ draw (comac_t *cr, int width, int height)
     /* copy a subregion to a smaller intermediate surface */
     similar = comac_surface_create_similar (surface,
 					    COMAC_CONTENT_COLOR_ALPHA,
-					    INTER_SIZE, INTER_SIZE);
+					    INTER_SIZE,
+					    INTER_SIZE);
     cr2 = comac_create (similar);
     comac_surface_destroy (similar);
-    comac_set_source_surface (cr2, surface,
-			      (INTER_SIZE - SOURCE_SIZE)/2,
-			      (INTER_SIZE - SOURCE_SIZE)/2);
+    comac_set_source_surface (cr2,
+			      surface,
+			      (INTER_SIZE - SOURCE_SIZE) / 2,
+			      (INTER_SIZE - SOURCE_SIZE) / 2);
     comac_paint (cr2);
 
     /* and then paint onto a small surface for checking */
-    comac_set_source_surface (cr, comac_get_target (cr2),
-			      (width - INTER_SIZE)/2,
-			      (height - INTER_SIZE)/2);
+    comac_set_source_surface (cr,
+			      comac_get_target (cr2),
+			      (width - INTER_SIZE) / 2,
+			      (height - INTER_SIZE) / 2);
     comac_destroy (cr2);
     comac_rectangle (cr, 16, 16, 64, 64);
     comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
@@ -148,8 +159,7 @@ draw (comac_t *cr, int width, int height)
     status = comac_surface_status (surface);
     comac_surface_destroy (surface);
 
-    return comac_test_status_from_status (comac_test_get_context (cr),
-					  status);
+    return comac_test_status_from_status (comac_test_get_context (cr), status);
 }
 
 static comac_test_status_t

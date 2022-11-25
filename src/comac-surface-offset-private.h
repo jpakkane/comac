@@ -45,51 +45,56 @@ COMAC_BEGIN_DECLS
 
 comac_private comac_status_t
 _comac_surface_offset_paint (comac_surface_t *target,
-			     int x, int y,
-			     comac_operator_t	 op,
+			     int x,
+			     int y,
+			     comac_operator_t op,
 			     const comac_pattern_t *source,
-			     const comac_clip_t	    *clip);
+			     const comac_clip_t *clip);
 
 comac_private comac_status_t
 _comac_surface_offset_mask (comac_surface_t *target,
-			    int x, int y,
-			    comac_operator_t	 op,
+			    int x,
+			    int y,
+			    comac_operator_t op,
 			    const comac_pattern_t *source,
 			    const comac_pattern_t *mask,
-			    const comac_clip_t	    *clip);
+			    const comac_clip_t *clip);
 
 comac_private comac_status_t
 _comac_surface_offset_stroke (comac_surface_t *surface,
-			      int x, int y,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_path_fixed_t	*path,
-			      const comac_stroke_style_t	*stroke_style,
-			      const comac_matrix_t		*ctm,
-			      const comac_matrix_t		*ctm_inverse,
-			      double			 tolerance,
-			      comac_antialias_t	 antialias,
-			      const comac_clip_t		*clip);
+			      int x,
+			      int y,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      const comac_stroke_style_t *stroke_style,
+			      const comac_matrix_t *ctm,
+			      const comac_matrix_t *ctm_inverse,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip);
 
 comac_private comac_status_t
-_comac_surface_offset_fill (comac_surface_t	*surface,
-			    int x, int y,
-			    comac_operator_t	 op,
-			    const comac_pattern_t*source,
-			    const comac_path_fixed_t	*path,
-			    comac_fill_rule_t	 fill_rule,
-			    double		 tolerance,
-			    comac_antialias_t	 antialias,
-			    const comac_clip_t		*clip);
+_comac_surface_offset_fill (comac_surface_t *surface,
+			    int x,
+			    int y,
+			    comac_operator_t op,
+			    const comac_pattern_t *source,
+			    const comac_path_fixed_t *path,
+			    comac_fill_rule_t fill_rule,
+			    double tolerance,
+			    comac_antialias_t antialias,
+			    const comac_clip_t *clip);
 
 comac_private comac_status_t
-_comac_surface_offset_glyphs (comac_surface_t		*surface,
-			      int x, int y,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      comac_scaled_font_t	*scaled_font,
-			      comac_glyph_t		*glyphs,
-			      int			 num_glyphs,
-			      const comac_clip_t		*clip);
+_comac_surface_offset_glyphs (comac_surface_t *surface,
+			      int x,
+			      int y,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      comac_scaled_font_t *scaled_font,
+			      comac_glyph_t *glyphs,
+			      int num_glyphs,
+			      const comac_clip_t *clip);
 
 #endif /* COMAC_SURFACE_OFFSET_PRIVATE_H */

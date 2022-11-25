@@ -25,29 +25,26 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(3 * LINE_WIDTH)
+#define LINE_WIDTH 10.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (3 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
 {
     comac_move_to (cr, 0, 0);
-    comac_rel_curve_to (cr,
-			-SIZE/4, SIZE/3,
-			-SIZE/4, SIZE/3,
-			0, SIZE);
-    comac_rel_curve_to (cr,
-			SIZE/3, -SIZE/4,
-			SIZE/3, -SIZE/4,
-			SIZE, 0);
+    comac_rel_curve_to (cr, -SIZE / 4, SIZE / 3, -SIZE / 4, SIZE / 3, 0, SIZE);
+    comac_rel_curve_to (cr, SIZE / 3, -SIZE / 4, SIZE / 3, -SIZE / 4, SIZE, 0);
     comac_close_path (cr);
 
     comac_move_to (cr, 5 * LINE_WIDTH, 3 * LINE_WIDTH);
     comac_rel_curve_to (cr,
-			0, -3 * LINE_WIDTH,
-			0, -3 * LINE_WIDTH,
-			-3 * LINE_WIDTH, -3 * LINE_WIDTH);
+			0,
+			-3 * LINE_WIDTH,
+			0,
+			-3 * LINE_WIDTH,
+			-3 * LINE_WIDTH,
+			-3 * LINE_WIDTH);
 }
 
 static void
@@ -104,8 +101,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (caps_joins_curve,
 	    "Test caps and joins on curves",
 	    "stroke, cap, join", /* keywords */
-	    NULL, /* requirements */
+	    NULL,		 /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    2 * (PAD + SIZE) + PAD,
-	    NULL, draw)
-
+	    NULL,
+	    draw)

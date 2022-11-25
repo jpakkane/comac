@@ -53,22 +53,23 @@ _expand_four_tuple_to_five (unsigned char four_tuple[4],
     uint32_t value;
     int digit, i;
 
-    value = (uint32_t)four_tuple[0] << 24 | four_tuple[1] << 16 | four_tuple[2] << 8 | four_tuple[3];
+    value = (uint32_t) four_tuple[0] << 24 | four_tuple[1] << 16 |
+	    four_tuple[2] << 8 | four_tuple[3];
     if (all_zero)
 	*all_zero = TRUE;
     for (i = 0; i < 5; i++) {
 	digit = value % 85;
 	if (digit != 0 && all_zero)
 	    *all_zero = FALSE;
-	five_tuple[4-i] = digit + 33;
+	five_tuple[4 - i] = digit + 33;
 	value = value / 85;
     }
 }
 
 static comac_status_t
 _comac_base85_stream_write (comac_output_stream_t *base,
-			    const unsigned char	  *data,
-			    unsigned int	   length)
+			    const unsigned char *data,
+			    unsigned int length)
 {
     comac_base85_stream_t *stream = (comac_base85_stream_t *) base;
     const unsigned char *ptr = data;
@@ -79,7 +80,9 @@ _comac_base85_stream_write (comac_output_stream_t *base,
 	stream->four_tuple[stream->pending++] = *ptr++;
 	length--;
 	if (stream->pending == 4) {
-	    _expand_four_tuple_to_five (stream->four_tuple, five_tuple, &is_zero);
+	    _expand_four_tuple_to_five (stream->four_tuple,
+					five_tuple,
+					&is_zero);
 	    if (is_zero)
 		_comac_output_stream_write (stream->output, "z", 1);
 	    else
@@ -100,7 +103,9 @@ _comac_base85_stream_close (comac_output_stream_t *base)
     if (stream->pending) {
 	memset (stream->four_tuple + stream->pending, 0, 4 - stream->pending);
 	_expand_four_tuple_to_five (stream->four_tuple, five_tuple, NULL);
-	_comac_output_stream_write (stream->output, five_tuple, stream->pending + 1);
+	_comac_output_stream_write (stream->output,
+				    five_tuple,
+				    stream->pending + 1);
     }
 
     return _comac_output_stream_get_status (stream->output);

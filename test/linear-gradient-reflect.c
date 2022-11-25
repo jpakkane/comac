@@ -27,7 +27,7 @@
 #include "comac-test.h"
 #include "stdio.h"
 
-#define WIDTH  50
+#define WIDTH 50
 #define HEIGHT 50
 
 static comac_test_status_t
@@ -42,10 +42,8 @@ draw (comac_t *cr, int width, int height)
 
     pattern = comac_pattern_create_linear (0, 0, 10.0, 0);
 
-    comac_pattern_add_color_stop_rgb (pattern, 0.0,
-				      0.0, 0.0, 1.0);
-    comac_pattern_add_color_stop_rgb (pattern, 1.0,
-				      1.0, 0.0, 0.0);
+    comac_pattern_add_color_stop_rgb (pattern, 0.0, 0.0, 0.0, 1.0);
+    comac_pattern_add_color_stop_rgb (pattern, 1.0, 1.0, 0.0, 0.0);
     comac_pattern_set_extend (pattern, COMAC_EXTEND_REFLECT);
 
     comac_set_source (cr, pattern);
@@ -61,7 +59,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (linear_gradient_reflect,
 	    "Tests the drawing of linear gradient with reflect",
 	    "gradient", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
-
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

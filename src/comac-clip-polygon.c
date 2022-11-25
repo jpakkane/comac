@@ -105,8 +105,10 @@ _comac_clip_get_polygon (const comac_clip_t *clip,
 	goto err;
 
     if (clip->num_boxes > 1) {
-	status = _comac_polygon_intersect_with_boxes (polygon, fill_rule,
-						      clip->boxes, clip->num_boxes);
+	status = _comac_polygon_intersect_with_boxes (polygon,
+						      fill_rule,
+						      clip->boxes,
+						      clip->num_boxes);
 	if (unlikely (status))
 	    goto err;
     }
@@ -122,8 +124,10 @@ _comac_clip_get_polygon (const comac_clip_t *clip,
 						    clip_path->tolerance,
 						    &next);
 	if (likely (status == COMAC_STATUS_SUCCESS))
-		status = _comac_polygon_intersect (polygon, *fill_rule,
-						   &next, clip_path->fill_rule);
+	    status = _comac_polygon_intersect (polygon,
+					       *fill_rule,
+					       &next,
+					       clip_path->fill_rule);
 	_comac_polygon_fini (&next);
 	if (unlikely (status))
 	    goto err;

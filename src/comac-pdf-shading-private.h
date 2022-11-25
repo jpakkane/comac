@@ -41,7 +41,6 @@
 #include "comac-types-private.h"
 #include "comac-pattern-private.h"
 
-
 typedef struct _comac_pdf_shading {
     int shading_type;
     int bits_per_coordinate;
@@ -52,7 +51,6 @@ typedef struct _comac_pdf_shading {
     unsigned char *data;
     unsigned long data_length;
 } comac_pdf_shading_t;
-
 
 /**
  * _comac_pdf_shading_init_color:
@@ -66,9 +64,8 @@ typedef struct _comac_pdf_shading {
  * include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_pdf_shading_init_color (comac_pdf_shading_t        *shading,
+_comac_pdf_shading_init_color (comac_pdf_shading_t *shading,
 			       const comac_mesh_pattern_t *pattern);
-
 
 /**
  * _comac_pdf_shading_init_alpha:
@@ -82,7 +79,7 @@ _comac_pdf_shading_init_color (comac_pdf_shading_t        *shading,
  * include %COMAC_STATUS_NO_MEMORY.
  **/
 comac_private comac_status_t
-_comac_pdf_shading_init_alpha (comac_pdf_shading_t        *shading,
+_comac_pdf_shading_init_alpha (comac_pdf_shading_t *shading,
 			       const comac_mesh_pattern_t *pattern);
 
 /**
@@ -95,6 +92,5 @@ _comac_pdf_shading_init_alpha (comac_pdf_shading_t        *shading,
  **/
 comac_private void
 _comac_pdf_shading_fini (comac_pdf_shading_t *shading);
-
 
 #endif /* COMAC_PDF_SHADING_H */

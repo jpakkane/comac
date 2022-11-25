@@ -43,37 +43,36 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-typedef comac_status_t
-(*comac_output_stream_write_func_t) (comac_output_stream_t *output_stream,
-				     const unsigned char   *data,
-				     unsigned int           length);
+typedef comac_status_t (*comac_output_stream_write_func_t) (
+    comac_output_stream_t *output_stream,
+    const unsigned char *data,
+    unsigned int length);
 
-typedef comac_status_t
-(*comac_output_stream_flush_func_t) (comac_output_stream_t *output_stream);
+typedef comac_status_t (*comac_output_stream_flush_func_t) (
+    comac_output_stream_t *output_stream);
 
-typedef comac_status_t
-(*comac_output_stream_close_func_t) (comac_output_stream_t *output_stream);
+typedef comac_status_t (*comac_output_stream_close_func_t) (
+    comac_output_stream_t *output_stream);
 
 struct _comac_output_stream {
     comac_output_stream_write_func_t write_func;
     comac_output_stream_flush_func_t flush_func;
     comac_output_stream_close_func_t close_func;
-    long long		             position;
-    comac_status_t		     status;
-    comac_bool_t		     closed;
+    long long position;
+    comac_status_t status;
+    comac_bool_t closed;
 };
 
 extern const comac_private comac_output_stream_t _comac_output_stream_nil;
 
 comac_private void
-_comac_output_stream_init (comac_output_stream_t            *stream,
-			   comac_output_stream_write_func_t  write_func,
-			   comac_output_stream_flush_func_t  flush_func,
-			   comac_output_stream_close_func_t  close_func);
+_comac_output_stream_init (comac_output_stream_t *stream,
+			   comac_output_stream_write_func_t write_func,
+			   comac_output_stream_flush_func_t flush_func,
+			   comac_output_stream_close_func_t close_func);
 
 comac_private comac_status_t
 _comac_output_stream_fini (comac_output_stream_t *stream);
-
 
 /* We already have the following declared in comac.h:
 
@@ -82,7 +81,6 @@ typedef comac_status_t (*comac_write_func_t) (void		  *closure,
 					      unsigned int	   length);
 */
 typedef comac_status_t (*comac_close_func_t) (void *closure);
-
 
 /* This function never returns %NULL. If an error occurs (NO_MEMORY)
  * while trying to create the output stream this function returns a
@@ -93,9 +91,9 @@ typedef comac_status_t (*comac_close_func_t) (void *closure);
  * _comac_output_stream_destroy.
  */
 comac_private comac_output_stream_t *
-_comac_output_stream_create (comac_write_func_t		write_func,
-			     comac_close_func_t		close_func,
-			     void			*closure);
+_comac_output_stream_create (comac_write_func_t write_func,
+			     comac_close_func_t close_func,
+			     void *closure);
 
 comac_private comac_output_stream_t *
 _comac_output_stream_create_in_error (comac_status_t status);
@@ -118,7 +116,8 @@ _comac_output_stream_destroy (comac_output_stream_t *stream);
 
 comac_private void
 _comac_output_stream_write (comac_output_stream_t *stream,
-			    const void *data, size_t length);
+			    const void *data,
+			    size_t length);
 
 comac_private void
 _comac_output_stream_write_hex_string (comac_output_stream_t *stream,
@@ -128,7 +127,7 @@ _comac_output_stream_write_hex_string (comac_output_stream_t *stream,
 comac_private void
 _comac_output_stream_vprintf (comac_output_stream_t *stream,
 			      const char *fmt,
-			      va_list ap) COMAC_PRINTF_FORMAT ( 2, 0);
+			      va_list ap) COMAC_PRINTF_FORMAT (2, 0);
 
 comac_private void
 _comac_output_stream_printf (comac_output_stream_t *stream,
@@ -138,7 +137,7 @@ _comac_output_stream_printf (comac_output_stream_t *stream,
 /* Print matrix element values with rounding of insignificant digits. */
 comac_private void
 _comac_output_stream_print_matrix (comac_output_stream_t *stream,
-				   const comac_matrix_t  *matrix);
+				   const comac_matrix_t *matrix);
 
 comac_private long long
 _comac_output_stream_get_position (comac_output_stream_t *stream);
@@ -196,6 +195,5 @@ _comac_base64_stream_create (comac_output_stream_t *output);
 /* comac-deflate-stream.c */
 comac_private comac_output_stream_t *
 _comac_deflate_stream_create (comac_output_stream_t *output);
-
 
 #endif /* COMAC_OUTPUT_STREAM_PRIVATE_H */

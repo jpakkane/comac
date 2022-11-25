@@ -36,12 +36,12 @@ draw (comac_t *cr, int width, int height)
     comac_matrix_t matrix;
 
     /* Paint a diagonal division as a test image */
-    comac_set_source_rgb (cr, 1, 1, 1);	/* White */
+    comac_set_source_rgb (cr, 1, 1, 1); /* White */
     comac_paint (cr);
 
-    comac_move_to (cr, SIZE,    0);
+    comac_move_to (cr, SIZE, 0);
     comac_line_to (cr, SIZE, SIZE);
-    comac_line_to (cr, 0,    SIZE);
+    comac_line_to (cr, 0, SIZE);
 
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_fill (cr);
@@ -51,7 +51,7 @@ draw (comac_t *cr, int width, int height)
      */
     pattern = comac_pattern_create_for_surface (comac_get_group_target (cr));
 
-    comac_matrix_init_translate (&matrix, - SIZE / 2, - SIZE / 2);
+    comac_matrix_init_translate (&matrix, -SIZE / 2, -SIZE / 2);
     comac_pattern_set_matrix (pattern, &matrix);
 
     comac_set_source (cr, pattern);
@@ -63,22 +63,19 @@ draw (comac_t *cr, int width, int height)
      * on the surface as a destination affects it as the source as
      * well.
      */
-    comac_rectangle (cr,
-		     2 * SIZE / 4, 2 * SIZE / 4,
-		     SIZE / 4,     SIZE / 4);
-    comac_rectangle (cr,
-		     3 * SIZE / 4, 3 * SIZE / 4,
-		     SIZE / 4,     SIZE / 4);
+    comac_rectangle (cr, 2 * SIZE / 4, 2 * SIZE / 4, SIZE / 4, SIZE / 4);
+    comac_rectangle (cr, 3 * SIZE / 4, 3 * SIZE / 4, SIZE / 4, SIZE / 4);
     comac_clip (cr);
     comac_paint (cr);
 
     return COMAC_TEST_SUCCESS;
-
 }
 
 COMAC_TEST (self_copy,
 	    "Test copying from a surface to itself with a clip",
 	    "paint", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

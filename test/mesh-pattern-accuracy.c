@@ -94,6 +94,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mesh_pattern_accuracy,
 	    "Paint mesh pattern",
 	    "mesh, pattern", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

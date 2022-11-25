@@ -52,8 +52,7 @@ xmalloc (size_t size)
 }
 
 void *
-xcalloc (size_t nmemb,
-	 size_t size)
+xcalloc (size_t nmemb, size_t size)
 {
     void *buf;
 
@@ -70,8 +69,7 @@ xcalloc (size_t nmemb,
 }
 
 void *
-xrealloc (void	 *buf,
-	  size_t  size)
+xrealloc (void *buf, size_t size)
 {
     buf = realloc (buf, size);
     if (buf == NULL && size != 0) {
@@ -83,9 +81,7 @@ xrealloc (void	 *buf,
 }
 
 void
-xasprintf (char       **strp,
-	   const char  *fmt,
-			...)
+xasprintf (char **strp, const char *fmt, ...)
 {
 #ifdef HAVE_VASPRINTF
     va_list va;
@@ -134,7 +130,7 @@ xasprintf (char       **strp,
 	    exit (1);
 	}
     }
-    memset (*strp + ret, 0, len-ret);
+    memset (*strp + ret, 0, len - ret);
 #endif /* !HAVE_VASNPRINTF */
 }
 
@@ -142,8 +138,10 @@ void
 xunlink (const char *pathname)
 {
     if (unlink (pathname) < 0 && errno != ENOENT) {
-	fprintf (stderr, "Error: Cannot remove %s: %s\n",
-			       pathname, strerror (errno));
+	fprintf (stderr,
+		 "Error: Cannot remove %s: %s\n",
+		 pathname,
+		 strerror (errno));
 	exit (1);
     }
 }

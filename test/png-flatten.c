@@ -37,7 +37,10 @@ main (int argc, char *argv[])
 
     if (argc != 3) {
 	fprintf (stderr, "usage: %s input.png output.png", argv[0]);
-	fprintf (stderr, "Loads a PNG image (potentially with alpha) and writes out a flattened (no alpha)\nPNG image by first blending over white.\n");
+	fprintf (
+	    stderr,
+	    "Loads a PNG image (potentially with alpha) and writes out a "
+	    "flattened (no alpha)\nPNG image by first blending over white.\n");
 	return 1;
     }
 
@@ -47,8 +50,11 @@ main (int argc, char *argv[])
     argb = comac_image_surface_create_from_png (input);
     status = comac_surface_status (argb);
     if (status) {
-	fprintf (stderr, "%s: Error: Failed to load %s: %s\n",
-		 argv[0], input, comac_status_to_string (status));
+	fprintf (stderr,
+		 "%s: Error: Failed to load %s: %s\n",
+		 argv[0],
+		 input,
+		 comac_status_to_string (status));
 	return 1;
     }
 
@@ -68,8 +74,11 @@ main (int argc, char *argv[])
 
     status = comac_surface_write_to_png (rgb24, output);
     if (status) {
-	fprintf (stderr, "%s: Error: Failed to write %s: %s\n",
-		 argv[0], output, comac_status_to_string (status));
+	fprintf (stderr,
+		 "%s: Error: Failed to write %s: %s\n",
+		 argv[0],
+		 output,
+		 comac_status_to_string (status));
 	return 1;
     }
 

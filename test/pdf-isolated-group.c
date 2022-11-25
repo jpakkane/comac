@@ -27,9 +27,8 @@
 #include "comac-test.h"
 
 #define SIZE 60
-#define WIDTH  SIZE
+#define WIDTH SIZE
 #define HEIGHT SIZE
-
 
 /* PDF transparency groups can be isolated or non-isolated. This test
  * checks that the PDF output is using isolated groups. If the group
@@ -48,7 +47,7 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     comac_set_source_rgb (cr, 1, 0.5, 0);
-    comac_rectangle (cr, 0, SIZE/2, SIZE, SIZE/2);
+    comac_rectangle (cr, 0, SIZE / 2, SIZE, SIZE / 2);
     comac_fill (cr);
 
     comac_set_operator (cr, COMAC_OPERATOR_MULTIPLY);
@@ -56,7 +55,7 @@ draw (comac_t *cr, int width, int height)
     comac_push_group (cr);
 
     comac_set_source_rgb (cr, 0.7, 0.7, 0.7);
-    comac_rectangle (cr, SIZE/4, SIZE/4, SIZE/2, SIZE/2);
+    comac_rectangle (cr, SIZE / 4, SIZE / 4, SIZE / 2, SIZE / 2);
     comac_fill (cr);
 
     comac_pop_group_to_source (cr);
@@ -68,6 +67,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (pdf_isolated_group,
 	    "Check that transparency groups in PDF output are isolated",
 	    "group, operator", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	       /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

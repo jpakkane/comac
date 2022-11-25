@@ -85,8 +85,8 @@
 static comac_bool_t
 _comac_image_surface_is_size_valid (int width, int height)
 {
-    return 0 <= width  &&  width <= MAX_IMAGE_SIZE &&
-	   0 <= height && height <= MAX_IMAGE_SIZE;
+    return 0 <= width && width <= MAX_IMAGE_SIZE && 0 <= height &&
+	   height <= MAX_IMAGE_SIZE;
 }
 
 comac_format_t
@@ -109,29 +109,49 @@ _comac_format_from_pixman_format (pixman_format_code_t pixman_format)
 	return COMAC_FORMAT_A1;
     case PIXMAN_r5g6b5:
 	return COMAC_FORMAT_RGB16_565;
-#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,22,0)
-    case PIXMAN_r8g8b8a8: case PIXMAN_r8g8b8x8:
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0, 22, 0)
+    case PIXMAN_r8g8b8a8:
+    case PIXMAN_r8g8b8x8:
 #endif
-#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,27,2)
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0, 27, 2)
     case PIXMAN_a8r8g8b8_sRGB:
 #endif
-    case PIXMAN_a8b8g8r8: case PIXMAN_x8b8g8r8: case PIXMAN_r8g8b8:
-    case PIXMAN_b8g8r8:   case PIXMAN_b5g6r5:
-    case PIXMAN_a1r5g5b5: case PIXMAN_x1r5g5b5: case PIXMAN_a1b5g5r5:
-    case PIXMAN_x1b5g5r5: case PIXMAN_a4r4g4b4: case PIXMAN_x4r4g4b4:
-    case PIXMAN_a4b4g4r4: case PIXMAN_x4b4g4r4: case PIXMAN_r3g3b2:
-    case PIXMAN_b2g3r3:   case PIXMAN_a2r2g2b2: case PIXMAN_a2b2g2r2:
-    case PIXMAN_c8:       case PIXMAN_g8:       case PIXMAN_x4a4:
-    case PIXMAN_a4:       case PIXMAN_r1g2b1:   case PIXMAN_b1g2r1:
-    case PIXMAN_a1r1g1b1: case PIXMAN_a1b1g1r1: case PIXMAN_c4:
-    case PIXMAN_g4:       case PIXMAN_g1:
-    case PIXMAN_yuy2:     case PIXMAN_yv12:
+    case PIXMAN_a8b8g8r8:
+    case PIXMAN_x8b8g8r8:
+    case PIXMAN_r8g8b8:
+    case PIXMAN_b8g8r8:
+    case PIXMAN_b5g6r5:
+    case PIXMAN_a1r5g5b5:
+    case PIXMAN_x1r5g5b5:
+    case PIXMAN_a1b5g5r5:
+    case PIXMAN_x1b5g5r5:
+    case PIXMAN_a4r4g4b4:
+    case PIXMAN_x4r4g4b4:
+    case PIXMAN_a4b4g4r4:
+    case PIXMAN_x4b4g4r4:
+    case PIXMAN_r3g3b2:
+    case PIXMAN_b2g3r3:
+    case PIXMAN_a2r2g2b2:
+    case PIXMAN_a2b2g2r2:
+    case PIXMAN_c8:
+    case PIXMAN_g8:
+    case PIXMAN_x4a4:
+    case PIXMAN_a4:
+    case PIXMAN_r1g2b1:
+    case PIXMAN_b1g2r1:
+    case PIXMAN_a1r1g1b1:
+    case PIXMAN_a1b1g1r1:
+    case PIXMAN_c4:
+    case PIXMAN_g4:
+    case PIXMAN_g1:
+    case PIXMAN_yuy2:
+    case PIXMAN_yv12:
     case PIXMAN_b8g8r8x8:
     case PIXMAN_b8g8r8a8:
     case PIXMAN_a2b10g10r10:
     case PIXMAN_x2b10g10r10:
     case PIXMAN_a2r10g10b10:
-#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,22,0)
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0, 22, 0)
     case PIXMAN_x14r6g6b6:
 #endif
     default:
@@ -157,8 +177,8 @@ _comac_content_from_pixman_format (pixman_format_code_t pixman_format)
 
 void
 _comac_image_surface_init (comac_image_surface_t *surface,
-			   pixman_image_t	*pixman_image,
-			   pixman_format_code_t	 pixman_format)
+			   pixman_image_t *pixman_image,
+			   pixman_format_code_t pixman_format)
 {
     surface->parent = NULL;
     surface->pixman_image = pixman_image;
@@ -181,14 +201,15 @@ _comac_image_surface_init (comac_image_surface_t *surface,
 }
 
 comac_surface_t *
-_comac_image_surface_create_for_pixman_image (pixman_image_t		*pixman_image,
-					      pixman_format_code_t	 pixman_format)
+_comac_image_surface_create_for_pixman_image (
+    pixman_image_t *pixman_image, pixman_format_code_t pixman_format)
 {
     comac_image_surface_t *surface;
 
     surface = _comac_malloc (sizeof (comac_image_surface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
 			 &_comac_image_surface_backend,
@@ -235,25 +256,24 @@ _pixman_format_from_masks (comac_format_masks_t *masks,
      * expected. This avoid any problems from something bizarre like
      * alpha in the least-significant bits, or insane channel order,
      * or whatever. */
-     if (!_pixman_format_to_masks (format, &format_masks) ||
-         masks->bpp        != format_masks.bpp            ||
-	 masks->red_mask   != format_masks.red_mask       ||
-	 masks->green_mask != format_masks.green_mask     ||
-	 masks->blue_mask  != format_masks.blue_mask)
-     {
-	 return FALSE;
-     }
+    if (! _pixman_format_to_masks (format, &format_masks) ||
+	masks->bpp != format_masks.bpp ||
+	masks->red_mask != format_masks.red_mask ||
+	masks->green_mask != format_masks.green_mask ||
+	masks->blue_mask != format_masks.blue_mask) {
+	return FALSE;
+    }
 
     *format_ret = format;
     return TRUE;
 }
 
 /* A mask consisting of N bits set to 1. */
-#define MASK(N) ((1UL << (N))-1)
+#define MASK(N) ((1UL << (N)) - 1)
 
 comac_bool_t
-_pixman_format_to_masks (pixman_format_code_t	 format,
-			 comac_format_masks_t	*masks)
+_pixman_format_to_masks (pixman_format_code_t format,
+			 comac_format_masks_t *masks)
 {
     int a, r, g, b;
 
@@ -267,42 +287,42 @@ _pixman_format_to_masks (pixman_format_code_t	 format,
 
     switch (PIXMAN_FORMAT_TYPE (format)) {
     case PIXMAN_TYPE_ARGB:
-        masks->alpha_mask = MASK (a) << (r + g + b);
-        masks->red_mask   = MASK (r) << (g + b);
-        masks->green_mask = MASK (g) << (b);
-        masks->blue_mask  = MASK (b);
-        return TRUE;
+	masks->alpha_mask = MASK (a) << (r + g + b);
+	masks->red_mask = MASK (r) << (g + b);
+	masks->green_mask = MASK (g) << (b);
+	masks->blue_mask = MASK (b);
+	return TRUE;
     case PIXMAN_TYPE_ABGR:
-        masks->alpha_mask = MASK (a) << (b + g + r);
-        masks->blue_mask  = MASK (b) << (g + r);
-        masks->green_mask = MASK (g) << (r);
-        masks->red_mask   = MASK (r);
-        return TRUE;
+	masks->alpha_mask = MASK (a) << (b + g + r);
+	masks->blue_mask = MASK (b) << (g + r);
+	masks->green_mask = MASK (g) << (r);
+	masks->red_mask = MASK (r);
+	return TRUE;
 #ifdef PIXMAN_TYPE_BGRA
     case PIXMAN_TYPE_BGRA:
-        masks->blue_mask  = MASK (b) << (masks->bpp - b);
-        masks->green_mask = MASK (g) << (masks->bpp - b - g);
-        masks->red_mask   = MASK (r) << (masks->bpp - b - g - r);
-        masks->alpha_mask = MASK (a);
-        return TRUE;
+	masks->blue_mask = MASK (b) << (masks->bpp - b);
+	masks->green_mask = MASK (g) << (masks->bpp - b - g);
+	masks->red_mask = MASK (r) << (masks->bpp - b - g - r);
+	masks->alpha_mask = MASK (a);
+	return TRUE;
 #endif
     case PIXMAN_TYPE_A:
-        masks->alpha_mask = MASK (a);
-        masks->red_mask   = 0;
-        masks->green_mask = 0;
-        masks->blue_mask  = 0;
-        return TRUE;
+	masks->alpha_mask = MASK (a);
+	masks->red_mask = 0;
+	masks->green_mask = 0;
+	masks->blue_mask = 0;
+	return TRUE;
     case PIXMAN_TYPE_OTHER:
     case PIXMAN_TYPE_COLOR:
     case PIXMAN_TYPE_GRAY:
     case PIXMAN_TYPE_YUY2:
     case PIXMAN_TYPE_YV12:
     default:
-        masks->alpha_mask = 0;
-        masks->red_mask   = 0;
-        masks->green_mask = 0;
-        masks->blue_mask  = 0;
-        return FALSE;
+	masks->alpha_mask = 0;
+	masks->red_mask = 0;
+	masks->green_mask = 0;
+	masks->blue_mask = 0;
+	return FALSE;
     }
 }
 
@@ -342,25 +362,30 @@ _comac_format_to_pixman_format_code (comac_format_t format)
 }
 
 comac_surface_t *
-_comac_image_surface_create_with_pixman_format (unsigned char		*data,
-						pixman_format_code_t	 pixman_format,
-						int			 width,
-						int			 height,
-						int			 stride)
+_comac_image_surface_create_with_pixman_format (
+    unsigned char *data,
+    pixman_format_code_t pixman_format,
+    int width,
+    int height,
+    int stride)
 {
     comac_surface_t *surface;
     pixman_image_t *pixman_image;
 
-    if (! _comac_image_surface_is_size_valid (width, height))
-    {
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_SIZE));
+    if (! _comac_image_surface_is_size_valid (width, height)) {
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_SIZE));
     }
 
-    pixman_image = pixman_image_create_bits (pixman_format, width, height,
-					     (uint32_t *) data, stride);
+    pixman_image = pixman_image_create_bits (pixman_format,
+					     width,
+					     height,
+					     (uint32_t *) data,
+					     stride);
 
     if (unlikely (pixman_image == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     surface = _comac_image_surface_create_for_pixman_image (pixman_image,
 							    pixman_format);
@@ -397,28 +422,31 @@ _comac_image_surface_create_with_pixman_format (unsigned char		*data,
  * Since: 1.0
  **/
 comac_surface_t *
-comac_image_surface_create (comac_format_t	format,
-			    int			width,
-			    int			height)
+comac_image_surface_create (comac_format_t format, int width, int height)
 {
     pixman_format_code_t pixman_format;
 
     if (! COMAC_FORMAT_VALID (format))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_FORMAT));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_FORMAT));
 
     pixman_format = _comac_format_to_pixman_format_code (format);
 
-    return _comac_image_surface_create_with_pixman_format (NULL, pixman_format,
-							   width, height, -1);
+    return _comac_image_surface_create_with_pixman_format (NULL,
+							   pixman_format,
+							   width,
+							   height,
+							   -1);
 }
 
-    comac_surface_t *
-_comac_image_surface_create_with_content (comac_content_t	content,
-					  int			width,
-					  int			height)
+comac_surface_t *
+_comac_image_surface_create_with_content (comac_content_t content,
+					  int width,
+					  int height)
 {
     return comac_image_surface_create (_comac_format_from_content (content),
-				       width, height);
+				       width,
+				       height);
 }
 
 /**
@@ -448,9 +476,8 @@ _comac_image_surface_create_with_content (comac_content_t	content,
  *
  * Since: 1.6
  **/
-    int
-comac_format_stride_for_width (comac_format_t	format,
-			       int		width)
+int
+comac_format_stride_for_width (comac_format_t format, int width)
 {
     int bpp;
 
@@ -511,40 +538,46 @@ comac_format_stride_for_width (comac_format_t	format,
  *
  * Since: 1.0
  **/
-    comac_surface_t *
-comac_image_surface_create_for_data (unsigned char     *data,
-				     comac_format_t	format,
-				     int		width,
-				     int		height,
-				     int		stride)
+comac_surface_t *
+comac_image_surface_create_for_data (unsigned char *data,
+				     comac_format_t format,
+				     int width,
+				     int height,
+				     int stride)
 {
     pixman_format_code_t pixman_format;
     int minstride;
 
     if (! COMAC_FORMAT_VALID (format))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_FORMAT));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_FORMAT));
 
-    if ((stride & (COMAC_STRIDE_ALIGNMENT-1)) != 0)
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_STRIDE));
+    if ((stride & (COMAC_STRIDE_ALIGNMENT - 1)) != 0)
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_STRIDE));
 
     if (! _comac_image_surface_is_size_valid (width, height))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_SIZE));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_SIZE));
 
     minstride = comac_format_stride_for_width (format, width);
     if (stride < 0) {
 	if (stride > -minstride) {
-	    return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_STRIDE));
+	    return _comac_surface_create_in_error (
+		_comac_error (COMAC_STATUS_INVALID_STRIDE));
 	}
     } else {
 	if (stride < minstride) {
-	    return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_STRIDE));
+	    return _comac_surface_create_in_error (
+		_comac_error (COMAC_STATUS_INVALID_STRIDE));
 	}
     }
 
     pixman_format = _comac_format_to_pixman_format_code (format);
     return _comac_image_surface_create_with_pixman_format (data,
 							   pixman_format,
-							   width, height,
+							   width,
+							   height,
 							   stride);
 }
 
@@ -675,7 +708,7 @@ comac_image_surface_get_stride (comac_surface_t *surface)
     return image_surface->stride;
 }
 
-    comac_format_t
+comac_format_t
 _comac_format_from_content (comac_content_t content)
 {
     switch (content) {
@@ -691,7 +724,7 @@ _comac_format_from_content (comac_content_t content)
     return COMAC_FORMAT_INVALID;
 }
 
-    comac_content_t
+comac_content_t
 _comac_content_from_format (comac_format_t format)
 {
     switch (format) {
@@ -716,7 +749,7 @@ _comac_content_from_format (comac_format_t format)
     return COMAC_CONTENT_COLOR_ALPHA;
 }
 
-    int
+int
 _comac_format_bits_per_pixel (comac_format_t format)
 {
     switch (format) {
@@ -742,27 +775,29 @@ _comac_format_bits_per_pixel (comac_format_t format)
 }
 
 comac_surface_t *
-_comac_image_surface_create_similar (void	       *abstract_other,
-				     comac_content_t	content,
-				     int		width,
-				     int		height)
+_comac_image_surface_create_similar (void *abstract_other,
+				     comac_content_t content,
+				     int width,
+				     int height)
 {
     comac_image_surface_t *other = abstract_other;
 
     TRACE ((stderr, "%s (other=%u)\n", __FUNCTION__, other->base.unique_id));
 
     if (! _comac_image_surface_is_size_valid (width, height))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_SIZE));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_SIZE));
 
     if (content == other->base.content) {
-	return _comac_image_surface_create_with_pixman_format (NULL,
-							       other->pixman_format,
-							       width, height,
-							       0);
+	return _comac_image_surface_create_with_pixman_format (
+	    NULL,
+	    other->pixman_format,
+	    width,
+	    height,
+	    0);
     }
 
-    return _comac_image_surface_create_with_content (content,
-						     width, height);
+    return _comac_image_surface_create_with_content (content, width, height);
 }
 
 comac_surface_t *
@@ -802,11 +837,17 @@ _comac_image_surface_snapshot (void *abstract_surface)
 	memcpy (clone->data, image->data, clone->stride * clone->height);
     } else {
 	pixman_image_composite32 (PIXMAN_OP_SRC,
-				  image->pixman_image, NULL, clone->pixman_image,
-				  0, 0,
-				  0, 0,
-				  0, 0,
-				  image->width, image->height);
+				  image->pixman_image,
+				  NULL,
+				  clone->pixman_image,
+				  0,
+				  0,
+				  0,
+				  0,
+				  0,
+				  0,
+				  image->width,
+				  image->height);
     }
     clone->base.is_clear = FALSE;
     return &clone->base;
@@ -822,7 +863,7 @@ _comac_image_surface_map_to_image (void *abstract_other,
 
     data = other->data;
     data += extents->y * other->stride;
-    data += extents->x * PIXMAN_FORMAT_BPP (other->pixman_format)/ 8;
+    data += extents->x * PIXMAN_FORMAT_BPP (other->pixman_format) / 8;
 
     surface =
 	_comac_image_surface_create_with_pixman_format (data,
@@ -876,8 +917,8 @@ _comac_image_surface_assume_ownership_of_data (comac_image_surface_t *surface)
 }
 
 comac_surface_t *
-_comac_image_surface_source (void			*abstract_surface,
-			     comac_rectangle_int_t	*extents)
+_comac_image_surface_source (void *abstract_surface,
+			     comac_rectangle_int_t *extents)
 {
     comac_image_surface_t *surface = abstract_surface;
 
@@ -891,9 +932,9 @@ _comac_image_surface_source (void			*abstract_surface,
 }
 
 comac_status_t
-_comac_image_surface_acquire_source_image (void                    *abstract_surface,
-					   comac_image_surface_t  **image_out,
-					   void                   **image_extra)
+_comac_image_surface_acquire_source_image (void *abstract_surface,
+					   comac_image_surface_t **image_out,
+					   void **image_extra)
 {
     *image_out = abstract_surface;
     *image_extra = NULL;
@@ -902,130 +943,154 @@ _comac_image_surface_acquire_source_image (void                    *abstract_sur
 }
 
 void
-_comac_image_surface_release_source_image (void                   *abstract_surface,
-					   comac_image_surface_t  *image,
-					   void                   *image_extra)
+_comac_image_surface_release_source_image (void *abstract_surface,
+					   comac_image_surface_t *image,
+					   void *image_extra)
 {
 }
 
 /* high level image interface */
 comac_bool_t
-_comac_image_surface_get_extents (void			  *abstract_surface,
-				  comac_rectangle_int_t   *rectangle)
+_comac_image_surface_get_extents (void *abstract_surface,
+				  comac_rectangle_int_t *rectangle)
 {
     comac_image_surface_t *surface = abstract_surface;
 
     rectangle->x = 0;
     rectangle->y = 0;
-    rectangle->width  = surface->width;
+    rectangle->width = surface->width;
     rectangle->height = surface->height;
 
     return TRUE;
 }
 
 comac_int_status_t
-_comac_image_surface_paint (void			*abstract_surface,
-			    comac_operator_t		 op,
-			    const comac_pattern_t	*source,
-			    const comac_clip_t		*clip)
+_comac_image_surface_paint (void *abstract_surface,
+			    comac_operator_t op,
+			    const comac_pattern_t *source,
+			    const comac_clip_t *clip)
 {
     comac_image_surface_t *surface = abstract_surface;
 
-    TRACE ((stderr, "%s (surface=%d)\n",
-	    __FUNCTION__, surface->base.unique_id));
+    TRACE (
+	(stderr, "%s (surface=%d)\n", __FUNCTION__, surface->base.unique_id));
 
     return _comac_compositor_paint (surface->compositor,
-				    &surface->base, op, source, clip);
+				    &surface->base,
+				    op,
+				    source,
+				    clip);
 }
 
 comac_int_status_t
-_comac_image_surface_mask (void				*abstract_surface,
-			   comac_operator_t		 op,
-			   const comac_pattern_t	*source,
-			   const comac_pattern_t	*mask,
-			   const comac_clip_t		*clip)
+_comac_image_surface_mask (void *abstract_surface,
+			   comac_operator_t op,
+			   const comac_pattern_t *source,
+			   const comac_pattern_t *mask,
+			   const comac_clip_t *clip)
 {
     comac_image_surface_t *surface = abstract_surface;
 
-    TRACE ((stderr, "%s (surface=%d)\n",
-	    __FUNCTION__, surface->base.unique_id));
+    TRACE (
+	(stderr, "%s (surface=%d)\n", __FUNCTION__, surface->base.unique_id));
 
     return _comac_compositor_mask (surface->compositor,
-				   &surface->base, op, source, mask, clip);
-}
-
-comac_int_status_t
-_comac_image_surface_stroke (void			*abstract_surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     const comac_path_fixed_t	*path,
-			     const comac_stroke_style_t	*style,
-			     const comac_matrix_t	*ctm,
-			     const comac_matrix_t	*ctm_inverse,
-			     double			 tolerance,
-			     comac_antialias_t		 antialias,
-			     const comac_clip_t		*clip)
-{
-    comac_image_surface_t *surface = abstract_surface;
-
-    TRACE ((stderr, "%s (surface=%d)\n",
-	    __FUNCTION__, surface->base.unique_id));
-
-    return _comac_compositor_stroke (surface->compositor, &surface->base,
-				     op, source, path,
-				     style, ctm, ctm_inverse,
-				     tolerance, antialias, clip);
-}
-
-comac_int_status_t
-_comac_image_surface_fill (void				*abstract_surface,
-			   comac_operator_t		 op,
-			   const comac_pattern_t	*source,
-			   const comac_path_fixed_t	*path,
-			   comac_fill_rule_t		 fill_rule,
-			   double			 tolerance,
-			   comac_antialias_t		 antialias,
-			   const comac_clip_t		*clip)
-{
-    comac_image_surface_t *surface = abstract_surface;
-
-    TRACE ((stderr, "%s (surface=%d)\n",
-	    __FUNCTION__, surface->base.unique_id));
-
-    return _comac_compositor_fill (surface->compositor, &surface->base,
-				   op, source, path,
-				   fill_rule, tolerance, antialias,
+				   &surface->base,
+				   op,
+				   source,
+				   mask,
 				   clip);
 }
 
 comac_int_status_t
-_comac_image_surface_glyphs (void			*abstract_surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     comac_glyph_t		*glyphs,
-			     int			 num_glyphs,
-			     comac_scaled_font_t	*scaled_font,
-			     const comac_clip_t		*clip)
+_comac_image_surface_stroke (void *abstract_surface,
+			     comac_operator_t op,
+			     const comac_pattern_t *source,
+			     const comac_path_fixed_t *path,
+			     const comac_stroke_style_t *style,
+			     const comac_matrix_t *ctm,
+			     const comac_matrix_t *ctm_inverse,
+			     double tolerance,
+			     comac_antialias_t antialias,
+			     const comac_clip_t *clip)
 {
     comac_image_surface_t *surface = abstract_surface;
 
-    TRACE ((stderr, "%s (surface=%d)\n",
-	    __FUNCTION__, surface->base.unique_id));
+    TRACE (
+	(stderr, "%s (surface=%d)\n", __FUNCTION__, surface->base.unique_id));
 
-    return _comac_compositor_glyphs (surface->compositor, &surface->base,
-				     op, source,
-				     glyphs, num_glyphs, scaled_font,
+    return _comac_compositor_stroke (surface->compositor,
+				     &surface->base,
+				     op,
+				     source,
+				     path,
+				     style,
+				     ctm,
+				     ctm_inverse,
+				     tolerance,
+				     antialias,
+				     clip);
+}
+
+comac_int_status_t
+_comac_image_surface_fill (void *abstract_surface,
+			   comac_operator_t op,
+			   const comac_pattern_t *source,
+			   const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule,
+			   double tolerance,
+			   comac_antialias_t antialias,
+			   const comac_clip_t *clip)
+{
+    comac_image_surface_t *surface = abstract_surface;
+
+    TRACE (
+	(stderr, "%s (surface=%d)\n", __FUNCTION__, surface->base.unique_id));
+
+    return _comac_compositor_fill (surface->compositor,
+				   &surface->base,
+				   op,
+				   source,
+				   path,
+				   fill_rule,
+				   tolerance,
+				   antialias,
+				   clip);
+}
+
+comac_int_status_t
+_comac_image_surface_glyphs (void *abstract_surface,
+			     comac_operator_t op,
+			     const comac_pattern_t *source,
+			     comac_glyph_t *glyphs,
+			     int num_glyphs,
+			     comac_scaled_font_t *scaled_font,
+			     const comac_clip_t *clip)
+{
+    comac_image_surface_t *surface = abstract_surface;
+
+    TRACE (
+	(stderr, "%s (surface=%d)\n", __FUNCTION__, surface->base.unique_id));
+
+    return _comac_compositor_glyphs (surface->compositor,
+				     &surface->base,
+				     op,
+				     source,
+				     glyphs,
+				     num_glyphs,
+				     scaled_font,
 				     clip);
 }
 
 void
-_comac_image_surface_get_font_options (void                  *abstract_surface,
-				       comac_font_options_t  *options)
+_comac_image_surface_get_font_options (void *abstract_surface,
+				       comac_font_options_t *options)
 {
     _comac_font_options_init_default (options);
 
     comac_font_options_set_hint_metrics (options, COMAC_HINT_METRICS_ON);
-    _comac_font_options_set_round_glyph_positions (options, COMAC_ROUND_GLYPH_POS_ON);
+    _comac_font_options_set_round_glyph_positions (options,
+						   COMAC_ROUND_GLYPH_POS_ON);
 }
 
 const comac_surface_backend_t _comac_image_surface_backend = {
@@ -1066,41 +1131,51 @@ const comac_surface_backend_t _comac_image_surface_backend = {
 comac_image_surface_t *
 _comac_image_surface_coerce (comac_image_surface_t *surface)
 {
-    return _comac_image_surface_coerce_to_format (surface,
-		                                  _comac_format_from_content (surface->base.content));
+    return _comac_image_surface_coerce_to_format (
+	surface,
+	_comac_format_from_content (surface->base.content));
 }
 
 /* A convenience function for when one needs to coerce an image
  * surface to an alternate format. */
 comac_image_surface_t *
 _comac_image_surface_coerce_to_format (comac_image_surface_t *surface,
-			               comac_format_t	      format)
+				       comac_format_t format)
 {
     comac_image_surface_t *clone;
     comac_status_t status;
 
     status = surface->base.status;
     if (unlikely (status))
-	return (comac_image_surface_t *)_comac_surface_create_in_error (status);
+	return (comac_image_surface_t *) _comac_surface_create_in_error (
+	    status);
 
     if (surface->format == format)
-	return (comac_image_surface_t *)comac_surface_reference(&surface->base);
+	return (comac_image_surface_t *) comac_surface_reference (
+	    &surface->base);
 
-    clone = (comac_image_surface_t *)
-	comac_image_surface_create (format, surface->width, surface->height);
+    clone =
+	(comac_image_surface_t *) comac_image_surface_create (format,
+							      surface->width,
+							      surface->height);
     if (unlikely (clone->base.status))
 	return clone;
 
     pixman_image_composite32 (PIXMAN_OP_SRC,
-                              surface->pixman_image, NULL, clone->pixman_image,
-                              0, 0,
-                              0, 0,
-                              0, 0,
-                              surface->width, surface->height);
+			      surface->pixman_image,
+			      NULL,
+			      clone->pixman_image,
+			      0,
+			      0,
+			      0,
+			      0,
+			      0,
+			      0,
+			      surface->width,
+			      surface->height);
     clone->base.is_clear = FALSE;
 
-    clone->base.device_transform =
-	surface->base.device_transform;
+    clone->base.device_transform = surface->base.device_transform;
     clone->base.device_transform_inverse =
 	surface->base.device_transform_inverse;
 
@@ -1110,8 +1185,11 @@ _comac_image_surface_coerce_to_format (comac_image_surface_t *surface,
 comac_image_surface_t *
 _comac_image_surface_create_from_image (comac_image_surface_t *other,
 					pixman_format_code_t format,
-					int x, int y,
-					int width, int height, int stride)
+					int x,
+					int y,
+					int width,
+					int height,
+					int stride)
 {
     comac_image_surface_t *surface;
     comac_status_t status;
@@ -1144,11 +1222,17 @@ _comac_image_surface_create_from_image (comac_image_surface_t *other,
     }
 
     pixman_image_composite32 (PIXMAN_OP_SRC,
-                              other->pixman_image, NULL, image,
-                              x, y,
-                              0, 0,
-                              0, 0,
-                              width, height);
+			      other->pixman_image,
+			      NULL,
+			      image,
+			      x,
+			      y,
+			      0,
+			      0,
+			      0,
+			      0,
+			      width,
+			      height);
     surface->base.is_clear = FALSE;
     surface->owns_data = mem != NULL;
 
@@ -1230,7 +1314,7 @@ _comac_image_analyze_transparency (comac_image_surface_t *image)
 }
 
 static comac_image_color_t
-_comac_image_compute_color (comac_image_surface_t      *image)
+_comac_image_compute_color (comac_image_surface_t *image)
 {
     int x, y;
     comac_image_color_t color;
@@ -1261,7 +1345,7 @@ _comac_image_compute_color (comac_image_surface_t      *image)
 		    g = (g * 255 + a / 2) / a;
 		    b = (b * 255 + a / 2) / a;
 		}
-		if (!(r == g && g == b))
+		if (! (r == g && g == b))
 		    return COMAC_IMAGE_IS_COLOR;
 		else if (r > 0 && r < 255)
 		    color = COMAC_IMAGE_IS_GRAYSCALE;
@@ -1277,9 +1361,9 @@ _comac_image_compute_color (comac_image_surface_t      *image)
 
 	    for (x = 0; x < image->width; x++, pixel++) {
 		int r = (*pixel & 0x00ff0000) >> 16;
-		int g = (*pixel & 0x0000ff00) >>  8;
+		int g = (*pixel & 0x0000ff00) >> 8;
 		int b = (*pixel & 0x000000ff);
-		if (!(r == g && g == b))
+		if (! (r == g && g == b))
 		    return COMAC_IMAGE_IS_COLOR;
 		else if (r > 0 && r < 255)
 		    color = COMAC_IMAGE_IS_GRAYSCALE;
@@ -1292,7 +1376,7 @@ _comac_image_compute_color (comac_image_surface_t      *image)
 }
 
 comac_image_color_t
-_comac_image_analyze_color (comac_image_surface_t      *image)
+_comac_image_analyze_color (comac_image_surface_t *image)
 {
     if (_comac_surface_is_snapshot (&image->base)) {
 	if (image->color == COMAC_IMAGE_UNKNOWN_COLOR)
@@ -1305,25 +1389,24 @@ _comac_image_analyze_color (comac_image_surface_t      *image)
 }
 
 comac_image_surface_t *
-_comac_image_surface_clone_subimage (comac_surface_t             *surface,
+_comac_image_surface_clone_subimage (comac_surface_t *surface,
 				     const comac_rectangle_int_t *extents)
 {
     comac_surface_t *image;
     comac_surface_pattern_t pattern;
     comac_status_t status;
 
-    image = comac_surface_create_similar_image (surface,
-						_comac_format_from_content (surface->content),
-						extents->width,
-						extents->height);
+    image = comac_surface_create_similar_image (
+	surface,
+	_comac_format_from_content (surface->content),
+	extents->width,
+	extents->height);
     if (image->status)
 	return to_image_surface (image);
 
     /* TODO: check me with non-identity device_transform. Should we
      * clone the scaling, too? */
-    comac_surface_set_device_offset (image,
-				     -extents->x,
-				     -extents->y);
+    comac_surface_set_device_offset (image, -extents->x, -extents->y);
 
     _comac_pattern_init_for_surface (&pattern, surface);
     pattern.base.filter = COMAC_FILTER_NEAREST;

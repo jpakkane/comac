@@ -46,9 +46,7 @@ box_outline_stroke (comac_t *cr, int width, int height, int loops)
     comac_set_source_rgb (cr, 0, 0, 1); /* blue */
     comac_paint (cr);
 
-    comac_rectangle (cr,
-		     1.5, 1.5,
-		     width - 3, height - 3);
+    comac_rectangle (cr, 1.5, 1.5, width - 3, height - 3);
     comac_set_line_width (cr, 1.0);
     comac_set_source_rgb (cr, 1, 0, 0); /* red */
 
@@ -70,9 +68,7 @@ box_outline_alpha_stroke (comac_t *cr, int width, int height, int loops)
     comac_set_source_rgb (cr, 0, 0, 1); /* blue */
     comac_paint (cr);
 
-    comac_rectangle (cr,
-		     1.5, 1.5,
-		     width - 3, height - 3);
+    comac_rectangle (cr, 1.5, 1.5, width - 3, height - 3);
     comac_set_line_width (cr, 1.0);
     comac_set_source_rgba (cr, 1, 0, 0, .5); /* red */
 
@@ -95,9 +91,7 @@ box_outline_aa_stroke (comac_t *cr, int width, int height, int loops)
     comac_paint (cr);
 
     comac_translate (cr, .5, .5);
-    comac_rectangle (cr,
-		     1.5, 1.5,
-		     width - 3, height - 3);
+    comac_rectangle (cr, 1.5, 1.5, width - 3, height - 3);
     comac_set_line_width (cr, 1.0);
     comac_set_source_rgb (cr, 1, 0, 0); /* red */
 
@@ -119,12 +113,8 @@ box_outline_fill (comac_t *cr, int width, int height, int loops)
     comac_set_source_rgb (cr, 0, 0, 1); /* blue */
     comac_paint (cr);
 
-    comac_rectangle (cr,
-		     1.0, 1.0,
-		     width - 2, height - 2);
-    comac_rectangle (cr,
-		     2.0, 2.0,
-		     width - 4, height - 4);
+    comac_rectangle (cr, 1.0, 1.0, width - 2, height - 2);
+    comac_rectangle (cr, 2.0, 2.0, width - 4, height - 4);
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
     comac_set_source_rgb (cr, 0, 1, 0); /* green */
 
@@ -146,12 +136,8 @@ box_outline_alpha_fill (comac_t *cr, int width, int height, int loops)
     comac_set_source_rgb (cr, 0, 0, 1); /* blue */
     comac_paint (cr);
 
-    comac_rectangle (cr,
-		     1.0, 1.0,
-		     width - 2, height - 2);
-    comac_rectangle (cr,
-		     2.0, 2.0,
-		     width - 4, height - 4);
+    comac_rectangle (cr, 1.0, 1.0, width - 2, height - 2);
+    comac_rectangle (cr, 2.0, 2.0, width - 4, height - 4);
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
     comac_set_source_rgba (cr, 0, 1, 0, .5); /* green */
 
@@ -174,12 +160,8 @@ box_outline_aa_fill (comac_t *cr, int width, int height, int loops)
     comac_paint (cr);
 
     comac_translate (cr, .5, .5);
-    comac_rectangle (cr,
-		     1.0, 1.0,
-		     width - 2, height - 2);
-    comac_rectangle (cr,
-		     2.0, 2.0,
-		     width - 4, height - 4);
+    comac_rectangle (cr, 1.0, 1.0, width - 2, height - 2);
+    comac_rectangle (cr, 2.0, 2.0, width - 4, height - 4);
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
     comac_set_source_rgb (cr, 0, 1, 0); /* green */
 
@@ -207,8 +189,14 @@ box_outline (comac_perf_t *perf, comac_t *cr, int width, int height)
     comac_perf_run (perf, "box-outline-stroke", box_outline_stroke, NULL);
     comac_perf_run (perf, "box-outline-fill", box_outline_fill, NULL);
 
-    comac_perf_run (perf, "box-outline-alpha-stroke", box_outline_alpha_stroke, NULL);
-    comac_perf_run (perf, "box-outline-alpha-fill", box_outline_alpha_fill, NULL);
+    comac_perf_run (perf,
+		    "box-outline-alpha-stroke",
+		    box_outline_alpha_stroke,
+		    NULL);
+    comac_perf_run (perf,
+		    "box-outline-alpha-fill",
+		    box_outline_alpha_fill,
+		    NULL);
 
     comac_perf_run (perf, "box-outline-aa-stroke", box_outline_aa_stroke, NULL);
     comac_perf_run (perf, "box-outline-aa-fill", box_outline_aa_fill, NULL);

@@ -55,29 +55,26 @@ draw (comac_t *cr, int width, int height)
     /* subpath starts with comac_curve_to */
     comac_new_sub_path (cr);
     comac_curve_to (cr,
-		    SIZE, 5 * SIZE,
-		    1.5 * SIZE, 6 * SIZE,
-		    2 * SIZE, 5 * SIZE);
+		    SIZE,
+		    5 * SIZE,
+		    1.5 * SIZE,
+		    6 * SIZE,
+		    2 * SIZE,
+		    5 * SIZE);
     comac_rel_line_to (cr, 0, SIZE);
     comac_close_path (cr);
     comac_rel_line_to (cr, -0.5 * SIZE, SIZE);
 
     /* subpath starts with comac_arc */
     comac_new_sub_path (cr);
-    comac_arc (cr,
-	       1.5 * SIZE, 7 * SIZE,
-	       0.5 * SIZE,
-	       M_PI, 2 * M_PI);
+    comac_arc (cr, 1.5 * SIZE, 7 * SIZE, 0.5 * SIZE, M_PI, 2 * M_PI);
     comac_rel_line_to (cr, 0, SIZE);
     comac_close_path (cr);
     comac_rel_line_to (cr, -0.7 * SIZE, 0.7 * SIZE);
 
     /* subpath starts with comac_arc_negative */
     comac_new_sub_path (cr);
-    comac_arc_negative (cr,
-			1.5 * SIZE, 9 * SIZE,
-			0.5 * SIZE,
-			M_PI, 2 * M_PI);
+    comac_arc_negative (cr, 1.5 * SIZE, 9 * SIZE, 0.5 * SIZE, M_PI, 2 * M_PI);
     comac_rel_line_to (cr, 0, SIZE);
     comac_close_path (cr);
     comac_rel_line_to (cr, -0.8 * SIZE, 0.3 * SIZE);
@@ -88,8 +85,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (close_path_current_point,
-	    "Test some corner cases related to comac path operations and the current point",
+	    "Test some corner cases related to comac path operations and the "
+	    "current point",
 	    "path", /* keywords */
-	    NULL, /* requirements */
-	    3 * SIZE, 11 * SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    3 * SIZE,
+	    11 * SIZE,
+	    NULL,
+	    draw)

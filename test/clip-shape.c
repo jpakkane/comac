@@ -29,17 +29,17 @@
 #include "comac-test.h"
 
 static const struct xy {
-   double x;
-   double y;
+    double x;
+    double y;
 } gp[] = {
-    { 100, 250 },
-    { 100, 100 },
-    { 150, 230 },
-    { 239, 100 },
-    { 239, 250 },
+    {100, 250},
+    {100, 100},
+    {150, 230},
+    {239, 100},
+    {239, 250},
 };
 
-static const double vp[3] = { 100, 144, 238.5 };
+static const double vp[3] = {100, 144, 238.5};
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -81,6 +81,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_shape,
 	    "Test handling of clipping with a non-aligned shape",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    400, 300,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    400,
+	    300,
+	    NULL,
+	    draw)

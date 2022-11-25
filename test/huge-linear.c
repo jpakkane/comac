@@ -35,16 +35,21 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_pattern_t *pattern;
-    comac_matrix_t mat = {
-	0, -4.5254285714285709 * FACTOR,
-	-2.6398333333333333 * FACTOR, 0,
-	0, 0
-    };
+    comac_matrix_t mat = {0,
+			  -4.5254285714285709 * FACTOR,
+			  -2.6398333333333333 * FACTOR,
+			  0,
+			  0,
+			  0};
 
-    pattern = comac_pattern_create_linear (-16384 * FACTOR, 0,
-					    16384 * FACTOR, 0);
+    pattern =
+	comac_pattern_create_linear (-16384 * FACTOR, 0, 16384 * FACTOR, 0);
     comac_pattern_add_color_stop_rgba (pattern,
-				       0, 0.376471, 0.533333, 0.27451, 1);
+				       0,
+				       0.376471,
+				       0.533333,
+				       0.27451,
+				       1);
     comac_pattern_add_color_stop_rgba (pattern, 1, 1, 1, 1, 1);
     comac_pattern_set_matrix (pattern, &mat);
 
@@ -62,6 +67,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (huge_linear,
 	    "Test huge linear patterns",
 	    "gradient, linear", /* keywords */
-	    NULL, /* requirements */
-	    600, 350,
-	    NULL, draw)
+	    NULL,		/* requirements */
+	    600,
+	    350,
+	    NULL,
+	    draw)

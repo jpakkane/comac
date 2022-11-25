@@ -42,7 +42,8 @@ create_source (comac_surface_t *target)
 
     surface = comac_surface_create_similar (target,
 					    COMAC_CONTENT_COLOR,
-					    WIDTH, HEIGHT);
+					    WIDTH,
+					    HEIGHT);
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
@@ -73,7 +74,7 @@ draw (comac_t *cr, int width, int height)
     /* blit a set of rectangles that the rectangular tessellator
      * will not emit sorted. */
     for (x = 0; x < WIDTH - 10; x += 15)
-	comac_rectangle (cr, x, x, 10, HEIGHT - 2*x);
+	comac_rectangle (cr, x, x, 10, HEIGHT - 2 * x);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -82,6 +83,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (copy_disjoint,
 	    "Tests copying unsorted rectangles.",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

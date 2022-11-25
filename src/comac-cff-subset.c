@@ -56,60 +56,58 @@
 
 /* CFF Dict Operators. If the high byte is 0 the command is encoded
  * with a single byte. */
-#define BASEFONTNAME_OP     0x0c16
-#define CIDCOUNT_OP         0x0c22
-#define CHARSET_OP          0x000f
-#define CHARSTRINGS_OP      0x0011
-#define COPYRIGHT_OP        0x0c00
-#define DEFAULTWIDTH_OP     0x0014
-#define ENCODING_OP         0x0010
-#define FAMILYNAME_OP       0x0003
-#define FDARRAY_OP          0x0c24
-#define FDSELECT_OP         0x0c25
-#define FONTBBOX_OP         0x0005
-#define FONTMATRIX_OP       0x0c07
-#define FONTNAME_OP         0x0c26
-#define FULLNAME_OP         0x0002
-#define LOCAL_SUB_OP        0x0013
-#define NOMINALWIDTH_OP     0x0015
-#define NOTICE_OP           0x0001
-#define POSTSCRIPT_OP       0x0c15
-#define PRIVATE_OP          0x0012
-#define ROS_OP              0x0c1e
-#define UNIQUEID_OP         0x000d
-#define VERSION_OP          0x0000
-#define WEIGHT_OP           0x0004
-#define XUID_OP             0x000e
-#define BLUEVALUES_OP       0x0006
-#define OTHERBLUES_OP       0x0007
-#define FAMILYBLUES_OP      0x0008
+#define BASEFONTNAME_OP 0x0c16
+#define CIDCOUNT_OP 0x0c22
+#define CHARSET_OP 0x000f
+#define CHARSTRINGS_OP 0x0011
+#define COPYRIGHT_OP 0x0c00
+#define DEFAULTWIDTH_OP 0x0014
+#define ENCODING_OP 0x0010
+#define FAMILYNAME_OP 0x0003
+#define FDARRAY_OP 0x0c24
+#define FDSELECT_OP 0x0c25
+#define FONTBBOX_OP 0x0005
+#define FONTMATRIX_OP 0x0c07
+#define FONTNAME_OP 0x0c26
+#define FULLNAME_OP 0x0002
+#define LOCAL_SUB_OP 0x0013
+#define NOMINALWIDTH_OP 0x0015
+#define NOTICE_OP 0x0001
+#define POSTSCRIPT_OP 0x0c15
+#define PRIVATE_OP 0x0012
+#define ROS_OP 0x0c1e
+#define UNIQUEID_OP 0x000d
+#define VERSION_OP 0x0000
+#define WEIGHT_OP 0x0004
+#define XUID_OP 0x000e
+#define BLUEVALUES_OP 0x0006
+#define OTHERBLUES_OP 0x0007
+#define FAMILYBLUES_OP 0x0008
 #define FAMILYOTHERBLUES_OP 0x0009
-#define STEMSNAPH_OP        0x0c0c
-#define STEMSNAPV_OP        0x0c0d
+#define STEMSNAPH_OP 0x0c0c
+#define STEMSNAPV_OP 0x0c0d
 
 #define NUM_STD_STRINGS 391
 
 /* Type 2 Charstring operators */
-#define TYPE2_hstem     0x0001
-#define TYPE2_vstem     0x0003
-#define TYPE2_callsubr  0x000a
+#define TYPE2_hstem 0x0001
+#define TYPE2_vstem 0x0003
+#define TYPE2_callsubr 0x000a
 
-#define TYPE2_return    0x000b
-#define TYPE2_endchar   0x000e
+#define TYPE2_return 0x000b
+#define TYPE2_endchar 0x000e
 
-#define TYPE2_hstemhm   0x0012
-#define TYPE2_hintmask  0x0013
-#define TYPE2_cntrmask  0x0014
-#define TYPE2_vstemhm   0x0017
+#define TYPE2_hstemhm 0x0012
+#define TYPE2_hintmask 0x0013
+#define TYPE2_cntrmask 0x0014
+#define TYPE2_vstemhm 0x0017
 #define TYPE2_callgsubr 0x001d
 
-#define TYPE2_rmoveto   0x0015
-#define TYPE2_hmoveto   0x0016
-#define TYPE2_vmoveto   0x0004
-
+#define TYPE2_rmoveto 0x0015
+#define TYPE2_hmoveto 0x0016
+#define TYPE2_vmoveto 0x0004
 
 #define MAX_SUBROUTINE_NESTING 10 /* From Type2 Charstring spec */
-
 
 typedef struct _cff_header {
     uint8_t major;
@@ -119,9 +117,9 @@ typedef struct _cff_header {
 } cff_header_t;
 
 typedef struct _cff_index_element {
-    comac_bool_t   is_copy;
+    comac_bool_t is_copy;
     unsigned char *data;
-    int            length;
+    int length;
 } cff_index_element_t;
 
 typedef struct _cff_dict_operator {
@@ -129,8 +127,8 @@ typedef struct _cff_dict_operator {
 
     unsigned short operator;
     unsigned char *operand;
-    int            operand_length;
-    int            operand_offset;
+    int operand_length;
+    int operand_offset;
 } cff_dict_operator_t;
 
 typedef struct _comac_cff_font {
@@ -139,71 +137,71 @@ typedef struct _comac_cff_font {
     const comac_scaled_font_backend_t *backend;
 
     /* Font Data */
-    unsigned char       *data;
-    unsigned long        data_length;
-    unsigned char       *current_ptr;
-    unsigned char       *data_end;
-    cff_header_t        *header;
-    char                *font_name;
-    char                *ps_name;
-    comac_hash_table_t  *top_dict;
-    comac_hash_table_t  *private_dict;
-    comac_array_t        strings_index;
-    comac_array_t        charstrings_index;
-    comac_array_t        global_sub_index;
-    comac_array_t        local_sub_index;
-    unsigned char       *charset;
-    int                  num_glyphs;
-    comac_bool_t         is_cid;
-    comac_bool_t         is_opentype;
-    int  		 units_per_em;
-    int 		 global_sub_bias;
-    int			 local_sub_bias;
-    double               default_width;
-    double               nominal_width;
+    unsigned char *data;
+    unsigned long data_length;
+    unsigned char *current_ptr;
+    unsigned char *data_end;
+    cff_header_t *header;
+    char *font_name;
+    char *ps_name;
+    comac_hash_table_t *top_dict;
+    comac_hash_table_t *private_dict;
+    comac_array_t strings_index;
+    comac_array_t charstrings_index;
+    comac_array_t global_sub_index;
+    comac_array_t local_sub_index;
+    unsigned char *charset;
+    int num_glyphs;
+    comac_bool_t is_cid;
+    comac_bool_t is_opentype;
+    int units_per_em;
+    int global_sub_bias;
+    int local_sub_bias;
+    double default_width;
+    double nominal_width;
 
     /* CID Font Data */
-    int                 *fdselect;
-    unsigned int         num_fontdicts;
+    int *fdselect;
+    unsigned int num_fontdicts;
     comac_hash_table_t **fd_dict;
     comac_hash_table_t **fd_private_dict;
-    comac_array_t       *fd_local_sub_index;
-    int			*fd_local_sub_bias;
-    double              *fd_default_width;
-    double              *fd_nominal_width;
+    comac_array_t *fd_local_sub_index;
+    int *fd_local_sub_bias;
+    double *fd_default_width;
+    double *fd_nominal_width;
 
     /* Subsetted Font Data */
-    char                *subset_font_name;
-    comac_array_t        charstrings_subset_index;
-    comac_array_t        strings_subset_index;
-    int			 euro_sid;
-    int                 *fdselect_subset;
-    unsigned int         num_subset_fontdicts;
-    int                 *fd_subset_map;
-    int                 *private_dict_offset;
-    comac_bool_t         subset_subroutines;
-    comac_bool_t	*global_subs_used;
-    comac_bool_t	*local_subs_used;
-    comac_bool_t       **fd_local_subs_used;
-    comac_array_t        output;
+    char *subset_font_name;
+    comac_array_t charstrings_subset_index;
+    comac_array_t strings_subset_index;
+    int euro_sid;
+    int *fdselect_subset;
+    unsigned int num_subset_fontdicts;
+    int *fd_subset_map;
+    int *private_dict_offset;
+    comac_bool_t subset_subroutines;
+    comac_bool_t *global_subs_used;
+    comac_bool_t *local_subs_used;
+    comac_bool_t **fd_local_subs_used;
+    comac_array_t output;
 
     /* Subset Metrics */
-    int                 *widths;
-    int                  x_min, y_min, x_max, y_max;
-    int                  ascent, descent;
+    int *widths;
+    int x_min, y_min, x_max, y_max;
+    int ascent, descent;
 
     /* Type 2 charstring data */
-    int 	 	 type2_stack_size;
-    int 		 type2_stack_top_value;
-    comac_bool_t 	 type2_stack_top_is_int;
-    int 		 type2_num_hints;
-    int 		 type2_hintmask_bytes;
-    int                  type2_nesting_level;
-    comac_bool_t         type2_seen_first_int;
-    comac_bool_t         type2_find_width;
-    comac_bool_t         type2_found_width;
-    int                  type2_width;
-    comac_bool_t         type2_has_path;
+    int type2_stack_size;
+    int type2_stack_top_value;
+    comac_bool_t type2_stack_top_is_int;
+    int type2_num_hints;
+    int type2_hintmask_bytes;
+    int type2_nesting_level;
+    comac_bool_t type2_seen_first_int;
+    comac_bool_t type2_find_width;
+    comac_bool_t type2_found_width;
+    int type2_width;
+    comac_bool_t type2_has_path;
 
 } comac_cff_font_t;
 
@@ -215,7 +213,7 @@ encode_integer_max (unsigned char *p, int i)
     *p++ = 29;
     *p++ = i >> 24;
     *p++ = (i >> 16) & 0xff;
-    *p++ = (i >> 8)  & 0xff;
+    *p++ = (i >> 8) & 0xff;
     *p++ = i & 0xff;
     return p;
 }
@@ -224,21 +222,21 @@ static unsigned char *
 encode_integer (unsigned char *p, int i)
 {
     if (i >= -107 && i <= 107) {
-        *p++ = i + 139;
+	*p++ = i + 139;
     } else if (i >= 108 && i <= 1131) {
-        i -= 108;
-        *p++ = (i >> 8)+ 247;
-        *p++ = i & 0xff;
+	i -= 108;
+	*p++ = (i >> 8) + 247;
+	*p++ = i & 0xff;
     } else if (i >= -1131 && i <= -108) {
-        i = -i - 108;
-        *p++ = (i >> 8)+ 251;
-        *p++ = i & 0xff;
+	i = -i - 108;
+	*p++ = (i >> 8) + 251;
+	*p++ = i & 0xff;
     } else if (i >= -32768 && i <= 32767) {
-        *p++ = 28;
-        *p++ = (i >> 8)  & 0xff;
-        *p++ = i & 0xff;
+	*p++ = 28;
+	*p++ = (i >> 8) & 0xff;
+	*p++ = i & 0xff;
     } else {
-        p = encode_integer_max (p, i);
+	p = encode_integer_max (p, i);
     }
     return p;
 }
@@ -247,22 +245,23 @@ static unsigned char *
 decode_integer (unsigned char *p, int *integer)
 {
     if (*p == 28) {
-        *integer = (int16_t)(p[1]<<8 | p[2]);
-        p += 3;
+	*integer = (int16_t) (p[1] << 8 | p[2]);
+	p += 3;
     } else if (*p == 29) {
-        *integer = (int32_t)(((uint32_t)p[1] << 24) | (p[2] << 16) | (p[3] << 8) | p[4]);
-        p += 5;
+	*integer = (int32_t) (((uint32_t) p[1] << 24) | (p[2] << 16) |
+			      (p[3] << 8) | p[4]);
+	p += 5;
     } else if (*p >= 32 && *p <= 246) {
-        *integer = *p++ - 139;
+	*integer = *p++ - 139;
     } else if (*p <= 250) {
-        *integer = (p[0] - 247) * 256 + p[1] + 108;
-        p += 2;
+	*integer = (p[0] - 247) * 256 + p[1] + 108;
+	p += 2;
     } else if (*p <= 254) {
-        *integer = -(p[0] - 251) * 256 - p[1] - 108;
-        p += 2;
+	*integer = -(p[0] - 251) * 256 - p[1] - 108;
+	p += 2;
     } else {
-        *integer = 0;
-        p += 1;
+	*integer = 0;
+	p += 1;
     }
     return p;
 }
@@ -270,8 +269,7 @@ decode_integer (unsigned char *p, int *integer)
 static char *
 decode_nibble (int n, char *buf)
 {
-    switch (n)
-    {
+    switch (n) {
     case 0xa:
 	*buf++ = '.';
 	break;
@@ -313,9 +311,9 @@ decode_real (unsigned char *p, double *real)
 	buf = decode_nibble (n, buf);
 	n = *p & 0x0f;
 	buf = decode_nibble (n, buf);
-        if ((*p & 0x0f) == 0x0f) {
+	if ((*p & 0x0f) == 0x0f) {
 	    p++;
-            break;
+	    break;
 	}
 	p++;
     };
@@ -330,11 +328,11 @@ static unsigned char *
 decode_number (unsigned char *p, double *number)
 {
     if (*p == 30) {
-        p = decode_real (p, number);
+	p = decode_real (p, number);
     } else {
-        int i;
-        p = decode_integer (p, &i);
-        *number = i;
+	int i;
+	p = decode_integer (p, &i);
+	*number = i;
     }
     return p;
 }
@@ -346,10 +344,10 @@ decode_operator (unsigned char *p, unsigned short *operator)
 
     op = *p++;
     if (op == 12) {
-        op <<= 8;
-        op |= *p++;
+	op <<= 8;
+	op |= *p++;
     }
-    *operator = op;
+    *operator= op;
     return p;
 }
 
@@ -360,21 +358,21 @@ operand_length (unsigned char *p)
     unsigned char *begin = p;
 
     if (*p == 28)
-        return 3;
+	return 3;
 
     if (*p == 29)
-        return 5;
+	return 5;
 
     if (*p >= 32 && *p <= 246)
-        return 1;
+	return 1;
 
     if (*p >= 247 && *p <= 254)
-        return 2;
+	return 2;
 
     if (*p == 30) {
-        while ((*p & 0x0f) != 0x0f)
-            p++;
-        return p - begin + 1;
+	while ((*p & 0x0f) != 0x0f)
+	    p++;
+	return p - begin + 1;
     }
 
     return 0;
@@ -384,19 +382,19 @@ static unsigned char *
 encode_index_offset (unsigned char *p, int offset_size, unsigned long offset)
 {
     while (--offset_size >= 0) {
-        p[offset_size] = (unsigned char) (offset & 0xff);
-        offset >>= 8;
+	p[offset_size] = (unsigned char) (offset & 0xff);
+	offset >>= 8;
     }
     return p + offset_size;
 }
 
 static unsigned long
-decode_index_offset(unsigned char *p, int off_size)
+decode_index_offset (unsigned char *p, int off_size)
 {
     unsigned long offset = 0;
 
     while (off_size-- > 0)
-        offset = offset*256 + *p++;
+	offset = offset * 256 + *p++;
     return offset;
 }
 
@@ -407,7 +405,9 @@ cff_index_init (comac_array_t *index)
 }
 
 static comac_int_status_t
-cff_index_read (comac_array_t *index, unsigned char **ptr, unsigned char *end_ptr)
+cff_index_read (comac_array_t *index,
+		unsigned char **ptr,
+		unsigned char *end_ptr)
 {
     cff_index_element_t element;
     unsigned char *data, *p;
@@ -417,30 +417,30 @@ cff_index_read (comac_array_t *index, unsigned char **ptr, unsigned char *end_pt
 
     p = *ptr;
     if (p + 2 > end_ptr)
-        return COMAC_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
     count = get_unaligned_be16 (p);
     p += 2;
     if (count > 0) {
-        offset_size = *p++;
-        if (p + (count + 1)*offset_size > end_ptr)
-            return COMAC_INT_STATUS_UNSUPPORTED;
-        data = p + offset_size*(count + 1) - 1;
-        start = decode_index_offset (p, offset_size);
-        p += offset_size;
-        for (i = 0; i < count; i++) {
-            end = decode_index_offset (p, offset_size);
-            p += offset_size;
-            if (p > end_ptr)
-                return COMAC_INT_STATUS_UNSUPPORTED;
-            element.length = end - start;
-            element.is_copy = FALSE;
-            element.data = data + start;
-            status = _comac_array_append (index, &element);
-            if (unlikely (status))
-                return status;
-            start = end;
-        }
-        p = data + end;
+	offset_size = *p++;
+	if (p + (count + 1) * offset_size > end_ptr)
+	    return COMAC_INT_STATUS_UNSUPPORTED;
+	data = p + offset_size * (count + 1) - 1;
+	start = decode_index_offset (p, offset_size);
+	p += offset_size;
+	for (i = 0; i < count; i++) {
+	    end = decode_index_offset (p, offset_size);
+	    p += offset_size;
+	    if (p > end_ptr)
+		return COMAC_INT_STATUS_UNSUPPORTED;
+	    element.length = end - start;
+	    element.is_copy = FALSE;
+	    element.data = data + start;
+	    status = _comac_array_append (index, &element);
+	    if (unlikely (status))
+		return status;
+	    start = end;
+	}
+	p = data + end;
     }
     *ptr = p;
 
@@ -463,68 +463,70 @@ cff_index_write (comac_array_t *index, comac_array_t *output)
     count = cpu_to_be16 ((uint16_t) num_elem);
     status = _comac_array_append_multiple (output, &count, 2);
     if (unlikely (status))
-        return status;
+	return status;
 
     if (num_elem == 0)
-        return COMAC_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     /* Find maximum offset to determine offset size */
     offset = 1;
     for (i = 0; i < num_elem; i++) {
-        element = _comac_array_index (index, i);
-        offset += element->length;
+	element = _comac_array_index (index, i);
+	offset += element->length;
     }
     if (offset < 0x100)
-        offset_size = 1;
+	offset_size = 1;
     else if (offset < 0x10000)
-        offset_size = 2;
+	offset_size = 2;
     else if (offset < 0x1000000)
-        offset_size = 3;
+	offset_size = 3;
     else
-        offset_size = 4;
+	offset_size = 4;
 
     buf[0] = (unsigned char) offset_size;
     status = _comac_array_append (output, buf);
     if (unlikely (status))
-        return status;
+	return status;
 
     offset = 1;
     encode_index_offset (buf, offset_size, offset);
     status = _comac_array_append_multiple (output, buf, offset_size);
     if (unlikely (status))
-        return status;
+	return status;
 
     for (i = 0; i < num_elem; i++) {
-        element = _comac_array_index (index, i);
-        offset += element->length;
-        encode_index_offset (buf, offset_size, offset);
-        status = _comac_array_append_multiple (output, buf, offset_size);
-        if (unlikely (status))
-            return status;
+	element = _comac_array_index (index, i);
+	offset += element->length;
+	encode_index_offset (buf, offset_size, offset);
+	status = _comac_array_append_multiple (output, buf, offset_size);
+	if (unlikely (status))
+	    return status;
     }
 
     for (i = 0; i < num_elem; i++) {
-        element = _comac_array_index (index, i);
-        if (element->length > 0) {
-            status = _comac_array_append_multiple (output,
-                                                   element->data,
-                                                   element->length);
-        }
-        if (unlikely (status))
-            return status;
+	element = _comac_array_index (index, i);
+	if (element->length > 0) {
+	    status = _comac_array_append_multiple (output,
+						   element->data,
+						   element->length);
+	}
+	if (unlikely (status))
+	    return status;
     }
     return COMAC_STATUS_SUCCESS;
 }
 
 static void
-cff_index_set_object (comac_array_t *index, int obj_index,
-                      unsigned char *object , int length)
+cff_index_set_object (comac_array_t *index,
+		      int obj_index,
+		      unsigned char *object,
+		      int length)
 {
     cff_index_element_t *element;
 
     element = _comac_array_index (index, obj_index);
     if (element->is_copy)
-        free (element->data);
+	free (element->data);
 
     element->data = object;
     element->length = length;
@@ -532,7 +534,7 @@ cff_index_set_object (comac_array_t *index, int obj_index,
 }
 
 static comac_status_t
-cff_index_append (comac_array_t *index, unsigned char *object , int length)
+cff_index_append (comac_array_t *index, unsigned char *object, int length)
 {
     cff_index_element_t element;
 
@@ -545,8 +547,8 @@ cff_index_append (comac_array_t *index, unsigned char *object , int length)
 
 static comac_status_t
 cff_index_append_copy (comac_array_t *index,
-                       const unsigned char *object,
-                       unsigned int length)
+		       const unsigned char *object,
+		       unsigned int length)
 {
     cff_index_element_t element;
     comac_status_t status;
@@ -575,9 +577,9 @@ cff_index_fini (comac_array_t *index)
     unsigned int i;
 
     for (i = 0; i < _comac_array_num_elements (index); i++) {
-        element = _comac_array_index (index, i);
-        if (element->is_copy && element->data)
-            free (element->data);
+	element = _comac_array_index (index, i);
+	if (element->is_copy && element->data)
+	    free (element->data);
     }
     _comac_array_fini (index);
 }
@@ -588,7 +590,7 @@ _comac_cff_dict_equal (const void *key_a, const void *key_b)
     const cff_dict_operator_t *op_a = key_a;
     const cff_dict_operator_t *op_b = key_b;
 
-    return op_a->operator == op_b->operator;
+    return op_a->operator== op_b->operator;
 }
 
 static comac_status_t
@@ -605,13 +607,13 @@ static void
 _comac_dict_init_key (cff_dict_operator_t *key, int operator)
 {
     key->base.hash = (unsigned long) operator;
-    key->operator = operator;
+    key->operator= operator;
 }
 
 static comac_status_t
-cff_dict_create_operator (int            operator,
-                          unsigned char *operand,
-                          int            size,
+cff_dict_create_operator (int operator,
+			  unsigned char * operand,
+			  int size,
 			  cff_dict_operator_t **out)
 {
     cff_dict_operator_t *op;
@@ -631,12 +633,11 @@ cff_dict_create_operator (int            operator,
     } else {
 	op->operand = NULL;
 	/* Delta-encoded arrays can be empty. */
-	if (operator != BLUEVALUES_OP &&
-	    operator != OTHERBLUES_OP &&
-	    operator != FAMILYBLUES_OP &&
-	    operator != FAMILYOTHERBLUES_OP &&
-	    operator != STEMSNAPH_OP &&
-	    operator != STEMSNAPV_OP) {
+	if (operator!= BLUEVALUES_OP && operator!= OTHERBLUES_OP && operator!=
+	    FAMILYBLUES_OP &&
+	    operator!= FAMILYOTHERBLUES_OP &&
+	    operator!= STEMSNAPH_OP &&
+	    operator!= STEMSNAPV_OP) {
 	    free (op);
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
@@ -662,28 +663,29 @@ cff_dict_read (comac_hash_table_t *dict, unsigned char *p, int dict_size)
     end = p + dict_size;
     _comac_array_init (&operands, 1);
     while (p < end) {
-        size = operand_length (p);
-        if (size != 0) {
-            status = _comac_array_append_multiple (&operands, p, size);
-            if (unlikely (status))
-                goto fail;
+	size = operand_length (p);
+	if (size != 0) {
+	    status = _comac_array_append_multiple (&operands, p, size);
+	    if (unlikely (status))
+		goto fail;
 
-            p += size;
-        } else {
-            p = decode_operator (p, &operator);
-            status = cff_dict_create_operator (operator,
-                                          _comac_array_index (&operands, 0),
-                                          _comac_array_num_elements (&operands),
+	    p += size;
+	} else {
+	    p = decode_operator (p, &operator);
+	    status =
+		cff_dict_create_operator (operator,
+					  _comac_array_index (&operands, 0),
+					  _comac_array_num_elements (&operands),
 					  &op);
-            if (unlikely (status))
-                goto fail;
+	    if (unlikely (status))
+		goto fail;
 
-            status = _comac_hash_table_insert (dict, &op->base);
-            if (unlikely (status))
-                goto fail;
+	    status = _comac_hash_table_insert (dict, &op->base);
+	    if (unlikely (status))
+		goto fail;
 
-            _comac_array_truncate (&operands, 0);
-        }
+	    _comac_array_truncate (&operands, 0);
+	}
     }
 
 fail:
@@ -700,24 +702,23 @@ cff_dict_remove (comac_hash_table_t *dict, unsigned short operator)
     _comac_dict_init_key (&key, operator);
     op = _comac_hash_table_lookup (dict, &key.base);
     if (op != NULL) {
-        free (op->operand);
-        _comac_hash_table_remove (dict, (comac_hash_entry_t *) op);
-        free (op);
+	free (op->operand);
+	_comac_hash_table_remove (dict, (comac_hash_entry_t *) op);
+	free (op);
     }
 }
 
 static unsigned char *
-cff_dict_get_operands (comac_hash_table_t *dict,
-                       unsigned short      operator,
-                       int                *size)
+cff_dict_get_operands (
+    comac_hash_table_t *dict, unsigned short operator, int * size)
 {
     cff_dict_operator_t key, *op;
 
     _comac_dict_init_key (&key, operator);
     op = _comac_hash_table_lookup (dict, &key.base);
     if (op != NULL) {
-        *size = op->operand_length;
-        return op->operand;
+	*size = op->operand_length;
+	return op->operand;
     }
 
     return NULL;
@@ -725,9 +726,10 @@ cff_dict_get_operands (comac_hash_table_t *dict,
 
 static comac_status_t
 cff_dict_set_operands (comac_hash_table_t *dict,
-                       unsigned short      operator,
-                       unsigned char      *operand,
-                       int                 size)
+		       unsigned short
+		       operator,
+		       unsigned char * operand,
+		       int size)
 {
     cff_dict_operator_t key, *op;
     comac_status_t status;
@@ -735,18 +737,16 @@ cff_dict_set_operands (comac_hash_table_t *dict,
     _comac_dict_init_key (&key, operator);
     op = _comac_hash_table_lookup (dict, &key.base);
     if (op != NULL) {
-        free (op->operand);
-        op->operand = _comac_malloc (size);
+	free (op->operand);
+	op->operand = _comac_malloc (size);
 	if (unlikely (op->operand == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-        memcpy (op->operand, operand, size);
-        op->operand_length = size;
-    }
-    else
-    {
-        status = cff_dict_create_operator (operator, operand, size, &op);
-        if (unlikely (status))
+	memcpy (op->operand, operand, size);
+	op->operand_length = size;
+    } else {
+	status = cff_dict_create_operator (operator, operand, size, &op);
+	if (unlikely (status))
 	    return status;
 
 	status = _comac_hash_table_insert (dict, &op->base);
@@ -758,17 +758,16 @@ cff_dict_set_operands (comac_hash_table_t *dict,
 }
 
 static int
-cff_dict_get_location (comac_hash_table_t *dict,
-                       unsigned short      operator,
-                       int                *size)
+cff_dict_get_location (
+    comac_hash_table_t *dict, unsigned short operator, int * size)
 {
     cff_dict_operator_t key, *op;
 
     _comac_dict_init_key (&key, operator);
     op = _comac_hash_table_lookup (dict, &key.base);
     if (op != NULL) {
-        *size = op->operand_length;
-        return op->operand_offset;
+	*size = op->operand_length;
+	return op->operand_offset;
     }
 
     return -1;
@@ -780,37 +779,40 @@ typedef struct _dict_write_info {
 } dict_write_info_t;
 
 static void
-comac_dict_write_operator (cff_dict_operator_t *op, dict_write_info_t *write_info)
+comac_dict_write_operator (cff_dict_operator_t *op,
+			   dict_write_info_t *write_info)
 {
     unsigned char data;
 
     op->operand_offset = _comac_array_num_elements (write_info->output);
-    write_info->status = _comac_array_append_multiple (write_info->output, op->operand, op->operand_length);
+    write_info->status = _comac_array_append_multiple (write_info->output,
+						       op->operand,
+						       op->operand_length);
     if (write_info->status)
-        return;
+	return;
 
-    if (op->operator & 0xff00) {
-        data = op->operator >> 8;
-        write_info->status = _comac_array_append (write_info->output, &data);
-        if (write_info->status)
-            return;
+    if (op->operator& 0xff00) {
+	data = op->operator>> 8;
+	write_info->status = _comac_array_append (write_info->output, &data);
+	if (write_info->status)
+	    return;
     }
-    data = op->operator & 0xff;
+    data = op->operator& 0xff;
     write_info->status = _comac_array_append (write_info->output, &data);
 }
 
 static void
 _comac_dict_collect (void *entry, void *closure)
 {
-    dict_write_info_t   *write_info = closure;
+    dict_write_info_t *write_info = closure;
     cff_dict_operator_t *op = entry;
 
     if (write_info->status)
-        return;
+	return;
 
     /* The ROS operator is handled separately in cff_dict_write() */
-    if (op->operator != ROS_OP)
-        comac_dict_write_operator (op, write_info);
+    if (op->operator!= ROS_OP)
+	comac_dict_write_operator (op, write_info);
 }
 
 static comac_status_t
@@ -827,7 +829,7 @@ cff_dict_write (comac_hash_table_t *dict, comac_array_t *output)
     _comac_dict_init_key (&key, ROS_OP);
     op = _comac_hash_table_lookup (dict, &key.base);
     if (op != NULL)
-        comac_dict_write_operator (op, &write_info);
+	comac_dict_write_operator (op, &write_info);
 
     _comac_hash_table_foreach (dict, _comac_dict_collect, &write_info);
 
@@ -855,8 +857,7 @@ static comac_int_status_t
 comac_cff_font_read_header (comac_cff_font_t *font)
 {
     if (font->data_length < sizeof (cff_header_t))
-        return COMAC_INT_STATUS_UNSUPPORTED;
-
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     font->header = (cff_header_t *) font->data;
     font->current_ptr = font->data + font->header->header_size;
@@ -875,8 +876,8 @@ comac_cff_font_read_name (comac_cff_font_t *font)
 
     cff_index_init (&index);
     status = cff_index_read (&index, &font->current_ptr, font->data_end);
-    if (!font->is_opentype) {
-        element = _comac_array_index (&index, 0);
+    if (! font->is_opentype) {
+	element = _comac_array_index (&index, 0);
 	p = element->data;
 	len = element->length;
 
@@ -890,14 +891,14 @@ comac_cff_font_read_name (comac_cff_font_t *font)
 		len -= 7;
 	    }
 	}
-        font->ps_name = _comac_malloc (len + 1);
-        if (unlikely (font->ps_name == NULL))
-            return _comac_error (COMAC_STATUS_NO_MEMORY);
+	font->ps_name = _comac_malloc (len + 1);
+	if (unlikely (font->ps_name == NULL))
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-        memcpy (font->ps_name, p, len);
-        font->ps_name[len] = 0;
+	memcpy (font->ps_name, p, len);
+	font->ps_name[len] = 0;
 
-        status = _comac_escape_ps_name (&font->ps_name);
+	status = _comac_escape_ps_name (&font->ps_name);
     }
     cff_index_fini (&index);
 
@@ -905,15 +906,15 @@ comac_cff_font_read_name (comac_cff_font_t *font)
 }
 
 static comac_int_status_t
-comac_cff_font_read_private_dict (comac_cff_font_t   *font,
-                                  comac_hash_table_t *private_dict,
-                                  comac_array_t      *local_sub_index,
-                                  int                *local_sub_bias,
-                                  comac_bool_t      **local_subs_used,
-                                  double             *default_width,
-                                  double             *nominal_width,
-                                  unsigned char      *ptr,
-                                  int                 size)
+comac_cff_font_read_private_dict (comac_cff_font_t *font,
+				  comac_hash_table_t *private_dict,
+				  comac_array_t *local_sub_index,
+				  int *local_sub_bias,
+				  comac_bool_t **local_subs_used,
+				  double *default_width,
+				  double *nominal_width,
+				  unsigned char *ptr,
+				  int size)
 {
     comac_int_status_t status;
     unsigned char buf[10];
@@ -930,15 +931,18 @@ comac_cff_font_read_private_dict (comac_cff_font_t   *font,
 
     operand = cff_dict_get_operands (private_dict, LOCAL_SUB_OP, &i);
     if (operand) {
-        decode_integer (operand, &offset);
-        p = ptr + offset;
-        status = cff_index_read (local_sub_index, &p, font->data_end);
+	decode_integer (operand, &offset);
+	p = ptr + offset;
+	status = cff_index_read (local_sub_index, &p, font->data_end);
 	if (unlikely (status))
 	    return status;
 
 	/* Use maximum sized encoding to reserve space for later modification. */
 	end_buf = encode_integer_max (buf, 0);
-	status = cff_dict_set_operands (private_dict, LOCAL_SUB_OP, buf, end_buf - buf);
+	status = cff_dict_set_operands (private_dict,
+					LOCAL_SUB_OP,
+					buf,
+					end_buf - buf);
 	if (unlikely (status))
 	    return status;
     }
@@ -946,12 +950,12 @@ comac_cff_font_read_private_dict (comac_cff_font_t   *font,
     *default_width = 0;
     operand = cff_dict_get_operands (private_dict, DEFAULTWIDTH_OP, &i);
     if (operand)
-        decode_number (operand, default_width);
+	decode_number (operand, default_width);
 
     *nominal_width = 0;
     operand = cff_dict_get_operands (private_dict, NOMINALWIDTH_OP, &i);
     if (operand)
-	 decode_number (operand, nominal_width);
+	decode_number (operand, nominal_width);
 
     num_subs = _comac_array_num_elements (local_sub_index);
     *local_subs_used = calloc (num_subs, sizeof (comac_bool_t));
@@ -978,26 +982,24 @@ comac_cff_font_read_fdselect (comac_cff_font_t *font, unsigned char *p)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     type = *p++;
-    if (type == 0)
-    {
-        for (i = 0; i < font->num_glyphs; i++)
-            font->fdselect[i] = *p++;
+    if (type == 0) {
+	for (i = 0; i < font->num_glyphs; i++)
+	    font->fdselect[i] = *p++;
     } else if (type == 3) {
-        num_ranges = get_unaligned_be16 (p);
-        p += 2;
-        for  (i = 0; i < num_ranges; i++)
-        {
-            first = get_unaligned_be16 (p);
-            p += 2;
-            fd = *p++;
-            last = get_unaligned_be16 (p);
-            if (last > font->num_glyphs)
-                return COMAC_INT_STATUS_UNSUPPORTED;
-            for (j = first; j < last; j++)
-                font->fdselect[j] = fd;
-        }
+	num_ranges = get_unaligned_be16 (p);
+	p += 2;
+	for (i = 0; i < num_ranges; i++) {
+	    first = get_unaligned_be16 (p);
+	    p += 2;
+	    fd = *p++;
+	    last = get_unaligned_be16 (p);
+	    if (last > font->num_glyphs)
+		return COMAC_INT_STATUS_UNSUPPORTED;
+	    for (j = first; j < last; j++)
+		font->fdselect[j] = fd;
+	}
     } else {
-        return COMAC_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -1019,93 +1021,100 @@ comac_cff_font_read_cid_fontdict (comac_cff_font_t *font, unsigned char *ptr)
     cff_index_init (&index);
     status = cff_index_read (&index, &ptr, font->data_end);
     if (unlikely (status))
-        goto fail;
+	goto fail;
 
     font->num_fontdicts = _comac_array_num_elements (&index);
 
     font->fd_dict = calloc (sizeof (comac_hash_table_t *), font->num_fontdicts);
     if (unlikely (font->fd_dict == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail;
     }
 
-    font->fd_private_dict = calloc (sizeof (comac_hash_table_t *), font->num_fontdicts);
+    font->fd_private_dict =
+	calloc (sizeof (comac_hash_table_t *), font->num_fontdicts);
     if (unlikely (font->fd_private_dict == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail;
     }
 
-    font->fd_local_sub_index = calloc (sizeof (comac_array_t), font->num_fontdicts);
+    font->fd_local_sub_index =
+	calloc (sizeof (comac_array_t), font->num_fontdicts);
     if (unlikely (font->fd_local_sub_index == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail;
     }
 
     font->fd_local_sub_bias = calloc (sizeof (int), font->num_fontdicts);
     if (unlikely (font->fd_local_sub_bias == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail;
     }
 
-    font->fd_local_subs_used = calloc (sizeof (comac_bool_t *), font->num_fontdicts);
+    font->fd_local_subs_used =
+	calloc (sizeof (comac_bool_t *), font->num_fontdicts);
     if (unlikely (font->fd_local_subs_used == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail;
     }
 
     font->fd_default_width = calloc (font->num_fontdicts, sizeof (double));
     if (unlikely (font->fd_default_width == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail;
     }
 
     font->fd_nominal_width = calloc (font->num_fontdicts, sizeof (double));
     if (unlikely (font->fd_nominal_width == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail;
     }
 
     for (i = 0; i < font->num_fontdicts; i++) {
-        status = cff_dict_init (&font->fd_dict[i]);
-        if (unlikely (status))
-            goto fail;
-
-        element = _comac_array_index (&index, i);
-        status = cff_dict_read (font->fd_dict[i], element->data, element->length);
-        if (unlikely (status))
-            goto fail;
-
-        operand = cff_dict_get_operands (font->fd_dict[i], PRIVATE_OP, &size);
-        if (operand == NULL) {
-            status = COMAC_INT_STATUS_UNSUPPORTED;
-            goto fail;
-        }
-        operand = decode_integer (operand, &size);
-        decode_integer (operand, &offset);
-        status = cff_dict_init (&font->fd_private_dict[i]);
+	status = cff_dict_init (&font->fd_dict[i]);
 	if (unlikely (status))
-            goto fail;
+	    goto fail;
 
-        cff_index_init (&font->fd_local_sub_index[i]);
-        status = comac_cff_font_read_private_dict (font,
-                                                   font->fd_private_dict[i],
-                                                   &font->fd_local_sub_index[i],
-                                                   &font->fd_local_sub_bias[i],
-                                                   &font->fd_local_subs_used[i],
-                                                   &font->fd_default_width[i],
-                                                   &font->fd_nominal_width[i],
-                                                   font->data + offset,
-                                                   size);
-        if (unlikely (status))
-            goto fail;
+	element = _comac_array_index (&index, i);
+	status =
+	    cff_dict_read (font->fd_dict[i], element->data, element->length);
+	if (unlikely (status))
+	    goto fail;
+
+	operand = cff_dict_get_operands (font->fd_dict[i], PRIVATE_OP, &size);
+	if (operand == NULL) {
+	    status = COMAC_INT_STATUS_UNSUPPORTED;
+	    goto fail;
+	}
+	operand = decode_integer (operand, &size);
+	decode_integer (operand, &offset);
+	status = cff_dict_init (&font->fd_private_dict[i]);
+	if (unlikely (status))
+	    goto fail;
+
+	cff_index_init (&font->fd_local_sub_index[i]);
+	status = comac_cff_font_read_private_dict (font,
+						   font->fd_private_dict[i],
+						   &font->fd_local_sub_index[i],
+						   &font->fd_local_sub_bias[i],
+						   &font->fd_local_subs_used[i],
+						   &font->fd_default_width[i],
+						   &font->fd_nominal_width[i],
+						   font->data + offset,
+						   size);
+	if (unlikely (status))
+	    goto fail;
 
 	/* Set integer operand to max value to use max size encoding to reserve
          * space for any value later */
-        end_buf = encode_integer_max (buf, 0);
-        end_buf = encode_integer_max (end_buf, 0);
-        status = cff_dict_set_operands (font->fd_dict[i], PRIVATE_OP, buf, end_buf - buf);
-        if (unlikely (status))
-            goto fail;
+	end_buf = encode_integer_max (buf, 0);
+	end_buf = encode_integer_max (end_buf, 0);
+	status = cff_dict_set_operands (font->fd_dict[i],
+					PRIVATE_OP,
+					buf,
+					end_buf - buf);
+	if (unlikely (status))
+	    goto fail;
     }
 
     status = COMAC_STATUS_SUCCESS;
@@ -1117,7 +1126,8 @@ fail:
 }
 
 static void
-comac_cff_font_read_font_metrics (comac_cff_font_t *font, comac_hash_table_t  *top_dict)
+comac_cff_font_read_font_metrics (comac_cff_font_t *font,
+				  comac_hash_table_t *top_dict)
 {
     unsigned char *p;
     unsigned char *end;
@@ -1131,15 +1141,15 @@ comac_cff_font_read_font_metrics (comac_cff_font_t *font, comac_hash_table_t  *t
     y_max = 0.0;
     p = cff_dict_get_operands (font->top_dict, FONTBBOX_OP, &size);
     if (p) {
-        end = p + size;
-        if (p < end)
-            p = decode_number (p, &x_min);
-        if (p < end)
-            p = decode_number (p, &y_min);
-        if (p < end)
-            p = decode_number (p, &x_max);
-        if (p < end)
-            p = decode_number (p, &y_max);
+	end = p + size;
+	if (p < end)
+	    p = decode_number (p, &x_min);
+	if (p < end)
+	    p = decode_number (p, &y_min);
+	if (p < end)
+	    p = decode_number (p, &x_max);
+	if (p < end)
+	    p = decode_number (p, &y_max);
     }
     font->x_min = floor (x_min);
     font->y_min = floor (y_min);
@@ -1154,18 +1164,18 @@ comac_cff_font_read_font_metrics (comac_cff_font_t *font, comac_hash_table_t  *t
     yy = 0.001;
     p = cff_dict_get_operands (font->top_dict, FONTMATRIX_OP, &size);
     if (p) {
-        end = p + size;
-        if (p < end)
-            p = decode_number (p, &xx);
-        if (p < end)
-            p = decode_number (p, &yx);
-        if (p < end)
-            p = decode_number (p, &xy);
-        if (p < end)
-            p = decode_number (p, &yy);
+	end = p + size;
+	if (p < end)
+	    p = decode_number (p, &xx);
+	if (p < end)
+	    p = decode_number (p, &yx);
+	if (p < end)
+	    p = decode_number (p, &xy);
+	if (p < end)
+	    p = decode_number (p, &yy);
     }
     /* Freetype uses 1/abs(yy) to get units per EM */
-    font->units_per_em = _comac_round(1.0/fabs(yy));
+    font->units_per_em = _comac_round (1.0 / fabs (yy));
 }
 
 static comac_int_status_t
@@ -1184,63 +1194,63 @@ comac_cff_font_read_top_dict (comac_cff_font_t *font)
     cff_index_init (&index);
     status = cff_index_read (&index, &font->current_ptr, font->data_end);
     if (unlikely (status))
-        goto fail;
+	goto fail;
 
     element = _comac_array_index (&index, 0);
     status = cff_dict_read (font->top_dict, element->data, element->length);
     if (unlikely (status))
-        goto fail;
+	goto fail;
 
     if (cff_dict_get_operands (font->top_dict, ROS_OP, &size) != NULL)
-        font->is_cid = TRUE;
+	font->is_cid = TRUE;
     else
-        font->is_cid = FALSE;
+	font->is_cid = FALSE;
 
     operand = cff_dict_get_operands (font->top_dict, CHARSTRINGS_OP, &size);
     decode_integer (operand, &offset);
     p = font->data + offset;
     status = cff_index_read (&font->charstrings_index, &p, font->data_end);
     if (unlikely (status))
-        goto fail;
+	goto fail;
     font->num_glyphs = _comac_array_num_elements (&font->charstrings_index);
 
     if (font->is_cid) {
-	 operand = cff_dict_get_operands (font->top_dict, CHARSET_OP, &size);
-	 if (!operand)
-	      return COMAC_INT_STATUS_UNSUPPORTED;
+	operand = cff_dict_get_operands (font->top_dict, CHARSET_OP, &size);
+	if (! operand)
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-	 decode_integer (operand, &offset);
-	 font->charset = font->data + offset;
-	 if (font->charset >= font->data_end)
-	      return COMAC_INT_STATUS_UNSUPPORTED;
+	decode_integer (operand, &offset);
+	font->charset = font->data + offset;
+	if (font->charset >= font->data_end)
+	    return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
-    if (!font->is_opentype)
-        comac_cff_font_read_font_metrics (font, font->top_dict);
+    if (! font->is_opentype)
+	comac_cff_font_read_font_metrics (font, font->top_dict);
 
     if (font->is_cid) {
-        operand = cff_dict_get_operands (font->top_dict, FDSELECT_OP, &size);
-        decode_integer (operand, &offset);
-        status = comac_cff_font_read_fdselect (font, font->data + offset);
+	operand = cff_dict_get_operands (font->top_dict, FDSELECT_OP, &size);
+	decode_integer (operand, &offset);
+	status = comac_cff_font_read_fdselect (font, font->data + offset);
 	if (unlikely (status))
 	    goto fail;
 
-        operand = cff_dict_get_operands (font->top_dict, FDARRAY_OP, &size);
-        decode_integer (operand, &offset);
-        status = comac_cff_font_read_cid_fontdict (font, font->data + offset);
+	operand = cff_dict_get_operands (font->top_dict, FDARRAY_OP, &size);
+	decode_integer (operand, &offset);
+	status = comac_cff_font_read_cid_fontdict (font, font->data + offset);
 	if (unlikely (status))
 	    goto fail;
     } else {
-        operand = cff_dict_get_operands (font->top_dict, PRIVATE_OP, &size);
-        operand = decode_integer (operand, &size);
-        decode_integer (operand, &offset);
+	operand = cff_dict_get_operands (font->top_dict, PRIVATE_OP, &size);
+	operand = decode_integer (operand, &size);
+	decode_integer (operand, &offset);
 	status = comac_cff_font_read_private_dict (font,
-                                                   font->private_dict,
+						   font->private_dict,
 						   &font->local_sub_index,
 						   &font->local_sub_bias,
 						   &font->local_subs_used,
-                                                   &font->default_width,
-                                                   &font->nominal_width,
+						   &font->default_width,
+						   &font->nominal_width,
 						   font->data + offset,
 						   size);
 	if (unlikely (status))
@@ -1250,40 +1260,48 @@ comac_cff_font_read_top_dict (comac_cff_font_t *font)
     /* Use maximum sized encoding to reserve space for later modification. */
     end_buf = encode_integer_max (buf, 0);
     status = cff_dict_set_operands (font->top_dict,
-	                            CHARSTRINGS_OP, buf, end_buf - buf);
+				    CHARSTRINGS_OP,
+				    buf,
+				    end_buf - buf);
     if (unlikely (status))
 	goto fail;
 
-    status = cff_dict_set_operands (font->top_dict,
-	                            CHARSET_OP, buf, end_buf - buf);
+    status =
+	cff_dict_set_operands (font->top_dict, CHARSET_OP, buf, end_buf - buf);
     if (unlikely (status))
 	goto fail;
 
     if (font->scaled_font_subset->is_latin) {
-        status = cff_dict_set_operands (font->top_dict,
-                                        ENCODING_OP, buf, end_buf - buf);
-        if (unlikely (status))
-            goto fail;
+	status = cff_dict_set_operands (font->top_dict,
+					ENCODING_OP,
+					buf,
+					end_buf - buf);
+	if (unlikely (status))
+	    goto fail;
 
 	/* Private has two operands - size and offset */
 	end_buf = encode_integer_max (end_buf, 0);
 	cff_dict_set_operands (font->top_dict, PRIVATE_OP, buf, end_buf - buf);
-        if (unlikely (status))
-            goto fail;
+	if (unlikely (status))
+	    goto fail;
 
     } else {
-        status = cff_dict_set_operands (font->top_dict,
-                                        FDSELECT_OP, buf, end_buf - buf);
-        if (unlikely (status))
-            goto fail;
+	status = cff_dict_set_operands (font->top_dict,
+					FDSELECT_OP,
+					buf,
+					end_buf - buf);
+	if (unlikely (status))
+	    goto fail;
 
-        status = cff_dict_set_operands (font->top_dict,
-                                        FDARRAY_OP, buf, end_buf - buf);
-        if (unlikely (status))
-            goto fail;
+	status = cff_dict_set_operands (font->top_dict,
+					FDARRAY_OP,
+					buf,
+					end_buf - buf);
+	if (unlikely (status))
+	    goto fail;
 
-        cff_dict_remove (font->top_dict, ENCODING_OP);
-        cff_dict_remove (font->top_dict, PRIVATE_OP);
+	cff_dict_remove (font->top_dict, ENCODING_OP);
+	cff_dict_remove (font->top_dict, PRIVATE_OP);
     }
 
     /* Remove the unique identifier operators as the subsetted font is
@@ -1300,7 +1318,9 @@ fail:
 static comac_int_status_t
 comac_cff_font_read_strings (comac_cff_font_t *font)
 {
-    return cff_index_read (&font->strings_index, &font->current_ptr, font->data_end);
+    return cff_index_read (&font->strings_index,
+			   &font->current_ptr,
+			   font->data_end);
 }
 
 static comac_int_status_t
@@ -1309,27 +1329,28 @@ comac_cff_font_read_global_subroutines (comac_cff_font_t *font)
     comac_int_status_t status;
     int num_subs;
 
-    status = cff_index_read (&font->global_sub_index, &font->current_ptr, font->data_end);
+    status = cff_index_read (&font->global_sub_index,
+			     &font->current_ptr,
+			     font->data_end);
     if (unlikely (status))
 	return status;
 
     num_subs = _comac_array_num_elements (&font->global_sub_index);
-    font->global_subs_used = calloc (num_subs, sizeof(comac_bool_t));
+    font->global_subs_used = calloc (num_subs, sizeof (comac_bool_t));
     if (unlikely (font->global_subs_used == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     if (num_subs < 1240)
-        font->global_sub_bias = 107;
+	font->global_sub_bias = 107;
     else if (num_subs < 33900)
-        font->global_sub_bias = 1131;
+	font->global_sub_bias = 1131;
     else
-        font->global_sub_bias = 32768;
+	font->global_sub_bias = 32768;
 
     return COMAC_STATUS_SUCCESS;
 }
 
-typedef comac_int_status_t
-(*font_read_t) (comac_cff_font_t *font);
+typedef comac_int_status_t (*font_read_t) (comac_cff_font_t *font);
 
 static const font_read_t font_read_funcs[] = {
     comac_cff_font_read_header,
@@ -1346,9 +1367,9 @@ comac_cff_font_read_font (comac_cff_font_t *font)
     unsigned int i;
 
     for (i = 0; i < ARRAY_LENGTH (font_read_funcs); i++) {
-        status = font_read_funcs[i] (font);
-        if (unlikely (status))
-            return status;
+	status = font_read_funcs[i](font);
+	if (unlikely (status))
+	    return status;
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -1364,17 +1385,19 @@ comac_cff_font_set_ros_strings (comac_cff_font_t *font)
     const char *registry = "Adobe";
     const char *ordering = "Identity";
 
-    sid1 = NUM_STD_STRINGS + _comac_array_num_elements (&font->strings_subset_index);
+    sid1 = NUM_STD_STRINGS +
+	   _comac_array_num_elements (&font->strings_subset_index);
     status = cff_index_append_copy (&font->strings_subset_index,
-                                    (unsigned char *)registry,
-                                    strlen(registry));
+				    (unsigned char *) registry,
+				    strlen (registry));
     if (unlikely (status))
 	return status;
 
-    sid2 = NUM_STD_STRINGS + _comac_array_num_elements (&font->strings_subset_index);
+    sid2 = NUM_STD_STRINGS +
+	   _comac_array_num_elements (&font->strings_subset_index);
     status = cff_index_append_copy (&font->strings_subset_index,
-                                    (unsigned char *)ordering,
-				    strlen(ordering));
+				    (unsigned char *) ordering,
+				    strlen (ordering));
     if (unlikely (status))
 	return status;
 
@@ -1394,9 +1417,8 @@ comac_cff_font_set_ros_strings (comac_cff_font_t *font)
 }
 
 static comac_status_t
-comac_cff_font_subset_dict_string(comac_cff_font_t   *font,
-                                  comac_hash_table_t *dict,
-                                  int                 operator)
+comac_cff_font_subset_dict_string (
+    comac_cff_font_t *font, comac_hash_table_t *dict, int operator)
 {
     int size;
     unsigned char *p;
@@ -1405,19 +1427,22 @@ comac_cff_font_subset_dict_string(comac_cff_font_t   *font,
     cff_index_element_t *element;
     comac_status_t status;
 
-    p = cff_dict_get_operands (dict, operator, &size);
-    if (!p)
-        return COMAC_STATUS_SUCCESS;
+    p = cff_dict_get_operands (dict, operator, & size);
+    if (! p)
+	return COMAC_STATUS_SUCCESS;
 
     decode_integer (p, &sid);
     if (sid < NUM_STD_STRINGS)
-        return COMAC_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     element = _comac_array_index (&font->strings_index, sid - NUM_STD_STRINGS);
-    sid = NUM_STD_STRINGS + _comac_array_num_elements (&font->strings_subset_index);
-    status = cff_index_append (&font->strings_subset_index, element->data, element->length);
+    sid = NUM_STD_STRINGS +
+	  _comac_array_num_elements (&font->strings_subset_index);
+    status = cff_index_append (&font->strings_subset_index,
+			       element->data,
+			       element->length);
     if (unlikely (status))
-        return status;
+	return status;
 
     p = encode_integer (buf, sid);
     status = cff_dict_set_operands (dict, operator, buf, p - buf);
@@ -1440,16 +1465,17 @@ static const int dict_strings[] = {
 };
 
 static comac_status_t
-comac_cff_font_subset_dict_strings (comac_cff_font_t   *font,
-                                    comac_hash_table_t *dict)
+comac_cff_font_subset_dict_strings (comac_cff_font_t *font,
+				    comac_hash_table_t *dict)
 {
     comac_status_t status;
     unsigned int i;
 
     for (i = 0; i < ARRAY_LENGTH (dict_strings); i++) {
-        status = comac_cff_font_subset_dict_string (font, dict, dict_strings[i]);
-        if (unlikely (status))
-            return status;
+	status =
+	    comac_cff_font_subset_dict_string (font, dict, dict_strings[i]);
+	if (unlikely (status))
+	    return status;
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -1462,17 +1488,17 @@ type2_decode_integer (unsigned char *p, int *integer)
 	*integer = p[1] << 8 | p[2];
 	p += 3;
     } else if (*p <= 246) {
-        *integer = *p++ - 139;
+	*integer = *p++ - 139;
     } else if (*p <= 250) {
-        *integer = (p[0] - 247) * 256 + p[1] + 108;
-        p += 2;
+	*integer = (p[0] - 247) * 256 + p[1] + 108;
+	p += 2;
     } else if (*p <= 254) {
-        *integer = -(p[0] - 251) * 256 - p[1] - 108;
-        p += 2;
+	*integer = -(p[0] - 251) * 256 - p[1] - 108;
+	p += 2;
     } else { /* *p == 255 */
-	 /* 16.16 fixed-point number. The fraction is ignored. */
-	 *integer = (int16_t)((p[1] << 8) | p[2]);
-        p += 5;
+	/* 16.16 fixed-point number. The fraction is ignored. */
+	*integer = (int16_t) ((p[1] << 8) | p[2]);
+	p += 5;
     }
     return p;
 }
@@ -1503,8 +1529,9 @@ type2_decode_integer (unsigned char *p, int *integer)
  */
 static comac_status_t
 comac_cff_parse_charstring (comac_cff_font_t *font,
-                            unsigned char *charstring, int length,
-                            int glyph_id,
+			    unsigned char *charstring,
+			    int length,
+			    int glyph_id,
 			    comac_bool_t need_width)
 {
     unsigned char *p = charstring;
@@ -1516,22 +1543,22 @@ comac_cff_parse_charstring (comac_cff_font_t *font,
     int fd;
 
     while (p < end) {
-        if (*p == 28 || *p >= 32) {
-            /* Integer value */
-            p = type2_decode_integer (p, &integer);
-            font->type2_stack_size++;
-            font->type2_stack_top_value = integer;
-            font->type2_stack_top_is_int = TRUE;
-	    if (!font->type2_seen_first_int) {
+	if (*p == 28 || *p >= 32) {
+	    /* Integer value */
+	    p = type2_decode_integer (p, &integer);
+	    font->type2_stack_size++;
+	    font->type2_stack_top_value = integer;
+	    font->type2_stack_top_is_int = TRUE;
+	    if (! font->type2_seen_first_int) {
 		font->type2_width = integer;
 		font->type2_seen_first_int = TRUE;
 	    }
 	} else if (*p == TYPE2_hstem || *p == TYPE2_vstem ||
 		   *p == TYPE2_hstemhm || *p == TYPE2_vstemhm) {
-            /* Hint operator. The number of hints declared by the
+	    /* Hint operator. The number of hints declared by the
              * operator depends on the size of the stack. */
 	    font->type2_stack_top_is_int = FALSE;
-	    font->type2_num_hints += font->type2_stack_size/2;
+	    font->type2_num_hints += font->type2_stack_size / 2;
 	    if (font->type2_find_width && font->type2_stack_size % 2)
 		font->type2_found_width = TRUE;
 
@@ -1546,13 +1573,13 @@ comac_cff_parse_charstring (comac_cff_font_t *font,
 	     * the stack. */
 	    if (font->type2_hintmask_bytes == 0) {
 		font->type2_stack_top_is_int = FALSE;
-		font->type2_num_hints += font->type2_stack_size/2;
+		font->type2_num_hints += font->type2_stack_size / 2;
 		if (font->type2_find_width && font->type2_stack_size % 2)
 		    font->type2_found_width = TRUE;
 
 		font->type2_stack_size = 0;
 		font->type2_find_width = FALSE;
-		font->type2_hintmask_bytes = (font->type2_num_hints+7)/8;
+		font->type2_hintmask_bytes = (font->type2_num_hints + 7) / 8;
 	    }
 
 	    hint_bytes = font->type2_hintmask_bytes;
@@ -1575,77 +1602,92 @@ comac_cff_parse_charstring (comac_cff_font_t *font,
 	    font->type2_has_path = TRUE;
 	    p++;
 	} else if (*p == TYPE2_endchar) {
-	    if (!font->type2_has_path && font->type2_stack_size > 3)
+	    if (! font->type2_has_path && font->type2_stack_size > 3)
 		return COMAC_INT_STATUS_UNSUPPORTED; /* seac (Ref Appendix C of Type 2 Charstring Format */
 
 	    if (font->type2_find_width && font->type2_stack_size > 0)
 		font->type2_found_width = TRUE;
 
 	    return COMAC_STATUS_SUCCESS;
-        } else if (*p == TYPE2_callsubr) {
-            /* call to local subroutine */
+	} else if (*p == TYPE2_callsubr) {
+	    /* call to local subroutine */
 	    if (! font->type2_stack_top_is_int)
 		return COMAC_INT_STATUS_UNSUPPORTED;
 
-            if (++font->type2_nesting_level > MAX_SUBROUTINE_NESTING)
+	    if (++font->type2_nesting_level > MAX_SUBROUTINE_NESTING)
 		return COMAC_INT_STATUS_UNSUPPORTED;
 
-            p++;
+	    p++;
 	    font->type2_stack_top_is_int = FALSE;
-            font->type2_stack_size--;
+	    font->type2_stack_size--;
 	    if (font->type2_find_width && font->type2_stack_size == 0)
 		font->type2_seen_first_int = FALSE;
 
-            if (font->is_cid) {
-                fd = font->fdselect[glyph_id];
-		sub_num = font->type2_stack_top_value + font->fd_local_sub_bias[fd];
-		if (sub_num >= (int)_comac_array_num_elements(&font->fd_local_sub_index[fd]))
+	    if (font->is_cid) {
+		fd = font->fdselect[glyph_id];
+		sub_num =
+		    font->type2_stack_top_value + font->fd_local_sub_bias[fd];
+		if (sub_num >= (int) _comac_array_num_elements (
+				   &font->fd_local_sub_index[fd]))
 		    return COMAC_INT_STATUS_UNSUPPORTED;
-                element = _comac_array_index (&font->fd_local_sub_index[fd], sub_num);
-                if (! font->fd_local_subs_used[fd][sub_num]) {
+		element =
+		    _comac_array_index (&font->fd_local_sub_index[fd], sub_num);
+		if (! font->fd_local_subs_used[fd][sub_num]) {
 		    font->fd_local_subs_used[fd][sub_num] = TRUE;
-		    comac_cff_parse_charstring (font, element->data, element->length, glyph_id, need_width);
+		    comac_cff_parse_charstring (font,
+						element->data,
+						element->length,
+						glyph_id,
+						need_width);
 		}
-            } else {
+	    } else {
 		sub_num = font->type2_stack_top_value + font->local_sub_bias;
-		if (sub_num >= (int)_comac_array_num_elements(&font->local_sub_index))
+		if (sub_num >=
+		    (int) _comac_array_num_elements (&font->local_sub_index))
 		    return COMAC_INT_STATUS_UNSUPPORTED;
-                element = _comac_array_index (&font->local_sub_index, sub_num);
-                if (! font->local_subs_used[sub_num] ||
-		    (need_width && !font->type2_found_width))
-		{
+		element = _comac_array_index (&font->local_sub_index, sub_num);
+		if (! font->local_subs_used[sub_num] ||
+		    (need_width && ! font->type2_found_width)) {
 		    font->local_subs_used[sub_num] = TRUE;
-		    comac_cff_parse_charstring (font, element->data, element->length, glyph_id, need_width);
+		    comac_cff_parse_charstring (font,
+						element->data,
+						element->length,
+						glyph_id,
+						need_width);
 		}
-            }
-            font->type2_nesting_level--;
-        } else if (*p == TYPE2_callgsubr) {
-            /* call to global subroutine */
+	    }
+	    font->type2_nesting_level--;
+	} else if (*p == TYPE2_callgsubr) {
+	    /* call to global subroutine */
 	    if (! font->type2_stack_top_is_int)
 		return COMAC_INT_STATUS_UNSUPPORTED;
 
-            if (++font->type2_nesting_level > MAX_SUBROUTINE_NESTING)
+	    if (++font->type2_nesting_level > MAX_SUBROUTINE_NESTING)
 		return COMAC_INT_STATUS_UNSUPPORTED;
 
-            p++;
-            font->type2_stack_size--;
+	    p++;
+	    font->type2_stack_size--;
 	    font->type2_stack_top_is_int = FALSE;
 	    if (font->type2_find_width && font->type2_stack_size == 0)
 		font->type2_seen_first_int = FALSE;
 
 	    sub_num = font->type2_stack_top_value + font->global_sub_bias;
-	    if (sub_num >= (int)_comac_array_num_elements(&font->global_sub_index))
+	    if (sub_num >=
+		(int) _comac_array_num_elements (&font->global_sub_index))
 		return COMAC_INT_STATUS_UNSUPPORTED;
 	    element = _comac_array_index (&font->global_sub_index, sub_num);
-            if (! font->global_subs_used[sub_num] ||
-		(need_width && !font->type2_found_width))
-	    {
-                font->global_subs_used[sub_num] = TRUE;
-                comac_cff_parse_charstring (font, element->data, element->length, glyph_id, need_width);
-            }
-            font->type2_nesting_level--;
-        } else if (*p == 12) {
-            /* 2 byte instruction */
+	    if (! font->global_subs_used[sub_num] ||
+		(need_width && ! font->type2_found_width)) {
+		font->global_subs_used[sub_num] = TRUE;
+		comac_cff_parse_charstring (font,
+					    element->data,
+					    element->length,
+					    glyph_id,
+					    need_width);
+	    }
+	    font->type2_nesting_level--;
+	} else if (*p == 12) {
+	    /* 2 byte instruction */
 
 	    /* All the 2 byte operators are either not valid before a
 	     * stack clearing operator or they are one of the
@@ -1653,29 +1695,32 @@ comac_cff_parse_charstring (comac_cff_font_t *font,
 	    if (need_width && font->type2_find_width)
 		return COMAC_INT_STATUS_UNSUPPORTED;
 
-            p += 2;
+	    p += 2;
 	    font->type2_stack_top_is_int = FALSE;
 	} else {
-            /* 1 byte instruction */
-            p++;
+	    /* 1 byte instruction */
+	    p++;
 	    font->type2_stack_top_is_int = FALSE;
-        }
+	}
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-comac_cff_find_width_and_subroutines_used (comac_cff_font_t  *font,
-					   unsigned char *charstring, int length,
-					   int glyph_id, int subset_id)
+comac_cff_find_width_and_subroutines_used (comac_cff_font_t *font,
+					   unsigned char *charstring,
+					   int length,
+					   int glyph_id,
+					   int subset_id)
 {
     comac_status_t status;
     int width;
     int fd;
 
     font->type2_stack_size = 0;
-    font->type2_stack_top_value = 0;;
+    font->type2_stack_top_value = 0;
+    ;
     font->type2_stack_top_is_int = FALSE;
     font->type2_num_hints = 0;
     font->type2_hintmask_bytes = 0;
@@ -1686,31 +1731,34 @@ comac_cff_find_width_and_subroutines_used (comac_cff_font_t  *font,
     font->type2_width = 0;
     font->type2_has_path = FALSE;
 
-    status = comac_cff_parse_charstring (font, charstring, length, glyph_id, TRUE);
+    status =
+	comac_cff_parse_charstring (font, charstring, length, glyph_id, TRUE);
     if (status)
 	return status;
 
-    if (!font->is_opentype) {
-        if (font->is_cid) {
-            fd = font->fdselect[glyph_id];
-            if (font->type2_found_width)
-                width = font->fd_nominal_width[fd] + font->type2_width;
-            else
-                width = font->fd_default_width[fd];
-        } else {
-            if (font->type2_found_width)
-                width = font->nominal_width + font->type2_width;
-            else
-                width = font->default_width;
-        }
-        font->widths[subset_id] = width;
+    if (! font->is_opentype) {
+	if (font->is_cid) {
+	    fd = font->fdselect[glyph_id];
+	    if (font->type2_found_width)
+		width = font->fd_nominal_width[fd] + font->type2_width;
+	    else
+		width = font->fd_default_width[fd];
+	} else {
+	    if (font->type2_found_width)
+		width = font->nominal_width + font->type2_width;
+	    else
+		width = font->default_width;
+	}
+	font->widths[subset_id] = width;
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-comac_cff_font_get_gid_for_cid (comac_cff_font_t  *font, unsigned long cid, unsigned long *gid)
+comac_cff_font_get_gid_for_cid (comac_cff_font_t *font,
+				unsigned long cid,
+				unsigned long *gid)
 {
     unsigned char *p;
     unsigned long first_gid;
@@ -1724,61 +1772,63 @@ comac_cff_font_get_gid_for_cid (comac_cff_font_t  *font, unsigned long cid, unsi
     }
 
     switch (font->charset[0]) {
-	/* Format 0 */
-	case 0:
-	    p = font->charset + 1;
-	    g = 1;
-	    while (g <= (unsigned)font->num_glyphs && p < font->data_end) {
-		c = get_unaligned_be16 (p);
-		if (c == cid) {
-		    *gid = g;
-		    return COMAC_STATUS_SUCCESS;
-		}
-		g++;
-		p += 2;
+    /* Format 0 */
+    case 0:
+	p = font->charset + 1;
+	g = 1;
+	while (g <= (unsigned) font->num_glyphs && p < font->data_end) {
+	    c = get_unaligned_be16 (p);
+	    if (c == cid) {
+		*gid = g;
+		return COMAC_STATUS_SUCCESS;
 	    }
-	    break;
+	    g++;
+	    p += 2;
+	}
+	break;
 
-	/* Format 1 */
-	case 1:
-	    first_gid = 1;
-	    p = font->charset + 1;
-	    while (first_gid <= (unsigned)font->num_glyphs && p + 2 < font->data_end) {
-		first_cid = get_unaligned_be16 (p);
-		num_left = p[2];
-		if (cid >= first_cid && cid <= first_cid + num_left) {
-		    *gid = first_gid + cid - first_cid;
-		    return COMAC_STATUS_SUCCESS;
-		}
-		first_gid += num_left + 1;
-		p += 3;
+    /* Format 1 */
+    case 1:
+	first_gid = 1;
+	p = font->charset + 1;
+	while (first_gid <= (unsigned) font->num_glyphs &&
+	       p + 2 < font->data_end) {
+	    first_cid = get_unaligned_be16 (p);
+	    num_left = p[2];
+	    if (cid >= first_cid && cid <= first_cid + num_left) {
+		*gid = first_gid + cid - first_cid;
+		return COMAC_STATUS_SUCCESS;
 	    }
-	    break;
+	    first_gid += num_left + 1;
+	    p += 3;
+	}
+	break;
 
-	/* Format 2 */
-	case 2:
-	    first_gid = 1;
-	    p = font->charset + 1;
-	    while (first_gid <= (unsigned)font->num_glyphs && p + 3 < font->data_end) {
-		first_cid = get_unaligned_be16 (p);
-		num_left = get_unaligned_be16 (p+2);
-		if (cid >= first_cid && cid <= first_cid + num_left) {
-		    *gid = first_gid + cid - first_cid;
-		    return COMAC_STATUS_SUCCESS;
-		}
-		first_gid += num_left + 1;
-		p += 4;
+    /* Format 2 */
+    case 2:
+	first_gid = 1;
+	p = font->charset + 1;
+	while (first_gid <= (unsigned) font->num_glyphs &&
+	       p + 3 < font->data_end) {
+	    first_cid = get_unaligned_be16 (p);
+	    num_left = get_unaligned_be16 (p + 2);
+	    if (cid >= first_cid && cid <= first_cid + num_left) {
+		*gid = first_gid + cid - first_cid;
+		return COMAC_STATUS_SUCCESS;
 	    }
-	    break;
+	    first_gid += num_left + 1;
+	    p += 4;
+	}
+	break;
 
-	default:
-	    break;
+    default:
+	break;
     }
     return COMAC_INT_STATUS_UNSUPPORTED;
 }
 
 static comac_int_status_t
-comac_cff_font_subset_charstrings_and_subroutines (comac_cff_font_t  *font)
+comac_cff_font_subset_charstrings_and_subroutines (comac_cff_font_t *font)
 {
     cff_index_element_t *element;
     unsigned int i;
@@ -1787,7 +1837,7 @@ comac_cff_font_subset_charstrings_and_subroutines (comac_cff_font_t  *font)
 
     font->subset_subroutines = TRUE;
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
-	if (font->is_cid && !font->is_opentype) {
+	if (font->is_cid && ! font->is_opentype) {
 	    cid = font->scaled_font_subset->glyphs[i];
 	    status = comac_cff_font_get_gid_for_cid (font, cid, &glyph);
 	    if (unlikely (status))
@@ -1795,36 +1845,38 @@ comac_cff_font_subset_charstrings_and_subroutines (comac_cff_font_t  *font)
 	} else {
 	    glyph = font->scaled_font_subset->glyphs[i];
 	}
-        element = _comac_array_index (&font->charstrings_index, glyph);
-        status = cff_index_append (&font->charstrings_subset_index,
-                                   element->data,
-                                   element->length);
-        if (unlikely (status))
-            return status;
+	element = _comac_array_index (&font->charstrings_index, glyph);
+	status = cff_index_append (&font->charstrings_subset_index,
+				   element->data,
+				   element->length);
+	if (unlikely (status))
+	    return status;
 
 	if (font->subset_subroutines) {
 	    status = comac_cff_find_width_and_subroutines_used (font,
-								element->data, element->length,
-								glyph, i);
+								element->data,
+								element->length,
+								glyph,
+								i);
 	    if (status == COMAC_INT_STATUS_UNSUPPORTED) {
 		/* If parsing the charstrings fails we embed all the
 		 * subroutines. But if the font is not opentype we
 		 * need to successfully parse all charstrings to get
 		 * the widths. */
 		font->subset_subroutines = FALSE;
-		if (!font->is_opentype)
+		if (! font->is_opentype)
 		    return status;
 	    } else if (unlikely (status)) {
-                return status;
+		return status;
 	    }
-        }
+	}
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-comac_cff_font_subset_fontdict (comac_cff_font_t  *font)
+comac_cff_font_subset_fontdict (comac_cff_font_t *font)
 {
     unsigned int i;
     int fd;
@@ -1832,8 +1884,8 @@ comac_cff_font_subset_fontdict (comac_cff_font_t  *font)
     unsigned long cid, gid;
     comac_int_status_t status;
 
-    font->fdselect_subset = calloc (font->scaled_font_subset->num_glyphs,
-                                     sizeof (int));
+    font->fdselect_subset =
+	calloc (font->scaled_font_subset->num_glyphs, sizeof (int));
     if (unlikely (font->fdselect_subset == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -1850,7 +1902,7 @@ comac_cff_font_subset_fontdict (comac_cff_font_t  *font)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     for (i = 0; i < font->num_fontdicts; i++)
-        reverse_map[i] = -1;
+	reverse_map[i] = -1;
 
     font->num_subset_fontdicts = 0;
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
@@ -1865,12 +1917,12 @@ comac_cff_font_subset_fontdict (comac_cff_font_t  *font)
 	    }
 	}
 
-        fd = font->fdselect[gid];
-        if (reverse_map[fd] < 0) {
-            font->fd_subset_map[font->num_subset_fontdicts] = fd;
-            reverse_map[fd] = font->num_subset_fontdicts++;
-        }
-        font->fdselect_subset[i] = reverse_map[fd];
+	fd = font->fdselect[gid];
+	if (reverse_map[fd] < 0) {
+	    font->fd_subset_map[font->num_subset_fontdicts] = fd;
+	    reverse_map[fd] = font->num_subset_fontdicts++;
+	}
+	font->fdselect_subset[i] = reverse_map[fd];
     }
 
     free (reverse_map);
@@ -1912,7 +1964,10 @@ comac_cff_font_create_cid_fontdict (comac_cff_font_t *font)
      * space for any value later */
     end_buf = encode_integer_max (buf, 0);
     end_buf = encode_integer_max (end_buf, 0);
-    status = cff_dict_set_operands (font->fd_dict[0], PRIVATE_OP, buf, end_buf - buf);
+    status = cff_dict_set_operands (font->fd_dict[0],
+				    PRIVATE_OP,
+				    buf,
+				    end_buf - buf);
     if (unlikely (status))
 	return status;
 
@@ -1927,20 +1982,24 @@ comac_cff_font_subset_strings (comac_cff_font_t *font)
 
     status = comac_cff_font_subset_dict_strings (font, font->top_dict);
     if (unlikely (status))
-        return status;
+	return status;
 
     if (font->is_cid) {
-        for (i = 0; i < font->num_subset_fontdicts; i++) {
-            status = comac_cff_font_subset_dict_strings (font, font->fd_dict[font->fd_subset_map[i]]);
-            if (unlikely (status))
-                return status;
+	for (i = 0; i < font->num_subset_fontdicts; i++) {
+	    status = comac_cff_font_subset_dict_strings (
+		font,
+		font->fd_dict[font->fd_subset_map[i]]);
+	    if (unlikely (status))
+		return status;
 
-            status = comac_cff_font_subset_dict_strings (font, font->fd_private_dict[font->fd_subset_map[i]]);
-            if (unlikely (status))
-                return status;
-        }
+	    status = comac_cff_font_subset_dict_strings (
+		font,
+		font->fd_private_dict[font->fd_subset_map[i]]);
+	    if (unlikely (status))
+		return status;
+	}
     } else {
-        status = comac_cff_font_subset_dict_strings (font, font->private_dict);
+	status = comac_cff_font_subset_dict_strings (font, font->private_dict);
     }
 
     return status;
@@ -1963,9 +2022,11 @@ comac_cff_font_add_euro_charset_string (comac_cff_font_t *font)
     for (i = 1; i < font->scaled_font_subset->num_glyphs; i++) {
 	ch = font->scaled_font_subset->to_latin_char[i];
 	if (ch == 128) {
-	    font->euro_sid = NUM_STD_STRINGS + _comac_array_num_elements (&font->strings_subset_index);
+	    font->euro_sid = NUM_STD_STRINGS + _comac_array_num_elements (
+						   &font->strings_subset_index);
 	    status = cff_index_append_copy (&font->strings_subset_index,
-					    (unsigned char *)euro, strlen(euro));
+					    (unsigned char *) euro,
+					    strlen (euro));
 	    return status;
 	}
     }
@@ -1974,11 +2035,11 @@ comac_cff_font_add_euro_charset_string (comac_cff_font_t *font)
 }
 
 static comac_status_t
-comac_cff_font_subset_font (comac_cff_font_t  *font)
+comac_cff_font_subset_font (comac_cff_font_t *font)
 {
     comac_status_t status;
 
-    if (!font->scaled_font_subset->is_latin) {
+    if (! font->scaled_font_subset->is_latin) {
 	status = comac_cff_font_set_ros_strings (font);
 	if (unlikely (status))
 	    return status;
@@ -1986,16 +2047,16 @@ comac_cff_font_subset_font (comac_cff_font_t  *font)
 
     status = comac_cff_font_subset_charstrings_and_subroutines (font);
     if (unlikely (status))
-        return status;
+	return status;
 
-    if (!font->scaled_font_subset->is_latin) {
+    if (! font->scaled_font_subset->is_latin) {
 	if (font->is_cid)
 	    status = comac_cff_font_subset_fontdict (font);
 	else
 	    status = comac_cff_font_create_cid_fontdict (font);
 	if (unlikely (status))
 	    return status;
-    }  else {
+    } else {
 	font->private_dict_offset = _comac_malloc (sizeof (int));
 	if (unlikely (font->private_dict_offset == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -2003,7 +2064,7 @@ comac_cff_font_subset_font (comac_cff_font_t  *font)
 
     status = comac_cff_font_subset_strings (font);
     if (unlikely (status))
-        return status;
+	return status;
 
     if (font->scaled_font_subset->is_latin)
 	status = comac_cff_font_add_euro_charset_string (font);
@@ -2016,8 +2077,8 @@ comac_cff_font_subset_font (comac_cff_font_t  *font)
  * array. Operands updated with this function must have previously
  * been encoded with the 5-byte (max) integer encoding. */
 static void
-comac_cff_font_set_topdict_operator_to_cur_pos (comac_cff_font_t  *font,
-                                                int                operator)
+comac_cff_font_set_topdict_operator_to_cur_pos (
+    comac_cff_font_t *font, int operator)
 {
     int cur_pos;
     int offset;
@@ -2028,7 +2089,7 @@ comac_cff_font_set_topdict_operator_to_cur_pos (comac_cff_font_t  *font,
 
     cur_pos = _comac_array_num_elements (&font->output);
     buf_end = encode_integer_max (buf, cur_pos);
-    offset = cff_dict_get_location (font->top_dict, operator, &size);
+    offset = cff_dict_get_location (font->top_dict, operator, & size);
     assert (offset > 0);
     op_ptr = _comac_array_index (&font->output, offset);
     memcpy (op_ptr, buf, buf_end - buf);
@@ -2038,8 +2099,8 @@ static comac_status_t
 comac_cff_font_write_header (comac_cff_font_t *font)
 {
     return _comac_array_append_multiple (&font->output,
-                                         font->header,
-                                         font->header->header_size);
+					 font->header,
+					 font->header->header_size);
 }
 
 static comac_status_t
@@ -2051,14 +2112,14 @@ comac_cff_font_write_name (comac_cff_font_t *font)
     cff_index_init (&index);
 
     status = cff_index_append_copy (&index,
-                                    (unsigned char *) font->ps_name,
-                                    strlen(font->ps_name));
+				    (unsigned char *) font->ps_name,
+				    strlen (font->ps_name));
     if (unlikely (status))
 	goto FAIL;
 
     status = cff_index_write (&index, &font->output);
     if (unlikely (status))
-        goto FAIL;
+	goto FAIL;
 
 FAIL:
     cff_index_fini (&index);
@@ -2082,27 +2143,27 @@ comac_cff_font_write_top_dict (comac_cff_font_t *font)
     count = cpu_to_be16 (1);
     status = _comac_array_append_multiple (&font->output, &count, 2);
     if (unlikely (status))
-        return status;
+	return status;
     buf[0] = offset_size;
     status = _comac_array_append (&font->output, buf);
     if (unlikely (status))
-        return status;
+	return status;
     encode_index_offset (buf, offset_size, 1);
     status = _comac_array_append_multiple (&font->output, buf, offset_size);
     if (unlikely (status))
-        return status;
+	return status;
 
     /* Reserve space for last element of offset array and update after
      * dict is written */
     offset_index = _comac_array_num_elements (&font->output);
     status = _comac_array_append_multiple (&font->output, buf, offset_size);
     if (unlikely (status))
-        return status;
+	return status;
 
     dict_start = _comac_array_num_elements (&font->output);
     status = cff_dict_write (font->top_dict, &font->output);
     if (unlikely (status))
-        return status;
+	return status;
     dict_size = _comac_array_num_elements (&font->output) - dict_start;
 
     encode_index_offset (buf, offset_size, dict_size + 1);
@@ -2113,13 +2174,13 @@ comac_cff_font_write_top_dict (comac_cff_font_t *font)
 }
 
 static comac_status_t
-comac_cff_font_write_strings (comac_cff_font_t  *font)
+comac_cff_font_write_strings (comac_cff_font_t *font)
 {
     return cff_index_write (&font->strings_subset_index, &font->output);
 }
 
 static comac_status_t
-comac_cff_font_write_global_subrs (comac_cff_font_t  *font)
+comac_cff_font_write_global_subrs (comac_cff_font_t *font)
 {
     unsigned int i;
     unsigned char return_op = TYPE2_return;
@@ -2127,17 +2188,21 @@ comac_cff_font_write_global_subrs (comac_cff_font_t  *font)
     /* poppler and fontforge don't like zero length subroutines so we
      * replace unused subroutines with a 'return' instruction. */
     if (font->subset_subroutines) {
-        for (i = 0; i < _comac_array_num_elements (&font->global_sub_index); i++) {
-            if (! font->global_subs_used[i])
-                cff_index_set_object (&font->global_sub_index, i, &return_op, 1);
-        }
+	for (i = 0; i < _comac_array_num_elements (&font->global_sub_index);
+	     i++) {
+	    if (! font->global_subs_used[i])
+		cff_index_set_object (&font->global_sub_index,
+				      i,
+				      &return_op,
+				      1);
+	}
     }
 
     return cff_index_write (&font->global_sub_index, &font->output);
 }
 
 static comac_status_t
-comac_cff_font_write_encoding (comac_cff_font_t  *font)
+comac_cff_font_write_encoding (comac_cff_font_t *font)
 {
     unsigned char buf[2];
     comac_status_t status;
@@ -2152,16 +2217,16 @@ comac_cff_font_write_encoding (comac_cff_font_t  *font)
 
     for (i = 1; i < font->scaled_font_subset->num_glyphs; i++) {
 	unsigned char ch = font->scaled_font_subset->to_latin_char[i];
-        status = _comac_array_append (&font->output, &ch);
-        if (unlikely (status))
-            return status;
+	status = _comac_array_append (&font->output, &ch);
+	if (unlikely (status))
+	    return status;
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-comac_cff_font_write_fdselect (comac_cff_font_t  *font)
+comac_cff_font_write_fdselect (comac_cff_font_t *font)
 {
     unsigned char data;
     unsigned int i;
@@ -2170,44 +2235,44 @@ comac_cff_font_write_fdselect (comac_cff_font_t  *font)
     comac_cff_font_set_topdict_operator_to_cur_pos (font, FDSELECT_OP);
 
     if (font->is_cid) {
-        data = 0;
-        status = _comac_array_append (&font->output, &data);
-        if (unlikely (status))
-            return status;
+	data = 0;
+	status = _comac_array_append (&font->output, &data);
+	if (unlikely (status))
+	    return status;
 
-        for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
-            data = font->fdselect_subset[i];
-            status = _comac_array_append (&font->output, &data);
-            if (unlikely (status))
-                return status;
-        }
+	for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
+	    data = font->fdselect_subset[i];
+	    status = _comac_array_append (&font->output, &data);
+	    if (unlikely (status))
+		return status;
+	}
     } else {
-        unsigned char byte;
-        uint16_t word;
+	unsigned char byte;
+	uint16_t word;
 
-        status = _comac_array_grow_by (&font->output, 9);
-        if (unlikely (status))
-            return status;
+	status = _comac_array_grow_by (&font->output, 9);
+	if (unlikely (status))
+	    return status;
 
-        byte = 3;
-        status = _comac_array_append (&font->output, &byte);
-        assert (status == COMAC_INT_STATUS_SUCCESS);
+	byte = 3;
+	status = _comac_array_append (&font->output, &byte);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
 
-        word = cpu_to_be16 (1);
-        status = _comac_array_append_multiple (&font->output, &word, 2);
-        assert (status == COMAC_INT_STATUS_SUCCESS);
+	word = cpu_to_be16 (1);
+	status = _comac_array_append_multiple (&font->output, &word, 2);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
 
-        word = cpu_to_be16 (0);
-        status = _comac_array_append_multiple (&font->output, &word, 2);
-        assert (status == COMAC_INT_STATUS_SUCCESS);
+	word = cpu_to_be16 (0);
+	status = _comac_array_append_multiple (&font->output, &word, 2);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
 
-        byte = 0;
-        status = _comac_array_append (&font->output, &byte);
-        assert (status == COMAC_INT_STATUS_SUCCESS);
+	byte = 0;
+	status = _comac_array_append (&font->output, &byte);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
 
-        word = cpu_to_be16 (font->scaled_font_subset->num_glyphs);
-        status = _comac_array_append_multiple (&font->output, &word, 2);
-        assert (status == COMAC_INT_STATUS_SUCCESS);
+	word = cpu_to_be16 (font->scaled_font_subset->num_glyphs);
+	status = _comac_array_append_multiple (&font->output, &word, 2);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -2215,34 +2280,146 @@ comac_cff_font_write_fdselect (comac_cff_font_t  *font)
 
 /* Winansi to CFF standard strings mapping for characters 128 to 255 */
 static const int winansi_to_cff_std_string[] = {
-	/* 128 */
-      0,   0, 117, 101, 118, 121, 112, 113,
-    126, 122, 192, 107, 142,   0, 199,   0,
-	/* 144 */
-      0,  65,   8, 105, 119, 116, 111, 137,
-    127, 153, 221, 108, 148,   0, 228, 198,
-	/* 160 */
-      0,  96,  97,  98, 103, 100, 160, 102,
-    131, 170, 139, 106, 151,   0, 165, 128,
-	/* 176 */
-    161, 156, 164, 169, 125, 152, 115, 114,
-    133, 150, 143, 120, 158, 155, 163, 123,
-	/* 192 */
-    174, 171, 172, 176, 173, 175, 138, 177,
-    181, 178, 179, 180, 185, 182, 183, 184,
-	/* 208 */
-    154, 186, 190, 187, 188, 191, 189, 168,
-    141, 196, 193, 194, 195, 197, 157, 149,
-	/* 224 */
-    203, 200, 201, 205, 202, 204, 144, 206,
-    210, 207, 208, 209, 214, 211, 212, 213,
-	/* 240 */
-    167, 215, 219, 216, 217, 220, 218, 159,
-    147, 225, 222, 223, 224, 226, 162, 227,
+    /* 128 */
+    0,
+    0,
+    117,
+    101,
+    118,
+    121,
+    112,
+    113,
+    126,
+    122,
+    192,
+    107,
+    142,
+    0,
+    199,
+    0,
+    /* 144 */
+    0,
+    65,
+    8,
+    105,
+    119,
+    116,
+    111,
+    137,
+    127,
+    153,
+    221,
+    108,
+    148,
+    0,
+    228,
+    198,
+    /* 160 */
+    0,
+    96,
+    97,
+    98,
+    103,
+    100,
+    160,
+    102,
+    131,
+    170,
+    139,
+    106,
+    151,
+    0,
+    165,
+    128,
+    /* 176 */
+    161,
+    156,
+    164,
+    169,
+    125,
+    152,
+    115,
+    114,
+    133,
+    150,
+    143,
+    120,
+    158,
+    155,
+    163,
+    123,
+    /* 192 */
+    174,
+    171,
+    172,
+    176,
+    173,
+    175,
+    138,
+    177,
+    181,
+    178,
+    179,
+    180,
+    185,
+    182,
+    183,
+    184,
+    /* 208 */
+    154,
+    186,
+    190,
+    187,
+    188,
+    191,
+    189,
+    168,
+    141,
+    196,
+    193,
+    194,
+    195,
+    197,
+    157,
+    149,
+    /* 224 */
+    203,
+    200,
+    201,
+    205,
+    202,
+    204,
+    144,
+    206,
+    210,
+    207,
+    208,
+    209,
+    214,
+    211,
+    212,
+    213,
+    /* 240 */
+    167,
+    215,
+    219,
+    216,
+    217,
+    220,
+    218,
+    159,
+    147,
+    225,
+    222,
+    223,
+    224,
+    226,
+    162,
+    227,
 };
 
 static int
-comac_cff_font_get_sid_for_winansi_char (comac_cff_font_t  *font, int ch)
+comac_cff_font_get_sid_for_winansi_char (comac_cff_font_t *font, int ch)
 {
     int sid;
 
@@ -2270,7 +2447,7 @@ comac_cff_font_get_sid_for_winansi_char (comac_cff_font_t  *font, int ch)
 }
 
 static comac_status_t
-comac_cff_font_write_type1_charset (comac_cff_font_t  *font)
+comac_cff_font_write_type1_charset (comac_cff_font_t *font)
 {
     unsigned char format = 0;
     unsigned int i;
@@ -2286,20 +2463,22 @@ comac_cff_font_write_type1_charset (comac_cff_font_t  *font)
     for (i = 1; i < font->scaled_font_subset->num_glyphs; i++) {
 	ch = font->scaled_font_subset->to_latin_char[i];
 	sid = comac_cff_font_get_sid_for_winansi_char (font, ch);
-        if (unlikely (status))
+	if (unlikely (status))
 	    return status;
 
-	sid_be16 = cpu_to_be16(sid);
-	status = _comac_array_append_multiple (&font->output, &sid_be16, sizeof(sid_be16));
-        if (unlikely (status))
-            return status;
+	sid_be16 = cpu_to_be16 (sid);
+	status = _comac_array_append_multiple (&font->output,
+					       &sid_be16,
+					       sizeof (sid_be16));
+	if (unlikely (status))
+	    return status;
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-comac_cff_font_write_cid_charset (comac_cff_font_t  *font)
+comac_cff_font_write_cid_charset (comac_cff_font_t *font)
 {
     unsigned char byte;
     uint16_t word;
@@ -2308,7 +2487,7 @@ comac_cff_font_write_cid_charset (comac_cff_font_t  *font)
     comac_cff_font_set_topdict_operator_to_cur_pos (font, CHARSET_OP);
     status = _comac_array_grow_by (&font->output, 5);
     if (unlikely (status))
-        return status;
+	return status;
 
     byte = 2;
     status = _comac_array_append (&font->output, &byte);
@@ -2326,7 +2505,7 @@ comac_cff_font_write_cid_charset (comac_cff_font_t  *font)
 }
 
 static comac_status_t
-comac_cff_font_write_charstrings (comac_cff_font_t  *font)
+comac_cff_font_write_charstrings (comac_cff_font_t *font)
 {
     comac_cff_font_set_topdict_operator_to_cur_pos (font, CHARSTRINGS_OP);
 
@@ -2346,40 +2525,43 @@ comac_cff_font_write_cid_fontdict (comac_cff_font_t *font)
 
     comac_cff_font_set_topdict_operator_to_cur_pos (font, FDARRAY_OP);
     count = cpu_to_be16 (font->num_subset_fontdicts);
-    status = _comac_array_append_multiple (&font->output, &count, sizeof (uint16_t));
+    status =
+	_comac_array_append_multiple (&font->output, &count, sizeof (uint16_t));
     if (unlikely (status))
-        return status;
+	return status;
     status = _comac_array_append (&font->output, &offset_size);
     if (unlikely (status))
-        return status;
+	return status;
 
     offset_array = _comac_array_num_elements (&font->output);
-    status = _comac_array_allocate (&font->output,
-                                    (font->num_subset_fontdicts + 1)*offset_size,
-                                    (void **) &offset_array_ptr);
+    status =
+	_comac_array_allocate (&font->output,
+			       (font->num_subset_fontdicts + 1) * offset_size,
+			       (void **) &offset_array_ptr);
     if (unlikely (status))
-        return status;
+	return status;
     offset_base = _comac_array_num_elements (&font->output) - 1;
-    put_unaligned_be32(1, offset_array_ptr);
-    offset_array += sizeof(uint32_t);
+    put_unaligned_be32 (1, offset_array_ptr);
+    offset_array += sizeof (uint32_t);
     for (i = 0; i < font->num_subset_fontdicts; i++) {
-        status = cff_dict_write (font->fd_dict[font->fd_subset_map[i]],
-                                 &font->output);
-        if (unlikely (status))
-            return status;
+	status = cff_dict_write (font->fd_dict[font->fd_subset_map[i]],
+				 &font->output);
+	if (unlikely (status))
+	    return status;
 
 	offset_array_ptr = _comac_array_index (&font->output, offset_array);
-	put_unaligned_be32 (_comac_array_num_elements (&font->output) - offset_base,
+	put_unaligned_be32 (_comac_array_num_elements (&font->output) -
+				offset_base,
 			    offset_array_ptr);
-	offset_array += sizeof(uint32_t);
+	offset_array += sizeof (uint32_t);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-comac_cff_font_write_private_dict (comac_cff_font_t   *font,
-				   int                 dict_num,
+comac_cff_font_write_private_dict (comac_cff_font_t *font,
+				   int dict_num,
 				   comac_hash_table_t *parent_dict,
 				   comac_hash_table_t *private_dict)
 {
@@ -2391,12 +2573,14 @@ comac_cff_font_write_private_dict (comac_cff_font_t   *font,
     comac_status_t status;
 
     /* Write private dict and update offset and size in top dict */
-    font->private_dict_offset[dict_num] = _comac_array_num_elements (&font->output);
+    font->private_dict_offset[dict_num] =
+	_comac_array_num_elements (&font->output);
     status = cff_dict_write (private_dict, &font->output);
     if (unlikely (status))
-        return status;
+	return status;
 
-    size = _comac_array_num_elements (&font->output) - font->private_dict_offset[dict_num];
+    size = _comac_array_num_elements (&font->output) -
+	   font->private_dict_offset[dict_num];
     /* private entry has two operands - size and offset */
     buf_end = encode_integer_max (buf, size);
     buf_end = encode_integer_max (buf_end, font->private_dict_offset[dict_num]);
@@ -2409,11 +2593,11 @@ comac_cff_font_write_private_dict (comac_cff_font_t   *font,
 }
 
 static comac_status_t
-comac_cff_font_write_local_sub (comac_cff_font_t   *font,
-                                int                 dict_num,
-                                comac_hash_table_t *private_dict,
-                                comac_array_t      *local_sub_index,
-                                comac_bool_t       *local_subs_used)
+comac_cff_font_write_local_sub (comac_cff_font_t *font,
+				int dict_num,
+				comac_hash_table_t *private_dict,
+				comac_array_t *local_sub_index,
+				comac_bool_t *local_subs_used)
 {
     int offset;
     int size;
@@ -2425,74 +2609,74 @@ comac_cff_font_write_local_sub (comac_cff_font_t   *font,
     unsigned char return_op = TYPE2_return;
 
     if (_comac_array_num_elements (local_sub_index) > 0) {
-        /* Write local subroutines and update offset in private
+	/* Write local subroutines and update offset in private
          * dict. Local subroutines offset is relative to start of
          * private dict */
-        offset = _comac_array_num_elements (&font->output) - font->private_dict_offset[dict_num];
-        buf_end = encode_integer_max (buf, offset);
-        offset = cff_dict_get_location (private_dict, LOCAL_SUB_OP, &size);
-        assert (offset > 0);
-        p = _comac_array_index (&font->output, offset);
-        memcpy (p, buf, buf_end - buf);
+	offset = _comac_array_num_elements (&font->output) -
+		 font->private_dict_offset[dict_num];
+	buf_end = encode_integer_max (buf, offset);
+	offset = cff_dict_get_location (private_dict, LOCAL_SUB_OP, &size);
+	assert (offset > 0);
+	p = _comac_array_index (&font->output, offset);
+	memcpy (p, buf, buf_end - buf);
 
 	/* poppler and fontforge don't like zero length subroutines so
 	 * we replace unused subroutines with a 'return' instruction.
 	 */
-        if (font->subset_subroutines) {
-            for (i = 0; i < _comac_array_num_elements (local_sub_index); i++) {
-                if (! local_subs_used[i])
-                    cff_index_set_object (local_sub_index, i, &return_op, 1);
-            }
-        }
-        status = cff_index_write (local_sub_index, &font->output);
-        if (unlikely (status))
-            return status;
+	if (font->subset_subroutines) {
+	    for (i = 0; i < _comac_array_num_elements (local_sub_index); i++) {
+		if (! local_subs_used[i])
+		    cff_index_set_object (local_sub_index, i, &return_op, 1);
+	    }
+	}
+	status = cff_index_write (local_sub_index, &font->output);
+	if (unlikely (status))
+	    return status;
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
-
 static comac_status_t
-comac_cff_font_write_cid_private_dict_and_local_sub (comac_cff_font_t  *font)
+comac_cff_font_write_cid_private_dict_and_local_sub (comac_cff_font_t *font)
 {
     unsigned int i;
     comac_int_status_t status;
 
     if (font->is_cid) {
-        for (i = 0; i < font->num_subset_fontdicts; i++) {
-            status = comac_cff_font_write_private_dict (
-                            font,
-                            i,
-                            font->fd_dict[font->fd_subset_map[i]],
-                            font->fd_private_dict[font->fd_subset_map[i]]);
-            if (unlikely (status))
-                return status;
-        }
+	for (i = 0; i < font->num_subset_fontdicts; i++) {
+	    status = comac_cff_font_write_private_dict (
+		font,
+		i,
+		font->fd_dict[font->fd_subset_map[i]],
+		font->fd_private_dict[font->fd_subset_map[i]]);
+	    if (unlikely (status))
+		return status;
+	}
 
-        for (i = 0; i < font->num_subset_fontdicts; i++) {
-            status = comac_cff_font_write_local_sub (
-                            font,
-                            i,
-                            font->fd_private_dict[font->fd_subset_map[i]],
-                            &font->fd_local_sub_index[font->fd_subset_map[i]],
-                            font->fd_local_subs_used[font->fd_subset_map[i]]);
-            if (unlikely (status))
-                return status;
-        }
+	for (i = 0; i < font->num_subset_fontdicts; i++) {
+	    status = comac_cff_font_write_local_sub (
+		font,
+		i,
+		font->fd_private_dict[font->fd_subset_map[i]],
+		&font->fd_local_sub_index[font->fd_subset_map[i]],
+		font->fd_local_subs_used[font->fd_subset_map[i]]);
+	    if (unlikely (status))
+		return status;
+	}
     } else {
-        status = comac_cff_font_write_private_dict (font,
-                                                    0,
-                                                    font->fd_dict[0],
-                                                    font->private_dict);
+	status = comac_cff_font_write_private_dict (font,
+						    0,
+						    font->fd_dict[0],
+						    font->private_dict);
 	if (unlikely (status))
 	    return status;
 
-        status = comac_cff_font_write_local_sub (font,
-                                                 0,
-                                                 font->private_dict,
-                                                 &font->local_sub_index,
-                                                 font->local_subs_used);
+	status = comac_cff_font_write_local_sub (font,
+						 0,
+						 font->private_dict,
+						 &font->local_sub_index,
+						 font->local_subs_used);
 	if (unlikely (status))
 	    return status;
     }
@@ -2501,7 +2685,7 @@ comac_cff_font_write_cid_private_dict_and_local_sub (comac_cff_font_t  *font)
 }
 
 static comac_status_t
-comac_cff_font_write_type1_private_dict_and_local_sub (comac_cff_font_t  *font)
+comac_cff_font_write_type1_private_dict_and_local_sub (comac_cff_font_t *font)
 {
     comac_int_status_t status;
 
@@ -2523,9 +2707,7 @@ comac_cff_font_write_type1_private_dict_and_local_sub (comac_cff_font_t  *font)
     return COMAC_STATUS_SUCCESS;
 }
 
-
-typedef comac_status_t
-(*font_write_t) (comac_cff_font_t *font);
+typedef comac_status_t (*font_write_t) (comac_cff_font_t *font);
 
 static const font_write_t font_write_cid_funcs[] = {
     comac_cff_font_write_header,
@@ -2559,52 +2741,53 @@ comac_cff_font_write_subset (comac_cff_font_t *font)
     unsigned int i;
 
     if (font->scaled_font_subset->is_latin) {
-        for (i = 0; i < ARRAY_LENGTH (font_write_type1_funcs); i++) {
-            status = font_write_type1_funcs[i] (font);
-            if (unlikely (status))
-                return status;
-        }
+	for (i = 0; i < ARRAY_LENGTH (font_write_type1_funcs); i++) {
+	    status = font_write_type1_funcs[i](font);
+	    if (unlikely (status))
+		return status;
+	}
     } else {
-        for (i = 0; i < ARRAY_LENGTH (font_write_cid_funcs); i++) {
-            status = font_write_cid_funcs[i] (font);
-            if (unlikely (status))
-                return status;
-        }
+	for (i = 0; i < ARRAY_LENGTH (font_write_cid_funcs); i++) {
+	    status = font_write_cid_funcs[i](font);
+	    if (unlikely (status))
+		return status;
+	}
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-comac_cff_font_generate (comac_cff_font_t  *font,
-                         const char       **data,
-                         unsigned long     *length)
+comac_cff_font_generate (comac_cff_font_t *font,
+			 const char **data,
+			 unsigned long *length)
 {
     comac_int_status_t status;
 
     status = comac_cff_font_read_font (font);
     if (unlikely (status))
-        return status;
+	return status;
 
     /* If the PS name is not found, create a ComacFont-x-y name. */
     if (font->ps_name == NULL) {
-        font->ps_name = _comac_malloc (30);
-        if (unlikely (font->ps_name == NULL))
+	font->ps_name = _comac_malloc (30);
+	if (unlikely (font->ps_name == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-        snprintf(font->ps_name, 30, "ComacFont-%u-%u",
-                 font->scaled_font_subset->font_id,
-                 font->scaled_font_subset->subset_id);
+	snprintf (font->ps_name,
+		  30,
+		  "ComacFont-%u-%u",
+		  font->scaled_font_subset->font_id,
+		  font->scaled_font_subset->subset_id);
     }
 
     status = comac_cff_font_subset_font (font);
     if (unlikely (status))
-        return status;
+	return status;
 
     status = comac_cff_font_write_subset (font);
     if (unlikely (status))
-        return status;
-
+	return status;
 
     *data = _comac_array_index (&font->output, 0);
     *length = _comac_array_num_elements (&font->output);
@@ -2626,36 +2809,39 @@ comac_cff_font_create_set_widths (comac_cff_font_t *font)
     comac_int_status_t status;
 
     size = sizeof (tt_hhea_t);
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                                 TT_TAG_hhea, 0,
-                                                 (unsigned char*) &hhea, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	TT_TAG_hhea,
+	0,
+	(unsigned char *) &hhea,
+	&size);
     if (unlikely (status))
-        return status;
+	return status;
     num_hmetrics = be16_to_cpu (hhea.num_hmetrics);
 
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
-        glyph_index = font->scaled_font_subset->glyphs[i];
-        long_entry_size = 2 * sizeof (int16_t);
-        short_entry_size = sizeof (int16_t);
-        if (glyph_index < num_hmetrics) {
-            status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                                         TT_TAG_hmtx,
-                                                         glyph_index * long_entry_size,
-                                                         (unsigned char *) &short_entry,
-							 &short_entry_size);
-            if (unlikely (status))
-                return status;
-        }
-        else
-        {
-            status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                                         TT_TAG_hmtx,
-                                                         (num_hmetrics - 1) * long_entry_size,
-                                                         (unsigned char *) &short_entry,
-							 &short_entry_size);
-            if (unlikely (status))
-                return status;
-        }
+	glyph_index = font->scaled_font_subset->glyphs[i];
+	long_entry_size = 2 * sizeof (int16_t);
+	short_entry_size = sizeof (int16_t);
+	if (glyph_index < num_hmetrics) {
+	    status = font->backend->load_truetype_table (
+		font->scaled_font_subset->scaled_font,
+		TT_TAG_hmtx,
+		glyph_index * long_entry_size,
+		(unsigned char *) &short_entry,
+		&short_entry_size);
+	    if (unlikely (status))
+		return status;
+	} else {
+	    status = font->backend->load_truetype_table (
+		font->scaled_font_subset->scaled_font,
+		TT_TAG_hmtx,
+		(num_hmetrics - 1) * long_entry_size,
+		(unsigned char *) &short_entry,
+		&short_entry_size);
+	    if (unlikely (status))
+		return status;
+	}
 	font->widths[i] = be16_to_cpu (short_entry);
     }
 
@@ -2667,14 +2853,11 @@ check_fontdata_is_cff (const unsigned char *data, long length)
 {
     cff_header_t *header;
 
-    if (length < (long)sizeof (cff_header_t))
-        return FALSE;
+    if (length < (long) sizeof (cff_header_t))
+	return FALSE;
 
     header = (cff_header_t *) data;
-    if (header->major == 1 &&
-	header->minor == 0 &&
-	header->header_size == 4)
-    {
+    if (header->major == 1 && header->minor == 0 && header->header_size == 4) {
 	return TRUE;
     }
 
@@ -2682,7 +2865,7 @@ check_fontdata_is_cff (const unsigned char *data, long length)
 }
 
 static comac_int_status_t
-_comac_cff_font_load_opentype_cff (comac_cff_font_t  *font)
+_comac_cff_font_load_opentype_cff (comac_cff_font_t *font)
 {
     const comac_scaled_font_backend_t *backend = font->backend;
     comac_status_t status;
@@ -2690,34 +2873,48 @@ _comac_cff_font_load_opentype_cff (comac_cff_font_t  *font)
     tt_hhea_t hhea;
     unsigned long size, data_length;
 
-    if (!backend->load_truetype_table)
+    if (! backend->load_truetype_table)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     data_length = 0;
-    status = backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                           TT_TAG_CFF, 0, NULL, &data_length);
+    status =
+	backend->load_truetype_table (font->scaled_font_subset->scaled_font,
+				      TT_TAG_CFF,
+				      0,
+				      NULL,
+				      &data_length);
     if (status)
-        return status;
+	return status;
 
     size = sizeof (tt_head_t);
-    status = backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                           TT_TAG_head, 0,
-                                           (unsigned char *) &head, &size);
+    status =
+	backend->load_truetype_table (font->scaled_font_subset->scaled_font,
+				      TT_TAG_head,
+				      0,
+				      (unsigned char *) &head,
+				      &size);
     if (unlikely (status))
-        return status;
+	return status;
 
     size = sizeof (tt_hhea_t);
-    status = backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                           TT_TAG_hhea, 0,
-                                           (unsigned char *) &hhea, &size);
+    status =
+	backend->load_truetype_table (font->scaled_font_subset->scaled_font,
+				      TT_TAG_hhea,
+				      0,
+				      (unsigned char *) &hhea,
+				      &size);
     if (unlikely (status))
-        return status;
+	return status;
 
     size = 0;
-    status = backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                           TT_TAG_hmtx, 0, NULL, &size);
+    status =
+	backend->load_truetype_table (font->scaled_font_subset->scaled_font,
+				      TT_TAG_hmtx,
+				      0,
+				      NULL,
+				      &size);
     if (unlikely (status))
-        return status;
+	return status;
 
     font->x_min = (int16_t) be16_to_cpu (head.x_min);
     font->y_min = (int16_t) be16_to_cpu (head.y_min);
@@ -2727,12 +2924,13 @@ _comac_cff_font_load_opentype_cff (comac_cff_font_t  *font)
     font->descent = (int16_t) be16_to_cpu (hhea.descender);
     font->units_per_em = (int16_t) be16_to_cpu (head.units_per_em);
     if (font->units_per_em == 0)
-        font->units_per_em = 1000;
+	font->units_per_em = 1000;
 
     font->font_name = NULL;
-    status = _comac_truetype_read_font_name (font->scaled_font_subset->scaled_font,
-					     &font->ps_name,
-					     &font->font_name);
+    status =
+	_comac_truetype_read_font_name (font->scaled_font_subset->scaled_font,
+					&font->ps_name,
+					&font->font_name);
     if (_comac_status_is_error (status))
 	return status;
 
@@ -2740,58 +2938,66 @@ _comac_cff_font_load_opentype_cff (comac_cff_font_t  *font)
     font->data_length = data_length;
     font->data = _comac_malloc (data_length);
     if (unlikely (font->data == NULL))
-        return _comac_error (COMAC_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 TT_TAG_CFF, 0, font->data,
-						 &font->data_length);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	TT_TAG_CFF,
+	0,
+	font->data,
+	&font->data_length);
     if (unlikely (status))
-        return status;
+	return status;
 
-    if (!check_fontdata_is_cff (font->data, data_length))
+    if (! check_fontdata_is_cff (font->data, data_length))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_comac_cff_font_load_cff (comac_cff_font_t  *font)
+_comac_cff_font_load_cff (comac_cff_font_t *font)
 {
     const comac_scaled_font_backend_t *backend = font->backend;
     comac_status_t status;
     unsigned long data_length;
 
-    if (!backend->load_type1_data)
+    if (! backend->load_type1_data)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     data_length = 0;
     status = backend->load_type1_data (font->scaled_font_subset->scaled_font,
-				      0, NULL, &data_length);
+				       0,
+				       NULL,
+				       &data_length);
     if (unlikely (status))
-        return status;
+	return status;
 
     font->font_name = NULL;
     font->is_opentype = FALSE;
     font->data_length = data_length;
     font->data = _comac_malloc (data_length);
     if (unlikely (font->data == NULL))
-        return _comac_error (COMAC_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = font->backend->load_type1_data (font->scaled_font_subset->scaled_font,
-					     0, font->data, &font->data_length);
+    status =
+	font->backend->load_type1_data (font->scaled_font_subset->scaled_font,
+					0,
+					font->data,
+					&font->data_length);
     if (unlikely (status))
-        return status;
+	return status;
 
-    if (!check_fontdata_is_cff (font->data, data_length))
+    if (! check_fontdata_is_cff (font->data, data_length))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_comac_cff_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
-                        comac_cff_font_t           **font_return,
-                        const char                  *subset_name)
+_comac_cff_font_create (comac_scaled_font_subset_t *scaled_font_subset,
+			comac_cff_font_t **font_return,
+			const char *subset_name)
 {
     const comac_scaled_font_backend_t *backend;
     comac_int_status_t status;
@@ -2802,7 +3008,8 @@ _comac_cff_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     /* We need to use a fallback font if this font differs from the CFF outlines. */
     if (backend->is_synthetic) {
-	status = backend->is_synthetic (scaled_font_subset->scaled_font, &is_synthetic);
+	status = backend->is_synthetic (scaled_font_subset->scaled_font,
+					&is_synthetic);
 	if (unlikely (status))
 	    return status;
 
@@ -2812,7 +3019,7 @@ _comac_cff_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     font = calloc (1, sizeof (comac_cff_font_t));
     if (unlikely (font == NULL))
-        return _comac_error (COMAC_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     font->backend = backend;
     font->scaled_font_subset = scaled_font_subset;
@@ -2831,14 +3038,14 @@ _comac_cff_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     font->subset_font_name = strdup (subset_name);
     if (unlikely (font->subset_font_name == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail2;
     }
 
     font->widths = calloc (font->scaled_font_subset->num_glyphs, sizeof (int));
     if (unlikely (font->widths == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail3;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail3;
     }
 
     if (font->is_opentype) {
@@ -2917,11 +3124,11 @@ comac_cff_font_destroy (comac_cff_font_t *font)
     /* If we bailed out early as a result of an error some of the
      * following comac_cff_font_t members may still be NULL */
     if (font->fd_dict) {
-        for (i = 0; i < font->num_fontdicts; i++) {
-            if (font->fd_dict[i])
-                cff_dict_fini (font->fd_dict[i]);
-        }
-        free (font->fd_dict);
+	for (i = 0; i < font->num_fontdicts; i++) {
+	    if (font->fd_dict[i])
+		cff_dict_fini (font->fd_dict[i]);
+	}
+	free (font->fd_dict);
     }
     free (font->global_subs_used);
     free (font->local_subs_used);
@@ -2931,25 +3138,25 @@ comac_cff_font_destroy (comac_cff_font_t *font)
     if (font->is_cid) {
 	free (font->fdselect);
 	free (font->fdselect_subset);
-        if (font->fd_private_dict) {
-            for (i = 0; i < font->num_fontdicts; i++) {
-                if (font->fd_private_dict[i])
-                    cff_dict_fini (font->fd_private_dict[i]);
-            }
-            free (font->fd_private_dict);
-        }
-        if (font->fd_local_sub_index) {
-            for (i = 0; i < font->num_fontdicts; i++)
-                cff_index_fini (&font->fd_local_sub_index[i]);
-            free (font->fd_local_sub_index);
-        }
+	if (font->fd_private_dict) {
+	    for (i = 0; i < font->num_fontdicts; i++) {
+		if (font->fd_private_dict[i])
+		    cff_dict_fini (font->fd_private_dict[i]);
+	    }
+	    free (font->fd_private_dict);
+	}
+	if (font->fd_local_sub_index) {
+	    for (i = 0; i < font->num_fontdicts; i++)
+		cff_index_fini (&font->fd_local_sub_index[i]);
+	    free (font->fd_local_sub_index);
+	}
 	free (font->fd_local_sub_bias);
-        if (font->fd_local_subs_used) {
-            for (i = 0; i < font->num_fontdicts; i++) {
+	if (font->fd_local_subs_used) {
+	    for (i = 0; i < font->num_fontdicts; i++) {
 		free (font->fd_local_subs_used[i]);
-            }
-            free (font->fd_local_subs_used);
-        }
+	    }
+	    free (font->fd_local_subs_used);
+	}
 	free (font->fd_default_width);
 	free (font->fd_nominal_width);
     }
@@ -2960,13 +3167,13 @@ comac_cff_font_destroy (comac_cff_font_t *font)
 }
 
 comac_status_t
-_comac_cff_subset_init (comac_cff_subset_t          *cff_subset,
-                        const char		    *subset_name,
-                        comac_scaled_font_subset_t  *font_subset)
+_comac_cff_subset_init (comac_cff_subset_t *cff_subset,
+			const char *subset_name,
+			comac_scaled_font_subset_t *font_subset)
 {
     comac_cff_font_t *font = NULL; /* squelch bogus compiler warning */
     comac_status_t status;
-    const char *data = NULL; /* squelch bogus compiler warning */
+    const char *data = NULL;  /* squelch bogus compiler warning */
     unsigned long length = 0; /* squelch bogus compiler warning */
     unsigned int i;
 
@@ -2994,20 +3201,21 @@ _comac_cff_subset_init (comac_cff_subset_t          *cff_subset,
 	cff_subset->family_name_utf8 = NULL;
     }
 
-    cff_subset->widths = calloc (sizeof (double), font->scaled_font_subset->num_glyphs);
+    cff_subset->widths =
+	calloc (sizeof (double), font->scaled_font_subset->num_glyphs);
     if (unlikely (cff_subset->widths == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail3;
     }
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++)
-        cff_subset->widths[i] = (double)font->widths[i]/font->units_per_em;
+	cff_subset->widths[i] = (double) font->widths[i] / font->units_per_em;
 
-    cff_subset->x_min = (double)font->x_min/font->units_per_em;
-    cff_subset->y_min = (double)font->y_min/font->units_per_em;
-    cff_subset->x_max = (double)font->x_max/font->units_per_em;
-    cff_subset->y_max = (double)font->y_max/font->units_per_em;
-    cff_subset->ascent = (double)font->ascent/font->units_per_em;
-    cff_subset->descent = (double)font->descent/font->units_per_em;
+    cff_subset->x_min = (double) font->x_min / font->units_per_em;
+    cff_subset->y_min = (double) font->y_min / font->units_per_em;
+    cff_subset->x_max = (double) font->x_max / font->units_per_em;
+    cff_subset->y_max = (double) font->y_max / font->units_per_em;
+    cff_subset->ascent = (double) font->ascent / font->units_per_em;
+    cff_subset->descent = (double) font->descent / font->units_per_em;
 
     cff_subset->data = _comac_malloc (length);
     if (unlikely (cff_subset->data == NULL)) {
@@ -3022,13 +3230,13 @@ _comac_cff_subset_init (comac_cff_subset_t          *cff_subset,
 
     return COMAC_STATUS_SUCCESS;
 
- fail4:
+fail4:
     free (cff_subset->widths);
- fail3:
+fail3:
     free (cff_subset->family_name_utf8);
- fail2:
+fail2:
     free (cff_subset->ps_name);
- fail1:
+fail1:
     comac_cff_font_destroy (font);
 
     return status;
@@ -3052,9 +3260,9 @@ _comac_cff_scaled_font_is_cid_cff (comac_scaled_font_t *scaled_font)
     unsigned long data_length;
     unsigned char *current_ptr;
     unsigned char *data_end;
-    cff_header_t  *header;
+    cff_header_t *header;
     cff_index_element_t *element;
-    comac_hash_table_t  *top_dict;
+    comac_hash_table_t *top_dict;
     comac_array_t index;
     int size;
     comac_bool_t is_cid = FALSE;
@@ -3065,26 +3273,31 @@ _comac_cff_scaled_font_is_cid_cff (comac_scaled_font_t *scaled_font)
     status = COMAC_INT_STATUS_UNSUPPORTED;
     /* Try to load an OpenType/CFF font */
     if (backend->load_truetype_table &&
-	(status = backend->load_truetype_table (scaled_font, TT_TAG_CFF,
-						0, NULL, &data_length)) == COMAC_INT_STATUS_SUCCESS)
-    {
+	(status = backend->load_truetype_table (scaled_font,
+						TT_TAG_CFF,
+						0,
+						NULL,
+						&data_length)) ==
+	    COMAC_INT_STATUS_SUCCESS) {
 	data = _comac_malloc (data_length);
 	if (unlikely (data == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    return FALSE;
 	}
 
-	status = backend->load_truetype_table (scaled_font, TT_TAG_CFF,
-					   0, data, &data_length);
+	status = backend->load_truetype_table (scaled_font,
+					       TT_TAG_CFF,
+					       0,
+					       data,
+					       &data_length);
 	if (unlikely (status))
 	    goto fail1;
     }
     /* Try to load a CFF font */
-    if (status == COMAC_INT_STATUS_UNSUPPORTED &&
-	backend->load_type1_data &&
-	(status = backend->load_type1_data (scaled_font,
-					    0, NULL, &data_length)) == COMAC_INT_STATUS_SUCCESS)
-    {
+    if (status == COMAC_INT_STATUS_UNSUPPORTED && backend->load_type1_data &&
+	(status =
+	     backend->load_type1_data (scaled_font, 0, NULL, &data_length)) ==
+	    COMAC_INT_STATUS_SUCCESS) {
 	data = _comac_malloc (data_length);
 	if (unlikely (data == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -3099,14 +3312,14 @@ _comac_cff_scaled_font_is_cid_cff (comac_scaled_font_t *scaled_font)
 	goto fail1;
 
     /* Check if it looks like a CFF font */
-    if (!check_fontdata_is_cff (data, data_length))
+    if (! check_fontdata_is_cff (data, data_length))
 	goto fail1;
 
     data_end = data + data_length;
 
     /* skip header */
     if (data_length < sizeof (cff_header_t))
-        goto fail1;
+	goto fail1;
 
     header = (cff_header_t *) data;
     current_ptr = data + header->header_size;
@@ -3117,13 +3330,13 @@ _comac_cff_scaled_font_is_cid_cff (comac_scaled_font_t *scaled_font)
     cff_index_fini (&index);
 
     if (status)
-        goto fail1;
+	goto fail1;
 
     /* read top dict */
     cff_index_init (&index);
     status = cff_index_read (&index, &current_ptr, data_end);
     if (unlikely (status))
-        goto fail2;
+	goto fail2;
 
     status = cff_dict_init (&top_dict);
     if (unlikely (status))
@@ -3132,11 +3345,11 @@ _comac_cff_scaled_font_is_cid_cff (comac_scaled_font_t *scaled_font)
     element = _comac_array_index (&index, 0);
     status = cff_dict_read (top_dict, element->data, element->length);
     if (unlikely (status))
-        goto fail3;
+	goto fail3;
 
     /* check for ROS operator indicating a CID font */
     if (cff_dict_get_operands (top_dict, ROS_OP, &size) != NULL)
-        is_cid = TRUE;
+	is_cid = TRUE;
 
 fail3:
     cff_dict_fini (top_dict);
@@ -3151,9 +3364,9 @@ fail1:
 }
 
 static comac_int_status_t
-_comac_cff_font_fallback_create (comac_scaled_font_subset_t  *scaled_font_subset,
-                                 comac_cff_font_t           **font_return,
-                                 const char                  *subset_name)
+_comac_cff_font_fallback_create (comac_scaled_font_subset_t *scaled_font_subset,
+				 comac_cff_font_t **font_return,
+				 const char *subset_name)
 {
     comac_status_t status;
     comac_cff_font_t *font;
@@ -3172,13 +3385,13 @@ _comac_cff_font_fallback_create (comac_scaled_font_subset_t  *scaled_font_subset
 
     font->subset_font_name = strdup (subset_name);
     if (unlikely (font->subset_font_name == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail1;
     }
 
     font->ps_name = strdup (subset_name);
     if (unlikely (font->ps_name == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail2;
     }
     font->font_name = NULL;
@@ -3192,8 +3405,8 @@ _comac_cff_font_fallback_create (comac_scaled_font_subset_t  *scaled_font_subset
 
     font->widths = calloc (font->scaled_font_subset->num_glyphs, sizeof (int));
     if (unlikely (font->widths == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail3;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail3;
     }
 
     font->data_length = 0;
@@ -3245,10 +3458,10 @@ fail1:
 }
 
 static comac_int_status_t
-comac_cff_font_fallback_generate (comac_cff_font_t           *font,
-                                  comac_type2_charstrings_t  *type2_subset,
-                                  const char                **data,
-                                  unsigned long              *length)
+comac_cff_font_fallback_generate (comac_cff_font_t *font,
+				  comac_type2_charstrings_t *type2_subset,
+				  const char **data,
+				  unsigned long *length)
 {
     comac_int_status_t status;
     cff_header_t header;
@@ -3268,24 +3481,29 @@ comac_cff_font_fallback_generate (comac_cff_font_t           *font,
     /* Create Top Dict */
     font->is_cid = FALSE;
 
-    snprintf((char*)buf, sizeof(buf), "ComacFont-%u-%u",
-	     font->scaled_font_subset->font_id,
-	     font->scaled_font_subset->subset_id);
-    sid = NUM_STD_STRINGS + _comac_array_num_elements (&font->strings_subset_index);
+    snprintf ((char *) buf,
+	      sizeof (buf),
+	      "ComacFont-%u-%u",
+	      font->scaled_font_subset->font_id,
+	      font->scaled_font_subset->subset_id);
+    sid = NUM_STD_STRINGS +
+	  _comac_array_num_elements (&font->strings_subset_index);
     status = cff_index_append_copy (&font->strings_subset_index,
-                                    (unsigned char *)buf,
-                                    strlen((char*)buf));
+				    (unsigned char *) buf,
+				    strlen ((char *) buf));
     if (unlikely (status))
 	return status;
 
     end_buf = encode_integer (buf, sid);
-    status = cff_dict_set_operands (font->top_dict, FULLNAME_OP,
-				    buf, end_buf - buf);
+    status =
+	cff_dict_set_operands (font->top_dict, FULLNAME_OP, buf, end_buf - buf);
     if (unlikely (status))
 	return status;
 
-    status = cff_dict_set_operands (font->top_dict, FAMILYNAME_OP,
-				    buf, end_buf - buf);
+    status = cff_dict_set_operands (font->top_dict,
+				    FAMILYNAME_OP,
+				    buf,
+				    end_buf - buf);
     if (unlikely (status))
 	return status;
 
@@ -3293,48 +3511,55 @@ comac_cff_font_fallback_generate (comac_cff_font_t           *font,
     end_buf = encode_integer (end_buf, type2_subset->y_min);
     end_buf = encode_integer (end_buf, type2_subset->x_max);
     end_buf = encode_integer (end_buf, type2_subset->y_max);
-    status = cff_dict_set_operands (font->top_dict,
-	                            FONTBBOX_OP, buf, end_buf - buf);
+    status =
+	cff_dict_set_operands (font->top_dict, FONTBBOX_OP, buf, end_buf - buf);
     if (unlikely (status))
 	return status;
 
     end_buf = encode_integer_max (buf, 0);
     status = cff_dict_set_operands (font->top_dict,
-	                            CHARSTRINGS_OP, buf, end_buf - buf);
+				    CHARSTRINGS_OP,
+				    buf,
+				    end_buf - buf);
     if (unlikely (status))
 	return status;
 
-
     if (font->scaled_font_subset->is_latin) {
 	status = cff_dict_set_operands (font->top_dict,
-                                        ENCODING_OP, buf, end_buf - buf);
-        if (unlikely (status))
+					ENCODING_OP,
+					buf,
+					end_buf - buf);
+	if (unlikely (status))
 	    return status;
 
 	/* Private has two operands - size and offset */
 	end_buf2 = encode_integer_max (end_buf, 0);
 	cff_dict_set_operands (font->top_dict, PRIVATE_OP, buf, end_buf2 - buf);
-        if (unlikely (status))
+	if (unlikely (status))
 	    return status;
 
     } else {
 	status = cff_dict_set_operands (font->top_dict,
-					FDSELECT_OP, buf, end_buf - buf);
+					FDSELECT_OP,
+					buf,
+					end_buf - buf);
 	if (unlikely (status))
 	    return status;
 
 	status = cff_dict_set_operands (font->top_dict,
-					FDARRAY_OP, buf, end_buf - buf);
+					FDARRAY_OP,
+					buf,
+					end_buf - buf);
 	if (unlikely (status))
 	    return status;
     }
 
-    status = cff_dict_set_operands (font->top_dict,
-	                            CHARSET_OP, buf, end_buf - buf);
+    status =
+	cff_dict_set_operands (font->top_dict, CHARSET_OP, buf, end_buf - buf);
     if (unlikely (status))
 	return status;
 
-    if (!font->scaled_font_subset->is_latin) {
+    if (! font->scaled_font_subset->is_latin) {
 	status = comac_cff_font_set_ros_strings (font);
 	if (unlikely (status))
 	    return status;
@@ -3351,14 +3576,14 @@ comac_cff_font_fallback_generate (comac_cff_font_t           *font,
 
     /* Create charstrings */
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
-        charstring = _comac_array_index(&type2_subset->charstrings, i);
+	charstring = _comac_array_index (&type2_subset->charstrings, i);
 
-        status = cff_index_append (&font->charstrings_subset_index,
-                                   _comac_array_index (charstring, 0),
-                                   _comac_array_num_elements (charstring));
+	status = cff_index_append (&font->charstrings_subset_index,
+				   _comac_array_index (charstring, 0),
+				   _comac_array_num_elements (charstring));
 
-        if (unlikely (status))
-            return status;
+	if (unlikely (status))
+	    return status;
     }
 
     if (font->scaled_font_subset->is_latin)
@@ -3366,7 +3591,7 @@ comac_cff_font_fallback_generate (comac_cff_font_t           *font,
 
     status = comac_cff_font_write_subset (font);
     if (unlikely (status))
-        return status;
+	return status;
 
     *data = _comac_array_index (&font->output, 0);
     *length = _comac_array_num_elements (&font->output);
@@ -3375,13 +3600,13 @@ comac_cff_font_fallback_generate (comac_cff_font_t           *font,
 }
 
 comac_status_t
-_comac_cff_fallback_init (comac_cff_subset_t          *cff_subset,
-                          const char		      *subset_name,
-                          comac_scaled_font_subset_t  *font_subset)
+_comac_cff_fallback_init (comac_cff_subset_t *cff_subset,
+			  const char *subset_name,
+			  comac_scaled_font_subset_t *font_subset)
 {
     comac_cff_font_t *font = NULL; /* squelch bogus compiler warning */
     comac_status_t status;
-    const char *data = NULL; /* squelch bogus compiler warning */
+    const char *data = NULL;  /* squelch bogus compiler warning */
     unsigned long length = 0; /* squelch bogus compiler warning */
     unsigned int i;
     comac_type2_charstrings_t type2_subset;
@@ -3394,7 +3619,8 @@ _comac_cff_fallback_init (comac_cff_subset_t          *cff_subset,
     if (unlikely (status))
 	goto fail1;
 
-    status = comac_cff_font_fallback_generate (font, &type2_subset, &data, &length);
+    status =
+	comac_cff_font_fallback_generate (font, &type2_subset, &data, &length);
     if (unlikely (status))
 	goto fail2;
 
@@ -3405,21 +3631,22 @@ _comac_cff_fallback_init (comac_cff_subset_t          *cff_subset,
 	goto fail2;
     }
 
-    cff_subset->widths = calloc (sizeof (double), font->scaled_font_subset->num_glyphs);
+    cff_subset->widths =
+	calloc (sizeof (double), font->scaled_font_subset->num_glyphs);
     if (unlikely (cff_subset->widths == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail3;
     }
 
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++)
-        cff_subset->widths[i] = (double)type2_subset.widths[i]/1000;
+	cff_subset->widths[i] = (double) type2_subset.widths[i] / 1000;
 
-    cff_subset->x_min = (double)type2_subset.x_min/1000;
-    cff_subset->y_min = (double)type2_subset.y_min/1000;
-    cff_subset->x_max = (double)type2_subset.x_max/1000;
-    cff_subset->y_max = (double)type2_subset.y_max/1000;
-    cff_subset->ascent = (double)type2_subset.y_max/1000;
-    cff_subset->descent = (double)type2_subset.y_min/1000;
+    cff_subset->x_min = (double) type2_subset.x_min / 1000;
+    cff_subset->y_min = (double) type2_subset.y_min / 1000;
+    cff_subset->x_max = (double) type2_subset.x_max / 1000;
+    cff_subset->y_max = (double) type2_subset.y_max / 1000;
+    cff_subset->ascent = (double) type2_subset.y_max / 1000;
+    cff_subset->descent = (double) type2_subset.y_min / 1000;
 
     cff_subset->data = _comac_malloc (length);
     if (unlikely (cff_subset->data == NULL)) {
@@ -3435,13 +3662,13 @@ _comac_cff_fallback_init (comac_cff_subset_t          *cff_subset,
 
     return COMAC_STATUS_SUCCESS;
 
- fail4:
+fail4:
     free (cff_subset->widths);
- fail3:
+fail3:
     free (cff_subset->ps_name);
- fail2:
+fail2:
     _comac_type2_charstrings_fini (&type2_subset);
- fail1:
+fail1:
     comac_cff_font_destroy (font);
 
     return status;

@@ -48,8 +48,7 @@ read_file (const comac_test_context_t *ctx,
 	    return COMAC_STATUS_NO_MEMORY;
 
 	/* try again with srcdir */
-	snprintf (path, sizeof (path),
-		  "%s/%s", ctx->srcdir, filename);
+	snprintf (path, sizeof (path), "%s/%s", ctx->srcdir, filename);
 	file = fopen (path, "rb");
     }
     if (file == NULL) {
@@ -78,9 +77,8 @@ read_file (const comac_test_context_t *ctx,
 }
 
 static comac_test_status_t
-paint_file (comac_t *cr,
-	    const char *filename, const char *mime_type,
-	    int x, int y)
+paint_file (
+    comac_t *cr, const char *filename, const char *mime_type, int x, int y)
 {
     const comac_test_context_t *ctx = comac_test_get_context (cr);
     comac_surface_t *image;
@@ -98,9 +96,12 @@ paint_file (comac_t *cr,
 
     image = comac_image_surface_create (COMAC_FORMAT_RGB24, 200, 50);
 
-    status = comac_surface_set_mime_data (image, mime_type,
-					  mime_data, mime_length,
-					  free, mime_data);
+    status = comac_surface_set_mime_data (image,
+					  mime_type,
+					  mime_data,
+					  mime_length,
+					  free,
+					  mime_data);
     if (status) {
 	comac_surface_destroy (image);
 	free (mime_data);
@@ -140,16 +141,23 @@ paint_jbig2_file (comac_t *cr, int x, int y)
 
     image = comac_image_surface_create (COMAC_FORMAT_RGB24, 200, 50);
 
-    status = comac_surface_set_mime_data (image, COMAC_MIME_TYPE_JBIG2_GLOBAL_ID,
-					  (unsigned char *)"global", 6, NULL, NULL);
+    status = comac_surface_set_mime_data (image,
+					  COMAC_MIME_TYPE_JBIG2_GLOBAL_ID,
+					  (unsigned char *) "global",
+					  6,
+					  NULL,
+					  NULL);
     if (status) {
 	comac_surface_destroy (image);
 	return comac_test_status_from_status (ctx, status);
     }
 
-    status = comac_surface_set_mime_data (image, COMAC_MIME_TYPE_JBIG2,
-					  mime_data, mime_length,
-					  free, mime_data);
+    status = comac_surface_set_mime_data (image,
+					  COMAC_MIME_TYPE_JBIG2,
+					  mime_data,
+					  mime_length,
+					  free,
+					  mime_data);
     if (status) {
 	comac_surface_destroy (image);
 	free (mime_data);
@@ -169,16 +177,23 @@ paint_jbig2_file (comac_t *cr, int x, int y)
 
     image = comac_image_surface_create (COMAC_FORMAT_RGB24, 200, 50);
 
-    status = comac_surface_set_mime_data (image, COMAC_MIME_TYPE_JBIG2_GLOBAL_ID,
-					  (unsigned char *)"global", 6, NULL, NULL);
+    status = comac_surface_set_mime_data (image,
+					  COMAC_MIME_TYPE_JBIG2_GLOBAL_ID,
+					  (unsigned char *) "global",
+					  6,
+					  NULL,
+					  NULL);
     if (status) {
 	comac_surface_destroy (image);
 	return comac_test_status_from_status (ctx, status);
     }
 
-    status = comac_surface_set_mime_data (image, COMAC_MIME_TYPE_JBIG2,
-					  mime_data, mime_length,
-					  free, mime_data);
+    status = comac_surface_set_mime_data (image,
+					  COMAC_MIME_TYPE_JBIG2,
+					  mime_data,
+					  mime_length,
+					  free,
+					  mime_data);
     if (status) {
 	comac_surface_destroy (image);
 	free (mime_data);
@@ -190,9 +205,12 @@ paint_jbig2_file (comac_t *cr, int x, int y)
     if (status)
 	return comac_test_status_from_status (ctx, status);
 
-    status = comac_surface_set_mime_data (image, COMAC_MIME_TYPE_JBIG2_GLOBAL,
-					  mime_data, mime_length,
-					  free, mime_data);
+    status = comac_surface_set_mime_data (image,
+					  COMAC_MIME_TYPE_JBIG2_GLOBAL,
+					  mime_data,
+					  mime_length,
+					  free,
+					  mime_data);
     if (status) {
 	comac_surface_destroy (image);
 	free (mime_data);
@@ -229,9 +247,12 @@ paint_ccitt_file (comac_t *cr, int x, int y)
     image = comac_image_surface_create (COMAC_FORMAT_RGB24, 200, 50);
 
     /* Set the CCITT image data */
-    status = comac_surface_set_mime_data (image, COMAC_MIME_TYPE_CCITT_FAX,
-					  mime_data, mime_length,
-					  free, mime_data);
+    status = comac_surface_set_mime_data (image,
+					  COMAC_MIME_TYPE_CCITT_FAX,
+					  mime_data,
+					  mime_length,
+					  free,
+					  mime_data);
     if (status) {
 	comac_surface_destroy (image);
 	free (mime_data);
@@ -239,10 +260,12 @@ paint_ccitt_file (comac_t *cr, int x, int y)
     }
 
     /* Set the CCITT image parameters */
-    status = comac_surface_set_mime_data (image, COMAC_MIME_TYPE_CCITT_FAX_PARAMS,
-					  (unsigned char *)ccitt_image_params,
+    status = comac_surface_set_mime_data (image,
+					  COMAC_MIME_TYPE_CCITT_FAX_PARAMS,
+					  (unsigned char *) ccitt_image_params,
 					  strlen (ccitt_image_params),
-					  NULL, NULL);
+					  NULL,
+					  NULL);
     if (status) {
 	comac_surface_destroy (image);
 	return comac_test_status_from_status (ctx, status);
@@ -290,6 +313,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mime_data,
 	    "Check that the mime-data embedding works",
 	    "jpeg, api", /* keywords */
-	    NULL, /* requirements */
-	    200, 300,
-	    NULL, draw)
+	    NULL,	 /* requirements */
+	    200,
+	    300,
+	    NULL,
+	    draw)

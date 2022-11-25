@@ -35,7 +35,7 @@ rounded_rectangle (comac_t *cr, int x, int y, int w, int h, int r)
 {
     comac_new_sub_path (cr);
     comac_arc (cr, x + r, y + r, r, M_PI, 3 * M_PI / 2);
-    comac_arc (cr, x + w - r, y + r, r, 3 *M_PI / 2, 2 * M_PI);
+    comac_arc (cr, x + w - r, y + r, r, 3 * M_PI / 2, 2 * M_PI);
     comac_arc (cr, x + w - r, y + h - r, r, 0, M_PI / 2);
     comac_arc (cr, x + r, y + h - r, r, M_PI / 2, M_PI);
     comac_close_path (cr);
@@ -50,8 +50,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
 
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
-    rounded_rectangle (cr, 5, 5, width-10, height-10, 15);
-    rounded_rectangle (cr, 15, 15, width-30, height-30, 5);
+    rounded_rectangle (cr, 5, 5, width - 10, height - 10, 15);
+    rounded_rectangle (cr, 15, 15, width - 30, height - 30, 5);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -60,6 +60,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (rounded_rectangle_fill,
 	    "Tests handling of rounded rectangles, the UI designers favourite",
 	    "fill, rounded-rectangle", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,		       /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

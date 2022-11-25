@@ -70,4 +70,5 @@ _comac_error (comac_status_t status)
     return status;
 }
 
-COMPILE_TIME_ASSERT ((int)COMAC_INT_STATUS_LAST_STATUS == (int)COMAC_STATUS_LAST_STATUS);
+COMPILE_TIME_ASSERT ((int) COMAC_INT_STATUS_LAST_STATUS ==
+		     (int) COMAC_STATUS_LAST_STATUS);

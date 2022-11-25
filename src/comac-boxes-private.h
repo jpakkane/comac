@@ -64,8 +64,7 @@ comac_private void
 _comac_boxes_init (comac_boxes_t *boxes);
 
 comac_private void
-_comac_boxes_init_with_clip (comac_boxes_t *boxes,
-			     comac_clip_t *clip);
+_comac_boxes_init_with_clip (comac_boxes_t *boxes, comac_clip_t *clip);
 
 comac_private void
 _comac_boxes_init_for_array (comac_boxes_t *boxes,
@@ -73,13 +72,13 @@ _comac_boxes_init_for_array (comac_boxes_t *boxes,
 			     int num_boxes);
 
 comac_private void
-_comac_boxes_init_from_rectangle (comac_boxes_t *boxes,
-				  int x, int y, int w, int h);
+_comac_boxes_init_from_rectangle (
+    comac_boxes_t *boxes, int x, int y, int w, int h);
 
 comac_private void
-_comac_boxes_limit (comac_boxes_t	*boxes,
-		    const comac_box_t	*limits,
-		    int			 num_limits);
+_comac_boxes_limit (comac_boxes_t *boxes,
+		    const comac_box_t *limits,
+		    int num_limits);
 
 comac_private comac_status_t
 _comac_boxes_add (comac_boxes_t *boxes,
@@ -87,12 +86,10 @@ _comac_boxes_add (comac_boxes_t *boxes,
 		  const comac_box_t *box);
 
 comac_private void
-_comac_boxes_extents (const comac_boxes_t *boxes,
-		      comac_box_t *box);
+_comac_boxes_extents (const comac_boxes_t *boxes, comac_box_t *box);
 
 comac_private comac_box_t *
-_comac_boxes_to_array (const comac_boxes_t *boxes,
-		       int *num_boxes);
+_comac_boxes_to_array (const comac_boxes_t *boxes, int *num_boxes);
 
 comac_private comac_status_t
 _comac_boxes_intersect (const comac_boxes_t *a,
@@ -108,15 +105,14 @@ _comac_boxes_for_each_box (comac_boxes_t *boxes,
 			   void *data);
 
 comac_private comac_status_t
-_comac_rasterise_polygon_to_boxes (comac_polygon_t			*polygon,
-				   comac_fill_rule_t			 fill_rule,
+_comac_rasterise_polygon_to_boxes (comac_polygon_t *polygon,
+				   comac_fill_rule_t fill_rule,
 				   comac_boxes_t *boxes);
 
 comac_private void
 _comac_boxes_fini (comac_boxes_t *boxes);
 
 comac_private void
-_comac_debug_print_boxes (FILE *stream,
-			  const comac_boxes_t *boxes);
+_comac_debug_print_boxes (FILE *stream, const comac_boxes_t *boxes);
 
 #endif /* COMAC_BOXES_H */

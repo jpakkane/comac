@@ -104,7 +104,8 @@ dump_traps (comac_traps_t *traps, const char *filename)
     file = fopen (filename, "a");
     if (file != NULL) {
 	for (n = 0; n < traps->num_traps; n++) {
-	    fprintf (file, "%d %d L:(%d, %d), (%d, %d) R:(%d, %d), (%d, %d)\n",
+	    fprintf (file,
+		     "%d %d L:(%d, %d), (%d, %d) R:(%d, %d), (%d, %d)\n",
 		     traps->traps[n].top,
 		     traps->traps[n].bottom,
 		     traps->traps[n].left.p1.x,
@@ -125,15 +126,13 @@ dump_traps (comac_traps_t *traps, const char *filename)
 #endif
 
 static inline int
-rectangle_compare_start (const rectangle_t *a,
-			 const rectangle_t *b)
+rectangle_compare_start (const rectangle_t *a, const rectangle_t *b)
 {
     return a->top - b->top;
 }
 
 static inline int
-rectangle_compare_stop (const rectangle_t *a,
-			 const rectangle_t *b)
+rectangle_compare_stop (const rectangle_t *a, const rectangle_t *b)
 {
     return a->bottom - b->bottom;
 }
@@ -162,12 +161,12 @@ pqueue_grow (pqueue_t *pq)
     pq->max_size *= 2;
 
     if (pq->elements == pq->elements_embedded) {
-	new_elements = _comac_malloc_ab (pq->max_size,
-					 sizeof (rectangle_t *));
+	new_elements = _comac_malloc_ab (pq->max_size, sizeof (rectangle_t *));
 	if (unlikely (new_elements == NULL))
 	    return FALSE;
 
-	memcpy (new_elements, pq->elements_embedded,
+	memcpy (new_elements,
+		pq->elements_embedded,
 		sizeof (pq->elements_embedded));
     } else {
 	new_elements = _comac_realloc_ab (pq->elements,
@@ -189,8 +188,7 @@ pqueue_push (sweep_line_t *sweep, rectangle_t *rectangle)
 
     if (unlikely (sweep->pq.size + 1 == sweep->pq.max_size)) {
 	if (unlikely (! pqueue_grow (&sweep->pq))) {
-	    longjmp (sweep->unwind,
-		     _comac_error (COMAC_STATUS_NO_MEMORY));
+	    longjmp (sweep->unwind, _comac_error (COMAC_STATUS_NO_MEMORY));
 	}
     }
 
@@ -199,8 +197,7 @@ pqueue_push (sweep_line_t *sweep, rectangle_t *rectangle)
 	 i != PQ_FIRST_ENTRY &&
 	 rectangle_compare_stop (rectangle,
 				 elements[parent = PQ_PARENT_INDEX (i)]) < 0;
-	 i = parent)
-    {
+	 i = parent) {
 	elements[i] = elements[parent];
     }
 
@@ -220,14 +217,10 @@ pqueue_pop (pqueue_t *pq)
 	return;
     }
 
-    for (i = PQ_FIRST_ENTRY;
-	 (child = PQ_LEFT_CHILD_INDEX (i)) <= pq->size;
-	 i = child)
-    {
+    for (i = PQ_FIRST_ENTRY; (child = PQ_LEFT_CHILD_INDEX (i)) <= pq->size;
+	 i = child) {
 	if (child != pq->size &&
-	    rectangle_compare_stop (elements[child+1],
-				    elements[child]) < 0)
-	{
+	    rectangle_compare_stop (elements[child + 1], elements[child]) < 0) {
 	    child++;
 	}
 
@@ -251,14 +244,12 @@ rectangle_peek_stop (sweep_line_t *sweep_line)
     return sweep_line->pq.elements[PQ_FIRST_ENTRY];
 }
 
-COMAC_COMBSORT_DECLARE (_rectangle_sort,
-			rectangle_t *,
-			rectangle_compare_start)
+COMAC_COMBSORT_DECLARE (_rectangle_sort, rectangle_t *, rectangle_compare_start)
 
 static void
-sweep_line_init (sweep_line_t	 *sweep_line,
-		 rectangle_t	**rectangles,
-		 int		  num_rectangles)
+sweep_line_init (sweep_line_t *sweep_line,
+		 rectangle_t **rectangles,
+		 int num_rectangles)
 {
     _rectangle_sort (rectangles, num_rectangles);
     rectangles[num_rectangles] = NULL;
@@ -289,7 +280,10 @@ sweep_line_fini (sweep_line_t *sweep_line)
 }
 
 static void
-end_box (sweep_line_t *sweep_line, edge_t *left, int32_t bot, comac_boxes_t *out)
+end_box (sweep_line_t *sweep_line,
+	 edge_t *left,
+	 int32_t bot,
+	 comac_boxes_t *out)
 {
     if (likely (left->top < bot)) {
 	comac_status_t status;
@@ -315,9 +309,9 @@ end_box (sweep_line_t *sweep_line, edge_t *left, int32_t bot, comac_boxes_t *out
  * trapezoid would be a continuation of the existing one. */
 static inline void
 start_or_continue_box (sweep_line_t *sweep_line,
-		       edge_t	*left,
-		       edge_t	*right,
-		       int		 top,
+		       edge_t *left,
+		       edge_t *right,
+		       int top,
 		       comac_boxes_t *out)
 {
     if (left->right == right)
@@ -339,7 +333,8 @@ start_or_continue_box (sweep_line_t *sweep_line,
     }
 }
 
-static inline int is_zero(const int *winding)
+static inline int
+is_zero (const int *winding)
 {
     return winding[0] == 0 || winding[1] == 0;
 }
@@ -348,7 +343,7 @@ static inline void
 active_edges (sweep_line_t *sweep, comac_boxes_t *out)
 {
     int top = sweep->current_y;
-    int winding[2] = { 0 };
+    int winding[2] = {0};
     edge_t *pos;
 
     if (sweep->last_y == sweep->current_y)
@@ -364,7 +359,7 @@ active_edges (sweep_line_t *sweep, comac_boxes_t *out)
 	left = pos;
 	do {
 	    winding[left->a_or_b] += left->dir;
-	    if (!is_zero (winding))
+	    if (! is_zero (winding))
 		break;
 	    if (left->next == &sweep->tail)
 		goto out;
@@ -400,7 +395,9 @@ out:
 }
 
 static inline void
-sweep_line_delete_edge (sweep_line_t *sweep_line, edge_t *edge, comac_boxes_t *out)
+sweep_line_delete_edge (sweep_line_t *sweep_line,
+			edge_t *edge,
+			comac_boxes_t *out)
 {
     if (edge->right != NULL) {
 	edge_t *next = edge->next;
@@ -422,8 +419,8 @@ sweep_line_delete_edge (sweep_line_t *sweep_line, edge_t *edge, comac_boxes_t *o
 }
 
 static inline void
-sweep_line_delete (sweep_line_t	*sweep,
-		   rectangle_t	*rectangle,
+sweep_line_delete (sweep_line_t *sweep,
+		   rectangle_t *rectangle,
 		   comac_boxes_t *out)
 {
     sweep_line_delete_edge (sweep, &rectangle->left, out);
@@ -438,7 +435,7 @@ insert_edge (edge_t *edge, edge_t *pos)
     if (pos->x != edge->x) {
 	if (pos->x > edge->x) {
 	    do {
-		UNROLL3({
+		UNROLL3 ({
 		    if (pos->prev->x <= edge->x)
 			break;
 		    pos = pos->prev;
@@ -446,7 +443,7 @@ insert_edge (edge_t *edge, edge_t *pos)
 	    } while (TRUE);
 	} else {
 	    do {
-		UNROLL3({
+		UNROLL3 ({
 		    pos = pos->next;
 		    if (pos->x >= edge->x)
 			break;
@@ -462,7 +459,7 @@ insert_edge (edge_t *edge, edge_t *pos)
 }
 
 static inline void
-sweep_line_insert (sweep_line_t	*sweep, rectangle_t	*rectangle)
+sweep_line_insert (sweep_line_t *sweep, rectangle_t *rectangle)
 {
     edge_t *pos;
 
@@ -612,7 +609,7 @@ _comac_boxes_intersect (const comac_boxes_t *a,
     if (count > ARRAY_LENGTH (stack_rectangles)) {
 	rectangles = _comac_malloc_ab_plus_c (count,
 					      sizeof (rectangle_t) +
-					      sizeof (rectangle_t *),
+						  sizeof (rectangle_t *),
 					      sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);

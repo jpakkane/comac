@@ -80,7 +80,7 @@ _comac_surface_snapshot_flush (void *abstract_surface, unsigned flags)
 }
 
 static comac_surface_t *
-_comac_surface_snapshot_source (void                    *abstract_surface,
+_comac_surface_snapshot_source (void *abstract_surface,
 				comac_rectangle_int_t *extents)
 {
     comac_surface_snapshot_t *surface = abstract_surface;
@@ -93,9 +93,9 @@ struct snapshot_extra {
 };
 
 static comac_status_t
-_comac_surface_snapshot_acquire_source_image (void                    *abstract_surface,
-					      comac_image_surface_t  **image_out,
-					      void                   **extra_out)
+_comac_surface_snapshot_acquire_source_image (void *abstract_surface,
+					      comac_image_surface_t **image_out,
+					      void **extra_out)
 {
     comac_surface_snapshot_t *surface = abstract_surface;
     struct snapshot_extra *extra;
@@ -108,7 +108,9 @@ _comac_surface_snapshot_acquire_source_image (void                    *abstract_
     }
 
     extra->target = _comac_surface_snapshot_get_target (&surface->base);
-    status =  _comac_surface_acquire_source_image (extra->target, image_out, &extra->extra);
+    status = _comac_surface_acquire_source_image (extra->target,
+						  image_out,
+						  &extra->extra);
     if (unlikely (status)) {
 	comac_surface_destroy (extra->target);
 	free (extra);
@@ -120,9 +122,9 @@ _comac_surface_snapshot_acquire_source_image (void                    *abstract_
 }
 
 static void
-_comac_surface_snapshot_release_source_image (void                   *abstract_surface,
-					      comac_image_surface_t  *image,
-					      void                   *_extra)
+_comac_surface_snapshot_release_source_image (void *abstract_surface,
+					      comac_image_surface_t *image,
+					      void *_extra)
 {
     struct snapshot_extra *extra = _extra;
 
@@ -132,7 +134,7 @@ _comac_surface_snapshot_release_source_image (void                   *abstract_s
 }
 
 static comac_bool_t
-_comac_surface_snapshot_get_extents (void                  *abstract_surface,
+_comac_surface_snapshot_get_extents (void *abstract_surface,
 				     comac_rectangle_int_t *extents)
 {
     comac_surface_snapshot_t *surface = abstract_surface;
@@ -179,8 +181,8 @@ _comac_surface_snapshot_copy_on_write (comac_surface_t *surface)
     void *extra;
     comac_status_t status;
 
-    TRACE ((stderr, "%s: target=%d\n",
-	    __FUNCTION__, snapshot->target->unique_id));
+    TRACE (
+	(stderr, "%s: target=%d\n", __FUNCTION__, snapshot->target->unique_id));
 
     /* We need to make an image copy of the original surface since the
      * snapshot may exceed the lifetime of the original device, i.e.
@@ -202,7 +204,8 @@ _comac_surface_snapshot_copy_on_write (comac_surface_t *surface)
      * We should probably leave such decisions to the backend in case we
      * rely upon devices/connections like Xlib.
     */
-    status = _comac_surface_acquire_source_image (snapshot->target, &image, &extra);
+    status =
+	_comac_surface_acquire_source_image (snapshot->target, &image, &extra);
     if (unlikely (status)) {
 	snapshot->target = _comac_surface_create_in_error (status);
 	status = _comac_surface_set_error (surface, status);
@@ -250,7 +253,8 @@ _comac_surface_snapshot (comac_surface_t *surface)
 	return _comac_surface_create_in_error (surface->status);
 
     if (unlikely (surface->finished))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (surface->snapshot_of != NULL)
 	return comac_surface_reference (surface);
@@ -258,14 +262,16 @@ _comac_surface_snapshot (comac_surface_t *surface)
     if (_comac_surface_is_snapshot (surface))
 	return comac_surface_reference (surface);
 
-    snapshot = (comac_surface_snapshot_t *)
-	_comac_surface_has_snapshot (surface, &_comac_surface_snapshot_backend);
+    snapshot = (comac_surface_snapshot_t *) _comac_surface_has_snapshot (
+	surface,
+	&_comac_surface_snapshot_backend);
     if (snapshot != NULL)
 	return comac_surface_reference (&snapshot->base);
 
     snapshot = _comac_malloc (sizeof (comac_surface_snapshot_t));
     if (unlikely (snapshot == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     _comac_surface_init (&snapshot->base,
 			 &_comac_surface_snapshot_backend,

@@ -9,7 +9,8 @@
 static comac_surface_t *
 _surface_create (void *_closure,
 		 comac_content_t content,
-		 double width, double height,
+		 double width,
+		 double height,
 		 long uid)
 {
     comac_surface_t **closure = _closure;
@@ -17,7 +18,7 @@ _surface_create (void *_closure,
     comac_rectangle_t extents;
 
     extents.x = extents.y = 0;
-    extents.width  = width;
+    extents.width = width;
     extents.height = height;
     surface = comac_recording_surface_create (content, &extents);
     if (*closure == NULL)

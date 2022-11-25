@@ -63,16 +63,14 @@ comac_private comac_damage_t *
 _comac_damage_create_in_error (comac_status_t status);
 
 comac_private comac_damage_t *
-_comac_damage_add_box (comac_damage_t *damage,
-		       const comac_box_t *box);
+_comac_damage_add_box (comac_damage_t *damage, const comac_box_t *box);
 
 comac_private comac_damage_t *
 _comac_damage_add_rectangle (comac_damage_t *damage,
 			     const comac_rectangle_int_t *rect);
 
 comac_private comac_damage_t *
-_comac_damage_add_region (comac_damage_t *damage,
-			  const comac_region_t *region);
+_comac_damage_add_region (comac_damage_t *damage, const comac_region_t *region);
 
 comac_private comac_damage_t *
 _comac_damage_reduce (comac_damage_t *damage);

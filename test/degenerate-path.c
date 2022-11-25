@@ -31,7 +31,9 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    const comac_line_cap_t cap[] = { COMAC_LINE_CAP_ROUND, COMAC_LINE_CAP_SQUARE, COMAC_LINE_CAP_BUTT };
+    const comac_line_cap_t cap[] = {COMAC_LINE_CAP_ROUND,
+				    COMAC_LINE_CAP_SQUARE,
+				    COMAC_LINE_CAP_BUTT};
     size_t i;
     double dash[] = {2, 2};
     double dash_long[] = {6, 6};
@@ -49,7 +51,7 @@ draw (comac_t *cr, int width, int height)
 	comac_line_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_stroke (cr);
 
-	comac_translate (cr, 0, 3*PAD);
+	comac_translate (cr, 0, 3 * PAD);
 	comac_move_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_close_path (cr);
 	comac_stroke (cr);
@@ -57,12 +59,12 @@ draw (comac_t *cr, int width, int height)
 	/* degenerate paths starting with dash on */
 	comac_set_dash (cr, dash, 2, 0.);
 
-	comac_translate (cr, 0, 3*PAD);
+	comac_translate (cr, 0, 3 * PAD);
 	comac_move_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_line_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_stroke (cr);
 
-	comac_translate (cr, 0, 3*PAD);
+	comac_translate (cr, 0, 3 * PAD);
 	comac_move_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_close_path (cr);
 	comac_stroke (cr);
@@ -71,12 +73,12 @@ draw (comac_t *cr, int width, int height)
 	/* these should not draw anything */
 	comac_set_dash (cr, dash, 2, 2.);
 
-	comac_translate (cr, 0, 3*PAD);
+	comac_translate (cr, 0, 3 * PAD);
 	comac_move_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_line_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_stroke (cr);
 
-	comac_translate (cr, 0, 3*PAD);
+	comac_translate (cr, 0, 3 * PAD);
 	comac_move_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_close_path (cr);
 	comac_stroke (cr);
@@ -85,7 +87,7 @@ draw (comac_t *cr, int width, int height)
 	 * at the end of the path */
 	comac_set_dash (cr, dash_long, 2, 6.);
 
-	comac_translate (cr, 0, 3*PAD);
+	comac_translate (cr, 0, 3 * PAD);
 	comac_move_to (cr, LINE_WIDTH + 6.0, LINE_WIDTH);
 	comac_line_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_stroke (cr);
@@ -95,7 +97,7 @@ draw (comac_t *cr, int width, int height)
 	 * and the above is that this ends with a degenerate sub-path*/
 	comac_set_dash (cr, dash_long, 2, 6.);
 
-	comac_translate (cr, 0, 3*PAD);
+	comac_translate (cr, 0, 3 * PAD);
 	comac_move_to (cr, LINE_WIDTH + 6.0, LINE_WIDTH);
 	comac_line_to (cr, LINE_WIDTH, LINE_WIDTH);
 	comac_line_to (cr, LINE_WIDTH, LINE_WIDTH);
@@ -103,7 +105,7 @@ draw (comac_t *cr, int width, int height)
 
 	comac_restore (cr);
 
-	comac_translate (cr, PAD+LINE_WIDTH+PAD, 0);
+	comac_translate (cr, PAD + LINE_WIDTH + PAD, 0);
     }
     return COMAC_TEST_SUCCESS;
 }
@@ -115,6 +117,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (degenerate_path,
 	    "Tests the behaviour of degenerate paths with different cap types",
 	    "degenerate", /* keywords */
-	    NULL, /* requirements */
-	    3*(PAD+LINE_WIDTH+PAD), 8*(LINE_WIDTH+PAD) + PAD,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    3 * (PAD + LINE_WIDTH + PAD),
+	    8 * (LINE_WIDTH + PAD) + PAD,
+	    NULL,
+	    draw)

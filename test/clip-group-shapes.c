@@ -41,36 +41,32 @@
 
 /* For determining whether we establish the clip path before or after
  * pushing a group. */
-enum {
-    CLIP_OUTSIDE_GROUP,
-    CLIP_INSIDE_GROUP
-};
+enum { CLIP_OUTSIDE_GROUP, CLIP_INSIDE_GROUP };
 
-typedef void (*clipper_t)(comac_t *cr, int w, int h);
+typedef void (*clipper_t) (comac_t *cr, int w, int h);
 
 static comac_test_status_t
-clip_and_paint (comac_t *cr,
-                int w, int h,
-                clipper_t do_clip,
-                int clip_where)
+clip_and_paint (comac_t *cr, int w, int h, clipper_t do_clip, int clip_where)
 {
-    comac_save (cr); {
-        if (GENERATE_REF) {
-            do_clip (cr, w, h);
-            comac_paint (cr);
-        } else {
-            if (clip_where == CLIP_OUTSIDE_GROUP)
-                do_clip (cr, w, h);
-            comac_push_group (cr); {
-                if (clip_where == CLIP_INSIDE_GROUP)
-                    do_clip (cr, w, h);
-                comac_paint (cr);
-            }
-            comac_pop_group_to_source (cr);
-            if (clip_where == CLIP_OUTSIDE_GROUP)
+    comac_save (cr);
+    {
+	if (GENERATE_REF) {
+	    do_clip (cr, w, h);
+	    comac_paint (cr);
+	} else {
+	    if (clip_where == CLIP_OUTSIDE_GROUP)
+		do_clip (cr, w, h);
+	    comac_push_group (cr);
+	    {
+		if (clip_where == CLIP_INSIDE_GROUP)
+		    do_clip (cr, w, h);
+		comac_paint (cr);
+	    }
+	    comac_pop_group_to_source (cr);
+	    if (clip_where == CLIP_OUTSIDE_GROUP)
 		comac_reset_clip (cr);
-            comac_paint (cr);
-        }
+	    comac_paint (cr);
+	}
     }
     comac_restore (cr);
     return COMAC_TEST_SUCCESS;
@@ -79,16 +75,16 @@ clip_and_paint (comac_t *cr,
 static comac_test_status_t
 run_clip_test (comac_t *cr, int w, int h, clipper_t do_clip)
 {
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
-    comac_set_source_rgb (cr, 1,0,0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
     /* Left. */
-    clip_and_paint (cr, w/2, h, do_clip, CLIP_OUTSIDE_GROUP);
+    clip_and_paint (cr, w / 2, h, do_clip, CLIP_OUTSIDE_GROUP);
 
     /* Right */
-    comac_translate(cr, w/2, 0);
-    clip_and_paint (cr, w/2, h, do_clip, CLIP_INSIDE_GROUP);
+    comac_translate (cr, w / 2, 0);
+    clip_and_paint (cr, w / 2, h, do_clip, CLIP_INSIDE_GROUP);
 
     return COMAC_TEST_SUCCESS;
 }
@@ -120,13 +116,13 @@ clip_unaligned_rectangles (comac_t *cr, int w, int h)
     int x2 = 0.8 * w;
     int y2 = 0.8 * h;
 
-    comac_rectangle (cr, x1+0.5, y1+0.5, w, h);
+    comac_rectangle (cr, x1 + 0.5, y1 + 0.5, w, h);
     comac_clip (cr);
 
-    comac_rectangle (cr, x2+0.5, y2+0.5, -w, -h);
+    comac_rectangle (cr, x2 + 0.5, y2 + 0.5, -w, -h);
     w = x2 - x1;
     h = y2 - y1;
-    comac_rectangle (cr, x2, y1+1, -w+1, h-1);
+    comac_rectangle (cr, x2, y1 + 1, -w + 1, h - 1);
     comac_clip (cr);
 }
 
@@ -137,7 +133,7 @@ clip_circles (comac_t *cr, int w, int h)
     int y1 = 0.5 * h;
     int x2 = 0.75 * w;
     int y2 = 0.75 * h;
-    int r = 0.4*MIN(w,h);
+    int r = 0.4 * MIN (w, h);
 
     comac_arc (cr, x1, y1, r, 0, 6.28);
     comac_close_path (cr);
@@ -169,20 +165,26 @@ draw_circles (comac_t *cr, int width, int height)
 COMAC_TEST (clip_group_shapes_aligned_rectangles,
 	    "Test clip and group interaction with aligned rectangle clips",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    200, 100,
-	    NULL, draw_aligned_rectangles)
+	    NULL,   /* requirements */
+	    200,
+	    100,
+	    NULL,
+	    draw_aligned_rectangles)
 
 COMAC_TEST (clip_group_shapes_unaligned_rectangles,
 	    "Test clip and group interaction with unaligned rectangle clips",
-	    "clip", /* keywords */
+	    "clip",	     /* keywords */
 	    "target=raster", /* requirements */
-	    200, 100,
-	    NULL, draw_unaligned_rectangles)
+	    200,
+	    100,
+	    NULL,
+	    draw_unaligned_rectangles)
 
 COMAC_TEST (clip_group_shapes_circles,
 	    "Test clip and group interaction with circular clips",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    200, 100,
-	    NULL, draw_circles)
+	    NULL,   /* requirements */
+	    200,
+	    100,
+	    NULL,
+	    draw_circles)

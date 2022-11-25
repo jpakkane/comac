@@ -33,11 +33,11 @@
 
 #include <comac.h>
 
-#define WIDTH	32
-#define HEIGHT	WIDTH
+#define WIDTH 32
+#define HEIGHT WIDTH
 
-#define IMAGE_WIDTH	(3 * WIDTH)
-#define IMAGE_HEIGHT	IMAGE_WIDTH
+#define IMAGE_WIDTH (3 * WIDTH)
+#define IMAGE_HEIGHT IMAGE_WIDTH
 
 /* Draw the word comac at NUM_TEXT different angles */
 static comac_test_status_t
@@ -62,7 +62,8 @@ draw (comac_t *cr, int width, int height)
 
     stamp = comac_surface_create_similar (comac_get_group_target (cr),
 					  COMAC_CONTENT_COLOR_ALPHA,
-					  WIDTH, HEIGHT);
+					  WIDTH,
+					  HEIGHT);
     cr2 = comac_create (stamp);
     comac_surface_destroy (stamp);
     {
@@ -87,6 +88,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (pixman_rotate,
 	    "Exposes pixman off-by-one error when rotating",
 	    "image, transform", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,		/* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

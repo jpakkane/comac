@@ -53,16 +53,16 @@ draw (comac_t *cr, int width, int height)
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_set_line_width (cr, 4);
-    comac_translate (cr, 2*OFFSET, 2*OFFSET);
+    comac_translate (cr, 2 * OFFSET, 2 * OFFSET);
 
     for (i = 0; i < 4; i++) {
 	double x = i * DISTANCE;
 
-	comac_move_to (cr, x, -OFFSET-0.75);
-	comac_line_to (cr, x, SIZE-3*OFFSET-0.25);
+	comac_move_to (cr, x, -OFFSET - 0.75);
+	comac_line_to (cr, x, SIZE - 3 * OFFSET - 0.25);
 
-	comac_move_to (cr, -OFFSET-0.75, x);
-	comac_line_to (cr, SIZE-3*OFFSET-0.25, x);
+	comac_move_to (cr, -OFFSET - 0.75, x);
+	comac_line_to (cr, SIZE - 3 * OFFSET - 0.25, x);
     }
 
     comac_stroke (cr);
@@ -80,13 +80,17 @@ aligned (comac_t *cr, int width, int height)
 COMAC_TEST (rectilinear_grid,
 	    "Test rectilinear rasterizer (covering partial pixels)",
 	    "rectilinear", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)
 
 COMAC_TEST (a1_rectilinear_grid,
 	    "Test rectilinear rasterizer (covering whole pixels)",
-	    "rectilinear", /* keywords */
+	    "rectilinear",   /* keywords */
 	    "target=raster", /* requirements */
-	    SIZE, SIZE,
-	    NULL, aligned)
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    aligned)

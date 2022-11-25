@@ -56,18 +56,18 @@ typedef struct _comac_type1_font {
     int *widths;
 
     comac_scaled_font_subset_t *scaled_font_subset;
-    comac_scaled_font_t        *type1_scaled_font;
+    comac_scaled_font_t *type1_scaled_font;
 
     comac_array_t contents;
 
     double x_min, y_min, x_max, y_max;
 
-    const char    *data;
-    unsigned long  header_size;
-    unsigned long  data_size;
-    unsigned long  trailer_size;
-    int            bbox_position;
-    int            bbox_max_chars;
+    const char *data;
+    unsigned long header_size;
+    unsigned long data_size;
+    unsigned long trailer_size;
+    int bbox_position;
+    int bbox_max_chars;
 
     comac_output_stream_t *output;
 
@@ -77,9 +77,9 @@ typedef struct _comac_type1_font {
 } comac_type1_font_t;
 
 static comac_status_t
-comac_type1_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
-                         comac_type1_font_t         **subset_return,
-                         comac_bool_t                 hex_encode)
+comac_type1_font_create (comac_scaled_font_subset_t *scaled_font_subset,
+			 comac_type1_font_t **subset_return,
+			 comac_bool_t hex_encode)
 {
     comac_type1_font_t *font;
     comac_font_face_t *font_face;
@@ -101,7 +101,8 @@ comac_type1_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
     font->scaled_font_subset = scaled_font_subset;
     font->hex_encode = hex_encode;
 
-    font_face = comac_scaled_font_get_font_face (scaled_font_subset->scaled_font);
+    font_face =
+	comac_scaled_font_get_font_face (scaled_font_subset->scaled_font);
 
     comac_matrix_init_scale (&font_matrix, 1000, -1000);
     comac_matrix_init_identity (&ctm);
@@ -110,13 +111,11 @@ comac_type1_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
     comac_font_options_set_hint_style (&font_options, COMAC_HINT_STYLE_NONE);
     comac_font_options_set_hint_metrics (&font_options, COMAC_HINT_METRICS_OFF);
 
-    font->type1_scaled_font = comac_scaled_font_create (font_face,
-							&font_matrix,
-							&ctm,
-							&font_options);
+    font->type1_scaled_font =
+	comac_scaled_font_create (font_face, &font_matrix, &ctm, &font_options);
     status = font->type1_scaled_font->status;
     if (unlikely (status))
-        goto fail;
+	goto fail;
 
     _comac_array_init (&font->contents, sizeof (unsigned char));
     font->output = NULL;
@@ -134,12 +133,12 @@ fail:
 
 /* Charstring commands. If the high byte is 0 the command is encoded
  * with a single byte. */
-#define CHARSTRING_sbw        0x0c07
-#define CHARSTRING_rmoveto    0x0015
-#define CHARSTRING_rlineto    0x0005
-#define CHARSTRING_rcurveto   0x0008
-#define CHARSTRING_closepath  0x0009
-#define CHARSTRING_endchar    0x000e
+#define CHARSTRING_sbw 0x0c07
+#define CHARSTRING_rmoveto 0x0015
+#define CHARSTRING_rlineto 0x0005
+#define CHARSTRING_rcurveto 0x0008
+#define CHARSTRING_closepath 0x0009
+#define CHARSTRING_endchar 0x000e
 
 /* Before calling this function, the caller must allocate sufficient
  * space in data (see _comac_array_grow_by). The maximum number of
@@ -154,7 +153,7 @@ charstring_encode_command (comac_array_t *data, int command)
     unsigned char *p = buf;
 
     if (command & 0xff00)
-        *p++ = command >> 8;
+	*p++ = command >> 8;
     *p++ = command & 0x00ff;
 
     /* Ensure the array doesn't grow, which allows this function to
@@ -172,8 +171,8 @@ charstring_encode_command (comac_array_t *data, int command)
  */
 static void
 charstring_encode_integer (comac_array_t *data,
-                           int i,
-                           comac_charstring_type_t type)
+			   int i,
+			   comac_charstring_type_t type)
 {
     comac_status_t status;
     unsigned int orig_size;
@@ -181,29 +180,29 @@ charstring_encode_integer (comac_array_t *data,
     unsigned char *p = buf;
 
     if (i >= -107 && i <= 107) {
-        *p++ = i + 139;
+	*p++ = i + 139;
     } else if (i >= 108 && i <= 1131) {
-        i -= 108;
-        *p++ = (i >> 8)+ 247;
-        *p++ = i & 0xff;
+	i -= 108;
+	*p++ = (i >> 8) + 247;
+	*p++ = i & 0xff;
     } else if (i >= -1131 && i <= -108) {
-        i = -i - 108;
-        *p++ = (i >> 8)+ 251;
-        *p++ = i & 0xff;
+	i = -i - 108;
+	*p++ = (i >> 8) + 251;
+	*p++ = i & 0xff;
     } else {
-        if (type == COMAC_CHARSTRING_TYPE1) {
-            *p++ = 0xff;
-            *p++ = i >> 24;
-            *p++ = (i >> 16) & 0xff;
-            *p++ = (i >> 8)  & 0xff;
-            *p++ = i & 0xff;
-        } else {
-            *p++ = 0xff;
-            *p++ = (i >> 8)  & 0xff;
-            *p++ = i & 0xff;
-            *p++ = 0;
-            *p++ = 0;
-        }
+	if (type == COMAC_CHARSTRING_TYPE1) {
+	    *p++ = 0xff;
+	    *p++ = i >> 24;
+	    *p++ = (i >> 16) & 0xff;
+	    *p++ = (i >> 8) & 0xff;
+	    *p++ = i & 0xff;
+	} else {
+	    *p++ = 0xff;
+	    *p++ = (i >> 8) & 0xff;
+	    *p++ = i & 0xff;
+	    *p++ = 0;
+	    *p++ = 0;
+	}
     }
 
     /* Ensure the array doesn't grow, which allows this function to
@@ -222,8 +221,7 @@ typedef struct _ps_path_info {
 } t1_path_info_t;
 
 static comac_status_t
-_charstring_move_to (void		    *closure,
-                     const comac_point_t    *point)
+_charstring_move_to (void *closure, const comac_point_t *point)
 {
     t1_path_info_t *path_info = (t1_path_info_t *) closure;
     int dx, dy;
@@ -231,7 +229,7 @@ _charstring_move_to (void		    *closure,
 
     status = _comac_array_grow_by (path_info->data, 12);
     if (unlikely (status))
-        return status;
+	return status;
 
     dx = _comac_fixed_integer_part (point->x) - path_info->current_x;
     dy = _comac_fixed_integer_part (point->y) - path_info->current_y;
@@ -246,8 +244,7 @@ _charstring_move_to (void		    *closure,
 }
 
 static comac_status_t
-_charstring_line_to (void		    *closure,
-                     const comac_point_t    *point)
+_charstring_line_to (void *closure, const comac_point_t *point)
 {
     t1_path_info_t *path_info = (t1_path_info_t *) closure;
     int dx, dy;
@@ -255,7 +252,7 @@ _charstring_line_to (void		    *closure,
 
     status = _comac_array_grow_by (path_info->data, 12);
     if (unlikely (status))
-        return status;
+	return status;
 
     dx = _comac_fixed_integer_part (point->x) - path_info->current_x;
     dy = _comac_fixed_integer_part (point->y) - path_info->current_y;
@@ -270,10 +267,10 @@ _charstring_line_to (void		    *closure,
 }
 
 static comac_status_t
-_charstring_curve_to (void		    *closure,
-                      const comac_point_t   *point1,
-                      const comac_point_t   *point2,
-                      const comac_point_t   *point3)
+_charstring_curve_to (void *closure,
+		      const comac_point_t *point1,
+		      const comac_point_t *point2,
+		      const comac_point_t *point3)
 {
     t1_path_info_t *path_info = (t1_path_info_t *) closure;
     int dx1, dy1, dx2, dy2, dx3, dy3;
@@ -281,14 +278,16 @@ _charstring_curve_to (void		    *closure,
 
     status = _comac_array_grow_by (path_info->data, 32);
     if (unlikely (status))
-        return status;
+	return status;
 
     dx1 = _comac_fixed_integer_part (point1->x) - path_info->current_x;
     dy1 = _comac_fixed_integer_part (point1->y) - path_info->current_y;
     dx2 = _comac_fixed_integer_part (point2->x) - path_info->current_x - dx1;
     dy2 = _comac_fixed_integer_part (point2->y) - path_info->current_y - dy1;
-    dx3 = _comac_fixed_integer_part (point3->x) - path_info->current_x - dx1 - dx2;
-    dy3 = _comac_fixed_integer_part (point3->y) - path_info->current_y - dy1 - dy2;
+    dx3 = _comac_fixed_integer_part (point3->x) - path_info->current_x - dx1 -
+	  dx2;
+    dy3 = _comac_fixed_integer_part (point3->y) - path_info->current_y - dy1 -
+	  dy2;
     charstring_encode_integer (path_info->data, dx1, path_info->type);
     charstring_encode_integer (path_info->data, dy1, path_info->type);
     charstring_encode_integer (path_info->data, dx2, path_info->type);
@@ -309,7 +308,7 @@ _charstring_close_path (void *closure)
     t1_path_info_t *path_info = (t1_path_info_t *) closure;
 
     if (path_info->type == COMAC_CHARSTRING_TYPE2)
-        return COMAC_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     status = _comac_array_grow_by (path_info->data, 2);
     if (unlikely (status))
@@ -333,16 +332,16 @@ charstring_encrypt (comac_array_t *data)
 	p = *d;
 	c = p ^ (r >> 8);
 	r = (c + r) * COMAC_TYPE1_ENCRYPT_C1 + COMAC_TYPE1_ENCRYPT_C2;
-        *d++ = c;
+	*d++ = c;
     }
 }
 
 static comac_int_status_t
-comac_type1_font_create_charstring (comac_type1_font_t      *font,
-                                    int                      subset_index,
-                                    int                      glyph_index,
-                                    comac_charstring_type_t  type,
-                                    comac_array_t           *data)
+comac_type1_font_create_charstring (comac_type1_font_t *font,
+				    int subset_index,
+				    int glyph_index,
+				    comac_charstring_type_t type,
+				    comac_array_t *data)
 {
     comac_int_status_t status;
     comac_scaled_glyph_t *scaled_glyph;
@@ -353,8 +352,8 @@ comac_type1_font_create_charstring (comac_type1_font_t      *font,
     /* This call may return COMAC_INT_STATUS_UNSUPPORTED for bitmap fonts. */
     status = _comac_scaled_glyph_lookup (font->type1_scaled_font,
 					 glyph_index,
-					 COMAC_SCALED_GLYPH_INFO_METRICS|
-					 COMAC_SCALED_GLYPH_INFO_PATH,
+					 COMAC_SCALED_GLYPH_INFO_METRICS |
+					     COMAC_SCALED_GLYPH_INFO_PATH,
 					 NULL, /* foreground color */
 					 &scaled_glyph);
 
@@ -365,48 +364,58 @@ comac_type1_font_create_charstring (comac_type1_font_t      *font,
 	status = _comac_scaled_glyph_lookup (font->type1_scaled_font,
 					     glyph_index,
 					     COMAC_SCALED_GLYPH_INFO_METRICS,
-                                             NULL, /* foreground color */
+					     NULL, /* foreground color */
 					     &scaled_glyph);
     }
     if (unlikely (status))
-        return status;
+	return status;
 
     metrics = &scaled_glyph->metrics;
     if (subset_index == 0) {
-        font->x_min = metrics->x_bearing;
-        font->y_min = metrics->y_bearing;
-        font->x_max = metrics->x_bearing + metrics->width;
-        font->y_max = metrics->y_bearing + metrics->height;
+	font->x_min = metrics->x_bearing;
+	font->y_min = metrics->y_bearing;
+	font->x_max = metrics->x_bearing + metrics->width;
+	font->y_max = metrics->y_bearing + metrics->height;
     } else {
-        if (metrics->x_bearing < font->x_min)
-            font->x_min = metrics->x_bearing;
-        if (metrics->y_bearing < font->y_min)
-            font->y_min = metrics->y_bearing;
-        if (metrics->x_bearing + metrics->width > font->x_max)
-            font->x_max = metrics->x_bearing + metrics->width;
-        if (metrics->y_bearing + metrics->height > font->y_max)
-            font->y_max = metrics->y_bearing + metrics->height;
+	if (metrics->x_bearing < font->x_min)
+	    font->x_min = metrics->x_bearing;
+	if (metrics->y_bearing < font->y_min)
+	    font->y_min = metrics->y_bearing;
+	if (metrics->x_bearing + metrics->width > font->x_max)
+	    font->x_max = metrics->x_bearing + metrics->width;
+	if (metrics->y_bearing + metrics->height > font->y_max)
+	    font->y_max = metrics->y_bearing + metrics->height;
     }
     font->widths[subset_index] = metrics->x_advance;
 
     status = _comac_array_grow_by (data, 30);
     if (unlikely (status))
-        return status;
+	return status;
 
     if (type == COMAC_CHARSTRING_TYPE1) {
-        charstring_encode_integer (data, (int) scaled_glyph->metrics.x_bearing, type);
-        charstring_encode_integer (data, (int) scaled_glyph->metrics.y_bearing, type);
-        charstring_encode_integer (data, (int) scaled_glyph->metrics.x_advance, type);
-        charstring_encode_integer (data, (int) scaled_glyph->metrics.y_advance, type);
-        charstring_encode_command (data, CHARSTRING_sbw);
+	charstring_encode_integer (data,
+				   (int) scaled_glyph->metrics.x_bearing,
+				   type);
+	charstring_encode_integer (data,
+				   (int) scaled_glyph->metrics.y_bearing,
+				   type);
+	charstring_encode_integer (data,
+				   (int) scaled_glyph->metrics.x_advance,
+				   type);
+	charstring_encode_integer (data,
+				   (int) scaled_glyph->metrics.y_advance,
+				   type);
+	charstring_encode_command (data, CHARSTRING_sbw);
 
-        path_info.current_x = (int) scaled_glyph->metrics.x_bearing;
-        path_info.current_y = (int) scaled_glyph->metrics.y_bearing;
+	path_info.current_x = (int) scaled_glyph->metrics.x_bearing;
+	path_info.current_y = (int) scaled_glyph->metrics.y_bearing;
     } else {
-        charstring_encode_integer (data, (int) scaled_glyph->metrics.x_advance, type);
+	charstring_encode_integer (data,
+				   (int) scaled_glyph->metrics.x_advance,
+				   type);
 
-        path_info.current_x = 0;
-        path_info.current_y = 0;
+	path_info.current_x = 0;
+	path_info.current_y = 0;
     }
     path_info.data = data;
     path_info.type = type;
@@ -423,18 +432,18 @@ comac_type1_font_create_charstring (comac_type1_font_t      *font,
 
     status = _comac_array_grow_by (data, 1);
     if (unlikely (status))
-        return status;
+	return status;
     charstring_encode_command (path_info.data, CHARSTRING_endchar);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-comac_type1_font_write_charstrings (comac_type1_font_t    *font,
-                                    comac_output_stream_t *encrypted_output)
+comac_type1_font_write_charstrings (comac_type1_font_t *font,
+				    comac_output_stream_t *encrypted_output)
 {
     comac_status_t status;
-    unsigned char zeros[] = { 0, 0, 0, 0 };
+    unsigned char zeros[] = {0, 0, 0, 0};
     comac_array_t data;
     unsigned int i;
     int length;
@@ -442,42 +451,51 @@ comac_type1_font_write_charstrings (comac_type1_font_t    *font,
     _comac_array_init (&data, sizeof (unsigned char));
     status = _comac_array_grow_by (&data, 1024);
     if (unlikely (status))
-        goto fail;
+	goto fail;
 
     _comac_output_stream_printf (encrypted_output,
-                                 "2 index /CharStrings %d dict dup begin\n",
-                                 font->scaled_font_subset->num_glyphs + 1);
+				 "2 index /CharStrings %d dict dup begin\n",
+				 font->scaled_font_subset->num_glyphs + 1);
 
     _comac_scaled_font_freeze_cache (font->type1_scaled_font);
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
-        _comac_array_truncate (&data, 0);
-        /* four "random" bytes required by encryption algorithm */
-        status = _comac_array_append_multiple (&data, zeros, 4);
-        if (unlikely (status))
+	_comac_array_truncate (&data, 0);
+	/* four "random" bytes required by encryption algorithm */
+	status = _comac_array_append_multiple (&data, zeros, 4);
+	if (unlikely (status))
 	    break;
 
-        status = comac_type1_font_create_charstring (font, i,
-						     font->scaled_font_subset->glyphs[i],
-                                                     COMAC_CHARSTRING_TYPE1,
-						     &data);
-        if (unlikely (status))
+	status = comac_type1_font_create_charstring (
+	    font,
+	    i,
+	    font->scaled_font_subset->glyphs[i],
+	    COMAC_CHARSTRING_TYPE1,
+	    &data);
+	if (unlikely (status))
 	    break;
 
-        charstring_encrypt (&data);
-        length = _comac_array_num_elements (&data);
+	charstring_encrypt (&data);
+	length = _comac_array_num_elements (&data);
 	if (font->scaled_font_subset->glyph_names != NULL) {
-	    _comac_output_stream_printf (encrypted_output, "/%s %d RD ",
-					 font->scaled_font_subset->glyph_names[i],
-					 length);
+	    _comac_output_stream_printf (
+		encrypted_output,
+		"/%s %d RD ",
+		font->scaled_font_subset->glyph_names[i],
+		length);
 	} else if (i == 0) {
-	    _comac_output_stream_printf (encrypted_output, "/.notdef %d RD ", length);
+	    _comac_output_stream_printf (encrypted_output,
+					 "/.notdef %d RD ",
+					 length);
 	} else {
-	    _comac_output_stream_printf (encrypted_output, "/g%d %d RD ", i, length);
+	    _comac_output_stream_printf (encrypted_output,
+					 "/g%d %d RD ",
+					 i,
+					 length);
 	}
-        _comac_output_stream_write (encrypted_output,
-                                    _comac_array_index (&data, 0),
-                                    length);
-        _comac_output_stream_printf (encrypted_output, " ND\n");
+	_comac_output_stream_write (encrypted_output,
+				    _comac_array_index (&data, 0),
+				    length);
+	_comac_output_stream_printf (encrypted_output, " ND\n");
     }
     _comac_scaled_font_thaw_cache (font->type1_scaled_font);
 
@@ -487,21 +505,22 @@ fail:
 }
 
 static void
-comac_type1_font_write_header (comac_type1_font_t *font,
-                               const char         *name)
+comac_type1_font_write_header (comac_type1_font_t *font, const char *name)
 {
     unsigned int i;
-    const char spaces[50] = "                                                  ";
+    const char spaces[50] =
+	"                                                  ";
 
-    _comac_output_stream_printf (font->output,
-                                 "%%!FontType1-1.1 %s 1.0\n"
-                                 "11 dict begin\n"
-                                 "/FontName /%s def\n"
-                                 "/PaintType 0 def\n"
-                                 "/FontType 1 def\n"
-                                  "/FontMatrix [0.001 0 0 0.001 0 0] readonly def\n",
-                                 name,
-                                 name);
+    _comac_output_stream_printf (
+	font->output,
+	"%%!FontType1-1.1 %s 1.0\n"
+	"11 dict begin\n"
+	"/FontName /%s def\n"
+	"/PaintType 0 def\n"
+	"/FontType 1 def\n"
+	"/FontMatrix [0.001 0 0 0.001 0 0] readonly def\n",
+	name,
+	name);
 
     /* We don't know the bbox values until after the charstrings have
      * been generated.  Reserve some space and fill in the bbox
@@ -515,42 +534,55 @@ comac_type1_font_write_header (comac_type1_font_t *font,
     _comac_output_stream_write (font->output, spaces, font->bbox_max_chars);
 
     _comac_output_stream_printf (font->output,
-                                 "} readonly def\n"
-                                 "/Encoding 256 array\n"
+				 "} readonly def\n"
+				 "/Encoding 256 array\n"
 				 "0 1 255 {1 index exch /.notdef put} for\n");
     if (font->scaled_font_subset->is_latin) {
 	for (i = 1; i < 256; i++) {
-	    int subset_glyph = font->scaled_font_subset->latin_to_subset_glyph_index[i];
+	    int subset_glyph =
+		font->scaled_font_subset->latin_to_subset_glyph_index[i];
 
 	    if (subset_glyph > 0) {
 		if (font->scaled_font_subset->glyph_names != NULL) {
-		    _comac_output_stream_printf (font->output, "dup %d /%s put\n",
-						 i, font->scaled_font_subset->glyph_names[subset_glyph]);
+		    _comac_output_stream_printf (
+			font->output,
+			"dup %d /%s put\n",
+			i,
+			font->scaled_font_subset->glyph_names[subset_glyph]);
 		} else {
-		    _comac_output_stream_printf (font->output, "dup %d /g%d put\n", i, subset_glyph);
+		    _comac_output_stream_printf (font->output,
+						 "dup %d /g%d put\n",
+						 i,
+						 subset_glyph);
 		}
 	    }
 	}
     } else {
 	for (i = 1; i < font->scaled_font_subset->num_glyphs; i++) {
 	    if (font->scaled_font_subset->glyph_names != NULL) {
-		_comac_output_stream_printf (font->output, "dup %d /%s put\n",
-					     i, font->scaled_font_subset->glyph_names[i]);
+		_comac_output_stream_printf (
+		    font->output,
+		    "dup %d /%s put\n",
+		    i,
+		    font->scaled_font_subset->glyph_names[i]);
 	    } else {
-		_comac_output_stream_printf (font->output, "dup %d /g%d put\n", i, i);
+		_comac_output_stream_printf (font->output,
+					     "dup %d /g%d put\n",
+					     i,
+					     i);
 	    }
 	}
     }
     _comac_output_stream_printf (font->output,
-                                 "readonly def\n"
-                                 "currentdict end\n"
-                                 "currentfile eexec\n");
+				 "readonly def\n"
+				 "currentdict end\n"
+				 "currentfile eexec\n");
 }
 
 static comac_status_t
-comac_type1_write_stream_encrypted (void                *closure,
-                                    const unsigned char *data,
-                                    unsigned int         length)
+comac_type1_write_stream_encrypted (void *closure,
+				    const unsigned char *data,
+				    unsigned int length)
 {
     const unsigned char *in, *end;
     uint16_t c, p;
@@ -563,7 +595,8 @@ comac_type1_write_stream_encrypted (void                *closure,
     while (in < end) {
 	p = *in++;
 	c = p ^ (font->eexec_key >> 8);
-	font->eexec_key = (c + font->eexec_key) * COMAC_TYPE1_ENCRYPT_C1 + COMAC_TYPE1_ENCRYPT_C2;
+	font->eexec_key = (c + font->eexec_key) * COMAC_TYPE1_ENCRYPT_C1 +
+			  COMAC_TYPE1_ENCRYPT_C2;
 
 	if (font->hex_encode) {
 	    digits[0] = hex_digits[c >> 4];
@@ -587,8 +620,7 @@ comac_type1_write_stream_encrypted (void                *closure,
 }
 
 static comac_int_status_t
-comac_type1_font_write_private_dict (comac_type1_font_t *font,
-                                     const char         *name)
+comac_type1_font_write_private_dict (comac_type1_font_t *font, const char *name)
 {
     comac_int_status_t status;
     comac_status_t status2;
@@ -596,40 +628,40 @@ comac_type1_font_write_private_dict (comac_type1_font_t *font,
 
     font->eexec_key = COMAC_TYPE1_PRIVATE_DICT_KEY;
     font->hex_column = 0;
-    encrypted_output = _comac_output_stream_create (
-        comac_type1_write_stream_encrypted,
-        NULL,
-        font);
+    encrypted_output =
+	_comac_output_stream_create (comac_type1_write_stream_encrypted,
+				     NULL,
+				     font);
     if (_comac_output_stream_get_status (encrypted_output))
-	return  _comac_output_stream_destroy (encrypted_output);
+	return _comac_output_stream_destroy (encrypted_output);
 
     /* Note: the first four spaces at the start of this private dict
      * are the four "random" bytes of plaintext required by the
      * encryption algorithm */
     _comac_output_stream_printf (encrypted_output,
-                                 "    dup /Private 9 dict dup begin\n"
-                                 "/RD {string currentfile exch readstring pop}"
-                                 " bind executeonly def\n"
-                                 "/ND {noaccess def} executeonly def\n"
-                                 "/NP {noaccess put} executeonly def\n"
-                                 "/BlueValues [] def\n"
-                                 "/MinFeature {16 16} def\n"
-                                 "/lenIV 4 def\n"
-                                 "/password 5839 def\n");
+				 "    dup /Private 9 dict dup begin\n"
+				 "/RD {string currentfile exch readstring pop}"
+				 " bind executeonly def\n"
+				 "/ND {noaccess def} executeonly def\n"
+				 "/NP {noaccess put} executeonly def\n"
+				 "/BlueValues [] def\n"
+				 "/MinFeature {16 16} def\n"
+				 "/lenIV 4 def\n"
+				 "/password 5839 def\n");
 
     status = comac_type1_font_write_charstrings (font, encrypted_output);
     if (unlikely (status))
 	goto fail;
 
     _comac_output_stream_printf (encrypted_output,
-                                 "end\n"
-                                 "end\n"
-                                 "readonly put\n"
-                                 "noaccess put\n"
-                                 "dup /FontName get exch definefont pop\n"
-                                 "mark currentfile closefile\n");
+				 "end\n"
+				 "end\n"
+				 "readonly put\n"
+				 "noaccess put\n"
+				 "dup /FontName get exch definefont pop\n"
+				 "mark currentfile closefile\n");
 
-  fail:
+fail:
     status2 = _comac_output_stream_destroy (encrypted_output);
     if (status == COMAC_INT_STATUS_SUCCESS)
 	status = status2;
@@ -638,7 +670,7 @@ comac_type1_font_write_private_dict (comac_type1_font_t *font,
 }
 
 static void
-comac_type1_font_write_trailer(comac_type1_font_t *font)
+comac_type1_font_write_trailer (comac_type1_font_t *font)
 {
     int i;
     static const char zeros[65] =
@@ -652,8 +684,8 @@ comac_type1_font_write_trailer(comac_type1_font_t *font)
 
 static comac_status_t
 comac_type1_write_stream (void *closure,
-                         const unsigned char *data,
-                         unsigned int length)
+			  const unsigned char *data,
+			  unsigned int length)
 {
     comac_type1_font_t *font = closure;
 
@@ -661,8 +693,7 @@ comac_type1_write_stream (void *closure,
 }
 
 static comac_int_status_t
-comac_type1_font_write (comac_type1_font_t *font,
-                        const char *name)
+comac_type1_font_write (comac_type1_font_t *font, const char *name)
 {
     comac_int_status_t status;
 
@@ -673,13 +704,12 @@ comac_type1_font_write (comac_type1_font_t *font,
     if (unlikely (status))
 	return status;
 
-    font->data_size = _comac_output_stream_get_position (font->output) -
-	font->header_size;
+    font->data_size =
+	_comac_output_stream_get_position (font->output) - font->header_size;
 
     comac_type1_font_write_trailer (font);
-    font->trailer_size =
-	_comac_output_stream_get_position (font->output) -
-	font->header_size - font->data_size;
+    font->trailer_size = _comac_output_stream_get_position (font->output) -
+			 font->header_size - font->data_size;
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -693,7 +723,8 @@ comac_type1_font_generate (comac_type1_font_t *font, const char *name)
     if (unlikely (status))
 	return status;
 
-    font->output = _comac_output_stream_create (comac_type1_write_stream, NULL, font);
+    font->output =
+	_comac_output_stream_create (comac_type1_write_stream, NULL, font);
     if (_comac_output_stream_get_status (font->output))
 	return _comac_output_stream_destroy (font->output);
 
@@ -722,10 +753,11 @@ comac_type1_font_destroy (comac_type1_font_t *font)
 }
 
 static comac_status_t
-_comac_type1_fallback_init_internal (comac_type1_subset_t	*type1_subset,
-                                     const char			*name,
-                                     comac_scaled_font_subset_t	*scaled_font_subset,
-                                     comac_bool_t                hex_encode)
+_comac_type1_fallback_init_internal (
+    comac_type1_subset_t *type1_subset,
+    const char *name,
+    comac_scaled_font_subset_t *scaled_font_subset,
+    comac_bool_t hex_encode)
 {
     comac_type1_font_t *font;
     comac_status_t status;
@@ -742,42 +774,43 @@ _comac_type1_fallback_init_internal (comac_type1_subset_t	*type1_subset,
 
     type1_subset->base_font = strdup (name);
     if (unlikely (type1_subset->base_font == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail1;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail1;
     }
 
-    type1_subset->widths = calloc (sizeof (double), font->scaled_font_subset->num_glyphs);
+    type1_subset->widths =
+	calloc (sizeof (double), font->scaled_font_subset->num_glyphs);
     if (unlikely (type1_subset->widths == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail2;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail2;
     }
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++)
-	type1_subset->widths[i] = (double)font->widths[i]/1000;
+	type1_subset->widths[i] = (double) font->widths[i] / 1000;
 
-    type1_subset->x_min   = (double)font->x_min/1000;
-    type1_subset->y_min   = (double)font->y_min/1000;
-    type1_subset->x_max   = (double)font->x_max/1000;
-    type1_subset->y_max   = (double)font->y_max/1000;
-    type1_subset->ascent  = (double)font->y_max/1000;
-    type1_subset->descent = (double)font->y_min/1000;
+    type1_subset->x_min = (double) font->x_min / 1000;
+    type1_subset->y_min = (double) font->y_min / 1000;
+    type1_subset->x_max = (double) font->x_max / 1000;
+    type1_subset->y_max = (double) font->y_max / 1000;
+    type1_subset->ascent = (double) font->y_max / 1000;
+    type1_subset->descent = (double) font->y_min / 1000;
 
-    length = font->header_size + font->data_size +
-	font->trailer_size;
+    length = font->header_size + font->data_size + font->trailer_size;
     type1_subset->data = _comac_malloc (length);
     if (unlikely (type1_subset->data == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail3;
     }
     memcpy (type1_subset->data,
-	    _comac_array_index (&font->contents, 0), length);
+	    _comac_array_index (&font->contents, 0),
+	    length);
 
-    len = snprintf(type1_subset->data + font->bbox_position,
-                   font->bbox_max_chars,
-                   "%d %d %d %d",
-                   (int)font->x_min,
-                   (int)font->y_min,
-                   (int)font->x_max,
-                   (int)font->y_max);
+    len = snprintf (type1_subset->data + font->bbox_position,
+		    font->bbox_max_chars,
+		    "%d %d %d %d",
+		    (int) font->x_min,
+		    (int) font->y_min,
+		    (int) font->x_max,
+		    (int) font->y_max);
     type1_subset->data[font->bbox_position + len] = ' ';
 
     type1_subset->header_length = font->header_size;
@@ -786,11 +819,11 @@ _comac_type1_fallback_init_internal (comac_type1_subset_t	*type1_subset,
 
     return comac_type1_font_destroy (font);
 
- fail3:
+fail3:
     free (type1_subset->widths);
- fail2:
+fail2:
     free (type1_subset->base_font);
- fail1:
+fail1:
     /* status is already set, ignore further errors */
     comac_type1_font_destroy (font);
 
@@ -798,23 +831,26 @@ _comac_type1_fallback_init_internal (comac_type1_subset_t	*type1_subset,
 }
 
 comac_status_t
-_comac_type1_fallback_init_binary (comac_type1_subset_t	      *type1_subset,
-                                   const char		      *name,
-                                   comac_scaled_font_subset_t *scaled_font_subset)
+_comac_type1_fallback_init_binary (
+    comac_type1_subset_t *type1_subset,
+    const char *name,
+    comac_scaled_font_subset_t *scaled_font_subset)
 {
     return _comac_type1_fallback_init_internal (type1_subset,
-                                                name,
-                                                scaled_font_subset, FALSE);
+						name,
+						scaled_font_subset,
+						FALSE);
 }
 
 comac_status_t
-_comac_type1_fallback_init_hex (comac_type1_subset_t	   *type1_subset,
-                                const char		   *name,
-                                comac_scaled_font_subset_t *scaled_font_subset)
+_comac_type1_fallback_init_hex (comac_type1_subset_t *type1_subset,
+				const char *name,
+				comac_scaled_font_subset_t *scaled_font_subset)
 {
     return _comac_type1_fallback_init_internal (type1_subset,
-                                                name,
-                                                scaled_font_subset, TRUE);
+						name,
+						scaled_font_subset,
+						TRUE);
 }
 
 void
@@ -827,7 +863,7 @@ _comac_type1_fallback_fini (comac_type1_subset_t *subset)
 
 comac_status_t
 _comac_type2_charstrings_init (comac_type2_charstrings_t *type2_subset,
-                               comac_scaled_font_subset_t *scaled_font_subset)
+			       comac_scaled_font_subset_t *scaled_font_subset)
 {
     comac_type1_font_t *font;
     comac_status_t status;
@@ -840,40 +876,43 @@ _comac_type2_charstrings_init (comac_type2_charstrings_t *type2_subset,
 
     _comac_array_init (&type2_subset->charstrings, sizeof (comac_array_t));
 
-    type2_subset->widths = calloc (sizeof (int), font->scaled_font_subset->num_glyphs);
+    type2_subset->widths =
+	calloc (sizeof (int), font->scaled_font_subset->num_glyphs);
     if (unlikely (type2_subset->widths == NULL)) {
-        status = _comac_error (COMAC_STATUS_NO_MEMORY);
-        goto fail1;
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
+	goto fail1;
     }
 
     _comac_scaled_font_freeze_cache (font->type1_scaled_font);
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
-        _comac_array_init (&charstring, sizeof (unsigned char));
-        status = _comac_array_grow_by (&charstring, 32);
-        if (unlikely (status))
-            goto fail2;
+	_comac_array_init (&charstring, sizeof (unsigned char));
+	status = _comac_array_grow_by (&charstring, 32);
+	if (unlikely (status))
+	    goto fail2;
 
-	status = comac_type1_font_create_charstring (font, i,
-						     font->scaled_font_subset->glyphs[i],
-						     COMAC_CHARSTRING_TYPE2,
-						     &charstring);
-        if (unlikely (status))
-            goto fail2;
+	status = comac_type1_font_create_charstring (
+	    font,
+	    i,
+	    font->scaled_font_subset->glyphs[i],
+	    COMAC_CHARSTRING_TYPE2,
+	    &charstring);
+	if (unlikely (status))
+	    goto fail2;
 
-        status = _comac_array_append (&type2_subset->charstrings, &charstring);
-        if (unlikely (status))
-            goto fail2;
+	status = _comac_array_append (&type2_subset->charstrings, &charstring);
+	if (unlikely (status))
+	    goto fail2;
     }
     _comac_scaled_font_thaw_cache (font->type1_scaled_font);
 
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++)
 	type2_subset->widths[i] = font->widths[i];
 
-    type2_subset->x_min   = (int) font->x_min;
-    type2_subset->y_min   = (int) font->y_min;
-    type2_subset->x_max   = (int) font->x_max;
-    type2_subset->y_max   = (int) font->y_max;
-    type2_subset->ascent  = (int) font->y_max;
+    type2_subset->x_min = (int) font->x_min;
+    type2_subset->y_min = (int) font->y_min;
+    type2_subset->x_max = (int) font->x_max;
+    type2_subset->y_max = (int) font->y_max;
+    type2_subset->ascent = (int) font->y_max;
     type2_subset->descent = (int) font->y_min;
 
     return comac_type1_font_destroy (font);
@@ -895,8 +934,8 @@ _comac_type2_charstrings_fini (comac_type2_charstrings_t *type2_subset)
 
     num_charstrings = _comac_array_num_elements (&type2_subset->charstrings);
     for (i = 0; i < num_charstrings; i++) {
-        charstring = _comac_array_index (&type2_subset->charstrings, i);
-        _comac_array_fini (charstring);
+	charstring = _comac_array_index (&type2_subset->charstrings, i);
+	_comac_array_fini (charstring);
     }
     _comac_array_fini (&type2_subset->charstrings);
 

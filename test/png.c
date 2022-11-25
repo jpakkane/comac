@@ -39,8 +39,7 @@ image_surface_equals (comac_surface_t *A, comac_surface_t *B)
 	comac_image_surface_get_format (B))
 	return 0;
 
-    if (comac_image_surface_get_width (A) !=
-	comac_image_surface_get_width (B))
+    if (comac_image_surface_get_width (A) != comac_image_surface_get_width (B))
 	return 0;
 
     if (comac_image_surface_get_height (A) !=
@@ -54,16 +53,25 @@ static const char *
 format_to_string (comac_format_t format)
 {
     switch (format) {
-    case COMAC_FORMAT_A1:     return "a1";
-    case COMAC_FORMAT_A8:     return "a8";
-    case COMAC_FORMAT_RGB16_565:  return "rgb16";
-    case COMAC_FORMAT_RGB24:  return "rgb24";
-    case COMAC_FORMAT_RGB30:  return "rgb30";
-    case COMAC_FORMAT_ARGB32: return "argb32";
-    case COMAC_FORMAT_RGB96F: return "rgb96f";
-    case COMAC_FORMAT_RGBA128F: return "rgba128f";
+    case COMAC_FORMAT_A1:
+	return "a1";
+    case COMAC_FORMAT_A8:
+	return "a8";
+    case COMAC_FORMAT_RGB16_565:
+	return "rgb16";
+    case COMAC_FORMAT_RGB24:
+	return "rgb24";
+    case COMAC_FORMAT_RGB30:
+	return "rgb30";
+    case COMAC_FORMAT_ARGB32:
+	return "argb32";
+    case COMAC_FORMAT_RGB96F:
+	return "rgb96f";
+    case COMAC_FORMAT_RGBA128F:
+	return "rgba128f";
     case COMAC_FORMAT_INVALID:
-    default: return "???";
+    default:
+	return "???";
     }
 }
 
@@ -84,16 +92,21 @@ preamble (comac_test_context_t *ctx)
     comac_status_t status;
     uint32_t argb32 = 0xdeadbede;
     char *filename;
-    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
+    const char *path =
+	comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
     xasprintf (&filename, "%s/%s.png", path, BASENAME);
     surface0 = comac_image_surface_create_for_data ((unsigned char *) &argb32,
 						    COMAC_FORMAT_ARGB32,
-						    1, 1, 4);
+						    1,
+						    1,
+						    4);
     status = comac_surface_write_to_png (surface0, filename);
     if (status) {
-	comac_test_log (ctx, "Error writing '%s': %s\n",
-			filename, comac_status_to_string (status));
+	comac_test_log (ctx,
+			"Error writing '%s': %s\n",
+			filename,
+			comac_status_to_string (status));
 
 	comac_surface_destroy (surface0);
 	free (filename);
@@ -102,8 +115,10 @@ preamble (comac_test_context_t *ctx)
     surface1 = comac_image_surface_create_from_png (filename);
     status = comac_surface_status (surface1);
     if (status) {
-	comac_test_log (ctx, "Error reading '%s': %s\n",
-			filename, comac_status_to_string (status));
+	comac_test_log (ctx,
+			"Error reading '%s': %s\n",
+			filename,
+			comac_status_to_string (status));
 
 	comac_surface_destroy (surface1);
 	comac_surface_destroy (surface0);
@@ -113,8 +128,10 @@ preamble (comac_test_context_t *ctx)
 
     if (! image_surface_equals (surface0, surface1)) {
 	comac_test_log (ctx, "Error surface mismatch.\n");
-	comac_test_log (ctx, "to png: "); print_surface (ctx, surface0);
-	comac_test_log (ctx, "from png: "); print_surface (ctx, surface1);
+	comac_test_log (ctx, "to png: ");
+	print_surface (ctx, surface0);
+	comac_test_log (ctx, "from png: ");
+	print_surface (ctx, surface1);
 
 	comac_surface_destroy (surface0);
 	comac_surface_destroy (surface1);
@@ -128,19 +145,25 @@ preamble (comac_test_context_t *ctx)
 
     surface0 = comac_image_surface_create_for_data ((unsigned char *) &argb32,
 						    COMAC_FORMAT_RGB24,
-						    1, 1, 4);
+						    1,
+						    1,
+						    4);
     status = comac_surface_write_to_png (surface0, filename);
     if (status) {
-	comac_test_log (ctx, "Error writing '%s': %s\n",
-			filename, comac_status_to_string (status));
+	comac_test_log (ctx,
+			"Error writing '%s': %s\n",
+			filename,
+			comac_status_to_string (status));
 	comac_surface_destroy (surface0);
 	return comac_test_status_from_status (ctx, status);
     }
     surface1 = comac_image_surface_create_from_png (filename);
     status = comac_surface_status (surface1);
     if (status) {
-	comac_test_log (ctx, "Error reading '%s': %s\n",
-			filename, comac_status_to_string (status));
+	comac_test_log (ctx,
+			"Error reading '%s': %s\n",
+			filename,
+			comac_status_to_string (status));
 	free (filename);
 
 	comac_surface_destroy (surface1);
@@ -151,15 +174,17 @@ preamble (comac_test_context_t *ctx)
 
     if (! image_surface_equals (surface0, surface1)) {
 	comac_test_log (ctx, "Error surface mismatch.\n");
-	comac_test_log (ctx, "to png: "); print_surface (ctx, surface0);
-	comac_test_log (ctx, "from png: "); print_surface (ctx, surface1);
+	comac_test_log (ctx, "to png: ");
+	print_surface (ctx, surface0);
+	comac_test_log (ctx, "from png: ");
+	print_surface (ctx, surface1);
 
 	comac_surface_destroy (surface0);
 	comac_surface_destroy (surface1);
 	return COMAC_TEST_FAILURE;
     }
-    assert ((*(uint32_t *) comac_image_surface_get_data (surface1) & RGB_MASK)
-	    == (argb32 & RGB_MASK));
+    assert ((*(uint32_t *) comac_image_surface_get_data (surface1) &
+	     RGB_MASK) == (argb32 & RGB_MASK));
 
     comac_surface_destroy (surface0);
     comac_surface_destroy (surface1);
@@ -170,6 +195,8 @@ preamble (comac_test_context_t *ctx)
 COMAC_TEST (png,
 	    "Check that the png export/import is idempotent.",
 	    "png, api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,	/* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

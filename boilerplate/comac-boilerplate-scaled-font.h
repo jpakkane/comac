@@ -28,7 +28,7 @@
 #define _COMAC_BOILERPLATE_SCALED_FONT_H_
 
 void
-comac_boilerplate_scaled_font_set_max_glyphs_cached (comac_scaled_font_t *scaled_font,
-						     int		  max_glyphs);
+comac_boilerplate_scaled_font_set_max_glyphs_cached (
+    comac_scaled_font_t *scaled_font, int max_glyphs);
 
 #endif

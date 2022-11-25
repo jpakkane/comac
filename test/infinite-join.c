@@ -68,5 +68,7 @@ COMAC_TEST (infinite_join,
 	    "Test case for infinite loop when stroking with round joins",
 	    "stroke", /* keywords */
 	    NULL,
-	    8, 8,
-	    NULL, draw)
+	    8,
+	    8,
+	    NULL,
+	    draw)

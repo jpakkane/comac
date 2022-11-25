@@ -45,7 +45,7 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, OFFSET, OFFSET);
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
     comac_set_source_surface (cr, image, 0, 0);
-    comac_rectangle (cr, 0, 0, (SIZE-OFFSET), (SIZE-OFFSET));
+    comac_rectangle (cr, 0, 0, (SIZE - OFFSET), (SIZE - OFFSET));
     comac_fill (cr);
 
     comac_surface_destroy (image);
@@ -56,6 +56,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (composite_integer_translate_over,
 	    "Test simple compositing: integer-translation 32->32 OVER",
 	    "composite", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,	 /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

@@ -51,7 +51,6 @@
 #include "comac-scaled-font-subsets-private.h"
 #include "comac-truetype-subset-private.h"
 
-
 typedef struct subset_glyph subset_glyph_t;
 struct subset_glyph {
     int parent_index;
@@ -80,13 +79,13 @@ struct _comac_truetype_font {
 	int num_glyphs_in_face; /* glyphs in font */
 	long x_min, y_min, x_max, y_max;
 	long ascent, descent;
-        int  units_per_em;
+	int units_per_em;
     } base;
 
     subset_glyph_t *glyphs; /* array size: num_glyphs_in_face + 2 */
     const comac_scaled_font_backend_t *backend;
     unsigned int num_glyphs; /* glyphs used */
-    int *widths; /* array size: num_glyphs_in_face  + 1 */
+    int *widths;	     /* array size: num_glyphs_in_face  + 1 */
     int checksum_index;
     comac_array_t output;
     comac_array_t string_offsets;
@@ -102,29 +101,29 @@ struct _comac_truetype_font {
  * correct size, ie. they are not padded.
  */
 #define check(T, S) COMPILE_TIME_ASSERT (sizeof (T) == (S))
-check (tt_head_t,	54);
-check (tt_hhea_t,	36);
-check (tt_maxp_t,	32);
+check (tt_head_t, 54);
+check (tt_hhea_t, 36);
+check (tt_maxp_t, 32);
 check (tt_name_record_t, 12);
-check (tt_name_t,	18);
+check (tt_name_t, 18);
 check (tt_composite_glyph_t, 16);
-check (tt_glyph_data_t,	26);
+check (tt_glyph_data_t, 26);
 #undef check
 
 static comac_status_t
-comac_truetype_font_use_glyph (comac_truetype_font_t	    *font,
-	                       unsigned short		     glyph,
-			       unsigned short		    *out);
+comac_truetype_font_use_glyph (comac_truetype_font_t *font,
+			       unsigned short glyph,
+			       unsigned short *out);
 
-#define SFNT_VERSION			0x00010000
-#define SFNT_STRING_MAX_LENGTH  65535
+#define SFNT_VERSION 0x00010000
+#define SFNT_STRING_MAX_LENGTH 65535
 
 static comac_status_t
 _comac_truetype_font_set_error (comac_truetype_font_t *font,
-			        comac_status_t status)
+				comac_status_t status)
 {
     if (status == COMAC_STATUS_SUCCESS ||
-	status == (int)COMAC_INT_STATUS_UNSUPPORTED)
+	status == (int) COMAC_INT_STATUS_UNSUPPORTED)
 	return status;
 
     _comac_status_set_error (&font->status, status);
@@ -133,9 +132,9 @@ _comac_truetype_font_set_error (comac_truetype_font_t *font,
 }
 
 static comac_status_t
-_comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
+_comac_truetype_font_create (comac_scaled_font_subset_t *scaled_font_subset,
 			     comac_bool_t is_pdf,
-			     comac_truetype_font_t      **font_return)
+			     comac_truetype_font_t **font_return)
 {
     comac_status_t status;
     comac_bool_t is_synthetic;
@@ -147,7 +146,7 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
     unsigned long size;
 
     backend = scaled_font_subset->scaled_font->backend;
-    if (!backend->load_truetype_table)
+    if (! backend->load_truetype_table)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* FIXME: We should either support subsetting vertical fonts, or fail on
@@ -161,7 +160,8 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     /* We need to use a fallback font if this font differs from the glyf outlines. */
     if (backend->is_synthetic) {
-	status = backend->is_synthetic (scaled_font_subset->scaled_font, &is_synthetic);
+	status = backend->is_synthetic (scaled_font_subset->scaled_font,
+					&is_synthetic);
 	if (unlikely (status))
 	    return status;
 
@@ -171,15 +171,17 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     size = sizeof (tt_head_t);
     status = backend->load_truetype_table (scaled_font_subset->scaled_font,
-                                          TT_TAG_head, 0,
-					  (unsigned char *) &head,
-                                          &size);
+					   TT_TAG_head,
+					   0,
+					   (unsigned char *) &head,
+					   &size);
     if (unlikely (status))
 	return status;
 
     size = sizeof (tt_maxp_t);
     status = backend->load_truetype_table (scaled_font_subset->scaled_font,
-                                           TT_TAG_maxp, 0,
+					   TT_TAG_maxp,
+					   0,
 					   (unsigned char *) &maxp,
 					   &size);
     if (unlikely (status))
@@ -187,7 +189,8 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     size = sizeof (tt_hhea_t);
     status = backend->load_truetype_table (scaled_font_subset->scaled_font,
-                                           TT_TAG_hhea, 0,
+					   TT_TAG_hhea,
+					   0,
 					   (unsigned char *) &hhea,
 					   &size);
     if (unlikely (status))
@@ -211,14 +214,16 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
     /* Add 2: +1 case font does not contain .notdef, and +1 because an extra
      * entry is required to contain the end location of the last glyph.
      */
-    font->glyphs = calloc (font->base.num_glyphs_in_face + 2, sizeof (subset_glyph_t));
+    font->glyphs =
+	calloc (font->base.num_glyphs_in_face + 2, sizeof (subset_glyph_t));
     if (unlikely (font->glyphs == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail1;
     }
 
     /* Add 1 in case font does not contain .notdef */
-    font->parent_to_subset = calloc (font->base.num_glyphs_in_face + 1, sizeof (int));
+    font->parent_to_subset =
+	calloc (font->base.num_glyphs_in_face + 1, sizeof (int));
     if (unlikely (font->parent_to_subset == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail2;
@@ -234,7 +239,7 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
     font->base.descent = (int16_t) be16_to_cpu (hhea.descender);
     font->base.units_per_em = (int16_t) be16_to_cpu (head.units_per_em);
     if (font->base.units_per_em == 0)
-        font->base.units_per_em = 2048;
+	font->base.units_per_em = 2048;
 
     font->base.ps_name = NULL;
     font->base.font_name = NULL;
@@ -246,15 +251,17 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     /* If the PS name is not found, create a ComacFont-x-y name. */
     if (font->base.ps_name == NULL) {
-        font->base.ps_name = _comac_malloc (30);
-        if (unlikely (font->base.ps_name == NULL)) {
+	font->base.ps_name = _comac_malloc (30);
+	if (unlikely (font->base.ps_name == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
-            goto fail3;
+	    goto fail3;
 	}
 
-        snprintf(font->base.ps_name, 30, "ComacFont-%u-%u",
-                 scaled_font_subset->font_id,
-                 scaled_font_subset->subset_id);
+	snprintf (font->base.ps_name,
+		  30,
+		  "ComacFont-%u-%u",
+		  scaled_font_subset->font_id,
+		  scaled_font_subset->subset_id);
     }
 
     /* Add 1 in case font does not contain .notdef */
@@ -275,17 +282,17 @@ _comac_truetype_font_create (comac_scaled_font_subset_t  *scaled_font_subset,
 
     return COMAC_STATUS_SUCCESS;
 
- fail5:
+fail5:
     _comac_array_fini (&font->string_offsets);
     free (font->widths);
- fail4:
+fail4:
     free (font->base.ps_name);
- fail3:
+fail3:
     free (font->parent_to_subset);
     free (font->base.font_name);
- fail2:
+fail2:
     free (font->glyphs);
- fail1:
+fail1:
     _comac_array_fini (&font->output);
     free (font);
 
@@ -306,9 +313,9 @@ comac_truetype_font_destroy (comac_truetype_font_t *font)
 }
 
 static comac_status_t
-comac_truetype_font_allocate_write_buffer (comac_truetype_font_t  *font,
-					   size_t		   length,
-					   unsigned char	 **buffer)
+comac_truetype_font_allocate_write_buffer (comac_truetype_font_t *font,
+					   size_t length,
+					   unsigned char **buffer)
 {
     comac_status_t status;
 
@@ -324,8 +331,8 @@ comac_truetype_font_allocate_write_buffer (comac_truetype_font_t  *font,
 
 static void
 comac_truetype_font_write (comac_truetype_font_t *font,
-			   const void            *data,
-			   size_t                 length)
+			   const void *data,
+			   size_t length)
 {
     comac_status_t status;
 
@@ -338,8 +345,7 @@ comac_truetype_font_write (comac_truetype_font_t *font,
 }
 
 static void
-comac_truetype_font_write_be16 (comac_truetype_font_t *font,
-				uint16_t               value)
+comac_truetype_font_write_be16 (comac_truetype_font_t *font, uint16_t value)
 {
     uint16_t be16_value;
 
@@ -351,8 +357,7 @@ comac_truetype_font_write_be16 (comac_truetype_font_t *font,
 }
 
 static void
-comac_truetype_font_write_be32 (comac_truetype_font_t *font,
-				uint32_t               value)
+comac_truetype_font_write_be32 (comac_truetype_font_t *font, uint32_t value)
 {
     uint32_t be32_value;
 
@@ -364,8 +369,8 @@ comac_truetype_font_write_be32 (comac_truetype_font_t *font,
 }
 
 static comac_status_t
-comac_truetype_font_align_output (comac_truetype_font_t	    *font,
-	                          unsigned long		    *aligned)
+comac_truetype_font_align_output (comac_truetype_font_t *font,
+				  unsigned long *aligned)
 {
     int length, pad;
     unsigned char *padding;
@@ -377,8 +382,8 @@ comac_truetype_font_align_output (comac_truetype_font_t	    *font,
     if (pad) {
 	comac_status_t status;
 
-	status = comac_truetype_font_allocate_write_buffer (font, pad,
-		                                            &padding);
+	status =
+	    comac_truetype_font_allocate_write_buffer (font, pad, &padding);
 	if (unlikely (status))
 	    return status;
 
@@ -390,21 +395,20 @@ comac_truetype_font_align_output (comac_truetype_font_t	    *font,
 
 static comac_status_t
 comac_truetype_font_check_boundary (comac_truetype_font_t *font,
-				    unsigned long          boundary)
+				    unsigned long boundary)
 {
     comac_status_t status;
 
     if (font->status)
 	return font->status;
 
-    if (boundary - font->last_offset > SFNT_STRING_MAX_LENGTH)
-    {
-        status = _comac_array_append (&font->string_offsets,
-				      &font->last_boundary);
+    if (boundary - font->last_offset > SFNT_STRING_MAX_LENGTH) {
+	status =
+	    _comac_array_append (&font->string_offsets, &font->last_boundary);
 	if (unlikely (status))
 	    return _comac_truetype_font_set_error (font, status);
 
-        font->last_offset = font->last_boundary;
+	font->last_offset = font->last_boundary;
     }
     font->last_boundary = boundary;
 
@@ -417,25 +421,25 @@ typedef struct _cmap_unicode_range {
 } cmap_unicode_range_t;
 
 static cmap_unicode_range_t winansi_unicode_ranges[] = {
-    { 0x0020, 0x007f },
-    { 0x00a0, 0x00ff },
-    { 0x0152, 0x0153 },
-    { 0x0160, 0x0161 },
-    { 0x0178, 0x0178 },
-    { 0x017d, 0x017e },
-    { 0x0192, 0x0192 },
-    { 0x02c6, 0x02c6 },
-    { 0x02dc, 0x02dc },
-    { 0x2013, 0x2026 },
-    { 0x2030, 0x2030 },
-    { 0x2039, 0x203a },
-    { 0x20ac, 0x20ac },
-    { 0x2122, 0x2122 },
+    {0x0020, 0x007f},
+    {0x00a0, 0x00ff},
+    {0x0152, 0x0153},
+    {0x0160, 0x0161},
+    {0x0178, 0x0178},
+    {0x017d, 0x017e},
+    {0x0192, 0x0192},
+    {0x02c6, 0x02c6},
+    {0x02dc, 0x02dc},
+    {0x2013, 0x2026},
+    {0x2030, 0x2030},
+    {0x2039, 0x203a},
+    {0x20ac, 0x20ac},
+    {0x2122, 0x2122},
 };
 
 static comac_status_t
 comac_truetype_font_write_cmap_table (comac_truetype_font_t *font,
-				      unsigned long          tag)
+				      unsigned long tag)
 {
     int i;
     unsigned int j;
@@ -446,9 +450,11 @@ comac_truetype_font_write_cmap_table (comac_truetype_font_t *font,
 
     num_ranges = ARRAY_LENGTH (winansi_unicode_ranges);
 
-    length = 16 + (num_ranges + 1)*8;
+    length = 16 + (num_ranges + 1) * 8;
     for (i = 0; i < num_ranges; i++)
-	length += (winansi_unicode_ranges[i].end - winansi_unicode_ranges[i].start + 1)*2;
+	length += (winansi_unicode_ranges[i].end -
+		   winansi_unicode_ranges[i].start + 1) *
+		  2;
 
     entry_selector = 0;
     while ((1 << entry_selector) <= (num_ranges + 1))
@@ -456,8 +462,8 @@ comac_truetype_font_write_cmap_table (comac_truetype_font_t *font,
 
     entry_selector--;
 
-    comac_truetype_font_write_be16 (font, 0);  /* Table version */
-    comac_truetype_font_write_be16 (font, 1);  /* Num tables */
+    comac_truetype_font_write_be16 (font, 0); /* Table version */
+    comac_truetype_font_write_be16 (font, 1); /* Num tables */
 
     comac_truetype_font_write_be16 (font, 3);  /* Platform */
     comac_truetype_font_write_be16 (font, 1);  /* Encoding */
@@ -465,41 +471,55 @@ comac_truetype_font_write_cmap_table (comac_truetype_font_t *font,
 
     /* Output a format 4 encoding table for the winansi encoding */
 
-    comac_truetype_font_write_be16 (font, 4);  /* Format */
-    comac_truetype_font_write_be16 (font, length); /* Length */
-    comac_truetype_font_write_be16 (font, 0);  /* Version */
-    comac_truetype_font_write_be16 (font, num_ranges*2 + 2);  /* 2*segcount */
-    comac_truetype_font_write_be16 (font, (1 << (entry_selector + 1)));  /* searchrange */
-    comac_truetype_font_write_be16 (font, entry_selector);  /* entry selector */
-    comac_truetype_font_write_be16 (font, num_ranges*2 + 2 - (1 << (entry_selector + 1)));  /* rangeshift */
+    comac_truetype_font_write_be16 (font, 4);		       /* Format */
+    comac_truetype_font_write_be16 (font, length);	       /* Length */
+    comac_truetype_font_write_be16 (font, 0);		       /* Version */
+    comac_truetype_font_write_be16 (font, num_ranges * 2 + 2); /* 2*segcount */
+    comac_truetype_font_write_be16 (
+	font,
+	(1 << (entry_selector + 1)));			   /* searchrange */
+    comac_truetype_font_write_be16 (font, entry_selector); /* entry selector */
+    comac_truetype_font_write_be16 (
+	font,
+	num_ranges * 2 + 2 - (1 << (entry_selector + 1))); /* rangeshift */
     for (i = 0; i < num_ranges; i++)
-	comac_truetype_font_write_be16 (font, winansi_unicode_ranges[i].end); /* end count[] */
-    comac_truetype_font_write_be16 (font, 0xffff);  /* end count[] */
+	comac_truetype_font_write_be16 (
+	    font,
+	    winansi_unicode_ranges[i].end);	   /* end count[] */
+    comac_truetype_font_write_be16 (font, 0xffff); /* end count[] */
 
-    comac_truetype_font_write_be16 (font, 0);       /* reserved */
-
-    for (i = 0; i < num_ranges; i++)
-	comac_truetype_font_write_be16 (font, winansi_unicode_ranges[i].start);  /* startCode[] */
-    comac_truetype_font_write_be16 (font, 0xffff);  /* startCode[] */
+    comac_truetype_font_write_be16 (font, 0); /* reserved */
 
     for (i = 0; i < num_ranges; i++)
-	comac_truetype_font_write_be16 (font, 0x0000);  /* delta[] */
-    comac_truetype_font_write_be16 (font, 1);       /* delta[] */
+	comac_truetype_font_write_be16 (
+	    font,
+	    winansi_unicode_ranges[i].start);	   /* startCode[] */
+    comac_truetype_font_write_be16 (font, 0xffff); /* startCode[] */
 
-    range_offset = num_ranges*2 + 2;
+    for (i = 0; i < num_ranges; i++)
+	comac_truetype_font_write_be16 (font, 0x0000); /* delta[] */
+    comac_truetype_font_write_be16 (font, 1);	       /* delta[] */
+
+    range_offset = num_ranges * 2 + 2;
     for (i = 0; i < num_ranges; i++) {
-	comac_truetype_font_write_be16 (font, range_offset);       /* rangeOffset[] */
-	range_offset += (winansi_unicode_ranges[i].end - winansi_unicode_ranges[i].start + 1)*2 - 2;
+	comac_truetype_font_write_be16 (font, range_offset); /* rangeOffset[] */
+	range_offset += (winansi_unicode_ranges[i].end -
+			 winansi_unicode_ranges[i].start + 1) *
+			    2 -
+			2;
     }
-    comac_truetype_font_write_be16 (font, 0);       /* rangeOffset[] */
+    comac_truetype_font_write_be16 (font, 0); /* rangeOffset[] */
 
     for (i = 0; i < num_ranges; i++) {
-	for (j = winansi_unicode_ranges[i].start; j < winansi_unicode_ranges[i].end + 1; j++) {
+	for (j = winansi_unicode_ranges[i].start;
+	     j < winansi_unicode_ranges[i].end + 1;
+	     j++) {
 	    int ch = _comac_unicode_to_winansi (j);
 	    int glyph;
 
 	    if (ch > 0)
-		glyph = font->scaled_font_subset->latin_to_subset_glyph_index[ch];
+		glyph =
+		    font->scaled_font_subset->latin_to_subset_glyph_index[ch];
 	    else
 		glyph = 0;
 	    comac_truetype_font_write_be16 (font, glyph);
@@ -511,7 +531,7 @@ comac_truetype_font_write_cmap_table (comac_truetype_font_t *font,
 
 static comac_status_t
 comac_truetype_font_write_generic_table (comac_truetype_font_t *font,
-					 unsigned long          tag)
+					 unsigned long tag)
 {
     comac_status_t status;
     unsigned char *buffer;
@@ -521,17 +541,25 @@ comac_truetype_font_write_generic_table (comac_truetype_font_t *font,
 	return font->status;
 
     size = 0;
-    status = font->backend->load_truetype_table(font->scaled_font_subset->scaled_font,
-					        tag, 0, NULL, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	tag,
+	0,
+	NULL,
+	&size);
     if (unlikely (status))
-        return _comac_truetype_font_set_error (font, status);
+	return _comac_truetype_font_set_error (font, status);
 
     status = comac_truetype_font_allocate_write_buffer (font, size, &buffer);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 tag, 0, buffer, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	tag,
+	0,
+	buffer,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
@@ -539,9 +567,9 @@ comac_truetype_font_write_generic_table (comac_truetype_font_t *font,
 }
 
 static comac_status_t
-comac_truetype_font_remap_composite_glyph (comac_truetype_font_t	*font,
-					   unsigned char		*buffer,
-					   unsigned long		 size)
+comac_truetype_font_remap_composite_glyph (comac_truetype_font_t *font,
+					   unsigned char *buffer,
+					   unsigned long size)
 {
     tt_glyph_data_t *glyph_data;
     tt_composite_glyph_t *composite_glyph;
@@ -556,36 +584,40 @@ comac_truetype_font_remap_composite_glyph (comac_truetype_font_t	*font,
 	return font->status;
 
     glyph_data = (tt_glyph_data_t *) buffer;
-    if ((unsigned char *)(&glyph_data->data) >= end)
+    if ((unsigned char *) (&glyph_data->data) >= end)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    if ((int16_t)be16_to_cpu (glyph_data->num_contours) >= 0)
-        return COMAC_STATUS_SUCCESS;
+    if ((int16_t) be16_to_cpu (glyph_data->num_contours) >= 0)
+	return COMAC_STATUS_SUCCESS;
 
     composite_glyph = &glyph_data->glyph;
     do {
-	if ((unsigned char *)(&composite_glyph->args[1]) > end)
+	if ((unsigned char *) (&composite_glyph->args[1]) > end)
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 
 	flags = be16_to_cpu (composite_glyph->flags);
-        has_more_components = flags & TT_MORE_COMPONENTS;
-        status = comac_truetype_font_use_glyph (font, be16_to_cpu (composite_glyph->index), &index);
+	has_more_components = flags & TT_MORE_COMPONENTS;
+	status =
+	    comac_truetype_font_use_glyph (font,
+					   be16_to_cpu (composite_glyph->index),
+					   &index);
 	if (unlikely (status))
 	    return status;
 
-        composite_glyph->index = cpu_to_be16 (index);
-        num_args = 1;
-        if (flags & TT_ARG_1_AND_2_ARE_WORDS)
-            num_args += 1;
+	composite_glyph->index = cpu_to_be16 (index);
+	num_args = 1;
+	if (flags & TT_ARG_1_AND_2_ARE_WORDS)
+	    num_args += 1;
 
 	if (flags & TT_WE_HAVE_A_SCALE)
-            num_args += 1;
-        else if (flags & TT_WE_HAVE_AN_X_AND_Y_SCALE)
-            num_args += 2;
-        else if (flags & TT_WE_HAVE_A_TWO_BY_TWO)
-            num_args += 4;
+	    num_args += 1;
+	else if (flags & TT_WE_HAVE_AN_X_AND_Y_SCALE)
+	    num_args += 2;
+	else if (flags & TT_WE_HAVE_A_TWO_BY_TWO)
+	    num_args += 4;
 
-	composite_glyph = (tt_composite_glyph_t *) &(composite_glyph->args[num_args]);
+	composite_glyph =
+	    (tt_composite_glyph_t *) &(composite_glyph->args[num_args]);
     } while (has_more_components);
 
     return COMAC_STATUS_SUCCESS;
@@ -593,7 +625,7 @@ comac_truetype_font_remap_composite_glyph (comac_truetype_font_t	*font,
 
 static comac_status_t
 comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
-				      unsigned long          tag)
+				      unsigned long tag)
 {
     unsigned long start_offset, index, size, next;
     tt_head_t header;
@@ -602,8 +634,8 @@ comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
     unsigned int i;
     union {
 	unsigned char *bytes;
-	uint16_t      *short_offsets;
-	uint32_t      *long_offsets;
+	uint16_t *short_offsets;
+	uint32_t *long_offsets;
     } u;
     comac_status_t status;
 
@@ -611,9 +643,12 @@ comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
 	return font->status;
 
     size = sizeof (tt_head_t);
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 TT_TAG_head, 0,
-						 (unsigned char*) &header, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	TT_TAG_head,
+	0,
+	(unsigned char *) &header,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
@@ -626,8 +661,12 @@ comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
     if (unlikely (u.bytes == NULL))
 	return _comac_truetype_font_set_error (font, COMAC_STATUS_NO_MEMORY);
 
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                                 TT_TAG_loca, 0, u.bytes, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	TT_TAG_loca,
+	0,
+	u.bytes,
+	&size);
     if (unlikely (status)) {
 	free (u.bytes);
 	return _comac_truetype_font_set_error (font, status);
@@ -639,8 +678,7 @@ comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
 	if (be16_to_cpu (header.index_to_loc_format) == 0) {
 	    begin = be16_to_cpu (u.short_offsets[index]) * 2;
 	    end = be16_to_cpu (u.short_offsets[index + 1]) * 2;
-	}
-	else {
+	} else {
 	    begin = be32_to_cpu (u.long_offsets[index]);
 	    end = be32_to_cpu (u.long_offsets[index + 1]);
 	}
@@ -652,17 +690,18 @@ comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
 	}
 
 	size = end - begin;
-        status = comac_truetype_font_align_output (font, &next);
+	status = comac_truetype_font_align_output (font, &next);
 	if (unlikely (status))
 	    goto FAIL;
 
-        status = comac_truetype_font_check_boundary (font, next);
+	status = comac_truetype_font_check_boundary (font, next);
 	if (unlikely (status))
 	    goto FAIL;
 
-        font->glyphs[i].location = next - start_offset;
+	font->glyphs[i].location = next - start_offset;
 
-	status = comac_truetype_font_allocate_write_buffer (font, size, &buffer);
+	status =
+	    comac_truetype_font_allocate_write_buffer (font, size, &buffer);
 	if (unlikely (status))
 	    goto FAIL;
 
@@ -670,15 +709,21 @@ comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
 	    tt_glyph_data_t *glyph_data;
 	    int num_contours;
 
-	    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-							 TT_TAG_glyf, begin, buffer, &size);
+	    status = font->backend->load_truetype_table (
+		font->scaled_font_subset->scaled_font,
+		TT_TAG_glyf,
+		begin,
+		buffer,
+		&size);
 	    if (unlikely (status))
 		goto FAIL;
 
 	    glyph_data = (tt_glyph_data_t *) buffer;
-	    num_contours = (int16_t)be16_to_cpu (glyph_data->num_contours);
+	    num_contours = (int16_t) be16_to_cpu (glyph_data->num_contours);
 	    if (num_contours < 0) {
-		status = comac_truetype_font_remap_composite_glyph (font, buffer, size);
+		status = comac_truetype_font_remap_composite_glyph (font,
+								    buffer,
+								    size);
 		if (unlikely (status))
 		    goto FAIL;
 	    } else if (num_contours == 0) {
@@ -691,7 +736,9 @@ comac_truetype_font_write_glyf_table (comac_truetype_font_t *font,
 		 *
 		 * If num_contours == 0, truncate the glyph to 0 size.
 		 */
-		_comac_array_truncate (&font->output, _comac_array_num_elements (&font->output) - size);
+		_comac_array_truncate (
+		    &font->output,
+		    _comac_array_num_elements (&font->output) - size);
 	    }
 	}
     }
@@ -711,7 +758,7 @@ FAIL:
 
 static comac_status_t
 comac_truetype_font_write_head_table (comac_truetype_font_t *font,
-                                      unsigned long          tag)
+				      unsigned long tag)
 {
     unsigned char *buffer;
     unsigned long size;
@@ -721,8 +768,12 @@ comac_truetype_font_write_head_table (comac_truetype_font_t *font,
 	return font->status;
 
     size = 0;
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 tag, 0, NULL, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	tag,
+	0,
+	NULL,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
@@ -731,19 +782,24 @@ comac_truetype_font_write_head_table (comac_truetype_font_t *font,
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 tag, 0, buffer, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	tag,
+	0,
+	buffer,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
     /* set checkSumAdjustment to 0 for table checksum calculation */
-    *(uint32_t *)(buffer + 8) = 0;
+    *(uint32_t *) (buffer + 8) = 0;
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-comac_truetype_font_write_hhea_table (comac_truetype_font_t *font, unsigned long tag)
+comac_truetype_font_write_hhea_table (comac_truetype_font_t *font,
+				      unsigned long tag)
 {
     tt_hhea_t *hhea;
     unsigned long size;
@@ -753,23 +809,30 @@ comac_truetype_font_write_hhea_table (comac_truetype_font_t *font, unsigned long
 	return font->status;
 
     size = sizeof (tt_hhea_t);
-    status = comac_truetype_font_allocate_write_buffer (font, size, (unsigned char **) &hhea);
+    status =
+	comac_truetype_font_allocate_write_buffer (font,
+						   size,
+						   (unsigned char **) &hhea);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 tag, 0, (unsigned char *) hhea, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	tag,
+	0,
+	(unsigned char *) hhea,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
-    hhea->num_hmetrics = cpu_to_be16 ((uint16_t)(font->num_glyphs));
+    hhea->num_hmetrics = cpu_to_be16 ((uint16_t) (font->num_glyphs));
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
 comac_truetype_font_write_hmtx_table (comac_truetype_font_t *font,
-				      unsigned long          tag)
+				      unsigned long tag)
 {
     unsigned long size;
     unsigned long long_entry_size;
@@ -784,49 +847,58 @@ comac_truetype_font_write_hmtx_table (comac_truetype_font_t *font,
 	return font->status;
 
     size = sizeof (tt_hhea_t);
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 TT_TAG_hhea, 0,
-						 (unsigned char*) &hhea, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	TT_TAG_hhea,
+	0,
+	(unsigned char *) &hhea,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
-    num_hmetrics = be16_to_cpu(hhea.num_hmetrics);
+    num_hmetrics = be16_to_cpu (hhea.num_hmetrics);
 
     for (i = 0; i < font->num_glyphs; i++) {
-        long_entry_size = 2 * sizeof (int16_t);
-        short_entry_size = sizeof (int16_t);
-        status = comac_truetype_font_allocate_write_buffer (font,
-		                                            long_entry_size,
-							    (unsigned char **) &p);
+	long_entry_size = 2 * sizeof (int16_t);
+	short_entry_size = sizeof (int16_t);
+	status =
+	    comac_truetype_font_allocate_write_buffer (font,
+						       long_entry_size,
+						       (unsigned char **) &p);
 	if (unlikely (status))
 	    return _comac_truetype_font_set_error (font, status);
 
-        if (font->glyphs[i].parent_index < num_hmetrics) {
-            status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                                         TT_TAG_hmtx,
-                                                         font->glyphs[i].parent_index * long_entry_size,
-                                                         (unsigned char *) p, &long_entry_size);
+	if (font->glyphs[i].parent_index < num_hmetrics) {
+	    status = font->backend->load_truetype_table (
+		font->scaled_font_subset->scaled_font,
+		TT_TAG_hmtx,
+		font->glyphs[i].parent_index * long_entry_size,
+		(unsigned char *) p,
+		&long_entry_size);
 	    if (unlikely (status))
 		return _comac_truetype_font_set_error (font, status);
-        }
-        else
-        {
-            status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                                         TT_TAG_hmtx,
-							 (num_hmetrics - 1) * long_entry_size,
-							 (unsigned char *) p, &short_entry_size);
+	} else {
+	    status = font->backend->load_truetype_table (
+		font->scaled_font_subset->scaled_font,
+		TT_TAG_hmtx,
+		(num_hmetrics - 1) * long_entry_size,
+		(unsigned char *) p,
+		&short_entry_size);
 	    if (unlikely (status))
 		return _comac_truetype_font_set_error (font, status);
 
-            status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-							 TT_TAG_hmtx,
-							 num_hmetrics * long_entry_size +
-							 (font->glyphs[i].parent_index - num_hmetrics) * short_entry_size,
-							 (unsigned char *) (p + 1), &short_entry_size);
+	    status = font->backend->load_truetype_table (
+		font->scaled_font_subset->scaled_font,
+		TT_TAG_hmtx,
+		num_hmetrics * long_entry_size +
+		    (font->glyphs[i].parent_index - num_hmetrics) *
+			short_entry_size,
+		(unsigned char *) (p + 1),
+		&short_entry_size);
 	    if (unlikely (status))
 		return _comac_truetype_font_set_error (font, status);
-        }
-        font->widths[i] = be16_to_cpu (p[0]);
+	}
+	font->widths[i] = be16_to_cpu (p[0]);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -834,7 +906,7 @@ comac_truetype_font_write_hmtx_table (comac_truetype_font_t *font,
 
 static comac_status_t
 comac_truetype_font_write_loca_table (comac_truetype_font_t *font,
-				      unsigned long          tag)
+				      unsigned long tag)
 {
     unsigned int i;
     tt_head_t header;
@@ -844,15 +916,17 @@ comac_truetype_font_write_loca_table (comac_truetype_font_t *font,
     if (font->status)
 	return font->status;
 
-    size = sizeof(tt_head_t);
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 TT_TAG_head, 0,
-						 (unsigned char*) &header, &size);
+    size = sizeof (tt_head_t);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	TT_TAG_head,
+	0,
+	(unsigned char *) &header,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
-    if (be16_to_cpu (header.index_to_loc_format) == 0)
-    {
+    if (be16_to_cpu (header.index_to_loc_format) == 0) {
 	for (i = 0; i < font->num_glyphs + 1; i++)
 	    comac_truetype_font_write_be16 (font, font->glyphs[i].location / 2);
     } else {
@@ -865,7 +939,7 @@ comac_truetype_font_write_loca_table (comac_truetype_font_t *font,
 
 static comac_status_t
 comac_truetype_font_write_maxp_table (comac_truetype_font_t *font,
-				      unsigned long          tag)
+				      unsigned long tag)
 {
     tt_maxp_t *maxp;
     unsigned long size;
@@ -875,12 +949,19 @@ comac_truetype_font_write_maxp_table (comac_truetype_font_t *font,
 	return font->status;
 
     size = sizeof (tt_maxp_t);
-    status = comac_truetype_font_allocate_write_buffer (font, size, (unsigned char **) &maxp);
+    status =
+	comac_truetype_font_allocate_write_buffer (font,
+						   size,
+						   (unsigned char **) &maxp);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
-    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-						 tag, 0, (unsigned char *) maxp, &size);
+    status = font->backend->load_truetype_table (
+	font->scaled_font_subset->scaled_font,
+	tag,
+	0,
+	(unsigned char *) maxp,
+	&size);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
@@ -919,8 +1000,9 @@ comac_truetype_font_write_offset_table (comac_truetype_font_t *font)
      * will be filled in by comac_truetype_font_update_entry() after
      * the table is written. */
     table_buffer_length = font->num_tables * 16;
-    status = comac_truetype_font_allocate_write_buffer (font, table_buffer_length,
-						      &table_buffer);
+    status = comac_truetype_font_allocate_write_buffer (font,
+							table_buffer_length,
+							&table_buffer);
     if (unlikely (status))
 	return _comac_truetype_font_set_error (font, status);
 
@@ -929,8 +1011,8 @@ comac_truetype_font_write_offset_table (comac_truetype_font_t *font)
 
 static uint32_t
 comac_truetype_font_calculate_checksum (comac_truetype_font_t *font,
-					unsigned long          start,
-					unsigned long          end)
+					unsigned long start,
+					unsigned long end)
 {
     uint32_t *padded_end;
     uint32_t *p;
@@ -942,33 +1024,34 @@ comac_truetype_font_calculate_checksum (comac_truetype_font_t *font,
     p = (uint32_t *) (data + start);
     padded_end = (uint32_t *) (data + ((end + 3) & ~3));
     while (p < padded_end)
-	checksum += be32_to_cpu(*p++);
+	checksum += be32_to_cpu (*p++);
 
     return checksum;
 }
 
 static void
 comac_truetype_font_update_entry (comac_truetype_font_t *font,
-				  int                    index,
-				  unsigned long          tag,
-				  unsigned long          start,
-				  unsigned long          end)
+				  int index,
+				  unsigned long tag,
+				  unsigned long start,
+				  unsigned long end)
 {
     uint32_t *entry;
 
     entry = _comac_array_index (&font->output, 12 + 16 * index);
-    entry[0] = cpu_to_be32 ((uint32_t)tag);
-    entry[1] = cpu_to_be32 (comac_truetype_font_calculate_checksum (font, start, end));
-    entry[2] = cpu_to_be32 ((uint32_t)start);
-    entry[3] = cpu_to_be32 ((uint32_t)(end - start));
+    entry[0] = cpu_to_be32 ((uint32_t) tag);
+    entry[1] =
+	cpu_to_be32 (comac_truetype_font_calculate_checksum (font, start, end));
+    entry[2] = cpu_to_be32 ((uint32_t) start);
+    entry[3] = cpu_to_be32 ((uint32_t) (end - start));
 }
 
 static comac_status_t
-comac_truetype_font_generate (comac_truetype_font_t  *font,
-			      const char            **data,
-			      unsigned long          *length,
-			      const unsigned long   **string_offsets,
-			      unsigned long          *num_strings)
+comac_truetype_font_generate (comac_truetype_font_t *font,
+			      const char **data,
+			      unsigned long *length,
+			      const unsigned long **string_offsets,
+			      unsigned long *num_strings)
 {
     comac_status_t status;
     unsigned long start, end, next;
@@ -988,7 +1071,8 @@ comac_truetype_font_generate (comac_truetype_font_t  *font,
 
     end = 0;
     for (i = 0; i < font->num_tables; i++) {
-	status = font->truetype_tables[i].write (font, font->truetype_tables[i].tag);
+	status =
+	    font->truetype_tables[i].write (font, font->truetype_tables[i].tag);
 	if (unlikely (status))
 	    goto FAIL;
 
@@ -997,9 +1081,12 @@ comac_truetype_font_generate (comac_truetype_font_t  *font,
 	if (unlikely (status))
 	    goto FAIL;
 
-	comac_truetype_font_update_entry (font, font->truetype_tables[i].pos,
-                                          font->truetype_tables[i].tag, start, end);
-        status = comac_truetype_font_check_boundary (font, next);
+	comac_truetype_font_update_entry (font,
+					  font->truetype_tables[i].pos,
+					  font->truetype_tables[i].tag,
+					  start,
+					  end);
+	status = comac_truetype_font_check_boundary (font, next);
 	if (unlikely (status))
 	    goto FAIL;
 
@@ -1008,7 +1095,8 @@ comac_truetype_font_generate (comac_truetype_font_t  *font,
 
     checksum =
 	0xb1b0afba - comac_truetype_font_calculate_checksum (font, 0, end);
-    checksum_location = _comac_array_index (&font->output, font->checksum_index);
+    checksum_location =
+	_comac_array_index (&font->output, font->checksum_index);
     *checksum_location = cpu_to_be32 (checksum);
 
     *data = _comac_array_index (&font->output, 0);
@@ -1019,14 +1107,14 @@ comac_truetype_font_generate (comac_truetype_font_t  *font,
     else
 	*string_offsets = NULL;
 
- FAIL:
+FAIL:
     return _comac_truetype_font_set_error (font, status);
 }
 
 static comac_status_t
-comac_truetype_font_use_glyph (comac_truetype_font_t	    *font,
-	                       unsigned short		     glyph,
-			       unsigned short		    *out)
+comac_truetype_font_use_glyph (comac_truetype_font_t *font,
+			       unsigned short glyph,
+			       unsigned short *out)
 {
     if (glyph >= font->base.num_glyphs_in_face)
 	return COMAC_INT_STATUS_UNSUPPORTED;
@@ -1042,10 +1130,11 @@ comac_truetype_font_use_glyph (comac_truetype_font_t	    *font,
 }
 
 static void
-comac_truetype_font_add_truetype_table (comac_truetype_font_t *font,
-           unsigned long tag,
-           comac_status_t (*write) (comac_truetype_font_t *font, unsigned long tag),
-           int pos)
+comac_truetype_font_add_truetype_table (
+    comac_truetype_font_t *font,
+    unsigned long tag,
+    comac_status_t (*write) (comac_truetype_font_t *font, unsigned long tag),
+    int pos)
 {
     font->truetype_tables[font->num_tables].tag = tag;
     font->truetype_tables[font->num_tables].write = write;
@@ -1086,58 +1175,107 @@ comac_truetype_font_create_truetype_table_list (comac_truetype_font_t *font)
     int pos;
 
     size = 0;
-    if (font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                      TT_TAG_cvt, 0, NULL,
-                                      &size) == COMAC_INT_STATUS_SUCCESS)
-        has_cvt = TRUE;
+    if (font->backend->load_truetype_table (
+	    font->scaled_font_subset->scaled_font,
+	    TT_TAG_cvt,
+	    0,
+	    NULL,
+	    &size) == COMAC_INT_STATUS_SUCCESS)
+	has_cvt = TRUE;
 
     size = 0;
-    if (font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                      TT_TAG_fpgm, 0, NULL,
-                                      &size) == COMAC_INT_STATUS_SUCCESS)
-        has_fpgm = TRUE;
+    if (font->backend->load_truetype_table (
+	    font->scaled_font_subset->scaled_font,
+	    TT_TAG_fpgm,
+	    0,
+	    NULL,
+	    &size) == COMAC_INT_STATUS_SUCCESS)
+	has_fpgm = TRUE;
 
     size = 0;
-    if (font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
-                                      TT_TAG_prep, 0, NULL,
-                                      &size) == COMAC_INT_STATUS_SUCCESS)
-        has_prep = TRUE;
+    if (font->backend->load_truetype_table (
+	    font->scaled_font_subset->scaled_font,
+	    TT_TAG_prep,
+	    0,
+	    NULL,
+	    &size) == COMAC_INT_STATUS_SUCCESS)
+	has_prep = TRUE;
 
     font->num_tables = 0;
     pos = 0;
     if (font->is_pdf && font->scaled_font_subset->is_latin)
 	pos++;
     if (has_cvt)
-        pos++;
+	pos++;
     if (has_fpgm)
-        pos++;
-    comac_truetype_font_add_truetype_table (font, TT_TAG_glyf, comac_truetype_font_write_glyf_table, pos);
+	pos++;
+    comac_truetype_font_add_truetype_table (
+	font,
+	TT_TAG_glyf,
+	comac_truetype_font_write_glyf_table,
+	pos);
 
     pos = 0;
     if (font->is_pdf && font->scaled_font_subset->is_latin)
-	comac_truetype_font_add_truetype_table (font, TT_TAG_cmap, comac_truetype_font_write_cmap_table, pos++);
+	comac_truetype_font_add_truetype_table (
+	    font,
+	    TT_TAG_cmap,
+	    comac_truetype_font_write_cmap_table,
+	    pos++);
     if (has_cvt)
-        comac_truetype_font_add_truetype_table (font, TT_TAG_cvt, comac_truetype_font_write_generic_table, pos++);
+	comac_truetype_font_add_truetype_table (
+	    font,
+	    TT_TAG_cvt,
+	    comac_truetype_font_write_generic_table,
+	    pos++);
     if (has_fpgm)
-        comac_truetype_font_add_truetype_table (font, TT_TAG_fpgm, comac_truetype_font_write_generic_table, pos++);
+	comac_truetype_font_add_truetype_table (
+	    font,
+	    TT_TAG_fpgm,
+	    comac_truetype_font_write_generic_table,
+	    pos++);
     pos++;
-    comac_truetype_font_add_truetype_table (font, TT_TAG_head, comac_truetype_font_write_head_table, pos++);
-    comac_truetype_font_add_truetype_table (font, TT_TAG_hhea, comac_truetype_font_write_hhea_table, pos++);
-    comac_truetype_font_add_truetype_table (font, TT_TAG_hmtx, comac_truetype_font_write_hmtx_table, pos++);
-    comac_truetype_font_add_truetype_table (font, TT_TAG_loca, comac_truetype_font_write_loca_table, pos++);
-    comac_truetype_font_add_truetype_table (font, TT_TAG_maxp, comac_truetype_font_write_maxp_table, pos++);
+    comac_truetype_font_add_truetype_table (
+	font,
+	TT_TAG_head,
+	comac_truetype_font_write_head_table,
+	pos++);
+    comac_truetype_font_add_truetype_table (
+	font,
+	TT_TAG_hhea,
+	comac_truetype_font_write_hhea_table,
+	pos++);
+    comac_truetype_font_add_truetype_table (
+	font,
+	TT_TAG_hmtx,
+	comac_truetype_font_write_hmtx_table,
+	pos++);
+    comac_truetype_font_add_truetype_table (
+	font,
+	TT_TAG_loca,
+	comac_truetype_font_write_loca_table,
+	pos++);
+    comac_truetype_font_add_truetype_table (
+	font,
+	TT_TAG_maxp,
+	comac_truetype_font_write_maxp_table,
+	pos++);
     if (has_prep)
-        comac_truetype_font_add_truetype_table (font, TT_TAG_prep, comac_truetype_font_write_generic_table, pos);
+	comac_truetype_font_add_truetype_table (
+	    font,
+	    TT_TAG_prep,
+	    comac_truetype_font_write_generic_table,
+	    pos);
 }
 
 static comac_status_t
-comac_truetype_subset_init_internal (comac_truetype_subset_t     *truetype_subset,
-				      comac_scaled_font_subset_t *font_subset,
-				      comac_bool_t                is_pdf)
+comac_truetype_subset_init_internal (comac_truetype_subset_t *truetype_subset,
+				     comac_scaled_font_subset_t *font_subset,
+				     comac_bool_t is_pdf)
 {
     comac_truetype_font_t *font = NULL;
     comac_status_t status;
-    const char *data = NULL; /* squelch bogus compiler warning */
+    const char *data = NULL;  /* squelch bogus compiler warning */
     unsigned long length = 0; /* squelch bogus compiler warning */
     unsigned long offsets_length;
     unsigned int i;
@@ -1150,14 +1288,18 @@ comac_truetype_subset_init_internal (comac_truetype_subset_t     *truetype_subse
 
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
 	unsigned short parent_glyph = font->scaled_font_subset->glyphs[i];
-	status = comac_truetype_font_use_glyph (font, parent_glyph, &parent_glyph);
+	status =
+	    comac_truetype_font_use_glyph (font, parent_glyph, &parent_glyph);
 	if (unlikely (status))
 	    goto fail1;
     }
 
     comac_truetype_font_create_truetype_table_list (font);
-    status = comac_truetype_font_generate (font, &data, &length,
-                                           &string_offsets, &num_strings);
+    status = comac_truetype_font_generate (font,
+					   &data,
+					   &length,
+					   &string_offsets,
+					   &num_strings);
     if (unlikely (status))
 	goto fail1;
 
@@ -1180,21 +1322,28 @@ comac_truetype_subset_init_internal (comac_truetype_subset_t     *truetype_subse
     /* The widths array returned must contain only widths for the
      * glyphs in font_subset. Any subglyphs appended after
      * font_subset->num_glyphs are omitted. */
-    truetype_subset->widths = calloc (sizeof (double),
-                                      font->scaled_font_subset->num_glyphs);
+    truetype_subset->widths =
+	calloc (sizeof (double), font->scaled_font_subset->num_glyphs);
     if (unlikely (truetype_subset->widths == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto fail3;
     }
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++)
-	truetype_subset->widths[i] = (double)font->widths[i]/font->base.units_per_em;
+	truetype_subset->widths[i] =
+	    (double) font->widths[i] / font->base.units_per_em;
 
-    truetype_subset->x_min = (double)font->base.x_min/font->base.units_per_em;
-    truetype_subset->y_min = (double)font->base.y_min/font->base.units_per_em;
-    truetype_subset->x_max = (double)font->base.x_max/font->base.units_per_em;
-    truetype_subset->y_max = (double)font->base.y_max/font->base.units_per_em;
-    truetype_subset->ascent = (double)font->base.ascent/font->base.units_per_em;
-    truetype_subset->descent = (double)font->base.descent/font->base.units_per_em;
+    truetype_subset->x_min =
+	(double) font->base.x_min / font->base.units_per_em;
+    truetype_subset->y_min =
+	(double) font->base.y_min / font->base.units_per_em;
+    truetype_subset->x_max =
+	(double) font->base.x_max / font->base.units_per_em;
+    truetype_subset->y_max =
+	(double) font->base.y_max / font->base.units_per_em;
+    truetype_subset->ascent =
+	(double) font->base.ascent / font->base.units_per_em;
+    truetype_subset->descent =
+	(double) font->base.descent / font->base.units_per_em;
 
     if (length) {
 	truetype_subset->data = _comac_malloc (length);
@@ -1216,7 +1365,9 @@ comac_truetype_subset_init_internal (comac_truetype_subset_t     *truetype_subse
 	    goto fail5;
 	}
 
-	memcpy (truetype_subset->string_offsets, string_offsets, offsets_length);
+	memcpy (truetype_subset->string_offsets,
+		string_offsets,
+		offsets_length);
 	truetype_subset->num_string_offsets = num_strings;
     } else {
 	truetype_subset->string_offsets = NULL;
@@ -1227,32 +1378,36 @@ comac_truetype_subset_init_internal (comac_truetype_subset_t     *truetype_subse
 
     return COMAC_STATUS_SUCCESS;
 
- fail5:
+fail5:
     free (truetype_subset->data);
- fail4:
+fail4:
     free (truetype_subset->widths);
- fail3:
+fail3:
     free (truetype_subset->family_name_utf8);
- fail2:
+fail2:
     free (truetype_subset->ps_name);
- fail1:
+fail1:
     comac_truetype_font_destroy (font);
 
     return status;
 }
 
 comac_status_t
-_comac_truetype_subset_init_ps (comac_truetype_subset_t    *truetype_subset,
-				comac_scaled_font_subset_t	*font_subset)
+_comac_truetype_subset_init_ps (comac_truetype_subset_t *truetype_subset,
+				comac_scaled_font_subset_t *font_subset)
 {
-    return comac_truetype_subset_init_internal (truetype_subset, font_subset, FALSE);
+    return comac_truetype_subset_init_internal (truetype_subset,
+						font_subset,
+						FALSE);
 }
 
 comac_status_t
-_comac_truetype_subset_init_pdf (comac_truetype_subset_t    *truetype_subset,
-				comac_scaled_font_subset_t	*font_subset)
+_comac_truetype_subset_init_pdf (comac_truetype_subset_t *truetype_subset,
+				 comac_scaled_font_subset_t *font_subset)
 {
-    return comac_truetype_subset_init_internal (truetype_subset, font_subset, TRUE);
+    return comac_truetype_subset_init_internal (truetype_subset,
+						font_subset,
+						TRUE);
 }
 
 void
@@ -1267,9 +1422,9 @@ _comac_truetype_subset_fini (comac_truetype_subset_t *subset)
 
 static comac_int_status_t
 _comac_truetype_reverse_cmap (comac_scaled_font_t *scaled_font,
-			      unsigned long        table_offset,
-			      unsigned long        index,
-			      uint32_t            *ucs4)
+			      unsigned long table_offset,
+			      unsigned long index,
+			      uint32_t *ucs4)
 {
     comac_status_t status;
     const comac_scaled_font_backend_t *backend;
@@ -1281,12 +1436,13 @@ _comac_truetype_reverse_cmap (comac_scaled_font_t *scaled_font,
     uint16_t *end_code;
     uint16_t *delta;
     uint16_t *range_offset;
-    uint16_t  c;
+    uint16_t c;
 
     backend = scaled_font->backend;
-    size = 4;  /* enough to read the two header fields we need */
+    size = 4; /* enough to read the two header fields we need */
     status = backend->load_truetype_table (scaled_font,
-                                           TT_TAG_cmap, table_offset,
+					   TT_TAG_cmap,
+					   table_offset,
 					   (unsigned char *) &map_header,
 					   &size);
     if (unlikely (status))
@@ -1306,17 +1462,18 @@ _comac_truetype_reverse_cmap (comac_scaled_font_t *scaled_font,
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     status = backend->load_truetype_table (scaled_font,
-                                           TT_TAG_cmap, table_offset,
-                                           (unsigned char *) map,
-                                           &size);
+					   TT_TAG_cmap,
+					   table_offset,
+					   (unsigned char *) map,
+					   &size);
     if (unlikely (status))
 	goto fail;
 
-    num_segments = be16_to_cpu (map->segCountX2)/2;
+    num_segments = be16_to_cpu (map->segCountX2) / 2;
 
     /* A Format 4 cmap contains 8 uint16_t numbers and 4 arrays of
      * uint16_t each num_segments long. */
-    if (size < (8 + 4*num_segments)*sizeof(uint16_t))
+    if (size < (8 + 4 * num_segments) * sizeof (uint16_t))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     end_code = map->endCount;
@@ -1348,13 +1505,14 @@ _comac_truetype_reverse_cmap (comac_scaled_font_t *scaled_font,
 	    break;
 
 	if (range_offset[i] != 0) {
-	    uint16_t *glyph_ids = &range_offset[i] + be16_to_cpu (range_offset[i])/2;
+	    uint16_t *glyph_ids =
+		&range_offset[i] + be16_to_cpu (range_offset[i]) / 2;
 	    int range_size = end - start + 1;
 	    uint16_t g_id_be = cpu_to_be16 (index);
 	    int j;
 
 	    if (range_size > 0) {
-		if ((char*)glyph_ids + 2*range_size > (char*)map + size)
+		if ((char *) glyph_ids + 2 * range_size > (char *) map + size)
 		    return COMAC_INT_STATUS_UNSUPPORTED;
 
 		for (j = 0; j < range_size; j++) {
@@ -1381,8 +1539,8 @@ fail:
 
 comac_int_status_t
 _comac_truetype_index_to_ucs4 (comac_scaled_font_t *scaled_font,
-                               unsigned long        index,
-                               uint32_t            *ucs4)
+			       unsigned long index,
+			       uint32_t *ucs4)
 {
     comac_int_status_t status = COMAC_INT_STATUS_UNSUPPORTED;
     const comac_scaled_font_backend_t *backend;
@@ -1392,12 +1550,13 @@ _comac_truetype_index_to_ucs4 (comac_scaled_font_t *scaled_font,
     unsigned long size;
 
     backend = scaled_font->backend;
-    if (!backend->load_truetype_table)
+    if (! backend->load_truetype_table)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    size = 4;  /* only read the header fields 'version' and 'num_tables' */
+    size = 4; /* only read the header fields 'version' and 'num_tables' */
     status = backend->load_truetype_table (scaled_font,
-                                           TT_TAG_cmap, 0,
+					   TT_TAG_cmap,
+					   0,
 					   (unsigned char *) &cmap_header,
 					   &size);
     if (unlikely (status))
@@ -1410,23 +1569,25 @@ _comac_truetype_index_to_ucs4 (comac_scaled_font_t *scaled_font,
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     status = backend->load_truetype_table (scaled_font,
-	                                   TT_TAG_cmap, 0,
+					   TT_TAG_cmap,
+					   0,
 					   (unsigned char *) cmap,
 					   &size);
     if (unlikely (status))
-        goto cleanup;
+	goto cleanup;
 
     /* Find a table with Unicode mapping */
     for (i = 0; i < num_tables; i++) {
-        if (be16_to_cpu (cmap->index[i].platform) == 3 &&
-            be16_to_cpu (cmap->index[i].encoding) == 1) {
-            status = _comac_truetype_reverse_cmap (scaled_font,
-						   be32_to_cpu (cmap->index[i].offset),
-						   index,
-						   ucs4);
-            if (status != COMAC_INT_STATUS_UNSUPPORTED)
-                break;
-        }
+	if (be16_to_cpu (cmap->index[i].platform) == 3 &&
+	    be16_to_cpu (cmap->index[i].encoding) == 1) {
+	    status = _comac_truetype_reverse_cmap (
+		scaled_font,
+		be32_to_cpu (cmap->index[i].offset),
+		index,
+		ucs4);
+	    if (status != COMAC_INT_STATUS_UNSUPPORTED)
+		break;
+	}
     }
 
 cleanup:
@@ -1442,7 +1603,13 @@ cleanup:
 #define MAX_FONT_NAME_LENGTH 127
 
 static comac_status_t
-find_name (tt_name_t *name, unsigned long size, int name_id, int platform, int encoding, int language, char **str_out)
+find_name (tt_name_t *name,
+	   unsigned long size,
+	   int name_id,
+	   int platform,
+	   int encoding,
+	   int language,
+	   char **str_out)
 {
     tt_name_record_t *record;
     unsigned int i, len;
@@ -1452,21 +1619,25 @@ find_name (tt_name_t *name, unsigned long size, int name_id, int platform, int e
     comac_status_t status;
 
     str = NULL;
-    for (i = 0; i < MIN(be16_to_cpu (name->num_records), size / sizeof(name->records[0])); i++) {
-        record = &(name->records[i]);
+    for (i = 0; i < MIN (be16_to_cpu (name->num_records),
+			 size / sizeof (name->records[0]));
+	 i++) {
+	record = &(name->records[i]);
 	if (be16_to_cpu (record->name) == name_id &&
 	    be16_to_cpu (record->platform) == platform &&
-            be16_to_cpu (record->encoding) == encoding &&
+	    be16_to_cpu (record->encoding) == encoding &&
 	    (language == -1 || be16_to_cpu (record->language) == language)) {
 
 	    len = be16_to_cpu (record->length);
-	    if (platform == 3 && len > MAX_FONT_NAME_LENGTH*2) /* UTF-16 name */
+	    if (platform == 3 &&
+		len > MAX_FONT_NAME_LENGTH * 2) /* UTF-16 name */
 		break;
 
 	    if (len > MAX_FONT_NAME_LENGTH)
 		break;
 
-	    uint16_t offset = be16_to_cpu (name->strings_offset) + be16_to_cpu (record->offset);
+	    uint16_t offset = be16_to_cpu (name->strings_offset) +
+			      be16_to_cpu (record->offset);
 	    if (offset + len > size)
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -1474,9 +1645,7 @@ find_name (tt_name_t *name, unsigned long size, int name_id, int platform, int e
 	    if (str == NULL)
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	    memcpy (str,
-		    ((char*)name) + offset,
-		    len);
+	    memcpy (str, ((char *) name) + offset, len);
 	    str[len] = 0;
 	    break;
 	}
@@ -1491,19 +1660,19 @@ find_name (tt_name_t *name, unsigned long size, int name_id, int platform, int e
 	int size = 0;
 	char *utf8;
 	uint16_t *u = (uint16_t *) str;
-	unsigned int u_len = len/2;
+	unsigned int u_len = len / 2;
 
 	for (i = 0; i < u_len; i++)
-	    size += _comac_ucs4_to_utf8 (be16_to_cpu(u[i]), NULL);
+	    size += _comac_ucs4_to_utf8 (be16_to_cpu (u[i]), NULL);
 
 	utf8 = _comac_malloc (size + 1);
 	if (utf8 == NULL) {
-	    status =_comac_error (COMAC_STATUS_NO_MEMORY);
+	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto fail;
 	}
 	p = utf8;
 	for (i = 0; i < u_len; i++)
-	    p += _comac_ucs4_to_utf8 (be16_to_cpu(u[i]), p);
+	    p += _comac_ucs4_to_utf8 (be16_to_cpu (u[i]), p);
 	*p = 0;
 	free (str);
 	str = utf8;
@@ -1512,7 +1681,7 @@ find_name (tt_name_t *name, unsigned long size, int name_id, int platform, int e
 	 * a lookup table to convert to unicode but since most fonts
 	 * include a unicode name this is just a rarely used fallback. */
 	for (i = 0; i < len; i++) {
-	    if ((unsigned char)str[i] > 127)
+	    if ((unsigned char) str[i] > 127)
 		str[i] = '_';
 	}
     }
@@ -1533,11 +1702,11 @@ find_name (tt_name_t *name, unsigned long size, int name_id, int platform, int e
     if (has_tag) {
 	p = _comac_malloc (len - 6);
 	if (unlikely (p == NULL)) {
-	    status =_comac_error (COMAC_STATUS_NO_MEMORY);
+	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto fail;
 	}
 	memcpy (p, str + 7, len - 7);
-	p[len-7] = 0;
+	p[len - 7] = 0;
 	free (str);
 	str = p;
     }
@@ -1546,16 +1715,16 @@ find_name (tt_name_t *name, unsigned long size, int name_id, int platform, int e
 
     return COMAC_STATUS_SUCCESS;
 
-  fail:
+fail:
     free (str);
 
     return status;
 }
 
 comac_int_status_t
-_comac_truetype_read_font_name (comac_scaled_font_t  	 *scaled_font,
-				char 	       		**ps_name_out,
-				char 	       		**font_name_out)
+_comac_truetype_read_font_name (comac_scaled_font_t *scaled_font,
+				char **ps_name_out,
+				char **font_name_out)
 {
     comac_status_t status;
     const comac_scaled_font_backend_t *backend;
@@ -1565,23 +1734,22 @@ _comac_truetype_read_font_name (comac_scaled_font_t  	 *scaled_font,
     char *family_name = NULL;
 
     backend = scaled_font->backend;
-    if (!backend->load_truetype_table)
+    if (! backend->load_truetype_table)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     size = 0;
-    status = backend->load_truetype_table (scaled_font,
-	                                   TT_TAG_name, 0,
-					   NULL,
-					   &size);
+    status =
+	backend->load_truetype_table (scaled_font, TT_TAG_name, 0, NULL, &size);
     if (status)
 	return status;
 
     name = _comac_malloc (size);
     if (name == NULL)
-        return _comac_error (COMAC_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     status = backend->load_truetype_table (scaled_font,
-					   TT_TAG_name, 0,
+					   TT_TAG_name,
+					   0,
 					   (unsigned char *) name,
 					   &size);
     if (status)
@@ -1589,41 +1757,77 @@ _comac_truetype_read_font_name (comac_scaled_font_t  	 *scaled_font,
 
     /* Find PS Name (name_id = 6). OT spec says PS name must be one of
      * the following two encodings */
-    status = find_name (name, size, 6, 3, 1, 0x409, &ps_name); /* win, unicode, english-us */
-    if (unlikely(status))
+    status = find_name (name,
+			size,
+			6,
+			3,
+			1,
+			0x409,
+			&ps_name); /* win, unicode, english-us */
+    if (unlikely (status))
 	goto fail;
 
-    if (!ps_name) {
-	status = find_name (name, size, 6, 1, 0, 0, &ps_name); /* mac, roman, english */
-	if (unlikely(status))
+    if (! ps_name) {
+	status = find_name (name,
+			    size,
+			    6,
+			    1,
+			    0,
+			    0,
+			    &ps_name); /* mac, roman, english */
+	if (unlikely (status))
 	    goto fail;
     }
 
     /* Find Family name (name_id = 1) */
-    status = find_name (name, size, 1, 3, 1, 0x409, &family_name); /* win, unicode, english-us */
-    if (unlikely(status))
+    status = find_name (name,
+			size,
+			1,
+			3,
+			1,
+			0x409,
+			&family_name); /* win, unicode, english-us */
+    if (unlikely (status))
 	goto fail;
 
-    if (!family_name) {
-	status = find_name (name, size, 1, 3, 0, 0x409, &family_name); /* win, symbol, english-us */
-	if (unlikely(status))
+    if (! family_name) {
+	status = find_name (name,
+			    size,
+			    1,
+			    3,
+			    0,
+			    0x409,
+			    &family_name); /* win, symbol, english-us */
+	if (unlikely (status))
 	    goto fail;
     }
 
-    if (!family_name) {
-	status = find_name (name, size, 1, 1, 0, 0, &family_name); /* mac, roman, english */
-	if (unlikely(status))
+    if (! family_name) {
+	status = find_name (name,
+			    size,
+			    1,
+			    1,
+			    0,
+			    0,
+			    &family_name); /* mac, roman, english */
+	if (unlikely (status))
 	    goto fail;
     }
 
-    if (!family_name) {
-	status = find_name (name, size, 1, 3, 1, -1, &family_name); /* win, unicode, any language */
-	if (unlikely(status))
+    if (! family_name) {
+	status = find_name (name,
+			    size,
+			    1,
+			    3,
+			    1,
+			    -1,
+			    &family_name); /* win, unicode, any language */
+	if (unlikely (status))
 	    goto fail;
     }
 
     status = _comac_escape_ps_name (&ps_name);
-    if (unlikely(status))
+    if (unlikely (status))
 	goto fail;
 
     free (name);
@@ -1644,10 +1848,10 @@ fail:
 }
 
 comac_int_status_t
-_comac_truetype_get_style (comac_scaled_font_t  	 *scaled_font,
-			   int				 *weight,
-			   comac_bool_t			 *bold,
-			   comac_bool_t			 *italic)
+_comac_truetype_get_style (comac_scaled_font_t *scaled_font,
+			   int *weight,
+			   comac_bool_t *bold,
+			   comac_bool_t *italic)
 {
     comac_status_t status;
     const comac_scaled_font_backend_t *backend;
@@ -1656,23 +1860,22 @@ _comac_truetype_get_style (comac_scaled_font_t  	 *scaled_font,
     uint16_t selection;
 
     backend = scaled_font->backend;
-    if (!backend->load_truetype_table)
+    if (! backend->load_truetype_table)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     size = 0;
-    status = backend->load_truetype_table (scaled_font,
-					   TT_TAG_OS2, 0,
-					   NULL,
-					   &size);
+    status =
+	backend->load_truetype_table (scaled_font, TT_TAG_OS2, 0, NULL, &size);
     if (status)
 	return status;
 
-    if (size < sizeof(os2))
+    if (size < sizeof (os2))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     size = sizeof (os2);
     status = backend->load_truetype_table (scaled_font,
-					   TT_TAG_OS2, 0,
+					   TT_TAG_OS2,
+					   0,
 					   (unsigned char *) &os2,
 					   &size);
     if (status)

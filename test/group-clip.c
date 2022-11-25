@@ -52,6 +52,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (group_clip,
 	    "test preserving paths across groups",
 	    "group", /* keywords */
-	    NULL, /* requirements */
-	    40 + 25, 40 + 25,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    40 + 25,
+	    40 + 25,
+	    NULL,
+	    draw)

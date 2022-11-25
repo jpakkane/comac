@@ -53,8 +53,7 @@
 COMAC_BEGIN_DECLS
 
 comac_public comac_font_face_t *
-comac_ft_font_face_create_for_ft_face (FT_Face         face,
-				       int             load_flags);
+comac_ft_font_face_create_for_ft_face (FT_Face face, int load_flags);
 
 /**
  * comac_ft_synthesize_t:
@@ -91,7 +90,6 @@ comac_ft_font_face_unset_synthesize (comac_font_face_t *font_face,
 comac_public unsigned int
 comac_ft_font_face_get_synthesize (comac_font_face_t *font_face);
 
-
 comac_public FT_Face
 comac_ft_scaled_font_lock_face (comac_scaled_font_t *scaled_font);
 
@@ -105,14 +103,14 @@ comac_ft_font_face_create_for_pattern (FcPattern *pattern);
 
 comac_public void
 comac_ft_font_options_substitute (const comac_font_options_t *options,
-				  FcPattern                  *pattern);
+				  FcPattern *pattern);
 
 #endif
 
 COMAC_END_DECLS
 
-#else  /* COMAC_HAS_FT_FONT */
-# error Comac was not compiled with support for the freetype font backend
+#else /* COMAC_HAS_FT_FONT */
+#error Comac was not compiled with support for the freetype font backend
 #endif /* COMAC_HAS_FT_FONT */
 
 #endif /* COMAC_FT_H */

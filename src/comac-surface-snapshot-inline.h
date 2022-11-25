@@ -61,7 +61,8 @@ _comac_surface_snapshot_get_target (comac_surface_t *surface)
 static inline comac_bool_t
 _comac_surface_is_snapshot (comac_surface_t *surface)
 {
-    return surface->backend->type == (comac_surface_type_t)COMAC_INTERNAL_SURFACE_TYPE_SNAPSHOT;
+    return surface->backend->type ==
+	   (comac_surface_type_t) COMAC_INTERNAL_SURFACE_TYPE_SNAPSHOT;
 }
 
 #endif /* COMAC_SURFACE_SNAPSHOT_INLINE_H */

@@ -46,8 +46,7 @@
 #endif
 
 static void
-report_print (const comac_perf_report_t *report,
-	      int show_histogram)
+report_print (const comac_perf_report_t *report, int show_histogram)
 {
     const test_report_t *test;
     comac_histogram_t h;
@@ -57,18 +56,18 @@ report_print (const comac_perf_report_t *report,
 	int num_cols = 80;
 
 #if USE_TERMINAL_SIZE
-	int fd = fileno(stdout);
-	if (isatty(fd)) {
+	int fd = fileno (stdout);
+	if (isatty (fd)) {
 	    struct winsize ws;
 
-	    if(ioctl(fd, TIOCGWINSZ, &ws) == 0 ) {
+	    if (ioctl (fd, TIOCGWINSZ, &ws) == 0) {
 		num_rows = ws.ws_row - 1;
 		num_cols = ws.ws_col;
 	    }
 	}
 #endif
 
-	if (!_comac_histogram_init (&h, num_cols, num_rows))
+	if (! _comac_histogram_init (&h, num_cols, num_rows))
 	    show_histogram = 0;
     }
 
@@ -94,15 +93,18 @@ report_print (const comac_perf_report_t *report,
 
 	if (test->size) {
 	    printf ("%5s-%-4s %26s-%-3d  ",
-		    test->backend, test->content,
-		    test->name, test->size);
+		    test->backend,
+		    test->content,
+		    test->name,
+		    test->size);
 	} else {
 	    printf ("%5s %26s  ", test->backend, test->name);
 	}
-	printf("%6.2f %4.2f%% (%d/%d)\n",
-	       test->stats.median_ticks / test->stats.ticks_per_ms,
-	       test->stats.std_dev * 100,
-	       test->stats.iterations, test->samples_count);
+	printf ("%6.2f %4.2f%% (%d/%d)\n",
+		test->stats.median_ticks / test->stats.ticks_per_ms,
+		test->stats.std_dev * 100,
+		test->stats.iterations,
+		test->samples_count);
     }
 
     if (show_histogram)
@@ -110,21 +112,20 @@ report_print (const comac_perf_report_t *report,
 }
 
 int
-main (int	  argc,
-      const char *argv[])
+main (int argc, const char *argv[])
 {
     comac_bool_t show_histogram = 0;
     int i;
 
-    for (i = 1; i < argc; i++ ) {
+    for (i = 1; i < argc; i++) {
 	comac_perf_report_t report;
 
-	if (strcmp(argv[i], "--histogram") == 0) {
+	if (strcmp (argv[i], "--histogram") == 0) {
 	    show_histogram = 1;
 	    continue;
 	}
 
-	if (strcmp(argv[i], "--short-histogram") == 0) {
+	if (strcmp (argv[i], "--short-histogram") == 0) {
 	    show_histogram = 2;
 	    continue;
 	}

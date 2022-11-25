@@ -38,7 +38,7 @@ draw (comac_t *cr, int width, int height)
     comac_reset_clip (cr);
     comac_rectangle (cr, CLIP_SIZE, CLIP_SIZE, CLIP_SIZE, CLIP_SIZE);
     comac_clip (cr);
-    comac_rectangle (cr, 3*CLIP_SIZE, 3*CLIP_SIZE, CLIP_SIZE, CLIP_SIZE);
+    comac_rectangle (cr, 3 * CLIP_SIZE, 3 * CLIP_SIZE, CLIP_SIZE, CLIP_SIZE);
     comac_clip (cr);
 
     comac_translate (cr, .5, .5);
@@ -46,7 +46,7 @@ draw (comac_t *cr, int width, int height)
     comac_reset_clip (cr);
     comac_rectangle (cr, CLIP_SIZE, CLIP_SIZE, CLIP_SIZE, CLIP_SIZE);
     comac_clip (cr);
-    comac_rectangle (cr, 3*CLIP_SIZE, 3*CLIP_SIZE, CLIP_SIZE, CLIP_SIZE);
+    comac_rectangle (cr, 3 * CLIP_SIZE, 3 * CLIP_SIZE, CLIP_SIZE, CLIP_SIZE);
     comac_clip (cr);
 
     comac_rectangle (cr, 0, 0, SIZE, SIZE);
@@ -55,13 +55,12 @@ draw (comac_t *cr, int width, int height)
 
     /* https://bugs.freedesktop.org/show_bug.cgi?id=13084 */
     comac_select_font_face (cr,
-	                    COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
     comac_move_to (cr, 0., SIZE);
     comac_show_text (cr, "comac");
-
 
     return COMAC_TEST_SUCCESS;
 }
@@ -69,7 +68,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_all,
 	    "Test clipping with everything clipped out",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
-
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

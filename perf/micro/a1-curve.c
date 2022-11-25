@@ -33,8 +33,8 @@ uniform_random (double minval, double maxval)
 {
     static uint32_t const poly = 0x9a795537U;
     uint32_t n = 32;
-    while (n-->0)
-	state = 2*state < state ? (2*state ^ poly) : 2*state;
+    while (n-- > 0)
+	state = 2 * state < state ? (2 * state ^ poly) : 2 * state;
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
@@ -52,9 +52,11 @@ do_curve_stroke (comac_t *cr, int width, int height, int loops)
 	double y1 = uniform_random (0, height);
 	double y2 = uniform_random (0, height);
 	double y3 = uniform_random (0, height);
-	comac_move_to (cr, uniform_random (0, width), uniform_random (0, height));
+	comac_move_to (cr,
+		       uniform_random (0, width),
+		       uniform_random (0, height));
 	comac_curve_to (cr, x1, y1, x2, y2, x3, y3);
-	comac_stroke(cr);
+	comac_stroke (cr);
     }
 
     comac_perf_timer_stop ();
@@ -87,7 +89,7 @@ do_curve_fill (comac_t *cr, int width, int height, int loops)
 	comac_curve_to (cr, x3, y3, x0, y0, xm, ym);
 	comac_close_path (cr);
 
-	comac_fill(cr);
+	comac_fill (cr);
     }
 
     comac_perf_timer_stop ();

@@ -34,7 +34,7 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
-    comac_t * cr_surface;
+    comac_t *cr_surface;
     int surface_size = 300;
 
     comac_set_source_rgb (cr, 0, 0, 0);
@@ -43,29 +43,34 @@ draw (comac_t *cr, int width, int height)
     /* Create an image surface with my favorite four colors in each
      * quadrant. */
     surface = comac_image_surface_create (COMAC_FORMAT_RGB24,
-					  surface_size, surface_size);
+					  surface_size,
+					  surface_size);
     cr_surface = comac_create (surface);
     comac_surface_destroy (surface);
 
     comac_set_source_rgb (cr_surface, 1, 1, 1);
-    comac_rectangle (cr_surface,
-		     0, 0,
-		     surface_size / 2, surface_size / 2);
+    comac_rectangle (cr_surface, 0, 0, surface_size / 2, surface_size / 2);
     comac_fill (cr_surface);
     comac_set_source_rgb (cr_surface, 1, 0, 0);
     comac_rectangle (cr_surface,
-		     surface_size / 2, 0,
-		     surface_size / 2, surface_size / 2);
+		     surface_size / 2,
+		     0,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr_surface);
     comac_set_source_rgb (cr_surface, 0, 1, 0);
     comac_rectangle (cr_surface,
-		     0, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
+		     0,
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr_surface);
     comac_set_source_rgb (cr_surface, 0, 0, 1);
     comac_rectangle (cr_surface,
-		     surface_size / 2, surface_size / 2,
-		     surface_size / 2, surface_size / 2);
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2,
+		     surface_size / 2);
     comac_fill (cr_surface);
 
     comac_scale (cr, 0.2, 0.2);
@@ -79,10 +84,13 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (surface_pattern_scale_down,
-	    "Test scaled-down transformed not-repeated surface patterns"
-	    "\nFails xlib backend (with argb32) with inexplicable alpha in result",
-	    "transform", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    surface_pattern_scale_down,
+    "Test scaled-down transformed not-repeated surface patterns"
+    "\nFails xlib backend (with argb32) with inexplicable alpha in result",
+    "transform", /* keywords */
+    NULL,	 /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

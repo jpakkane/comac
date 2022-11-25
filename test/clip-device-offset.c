@@ -31,49 +31,55 @@
 static comac_pattern_t *
 create_green_source (void)
 {
-  comac_surface_t *image;
-  comac_pattern_t *pattern;
-  comac_t *cr;
+    comac_surface_t *image;
+    comac_pattern_t *pattern;
+    comac_t *cr;
 
-  image = comac_image_surface_create (COMAC_FORMAT_ARGB32, WIDTH, HEIGHT);
-  cr = comac_create (image);
-  comac_surface_destroy (image);
+    image = comac_image_surface_create (COMAC_FORMAT_ARGB32, WIDTH, HEIGHT);
+    cr = comac_create (image);
+    comac_surface_destroy (image);
 
-  comac_set_source_rgb (cr, 0, 1, 0);
-  comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_paint (cr);
 
-  pattern = comac_pattern_create_for_surface (comac_get_target (cr));
-  comac_destroy (cr);
+    pattern = comac_pattern_create_for_surface (comac_get_target (cr));
+    comac_destroy (cr);
 
-  return pattern;
+    return pattern;
 }
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-  comac_pattern_t *source;
-  double old_x, old_y;
+    comac_pattern_t *source;
+    double old_x, old_y;
 
-  comac_surface_get_device_offset (comac_get_group_target (cr), &old_x, &old_y);
-  comac_surface_set_device_offset (comac_get_group_target (cr), old_x+5, old_y+5);
+    comac_surface_get_device_offset (comac_get_group_target (cr),
+				     &old_x,
+				     &old_y);
+    comac_surface_set_device_offset (comac_get_group_target (cr),
+				     old_x + 5,
+				     old_y + 5);
 
-  source = create_green_source ();
-  comac_set_source (cr, source);
-  comac_pattern_destroy (source);
+    source = create_green_source ();
+    comac_set_source (cr, source);
+    comac_pattern_destroy (source);
 
-  comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
-  comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-  comac_clip (cr);
-  comac_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
+    comac_paint (cr);
 
-  comac_surface_set_device_offset (comac_get_group_target (cr), old_x, old_y);
+    comac_surface_set_device_offset (comac_get_group_target (cr), old_x, old_y);
 
-  return COMAC_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 COMAC_TEST (clip_device_offset,
 	    "Test clipping on surfaces with device offsets",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH+10, HEIGHT+10,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    WIDTH + 10,
+	    HEIGHT + 10,
+	    NULL,
+	    draw)

@@ -29,10 +29,11 @@
 
 #define SIZE 40
 #define HEIGHT SIZE
-#define WIDTH  (SIZE * 1.5)
+#define WIDTH (SIZE * 1.5)
 #define FONT "Noto Color Emoji"
 
-static const char smiley_face_utf8[] = { 0xf0, 0x9f, 0x99, 0x82, 0x00 }; /* U+1F642 */
+static const char smiley_face_utf8[] = {
+    0xf0, 0x9f, 0x99, 0x82, 0x00}; /* U+1F642 */
 
 static comac_test_status_t
 set_color_emoji_font (comac_t *cr)
@@ -62,14 +63,15 @@ set_color_emoji_font (comac_t *cr)
 	return COMAC_TEST_NO_MEMORY;
     }
 
-    if (FcPatternGetString (resolved, FC_FAMILY, 0, &font_name) == FcResultMatch) {
-        if (strcmp((char*)font_name, FONT) != 0) {
-            const comac_test_context_t *ctx = comac_test_get_context (cr);
-            comac_test_log (ctx, "Could not find %s font\n", FONT);
-            return COMAC_TEST_UNTESTED;
-        }
+    if (FcPatternGetString (resolved, FC_FAMILY, 0, &font_name) ==
+	FcResultMatch) {
+	if (strcmp ((char *) font_name, FONT) != 0) {
+	    const comac_test_context_t *ctx = comac_test_get_context (cr);
+	    comac_test_log (ctx, "Could not find %s font\n", FONT);
+	    return COMAC_TEST_UNTESTED;
+	}
     } else {
-        return COMAC_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     font_face = comac_ft_font_face_create_for_pattern (resolved);
@@ -91,12 +93,12 @@ draw (comac_t *cr, int width, int height)
 
     result = set_color_emoji_font (cr);
     if (result != COMAC_TEST_SUCCESS)
-        return result;
+	return result;
 
-    comac_set_font_size (cr, SIZE/2);
-    comac_move_to (cr, SIZE/8, 0.7 * SIZE);
+    comac_set_font_size (cr, SIZE / 2);
+    comac_move_to (cr, SIZE / 8, 0.7 * SIZE);
 
-    comac_show_text(cr, smiley_face_utf8);
+    comac_show_text (cr, smiley_face_utf8);
 
     /* Show that the color mode font option can disable color rendering */
     font_options = comac_font_options_create ();
@@ -105,7 +107,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_font_options (cr, font_options);
     comac_font_options_destroy (font_options);
 
-    comac_show_text(cr, smiley_face_utf8);
+    comac_show_text (cr, smiley_face_utf8);
 
     return COMAC_TEST_SUCCESS;
 }
@@ -113,6 +115,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (ft_color_font,
 	    "Test color font",
 	    "ft, font", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

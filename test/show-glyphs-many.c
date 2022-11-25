@@ -92,10 +92,14 @@ get_glyph (const comac_test_context_t *ctx,
     text_to_glyphs = glyph;
     i = 1;
     status = comac_scaled_font_text_to_glyphs (scaled_font,
-					       0, 0,
-					       utf8, -1,
-					       &text_to_glyphs, &i,
-					       NULL, NULL,
+					       0,
+					       0,
+					       utf8,
+					       -1,
+					       &text_to_glyphs,
+					       &i,
+					       NULL,
+					       NULL,
 					       0);
     if (status != COMAC_STATUS_SUCCESS)
 	return comac_test_status_from_status (ctx, status);
@@ -114,11 +118,14 @@ draw (comac_t *cr, int width, int height)
     const comac_test_context_t *ctx = comac_test_get_context (cr);
     comac_glyph_t *glyphs = xmalloc (NUM_GLYPHS * sizeof (comac_glyph_t));
     comac_scaled_font_t *scaled_font;
-    const char *characters[] = { /* try to exercise different widths of index */
-	"m", /* Latin letter m, index=0x50 */
-	"μ", /* Greek letter mu, index=0x349 */
-	NULL,
-    }, **utf8;
+    const char *characters[] =
+	{
+	    /* try to exercise different widths of index */
+	    "m", /* Latin letter m, index=0x50 */
+	    "μ", /* Greek letter mu, index=0x349 */
+	    NULL,
+	},
+	       **utf8;
     int i, j;
     comac_status_t status;
 
@@ -126,7 +133,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -140,7 +148,7 @@ draw (comac_t *cr, int width, int height)
 	if (glyphs[0].index) {
 	    glyphs[0].x = 1.0;
 	    glyphs[0].y = height - 1;
-	    for (i=1; i < NUM_GLYPHS; i++)
+	    for (i = 1; i < NUM_GLYPHS; i++)
 		glyphs[i] = glyphs[0];
 
 	    comac_show_glyphs (cr, glyphs, NUM_GLYPHS);
@@ -151,19 +159,19 @@ draw (comac_t *cr, int width, int height)
     status = get_glyph (ctx, scaled_font, "m", &glyphs[0]);
     if (status)
 	goto BAIL;
-    for (i=1; i < 21500; i++)
+    for (i = 1; i < 21500; i++)
 	glyphs[i] = glyphs[0];
     /* so check expanding the current 1-byte request for 2-byte glyphs */
     status = get_glyph (ctx, scaled_font, "μ", &glyphs[i]);
     if (status)
 	goto BAIL;
-    for (j=i+1; j < NUM_GLYPHS; j++)
+    for (j = i + 1; j < NUM_GLYPHS; j++)
 	glyphs[j] = glyphs[i];
 
     comac_show_glyphs (cr, glyphs, NUM_GLYPHS);
 
-  BAIL:
-    free(glyphs);
+BAIL:
+    free (glyphs);
 
     return status;
 }
@@ -171,6 +179,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (show_glyphs_many,
 	    "Test that comac_show_glyphs works when handed 'many' glyphs",
 	    "text, stress", /* keywords */
-	    NULL, /* requirements */
-	    9, 11,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    9,
+	    11,
+	    NULL,
+	    draw)

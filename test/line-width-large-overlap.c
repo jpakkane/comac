@@ -54,10 +54,10 @@ draw (comac_t *cr, int width, int height)
 
     /* rectangle that is smaller than the line width in center of image */
     comac_rectangle (cr,
-                     (SIZE - RECT_SIZE) / 2,
-                     (SIZE - RECT_SIZE) / 2,
-                     RECT_SIZE,
-                     RECT_SIZE);
+		     (SIZE - RECT_SIZE) / 2,
+		     (SIZE - RECT_SIZE) / 2,
+		     RECT_SIZE,
+		     RECT_SIZE);
 
     comac_stroke (cr);
 
@@ -75,9 +75,9 @@ draw_offset (comac_t *cr, int width, int height)
 static comac_test_status_t
 draw_rotated (comac_t *cr, int width, int height)
 {
-    comac_translate (cr, SIZE/2, SIZE/2);
-    comac_rotate (cr, M_PI/4);
-    comac_translate (cr, -SIZE/2, -SIZE/2);
+    comac_translate (cr, SIZE / 2, SIZE / 2);
+    comac_rotate (cr, M_PI / 4);
+    comac_translate (cr, -SIZE / 2, -SIZE / 2);
 
     return draw (cr, width, height);
 }
@@ -85,9 +85,9 @@ draw_rotated (comac_t *cr, int width, int height)
 static comac_test_status_t
 draw_flipped (comac_t *cr, int width, int height)
 {
-    comac_translate (cr, SIZE/2, SIZE/2);
+    comac_translate (cr, SIZE / 2, SIZE / 2);
     comac_scale (cr, -1, 1);
-    comac_translate (cr, -SIZE/2, -SIZE/2);
+    comac_translate (cr, -SIZE / 2, -SIZE / 2);
 
     return draw (cr, width, height);
 }
@@ -95,9 +95,9 @@ draw_flipped (comac_t *cr, int width, int height)
 static comac_test_status_t
 draw_flopped (comac_t *cr, int width, int height)
 {
-    comac_translate (cr, SIZE/2, SIZE/2);
+    comac_translate (cr, SIZE / 2, SIZE / 2);
     comac_scale (cr, 1, -1);
-    comac_translate (cr, -SIZE/2, -SIZE/2);
+    comac_translate (cr, -SIZE / 2, -SIZE / 2);
 
     return draw (cr, width, height);
 }
@@ -105,7 +105,7 @@ draw_flopped (comac_t *cr, int width, int height)
 static comac_test_status_t
 draw_dashed (comac_t *cr, int width, int height)
 {
-    const double dashes[] = { 4 };
+    const double dashes[] = {4};
     comac_set_dash (cr, dashes, 1, 0);
     comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
     return draw (cr, width, height);
@@ -114,36 +114,48 @@ draw_dashed (comac_t *cr, int width, int height)
 COMAC_TEST (line_width_large_overlap,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)
 COMAC_TEST (line_width_large_overlap_offset,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw_offset)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw_offset)
 COMAC_TEST (line_width_large_overlap_rotated,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw_rotated)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw_rotated)
 COMAC_TEST (line_width_large_overlap_flipped,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw_flipped)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw_flipped)
 COMAC_TEST (line_width_large_overlap_flopped,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw_flopped)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw_flopped)
 COMAC_TEST (line_width_large_overlap_dashed,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw_dashed)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw_dashed)

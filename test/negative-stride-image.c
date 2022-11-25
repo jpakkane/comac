@@ -43,7 +43,10 @@ draw (comac_t *cr, int width, int height)
     stride = comac_format_stride_for_width (format, width);
     data = xcalloc (stride, height);
     inv = comac_image_surface_create_for_data (data + stride * (height - 1),
-					       format, width, height, -stride);
+					       format,
+					       width,
+					       height,
+					       -stride);
 
     cr_inv = comac_create (inv);
     comac_set_source_surface (cr_inv, png, 0, 0);
@@ -66,6 +69,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (negative_stride_image,
 	    "Test that images with a negative stride are handled correctly.",
 	    "stride, image", /* keywords */
-	    NULL, /* requirements */
-	    256, 192,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    256,
+	    192,
+	    NULL,
+	    draw)

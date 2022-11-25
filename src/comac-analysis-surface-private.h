@@ -38,15 +38,14 @@
 #include "comacint.h"
 
 comac_private comac_surface_t *
-_comac_analysis_surface_create (comac_surface_t		*target);
+_comac_analysis_surface_create (comac_surface_t *target);
 
 comac_private void
 _comac_analysis_surface_set_ctm (comac_surface_t *surface,
-				 const comac_matrix_t  *ctm);
+				 const comac_matrix_t *ctm);
 
 comac_private void
-_comac_analysis_surface_get_ctm (comac_surface_t *surface,
-				 comac_matrix_t  *ctm);
+_comac_analysis_surface_get_ctm (comac_surface_t *surface, comac_matrix_t *ctm);
 
 comac_private comac_region_t *
 _comac_analysis_surface_get_supported (comac_surface_t *surface);
@@ -62,7 +61,7 @@ _comac_analysis_surface_has_unsupported (comac_surface_t *surface);
 
 comac_private void
 _comac_analysis_surface_get_bounding_box (comac_surface_t *surface,
-					  comac_box_t     *bbox);
+					  comac_box_t *bbox);
 
 comac_private comac_int_status_t
 _comac_analysis_surface_merge_status (comac_int_status_t status_a,

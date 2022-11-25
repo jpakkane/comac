@@ -65,10 +65,10 @@ draw (comac_t *cr, int width, int height)
      */
 
     comac_move_to (cr, 0, 0);
-    comac_line_to (cr, SIZE/2, SIZE);
-    comac_line_to (cr, SIZE/2, 0);
-    comac_line_to (cr, SIZE, SIZE/2);
-    comac_line_to (cr, 0, SIZE/2);
+    comac_line_to (cr, SIZE / 2, SIZE);
+    comac_line_to (cr, SIZE / 2, 0);
+    comac_line_to (cr, SIZE, SIZE / 2);
+    comac_line_to (cr, 0, SIZE / 2);
     comac_close_path (cr);
     comac_fill (cr);
 
@@ -76,8 +76,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (fill_missed_stop,
-	    "Tests that the tessellator doesn't miss stop events when generating trapezoids",
+	    "Tests that the tessellator doesn't miss stop events when "
+	    "generating trapezoids",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    SIZE+3, SIZE+3,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE + 3,
+	    SIZE + 3,
+	    NULL,
+	    draw)

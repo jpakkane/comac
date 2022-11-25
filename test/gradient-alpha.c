@@ -30,14 +30,9 @@ draw (comac_t *cr, int width, int height)
 {
     comac_pattern_t *gradient;
 
-    gradient = comac_pattern_create_linear (0, -height,
-					    0, height);
-    comac_pattern_add_color_stop_rgba (gradient, 0.0,
-				       1.0, 0.0, 0.0,
-				       1.0);
-    comac_pattern_add_color_stop_rgba (gradient, 1.0,
-				       0.0, 0.0, 1.0,
-				       0.5);
+    gradient = comac_pattern_create_linear (0, -height, 0, height);
+    comac_pattern_add_color_stop_rgba (gradient, 0.0, 1.0, 0.0, 0.0, 1.0);
+    comac_pattern_add_color_stop_rgba (gradient, 1.0, 0.0, 0.0, 1.0, 0.5);
 
     comac_set_source (cr, gradient);
 
@@ -48,9 +43,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (gradient_alpha,
-	    "Tests drawing of a gradient with various alpha values in the color stops",
-	    "gradient, alpha", /* keywords */
-	    NULL, /* requirements */
-	    10, 10,
-	    NULL, draw)
+COMAC_TEST (
+    gradient_alpha,
+    "Tests drawing of a gradient with various alpha values in the color stops",
+    "gradient, alpha", /* keywords */
+    NULL,	       /* requirements */
+    10,
+    10,
+    NULL,
+    draw)

@@ -42,7 +42,9 @@
 
 #include <float.h>
 
-#define PIXMAN_MAX_INT ((pixman_fixed_1 >> 1) - pixman_fixed_e) /* need to ensure deltas also fit */
+#define PIXMAN_MAX_INT                                                         \
+    ((pixman_fixed_1 >> 1) -                                                   \
+     pixman_fixed_e) /* need to ensure deltas also fit */
 
 /**
  * SECTION:comac-pattern
@@ -65,102 +67,141 @@
 
 static freed_pool_t freed_pattern_pool[5];
 
-static const comac_solid_pattern_t _comac_pattern_nil = {
+static const comac_solid_pattern_t _comac_pattern_nil = {{
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    COMAC_STATUS_NO_MEMORY,	   /* status */
+    {0, 0, 0, NULL},		   /* user_data */
+    {NULL, NULL},		   /* observers */
+
+    COMAC_PATTERN_TYPE_SOLID,	   /* type */
+    COMAC_FILTER_DEFAULT,	   /* filter */
+    COMAC_EXTEND_GRADIENT_DEFAULT, /* extend */
+    FALSE,			   /* has component alpha */
+    FALSE,			   /* is_userfont_foreground */
     {
-      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-      COMAC_STATUS_NO_MEMORY,		/* status */
-      { 0, 0, 0, NULL },		/* user_data */
-      { NULL, NULL },			/* observers */
+	1.,
+	0.,
+	0.,
+	1.,
+	0.,
+	0.,
+    },	/* matrix */
+    1.0 /* opacity */
+}};
 
-      COMAC_PATTERN_TYPE_SOLID,		/* type */
-      COMAC_FILTER_DEFAULT,		/* filter */
-      COMAC_EXTEND_GRADIENT_DEFAULT,	/* extend */
-      FALSE,				/* has component alpha */
-      FALSE,				/* is_userfont_foreground */
-      { 1., 0., 0., 1., 0., 0., },	/* matrix */
-      1.0                               /* opacity */
-    }
-};
+static const comac_solid_pattern_t _comac_pattern_nil_null_pointer = {{
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    COMAC_STATUS_NULL_POINTER,	   /* status */
+    {0, 0, 0, NULL},		   /* user_data */
+    {NULL, NULL},		   /* observers */
 
-static const comac_solid_pattern_t _comac_pattern_nil_null_pointer = {
+    COMAC_PATTERN_TYPE_SOLID,	   /* type */
+    COMAC_FILTER_DEFAULT,	   /* filter */
+    COMAC_EXTEND_GRADIENT_DEFAULT, /* extend */
+    FALSE,			   /* has component alpha */
+    FALSE,			   /* is_userfont_foreground */
     {
-      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-      COMAC_STATUS_NULL_POINTER,	/* status */
-      { 0, 0, 0, NULL },		/* user_data */
-      { NULL, NULL },			/* observers */
-
-      COMAC_PATTERN_TYPE_SOLID,		/* type */
-      COMAC_FILTER_DEFAULT,		/* filter */
-      COMAC_EXTEND_GRADIENT_DEFAULT,	/* extend */
-      FALSE,				/* has component alpha */
-      FALSE,				/* is_userfont_foreground */
-      { 1., 0., 0., 1., 0., 0., },	/* matrix */
-      1.0                               /* opacity */
-    }
-};
+	1.,
+	0.,
+	0.,
+	1.,
+	0.,
+	0.,
+    },	/* matrix */
+    1.0 /* opacity */
+}};
 
 const comac_solid_pattern_t _comac_pattern_black = {
     {
-      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-      COMAC_STATUS_SUCCESS,		/* status */
-      { 0, 0, 0, NULL },		/* user_data */
-      { NULL, NULL },			/* observers */
+	COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+	COMAC_STATUS_SUCCESS,	       /* status */
+	{0, 0, 0, NULL},	       /* user_data */
+	{NULL, NULL},		       /* observers */
 
-      COMAC_PATTERN_TYPE_SOLID,		/* type */
-      COMAC_FILTER_NEAREST,		/* filter */
-      COMAC_EXTEND_REPEAT,		/* extend */
-      FALSE,				/* has component alpha */
-      FALSE,				/* is_userfont_foreground */
-      { 1., 0., 0., 1., 0., 0., },	/* matrix */
-      1.0                               /* opacity */
+	COMAC_PATTERN_TYPE_SOLID, /* type */
+	COMAC_FILTER_NEAREST,	  /* filter */
+	COMAC_EXTEND_REPEAT,	  /* extend */
+	FALSE,			  /* has component alpha */
+	FALSE,			  /* is_userfont_foreground */
+	{
+	    1.,
+	    0.,
+	    0.,
+	    1.,
+	    0.,
+	    0.,
+	},  /* matrix */
+	1.0 /* opacity */
     },
-    { 0., 0., 0., 1., 0, 0, 0, 0xffff },/* color (double rgba, short rgba) */
+    {0., 0., 0., 1., 0, 0, 0, 0xffff}, /* color (double rgba, short rgba) */
 };
 
 const comac_solid_pattern_t _comac_pattern_clear = {
     {
-      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-      COMAC_STATUS_SUCCESS,		/* status */
-      { 0, 0, 0, NULL },		/* user_data */
-      { NULL, NULL },			/* observers */
+	COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+	COMAC_STATUS_SUCCESS,	       /* status */
+	{0, 0, 0, NULL},	       /* user_data */
+	{NULL, NULL},		       /* observers */
 
-      COMAC_PATTERN_TYPE_SOLID,		/* type */
-      COMAC_FILTER_NEAREST,		/* filter */
-      COMAC_EXTEND_REPEAT,		/* extend */
-      FALSE,				/* has component alpha */
-      FALSE,				/* is_userfont_foreground */
-      { 1., 0., 0., 1., 0., 0., },	/* matrix */
-      1.0                               /* opacity */
+	COMAC_PATTERN_TYPE_SOLID, /* type */
+	COMAC_FILTER_NEAREST,	  /* filter */
+	COMAC_EXTEND_REPEAT,	  /* extend */
+	FALSE,			  /* has component alpha */
+	FALSE,			  /* is_userfont_foreground */
+	{
+	    1.,
+	    0.,
+	    0.,
+	    1.,
+	    0.,
+	    0.,
+	},  /* matrix */
+	1.0 /* opacity */
     },
-    { 0., 0., 0., 0., 0, 0, 0, 0 },/* color (double rgba, short rgba) */
+    {0., 0., 0., 0., 0, 0, 0, 0}, /* color (double rgba, short rgba) */
 };
 
 const comac_solid_pattern_t _comac_pattern_white = {
     {
-      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-      COMAC_STATUS_SUCCESS,		/* status */
-      { 0, 0, 0, NULL },		/* user_data */
-      { NULL, NULL },			/* observers */
+	COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+	COMAC_STATUS_SUCCESS,	       /* status */
+	{0, 0, 0, NULL},	       /* user_data */
+	{NULL, NULL},		       /* observers */
 
-      COMAC_PATTERN_TYPE_SOLID,		/* type */
-      COMAC_FILTER_NEAREST,		/* filter */
-      COMAC_EXTEND_REPEAT,		/* extend */
-      FALSE,				/* has component alpha */
-      FALSE,				/* is_userfont_foreground */
-      { 1., 0., 0., 1., 0., 0., },	/* matrix */
-      1.0                               /* opacity */
+	COMAC_PATTERN_TYPE_SOLID, /* type */
+	COMAC_FILTER_NEAREST,	  /* filter */
+	COMAC_EXTEND_REPEAT,	  /* extend */
+	FALSE,			  /* has component alpha */
+	FALSE,			  /* is_userfont_foreground */
+	{
+	    1.,
+	    0.,
+	    0.,
+	    1.,
+	    0.,
+	    0.,
+	},  /* matrix */
+	1.0 /* opacity */
     },
-    { 1., 1., 1., 1., 0xffff, 0xffff, 0xffff, 0xffff },/* color (double rgba, short rgba) */
+    {1.,
+     1.,
+     1.,
+     1.,
+     0xffff,
+     0xffff,
+     0xffff,
+     0xffff}, /* color (double rgba, short rgba) */
 };
 
 static void
-_comac_pattern_notify_observers (comac_pattern_t *pattern,
-				 unsigned int flags)
+_comac_pattern_notify_observers (comac_pattern_t *pattern, unsigned int flags)
 {
     comac_pattern_observer_t *pos;
 
-    comac_list_foreach_entry (pos, comac_pattern_observer_t, &pattern->observers, link)
-	pos->notify (pos, pattern, flags);
+    comac_list_foreach_entry (pos,
+			      comac_pattern_observer_t,
+			      &pattern->observers,
+			      link) pos->notify (pos, pattern, flags);
 }
 
 /**
@@ -181,8 +222,7 @@ _comac_pattern_notify_observers (comac_pattern_t *pattern,
  * user causes comac to detect an error.
  **/
 static comac_status_t
-_comac_pattern_set_error (comac_pattern_t *pattern,
-			  comac_status_t status)
+_comac_pattern_set_error (comac_pattern_t *pattern, comac_status_t status)
 {
     if (status == COMAC_STATUS_SUCCESS)
 	return status;
@@ -219,8 +259,8 @@ _comac_pattern_init (comac_pattern_t *pattern, comac_pattern_type_t type)
     }
 #endif
 
-    pattern->type      = type;
-    pattern->status    = COMAC_STATUS_SUCCESS;
+    pattern->type = type;
+    pattern->status = COMAC_STATUS_SUCCESS;
 
     /* Set the reference count to zero for on-stack patterns.
      * Callers needs to explicitly increment the count for heap allocations. */
@@ -234,8 +274,8 @@ _comac_pattern_init (comac_pattern_t *pattern, comac_pattern_type_t type)
     else
 	pattern->extend = COMAC_EXTEND_GRADIENT_DEFAULT;
 
-    pattern->filter    = COMAC_FILTER_DEFAULT;
-    pattern->opacity   = 1.0;
+    pattern->filter = COMAC_FILTER_DEFAULT;
+    pattern->opacity = 1.0;
 
     pattern->has_component_alpha = FALSE;
     pattern->is_userfont_foreground = FALSE;
@@ -246,21 +286,18 @@ _comac_pattern_init (comac_pattern_t *pattern, comac_pattern_type_t type)
 }
 
 static comac_status_t
-_comac_gradient_pattern_init_copy (comac_gradient_pattern_t	  *pattern,
+_comac_gradient_pattern_init_copy (comac_gradient_pattern_t *pattern,
 				   const comac_gradient_pattern_t *other)
 {
     if (COMAC_INJECT_FAULT ())
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    if (other->base.type == COMAC_PATTERN_TYPE_LINEAR)
-    {
+    if (other->base.type == COMAC_PATTERN_TYPE_LINEAR) {
 	comac_linear_pattern_t *dst = (comac_linear_pattern_t *) pattern;
 	comac_linear_pattern_t *src = (comac_linear_pattern_t *) other;
 
 	*dst = *src;
-    }
-    else
-    {
+    } else {
 	comac_radial_pattern_t *dst = (comac_radial_pattern_t *) pattern;
 	comac_radial_pattern_t *src = (comac_radial_pattern_t *) other;
 
@@ -269,17 +306,18 @@ _comac_gradient_pattern_init_copy (comac_gradient_pattern_t	  *pattern,
 
     if (other->stops == other->stops_embedded)
 	pattern->stops = pattern->stops_embedded;
-    else if (other->stops)
-    {
+    else if (other->stops) {
 	pattern->stops = _comac_malloc_ab (other->stops_size,
 					   sizeof (comac_gradient_stop_t));
 	if (unlikely (pattern->stops == NULL)) {
 	    pattern->stops_size = 0;
 	    pattern->n_stops = 0;
-	    return _comac_pattern_set_error (&pattern->base, COMAC_STATUS_NO_MEMORY);
+	    return _comac_pattern_set_error (&pattern->base,
+					     COMAC_STATUS_NO_MEMORY);
 	}
 
-	memcpy (pattern->stops, other->stops,
+	memcpy (pattern->stops,
+		other->stops,
 		other->n_stops * sizeof (comac_gradient_stop_t));
     }
 
@@ -287,19 +325,20 @@ _comac_gradient_pattern_init_copy (comac_gradient_pattern_t	  *pattern,
 }
 
 static comac_status_t
-_comac_mesh_pattern_init_copy (comac_mesh_pattern_t       *pattern,
+_comac_mesh_pattern_init_copy (comac_mesh_pattern_t *pattern,
 			       const comac_mesh_pattern_t *other)
 {
     *pattern = *other;
 
-    _comac_array_init (&pattern->patches,  sizeof (comac_mesh_patch_t));
-    return _comac_array_append_multiple (&pattern->patches,
-					 _comac_array_index_const (&other->patches, 0),
-					 _comac_array_num_elements (&other->patches));
+    _comac_array_init (&pattern->patches, sizeof (comac_mesh_patch_t));
+    return _comac_array_append_multiple (
+	&pattern->patches,
+	_comac_array_index_const (&other->patches, 0),
+	_comac_array_num_elements (&other->patches));
 }
 
 comac_status_t
-_comac_pattern_init_copy (comac_pattern_t	*pattern,
+_comac_pattern_init_copy (comac_pattern_t *pattern,
 			  const comac_pattern_t *other)
 {
     comac_status_t status;
@@ -312,7 +351,8 @@ _comac_pattern_init_copy (comac_pattern_t	*pattern,
 	comac_solid_pattern_t *dst = (comac_solid_pattern_t *) pattern;
 	comac_solid_pattern_t *src = (comac_solid_pattern_t *) other;
 
-	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_solid_pattern_t)));
+	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern,
+					 sizeof (comac_solid_pattern_t)));
 
 	*dst = *src;
     } break;
@@ -320,7 +360,8 @@ _comac_pattern_init_copy (comac_pattern_t	*pattern,
 	comac_surface_pattern_t *dst = (comac_surface_pattern_t *) pattern;
 	comac_surface_pattern_t *src = (comac_surface_pattern_t *) other;
 
-	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_surface_pattern_t)));
+	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern,
+					 sizeof (comac_surface_pattern_t)));
 
 	*dst = *src;
 	comac_surface_reference (dst->surface);
@@ -331,9 +372,11 @@ _comac_pattern_init_copy (comac_pattern_t	*pattern,
 	comac_gradient_pattern_t *src = (comac_gradient_pattern_t *) other;
 
 	if (other->type == COMAC_PATTERN_TYPE_LINEAR) {
-	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_linear_pattern_t)));
+	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern,
+					     sizeof (comac_linear_pattern_t)));
 	} else {
-	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_radial_pattern_t)));
+	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern,
+					     sizeof (comac_radial_pattern_t)));
 	}
 
 	status = _comac_gradient_pattern_init_copy (dst, src);
@@ -345,7 +388,8 @@ _comac_pattern_init_copy (comac_pattern_t	*pattern,
 	comac_mesh_pattern_t *dst = (comac_mesh_pattern_t *) pattern;
 	comac_mesh_pattern_t *src = (comac_mesh_pattern_t *) other;
 
-	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_mesh_pattern_t)));
+	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern,
+					 sizeof (comac_mesh_pattern_t)));
 
 	status = _comac_mesh_pattern_init_copy (dst, src);
 	if (unlikely (status))
@@ -369,7 +413,7 @@ _comac_pattern_init_copy (comac_pattern_t	*pattern,
 }
 
 void
-_comac_pattern_init_static_copy (comac_pattern_t	*pattern,
+_comac_pattern_init_static_copy (comac_pattern_t *pattern,
 				 const comac_pattern_t *other)
 {
     int size;
@@ -407,7 +451,7 @@ _comac_pattern_init_static_copy (comac_pattern_t	*pattern,
 }
 
 comac_status_t
-_comac_pattern_init_snapshot (comac_pattern_t       *pattern,
+_comac_pattern_init_snapshot (comac_pattern_t *pattern,
 			      const comac_pattern_t *other)
 {
     comac_status_t status;
@@ -459,8 +503,7 @@ _comac_pattern_fini (comac_pattern_t *pattern)
 	    free (gradient->stops);
     } break;
     case COMAC_PATTERN_TYPE_MESH: {
-	comac_mesh_pattern_t *mesh =
-	    (comac_mesh_pattern_t *) pattern;
+	comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
 
 	_comac_array_fini (&mesh->patches);
     } break;
@@ -493,8 +536,8 @@ _comac_pattern_fini (comac_pattern_t *pattern)
 }
 
 comac_status_t
-_comac_pattern_create_copy (comac_pattern_t	  **pattern_out,
-			    const comac_pattern_t  *other)
+_comac_pattern_create_copy (comac_pattern_t **pattern_out,
+			    const comac_pattern_t *other)
 {
     comac_pattern_t *pattern;
     comac_status_t status;
@@ -541,7 +584,7 @@ _comac_pattern_create_copy (comac_pattern_t	  **pattern_out,
 
 void
 _comac_pattern_init_solid (comac_solid_pattern_t *pattern,
-			   const comac_color_t	 *color)
+			   const comac_color_t *color)
 {
     _comac_pattern_init (&pattern->base, COMAC_PATTERN_TYPE_SOLID);
     pattern->color = *color;
@@ -549,7 +592,7 @@ _comac_pattern_init_solid (comac_solid_pattern_t *pattern,
 
 void
 _comac_pattern_init_for_surface (comac_surface_pattern_t *pattern,
-				 comac_surface_t	 *surface)
+				 comac_surface_t *surface)
 {
     if (surface->status) {
 	/* Force to solid to simplify the pattern_fini process. */
@@ -565,18 +608,18 @@ _comac_pattern_init_for_surface (comac_surface_pattern_t *pattern,
 
 static void
 _comac_pattern_init_gradient (comac_gradient_pattern_t *pattern,
-			      comac_pattern_type_t     type)
+			      comac_pattern_type_t type)
 {
     _comac_pattern_init (&pattern->base, type);
 
-    pattern->n_stops    = 0;
+    pattern->n_stops = 0;
     pattern->stops_size = 0;
-    pattern->stops      = NULL;
+    pattern->stops = NULL;
 }
 
 static void
-_comac_pattern_init_linear (comac_linear_pattern_t *pattern,
-			    double x0, double y0, double x1, double y1)
+_comac_pattern_init_linear (
+    comac_linear_pattern_t *pattern, double x0, double y0, double x1, double y1)
 {
     _comac_pattern_init_gradient (&pattern->base, COMAC_PATTERN_TYPE_LINEAR);
 
@@ -588,17 +631,21 @@ _comac_pattern_init_linear (comac_linear_pattern_t *pattern,
 
 static void
 _comac_pattern_init_radial (comac_radial_pattern_t *pattern,
-			    double cx0, double cy0, double radius0,
-			    double cx1, double cy1, double radius1)
+			    double cx0,
+			    double cy0,
+			    double radius0,
+			    double cx1,
+			    double cy1,
+			    double radius1)
 {
     _comac_pattern_init_gradient (&pattern->base, COMAC_PATTERN_TYPE_RADIAL);
 
     pattern->cd1.center.x = cx0;
     pattern->cd1.center.y = cy0;
-    pattern->cd1.radius   = fabs (radius0);
+    pattern->cd1.radius = fabs (radius0);
     pattern->cd2.center.x = cx1;
     pattern->cd2.center.y = cy1;
-    pattern->cd2.radius   = fabs (radius1);
+    pattern->cd2.radius = fabs (radius1);
 }
 
 comac_pattern_t *
@@ -606,8 +653,7 @@ _comac_pattern_create_solid (const comac_color_t *color)
 {
     comac_solid_pattern_t *pattern;
 
-    pattern =
-	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_SOLID]);
+    pattern = _freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_SOLID]);
     if (unlikely (pattern == NULL)) {
 	/* None cached, need to create a new pattern. */
 	pattern = _comac_malloc (sizeof (comac_solid_pattern_t));
@@ -629,7 +675,7 @@ _comac_pattern_create_in_error (comac_status_t status)
     comac_pattern_t *pattern;
 
     if (status == COMAC_STATUS_NO_MEMORY)
-	return (comac_pattern_t *)&_comac_pattern_nil.base;
+	return (comac_pattern_t *) &_comac_pattern_nil.base;
 
     COMAC_MUTEX_INITIALIZE ();
 
@@ -692,14 +738,13 @@ comac_pattern_create_rgb (double red, double green, double blue)
  * Since: 1.0
  **/
 comac_pattern_t *
-comac_pattern_create_rgba (double red, double green, double blue,
-			   double alpha)
+comac_pattern_create_rgba (double red, double green, double blue, double alpha)
 {
     comac_color_t color;
 
-    red   = _comac_restrict_value (red,   0.0, 1.0);
+    red = _comac_restrict_value (red, 0.0, 1.0);
     green = _comac_restrict_value (green, 0.0, 1.0);
-    blue  = _comac_restrict_value (blue,  0.0, 1.0);
+    blue = _comac_restrict_value (blue, 0.0, 1.0);
     alpha = _comac_restrict_value (alpha, 0.0, 1.0);
 
     _comac_color_init_rgba (&color, red, green, blue, alpha);
@@ -733,19 +778,18 @@ comac_pattern_create_for_surface (comac_surface_t *surface)
 
     if (surface == NULL) {
 	_comac_error_throw (COMAC_STATUS_NULL_POINTER);
-	return (comac_pattern_t*) &_comac_pattern_nil_null_pointer;
+	return (comac_pattern_t *) &_comac_pattern_nil_null_pointer;
     }
 
     if (surface->status)
 	return _comac_pattern_create_in_error (surface->status);
 
-    pattern =
-	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_SURFACE]);
+    pattern = _freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_SURFACE]);
     if (unlikely (pattern == NULL)) {
 	pattern = _comac_malloc (sizeof (comac_surface_pattern_t));
 	if (unlikely (pattern == NULL)) {
 	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
-	    return (comac_pattern_t *)&_comac_pattern_nil.base;
+	    return (comac_pattern_t *) &_comac_pattern_nil.base;
 	}
     }
 
@@ -790,8 +834,7 @@ comac_pattern_create_linear (double x0, double y0, double x1, double y1)
 {
     comac_linear_pattern_t *pattern;
 
-    pattern =
-	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_LINEAR]);
+    pattern = _freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_LINEAR]);
     if (unlikely (pattern == NULL)) {
 	pattern = _comac_malloc (sizeof (comac_linear_pattern_t));
 	if (unlikely (pattern == NULL)) {
@@ -839,13 +882,16 @@ comac_pattern_create_linear (double x0, double y0, double x1, double y1)
  * Since: 1.0
  **/
 comac_pattern_t *
-comac_pattern_create_radial (double cx0, double cy0, double radius0,
-			     double cx1, double cy1, double radius1)
+comac_pattern_create_radial (double cx0,
+			     double cy0,
+			     double radius0,
+			     double cx1,
+			     double cy1,
+			     double radius1)
 {
     comac_radial_pattern_t *pattern;
 
-    pattern =
-	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_RADIAL]);
+    pattern = _freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_RADIAL]);
     if (unlikely (pattern == NULL)) {
 	pattern = _comac_malloc (sizeof (comac_radial_pattern_t));
 	if (unlikely (pattern == NULL)) {
@@ -864,10 +910,10 @@ comac_pattern_create_radial (double cx0, double cy0, double radius0,
 
 /* This order is specified in the diagram in the documentation for
  * comac_pattern_create_mesh() */
-static const int mesh_path_point_i[12] = { 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1 };
-static const int mesh_path_point_j[12] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0 };
-static const int mesh_control_point_i[4] = { 1, 1, 2, 2 };
-static const int mesh_control_point_j[4] = { 1, 2, 2, 1 };
+static const int mesh_path_point_i[12] = {0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1};
+static const int mesh_path_point_j[12] = {0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0};
+static const int mesh_control_point_i[4] = {1, 1, 2, 2};
+static const int mesh_control_point_j[4] = {1, 2, 2, 1};
 
 /**
  * comac_pattern_create_mesh:
@@ -1022,8 +1068,7 @@ comac_pattern_create_mesh (void)
 {
     comac_mesh_pattern_t *pattern;
 
-    pattern =
-	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_MESH]);
+    pattern = _freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_MESH]);
     if (unlikely (pattern == NULL)) {
 	pattern = _comac_malloc (sizeof (comac_mesh_pattern_t));
 	if (unlikely (pattern == NULL)) {
@@ -1061,7 +1106,7 @@ comac_pattern_t *
 comac_pattern_reference (comac_pattern_t *pattern)
 {
     if (pattern == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return pattern;
 
     assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&pattern->ref_count));
@@ -1123,7 +1168,7 @@ comac_pattern_destroy (comac_pattern_t *pattern)
     comac_pattern_type_t type;
 
     if (pattern == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return;
 
     assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&pattern->ref_count));
@@ -1156,7 +1201,7 @@ unsigned int
 comac_pattern_get_reference_count (comac_pattern_t *pattern)
 {
     if (pattern == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return 0;
 
     return COMAC_REFERENCE_COUNT_GET_VALUE (&pattern->ref_count);
@@ -1177,11 +1222,10 @@ comac_pattern_get_reference_count (comac_pattern_t *pattern)
  * Since: 1.4
  **/
 void *
-comac_pattern_get_user_data (comac_pattern_t		 *pattern,
+comac_pattern_get_user_data (comac_pattern_t *pattern,
 			     const comac_user_data_key_t *key)
 {
-    return _comac_user_data_array_get_data (&pattern->user_data,
-					    key);
+    return _comac_user_data_array_get_data (&pattern->user_data, key);
 }
 
 /**
@@ -1203,16 +1247,18 @@ comac_pattern_get_user_data (comac_pattern_t		 *pattern,
  * Since: 1.4
  **/
 comac_status_t
-comac_pattern_set_user_data (comac_pattern_t		 *pattern,
+comac_pattern_set_user_data (comac_pattern_t *pattern,
 			     const comac_user_data_key_t *key,
-			     void			 *user_data,
-			     comac_destroy_func_t	  destroy)
+			     void *user_data,
+			     comac_destroy_func_t destroy)
 {
     if (COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return pattern->status;
 
     return _comac_user_data_array_set_data (&pattern->user_data,
-					    key, user_data, destroy);
+					    key,
+					    user_data,
+					    destroy);
 }
 
 /**
@@ -1254,11 +1300,13 @@ comac_mesh_pattern_begin_patch (comac_pattern_t *pattern)
 
     mesh = (comac_mesh_pattern_t *) pattern;
     if (unlikely (mesh->current_patch)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
-    status = _comac_array_allocate (&mesh->patches, 1, (void **) &current_patch);
+    status =
+	_comac_array_allocate (&mesh->patches, 1, (void **) &current_patch);
     if (unlikely (status)) {
 	_comac_pattern_set_error (pattern, status);
 	return;
@@ -1273,7 +1321,6 @@ comac_mesh_pattern_begin_patch (comac_pattern_t *pattern)
     for (i = 0; i < 4; i++)
 	mesh->has_color[i] = FALSE;
 }
-
 
 static void
 _calc_control_point (comac_mesh_patch_t *patch, int control_point)
@@ -1305,17 +1352,15 @@ _calc_control_point (comac_mesh_patch_t *patch, int control_point)
 	for (j = 0; j < 3; j++)
 	    p[i][j] = &patch->points[cp_i ^ i][cp_j ^ j];
 
-    p[0][0]->x = (- 4 * p[1][1]->x
-		  + 6 * (p[1][0]->x + p[0][1]->x)
-		  - 2 * (p[1][2]->x + p[2][1]->x)
-		  + 3 * (p[2][0]->x + p[0][2]->x)
-		  - 1 * p[2][2]->x) * (1. / 9);
+    p[0][0]->x = (-4 * p[1][1]->x + 6 * (p[1][0]->x + p[0][1]->x) -
+		  2 * (p[1][2]->x + p[2][1]->x) +
+		  3 * (p[2][0]->x + p[0][2]->x) - 1 * p[2][2]->x) *
+		 (1. / 9);
 
-    p[0][0]->y = (- 4 * p[1][1]->y
-		  + 6 * (p[1][0]->y + p[0][1]->y)
-		  - 2 * (p[1][2]->y + p[2][1]->y)
-		  + 3 * (p[2][0]->y + p[0][2]->y)
-		  - 1 * p[2][2]->y) * (1. / 9);
+    p[0][0]->y = (-4 * p[1][1]->y + 6 * (p[1][0]->y + p[0][1]->y) -
+		  2 * (p[1][2]->y + p[2][1]->y) +
+		  3 * (p[2][0]->y + p[0][2]->y) - 1 * p[2][2]->y) *
+		 (1. / 9);
 }
 
 /**
@@ -1354,13 +1399,15 @@ comac_mesh_pattern_end_patch (comac_pattern_t *pattern)
 
     mesh = (comac_mesh_pattern_t *) pattern;
     current_patch = mesh->current_patch;
-    if (unlikely (!current_patch)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+    if (unlikely (! current_patch)) {
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side == -2)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
@@ -1423,9 +1470,12 @@ comac_mesh_pattern_end_patch (comac_pattern_t *pattern)
  **/
 void
 comac_mesh_pattern_curve_to (comac_pattern_t *pattern,
-			     double x1, double y1,
-			     double x2, double y2,
-			     double x3, double y3)
+			     double x1,
+			     double y1,
+			     double x2,
+			     double y2,
+			     double x3,
+			     double y3)
 {
     comac_mesh_pattern_t *mesh;
     int current_point, i, j;
@@ -1439,13 +1489,15 @@ comac_mesh_pattern_curve_to (comac_pattern_t *pattern,
     }
 
     mesh = (comac_mesh_pattern_t *) pattern;
-    if (unlikely (!mesh->current_patch)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+    if (unlikely (! mesh->current_patch)) {
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side == 3)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
@@ -1505,8 +1557,7 @@ comac_mesh_pattern_curve_to (comac_pattern_t *pattern,
  * Since: 1.12
  **/
 void
-comac_mesh_pattern_line_to (comac_pattern_t *pattern,
-			    double x, double y)
+comac_mesh_pattern_line_to (comac_pattern_t *pattern, double x, double y)
 {
     comac_mesh_pattern_t *mesh;
     comac_point_double_t last_point;
@@ -1521,13 +1572,15 @@ comac_mesh_pattern_line_to (comac_pattern_t *pattern,
     }
 
     mesh = (comac_mesh_pattern_t *) pattern;
-    if (unlikely (!mesh->current_patch)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+    if (unlikely (! mesh->current_patch)) {
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side == 3)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
@@ -1547,7 +1600,8 @@ comac_mesh_pattern_line_to (comac_pattern_t *pattern,
 				 (2 * last_point.y + y) * (1. / 3),
 				 (last_point.x + 2 * x) * (1. / 3),
 				 (last_point.y + 2 * y) * (1. / 3),
-				 x, y);
+				 x,
+				 y);
 }
 
 /**
@@ -1570,8 +1624,7 @@ comac_mesh_pattern_line_to (comac_pattern_t *pattern,
  * Since: 1.12
  **/
 void
-comac_mesh_pattern_move_to (comac_pattern_t *pattern,
-			    double x, double y)
+comac_mesh_pattern_move_to (comac_pattern_t *pattern, double x, double y)
 {
     comac_mesh_pattern_t *mesh;
 
@@ -1584,13 +1637,15 @@ comac_mesh_pattern_move_to (comac_pattern_t *pattern,
     }
 
     mesh = (comac_mesh_pattern_t *) pattern;
-    if (unlikely (!mesh->current_patch)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+    if (unlikely (! mesh->current_patch)) {
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side >= 0)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
@@ -1623,9 +1678,9 @@ comac_mesh_pattern_move_to (comac_pattern_t *pattern,
  **/
 void
 comac_mesh_pattern_set_control_point (comac_pattern_t *pattern,
-				      unsigned int     point_num,
-				      double           x,
-				      double           y)
+				      unsigned int point_num,
+				      double x,
+				      double y)
 {
     comac_mesh_pattern_t *mesh;
     int i, j;
@@ -1644,8 +1699,9 @@ comac_mesh_pattern_set_control_point (comac_pattern_t *pattern,
     }
 
     mesh = (comac_mesh_pattern_t *) pattern;
-    if (unlikely (!mesh->current_patch)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+    if (unlikely (! mesh->current_patch)) {
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
@@ -1682,7 +1738,9 @@ _comac_pattern_gradient_grow (comac_gradient_pattern_t *pattern)
     if (pattern->stops == pattern->stops_embedded) {
 	new_stops = _comac_malloc_ab (new_size, sizeof (comac_gradient_stop_t));
 	if (new_stops)
-	    memcpy (new_stops, pattern->stops, old_size * sizeof (comac_gradient_stop_t));
+	    memcpy (new_stops,
+		    pattern->stops,
+		    old_size * sizeof (comac_gradient_stop_t));
     } else {
 	new_stops = _comac_realloc_ab (pattern->stops,
 				       new_size,
@@ -1700,8 +1758,10 @@ _comac_pattern_gradient_grow (comac_gradient_pattern_t *pattern)
 
 static void
 _comac_mesh_pattern_set_corner_color (comac_mesh_pattern_t *mesh,
-				      unsigned int     corner_num,
-				      double red, double green, double blue,
+				      unsigned int corner_num,
+				      double red,
+				      double green,
+				      double blue,
 				      double alpha)
 {
     comac_color_t *color;
@@ -1710,14 +1770,14 @@ _comac_mesh_pattern_set_corner_color (comac_mesh_pattern_t *mesh,
     assert (corner_num <= 3);
 
     color = &mesh->current_patch->colors[corner_num];
-    color->red   = red;
+    color->red = red;
     color->green = green;
-    color->blue  = blue;
+    color->blue = blue;
     color->alpha = alpha;
 
-    color->red_short   = _comac_color_double_to_short (red);
+    color->red_short = _comac_color_double_to_short (red);
     color->green_short = _comac_color_double_to_short (green);
-    color->blue_short  = _comac_color_double_to_short (blue);
+    color->blue_short = _comac_color_double_to_short (blue);
     color->alpha_short = _comac_color_double_to_short (alpha);
 
     mesh->has_color[corner_num] = TRUE;
@@ -1750,10 +1810,17 @@ _comac_mesh_pattern_set_corner_color (comac_mesh_pattern_t *mesh,
  **/
 void
 comac_mesh_pattern_set_corner_color_rgb (comac_pattern_t *pattern,
-					 unsigned int     corner_num,
-					 double red, double green, double blue)
+					 unsigned int corner_num,
+					 double red,
+					 double green,
+					 double blue)
 {
-    comac_mesh_pattern_set_corner_color_rgba (pattern, corner_num, red, green, blue, 1.0);
+    comac_mesh_pattern_set_corner_color_rgba (pattern,
+					      corner_num,
+					      red,
+					      green,
+					      blue,
+					      1.0);
 }
 
 /**
@@ -1784,8 +1851,10 @@ comac_mesh_pattern_set_corner_color_rgb (comac_pattern_t *pattern,
  **/
 void
 comac_mesh_pattern_set_corner_color_rgba (comac_pattern_t *pattern,
-					  unsigned int     corner_num,
-					  double red, double green, double blue,
+					  unsigned int corner_num,
+					  double red,
+					  double green,
+					  double blue,
 					  double alpha)
 {
     comac_mesh_pattern_t *mesh;
@@ -1804,32 +1873,38 @@ comac_mesh_pattern_set_corner_color_rgba (comac_pattern_t *pattern,
     }
 
     mesh = (comac_mesh_pattern_t *) pattern;
-    if (unlikely (!mesh->current_patch)) {
-	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
+    if (unlikely (! mesh->current_patch)) {
+	_comac_pattern_set_error (pattern,
+				  COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
-    red    = _comac_restrict_value (red,    0.0, 1.0);
-    green  = _comac_restrict_value (green,  0.0, 1.0);
-    blue   = _comac_restrict_value (blue,   0.0, 1.0);
-    alpha  = _comac_restrict_value (alpha,  0.0, 1.0);
+    red = _comac_restrict_value (red, 0.0, 1.0);
+    green = _comac_restrict_value (green, 0.0, 1.0);
+    blue = _comac_restrict_value (blue, 0.0, 1.0);
+    alpha = _comac_restrict_value (alpha, 0.0, 1.0);
 
-    _comac_mesh_pattern_set_corner_color (mesh, corner_num, red, green, blue, alpha);
+    _comac_mesh_pattern_set_corner_color (mesh,
+					  corner_num,
+					  red,
+					  green,
+					  blue,
+					  alpha);
 }
 
 static void
-_comac_pattern_add_color_stop (comac_gradient_pattern_t	*pattern,
-			       double			 offset,
-			       double			 red,
-			       double			 green,
-			       double			 blue,
-			       double			 alpha)
+_comac_pattern_add_color_stop (comac_gradient_pattern_t *pattern,
+			       double offset,
+			       double red,
+			       double green,
+			       double blue,
+			       double alpha)
 {
     comac_gradient_stop_t *stops;
-    unsigned int	   i;
+    unsigned int i;
 
     if (pattern->n_stops >= pattern->stops_size) {
-        comac_status_t status = _comac_pattern_gradient_grow (pattern);
+	comac_status_t status = _comac_pattern_gradient_grow (pattern);
 	if (unlikely (status)) {
 	    status = _comac_pattern_set_error (&pattern->base, status);
 	    return;
@@ -1838,11 +1913,10 @@ _comac_pattern_add_color_stop (comac_gradient_pattern_t	*pattern,
 
     stops = pattern->stops;
 
-    for (i = 0; i < pattern->n_stops; i++)
-    {
-	if (offset < stops[i].offset)
-	{
-	    memmove (&stops[i + 1], &stops[i],
+    for (i = 0; i < pattern->n_stops; i++) {
+	if (offset < stops[i].offset) {
+	    memmove (&stops[i + 1],
+		     &stops[i],
 		     sizeof (comac_gradient_stop_t) * (pattern->n_stops - i));
 
 	    break;
@@ -1851,14 +1925,14 @@ _comac_pattern_add_color_stop (comac_gradient_pattern_t	*pattern,
 
     stops[i].offset = offset;
 
-    stops[i].color.red   = red;
+    stops[i].color.red = red;
     stops[i].color.green = green;
-    stops[i].color.blue  = blue;
+    stops[i].color.blue = blue;
     stops[i].color.alpha = alpha;
 
-    stops[i].color.red_short   = _comac_color_double_to_short (red);
+    stops[i].color.red_short = _comac_color_double_to_short (red);
     stops[i].color.green_short = _comac_color_double_to_short (green);
-    stops[i].color.blue_short  = _comac_color_double_to_short (blue);
+    stops[i].color.blue_short = _comac_color_double_to_short (blue);
     stops[i].color.alpha_short = _comac_color_double_to_short (alpha);
 
     pattern->n_stops++;
@@ -1895,10 +1969,10 @@ _comac_pattern_add_color_stop (comac_gradient_pattern_t	*pattern,
  **/
 void
 comac_pattern_add_color_stop_rgb (comac_pattern_t *pattern,
-				  double	   offset,
-				  double	   red,
-				  double	   green,
-				  double	   blue)
+				  double offset,
+				  double red,
+				  double green,
+				  double blue)
 {
     comac_pattern_add_color_stop_rgba (pattern, offset, red, green, blue, 1.0);
 }
@@ -1934,30 +2008,33 @@ comac_pattern_add_color_stop_rgb (comac_pattern_t *pattern,
  **/
 void
 comac_pattern_add_color_stop_rgba (comac_pattern_t *pattern,
-				   double	   offset,
-				   double	   red,
-				   double	   green,
-				   double	   blue,
-				   double	   alpha)
+				   double offset,
+				   double red,
+				   double green,
+				   double blue,
+				   double alpha)
 {
     if (pattern->status)
 	return;
 
     if (pattern->type != COMAC_PATTERN_TYPE_LINEAR &&
-	pattern->type != COMAC_PATTERN_TYPE_RADIAL)
-    {
+	pattern->type != COMAC_PATTERN_TYPE_RADIAL) {
 	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
     offset = _comac_restrict_value (offset, 0.0, 1.0);
-    red    = _comac_restrict_value (red,    0.0, 1.0);
-    green  = _comac_restrict_value (green,  0.0, 1.0);
-    blue   = _comac_restrict_value (blue,   0.0, 1.0);
-    alpha  = _comac_restrict_value (alpha,  0.0, 1.0);
+    red = _comac_restrict_value (red, 0.0, 1.0);
+    green = _comac_restrict_value (green, 0.0, 1.0);
+    blue = _comac_restrict_value (blue, 0.0, 1.0);
+    alpha = _comac_restrict_value (alpha, 0.0, 1.0);
 
     _comac_pattern_add_color_stop ((comac_gradient_pattern_t *) pattern,
-				   offset, red, green, blue, alpha);
+				   offset,
+				   red,
+				   green,
+				   blue,
+				   alpha);
 }
 
 /**
@@ -1995,7 +2072,7 @@ comac_pattern_add_color_stop_rgba (comac_pattern_t *pattern,
  * Since: 1.0
  **/
 void
-comac_pattern_set_matrix (comac_pattern_t      *pattern,
+comac_pattern_set_matrix (comac_pattern_t *pattern,
 			  const comac_matrix_t *matrix)
 {
     comac_matrix_t inverse;
@@ -2124,8 +2201,8 @@ comac_pattern_get_extend (comac_pattern_t *pattern)
 }
 
 void
-_comac_pattern_pretransform (comac_pattern_t	*pattern,
-			     const comac_matrix_t  *ctm)
+_comac_pattern_pretransform (comac_pattern_t *pattern,
+			     const comac_matrix_t *ctm)
 {
     if (pattern->status)
 	return;
@@ -2134,8 +2211,8 @@ _comac_pattern_pretransform (comac_pattern_t	*pattern,
 }
 
 void
-_comac_pattern_transform (comac_pattern_t	*pattern,
-			  const comac_matrix_t  *ctm_inverse)
+_comac_pattern_transform (comac_pattern_t *pattern,
+			  const comac_matrix_t *ctm_inverse)
 {
     if (pattern->status)
 	return;
@@ -2170,15 +2247,18 @@ _radial_pattern_is_degenerate (const comac_radial_pattern_t *radial)
      */
 
     return fabs (radial->cd1.radius - radial->cd2.radius) < DBL_EPSILON &&
-	(MIN (radial->cd1.radius, radial->cd2.radius) < DBL_EPSILON ||
-	 MAX (fabs (radial->cd1.center.x - radial->cd2.center.x),
-	      fabs (radial->cd1.center.y - radial->cd2.center.y)) < 2 * DBL_EPSILON);
+	   (MIN (radial->cd1.radius, radial->cd2.radius) < DBL_EPSILON ||
+	    MAX (fabs (radial->cd1.center.x - radial->cd2.center.x),
+		 fabs (radial->cd1.center.y - radial->cd2.center.y)) <
+		2 * DBL_EPSILON);
 }
 
 static void
 _comac_linear_pattern_box_to_parameter (const comac_linear_pattern_t *linear,
-					double x0, double y0,
-					double x1, double y1,
+					double x0,
+					double y0,
+					double x1,
+					double y1,
 					double range[2])
 {
     double t0, tdx, tdy;
@@ -2236,7 +2316,7 @@ _comac_linear_pattern_box_to_parameter (const comac_linear_pattern_t *linear,
 static comac_bool_t
 _extend_range (double range[2], double value, comac_bool_t valid)
 {
-    if (!valid)
+    if (! valid)
 	range[0] = range[1] = value;
     else if (value < range[0])
 	range[0] = value;
@@ -2270,15 +2350,17 @@ _comac_radial_pattern_focus_is_inside (const comac_radial_pattern_t *radial)
     cr = radial->cd1.radius;
     dx = radial->cd2.center.x - cx;
     dy = radial->cd2.center.y - cy;
-    dr = radial->cd2.radius   - cr;
+    dr = radial->cd2.radius - cr;
 
-    return dx*dx + dy*dy < dr*dr;
+    return dx * dx + dy * dy < dr * dr;
 }
 
 static void
 _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
-					double x0, double y0,
-					double x1, double y1,
+					double x0,
+					double y0,
+					double x1,
+					double y1,
 					double tolerance,
 					double range[2])
 {
@@ -2303,7 +2385,7 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
     cr = radial->cd1.radius;
     dx = radial->cd2.center.x - cx;
     dy = radial->cd2.center.y - cy;
-    dr = radial->cd2.radius   - cr;
+    dr = radial->cd2.radius - cr;
 
     /* translate by -(cx, cy) to simplify computations */
     x0 -= cx;
@@ -2355,9 +2437,8 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
 	t_focus = -cr / dr;
 	x_focus = t_focus * dx;
 	y_focus = t_focus * dy;
-	if (minx <= x_focus && x_focus <= maxx &&
-	    miny <= y_focus && y_focus <= maxy)
-	{
+	if (minx <= x_focus && x_focus <= maxx && miny <= y_focus &&
+	    y_focus <= maxy) {
 	    valid = _extend_range (range, t_focus, valid);
 	}
     }
@@ -2396,14 +2477,14 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
      * the boundary line is the same as the edge is handled by the
      * focus point case and/or by the a==0 case.
      */
-#define T_EDGE(num,den,delta,lower,upper)				\
-    if (fabs (den) >= DBL_EPSILON) {					\
-	double t_edge, v;						\
-									\
-	t_edge = (num) / (den);						\
-	v = t_edge * (delta);						\
-	if (t_edge * dr >= mindr && (lower) <= v && v <= (upper))	\
-	    valid = _extend_range (range, t_edge, valid);		\
+#define T_EDGE(num, den, delta, lower, upper)                                  \
+    if (fabs (den) >= DBL_EPSILON) {                                           \
+	double t_edge, v;                                                      \
+                                                                               \
+	t_edge = (num) / (den);                                                \
+	v = t_edge * (delta);                                                  \
+	if (t_edge * dr >= mindr && (lower) <= v && v <= (upper))              \
+	    valid = _extend_range (range, t_edge, valid);                      \
     }
 
     /* circles tangent (externally) to left/right/top/bottom edge */
@@ -2503,21 +2584,21 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
 	 *   u = (edge) - (u_origin)
 	 *   v = -((edge) * (delta) + cr*dr) / (den) - v_focus
 	 */
-#define T_EDGE(edge,delta,den,lower,upper,u_origin,v_origin)	\
-	if (fabs (den) >= DBL_EPSILON) {			\
-	    double v;						\
-								\
-	    v = -((edge) * (delta) + cr * dr) / (den);		\
-	    if ((lower) <= v && v <= (upper)) {			\
-		double u, d2;					\
-								\
-		u = (edge) - (u_origin);			\
-		v -= (v_origin);				\
-		d2 = u*u + v*v;					\
-		if (maxd2 < d2)					\
-		    maxd2 = d2;					\
-	    }							\
-	}
+#define T_EDGE(edge, delta, den, lower, upper, u_origin, v_origin)             \
+    if (fabs (den) >= DBL_EPSILON) {                                           \
+	double v;                                                              \
+                                                                               \
+	v = -((edge) * (delta) + cr * dr) / (den);                             \
+	if ((lower) <= v && v <= (upper)) {                                    \
+	    double u, d2;                                                      \
+                                                                               \
+	    u = (edge) - (u_origin);                                           \
+	    v -= (v_origin);                                                   \
+	    d2 = u * u + v * v;                                                \
+	    if (maxd2 < d2)                                                    \
+		maxd2 = d2;                                                    \
+	}                                                                      \
+    }
 
 	maxd2 = 0;
 
@@ -2544,7 +2625,7 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
 	 *       (maxd2 + tolerance^2 - 2*tolerance*cr) / (2*tolerance*dr)
 	 */
 	if (maxd2 > 0) {
-	    double t_limit = maxd2 + tolerance*tolerance - 2*tolerance*cr;
+	    double t_limit = maxd2 + tolerance * tolerance - 2 * tolerance * cr;
 	    t_limit /= 2 * tolerance * dr;
 	    valid = _extend_range (range, t_limit, valid);
 	}
@@ -2559,19 +2640,19 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
 	 * The b == 0 case has just been handled, so we only have to
 	 * compute this if b != 0.
 	 */
-#define T_CORNER(x,y)							\
-	b = (x) * dx + (y) * dy + cr * dr;				\
-	if (fabs (b) >= DBL_EPSILON) {					\
-	    double t_corner;						\
-	    double x2 = (x) * (x);					\
-	    double y2 = (y) * (y);					\
-	    double cr2 = (cr) * (cr);					\
-	    double c = x2 + y2 - cr2;					\
-	    								\
-	    t_corner = 0.5 * c / b;					\
-	    if (t_corner * dr >= mindr)					\
-		valid = _extend_range (range, t_corner, valid);		\
-	}
+#define T_CORNER(x, y)                                                         \
+    b = (x) *dx + (y) *dy + cr * dr;                                           \
+    if (fabs (b) >= DBL_EPSILON) {                                             \
+	double t_corner;                                                       \
+	double x2 = (x) * (x);                                                 \
+	double y2 = (y) * (y);                                                 \
+	double cr2 = (cr) * (cr);                                              \
+	double c = x2 + y2 - cr2;                                              \
+                                                                               \
+	t_corner = 0.5 * c / b;                                                \
+	if (t_corner * dr >= mindr)                                            \
+	    valid = _extend_range (range, t_corner, valid);                    \
+    }
 
 	/* circles touching each corner */
 	T_CORNER (x0, y0);
@@ -2595,21 +2676,21 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
 	 * If the argument of sqrt() is negative, then no circle
 	 * passes through the corner.
 	 */
-#define T_CORNER(x,y)							\
-	b = (x) * dx + (y) * dy + cr * dr;				\
-	c = (x) * (x) + (y) * (y) - cr * cr;				\
-	d = b * b - a * c;						\
-	if (d >= 0) {							\
-	    double t_corner;						\
-									\
-	    d = sqrt (d);						\
-	    t_corner = (b + d) * inva;					\
-	    if (t_corner * dr >= mindr)					\
-		valid = _extend_range (range, t_corner, valid);		\
-	    t_corner = (b - d) * inva;					\
-	    if (t_corner * dr >= mindr)					\
-		valid = _extend_range (range, t_corner, valid);		\
-	}
+#define T_CORNER(x, y)                                                         \
+    b = (x) *dx + (y) *dy + cr * dr;                                           \
+    c = (x) * (x) + (y) * (y) -cr * cr;                                        \
+    d = b * b - a * c;                                                         \
+    if (d >= 0) {                                                              \
+	double t_corner;                                                       \
+                                                                               \
+	d = sqrt (d);                                                          \
+	t_corner = (b + d) * inva;                                             \
+	if (t_corner * dr >= mindr)                                            \
+	    valid = _extend_range (range, t_corner, valid);                    \
+	t_corner = (b - d) * inva;                                             \
+	if (t_corner * dr >= mindr)                                            \
+	    valid = _extend_range (range, t_corner, valid);                    \
+    }
 
 	/* circles touching each corner */
 	T_CORNER (x0, y0);
@@ -2635,21 +2716,35 @@ _comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
  * The range isn't guaranteed to be minimal, but it tries to.
  **/
 void
-_comac_gradient_pattern_box_to_parameter (const comac_gradient_pattern_t *gradient,
-					  double x0, double y0,
-					  double x1, double y1,
-					  double tolerance,
-					  double out_range[2])
+_comac_gradient_pattern_box_to_parameter (
+    const comac_gradient_pattern_t *gradient,
+    double x0,
+    double y0,
+    double x1,
+    double y1,
+    double tolerance,
+    double out_range[2])
 {
     assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
 	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
     if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
-	_comac_linear_pattern_box_to_parameter ((comac_linear_pattern_t *) gradient,
-						x0, y0, x1, y1, out_range);
+	_comac_linear_pattern_box_to_parameter (
+	    (comac_linear_pattern_t *) gradient,
+	    x0,
+	    y0,
+	    x1,
+	    y1,
+	    out_range);
     } else {
-	_comac_radial_pattern_box_to_parameter ((comac_radial_pattern_t *) gradient,
-						x0, y0, x1, y1, tolerance, out_range);
+	_comac_radial_pattern_box_to_parameter (
+	    (comac_radial_pattern_t *) gradient,
+	    x0,
+	    y0,
+	    x1,
+	    y1,
+	    tolerance,
+	    out_range);
     }
 }
 
@@ -2662,13 +2757,13 @@ _comac_gradient_pattern_box_to_parameter (const comac_gradient_pattern_t *gradie
  **/
 void
 _comac_gradient_pattern_interpolate (const comac_gradient_pattern_t *gradient,
-				     double			     t,
-				     comac_circle_double_t	    *out_circle)
+				     double t,
+				     comac_circle_double_t *out_circle)
 {
     assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
 	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
-#define lerp(a,b) (a)*(1-t) + (b)*t
+#define lerp(a, b) (a) * (1 - t) + (b) *t
 
     if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
 	comac_linear_pattern_t *linear = (comac_linear_pattern_t *) gradient;
@@ -2677,14 +2772,15 @@ _comac_gradient_pattern_interpolate (const comac_gradient_pattern_t *gradient,
 	out_circle->radius = 0;
     } else {
 	comac_radial_pattern_t *radial = (comac_radial_pattern_t *) gradient;
-	out_circle->center.x = lerp (radial->cd1.center.x, radial->cd2.center.x);
-	out_circle->center.y = lerp (radial->cd1.center.y, radial->cd2.center.y);
-	out_circle->radius   = lerp (radial->cd1.radius  , radial->cd2.radius);
+	out_circle->center.x =
+	    lerp (radial->cd1.center.x, radial->cd2.center.x);
+	out_circle->center.y =
+	    lerp (radial->cd1.center.y, radial->cd2.center.y);
+	out_circle->radius = lerp (radial->cd1.radius, radial->cd2.radius);
     }
 
 #undef lerp
 }
-
 
 /**
  * _comac_gradient_pattern_fit_to_range:
@@ -2699,9 +2795,9 @@ _comac_gradient_pattern_interpolate (const comac_gradient_pattern_t *gradient,
  **/
 void
 _comac_gradient_pattern_fit_to_range (const comac_gradient_pattern_t *gradient,
-				      double			      max_value,
-				      comac_matrix_t                 *out_matrix,
-				      comac_circle_double_t	      out_circle[2])
+				      double max_value,
+				      comac_matrix_t *out_matrix,
+				      comac_circle_double_t out_circle[2])
 {
     double dim;
 
@@ -2736,7 +2832,7 @@ _comac_gradient_pattern_fit_to_range (const comac_gradient_pattern_t *gradient,
 	dim = MAX (dim, fabs (radial->cd2.radius));
 	dim = MAX (dim, fabs (radial->cd1.center.x - radial->cd2.center.x));
 	dim = MAX (dim, fabs (radial->cd1.center.y - radial->cd2.center.y));
-	dim = MAX (dim, fabs (radial->cd1.radius   - radial->cd2.radius));
+	dim = MAX (dim, fabs (radial->cd1.radius - radial->cd2.radius));
     }
 
     if (unlikely (dim > max_value)) {
@@ -2746,10 +2842,10 @@ _comac_gradient_pattern_fit_to_range (const comac_gradient_pattern_t *gradient,
 
 	out_circle[0].center.x *= dim;
 	out_circle[0].center.y *= dim;
-	out_circle[0].radius   *= dim;
+	out_circle[0].radius *= dim;
 	out_circle[1].center.x *= dim;
 	out_circle[1].center.y *= dim;
-	out_circle[1].radius   *= dim;
+	out_circle[1].radius *= dim;
 
 	comac_matrix_init_scale (&scale, dim, dim);
 	comac_matrix_multiply (out_matrix, &gradient->base.matrix, &scale);
@@ -2769,7 +2865,8 @@ _gradient_is_clear (const comac_gradient_pattern_t *gradient,
 
     if (gradient->n_stops == 0 ||
 	(gradient->base.extend == COMAC_EXTEND_NONE &&
-	 gradient->stops[0].offset == gradient->stops[gradient->n_stops - 1].offset))
+	 gradient->stops[0].offset ==
+	     gradient->stops[gradient->n_stops - 1].offset))
 	return TRUE;
 
     if (gradient->base.type == COMAC_PATTERN_TYPE_RADIAL) {
@@ -2783,10 +2880,8 @@ _gradient_is_clear (const comac_gradient_pattern_t *gradient,
     }
 
     /* Check if the extents intersect the drawn part of the pattern. */
-    if (extents != NULL &&
-	(gradient->base.extend == COMAC_EXTEND_NONE ||
-	 gradient->base.type == COMAC_PATTERN_TYPE_RADIAL))
-    {
+    if (extents != NULL && (gradient->base.extend == COMAC_EXTEND_NONE ||
+			    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL)) {
 	double t[2];
 
 	_comac_gradient_pattern_box_to_parameter (gradient,
@@ -2799,9 +2894,8 @@ _gradient_is_clear (const comac_gradient_pattern_t *gradient,
 
 	if (gradient->base.extend == COMAC_EXTEND_NONE &&
 	    (t[0] >= gradient->stops[gradient->n_stops - 1].offset ||
-	     t[1] <= gradient->stops[0].offset))
-	{
-		return TRUE;
+	     t[1] <= gradient->stops[0].offset)) {
+	    return TRUE;
 	}
 
 	if (t[0] == t[1])
@@ -2839,7 +2933,7 @@ _gradient_color_average (const comac_gradient_pattern_t *gradient,
 
     switch (gradient->base.extend) {
     case COMAC_EXTEND_REPEAT:
-      /*
+	/*
        * Sa, Sb and Sy, Sz are the first two and last two stops respectively.
        * The weight of the first and last stop can be computed as the area of
        * the following triangles (taken with height 1, since the whole [0-1]
@@ -2857,11 +2951,12 @@ _gradient_color_average (const comac_gradient_pattern_t *gradient,
        * Halving the result is done after summing up all the areas.
        */
 	delta0 = 1.0 + gradient->stops[1].offset - gradient->stops[end].offset;
-	delta1 = 1.0 + gradient->stops[0].offset - gradient->stops[end-1].offset;
+	delta1 =
+	    1.0 + gradient->stops[0].offset - gradient->stops[end - 1].offset;
 	break;
 
     case COMAC_EXTEND_REFLECT:
-      /*
+	/*
        * Sa, Sb and Sy, Sz are the first two and last two stops respectively.
        * The weight of the first and last stop can be computed as the area of
        * the following trapezoids (taken with height 1, since the whole [0-1]
@@ -2879,11 +2974,12 @@ _gradient_color_average (const comac_gradient_pattern_t *gradient,
        * Halving the result is done after summing up all the areas.
        */
 	delta0 = gradient->stops[0].offset + gradient->stops[1].offset;
-	delta1 = 2.0 - gradient->stops[end-1].offset - gradient->stops[end].offset;
+	delta1 =
+	    2.0 - gradient->stops[end - 1].offset - gradient->stops[end].offset;
 	break;
 
     case COMAC_EXTEND_PAD:
-      /* PAD is computed as the average of the first and last stop:
+	/* PAD is computed as the average of the first and last stop:
        *  - take both of them with weight 1 (they will be halved
        *    after the whole sum has been computed).
        *  - avoid summing any of the inner stops.
@@ -2905,12 +3001,13 @@ _gradient_color_average (const comac_gradient_pattern_t *gradient,
     a = delta0 * gradient->stops[0].color.alpha;
 
     for (i = start; i < end; ++i) {
-      /* Inner stops weight is the same as the area of the triangle they influence
+	/* Inner stops weight is the same as the area of the triangle they influence
        * (which goes from the stop before to the stop after), again with height 1
        * since the whole must sum up to 1: b*h/2
        * Halving is done after the whole sum has been computed.
        */
-	double delta = gradient->stops[i+1].offset - gradient->stops[i-1].offset;
+	double delta =
+	    gradient->stops[i + 1].offset - gradient->stops[i - 1].offset;
 	r += delta * gradient->stops[i].color.red;
 	g += delta * gradient->stops[i].color.green;
 	b += delta * gradient->stops[i].color.blue;
@@ -2937,8 +3034,8 @@ _gradient_color_average (const comac_gradient_pattern_t *gradient,
  **/
 void
 _comac_pattern_alpha_range (const comac_pattern_t *pattern,
-			    double                *out_min,
-			    double                *out_max)
+			    double *out_min,
+			    double *out_max)
 {
     double alpha_min, alpha_max;
 
@@ -2951,7 +3048,8 @@ _comac_pattern_alpha_range (const comac_pattern_t *pattern,
 
     case COMAC_PATTERN_TYPE_LINEAR:
     case COMAC_PATTERN_TYPE_RADIAL: {
-	const comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t *) pattern;
+	const comac_gradient_pattern_t *gradient =
+	    (comac_gradient_pattern_t *) pattern;
 	unsigned int i;
 
 	assert (gradient->n_stops >= 1);
@@ -2968,8 +3066,10 @@ _comac_pattern_alpha_range (const comac_pattern_t *pattern,
     }
 
     case COMAC_PATTERN_TYPE_MESH: {
-	const comac_mesh_pattern_t *mesh = (const comac_mesh_pattern_t *) pattern;
-	const comac_mesh_patch_t *patch = _comac_array_index_const (&mesh->patches, 0);
+	const comac_mesh_pattern_t *mesh =
+	    (const comac_mesh_pattern_t *) pattern;
+	const comac_mesh_patch_t *patch =
+	    _comac_array_index_const (&mesh->patches, 0);
 	unsigned int i, j, n = _comac_array_num_elements (&mesh->patches);
 
 	assert (n >= 1);
@@ -3022,10 +3122,10 @@ _comac_pattern_alpha_range (const comac_pattern_t *pattern,
  **/
 comac_bool_t
 _comac_mesh_pattern_coord_box (const comac_mesh_pattern_t *mesh,
-			       double                     *out_xmin,
-			       double                     *out_ymin,
-			       double                     *out_xmax,
-			       double                     *out_ymax)
+			       double *out_xmin,
+			       double *out_ymin,
+			       double *out_xmax,
+			       double *out_ymax)
 {
     const comac_mesh_patch_t *patch;
     unsigned int num_patches, i, j, k;
@@ -3105,7 +3205,8 @@ _comac_gradient_pattern_is_solid (const comac_gradient_pattern_t *gradient,
 						    extents->x,
 						    extents->y,
 						    extents->x + extents->width,
-						    extents->y + extents->height,
+						    extents->y +
+							extents->height,
 						    t);
 
 	    if (t[0] < 0.0 || t[1] > 1.0)
@@ -3138,9 +3239,9 @@ _comac_gradient_pattern_is_solid (const comac_gradient_pattern_t *gradient,
  * Return value: %TRUE if the pattern has constant alpha.
  **/
 comac_bool_t
-_comac_pattern_is_constant_alpha (const comac_pattern_t         *abstract_pattern,
-				  const comac_rectangle_int_t   *extents,
-				  double                        *alpha)
+_comac_pattern_is_constant_alpha (const comac_pattern_t *abstract_pattern,
+				  const comac_rectangle_int_t *extents,
+				  double *alpha)
 {
     const comac_pattern_union_t *pattern;
     comac_color_t color;
@@ -3163,7 +3264,9 @@ _comac_pattern_is_constant_alpha (const comac_pattern_t         *abstract_patter
 
     case COMAC_PATTERN_TYPE_LINEAR:
     case COMAC_PATTERN_TYPE_RADIAL:
-	if (_comac_gradient_pattern_is_solid (&pattern->gradient.base, extents, &color)) {
+	if (_comac_gradient_pattern_is_solid (&pattern->gradient.base,
+					      extents,
+					      &color)) {
 	    *alpha = color.alpha;
 	    return TRUE;
 	} else {
@@ -3188,7 +3291,7 @@ _mesh_is_clear (const comac_mesh_pattern_t *mesh)
     comac_bool_t is_valid;
 
     is_valid = _comac_mesh_pattern_coord_box (mesh, &x1, &y1, &x2, &y2);
-    if (!is_valid)
+    if (! is_valid)
 	return TRUE;
 
     if (x2 - x1 < DBL_EPSILON || y2 - y1 < DBL_EPSILON)
@@ -3268,7 +3371,7 @@ _surface_is_clear (const comac_surface_pattern_t *pattern)
 	return TRUE;
 
     return pattern->surface->is_clear &&
-	pattern->surface->content & COMAC_CONTENT_ALPHA;
+	   pattern->surface->content & COMAC_CONTENT_ALPHA;
 }
 
 static comac_bool_t
@@ -3288,13 +3391,15 @@ _gradient_is_opaque (const comac_gradient_pattern_t *gradient,
 
     if (gradient->n_stops == 0 ||
 	(gradient->base.extend == COMAC_EXTEND_NONE &&
-	 gradient->stops[0].offset == gradient->stops[gradient->n_stops - 1].offset))
+	 gradient->stops[0].offset ==
+	     gradient->stops[gradient->n_stops - 1].offset))
 	return FALSE;
 
     if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
 	if (gradient->base.extend == COMAC_EXTEND_NONE) {
 	    double t[2];
-	    comac_linear_pattern_t *linear = (comac_linear_pattern_t *) gradient;
+	    comac_linear_pattern_t *linear =
+		(comac_linear_pattern_t *) gradient;
 
 	    /* EXTEND_NONE degenerate radial gradients are clear */
 	    if (_linear_pattern_is_degenerate (linear))
@@ -3394,14 +3499,14 @@ _comac_pattern_is_clear (const comac_pattern_t *abstract_pattern)
  * then a scale of exactly .5 works.
  */
 static int
-use_bilinear(double x, double y, double t)
+use_bilinear (double x, double y, double t)
 {
     /* This is the inverse matrix! */
-    double h = x*x + y*y;
+    double h = x * x + y * y;
     if (h < 1.0 / (0.75 * 0.75))
-	return TRUE; /* scale > .75 */
-    if ((h > 3.99 && h < 4.01) /* scale is 1/2 */
-	&& !_comac_fixed_from_double(x*y) /* parallel to an axis */
+	return TRUE;			      /* scale > .75 */
+    if ((h > 3.99 && h < 4.01)		      /* scale is 1/2 */
+	&& ! _comac_fixed_from_double (x * y) /* parallel to an axis */
 	&& _comac_fixed_is_integer (_comac_fixed_from_double (t)))
 	return TRUE;
     return FALSE;
@@ -3437,9 +3542,11 @@ _comac_pattern_analyze_filter (const comac_pattern_t *pattern)
 	     * and the translation in that direction is an integer.
 	     */
 	    if (pattern->filter == COMAC_FILTER_GOOD &&
-		use_bilinear (pattern->matrix.xx, pattern->matrix.xy,
+		use_bilinear (pattern->matrix.xx,
+			      pattern->matrix.xy,
 			      pattern->matrix.x0) &&
-		use_bilinear (pattern->matrix.yx, pattern->matrix.yy,
+		use_bilinear (pattern->matrix.yx,
+			      pattern->matrix.yy,
 			      pattern->matrix.y0))
 		return COMAC_FILTER_BILINEAR;
 	}
@@ -3462,9 +3569,9 @@ _comac_pattern_analyze_filter (const comac_pattern_t *pattern)
  * hypot is too slow, as there is no need for accuracy here.
  **/
 static inline double
-_comac_hypot(double x, double y)
+_comac_hypot (double x, double y)
 {
-    return hypot(x, y);
+    return hypot (x, y);
 }
 
 /**
@@ -3503,7 +3610,10 @@ _comac_pattern_sampled_area (const comac_pattern_t *pattern,
     x2 = x1 + (extents->width - 1);
     y2 = y1 + (extents->height - 1);
     _comac_matrix_transform_bounding_box (&pattern->matrix,
-					  &x1, &y1, &x2, &y2,
+					  &x1,
+					  &y1,
+					  &x2,
+					  &y2,
 					  NULL);
 
     /* How far away from center will it actually sample?
@@ -3528,38 +3638,50 @@ _comac_pattern_sampled_area (const comac_pattern_t *pattern,
     case COMAC_FILTER_GOOD:
 	/* Correct value is max(width,1)*.5 */
 	padx = _comac_hypot (pattern->matrix.xx, pattern->matrix.xy);
-	if (padx <= 1.0) padx = 0.495;
-	else if (padx >= 16.0) padx = 7.92;
-	else padx *= 0.495;
+	if (padx <= 1.0)
+	    padx = 0.495;
+	else if (padx >= 16.0)
+	    padx = 7.92;
+	else
+	    padx *= 0.495;
 	pady = _comac_hypot (pattern->matrix.yx, pattern->matrix.yy);
-	if (pady <= 1.0) pady = 0.495;
-	else if (pady >= 16.0) pady = 7.92;
-	else pady *= 0.495;
+	if (pady <= 1.0)
+	    pady = 0.495;
+	else if (pady >= 16.0)
+	    pady = 7.92;
+	else
+	    pady *= 0.495;
 	break;
     case COMAC_FILTER_BEST:
 	/* Correct value is width*2 */
 	padx = _comac_hypot (pattern->matrix.xx, pattern->matrix.xy) * 1.98;
-	if (padx > 7.92) padx = 7.92;
+	if (padx > 7.92)
+	    padx = 7.92;
 	pady = _comac_hypot (pattern->matrix.yx, pattern->matrix.yy) * 1.98;
-	if (pady > 7.92) pady = 7.92;
+	if (pady > 7.92)
+	    pady = 7.92;
 	break;
     }
 
     /* round furthest samples to edge of pixels */
     x1 = floor (x1 - padx);
-    if (x1 < COMAC_RECT_INT_MIN) x1 = COMAC_RECT_INT_MIN;
+    if (x1 < COMAC_RECT_INT_MIN)
+	x1 = COMAC_RECT_INT_MIN;
     sample->x = x1;
 
     y1 = floor (y1 - pady);
-    if (y1 < COMAC_RECT_INT_MIN) y1 = COMAC_RECT_INT_MIN;
+    if (y1 < COMAC_RECT_INT_MIN)
+	y1 = COMAC_RECT_INT_MIN;
     sample->y = y1;
 
     x2 = floor (x2 + padx) + 1.0;
-    if (x2 > COMAC_RECT_INT_MAX) x2 = COMAC_RECT_INT_MAX;
+    if (x2 > COMAC_RECT_INT_MAX)
+	x2 = COMAC_RECT_INT_MAX;
     sample->width = x2 - x1;
 
     y2 = floor (y2 + pady) + 1.0;
-    if (y2 > COMAC_RECT_INT_MAX) y2 = COMAC_RECT_INT_MAX;
+    if (y2 > COMAC_RECT_INT_MAX)
+	y2 = COMAC_RECT_INT_MAX;
     sample->height = y2 - y1;
 }
 
@@ -3579,9 +3701,9 @@ _comac_pattern_sampled_area (const comac_pattern_t *pattern,
  * with a little more work.
  **/
 void
-_comac_pattern_get_extents (const comac_pattern_t         *pattern,
-			    comac_rectangle_int_t         *extents,
-			    comac_bool_t                   is_vector)
+_comac_pattern_get_extents (const comac_pattern_t *pattern,
+			    comac_rectangle_int_t *extents,
+			    comac_bool_t is_vector)
 {
     double x1, y1, x2, y2;
     int ix1, ix2, iy1, iy2;
@@ -3592,47 +3714,44 @@ _comac_pattern_get_extents (const comac_pattern_t         *pattern,
     case COMAC_PATTERN_TYPE_SOLID:
 	goto UNBOUNDED;
 
-    case COMAC_PATTERN_TYPE_SURFACE:
-	{
-	    comac_rectangle_int_t surface_extents;
-	    const comac_surface_pattern_t *surface_pattern =
-		(const comac_surface_pattern_t *) pattern;
-	    comac_surface_t *surface = surface_pattern->surface;
+    case COMAC_PATTERN_TYPE_SURFACE: {
+	comac_rectangle_int_t surface_extents;
+	const comac_surface_pattern_t *surface_pattern =
+	    (const comac_surface_pattern_t *) pattern;
+	comac_surface_t *surface = surface_pattern->surface;
 
-	    if (! _comac_surface_get_extents (surface, &surface_extents))
-		goto UNBOUNDED;
+	if (! _comac_surface_get_extents (surface, &surface_extents))
+	    goto UNBOUNDED;
 
-	    if (surface_extents.width == 0 || surface_extents.height == 0)
-		goto EMPTY;
+	if (surface_extents.width == 0 || surface_extents.height == 0)
+	    goto EMPTY;
 
-	    if (pattern->extend != COMAC_EXTEND_NONE)
-		goto UNBOUNDED;
+	if (pattern->extend != COMAC_EXTEND_NONE)
+	    goto UNBOUNDED;
 
-	    x1 = surface_extents.x;
-	    y1 = surface_extents.y;
-	    x2 = surface_extents.x + (int) surface_extents.width;
-	    y2 = surface_extents.y + (int) surface_extents.height;
+	x1 = surface_extents.x;
+	y1 = surface_extents.y;
+	x2 = surface_extents.x + (int) surface_extents.width;
+	y2 = surface_extents.y + (int) surface_extents.height;
 
-	    goto HANDLE_FILTER;
-	}
-	break;
+	goto HANDLE_FILTER;
+    } break;
 
-    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
-	{
-	    const comac_raster_source_pattern_t *raster =
-		(const comac_raster_source_pattern_t *) pattern;
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE: {
+	const comac_raster_source_pattern_t *raster =
+	    (const comac_raster_source_pattern_t *) pattern;
 
-	    if (raster->extents.width == 0 || raster->extents.height == 0)
-		goto EMPTY;
+	if (raster->extents.width == 0 || raster->extents.height == 0)
+	    goto EMPTY;
 
-	    if (pattern->extend != COMAC_EXTEND_NONE)
-		goto UNBOUNDED;
+	if (pattern->extend != COMAC_EXTEND_NONE)
+	    goto UNBOUNDED;
 
-	    x1 = raster->extents.x;
-	    y1 = raster->extents.y;
-	    x2 = raster->extents.x + (int) raster->extents.width;
-	    y2 = raster->extents.y + (int) raster->extents.height;
-	}
+	x1 = raster->extents.x;
+	y1 = raster->extents.y;
+	x2 = raster->extents.x + (int) raster->extents.width;
+	y2 = raster->extents.y + (int) raster->extents.height;
+    }
     HANDLE_FILTER:
 	switch (pattern->filter) {
 	case COMAC_FILTER_NEAREST:
@@ -3666,97 +3785,93 @@ _comac_pattern_get_extents (const comac_pattern_t         *pattern,
 	}
 	break;
 
-    case COMAC_PATTERN_TYPE_RADIAL:
-	{
-	    const comac_radial_pattern_t *radial =
-		(const comac_radial_pattern_t *) pattern;
-	    double cx1, cy1;
-	    double cx2, cy2;
-	    double r1, r2;
+    case COMAC_PATTERN_TYPE_RADIAL: {
+	const comac_radial_pattern_t *radial =
+	    (const comac_radial_pattern_t *) pattern;
+	double cx1, cy1;
+	double cx2, cy2;
+	double r1, r2;
 
-	    if (_radial_pattern_is_degenerate (radial)) {
-		/* comac-gstate should have optimised degenerate
+	if (_radial_pattern_is_degenerate (radial)) {
+	    /* comac-gstate should have optimised degenerate
 		 * patterns to solid clear patterns, so we can ignore
 		 * them here. */
-		goto EMPTY;
-	    }
-
-	    /* TODO: in some cases (focus outside/on the circle) it is
-	     * half-bounded. */
-	    if (pattern->extend != COMAC_EXTEND_NONE)
-		goto UNBOUNDED;
-
-	    cx1 = radial->cd1.center.x;
-	    cy1 = radial->cd1.center.y;
-	    r1  = radial->cd1.radius;
-
-	    cx2 = radial->cd2.center.x;
-	    cy2 = radial->cd2.center.y;
-	    r2  = radial->cd2.radius;
-
-	    x1 = MIN (cx1 - r1, cx2 - r2);
-	    y1 = MIN (cy1 - r1, cy2 - r2);
-	    x2 = MAX (cx1 + r1, cx2 + r2);
-	    y2 = MAX (cy1 + r1, cy2 + r2);
+	    goto EMPTY;
 	}
-	break;
 
-    case COMAC_PATTERN_TYPE_LINEAR:
-	{
-	    const comac_linear_pattern_t *linear =
-		(const comac_linear_pattern_t *) pattern;
+	/* TODO: in some cases (focus outside/on the circle) it is
+	     * half-bounded. */
+	if (pattern->extend != COMAC_EXTEND_NONE)
+	    goto UNBOUNDED;
 
-	    if (pattern->extend != COMAC_EXTEND_NONE)
-		goto UNBOUNDED;
+	cx1 = radial->cd1.center.x;
+	cy1 = radial->cd1.center.y;
+	r1 = radial->cd1.radius;
 
-	    if (_linear_pattern_is_degenerate (linear)) {
-		/* comac-gstate should have optimised degenerate
+	cx2 = radial->cd2.center.x;
+	cy2 = radial->cd2.center.y;
+	r2 = radial->cd2.radius;
+
+	x1 = MIN (cx1 - r1, cx2 - r2);
+	y1 = MIN (cy1 - r1, cy2 - r2);
+	x2 = MAX (cx1 + r1, cx2 + r2);
+	y2 = MAX (cy1 + r1, cy2 + r2);
+    } break;
+
+    case COMAC_PATTERN_TYPE_LINEAR: {
+	const comac_linear_pattern_t *linear =
+	    (const comac_linear_pattern_t *) pattern;
+
+	if (pattern->extend != COMAC_EXTEND_NONE)
+	    goto UNBOUNDED;
+
+	if (_linear_pattern_is_degenerate (linear)) {
+	    /* comac-gstate should have optimised degenerate
 		 * patterns to solid ones, so we can again ignore
 		 * them here. */
-		goto EMPTY;
-	    }
+	    goto EMPTY;
+	}
 
-	    /* TODO: to get tight extents, use the matrix to transform
+	/* TODO: to get tight extents, use the matrix to transform
 	     * the pattern instead of transforming the extents later. */
-	    if (pattern->matrix.xy != 0. || pattern->matrix.yx != 0.)
-		goto UNBOUNDED;
+	if (pattern->matrix.xy != 0. || pattern->matrix.yx != 0.)
+	    goto UNBOUNDED;
 
-	    if (linear->pd1.x == linear->pd2.x) {
-		x1 = -HUGE_VAL;
-		x2 = HUGE_VAL;
-		y1 = MIN (linear->pd1.y, linear->pd2.y);
-		y2 = MAX (linear->pd1.y, linear->pd2.y);
-	    } else if (linear->pd1.y == linear->pd2.y) {
-		x1 = MIN (linear->pd1.x, linear->pd2.x);
-		x2 = MAX (linear->pd1.x, linear->pd2.x);
-		y1 = -HUGE_VAL;
-		y2 = HUGE_VAL;
-	    } else {
-		goto  UNBOUNDED;
-	    }
+	if (linear->pd1.x == linear->pd2.x) {
+	    x1 = -HUGE_VAL;
+	    x2 = HUGE_VAL;
+	    y1 = MIN (linear->pd1.y, linear->pd2.y);
+	    y2 = MAX (linear->pd1.y, linear->pd2.y);
+	} else if (linear->pd1.y == linear->pd2.y) {
+	    x1 = MIN (linear->pd1.x, linear->pd2.x);
+	    x2 = MAX (linear->pd1.x, linear->pd2.x);
+	    y1 = -HUGE_VAL;
+	    y2 = HUGE_VAL;
+	} else {
+	    goto UNBOUNDED;
+	}
 
-	    /* The current linear renderer just point-samples in the middle
+	/* The current linear renderer just point-samples in the middle
 	       of the pixels, similar to the NEAREST filter: */
-	    round_x = round_y = TRUE;
-	}
-	break;
+	round_x = round_y = TRUE;
+    } break;
 
-    case COMAC_PATTERN_TYPE_MESH:
-	{
-	    const comac_mesh_pattern_t *mesh =
-		(const comac_mesh_pattern_t *) pattern;
-	    if (! _comac_mesh_pattern_coord_box (mesh, &x1, &y1, &x2, &y2))
-		goto EMPTY;
-	}
-	break;
+    case COMAC_PATTERN_TYPE_MESH: {
+	const comac_mesh_pattern_t *mesh =
+	    (const comac_mesh_pattern_t *) pattern;
+	if (! _comac_mesh_pattern_coord_box (mesh, &x1, &y1, &x2, &y2))
+	    goto EMPTY;
+    } break;
 
     default:
 	ASSERT_NOT_REACHED;
     }
 
     if (_comac_matrix_is_translation (&pattern->matrix)) {
-	x1 -= pattern->matrix.x0; x2 -= pattern->matrix.x0;
-	y1 -= pattern->matrix.y0; y2 -= pattern->matrix.y0;
+	x1 -= pattern->matrix.x0;
+	x2 -= pattern->matrix.x0;
+	y1 -= pattern->matrix.y0;
+	y2 -= pattern->matrix.y0;
     } else {
 	comac_matrix_t imatrix;
 	comac_status_t status;
@@ -3767,27 +3882,31 @@ _comac_pattern_get_extents (const comac_pattern_t         *pattern,
 	assert (status == COMAC_STATUS_SUCCESS);
 
 	_comac_matrix_transform_bounding_box (&imatrix,
-					      &x1, &y1, &x2, &y2,
+					      &x1,
+					      &y1,
+					      &x2,
+					      &y2,
 					      NULL);
     }
 
-    if (!round_x) {
+    if (! round_x) {
 	x1 -= 0.5;
 	x2 += 0.5;
     }
     if (x1 < COMAC_RECT_INT_MIN)
 	ix1 = COMAC_RECT_INT_MIN;
-    else 
+    else
 	ix1 = _comac_lround (x1);
     if (x2 > COMAC_RECT_INT_MAX)
 	ix2 = COMAC_RECT_INT_MAX;
     else
 	ix2 = _comac_lround (x2);
-    extents->x = ix1; extents->width  = ix2 - ix1;
+    extents->x = ix1;
+    extents->width = ix2 - ix1;
     if (is_vector && extents->width == 0 && x1 != x2)
 	extents->width += 1;
 
-    if (!round_y) {
+    if (! round_y) {
 	y1 -= 0.5;
 	y2 += 0.5;
     }
@@ -3799,18 +3918,19 @@ _comac_pattern_get_extents (const comac_pattern_t         *pattern,
 	iy2 = COMAC_RECT_INT_MAX;
     else
 	iy2 = _comac_lround (y2);
-    extents->y = iy1; extents->height = iy2 - iy1;
+    extents->y = iy1;
+    extents->height = iy2 - iy1;
     if (is_vector && extents->height == 0 && y1 != y2)
 	extents->height += 1;
 
     return;
 
-  UNBOUNDED:
+UNBOUNDED:
     /* unbounded patterns -> 'infinite' extents */
     _comac_unbounded_rectangle_init (extents);
     return;
 
-  EMPTY:
+EMPTY:
     extents->x = extents->y = 0;
     extents->width = extents->height = 0;
     return;
@@ -3822,12 +3942,11 @@ _comac_pattern_get_extents (const comac_pattern_t         *pattern,
  * Return the "target-space" inked extents of @pattern in @extents.
  **/
 comac_int_status_t
-_comac_pattern_get_ink_extents (const comac_pattern_t         *pattern,
-				comac_rectangle_int_t         *extents)
+_comac_pattern_get_ink_extents (const comac_pattern_t *pattern,
+				comac_rectangle_int_t *extents)
 {
     if (pattern->type == COMAC_PATTERN_TYPE_SURFACE &&
-	pattern->extend == COMAC_EXTEND_NONE)
-    {
+	pattern->extend == COMAC_EXTEND_NONE) {
 	const comac_surface_pattern_t *surface_pattern =
 	    (const comac_surface_pattern_t *) pattern;
 	comac_surface_t *surface = surface_pattern->surface;
@@ -3843,8 +3962,10 @@ _comac_pattern_get_ink_extents (const comac_pattern_t         *pattern,
 	    /* comac_pattern_set_matrix ensures the matrix is invertible */
 	    assert (status == COMAC_STATUS_SUCCESS);
 
-	    status = _comac_recording_surface_get_ink_bbox ((comac_recording_surface_t *)surface,
-						   &box, &imatrix);
+	    status = _comac_recording_surface_get_ink_bbox (
+		(comac_recording_surface_t *) surface,
+		&box,
+		&imatrix);
 	    if (unlikely (status))
 		return status;
 
@@ -3858,8 +3979,7 @@ _comac_pattern_get_ink_extents (const comac_pattern_t         *pattern,
 }
 
 static uintptr_t
-_comac_solid_pattern_hash (uintptr_t hash,
-			   const comac_solid_pattern_t *solid)
+_comac_solid_pattern_hash (uintptr_t hash, const comac_solid_pattern_t *solid)
 {
     hash = _comac_hash_bytes (hash, &solid->color, sizeof (solid->color));
 
@@ -3902,10 +4022,18 @@ uintptr_t
 _comac_radial_pattern_hash (uintptr_t hash,
 			    const comac_radial_pattern_t *radial)
 {
-    hash = _comac_hash_bytes (hash, &radial->cd1.center, sizeof (radial->cd1.center));
-    hash = _comac_hash_bytes (hash, &radial->cd1.radius, sizeof (radial->cd1.radius));
-    hash = _comac_hash_bytes (hash, &radial->cd2.center, sizeof (radial->cd2.center));
-    hash = _comac_hash_bytes (hash, &radial->cd2.radius, sizeof (radial->cd2.radius));
+    hash = _comac_hash_bytes (hash,
+			      &radial->cd1.center,
+			      sizeof (radial->cd1.center));
+    hash = _comac_hash_bytes (hash,
+			      &radial->cd1.radius,
+			      sizeof (radial->cd1.radius));
+    hash = _comac_hash_bytes (hash,
+			      &radial->cd2.center,
+			      sizeof (radial->cd2.center));
+    hash = _comac_hash_bytes (hash,
+			      &radial->cd2.radius,
+			      sizeof (radial->cd2.radius));
 
     return _comac_gradient_color_stops_hash (hash, &radial->base);
 }
@@ -3913,11 +4041,12 @@ _comac_radial_pattern_hash (uintptr_t hash,
 static uintptr_t
 _comac_mesh_pattern_hash (uintptr_t hash, const comac_mesh_pattern_t *mesh)
 {
-    const comac_mesh_patch_t *patch = _comac_array_index_const (&mesh->patches, 0);
+    const comac_mesh_patch_t *patch =
+	_comac_array_index_const (&mesh->patches, 0);
     unsigned int i, n = _comac_array_num_elements (&mesh->patches);
 
     for (i = 0; i < n; i++)
-       hash = _comac_hash_bytes (hash, patch + i, sizeof (comac_mesh_patch_t));
+	hash = _comac_hash_bytes (hash, patch + i, sizeof (comac_mesh_patch_t));
 
     return hash;
 }
@@ -3935,7 +4064,7 @@ static uintptr_t
 _comac_raster_source_pattern_hash (uintptr_t hash,
 				   const comac_raster_source_pattern_t *raster)
 {
-    hash ^= (uintptr_t)raster->user_data;
+    hash ^= (uintptr_t) raster->user_data;
 
     return hash;
 }
@@ -3951,11 +4080,14 @@ _comac_pattern_hash (const comac_pattern_t *pattern)
     hash = _comac_hash_bytes (hash, &pattern->type, sizeof (pattern->type));
     if (pattern->type != COMAC_PATTERN_TYPE_SOLID) {
 	hash = _comac_hash_bytes (hash,
-				  &pattern->matrix, sizeof (pattern->matrix));
+				  &pattern->matrix,
+				  sizeof (pattern->matrix));
 	hash = _comac_hash_bytes (hash,
-				  &pattern->filter, sizeof (pattern->filter));
+				  &pattern->filter,
+				  sizeof (pattern->filter));
 	hash = _comac_hash_bytes (hash,
-				  &pattern->extend, sizeof (pattern->extend));
+				  &pattern->extend,
+				  sizeof (pattern->extend));
 	hash = _comac_hash_bytes (hash,
 				  &pattern->has_component_alpha,
 				  sizeof (pattern->has_component_alpha));
@@ -3963,17 +4095,25 @@ _comac_pattern_hash (const comac_pattern_t *pattern)
 
     switch (pattern->type) {
     case COMAC_PATTERN_TYPE_SOLID:
-	return _comac_solid_pattern_hash (hash, (comac_solid_pattern_t *) pattern);
+	return _comac_solid_pattern_hash (hash,
+					  (comac_solid_pattern_t *) pattern);
     case COMAC_PATTERN_TYPE_LINEAR:
-	return _comac_linear_pattern_hash (hash, (comac_linear_pattern_t *) pattern);
+	return _comac_linear_pattern_hash (hash,
+					   (comac_linear_pattern_t *) pattern);
     case COMAC_PATTERN_TYPE_RADIAL:
-	return _comac_radial_pattern_hash (hash, (comac_radial_pattern_t *) pattern);
+	return _comac_radial_pattern_hash (hash,
+					   (comac_radial_pattern_t *) pattern);
     case COMAC_PATTERN_TYPE_MESH:
-	return _comac_mesh_pattern_hash (hash, (comac_mesh_pattern_t *) pattern);
+	return _comac_mesh_pattern_hash (hash,
+					 (comac_mesh_pattern_t *) pattern);
     case COMAC_PATTERN_TYPE_SURFACE:
-	return _comac_surface_pattern_hash (hash, (comac_surface_pattern_t *) pattern);
+	return _comac_surface_pattern_hash (
+	    hash,
+	    (comac_surface_pattern_t *) pattern);
     case COMAC_PATTERN_TYPE_RASTER_SOURCE:
-	return _comac_raster_source_pattern_hash (hash, (comac_raster_source_pattern_t *) pattern);
+	return _comac_raster_source_pattern_hash (
+	    hash,
+	    (comac_raster_source_pattern_t *) pattern);
     default:
 	ASSERT_NOT_REACHED;
 	return FALSE;
@@ -4066,7 +4206,7 @@ _comac_mesh_pattern_equal (const comac_mesh_pattern_t *a,
     for (i = 0; i < num_patches_a; i++) {
 	patch_a = _comac_array_index_const (&a->patches, i);
 	patch_b = _comac_array_index_const (&b->patches, i);
-	if (memcmp (patch_a, patch_b, sizeof(comac_mesh_patch_t)) != 0)
+	if (memcmp (patch_a, patch_b, sizeof (comac_mesh_patch_t)) != 0)
 	    return FALSE;
     }
 
@@ -4130,8 +4270,9 @@ _comac_pattern_equal (const comac_pattern_t *a, const comac_pattern_t *b)
 	return _comac_surface_pattern_equal ((comac_surface_pattern_t *) a,
 					     (comac_surface_pattern_t *) b);
     case COMAC_PATTERN_TYPE_RASTER_SOURCE:
-	return _comac_raster_source_pattern_equal ((comac_raster_source_pattern_t *) a,
-						   (comac_raster_source_pattern_t *) b);
+	return _comac_raster_source_pattern_equal (
+	    (comac_raster_source_pattern_t *) a,
+	    (comac_raster_source_pattern_t *) b);
     default:
 	ASSERT_NOT_REACHED;
 	return FALSE;
@@ -4156,10 +4297,12 @@ _comac_pattern_equal (const comac_pattern_t *a, const comac_pattern_t *b)
  **/
 comac_status_t
 comac_pattern_get_rgba (comac_pattern_t *pattern,
-			double *red, double *green,
-			double *blue, double *alpha)
+			double *red,
+			double *green,
+			double *blue,
+			double *alpha)
 {
-    comac_solid_pattern_t *solid = (comac_solid_pattern_t*) pattern;
+    comac_solid_pattern_t *solid = (comac_solid_pattern_t *) pattern;
     double r0, g0, b0, a0;
 
     if (pattern->status)
@@ -4198,10 +4341,9 @@ comac_pattern_get_rgba (comac_pattern_t *pattern,
  * Since: 1.4
  **/
 comac_status_t
-comac_pattern_get_surface (comac_pattern_t *pattern,
-			   comac_surface_t **surface)
+comac_pattern_get_surface (comac_pattern_t *pattern, comac_surface_t **surface)
 {
-    comac_surface_pattern_t *spat = (comac_surface_pattern_t*) pattern;
+    comac_surface_pattern_t *spat = (comac_surface_pattern_t *) pattern;
 
     if (pattern->status)
 	return pattern->status;
@@ -4239,11 +4381,14 @@ comac_pattern_get_surface (comac_pattern_t *pattern,
  **/
 comac_status_t
 comac_pattern_get_color_stop_rgba (comac_pattern_t *pattern,
-				   int index, double *offset,
-				   double *red, double *green,
-				   double *blue, double *alpha)
+				   int index,
+				   double *offset,
+				   double *red,
+				   double *green,
+				   double *blue,
+				   double *alpha)
 {
-    comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t*) pattern;
+    comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t *) pattern;
 
     if (pattern->status)
 	return pattern->status;
@@ -4284,10 +4429,9 @@ comac_pattern_get_color_stop_rgba (comac_pattern_t *pattern,
  * Since: 1.4
  **/
 comac_status_t
-comac_pattern_get_color_stop_count (comac_pattern_t *pattern,
-				    int *count)
+comac_pattern_get_color_stop_count (comac_pattern_t *pattern, int *count)
 {
-    comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t*) pattern;
+    comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t *) pattern;
 
     if (pattern->status)
 	return pattern->status;
@@ -4319,11 +4463,10 @@ comac_pattern_get_color_stop_count (comac_pattern_t *pattern,
  * Since: 1.4
  **/
 comac_status_t
-comac_pattern_get_linear_points (comac_pattern_t *pattern,
-				 double *x0, double *y0,
-				 double *x1, double *y1)
+comac_pattern_get_linear_points (
+    comac_pattern_t *pattern, double *x0, double *y0, double *x1, double *y1)
 {
-    comac_linear_pattern_t *linear = (comac_linear_pattern_t*) pattern;
+    comac_linear_pattern_t *linear = (comac_linear_pattern_t *) pattern;
 
     if (pattern->status)
 	return pattern->status;
@@ -4364,10 +4507,14 @@ comac_pattern_get_linear_points (comac_pattern_t *pattern,
  **/
 comac_status_t
 comac_pattern_get_radial_circles (comac_pattern_t *pattern,
-				  double *x0, double *y0, double *r0,
-				  double *x1, double *y1, double *r1)
+				  double *x0,
+				  double *y0,
+				  double *r0,
+				  double *x1,
+				  double *y1,
+				  double *r1)
 {
-    comac_radial_pattern_t *radial = (comac_radial_pattern_t*) pattern;
+    comac_radial_pattern_t *radial = (comac_radial_pattern_t *) pattern;
 
     if (pattern->status)
 	return pattern->status;
@@ -4448,8 +4595,7 @@ comac_mesh_pattern_get_patch_count (comac_pattern_t *pattern,
  * Since: 1.12
  **/
 comac_path_t *
-comac_mesh_pattern_get_path (comac_pattern_t *pattern,
-			     unsigned int patch_num)
+comac_mesh_pattern_get_path (comac_pattern_t *pattern, unsigned int patch_num)
 {
     comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
     const comac_mesh_patch_t *patch;
@@ -4462,27 +4608,30 @@ comac_mesh_pattern_get_path (comac_pattern_t *pattern,
 	return _comac_path_create_in_error (pattern->status);
 
     if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH))
-	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH));
+	return _comac_path_create_in_error (
+	    _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH));
 
     patch_count = _comac_array_num_elements (&mesh->patches);
     if (mesh->current_patch)
 	patch_count--;
 
     if (unlikely (patch_num >= patch_count))
-	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_INVALID_INDEX));
+	return _comac_path_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_INDEX));
 
     patch = _comac_array_index_const (&mesh->patches, patch_num);
 
     path = _comac_malloc (sizeof (comac_path_t));
     if (path == NULL)
-	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_path_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     path->num_data = 18;
-    path->data = _comac_malloc_ab (path->num_data,
-				   sizeof (comac_path_data_t));
+    path->data = _comac_malloc_ab (path->num_data, sizeof (comac_path_data_t));
     if (path->data == NULL) {
 	free (path);
-	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_path_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     data = path->data;
@@ -4546,8 +4695,10 @@ comac_status_t
 comac_mesh_pattern_get_corner_color_rgba (comac_pattern_t *pattern,
 					  unsigned int patch_num,
 					  unsigned int corner_num,
-					  double *red, double *green,
-					  double *blue, double *alpha)
+					  double *red,
+					  double *green,
+					  double *blue,
+					  double *alpha)
 {
     comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
     unsigned int patch_count;
@@ -4611,7 +4762,8 @@ comac_status_t
 comac_mesh_pattern_get_control_point (comac_pattern_t *pattern,
 				      unsigned int patch_num,
 				      unsigned int point_num,
-				      double *x, double *y)
+				      double *x,
+				      double *y)
 {
     comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
     const comac_mesh_patch_t *patch;
@@ -4662,46 +4814,103 @@ _comac_debug_print_surface_pattern (FILE *file,
 {
     const char *s;
     switch (pattern->surface->type) {
-    case COMAC_SURFACE_TYPE_IMAGE: s = "image"; break;
-    case COMAC_SURFACE_TYPE_PDF: s = "pdf"; break;
-    case COMAC_SURFACE_TYPE_PS: s = "ps"; break;
-    case COMAC_SURFACE_TYPE_XLIB: s = "xlib"; break;
-    case COMAC_SURFACE_TYPE_XCB: s = "xcb"; break;
-    case COMAC_SURFACE_TYPE_GLITZ: s = "glitz"; break;
-    case COMAC_SURFACE_TYPE_QUARTZ: s = "quartz"; break;
-    case COMAC_SURFACE_TYPE_WIN32: s = "win32"; break;
-    case COMAC_SURFACE_TYPE_BEOS: s = "beos"; break;
-    case COMAC_SURFACE_TYPE_DIRECTFB: s = "directfb"; break;
-    case COMAC_SURFACE_TYPE_SVG: s = "svg"; break;
-    case COMAC_SURFACE_TYPE_OS2: s = "os2"; break;
-    case COMAC_SURFACE_TYPE_WIN32_PRINTING: s = "win32_printing"; break;
-    case COMAC_SURFACE_TYPE_QUARTZ_IMAGE: s = "quartz_image"; break;
-    case COMAC_SURFACE_TYPE_SCRIPT: s = "script"; break;
-    case COMAC_SURFACE_TYPE_QT: s = "qt"; break;
-    case COMAC_SURFACE_TYPE_RECORDING: s = "recording"; break;
-    case COMAC_SURFACE_TYPE_VG: s = "vg"; break;
-    case COMAC_SURFACE_TYPE_GL: s = "gl"; break;
-    case COMAC_SURFACE_TYPE_DRM: s = "drm"; break;
-    case COMAC_SURFACE_TYPE_TEE: s = "tee"; break;
-    case COMAC_SURFACE_TYPE_XML: s = "xml"; break;
-    case COMAC_SURFACE_TYPE_SKIA: s = "skia"; break; /* Deprecated */
-    case COMAC_SURFACE_TYPE_SUBSURFACE: s = "subsurface"; break;
-    case COMAC_SURFACE_TYPE_COGL: s = "cogl"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case COMAC_SURFACE_TYPE_IMAGE:
+	s = "image";
+	break;
+    case COMAC_SURFACE_TYPE_PDF:
+	s = "pdf";
+	break;
+    case COMAC_SURFACE_TYPE_PS:
+	s = "ps";
+	break;
+    case COMAC_SURFACE_TYPE_XLIB:
+	s = "xlib";
+	break;
+    case COMAC_SURFACE_TYPE_XCB:
+	s = "xcb";
+	break;
+    case COMAC_SURFACE_TYPE_GLITZ:
+	s = "glitz";
+	break;
+    case COMAC_SURFACE_TYPE_QUARTZ:
+	s = "quartz";
+	break;
+    case COMAC_SURFACE_TYPE_WIN32:
+	s = "win32";
+	break;
+    case COMAC_SURFACE_TYPE_BEOS:
+	s = "beos";
+	break;
+    case COMAC_SURFACE_TYPE_DIRECTFB:
+	s = "directfb";
+	break;
+    case COMAC_SURFACE_TYPE_SVG:
+	s = "svg";
+	break;
+    case COMAC_SURFACE_TYPE_OS2:
+	s = "os2";
+	break;
+    case COMAC_SURFACE_TYPE_WIN32_PRINTING:
+	s = "win32_printing";
+	break;
+    case COMAC_SURFACE_TYPE_QUARTZ_IMAGE:
+	s = "quartz_image";
+	break;
+    case COMAC_SURFACE_TYPE_SCRIPT:
+	s = "script";
+	break;
+    case COMAC_SURFACE_TYPE_QT:
+	s = "qt";
+	break;
+    case COMAC_SURFACE_TYPE_RECORDING:
+	s = "recording";
+	break;
+    case COMAC_SURFACE_TYPE_VG:
+	s = "vg";
+	break;
+    case COMAC_SURFACE_TYPE_GL:
+	s = "gl";
+	break;
+    case COMAC_SURFACE_TYPE_DRM:
+	s = "drm";
+	break;
+    case COMAC_SURFACE_TYPE_TEE:
+	s = "tee";
+	break;
+    case COMAC_SURFACE_TYPE_XML:
+	s = "xml";
+	break;
+    case COMAC_SURFACE_TYPE_SKIA:
+	s = "skia";
+	break; /* Deprecated */
+    case COMAC_SURFACE_TYPE_SUBSURFACE:
+	s = "subsurface";
+	break;
+    case COMAC_SURFACE_TYPE_COGL:
+	s = "cogl";
+	break;
+    default:
+	s = "invalid";
+	ASSERT_NOT_REACHED;
+	break;
     }
     fprintf (file, "  surface type: %s\n", s);
 }
 
 static void
-_comac_debug_print_raster_source_pattern (FILE *file,
-					  const comac_raster_source_pattern_t *raster)
+_comac_debug_print_raster_source_pattern (
+    FILE *file, const comac_raster_source_pattern_t *raster)
 {
-    fprintf (file, "  content: %x, size %dx%d\n", raster->content, raster->extents.width, raster->extents.height);
+    fprintf (file,
+	     "  content: %x, size %dx%d\n",
+	     raster->content,
+	     raster->extents.width,
+	     raster->extents.height);
 }
 
 static void
 _comac_debug_print_linear_pattern (FILE *file,
-				    const comac_linear_pattern_t *pattern)
+				   const comac_linear_pattern_t *pattern)
 {
 }
 
@@ -4722,13 +4931,28 @@ _comac_debug_print_pattern (FILE *file, const comac_pattern_t *pattern)
 {
     const char *s;
     switch (pattern->type) {
-    case COMAC_PATTERN_TYPE_SOLID: s = "solid"; break;
-    case COMAC_PATTERN_TYPE_SURFACE: s = "surface"; break;
-    case COMAC_PATTERN_TYPE_LINEAR: s = "linear"; break;
-    case COMAC_PATTERN_TYPE_RADIAL: s = "radial"; break;
-    case COMAC_PATTERN_TYPE_MESH: s = "mesh"; break;
-    case COMAC_PATTERN_TYPE_RASTER_SOURCE: s = "raster"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case COMAC_PATTERN_TYPE_SOLID:
+	s = "solid";
+	break;
+    case COMAC_PATTERN_TYPE_SURFACE:
+	s = "surface";
+	break;
+    case COMAC_PATTERN_TYPE_LINEAR:
+	s = "linear";
+	break;
+    case COMAC_PATTERN_TYPE_RADIAL:
+	s = "radial";
+	break;
+    case COMAC_PATTERN_TYPE_MESH:
+	s = "mesh";
+	break;
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+	s = "raster";
+	break;
+    default:
+	s = "invalid";
+	ASSERT_NOT_REACHED;
+	break;
     }
 
     fprintf (file, "pattern: %s\n", s);
@@ -4736,46 +4960,83 @@ _comac_debug_print_pattern (FILE *file, const comac_pattern_t *pattern)
 	return;
 
     switch (pattern->extend) {
-    case COMAC_EXTEND_NONE: s = "none"; break;
-    case COMAC_EXTEND_REPEAT: s = "repeat"; break;
-    case COMAC_EXTEND_REFLECT: s = "reflect"; break;
-    case COMAC_EXTEND_PAD: s = "pad"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case COMAC_EXTEND_NONE:
+	s = "none";
+	break;
+    case COMAC_EXTEND_REPEAT:
+	s = "repeat";
+	break;
+    case COMAC_EXTEND_REFLECT:
+	s = "reflect";
+	break;
+    case COMAC_EXTEND_PAD:
+	s = "pad";
+	break;
+    default:
+	s = "invalid";
+	ASSERT_NOT_REACHED;
+	break;
     }
     fprintf (file, "  extend: %s\n", s);
 
     switch (pattern->filter) {
-    case COMAC_FILTER_FAST: s = "fast"; break;
-    case COMAC_FILTER_GOOD: s = "good"; break;
-    case COMAC_FILTER_BEST: s = "best"; break;
-    case COMAC_FILTER_NEAREST: s = "nearest"; break;
-    case COMAC_FILTER_BILINEAR: s = "bilinear"; break;
-    case COMAC_FILTER_GAUSSIAN: s = "gaussian"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case COMAC_FILTER_FAST:
+	s = "fast";
+	break;
+    case COMAC_FILTER_GOOD:
+	s = "good";
+	break;
+    case COMAC_FILTER_BEST:
+	s = "best";
+	break;
+    case COMAC_FILTER_NEAREST:
+	s = "nearest";
+	break;
+    case COMAC_FILTER_BILINEAR:
+	s = "bilinear";
+	break;
+    case COMAC_FILTER_GAUSSIAN:
+	s = "gaussian";
+	break;
+    default:
+	s = "invalid";
+	ASSERT_NOT_REACHED;
+	break;
     }
     fprintf (file, "  filter: %s\n", s);
-    fprintf (file, "  matrix: [%g %g %g %g %g %g]\n",
-	     pattern->matrix.xx, pattern->matrix.yx,
-	     pattern->matrix.xy, pattern->matrix.yy,
-	     pattern->matrix.x0, pattern->matrix.y0);
+    fprintf (file,
+	     "  matrix: [%g %g %g %g %g %g]\n",
+	     pattern->matrix.xx,
+	     pattern->matrix.yx,
+	     pattern->matrix.xy,
+	     pattern->matrix.yy,
+	     pattern->matrix.x0,
+	     pattern->matrix.y0);
     switch (pattern->type) {
     default:
     case COMAC_PATTERN_TYPE_SOLID:
 	break;
     case COMAC_PATTERN_TYPE_RASTER_SOURCE:
-	_comac_debug_print_raster_source_pattern (file, (comac_raster_source_pattern_t *)pattern);
+	_comac_debug_print_raster_source_pattern (
+	    file,
+	    (comac_raster_source_pattern_t *) pattern);
 	break;
     case COMAC_PATTERN_TYPE_SURFACE:
-	_comac_debug_print_surface_pattern (file, (comac_surface_pattern_t *)pattern);
+	_comac_debug_print_surface_pattern (
+	    file,
+	    (comac_surface_pattern_t *) pattern);
 	break;
     case COMAC_PATTERN_TYPE_LINEAR:
-	_comac_debug_print_linear_pattern (file, (comac_linear_pattern_t *)pattern);
+	_comac_debug_print_linear_pattern (file,
+					   (comac_linear_pattern_t *) pattern);
 	break;
     case COMAC_PATTERN_TYPE_RADIAL:
-	_comac_debug_print_radial_pattern (file, (comac_radial_pattern_t *)pattern);
+	_comac_debug_print_radial_pattern (file,
+					   (comac_radial_pattern_t *) pattern);
 	break;
     case COMAC_PATTERN_TYPE_MESH:
-	_comac_debug_print_mesh_pattern (file, (comac_mesh_pattern_t *)pattern);
+	_comac_debug_print_mesh_pattern (file,
+					 (comac_mesh_pattern_t *) pattern);
 	break;
     }
 }

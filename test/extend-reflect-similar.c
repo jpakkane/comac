@@ -3,13 +3,14 @@
 static const char *png_filename = "romedalen.png";
 
 static comac_surface_t *
-clone_similar_surface (comac_surface_t * target, comac_surface_t *surface)
+clone_similar_surface (comac_surface_t *target, comac_surface_t *surface)
 {
     comac_t *cr;
     comac_surface_t *similar;
 
-    similar = comac_surface_create_similar (target,
-	                              comac_surface_get_content (surface),
+    similar =
+	comac_surface_create_similar (target,
+				      comac_surface_get_content (surface),
 				      comac_image_surface_get_width (surface),
 				      comac_image_surface_get_height (surface));
     cr = comac_create (similar);
@@ -46,6 +47,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (extend_reflect_similar,
 	    "Test COMAC_EXTEND_REFLECT for surface patterns",
 	    "extend", /* keywords */
-	    NULL, /* requirements */
-	    256 + 32*2, 192 + 32*2,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    256 + 32 * 2,
+	    192 + 32 * 2,
+	    NULL,
+	    draw)

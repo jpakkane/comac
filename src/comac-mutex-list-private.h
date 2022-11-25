@@ -68,9 +68,9 @@ COMAC_MUTEX_DECLARE (_comac_xcb_connections_mutex)
 COMAC_MUTEX_DECLARE (_comac_gl_context_mutex)
 #endif
 
-#if !defined (HAS_ATOMIC_OPS) || defined (ATOMIC_OP_NEEDS_MEMORY_BARRIER)
+#if ! defined(HAS_ATOMIC_OPS) || defined(ATOMIC_OP_NEEDS_MEMORY_BARRIER)
 COMAC_MUTEX_DECLARE (_comac_atomic_mutex)
 #endif
 
 /* Undefine, to err on unintended inclusion */
-#undef   COMAC_MUTEX_DECLARE
+#undef COMAC_MUTEX_DECLARE

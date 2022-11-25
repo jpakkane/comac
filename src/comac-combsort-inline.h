@@ -38,57 +38,55 @@
 static inline unsigned int
 _comac_combsort_newgap (unsigned int gap)
 {
-  gap = 10 * gap / 13;
-  if (gap == 9 || gap == 10)
-    gap = 11;
-  if (gap < 1)
-    gap = 1;
-  return gap;
+    gap = 10 * gap / 13;
+    if (gap == 9 || gap == 10)
+	gap = 11;
+    if (gap < 1)
+	gap = 1;
+    return gap;
 }
 #endif
 
-#define COMAC_COMBSORT_DECLARE(NAME, TYPE, CMP) \
-static void \
-NAME (TYPE *base, unsigned int nmemb) \
-{ \
-  unsigned int gap = nmemb; \
-  unsigned int i, j; \
-  int swapped; \
-  do { \
-      gap = _comac_combsort_newgap (gap); \
-      swapped = gap > 1; \
-      for (i = 0; i < nmemb-gap ; i++) { \
-	  j = i + gap; \
-	  if (CMP (base[i], base[j]) > 0 ) { \
-	      TYPE tmp; \
-	      tmp = base[i]; \
-	      base[i] = base[j]; \
-	      base[j] = tmp; \
-	      swapped = 1; \
-	  } \
-      } \
-  } while (swapped); \
-}
+#define COMAC_COMBSORT_DECLARE(NAME, TYPE, CMP)                                \
+    static void NAME (TYPE *base, unsigned int nmemb)                          \
+    {                                                                          \
+	unsigned int gap = nmemb;                                              \
+	unsigned int i, j;                                                     \
+	int swapped;                                                           \
+	do {                                                                   \
+	    gap = _comac_combsort_newgap (gap);                                \
+	    swapped = gap > 1;                                                 \
+	    for (i = 0; i < nmemb - gap; i++) {                                \
+		j = i + gap;                                                   \
+		if (CMP (base[i], base[j]) > 0) {                              \
+		    TYPE tmp;                                                  \
+		    tmp = base[i];                                             \
+		    base[i] = base[j];                                         \
+		    base[j] = tmp;                                             \
+		    swapped = 1;                                               \
+		}                                                              \
+	    }                                                                  \
+	} while (swapped);                                                     \
+    }
 
-#define COMAC_COMBSORT_DECLARE_WITH_DATA(NAME, TYPE, CMP) \
-static void \
-NAME (TYPE *base, unsigned int nmemb, void *data) \
-{ \
-  unsigned int gap = nmemb; \
-  unsigned int i, j; \
-  int swapped; \
-  do { \
-      gap = _comac_combsort_newgap (gap); \
-      swapped = gap > 1; \
-      for (i = 0; i < nmemb-gap ; i++) { \
-	  j = i + gap; \
-	  if (CMP (base[i], base[j], data) > 0 ) { \
-	      TYPE tmp; \
-	      tmp = base[i]; \
-	      base[i] = base[j]; \
-	      base[j] = tmp; \
-	      swapped = 1; \
-	  } \
-      } \
-  } while (swapped); \
-}
+#define COMAC_COMBSORT_DECLARE_WITH_DATA(NAME, TYPE, CMP)                      \
+    static void NAME (TYPE *base, unsigned int nmemb, void *data)              \
+    {                                                                          \
+	unsigned int gap = nmemb;                                              \
+	unsigned int i, j;                                                     \
+	int swapped;                                                           \
+	do {                                                                   \
+	    gap = _comac_combsort_newgap (gap);                                \
+	    swapped = gap > 1;                                                 \
+	    for (i = 0; i < nmemb - gap; i++) {                                \
+		j = i + gap;                                                   \
+		if (CMP (base[i], base[j], data) > 0) {                        \
+		    TYPE tmp;                                                  \
+		    tmp = base[i];                                             \
+		    base[i] = base[j];                                         \
+		    base[j] = tmp;                                             \
+		    swapped = 1;                                               \
+		}                                                              \
+	    }                                                                  \
+	} while (swapped);                                                     \
+    }

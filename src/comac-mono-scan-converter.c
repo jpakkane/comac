@@ -83,17 +83,17 @@ struct mono_scan_converter {
     int32_t ymin, ymax;
 };
 
-#define I(x) _comac_fixed_integer_round_down(x)
+#define I(x) _comac_fixed_integer_round_down (x)
 
 /* Compute the floored division a/b. Assumes / and % perform symmetric
  * division. */
 inline static struct quorem
-floored_divrem(int a, int b)
+floored_divrem (int a, int b)
 {
     struct quorem qr;
-    qr.quo = a/b;
-    qr.rem = a%b;
-    if ((a^b)<0 && qr.rem) {
+    qr.quo = a / b;
+    qr.rem = a % b;
+    if ((a ^ b) < 0 && qr.rem) {
 	qr.quo -= 1;
 	qr.rem += b;
     }
@@ -103,13 +103,13 @@ floored_divrem(int a, int b)
 /* Compute the floored division (x*a)/b. Assumes / and % perform symmetric
  * division. */
 static struct quorem
-floored_muldivrem(int x, int a, int b)
+floored_muldivrem (int x, int a, int b)
 {
     struct quorem qr;
-    long long xa = (long long)x*a;
-    qr.quo = xa/b;
-    qr.rem = xa%b;
-    if ((xa>=0) != (b>=0) && qr.rem) {
+    long long xa = (long long) x * a;
+    qr.quo = xa / b;
+    qr.rem = xa % b;
+    if ((xa >= 0) != (b >= 0) && qr.rem) {
 	qr.quo -= 1;
 	qr.rem += b;
     }
@@ -128,7 +128,7 @@ polygon_init (struct polygon *polygon, int ymin, int ymax)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
     memset (polygon->y_buckets, 0, h * sizeof (struct edge *));
-    polygon->y_buckets[h-1] = (void *)-1;
+    polygon->y_buckets[h - 1] = (void *) -1;
 
     polygon->ymin = ymin;
     polygon->ymax = ymax;
@@ -146,9 +146,9 @@ polygon_fini (struct polygon *polygon)
 }
 
 static void
-_polygon_insert_edge_into_its_y_bucket(struct polygon *polygon,
-				       struct edge *e,
-				       int y)
+_polygon_insert_edge_into_its_y_bucket (struct polygon *polygon,
+					struct edge *e,
+					int y)
 {
     struct edge **ptail = &polygon->y_buckets[y - polygon->ymin];
     if (*ptail)
@@ -159,8 +159,7 @@ _polygon_insert_edge_into_its_y_bucket(struct polygon *polygon,
 }
 
 inline static void
-polygon_add_edge (struct polygon *polygon,
-		  const comac_edge_t *edge)
+polygon_add_edge (struct polygon *polygon, const comac_edge_t *edge)
 {
     struct edge *e;
     comac_fixed_t dx;
@@ -169,11 +168,11 @@ polygon_add_edge (struct polygon *polygon,
     int ymin = polygon->ymin;
     int ymax = polygon->ymax;
 
-    y = I(edge->top);
-    ytop = MAX(y, ymin);
+    y = I (edge->top);
+    ytop = MAX (y, ymin);
 
-    y = I(edge->bottom);
-    ybot = MIN(y, ymax);
+    y = I (edge->bottom);
+    ybot = MIN (y, ymax);
 
     if (ybot <= ytop)
 	return;
@@ -197,8 +196,11 @@ polygon_add_edge (struct polygon *polygon,
 	e->dxdy = floored_muldivrem (dx, COMAC_FIXED_ONE, dy);
 	e->dy = dy;
 
-	e->x = floored_muldivrem (ytop * COMAC_FIXED_ONE + COMAC_FIXED_FRAC_MASK/2 - edge->line.p1.y,
-				  dx, dy);
+	e->x =
+	    floored_muldivrem (ytop * COMAC_FIXED_ONE +
+				   COMAC_FIXED_FRAC_MASK / 2 - edge->line.p1.y,
+			       dx,
+			       dy);
 	e->x.quo += edge->line.p1.x;
     }
     e->x.rem -= dy;
@@ -235,7 +237,7 @@ merge_sorted_edges (struct edge *head_a, struct edge *head_b)
 	if (head_a == NULL)
 	    return head;
 
-start_with_b:
+    start_with_b:
 	x = head_a->x.quo;
 	while (head_b != NULL && head_b->x.quo <= x) {
 	    prev = head_b;
@@ -251,9 +253,7 @@ start_with_b:
 }
 
 static struct edge *
-sort_edges (struct edge *list,
-	    unsigned int level,
-	    struct edge **head_out)
+sort_edges (struct edge *list, unsigned int level, struct edge **head_out)
 {
     struct edge *head_other, *remaining;
     unsigned int i;
@@ -334,10 +334,10 @@ row (struct mono_scan_converter *c, unsigned int mask)
     c->num_spans = 0;
     while (&c->tail != edge) {
 	struct edge *next = edge->next;
-	int xend = I(edge->x.quo);
+	int xend = I (edge->x.quo);
 
 	if (--edge->height_left) {
-	    if (!edge->vertical) {
+	    if (! edge->vertical) {
 		edge->x.quo += edge->dxdy.quo;
 		edge->x.rem += edge->dxdy.rem;
 		if (edge->x.rem >= 0) {
@@ -366,7 +366,7 @@ row (struct mono_scan_converter *c, unsigned int mask)
 
 	winding += edge->dir;
 	if ((winding & mask) == 0) {
-	    if (I(next->x.quo) > xend + 1) {
+	    if (I (next->x.quo) > xend + 1) {
 		add_span (c, xstart, xend);
 		xstart = INT_MIN;
 	    }
@@ -377,7 +377,8 @@ row (struct mono_scan_converter *c, unsigned int mask)
     }
 }
 
-inline static void dec (struct edge *e, int h)
+inline static void
+dec (struct edge *e, int h)
 {
     e->height_left -= h;
     if (e->height_left == 0) {
@@ -387,21 +388,20 @@ inline static void dec (struct edge *e, int h)
 }
 
 static comac_status_t
-_mono_scan_converter_init(struct mono_scan_converter *c,
-			  int xmin, int ymin,
-			  int xmax, int ymax)
+_mono_scan_converter_init (
+    struct mono_scan_converter *c, int xmin, int ymin, int xmax, int ymax)
 {
     comac_status_t status;
     int max_num_spans;
 
     status = polygon_init (c->polygon, ymin, ymax);
-    if  (unlikely (status))
+    if (unlikely (status))
 	return status;
 
     max_num_spans = xmax - xmin + 1;
-    if (max_num_spans > ARRAY_LENGTH(c->spans_embedded)) {
-	c->spans = _comac_malloc_ab (max_num_spans,
-				     sizeof (comac_half_open_span_t));
+    if (max_num_spans > ARRAY_LENGTH (c->spans_embedded)) {
+	c->spans =
+	    _comac_malloc_ab (max_num_spans, sizeof (comac_half_open_span_t));
 	if (unlikely (c->spans == NULL)) {
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
@@ -429,17 +429,17 @@ _mono_scan_converter_init(struct mono_scan_converter *c,
 }
 
 static void
-_mono_scan_converter_fini(struct mono_scan_converter *self)
+_mono_scan_converter_fini (struct mono_scan_converter *self)
 {
     if (self->spans != self->spans_embedded)
 	free (self->spans);
 
-    polygon_fini(self->polygon);
+    polygon_fini (self->polygon);
 }
 
 static comac_status_t
-mono_scan_converter_allocate_edges(struct mono_scan_converter *c,
-				   int num_edges)
+mono_scan_converter_allocate_edges (struct mono_scan_converter *c,
+				    int num_edges)
 
 {
     c->polygon->num_edges = 0;
@@ -475,9 +475,9 @@ step_edges (struct mono_scan_converter *c, int count)
 }
 
 static comac_status_t
-mono_scan_converter_render(struct mono_scan_converter *c,
-			   unsigned int winding_mask,
-			   comac_span_renderer_t *renderer)
+mono_scan_converter_render (struct mono_scan_converter *c,
+			    unsigned int winding_mask,
+			    comac_span_renderer_t *renderer)
 {
     struct polygon *polygon = c->polygon;
     int i, j, h = c->ymax - c->ymin;
@@ -509,8 +509,11 @@ mono_scan_converter_render(struct mono_scan_converter *c,
 
 	row (c, winding_mask);
 	if (c->num_spans) {
-	    status = renderer->render_rows (renderer, c->ymin+i, j-i,
-					    c->spans, c->num_spans);
+	    status = renderer->render_rows (renderer,
+					    c->ymin + i,
+					    j - i,
+					    c->spans,
+					    c->num_spans);
 	    if (unlikely (status))
 		return status;
 	}
@@ -537,12 +540,12 @@ _comac_mono_scan_converter_destroy (void *converter)
 {
     comac_mono_scan_converter_t *self = converter;
     _mono_scan_converter_fini (self->converter);
-    free(self);
+    free (self);
 }
 
 comac_status_t
-_comac_mono_scan_converter_add_polygon (void		*converter,
-				       const comac_polygon_t *polygon)
+_comac_mono_scan_converter_add_polygon (void *converter,
+					const comac_polygon_t *polygon)
 {
     comac_mono_scan_converter_t *self = converter;
     comac_status_t status;
@@ -560,33 +563,31 @@ _comac_mono_scan_converter_add_polygon (void		*converter,
 	return status;
 
     for (i = 0; i < polygon->num_edges; i++)
-	 mono_scan_converter_add_edge (self->converter, &polygon->edges[i]);
+	mono_scan_converter_add_edge (self->converter, &polygon->edges[i]);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_comac_mono_scan_converter_generate (void			*converter,
-				    comac_span_renderer_t	*renderer)
+_comac_mono_scan_converter_generate (void *converter,
+				     comac_span_renderer_t *renderer)
 {
     comac_mono_scan_converter_t *self = converter;
 
-    return mono_scan_converter_render (self->converter,
-				       self->fill_rule == COMAC_FILL_RULE_WINDING ? ~0 : 1,
-				       renderer);
+    return mono_scan_converter_render (
+	self->converter,
+	self->fill_rule == COMAC_FILL_RULE_WINDING ? ~0 : 1,
+	renderer);
 }
 
 comac_scan_converter_t *
-_comac_mono_scan_converter_create (int			xmin,
-				  int			ymin,
-				  int			xmax,
-				  int			ymax,
-				  comac_fill_rule_t	fill_rule)
+_comac_mono_scan_converter_create (
+    int xmin, int ymin, int xmax, int ymax, comac_fill_rule_t fill_rule)
 {
     comac_mono_scan_converter_t *self;
     comac_status_t status;
 
-    self = _comac_malloc (sizeof(struct _comac_mono_scan_converter));
+    self = _comac_malloc (sizeof (struct _comac_mono_scan_converter));
     if (unlikely (self == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto bail_nomem;
@@ -595,8 +596,8 @@ _comac_mono_scan_converter_create (int			xmin,
     self->base.destroy = _comac_mono_scan_converter_destroy;
     self->base.generate = _comac_mono_scan_converter_generate;
 
-    status = _mono_scan_converter_init (self->converter,
-					xmin, ymin, xmax, ymax);
+    status =
+	_mono_scan_converter_init (self->converter, xmin, ymin, xmax, ymax);
     if (unlikely (status))
 	goto bail;
 
@@ -604,8 +605,8 @@ _comac_mono_scan_converter_create (int			xmin,
 
     return &self->base;
 
- bail:
-    self->base.destroy(&self->base);
- bail_nomem:
+bail:
+    self->base.destroy (&self->base);
+bail_nomem:
     return _comac_scan_converter_create_in_error (status);
 }

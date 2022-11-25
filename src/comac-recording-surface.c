@@ -99,7 +99,7 @@ typedef enum {
 typedef struct _comac_recording_surface_replay_params {
     const comac_rectangle_int_t *surface_extents;
     const comac_matrix_t *surface_transform;
-    comac_surface_t	     *target;
+    comac_surface_t *target;
     const comac_clip_t *target_clip;
     comac_bool_t surface_is_unbounded;
     comac_recording_replay_type_t type;
@@ -128,8 +128,8 @@ static const comac_surface_backend_t comac_recording_surface_backend;
  * according to the intended replay target).
  */
 
-static int bbtree_left_or_right (struct bbtree *bbt,
-				 const comac_box_t *box)
+static int
+bbtree_left_or_right (struct bbtree *bbt, const comac_box_t *box)
 {
     int left, right;
 
@@ -142,8 +142,10 @@ static int bbtree_left_or_right (struct bbtree *bbt,
 	b.p2.x = MAX (e->p2.x, box->p2.x);
 	b.p2.y = MAX (e->p2.y, box->p2.y);
 
-	left = _comac_fixed_integer_part (b.p2.x - b.p1.x) * _comac_fixed_integer_part (b.p2.y - b.p1.y);
-	left -= _comac_fixed_integer_part (e->p2.x - e->p1.x) * _comac_fixed_integer_part (e->p2.y - e->p1.y);
+	left = _comac_fixed_integer_part (b.p2.x - b.p1.x) *
+	       _comac_fixed_integer_part (b.p2.y - b.p1.y);
+	left -= _comac_fixed_integer_part (e->p2.x - e->p1.x) *
+		_comac_fixed_integer_part (e->p2.y - e->p1.y);
     } else
 	left = 0;
 
@@ -156,15 +158,17 @@ static int bbtree_left_or_right (struct bbtree *bbt,
 	b.p2.x = MAX (e->p2.x, box->p2.x);
 	b.p2.y = MAX (e->p2.y, box->p2.y);
 
-	right = _comac_fixed_integer_part (b.p2.x - b.p1.x) * _comac_fixed_integer_part (b.p2.y - b.p1.y);
-	right -= _comac_fixed_integer_part (e->p2.x - e->p1.x) * _comac_fixed_integer_part (e->p2.y - e->p1.y);
+	right = _comac_fixed_integer_part (b.p2.x - b.p1.x) *
+		_comac_fixed_integer_part (b.p2.y - b.p1.y);
+	right -= _comac_fixed_integer_part (e->p2.x - e->p1.x) *
+		 _comac_fixed_integer_part (e->p2.y - e->p1.y);
     } else
 	right = 0;
 
     return left <= right;
 }
 
-#define INVALID_CHAIN ((comac_command_header_t *)-1)
+#define INVALID_CHAIN ((comac_command_header_t *) -1)
 
 static struct bbtree *
 bbtree_new (const comac_box_t *box, comac_command_header_t *chain)
@@ -191,8 +195,7 @@ bbtree_add (struct bbtree *bbt,
 	    const comac_box_t *box)
 {
     if (box->p1.x < bbt->extents.p1.x || box->p1.y < bbt->extents.p1.y ||
-	box->p2.x > bbt->extents.p2.x || box->p2.y > bbt->extents.p2.y)
-    {
+	box->p2.x > bbt->extents.p2.x || box->p2.y > bbt->extents.p2.y) {
 	if (bbt->chain) {
 	    if (bbtree_left_or_right (bbt, &bbt->extents)) {
 		if (bbt->left == NULL) {
@@ -220,8 +223,7 @@ bbtree_add (struct bbtree *bbt,
     }
 
     if (box->p1.x == bbt->extents.p1.x && box->p1.y == bbt->extents.p1.y &&
-	box->p2.x == bbt->extents.p2.x && box->p2.y == bbt->extents.p2.y)
-    {
+	box->p2.x == bbt->extents.p2.x && box->p2.y == bbt->extents.p2.y) {
 	comac_command_header_t *last = header;
 	while (last->chain) /* expected to be infrequent */
 	    last = last->chain;
@@ -249,7 +251,8 @@ bbtree_add (struct bbtree *bbt,
     return COMAC_STATUS_SUCCESS;
 }
 
-static void bbtree_del (struct bbtree *bbt)
+static void
+bbtree_del (struct bbtree *bbt)
 {
     if (bbt->left)
 	bbtree_del (bbt->left);
@@ -259,11 +262,11 @@ static void bbtree_del (struct bbtree *bbt)
     free (bbt);
 }
 
-static comac_bool_t box_outside (const comac_box_t *a, const comac_box_t *b)
+static comac_bool_t
+box_outside (const comac_box_t *a, const comac_box_t *b)
 {
-    return
-	a->p1.x >= b->p2.x || a->p1.y >= b->p2.y ||
-	a->p2.x <= b->p1.x || a->p2.y <= b->p1.y;
+    return a->p1.x >= b->p2.x || a->p1.y >= b->p2.y || a->p2.x <= b->p1.x ||
+	   a->p2.y <= b->p1.y;
 }
 
 static void
@@ -282,13 +285,15 @@ bbtree_foreach_mark_visible (struct bbtree *bbt,
 	bbtree_foreach_mark_visible (bbt->right, box, indices);
 }
 
-static inline int intcmp (const unsigned int a, const unsigned int b)
+static inline int
+intcmp (const unsigned int a, const unsigned int b)
 {
     return a - b;
 }
 COMAC_COMBSORT_DECLARE (sort_indices, unsigned int, intcmp)
 
-static inline int sizecmp (unsigned int a, unsigned int b, comac_command_header_t **elements)
+static inline int
+sizecmp (unsigned int a, unsigned int b, comac_command_header_t **elements)
 {
     const comac_rectangle_int_t *r;
 
@@ -392,21 +397,21 @@ cleanup:
  * Since: 1.10
  **/
 comac_surface_t *
-comac_recording_surface_create (comac_content_t		 content,
-				const comac_rectangle_t	*extents)
+comac_recording_surface_create (comac_content_t content,
+				const comac_rectangle_t *extents)
 {
     comac_recording_surface_t *surface;
 
     surface = _comac_malloc (sizeof (comac_recording_surface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
 			 &comac_recording_surface_backend,
 			 NULL, /* device */
 			 content,
 			 TRUE); /* is_vector */
-
 
     surface->unbounded = TRUE;
 
@@ -417,8 +422,10 @@ comac_recording_surface_create (comac_content_t		 content,
 	/* XXX check for overflow */
 	surface->extents.x = floor (extents->x);
 	surface->extents.y = floor (extents->y);
-	surface->extents.width = ceil (extents->x + extents->width) - surface->extents.x;
-	surface->extents.height = ceil (extents->y + extents->height) - surface->extents.y;
+	surface->extents.width =
+	    ceil (extents->x + extents->width) - surface->extents.x;
+	surface->extents.height =
+	    ceil (extents->y + extents->height) - surface->extents.y;
 
 	surface->unbounded = FALSE;
     }
@@ -440,10 +447,10 @@ comac_recording_surface_create (comac_content_t		 content,
 }
 
 static comac_surface_t *
-_comac_recording_surface_create_similar (void		       *abstract_surface,
-					 comac_content_t	content,
-					 int			width,
-					 int			height)
+_comac_recording_surface_create_similar (void *abstract_surface,
+					 comac_content_t content,
+					 int width,
+					 int height)
 {
     comac_rectangle_t extents;
     extents.x = extents.y = 0;
@@ -500,7 +507,7 @@ _comac_recording_surface_finish (void *abstract_surface)
 	    }
 	    break;
 
-	    default:
+	default:
 	    ASSERT_NOT_REACHED;
 	}
 
@@ -526,18 +533,20 @@ struct proxy {
 };
 
 static comac_status_t
-proxy_acquire_source_image (void			 *abstract_surface,
-			    comac_image_surface_t	**image_out,
-			    void			**image_extra)
+proxy_acquire_source_image (void *abstract_surface,
+			    comac_image_surface_t **image_out,
+			    void **image_extra)
 {
     struct proxy *proxy = abstract_surface;
-    return _comac_surface_acquire_source_image (proxy->image, image_out, image_extra);
+    return _comac_surface_acquire_source_image (proxy->image,
+						image_out,
+						image_extra);
 }
 
 static void
-proxy_release_source_image (void			*abstract_surface,
-			    comac_image_surface_t	*image,
-			    void			*image_extra)
+proxy_release_source_image (void *abstract_surface,
+			    comac_image_surface_t *image,
+			    void *image_extra)
 {
     struct proxy *proxy = abstract_surface;
     _comac_surface_release_source_image (proxy->image, image, image_extra);
@@ -549,7 +558,7 @@ proxy_finish (void *abstract_surface)
     return COMAC_STATUS_SUCCESS;
 }
 
-static const comac_surface_backend_t proxy_backend  = {
+static const comac_surface_backend_t proxy_backend = {
     COMAC_INTERNAL_SURFACE_TYPE_NULL,
     proxy_finish,
     NULL,
@@ -565,8 +574,7 @@ static const comac_surface_backend_t proxy_backend  = {
 };
 
 static comac_surface_t *
-attach_proxy (comac_surface_t *source,
-	      comac_surface_t *image)
+attach_proxy (comac_surface_t *source, comac_surface_t *image)
 {
     struct proxy *proxy;
 
@@ -574,7 +582,11 @@ attach_proxy (comac_surface_t *source,
     if (unlikely (proxy == NULL))
 	return _comac_surface_create_in_error (COMAC_STATUS_NO_MEMORY);
 
-    _comac_surface_init (&proxy->base, &proxy_backend, NULL, image->content, FALSE);
+    _comac_surface_init (&proxy->base,
+			 &proxy_backend,
+			 NULL,
+			 image->content,
+			 FALSE);
 
     proxy->image = image;
     _comac_surface_attach_snapshot (source, &proxy->base, NULL);
@@ -583,8 +595,7 @@ attach_proxy (comac_surface_t *source,
 }
 
 static void
-detach_proxy (comac_surface_t *source,
-	      comac_surface_t *proxy)
+detach_proxy (comac_surface_t *source, comac_surface_t *proxy)
 {
     comac_surface_finish (proxy);
     comac_surface_destroy (proxy);
@@ -593,13 +604,14 @@ detach_proxy (comac_surface_t *source,
 static comac_surface_t *
 get_proxy (comac_surface_t *proxy)
 {
-    return ((struct proxy *)proxy)->image;
+    return ((struct proxy *) proxy)->image;
 }
 
 static comac_status_t
-_comac_recording_surface_acquire_source_image (void			 *abstract_surface,
-					       comac_image_surface_t	**image_out,
-					       void			**image_extra)
+_comac_recording_surface_acquire_source_image (
+    void *abstract_surface,
+    comac_image_surface_t **image_out,
+    void **image_extra)
 {
     comac_recording_surface_t *surface = abstract_surface;
     comac_surface_t *image, *proxy;
@@ -607,8 +619,8 @@ _comac_recording_surface_acquire_source_image (void			 *abstract_surface,
 
     proxy = _comac_surface_has_snapshot (abstract_surface, &proxy_backend);
     if (proxy != NULL) {
-	*image_out = (comac_image_surface_t *)
-	    comac_surface_reference (get_proxy (proxy));
+	*image_out = (comac_image_surface_t *) comac_surface_reference (
+	    get_proxy (proxy));
 	*image_extra = NULL;
 	return COMAC_STATUS_SUCCESS;
     }
@@ -617,11 +629,15 @@ _comac_recording_surface_acquire_source_image (void			 *abstract_surface,
     image = _comac_image_surface_create_with_content (surface->base.content,
 						      surface->extents.width,
 						      surface->extents.height);
-    comac_surface_set_device_offset (image, -surface->extents.x, -surface->extents.y);
+    comac_surface_set_device_offset (image,
+				     -surface->extents.x,
+				     -surface->extents.y);
     if (unlikely (image->status))
 	return image->status;
 
-    comac_surface_set_device_offset(image, -surface->extents.x, -surface->extents.y);
+    comac_surface_set_device_offset (image,
+				     -surface->extents.x,
+				     -surface->extents.y);
 
     /* Handle recursion by returning future reads from the current image */
     proxy = attach_proxy (abstract_surface, image);
@@ -639,9 +655,9 @@ _comac_recording_surface_acquire_source_image (void			 *abstract_surface,
 }
 
 static void
-_comac_recording_surface_release_source_image (void			*abstract_surface,
-					       comac_image_surface_t	*image,
-					       void			*image_extra)
+_comac_recording_surface_release_source_image (void *abstract_surface,
+					       comac_image_surface_t *image,
+					       void *image_extra)
 {
     comac_surface_destroy (&image->base);
 }
@@ -659,15 +675,16 @@ _command_init (comac_recording_surface_t *surface,
     command->op = op;
     command->region = COMAC_RECORDING_REGION_ALL;
 
-    command->extents = composite ? composite->unbounded : _comac_empty_rectangle;
+    command->extents =
+	composite ? composite->unbounded : _comac_empty_rectangle;
     command->chain = NULL;
     command->index = surface->commands.num_elements;
 
     /* steal the clip */
     command->clip = NULL;
-    if (composite && ! _comac_composite_rectangles_can_reduce_clip (composite,
-								    composite->clip))
-    {
+    if (composite &&
+	! _comac_composite_rectangles_can_reduce_clip (composite,
+						       composite->clip)) {
 	command->clip = composite->clip;
 	composite->clip = NULL;
     }
@@ -676,7 +693,8 @@ _command_init (comac_recording_surface_t *surface,
 }
 
 static void
-_comac_recording_surface_break_self_copy_loop (comac_recording_surface_t *surface)
+_comac_recording_surface_break_self_copy_loop (
+    comac_recording_surface_t *surface)
 {
     comac_surface_flush (&surface->base);
 }
@@ -705,10 +723,10 @@ _comac_recording_surface_reset (comac_recording_surface_t *surface)
 }
 
 static comac_int_status_t
-_comac_recording_surface_paint (void			  *abstract_surface,
-				comac_operator_t	   op,
-				const comac_pattern_t	  *source,
-				const comac_clip_t	  *clip)
+_comac_recording_surface_paint (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_recording_surface_t *surface = abstract_surface;
@@ -727,14 +745,15 @@ _comac_recording_surface_paint (void			  *abstract_surface,
     if (clip == NULL && surface->optimize_clears &&
 	(op == COMAC_OPERATOR_SOURCE ||
 	 (op == COMAC_OPERATOR_OVER &&
-	  (surface->base.is_clear || _comac_pattern_is_opaque_solid (source)))))
-    {
+	  (surface->base.is_clear ||
+	   _comac_pattern_is_opaque_solid (source))))) {
 	_comac_recording_surface_reset (surface);
     }
 
     status = _comac_composite_rectangles_init_for_paint (&composite,
 							 &surface->base,
-							 op, source,
+							 op,
+							 source,
 							 clip);
     if (unlikely (status))
 	return status;
@@ -746,7 +765,9 @@ _comac_recording_surface_paint (void			  *abstract_surface,
     }
 
     status = _command_init (surface,
-			    &command->header, COMAC_COMMAND_PAINT, op,
+			    &command->header,
+			    COMAC_COMMAND_PAINT,
+			    op,
 			    &composite);
     if (unlikely (status))
 	goto CLEANUP_COMMAND;
@@ -764,9 +785,9 @@ _comac_recording_surface_paint (void			  *abstract_surface,
     _comac_composite_rectangles_fini (&composite);
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP_SOURCE:
+CLEANUP_SOURCE:
     _comac_pattern_fini (&command->source.base);
-  CLEANUP_COMMAND:
+CLEANUP_COMMAND:
     _comac_clip_destroy (command->header.clip);
     free (command);
 CLEANUP_COMPOSITE:
@@ -775,11 +796,11 @@ CLEANUP_COMPOSITE:
 }
 
 static comac_int_status_t
-_comac_recording_surface_mask (void			*abstract_surface,
-			       comac_operator_t		 op,
-			       const comac_pattern_t	*source,
-			       const comac_pattern_t	*mask,
-			       const comac_clip_t	*clip)
+_comac_recording_surface_mask (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_pattern_t *mask,
+			       const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_recording_surface_t *surface = abstract_surface;
@@ -790,7 +811,9 @@ _comac_recording_surface_mask (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_mask (&composite,
 							&surface->base,
-							op, source, mask,
+							op,
+							source,
+							mask,
 							clip);
     if (unlikely (status))
 	return status;
@@ -802,7 +825,9 @@ _comac_recording_surface_mask (void			*abstract_surface,
     }
 
     status = _command_init (surface,
-			    &command->header, COMAC_COMMAND_MASK, op,
+			    &command->header,
+			    COMAC_COMMAND_MASK,
+			    op,
 			    &composite);
     if (unlikely (status))
 	goto CLEANUP_COMMAND;
@@ -824,11 +849,11 @@ _comac_recording_surface_mask (void			*abstract_surface,
     _comac_composite_rectangles_fini (&composite);
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP_MASK:
+CLEANUP_MASK:
     _comac_pattern_fini (&command->mask.base);
-  CLEANUP_SOURCE:
+CLEANUP_SOURCE:
     _comac_pattern_fini (&command->source.base);
-  CLEANUP_COMMAND:
+CLEANUP_COMMAND:
     _comac_clip_destroy (command->header.clip);
     free (command);
 CLEANUP_COMPOSITE:
@@ -837,16 +862,16 @@ CLEANUP_COMPOSITE:
 }
 
 static comac_int_status_t
-_comac_recording_surface_stroke (void			*abstract_surface,
-				 comac_operator_t	 op,
-				 const comac_pattern_t	*source,
-				 const comac_path_fixed_t	*path,
-				 const comac_stroke_style_t	*style,
-				 const comac_matrix_t		*ctm,
-				 const comac_matrix_t		*ctm_inverse,
-				 double			 tolerance,
-				 comac_antialias_t	 antialias,
-				 const comac_clip_t	*clip)
+_comac_recording_surface_stroke (void *abstract_surface,
+				 comac_operator_t op,
+				 const comac_pattern_t *source,
+				 const comac_path_fixed_t *path,
+				 const comac_stroke_style_t *style,
+				 const comac_matrix_t *ctm,
+				 const comac_matrix_t *ctm_inverse,
+				 double tolerance,
+				 comac_antialias_t antialias,
+				 const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_recording_surface_t *surface = abstract_surface;
@@ -857,8 +882,11 @@ _comac_recording_surface_stroke (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_stroke (&composite,
 							  &surface->base,
-							  op, source,
-							  path, style, ctm,
+							  op,
+							  source,
+							  path,
+							  style,
+							  ctm,
 							  clip);
     if (unlikely (status))
 	return status;
@@ -870,7 +898,9 @@ _comac_recording_surface_stroke (void			*abstract_surface,
     }
 
     status = _command_init (surface,
-			    &command->header, COMAC_COMMAND_STROKE, op,
+			    &command->header,
+			    COMAC_COMMAND_STROKE,
+			    op,
 			    &composite);
     if (unlikely (status))
 	goto CLEANUP_COMMAND;
@@ -901,13 +931,13 @@ _comac_recording_surface_stroke (void			*abstract_surface,
     _comac_composite_rectangles_fini (&composite);
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP_STYLE:
+CLEANUP_STYLE:
     _comac_stroke_style_fini (&command->style);
-  CLEANUP_PATH:
+CLEANUP_PATH:
     _comac_path_fixed_fini (&command->path);
-  CLEANUP_SOURCE:
+CLEANUP_SOURCE:
     _comac_pattern_fini (&command->source.base);
-  CLEANUP_COMMAND:
+CLEANUP_COMMAND:
     _comac_clip_destroy (command->header.clip);
     free (command);
 CLEANUP_COMPOSITE:
@@ -916,14 +946,14 @@ CLEANUP_COMPOSITE:
 }
 
 static comac_int_status_t
-_comac_recording_surface_fill (void			*abstract_surface,
-			       comac_operator_t		 op,
-			       const comac_pattern_t	*source,
-			       const comac_path_fixed_t	*path,
-			       comac_fill_rule_t	 fill_rule,
-			       double			 tolerance,
-			       comac_antialias_t	 antialias,
-			       const comac_clip_t	*clip)
+_comac_recording_surface_fill (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_path_fixed_t *path,
+			       comac_fill_rule_t fill_rule,
+			       double tolerance,
+			       comac_antialias_t antialias,
+			       const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_recording_surface_t *surface = abstract_surface;
@@ -934,7 +964,9 @@ _comac_recording_surface_fill (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_fill (&composite,
 							&surface->base,
-							op, source, path,
+							op,
+							source,
+							path,
 							clip);
     if (unlikely (status))
 	return status;
@@ -945,9 +977,11 @@ _comac_recording_surface_fill (void			*abstract_surface,
 	goto CLEANUP_COMPOSITE;
     }
 
-    status =_command_init (surface,
-			   &command->header, COMAC_COMMAND_FILL, op,
-			   &composite);
+    status = _command_init (surface,
+			    &command->header,
+			    COMAC_COMMAND_FILL,
+			    op,
+			    &composite);
     if (unlikely (status))
 	goto CLEANUP_COMMAND;
 
@@ -972,11 +1006,11 @@ _comac_recording_surface_fill (void			*abstract_surface,
     _comac_composite_rectangles_fini (&composite);
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP_PATH:
+CLEANUP_PATH:
     _comac_path_fixed_fini (&command->path);
-  CLEANUP_SOURCE:
+CLEANUP_SOURCE:
     _comac_pattern_fini (&command->source.base);
-  CLEANUP_COMMAND:
+CLEANUP_COMMAND:
     _comac_clip_destroy (command->header.clip);
     free (command);
 CLEANUP_COMPOSITE:
@@ -991,18 +1025,19 @@ _comac_recording_surface_has_show_text_glyphs (void *abstract_surface)
 }
 
 static comac_int_status_t
-_comac_recording_surface_show_text_glyphs (void				*abstract_surface,
-					   comac_operator_t		 op,
-					   const comac_pattern_t	*source,
-					   const char			*utf8,
-					   int				 utf8_len,
-					   comac_glyph_t		*glyphs,
-					   int				 num_glyphs,
-					   const comac_text_cluster_t	*clusters,
-					   int				 num_clusters,
-					   comac_text_cluster_flags_t	 cluster_flags,
-					   comac_scaled_font_t		*scaled_font,
-					   const comac_clip_t		*clip)
+_comac_recording_surface_show_text_glyphs (
+    void *abstract_surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const char *utf8,
+    int utf8_len,
+    comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_text_cluster_t *clusters,
+    int num_clusters,
+    comac_text_cluster_flags_t cluster_flags,
+    comac_scaled_font_t *scaled_font,
+    const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_recording_surface_t *surface = abstract_surface;
@@ -1013,9 +1048,11 @@ _comac_recording_surface_show_text_glyphs (void				*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_glyphs (&composite,
 							  &surface->base,
-							  op, source,
+							  op,
+							  source,
 							  scaled_font,
-							  glyphs, num_glyphs,
+							  glyphs,
+							  num_glyphs,
 							  clip,
 							  NULL);
     if (unlikely (status))
@@ -1028,8 +1065,10 @@ _comac_recording_surface_show_text_glyphs (void				*abstract_surface,
     }
 
     status = _command_init (surface,
-			    &command->header, COMAC_COMMAND_SHOW_TEXT_GLYPHS,
-			    op, &composite);
+			    &command->header,
+			    COMAC_COMMAND_SHOW_TEXT_GLYPHS,
+			    op,
+			    &composite);
     if (unlikely (status))
 	goto CLEANUP_COMMAND;
 
@@ -1061,12 +1100,15 @@ _comac_recording_surface_show_text_glyphs (void				*abstract_surface,
 	memcpy (command->glyphs, glyphs, sizeof (glyphs[0]) * num_glyphs);
     }
     if (num_clusters) {
-	command->clusters = _comac_malloc_ab (num_clusters, sizeof (clusters[0]));
+	command->clusters =
+	    _comac_malloc_ab (num_clusters, sizeof (clusters[0]));
 	if (unlikely (command->clusters == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto CLEANUP_ARRAYS;
 	}
-	memcpy (command->clusters, clusters, sizeof (clusters[0]) * num_clusters);
+	memcpy (command->clusters,
+		clusters,
+		sizeof (clusters[0]) * num_clusters);
     }
 
     command->cluster_flags = cluster_flags;
@@ -1080,15 +1122,15 @@ _comac_recording_surface_show_text_glyphs (void				*abstract_surface,
     _comac_composite_rectangles_fini (&composite);
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP_SCALED_FONT:
+CLEANUP_SCALED_FONT:
     comac_scaled_font_destroy (command->scaled_font);
-  CLEANUP_ARRAYS:
+CLEANUP_ARRAYS:
     free (command->utf8);
     free (command->glyphs);
     free (command->clusters);
 
     _comac_pattern_fini (&command->source.base);
-  CLEANUP_COMMAND:
+CLEANUP_COMMAND:
     _comac_clip_destroy (command->header.clip);
     free (command);
 CLEANUP_COMPOSITE:
@@ -1097,10 +1139,10 @@ CLEANUP_COMPOSITE:
 }
 
 static comac_int_status_t
-_comac_recording_surface_tag (void			 *abstract_surface,
-			      comac_bool_t                begin,
-			      const char                 *tag_name,
-			      const char                 *attributes)
+_comac_recording_surface_tag (void *abstract_surface,
+			      comac_bool_t begin,
+			      const char *tag_name,
+			      const char *attributes)
 {
     comac_status_t status;
     comac_recording_surface_t *surface = abstract_surface;
@@ -1114,7 +1156,9 @@ _comac_recording_surface_tag (void			 *abstract_surface,
     }
 
     status = _command_init (surface,
-			    &command->header, COMAC_COMMAND_TAG, COMAC_OPERATOR_SOURCE,
+			    &command->header,
+			    COMAC_COMMAND_TAG,
+			    COMAC_OPERATOR_SOURCE,
 			    NULL);
     if (unlikely (status))
 	goto CLEANUP_COMMAND;
@@ -1143,10 +1187,10 @@ _comac_recording_surface_tag (void			 *abstract_surface,
 
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP_STRINGS:
+CLEANUP_STRINGS:
     free (command->tag_name);
     free (command->attributes);
-  CLEANUP_COMMAND:
+CLEANUP_COMMAND:
     _comac_clip_destroy (command->header.clip);
     free (command);
     return status;
@@ -1197,7 +1241,7 @@ _comac_recording_surface_copy__paint (comac_recording_surface_t *surface,
 err_source:
     _comac_pattern_fini (&command->source.base);
 err_command:
-    free(command);
+    free (command);
 err:
     return status;
 }
@@ -1222,8 +1266,8 @@ _comac_recording_surface_copy__mask (comac_recording_surface_t *surface,
     if (unlikely (status))
 	goto err_command;
 
-    status = _comac_pattern_init_copy (&command->mask.base,
-				       &src->mask.mask.base);
+    status =
+	_comac_pattern_init_copy (&command->mask.base, &src->mask.mask.base);
     if (unlikely (status))
 	goto err_source;
 
@@ -1238,14 +1282,14 @@ err_mask:
 err_source:
     _comac_pattern_fini (&command->source.base);
 err_command:
-    free(command);
+    free (command);
 err:
     return status;
 }
 
 static comac_status_t
 _comac_recording_surface_copy__stroke (comac_recording_surface_t *surface,
-				     const comac_command_t *src)
+				       const comac_command_t *src)
 {
     comac_command_stroke_t *command;
     comac_status_t status;
@@ -1267,8 +1311,8 @@ _comac_recording_surface_copy__stroke (comac_recording_surface_t *surface,
     if (unlikely (status))
 	goto err_source;
 
-    status = _comac_stroke_style_init_copy (&command->style,
-					    &src->stroke.style);
+    status =
+	_comac_stroke_style_init_copy (&command->style, &src->stroke.style);
     if (unlikely (status))
 	goto err_path;
 
@@ -1290,7 +1334,7 @@ err_path:
 err_source:
     _comac_pattern_fini (&command->source.base);
 err_command:
-    free(command);
+    free (command);
 err:
     return status;
 }
@@ -1334,7 +1378,7 @@ err_path:
 err_source:
     _comac_pattern_fini (&command->source.base);
 err_command:
-    free(command);
+    free (command);
 err:
     return status;
 }
@@ -1375,13 +1419,14 @@ _comac_recording_surface_copy__glyphs (comac_recording_surface_t *surface,
 	memcpy (command->utf8, src->show_text_glyphs.utf8, command->utf8_len);
     }
     if (command->num_glyphs) {
-	command->glyphs = _comac_malloc_ab (command->num_glyphs,
-					    sizeof (command->glyphs[0]));
+	command->glyphs =
+	    _comac_malloc_ab (command->num_glyphs, sizeof (command->glyphs[0]));
 	if (unlikely (command->glyphs == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto err_arrays;
 	}
-	memcpy (command->glyphs, src->show_text_glyphs.glyphs,
+	memcpy (command->glyphs,
+		src->show_text_glyphs.glyphs,
 		sizeof (command->glyphs[0]) * command->num_glyphs);
     }
     if (command->num_clusters) {
@@ -1391,7 +1436,8 @@ _comac_recording_surface_copy__glyphs (comac_recording_surface_t *surface,
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto err_arrays;
 	}
-	memcpy (command->clusters, src->show_text_glyphs.clusters,
+	memcpy (command->clusters,
+		src->show_text_glyphs.clusters,
 		sizeof (command->clusters[0]) * command->num_clusters);
     }
 
@@ -1412,7 +1458,7 @@ err_arrays:
     free (command->clusters);
     _comac_pattern_fini (&command->source.base);
 err_command:
-    free(command);
+    free (command);
 err:
     return status;
 }
@@ -1455,9 +1501,9 @@ _comac_recording_surface_copy__tag (comac_recording_surface_t *surface,
     return COMAC_STATUS_SUCCESS;
 
 err_command:
-    free(command->tag_name);
-    free(command->attributes);
-    free(command);
+    free (command->tag_name);
+    free (command->attributes);
+    free (command);
 err:
     return status;
 }
@@ -1533,7 +1579,8 @@ _comac_recording_surface_snapshot (void *abstract_other)
 
     surface = _comac_malloc (sizeof (comac_recording_surface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
 			 &comac_recording_surface_backend,
@@ -1569,7 +1616,7 @@ _comac_recording_surface_snapshot (void *abstract_other)
 }
 
 static comac_bool_t
-_comac_recording_surface_get_extents (void		    *abstract_surface,
+_comac_recording_surface_get_extents (void *abstract_surface,
 				      comac_rectangle_int_t *rectangle)
 {
     comac_recording_surface_t *surface = abstract_surface;
@@ -1624,7 +1671,7 @@ static const comac_surface_backend_t comac_recording_surface_backend = {
 };
 
 comac_int_status_t
-_comac_recording_surface_get_path (comac_surface_t    *abstract_surface,
+_comac_recording_surface_get_path (comac_surface_t *abstract_surface,
 				   comac_path_fixed_t *path)
 {
     comac_recording_surface_t *surface;
@@ -1649,19 +1696,19 @@ _comac_recording_surface_get_path (comac_surface_t    *abstract_surface,
 	    status = COMAC_INT_STATUS_UNSUPPORTED;
 	    break;
 
-	case COMAC_COMMAND_STROKE:
-	{
+	case COMAC_COMMAND_STROKE: {
 	    comac_traps_t traps;
 
 	    _comac_traps_init (&traps);
 
 	    /* XXX call comac_stroke_to_path() when that is implemented */
-	    status = _comac_path_fixed_stroke_polygon_to_traps (&command->stroke.path,
-								&command->stroke.style,
-								&command->stroke.ctm,
-								&command->stroke.ctm_inverse,
-								command->stroke.tolerance,
-								&traps);
+	    status = _comac_path_fixed_stroke_polygon_to_traps (
+		&command->stroke.path,
+		&command->stroke.style,
+		&command->stroke.ctm,
+		&command->stroke.ctm_inverse,
+		command->stroke.tolerance,
+		&traps);
 
 	    if (status == COMAC_INT_STATUS_SUCCESS)
 		status = _comac_traps_path (&traps, path);
@@ -1669,19 +1716,16 @@ _comac_recording_surface_get_path (comac_surface_t    *abstract_surface,
 	    _comac_traps_fini (&traps);
 	    break;
 	}
-	case COMAC_COMMAND_FILL:
-	{
-	    status = _comac_path_fixed_append (path,
-					       &command->fill.path,
-					       0, 0);
+	case COMAC_COMMAND_FILL: {
+	    status = _comac_path_fixed_append (path, &command->fill.path, 0, 0);
 	    break;
 	}
-	case COMAC_COMMAND_SHOW_TEXT_GLYPHS:
-	{
-	    status = _comac_scaled_font_glyph_path (command->show_text_glyphs.scaled_font,
-						    command->show_text_glyphs.glyphs,
-						    command->show_text_glyphs.num_glyphs,
-						    path);
+	case COMAC_COMMAND_SHOW_TEXT_GLYPHS: {
+	    status = _comac_scaled_font_glyph_path (
+		command->show_text_glyphs.scaled_font,
+		command->show_text_glyphs.glyphs,
+		command->show_text_glyphs.num_glyphs,
+		path);
 	    break;
 	}
 
@@ -1700,14 +1744,14 @@ _comac_recording_surface_get_path (comac_surface_t    *abstract_surface,
 }
 
 static int
-_comac_recording_surface_get_visible_commands (comac_recording_surface_t *surface,
-					       const comac_rectangle_int_t *extents)
+_comac_recording_surface_get_visible_commands (
+    comac_recording_surface_t *surface, const comac_rectangle_int_t *extents)
 {
     unsigned int num_visible, *indices;
     comac_box_t box;
 
     if (surface->commands.num_elements == 0)
-	    return 0;
+	return 0;
 
     _comac_box_from_rectangle (&box, extents);
 
@@ -1724,9 +1768,10 @@ _comac_recording_surface_get_visible_commands (comac_recording_surface_t *surfac
 }
 
 static void
-_comac_recording_surface_merge_source_attributes (comac_recording_surface_t  *surface,
-						  comac_operator_t            op,
-						  const comac_pattern_t      *source)
+_comac_recording_surface_merge_source_attributes (
+    comac_recording_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source)
 {
     if (op != COMAC_OPERATOR_OVER)
 	surface->has_only_op_over = FALSE;
@@ -1745,7 +1790,8 @@ _comac_recording_surface_merge_source_attributes (comac_recording_surface_t  *su
 	    return;
 
 	if (surf->type == COMAC_SURFACE_TYPE_RECORDING) {
-	    comac_recording_surface_t *rec_surf = (comac_recording_surface_t *) surf;
+	    comac_recording_surface_t *rec_surf =
+		(comac_recording_surface_t *) surf;
 
 	    if (! _comac_recording_surface_has_only_bilevel_alpha (rec_surf))
 		surface->has_bilevel_alpha = FALSE;
@@ -1756,11 +1802,13 @@ _comac_recording_surface_merge_source_attributes (comac_recording_surface_t  *su
 	} else if (surf->type == COMAC_SURFACE_TYPE_IMAGE) {
 	    comac_image_surface_t *img_surf = (comac_image_surface_t *) surf;
 
-	    if (_comac_image_analyze_transparency (img_surf) == COMAC_IMAGE_HAS_ALPHA)
+	    if (_comac_image_analyze_transparency (img_surf) ==
+		COMAC_IMAGE_HAS_ALPHA)
 		surface->has_bilevel_alpha = FALSE;
 
 	} else {
-	    if (!_comac_pattern_is_clear (source) && !_comac_pattern_is_opaque (source, NULL))
+	    if (! _comac_pattern_is_clear (source) &&
+		! _comac_pattern_is_opaque (source, NULL))
 		surface->has_bilevel_alpha = FALSE;
 	}
 
@@ -1776,7 +1824,9 @@ _comac_recording_surface_merge_source_attributes (comac_recording_surface_t  *su
 	comac_surface_destroy (image);
 	if (raster) {
 	    if (raster->type == COMAC_SURFACE_TYPE_IMAGE) {
-		if (_comac_image_analyze_transparency ((comac_image_surface_t *)raster) == COMAC_IMAGE_HAS_ALPHA)
+		if (_comac_image_analyze_transparency (
+			(comac_image_surface_t *) raster) ==
+		    COMAC_IMAGE_HAS_ALPHA)
 		    surface->has_bilevel_alpha = FALSE;
 	    }
 
@@ -1786,18 +1836,20 @@ _comac_recording_surface_merge_source_attributes (comac_recording_surface_t  *su
 	}
     }
 
-    if (!_comac_pattern_is_clear (source) && !_comac_pattern_is_opaque (source, NULL))
+    if (! _comac_pattern_is_clear (source) &&
+	! _comac_pattern_is_opaque (source, NULL))
 	surface->has_bilevel_alpha = FALSE;
 }
 
 static comac_status_t
-_comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
-					  comac_recording_surface_replay_params_t *params)
+_comac_recording_surface_replay_internal (
+    comac_recording_surface_t *surface,
+    comac_recording_surface_replay_params_t *params)
 {
     comac_surface_wrapper_t wrapper;
     comac_command_t **elements;
-    comac_bool_t replay_all =
-	params->type == COMAC_RECORDING_CREATE_REGIONS || params->region == COMAC_RECORDING_REGION_ALL;
+    comac_bool_t replay_all = params->type == COMAC_RECORDING_CREATE_REGIONS ||
+			      params->region == COMAC_RECORDING_REGION_ALL;
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
     comac_rectangle_int_t extents;
     comac_bool_t use_indices = FALSE;
@@ -1820,18 +1872,24 @@ _comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
 
     _comac_surface_wrapper_init (&wrapper, params->target);
     if (params->surface_extents)
-	_comac_surface_wrapper_intersect_extents (&wrapper, params->surface_extents);
+	_comac_surface_wrapper_intersect_extents (&wrapper,
+						  params->surface_extents);
     r = &_comac_unbounded_rectangle;
-    if (! surface->unbounded && !params->surface_is_unbounded) {
+    if (! surface->unbounded && ! params->surface_is_unbounded) {
 	_comac_surface_wrapper_intersect_extents (&wrapper, &surface->extents);
 	r = &surface->extents;
     }
-    _comac_surface_wrapper_set_inverse_transform (&wrapper, params->surface_transform);
+    _comac_surface_wrapper_set_inverse_transform (&wrapper,
+						  params->surface_transform);
     _comac_surface_wrapper_set_clip (&wrapper, params->target_clip);
-    _comac_surface_wrapper_set_foreground_color (&wrapper, params->foreground_color);
+    _comac_surface_wrapper_set_foreground_color (&wrapper,
+						 params->foreground_color);
 
     /* Compute the extents of the target clip in recorded device space */
-    if (! _comac_surface_wrapper_get_target_extents (&wrapper, params->surface_is_unbounded, &extents))
+    if (! _comac_surface_wrapper_get_target_extents (
+	    &wrapper,
+	    params->surface_is_unbounded,
+	    &extents))
 	goto done;
 
     surface->has_bilevel_alpha = TRUE;
@@ -1846,12 +1904,14 @@ _comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
     }
 
     for (i = 0; i < num_elements; i++) {
-	comac_command_t *command = elements[use_indices ? surface->indices[i] : i];
+	comac_command_t *command =
+	    elements[use_indices ? surface->indices[i] : i];
 
 	if (! replay_all && command->header.region != params->region)
 	    continue;
 
-	if (! _comac_rectangle_intersects (&extents, &command->header.extents)) {
+	if (! _comac_rectangle_intersects (&extents,
+					   &command->header.extents)) {
 	    if (command->header.type != COMAC_COMMAND_TAG)
 		continue;
 	}
@@ -1863,9 +1923,10 @@ _comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
 						   &command->paint.source.base,
 						   command->header.clip);
 	    if (params->type == COMAC_RECORDING_CREATE_REGIONS) {
-		_comac_recording_surface_merge_source_attributes (surface,
-								  command->header.op,
-								  &command->paint.source.base);
+		_comac_recording_surface_merge_source_attributes (
+		    surface,
+		    command->header.op,
+		    &command->paint.source.base);
 	    }
 	    break;
 
@@ -1876,30 +1937,34 @@ _comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
 						  &command->mask.mask.base,
 						  command->header.clip);
 	    if (params->type == COMAC_RECORDING_CREATE_REGIONS) {
-		_comac_recording_surface_merge_source_attributes (surface,
-								  command->header.op,
-								  &command->mask.source.base);
-		_comac_recording_surface_merge_source_attributes (surface,
-								  command->header.op,
-								  &command->mask.mask.base);
+		_comac_recording_surface_merge_source_attributes (
+		    surface,
+		    command->header.op,
+		    &command->mask.source.base);
+		_comac_recording_surface_merge_source_attributes (
+		    surface,
+		    command->header.op,
+		    &command->mask.mask.base);
 	    }
 	    break;
 
 	case COMAC_COMMAND_STROKE:
-	    status = _comac_surface_wrapper_stroke (&wrapper,
-						    command->header.op,
-						    &command->stroke.source.base,
-						    &command->stroke.path,
-						    &command->stroke.style,
-						    &command->stroke.ctm,
-						    &command->stroke.ctm_inverse,
-						    command->stroke.tolerance,
-						    command->stroke.antialias,
-						    command->header.clip);
+	    status =
+		_comac_surface_wrapper_stroke (&wrapper,
+					       command->header.op,
+					       &command->stroke.source.base,
+					       &command->stroke.path,
+					       &command->stroke.style,
+					       &command->stroke.ctm,
+					       &command->stroke.ctm_inverse,
+					       command->stroke.tolerance,
+					       command->stroke.antialias,
+					       command->header.clip);
 	    if (params->type == COMAC_RECORDING_CREATE_REGIONS) {
-		_comac_recording_surface_merge_source_attributes (surface,
-								  command->header.op,
-								  &command->stroke.source.base);
+		_comac_recording_surface_merge_source_attributes (
+		    surface,
+		    command->header.op,
+		    &command->stroke.source.base);
 	    }
 	    break;
 
@@ -1909,13 +1974,13 @@ _comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
 		comac_command_t *stroke_command;
 
 		stroke_command = NULL;
-		if (params->type != COMAC_RECORDING_CREATE_REGIONS && i < num_elements - 1)
+		if (params->type != COMAC_RECORDING_CREATE_REGIONS &&
+		    i < num_elements - 1)
 		    stroke_command = elements[i + 1];
 
 		if (stroke_command != NULL &&
 		    params->type == COMAC_RECORDING_REPLAY &&
-		    params->region != COMAC_RECORDING_REGION_ALL)
-		{
+		    params->region != COMAC_RECORDING_REGION_ALL) {
 		    if (stroke_command->header.region != params->region)
 			stroke_command = NULL;
 		}
@@ -1925,65 +1990,74 @@ _comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
 		    _comac_path_fixed_equal (&command->fill.path,
 					     &stroke_command->stroke.path) &&
 		    _comac_clip_equal (command->header.clip,
-				       stroke_command->header.clip))
-		{
-		    status = _comac_surface_wrapper_fill_stroke (&wrapper,
-								 command->header.op,
-								 &command->fill.source.base,
-								 command->fill.fill_rule,
-								 command->fill.tolerance,
-								 command->fill.antialias,
-								 &command->fill.path,
-								 stroke_command->header.op,
-								 &stroke_command->stroke.source.base,
-								 &stroke_command->stroke.style,
-								 &stroke_command->stroke.ctm,
-								 &stroke_command->stroke.ctm_inverse,
-								 stroke_command->stroke.tolerance,
-								 stroke_command->stroke.antialias,
-								 command->header.clip);
+				       stroke_command->header.clip)) {
+		    status = _comac_surface_wrapper_fill_stroke (
+			&wrapper,
+			command->header.op,
+			&command->fill.source.base,
+			command->fill.fill_rule,
+			command->fill.tolerance,
+			command->fill.antialias,
+			&command->fill.path,
+			stroke_command->header.op,
+			&stroke_command->stroke.source.base,
+			&stroke_command->stroke.style,
+			&stroke_command->stroke.ctm,
+			&stroke_command->stroke.ctm_inverse,
+			stroke_command->stroke.tolerance,
+			stroke_command->stroke.antialias,
+			command->header.clip);
 		    if (params->type == COMAC_RECORDING_CREATE_REGIONS) {
-			_comac_recording_surface_merge_source_attributes (surface,
-									  command->header.op,
-									  &command->fill.source.base);
-			_comac_recording_surface_merge_source_attributes (surface,
-									  command->header.op,
-									  &command->stroke.source.base);
+			_comac_recording_surface_merge_source_attributes (
+			    surface,
+			    command->header.op,
+			    &command->fill.source.base);
+			_comac_recording_surface_merge_source_attributes (
+			    surface,
+			    command->header.op,
+			    &command->stroke.source.base);
 		    }
 		    i++;
 		}
 	    }
 	    if (status == COMAC_INT_STATUS_UNSUPPORTED) {
-		status = _comac_surface_wrapper_fill (&wrapper,
-						      command->header.op,
-						      &command->fill.source.base,
-						      &command->fill.path,
-						      command->fill.fill_rule,
-						      command->fill.tolerance,
-						      command->fill.antialias,
-						      command->header.clip);
+		status =
+		    _comac_surface_wrapper_fill (&wrapper,
+						 command->header.op,
+						 &command->fill.source.base,
+						 &command->fill.path,
+						 command->fill.fill_rule,
+						 command->fill.tolerance,
+						 command->fill.antialias,
+						 command->header.clip);
 		if (params->type == COMAC_RECORDING_CREATE_REGIONS) {
-		    _comac_recording_surface_merge_source_attributes (surface,
-								      command->header.op,
-								      &command->fill.source.base);
+		    _comac_recording_surface_merge_source_attributes (
+			surface,
+			command->header.op,
+			&command->fill.source.base);
 		}
 	    }
 	    break;
 
 	case COMAC_COMMAND_SHOW_TEXT_GLYPHS:
-	    status = _comac_surface_wrapper_show_text_glyphs (&wrapper,
-							      command->header.op,
-							      &command->show_text_glyphs.source.base,
-							      command->show_text_glyphs.utf8, command->show_text_glyphs.utf8_len,
-							      command->show_text_glyphs.glyphs, command->show_text_glyphs.num_glyphs,
-							      command->show_text_glyphs.clusters, command->show_text_glyphs.num_clusters,
-							      command->show_text_glyphs.cluster_flags,
-							      command->show_text_glyphs.scaled_font,
-							      command->header.clip);
+	    status = _comac_surface_wrapper_show_text_glyphs (
+		&wrapper,
+		command->header.op,
+		&command->show_text_glyphs.source.base,
+		command->show_text_glyphs.utf8,
+		command->show_text_glyphs.utf8_len,
+		command->show_text_glyphs.glyphs,
+		command->show_text_glyphs.num_glyphs,
+		command->show_text_glyphs.clusters,
+		command->show_text_glyphs.num_clusters,
+		command->show_text_glyphs.cluster_flags,
+		command->show_text_glyphs.scaled_font,
+		command->header.clip);
 	    if (params->type == COMAC_RECORDING_CREATE_REGIONS) {
-		_comac_recording_surface_merge_source_attributes (surface,
-								  command->header.op,
-								  &command->show_text_glyphs.source.base);
+		_comac_recording_surface_merge_source_attributes (
+		    surface,
+		    command->header.op,
+		    &command->show_text_glyphs.source.base);
 	    }
 	    break;
 
@@ -2002,7 +2076,8 @@ _comac_recording_surface_replay_internal (comac_recording_surface_t	*surface,
 	if (unlikely (status == COMAC_INT_STATUS_NOTHING_TO_DO))
 	    status = COMAC_INT_STATUS_SUCCESS;
 
-	if (params->type == COMAC_RECORDING_CREATE_REGIONS && command->header.region != COMAC_RECORDING_REGION_NATIVE) {
+	if (params->type == COMAC_RECORDING_CREATE_REGIONS &&
+	    command->header.region != COMAC_RECORDING_REGION_NATIVE) {
 	    if (status == COMAC_INT_STATUS_SUCCESS) {
 		command->header.region = COMAC_RECORDING_REGION_NATIVE;
 	    } else if (status == COMAC_INT_STATUS_IMAGE_FALLBACK) {
@@ -2023,9 +2098,9 @@ done:
 }
 
 comac_status_t
-_comac_recording_surface_replay_one (comac_recording_surface_t	*surface,
+_comac_recording_surface_replay_one (comac_recording_surface_t *surface,
 				     long unsigned index,
-				     comac_surface_t	     *target)
+				     comac_surface_t *target)
 {
     comac_surface_wrapper_t wrapper;
     comac_command_t **elements, *command;
@@ -2094,15 +2169,19 @@ _comac_recording_surface_replay_one (comac_recording_surface_t	*surface,
 	break;
 
     case COMAC_COMMAND_SHOW_TEXT_GLYPHS:
-	status = _comac_surface_wrapper_show_text_glyphs (&wrapper,
-							  command->header.op,
-							  &command->show_text_glyphs.source.base,
-							  command->show_text_glyphs.utf8, command->show_text_glyphs.utf8_len,
-							  command->show_text_glyphs.glyphs, command->show_text_glyphs.num_glyphs,
-							  command->show_text_glyphs.clusters, command->show_text_glyphs.num_clusters,
-							  command->show_text_glyphs.cluster_flags,
-							  command->show_text_glyphs.scaled_font,
-							  command->header.clip);
+	status = _comac_surface_wrapper_show_text_glyphs (
+	    &wrapper,
+	    command->header.op,
+	    &command->show_text_glyphs.source.base,
+	    command->show_text_glyphs.utf8,
+	    command->show_text_glyphs.utf8_len,
+	    command->show_text_glyphs.glyphs,
+	    command->show_text_glyphs.num_glyphs,
+	    command->show_text_glyphs.clusters,
+	    command->show_text_glyphs.num_clusters,
+	    command->show_text_glyphs.cluster_flags,
+	    command->show_text_glyphs.scaled_font,
+	    command->header.clip);
 	break;
 
     case COMAC_COMMAND_TAG:
@@ -2146,13 +2225,16 @@ _comac_recording_surface_replay (comac_surface_t *surface,
     params.region = COMAC_RECORDING_REGION_ALL;
     params.foreground_color = NULL;
 
-    return _comac_recording_surface_replay_internal ((comac_recording_surface_t *) surface, &params);
+    return _comac_recording_surface_replay_internal (
+	(comac_recording_surface_t *) surface,
+	&params);
 }
 
 comac_status_t
-_comac_recording_surface_replay_with_foreground_color (comac_surface_t *surface,
-                                                       comac_surface_t *target,
-                                                       const comac_color_t *color)
+_comac_recording_surface_replay_with_foreground_color (
+    comac_surface_t *surface,
+    comac_surface_t *target,
+    const comac_color_t *color)
 {
     comac_recording_surface_replay_params_t params;
 
@@ -2165,14 +2247,17 @@ _comac_recording_surface_replay_with_foreground_color (comac_surface_t *surface,
     params.region = COMAC_RECORDING_REGION_ALL;
     params.foreground_color = color;
 
-    return _comac_recording_surface_replay_internal ((comac_recording_surface_t *) surface, &params);
+    return _comac_recording_surface_replay_internal (
+	(comac_recording_surface_t *) surface,
+	&params);
 }
 
 comac_status_t
-_comac_recording_surface_replay_with_clip (comac_surface_t *surface,
-					   const comac_matrix_t *surface_transform,
-					   comac_surface_t *target,
-					   const comac_clip_t *target_clip)
+_comac_recording_surface_replay_with_clip (
+    comac_surface_t *surface,
+    const comac_matrix_t *surface_transform,
+    comac_surface_t *target,
+    const comac_clip_t *target_clip)
 {
     comac_recording_surface_replay_params_t params;
 
@@ -2185,7 +2270,9 @@ _comac_recording_surface_replay_with_clip (comac_surface_t *surface,
     params.region = COMAC_RECORDING_REGION_ALL;
     params.foreground_color = NULL;
 
-    return _comac_recording_surface_replay_internal ((comac_recording_surface_t *) surface, &params);
+    return _comac_recording_surface_replay_internal (
+	(comac_recording_surface_t *) surface,
+	&params);
 }
 
 /* Replay recording to surface. When the return status of each operation is
@@ -2195,10 +2282,11 @@ _comac_recording_surface_replay_with_clip (comac_surface_t *surface,
  * replay and return the status.
  */
 comac_status_t
-_comac_recording_surface_replay_and_create_regions (comac_surface_t *surface,
-						    const comac_matrix_t *surface_transform,
-						    comac_surface_t *target,
-						    comac_bool_t surface_is_unbounded)
+_comac_recording_surface_replay_and_create_regions (
+    comac_surface_t *surface,
+    const comac_matrix_t *surface_transform,
+    comac_surface_t *target,
+    comac_bool_t surface_is_unbounded)
 {
     comac_recording_surface_replay_params_t params;
 
@@ -2211,14 +2299,17 @@ _comac_recording_surface_replay_and_create_regions (comac_surface_t *surface,
     params.region = COMAC_RECORDING_REGION_ALL;
     params.foreground_color = NULL;
 
-    return _comac_recording_surface_replay_internal ((comac_recording_surface_t *) surface, &params);
+    return _comac_recording_surface_replay_internal (
+	(comac_recording_surface_t *) surface,
+	&params);
 }
 
 comac_status_t
-_comac_recording_surface_replay_region (comac_surface_t          *surface,
-					const comac_rectangle_int_t *surface_extents,
-					comac_surface_t          *target,
-					comac_recording_region_type_t  region)
+_comac_recording_surface_replay_region (
+    comac_surface_t *surface,
+    const comac_rectangle_int_t *surface_extents,
+    comac_surface_t *target,
+    comac_recording_region_type_t region)
 {
     comac_recording_surface_replay_params_t params;
 
@@ -2231,7 +2322,9 @@ _comac_recording_surface_replay_region (comac_surface_t          *surface,
     params.region = region;
     params.foreground_color = NULL;
 
-    return _comac_recording_surface_replay_internal ((comac_recording_surface_t *) surface, &params);
+    return _comac_recording_surface_replay_internal (
+	(comac_recording_surface_t *) surface,
+	&params);
 }
 
 static comac_status_t
@@ -2292,7 +2385,8 @@ comac_recording_surface_ink_extents (comac_surface_t *surface,
 	goto DONE;
     }
 
-    status = _recording_surface_get_ink_bbox ((comac_recording_surface_t *) surface,
+    status =
+	_recording_surface_get_ink_bbox ((comac_recording_surface_t *) surface,
 					 &bbox,
 					 NULL);
     if (unlikely (status))
@@ -2356,7 +2450,7 @@ comac_recording_surface_get_extents (comac_surface_t *surface,
 	return FALSE;
     }
 
-    record = (comac_recording_surface_t *)surface;
+    record = (comac_recording_surface_t *) surface;
     if (record->unbounded)
 	return FALSE;
 
@@ -2365,7 +2459,8 @@ comac_recording_surface_get_extents (comac_surface_t *surface,
 }
 
 comac_bool_t
-_comac_recording_surface_has_only_bilevel_alpha (comac_recording_surface_t *surface)
+_comac_recording_surface_has_only_bilevel_alpha (
+    comac_recording_surface_t *surface)
 {
     return surface->has_bilevel_alpha;
 }

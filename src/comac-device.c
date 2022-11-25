@@ -206,8 +206,7 @@ comac_device_t *
 comac_device_reference (comac_device_t *device)
 {
     if (device == NULL ||
-	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count))
-    {
+	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count)) {
 	return device;
     }
 
@@ -294,8 +293,7 @@ void
 comac_device_finish (comac_device_t *device)
 {
     if (device == NULL ||
-	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count))
-    {
+	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count)) {
 	return;
     }
 
@@ -332,8 +330,7 @@ comac_device_destroy (comac_device_t *device)
     comac_user_data_array_t user_data;
 
     if (device == NULL ||
-	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count))
-    {
+	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count)) {
 	return;
     }
 
@@ -351,7 +348,6 @@ comac_device_destroy (comac_device_t *device)
     device->backend->destroy (device);
 
     _comac_user_data_array_fini (&user_data);
-
 }
 
 /**
@@ -369,8 +365,7 @@ comac_device_type_t
 comac_device_get_type (comac_device_t *device)
 {
     if (device == NULL ||
-	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count))
-    {
+	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count)) {
 	return COMAC_DEVICE_TYPE_INVALID;
     }
 
@@ -454,11 +449,10 @@ comac_device_release (comac_device_t *device)
 }
 
 comac_status_t
-_comac_device_set_error (comac_device_t *device,
-			 comac_status_t  status)
+_comac_device_set_error (comac_device_t *device, comac_status_t status)
 {
     if (status == COMAC_STATUS_SUCCESS)
-        return COMAC_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     _comac_status_set_error (&device->status, status);
 
@@ -479,8 +473,7 @@ _comac_device_set_error (comac_device_t *device,
 unsigned int
 comac_device_get_reference_count (comac_device_t *device)
 {
-    if (device == NULL ||
-	COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count))
+    if (device == NULL || COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count))
 	return 0;
 
     return COMAC_REFERENCE_COUNT_GET_VALUE (&device->ref_count);
@@ -501,11 +494,10 @@ comac_device_get_reference_count (comac_device_t *device)
  * Since: 1.10
  **/
 void *
-comac_device_get_user_data (comac_device_t		 *device,
+comac_device_get_user_data (comac_device_t *device,
 			    const comac_user_data_key_t *key)
 {
-    return _comac_user_data_array_get_data (&device->user_data,
-					    key);
+    return _comac_user_data_array_get_data (&device->user_data, key);
 }
 
 /**
@@ -527,14 +519,16 @@ comac_device_get_user_data (comac_device_t		 *device,
  * Since: 1.10
  **/
 comac_status_t
-comac_device_set_user_data (comac_device_t		 *device,
+comac_device_set_user_data (comac_device_t *device,
 			    const comac_user_data_key_t *key,
-			    void			 *user_data,
-			    comac_destroy_func_t	  destroy)
+			    void *user_data,
+			    comac_destroy_func_t destroy)
 {
     if (COMAC_REFERENCE_COUNT_IS_INVALID (&device->ref_count))
 	return device->status;
 
     return _comac_user_data_array_set_data (&device->user_data,
-					    key, user_data, destroy);
+					    key,
+					    user_data,
+					    destroy);
 }

@@ -65,11 +65,11 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
     comac_restore (cr);
 
-    comac_scale (cr, 1.0/(1<<16), 1.0/(1<<16));
+    comac_scale (cr, 1.0 / (1 << 16), 1.0 / (1 << 16));
 
-    comac_move_to (cr, 131072,39321);
-    comac_line_to (cr, 1103072,1288088);
-    comac_line_to (cr, 1179648,1294990);
+    comac_move_to (cr, 131072, 39321);
+    comac_line_to (cr, 1103072, 1288088);
+    comac_line_to (cr, 1179648, 1294990);
     comac_close_path (cr);
 
     comac_fill (cr);
@@ -78,8 +78,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (leaky_polygon,
-	    "Exercises a corner case in the trapezoid rasterization in which pixels outside the trapezoids received a non-zero alpha",
+	    "Exercises a corner case in the trapezoid rasterization in which "
+	    "pixels outside the trapezoids received a non-zero alpha",
 	    "fill, trap", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

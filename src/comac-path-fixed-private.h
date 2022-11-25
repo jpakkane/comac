@@ -56,22 +56,23 @@ enum comac_path_op {
 typedef char comac_path_op_t;
 
 /* make _comac_path_fixed fit into ~512 bytes -- about 50 items */
-#define COMAC_PATH_BUF_SIZE ((512 - sizeof (comac_path_buf_t)) \
-			   / (2 * sizeof (comac_point_t) + sizeof (comac_path_op_t)))
+#define COMAC_PATH_BUF_SIZE                                                    \
+    ((512 - sizeof (comac_path_buf_t)) /                                       \
+     (2 * sizeof (comac_point_t) + sizeof (comac_path_op_t)))
 
 #define comac_path_head(path__) (&(path__)->buf.base)
 #define comac_path_tail(path__) comac_path_buf_prev (comac_path_head (path__))
 
-#define comac_path_buf_next(pos__) \
+#define comac_path_buf_next(pos__)                                             \
     comac_list_entry ((pos__)->link.next, comac_path_buf_t, link)
-#define comac_path_buf_prev(pos__) \
+#define comac_path_buf_prev(pos__)                                             \
     comac_list_entry ((pos__)->link.prev, comac_path_buf_t, link)
 
-#define comac_path_foreach_buf_start(pos__, path__) \
-    pos__ = comac_path_head (path__); do
-#define comac_path_foreach_buf_end(pos__, path__) \
-    while ((pos__ = comac_path_buf_next (pos__)) !=  comac_path_head (path__))
-
+#define comac_path_foreach_buf_start(pos__, path__)                            \
+    pos__ = comac_path_head (path__);                                          \
+    do
+#define comac_path_foreach_buf_end(pos__, path__)                              \
+    while ((pos__ = comac_path_buf_next (pos__)) != comac_path_head (path__))
 
 typedef struct _comac_path_buf {
     comac_list_t link;
@@ -101,18 +102,18 @@ typedef struct _comac_path_buf_fixed {
 struct _comac_path_fixed {
     comac_point_t last_move_point;
     comac_point_t current_point;
-    unsigned int has_current_point	: 1;
-    unsigned int needs_move_to		: 1;
-    unsigned int has_extents		: 1;
-    unsigned int has_curve_to		: 1;
-    unsigned int stroke_is_rectilinear	: 1;
-    unsigned int fill_is_rectilinear	: 1;
-    unsigned int fill_maybe_region	: 1;
-    unsigned int fill_is_empty		: 1;
+    unsigned int has_current_point : 1;
+    unsigned int needs_move_to : 1;
+    unsigned int has_extents : 1;
+    unsigned int has_curve_to : 1;
+    unsigned int stroke_is_rectilinear : 1;
+    unsigned int fill_is_rectilinear : 1;
+    unsigned int fill_maybe_region : 1;
+    unsigned int fill_is_empty : 1;
 
     comac_box_t extents;
 
-    comac_path_buf_fixed_t  buf;
+    comac_path_buf_fixed_t buf;
 };
 
 comac_private void
@@ -121,10 +122,10 @@ _comac_path_fixed_translate (comac_path_fixed_t *path,
 			     comac_fixed_t offy);
 
 comac_private comac_status_t
-_comac_path_fixed_append (comac_path_fixed_t		    *path,
-			  const comac_path_fixed_t	    *other,
-			  comac_fixed_t			     tx,
-			  comac_fixed_t			     ty);
+_comac_path_fixed_append (comac_path_fixed_t *path,
+			  const comac_path_fixed_t *other,
+			  comac_fixed_t tx,
+			  comac_fixed_t ty);
 
 comac_private uintptr_t
 _comac_path_fixed_hash (const comac_path_fixed_t *path);

@@ -60,7 +60,7 @@ struct _comac_composite_rectangles {
     comac_rectangle_int_t mask;
     comac_rectangle_int_t destination;
 
-    comac_rectangle_int_t bounded; /* source? IN mask? IN unbounded */
+    comac_rectangle_int_t bounded;   /* source? IN mask? IN unbounded */
     comac_rectangle_int_t unbounded; /* destination IN clip */
     uint32_t is_bounded;
 
@@ -76,80 +76,87 @@ struct _comac_composite_rectangles {
 };
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_init_for_paint (comac_composite_rectangles_t *extents,
-					    comac_surface_t *surface,
-					    comac_operator_t	 op,
-					    const comac_pattern_t	*source,
-					    const comac_clip_t		*clip);
+_comac_composite_rectangles_init_for_paint (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_init_for_mask (comac_composite_rectangles_t *extents,
-					   comac_surface_t *surface,
-					   comac_operator_t	 op,
-					   const comac_pattern_t	*source,
-					   const comac_pattern_t	*mask,
-					   const comac_clip_t		*clip);
+_comac_composite_rectangles_init_for_mask (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_pattern_t *mask,
+    const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_init_for_stroke (comac_composite_rectangles_t *extents,
-					     comac_surface_t *surface,
-					     comac_operator_t	 op,
-					     const comac_pattern_t	*source,
-					     const comac_path_fixed_t	*path,
-					     const comac_stroke_style_t	*style,
-					     const comac_matrix_t	*ctm,
-					     const comac_clip_t		*clip);
+_comac_composite_rectangles_init_for_stroke (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_path_fixed_t *path,
+    const comac_stroke_style_t *style,
+    const comac_matrix_t *ctm,
+    const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_init_for_fill (comac_composite_rectangles_t *extents,
-					   comac_surface_t *surface,
-					   comac_operator_t	 op,
-					   const comac_pattern_t	*source,
-					   const comac_path_fixed_t	*path,
-					   const comac_clip_t		*clip);
+_comac_composite_rectangles_init_for_fill (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_path_fixed_t *path,
+    const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_init_for_boxes (comac_composite_rectangles_t *extents,
-					      comac_surface_t		*surface,
-					      comac_operator_t		 op,
-					      const comac_pattern_t	*source,
-					      const comac_boxes_t	*boxes,
-					      const comac_clip_t		*clip);
+_comac_composite_rectangles_init_for_boxes (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_boxes_t *boxes,
+    const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_init_for_polygon (comac_composite_rectangles_t *extents,
-					      comac_surface_t		*surface,
-					      comac_operator_t		 op,
-					      const comac_pattern_t	*source,
-					      const comac_polygon_t	*polygon,
-					      const comac_clip_t		*clip);
+_comac_composite_rectangles_init_for_polygon (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const comac_polygon_t *polygon,
+    const comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_init_for_glyphs (comac_composite_rectangles_t *extents,
-					     comac_surface_t *surface,
-					     comac_operator_t		 op,
-					     const comac_pattern_t	*source,
-					     comac_scaled_font_t	*scaled_font,
-					     comac_glyph_t		*glyphs,
-					     int			 num_glyphs,
-					     const comac_clip_t		*clip,
-					     comac_bool_t		*overlap);
+_comac_composite_rectangles_init_for_glyphs (
+    comac_composite_rectangles_t *extents,
+    comac_surface_t *surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    comac_scaled_font_t *scaled_font,
+    comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_clip_t *clip,
+    comac_bool_t *overlap);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_intersect_source_extents (comac_composite_rectangles_t *extents,
-						      const comac_box_t *box);
+_comac_composite_rectangles_intersect_source_extents (
+    comac_composite_rectangles_t *extents, const comac_box_t *box);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_intersect_mask_extents (comac_composite_rectangles_t *extents,
-						    const comac_box_t *box);
+_comac_composite_rectangles_intersect_mask_extents (
+    comac_composite_rectangles_t *extents, const comac_box_t *box);
 
 comac_private comac_bool_t
-_comac_composite_rectangles_can_reduce_clip (comac_composite_rectangles_t *composite,
-					     comac_clip_t *clip);
+_comac_composite_rectangles_can_reduce_clip (
+    comac_composite_rectangles_t *composite, comac_clip_t *clip);
 
 comac_private comac_int_status_t
-_comac_composite_rectangles_add_to_damage (comac_composite_rectangles_t *composite,
-					   comac_boxes_t *damage);
+_comac_composite_rectangles_add_to_damage (
+    comac_composite_rectangles_t *composite, comac_boxes_t *damage);
 
 comac_private void
 _comac_composite_rectangles_fini (comac_composite_rectangles_t *extents);

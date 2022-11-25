@@ -58,8 +58,7 @@ static const comac_font_options_t _comac_font_options_nil = {
     COMAC_ROUND_GLYPH_POS_DEFAULT,
     NULL, /* variations */
     COMAC_COLOR_MODE_DEFAULT,
-    COMAC_COLOR_PALETTE_DEFAULT
-};
+    COMAC_COLOR_PALETTE_DEFAULT};
 
 /**
  * _comac_font_options_init_default:
@@ -82,8 +81,8 @@ _comac_font_options_init_default (comac_font_options_t *options)
 }
 
 void
-_comac_font_options_init_copy (comac_font_options_t		*options,
-			       const comac_font_options_t	*other)
+_comac_font_options_init_copy (comac_font_options_t *options,
+			       const comac_font_options_t *other)
 {
     options->antialias = other->antialias;
     options->subpixel_order = other->subpixel_order;
@@ -116,7 +115,7 @@ comac_font_options_create (void)
     comac_font_options_t *options;
 
     options = _comac_malloc (sizeof (comac_font_options_t));
-    if (!options) {
+    if (! options) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	return (comac_font_options_t *) &_comac_font_options_nil;
     }
@@ -150,7 +149,7 @@ comac_font_options_copy (const comac_font_options_t *original)
 	return (comac_font_options_t *) &_comac_font_options_nil;
 
     options = _comac_malloc (sizeof (comac_font_options_t));
-    if (!options) {
+    if (! options) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	return (comac_font_options_t *) &_comac_font_options_nil;
     }
@@ -221,7 +220,7 @@ comac_font_options_status (comac_font_options_t *options)
  * Since: 1.0
  **/
 void
-comac_font_options_merge (comac_font_options_t       *options,
+comac_font_options_merge (comac_font_options_t *options,
 			  const comac_font_options_t *other)
 {
     if (comac_font_options_status (options))
@@ -244,21 +243,21 @@ comac_font_options_merge (comac_font_options_t       *options,
 	options->round_glyph_positions = other->round_glyph_positions;
 
     if (other->variations) {
-      if (options->variations) {
-        char *p;
+	if (options->variations) {
+	    char *p;
 
-        /* 'merge' variations by concatenating - later entries win */
-        p = malloc (strlen (other->variations) + strlen (options->variations) + 2);
-        p[0] = 0;
-        strcat (p, options->variations);
-        strcat (p, ",");
-        strcat (p, other->variations);
-        free (options->variations);
-        options->variations = p;
-      }
-      else {
-        options->variations = strdup (other->variations);
-      }
+	    /* 'merge' variations by concatenating - later entries win */
+	    p = malloc (strlen (other->variations) +
+			strlen (options->variations) + 2);
+	    p[0] = 0;
+	    strcat (p, options->variations);
+	    strcat (p, ",");
+	    strcat (p, other->variations);
+	    free (options->variations);
+	    options->variations = p;
+	} else {
+	    options->variations = strdup (other->variations);
+	}
     }
 
     if (other->color_mode != COMAC_COLOR_MODE_DEFAULT)
@@ -298,9 +297,9 @@ comac_font_options_equal (const comac_font_options_t *options,
 	    options->hint_style == other->hint_style &&
 	    options->hint_metrics == other->hint_metrics &&
 	    options->round_glyph_positions == other->round_glyph_positions &&
-            ((options->variations == NULL && other->variations == NULL) ||
-             (options->variations != NULL && other->variations != NULL &&
-              strcmp (options->variations, other->variations) == 0)) &&
+	    ((options->variations == NULL && other->variations == NULL) ||
+	     (options->variations != NULL && other->variations != NULL &&
+	      strcmp (options->variations, other->variations) == 0)) &&
 	    options->color_mode == other->color_mode &&
 	    options->palette_index == other->palette_index);
 }
@@ -328,16 +327,15 @@ comac_font_options_hash (const comac_font_options_t *options)
 	options = &_comac_font_options_nil; /* force default values */
 
     if (options->variations)
-      hash = _comac_string_hash (options->variations, strlen (options->variations));
+	hash = _comac_string_hash (options->variations,
+				   strlen (options->variations));
 
     hash ^= options->palette_index;
 
-    return ((options->antialias) |
-	    (options->subpixel_order << 4) |
-	    (options->lcd_filter << 8) |
-	    (options->hint_style << 12) |
-	    (options->hint_metrics << 16) |
-            (options->color_mode << 20)) ^ hash;
+    return ((options->antialias) | (options->subpixel_order << 4) |
+	    (options->lcd_filter << 8) | (options->hint_style << 12) |
+	    (options->hint_metrics << 16) | (options->color_mode << 20)) ^
+	   hash;
 }
 
 /**
@@ -352,7 +350,7 @@ comac_font_options_hash (const comac_font_options_t *options)
  **/
 void
 comac_font_options_set_antialias (comac_font_options_t *options,
-				  comac_antialias_t     antialias)
+				  comac_antialias_t antialias)
 {
     if (comac_font_options_status (options))
 	return;
@@ -393,8 +391,8 @@ comac_font_options_get_antialias (const comac_font_options_t *options)
  * Since: 1.0
  **/
 void
-comac_font_options_set_subpixel_order (comac_font_options_t   *options,
-				       comac_subpixel_order_t  subpixel_order)
+comac_font_options_set_subpixel_order (comac_font_options_t *options,
+				       comac_subpixel_order_t subpixel_order)
 {
     if (comac_font_options_status (options))
 	return;
@@ -434,7 +432,7 @@ comac_font_options_get_subpixel_order (const comac_font_options_t *options)
  **/
 void
 _comac_font_options_set_lcd_filter (comac_font_options_t *options,
-				    comac_lcd_filter_t    lcd_filter)
+				    comac_lcd_filter_t lcd_filter)
 {
     if (comac_font_options_status (options))
 	return;
@@ -469,8 +467,8 @@ _comac_font_options_get_lcd_filter (const comac_font_options_t *options)
  * glyph's position will be rounded to integer values.
  **/
 void
-_comac_font_options_set_round_glyph_positions (comac_font_options_t *options,
-					       comac_round_glyph_positions_t  round)
+_comac_font_options_set_round_glyph_positions (
+    comac_font_options_t *options, comac_round_glyph_positions_t round)
 {
     if (comac_font_options_status (options))
 	return;
@@ -487,7 +485,8 @@ _comac_font_options_set_round_glyph_positions (comac_font_options_t *options,
  * Return value: The round glyph posistions flag for the font options object.
  **/
 comac_round_glyph_positions_t
-_comac_font_options_get_round_glyph_positions (const comac_font_options_t *options)
+_comac_font_options_get_round_glyph_positions (
+    const comac_font_options_t *options)
 {
     if (comac_font_options_status ((comac_font_options_t *) options))
 	return COMAC_ROUND_GLYPH_POS_DEFAULT;
@@ -509,7 +508,7 @@ _comac_font_options_get_round_glyph_positions (const comac_font_options_t *optio
  **/
 void
 comac_font_options_set_hint_style (comac_font_options_t *options,
-				   comac_hint_style_t    hint_style)
+				   comac_hint_style_t hint_style)
 {
     if (comac_font_options_status (options))
 	return;
@@ -551,7 +550,7 @@ comac_font_options_get_hint_style (const comac_font_options_t *options)
  **/
 void
 comac_font_options_set_hint_metrics (comac_font_options_t *options,
-				     comac_hint_metrics_t  hint_metrics)
+				     comac_hint_metrics_t hint_metrics)
 {
     if (comac_font_options_status (options))
 	return;
@@ -601,11 +600,11 @@ comac_font_options_get_hint_metrics (const comac_font_options_t *options)
  **/
 void
 comac_font_options_set_variations (comac_font_options_t *options,
-                                   const char           *variations)
+				   const char *variations)
 {
-  char *tmp = variations ? strdup (variations) : NULL;
-  free (options->variations);
-  options->variations = tmp;
+    char *tmp = variations ? strdup (variations) : NULL;
+    free (options->variations);
+    options->variations = tmp;
 }
 
 /**
@@ -627,7 +626,7 @@ comac_font_options_set_variations (comac_font_options_t *options,
 const char *
 comac_font_options_get_variations (comac_font_options_t *options)
 {
-  return options->variations;
+    return options->variations;
 }
 
 /**
@@ -643,7 +642,7 @@ comac_font_options_get_variations (comac_font_options_t *options)
  **/
 comac_public void
 comac_font_options_set_color_mode (comac_font_options_t *options,
-                                   comac_color_mode_t    color_mode)
+				   comac_color_mode_t color_mode)
 {
     if (comac_font_options_status (options))
 	return;
@@ -685,7 +684,7 @@ comac_font_options_get_color_mode (const comac_font_options_t *options)
  **/
 void
 comac_font_options_set_color_palette (comac_font_options_t *options,
-                                      unsigned int          palette_index)
+				      unsigned int palette_index)
 {
     if (comac_font_options_status (options))
 	return;

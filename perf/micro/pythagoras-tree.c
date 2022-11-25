@@ -37,23 +37,23 @@ add_rectangle (comac_t *cr, double size)
 
     comac_get_current_point (cr, &x, &y);
 
-    comac_rel_move_to (cr, -size/2., -size/2.);
+    comac_rel_move_to (cr, -size / 2., -size / 2.);
     comac_rel_line_to (cr, size, 0);
     comac_rel_line_to (cr, 0, size);
     comac_rel_line_to (cr, -size, 0);
     comac_close_path (cr);
 
     comac_save (cr);
-    comac_translate (cr, -size/2., size);
+    comac_translate (cr, -size / 2., size);
     comac_move_to (cr, x, y);
-    comac_rotate (cr, M_PI/4);
+    comac_rotate (cr, M_PI / 4);
     add_rectangle (cr, size / M_SQRT2);
     comac_restore (cr);
 
     comac_save (cr);
-    comac_translate (cr, size/2., size);
+    comac_translate (cr, size / 2., size);
     comac_move_to (cr, x, y);
-    comac_rotate (cr, -M_PI/4);
+    comac_rotate (cr, -M_PI / 4);
     add_rectangle (cr, size / M_SQRT2);
     comac_restore (cr);
 }
@@ -70,7 +70,7 @@ do_pythagoras_tree (comac_t *cr, int width, int height, int loops)
 	comac_translate (cr, 0, height);
 	comac_scale (cr, 1, -1);
 
-	comac_move_to (cr, width/2, size/2);
+	comac_move_to (cr, width / 2, size / 2);
 	add_rectangle (cr, size);
 	comac_set_source_rgb (cr, 0., 0., 0.);
 	comac_fill (cr);

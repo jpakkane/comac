@@ -45,9 +45,8 @@
 #include "comac-surface-clipper-private.h"
 #include "comac-pdf-operators-private.h"
 
-typedef comac_int_status_t
-(*comac_type3_glyph_surface_emit_image_t) (comac_image_surface_t *image,
-					   comac_output_stream_t	*stream);
+typedef comac_int_status_t (*comac_type3_glyph_surface_emit_image_t) (
+    comac_image_surface_t *image, comac_output_stream_t *stream);
 
 typedef struct comac_type3_glyph_surface {
     comac_surface_t base;
@@ -62,27 +61,29 @@ typedef struct comac_type3_glyph_surface {
 } comac_type3_glyph_surface_t;
 
 comac_private comac_surface_t *
-_comac_type3_glyph_surface_create (comac_scaled_font_t			 *scaled_font,
-				   comac_output_stream_t		 *stream,
-				   comac_type3_glyph_surface_emit_image_t emit_image,
-				   comac_scaled_font_subsets_t		 *font_subsets,
-				   comac_bool_t                           ps_output);
+_comac_type3_glyph_surface_create (
+    comac_scaled_font_t *scaled_font,
+    comac_output_stream_t *stream,
+    comac_type3_glyph_surface_emit_image_t emit_image,
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_bool_t ps_output);
 
 comac_private void
-_comac_type3_glyph_surface_set_font_subsets_callback (void				    *abstract_surface,
-						      comac_pdf_operators_use_font_subset_t  use_font_subset,
-						      void				    *closure);
+_comac_type3_glyph_surface_set_font_subsets_callback (
+    void *abstract_surface,
+    comac_pdf_operators_use_font_subset_t use_font_subset,
+    void *closure);
 
 comac_private comac_status_t
-_comac_type3_glyph_surface_analyze_glyph (void		     *abstract_surface,
-					  unsigned long	      glyph_index);
+_comac_type3_glyph_surface_analyze_glyph (void *abstract_surface,
+					  unsigned long glyph_index);
 
 comac_private comac_status_t
-_comac_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
+_comac_type3_glyph_surface_emit_glyph (void *abstract_surface,
 				       comac_output_stream_t *stream,
-				       unsigned long	      glyph_index,
-				       comac_box_t           *bbox,
-				       double                *width);
+				       unsigned long glyph_index,
+				       comac_box_t *bbox,
+				       double *width);
 
 #endif /* COMAC_HAS_FONT_SUBSET */
 

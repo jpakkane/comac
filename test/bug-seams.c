@@ -49,8 +49,14 @@
 
 static void
 draw_quad (comac_t *cr,
-	   double x1, double y1, double x2, double y2,
-	   double x3, double y3, double x4, double y4)
+	   double x1,
+	   double y1,
+	   double x2,
+	   double y2,
+	   double x3,
+	   double y3,
+	   double x4,
+	   double y4)
 {
     comac_move_to (cr, x1, y1);
     comac_line_to (cr, x2, y2);
@@ -75,17 +81,9 @@ draw (comac_t *cr, int width, int height)
     comac_set_operator (cr, COMAC_OPERATOR_ADD);
 
     comac_set_source_rgb (cr, 0, 0.6, 0);
-    draw_quad (cr,
-	       1.50, 1.50,
-	       2.64, 1.63,
-	       1.75, 2.75,
-	       0.55, 2.63);
+    draw_quad (cr, 1.50, 1.50, 2.64, 1.63, 1.75, 2.75, 0.55, 2.63);
     comac_fill (cr);
-    draw_quad (cr,
-	       0.55, 2.63,
-	       1.75, 2.75,
-	       0.98, 4.11,
-	       -0.35, 4.05);
+    draw_quad (cr, 0.55, 2.63, 1.75, 2.75, 0.98, 4.11, -0.35, 4.05);
     comac_fill (cr);
 
     comac_pop_group_to_source (cr);
@@ -97,16 +95,8 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, 10, 0);
 
     comac_set_source_rgb (cr, 0, 0.6, 0);
-    draw_quad (cr,
-	       1.50, 1.50,
-	       2.64, 1.63,
-	       1.75, 2.75,
-	       0.55, 2.63);
-    draw_quad (cr,
-	       0.55, 2.63,
-	       1.75, 2.75,
-	       0.98, 4.11,
-	       -0.35, 4.05);
+    draw_quad (cr, 1.50, 1.50, 2.64, 1.63, 1.75, 2.75, 0.55, 2.63);
+    draw_quad (cr, 0.55, 2.63, 1.75, 2.75, 0.98, 4.11, -0.35, 4.05);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -114,7 +104,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (bug_seams,
 	    "Check the fidelity of the rasterisation.",
-	    "raster", /* keywords */
+	    "raster",	     /* keywords */
 	    "target=raster", /* requirements */
-	    500, 300,
-	    NULL, draw)
+	    500,
+	    300,
+	    NULL,
+	    draw)

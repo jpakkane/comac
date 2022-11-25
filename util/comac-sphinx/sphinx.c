@@ -37,7 +37,7 @@
 #include <glib.h> /* for checksumming */
 
 #ifndef COMAC_HAS_REAL_PTHREAD
-# error "comac-sphinx needs real pthreads"
+#error "comac-sphinx needs real pthreads"
 #endif
 
 #ifndef MAP_NORESERVE
@@ -138,9 +138,9 @@ open_devnull_to_fd (int want_fd, int flags)
 
     close (want_fd);
 
-    got_fd = open("/dev/null", flags | O_CREAT, 0700);
+    got_fd = open ("/dev/null", flags | O_CREAT, 0700);
     if (got_fd == -1)
-        return -1;
+	return -1;
 
     error = dup2 (got_fd, want_fd);
     close (got_fd);
@@ -155,9 +155,12 @@ daemonize (void)
 
     /* Let the parent go. */
     switch (fork ()) {
-    case -1: return -1;
-    case  0: break;
-    default: _exit (0);
+    case -1:
+	return -1;
+    case 0:
+	break;
+    default:
+	_exit (0);
     }
 
     /* Become session leader. */
@@ -167,9 +170,12 @@ daemonize (void)
     /* Refork to yield session leadership. */
     oldhup = signal (SIGHUP, SIG_IGN);
     switch (fork ()) {
-    case -1: return -1;
-    case  0: break;
-    default: _exit (0);
+    case -1:
+	return -1;
+    case 0:
+	break;
+    default:
+	_exit (0);
     }
     signal (SIGHUP, oldhup);
 
@@ -309,8 +315,9 @@ clients_add_command (struct clients *clients, int fd, char *info)
 
     if (clients->count == clients->size) {
 	clients->size *= 2;
-	clients->clients = xrealloc (clients->clients,
-				     clients->size * sizeof (struct client_info));
+	clients->clients =
+	    xrealloc (clients->clients,
+		      clients->size * sizeof (struct client_info));
     }
 
     c = &clients->clients[clients->count++];
@@ -414,9 +421,13 @@ clients_image (struct clients *clients, int fd, char *info)
     if (c == NULL)
 	return 0;
 
-    if (sscanf (info, "%lu %d %d %d %d",
-		&c->image_serial, &format, &width, &height, &stride) != 5)
-    {
+    if (sscanf (info,
+		"%lu %d %d %d %d",
+		&c->image_serial,
+		&format,
+		&width,
+		&height,
+		&stride) != 5) {
 	return 0;
     }
 
@@ -426,7 +437,10 @@ clients_image (struct clients *clients, int fd, char *info)
 
     c->image =
 	comac_image_surface_create_for_data (clients->base + clients->offset,
-					     format, width, height, stride);
+					     format,
+					     width,
+					     height,
+					     stride);
 
     if (! writen (fd, &clients->offset, sizeof (clients->offset)))
 	return 0;
@@ -448,18 +462,23 @@ median (uint8_t *values, int count)
 {
     /* XXX could use a fast median here if we cared */
     qsort (values, count, 1, u8_cmp);
-    return values[count/2];
+    return values[count / 2];
 }
 
 static uint32_t
 get_pixel32 (int x, int y, const uint8_t *data, int stride)
 {
-    return ((uint32_t *)(data + y * stride))[x];
+    return ((uint32_t *) (data + y * stride))[x];
 }
 
 static uint8_t
-get_median_32 (int x, int y, int channel,
-	       const uint8_t *data, int width, int height, int stride)
+get_median_32 (int x,
+	       int y,
+	       int channel,
+	       const uint8_t *data,
+	       int width,
+	       int height,
+	       int stride)
 {
     uint8_t neighbourhood[25];
     int cnt = 0;
@@ -477,7 +496,8 @@ get_median_32 (int x, int y, int channel,
 	    if (xx >= width)
 		continue;
 
-	    neighbourhood[cnt++] = (get_pixel32 (xx, yy, data, stride) >> (channel*8)) & 0xff;
+	    neighbourhood[cnt++] =
+		(get_pixel32 (xx, yy, data, stride) >> (channel * 8)) & 0xff;
 	}
     }
 
@@ -491,7 +511,8 @@ get_pixel8 (int x, int y, const uint8_t *data, int stride)
 }
 
 static uint8_t
-get_median_8 (int x, int y, const uint8_t *data, int width, int height, int stride)
+get_median_8 (
+    int x, int y, const uint8_t *data, int width, int height, int stride)
 {
     uint8_t neighbourhood[25];
     int cnt = 0;
@@ -517,8 +538,7 @@ get_median_8 (int x, int y, const uint8_t *data, int width, int height, int stri
 }
 
 static comac_bool_t
-compare_images (comac_surface_t *a,
-		comac_surface_t *b)
+compare_images (comac_surface_t *a, comac_surface_t *b)
 {
     int width, height, stride;
     const uint8_t *aa, *bb;
@@ -530,18 +550,20 @@ compare_images (comac_surface_t *a,
     if (comac_surface_get_type (a) != comac_surface_get_type (b))
 	return FALSE;
 
-    if (comac_image_surface_get_format (a) != comac_image_surface_get_format (b))
+    if (comac_image_surface_get_format (a) !=
+	comac_image_surface_get_format (b))
 	return FALSE;
 
     if (comac_image_surface_get_width (a) != comac_image_surface_get_width (b))
 	return FALSE;
 
-    if (comac_image_surface_get_height (a) != comac_image_surface_get_height (b))
+    if (comac_image_surface_get_height (a) !=
+	comac_image_surface_get_height (b))
 	return FALSE;
 
-    if (comac_image_surface_get_stride (a) != comac_image_surface_get_stride (b))
+    if (comac_image_surface_get_stride (a) !=
+	comac_image_surface_get_stride (b))
 	return FALSE;
-
 
     width = comac_image_surface_get_width (a);
     height = comac_image_surface_get_height (a);
@@ -561,12 +583,24 @@ compare_images (comac_surface_t *a,
 		    for (channel = 0; channel < 4; channel++) {
 			unsigned va, vb, diff;
 
-			va = (ua[x] >> (channel*8)) & 0xff;
-			vb = (ub[x] >> (channel*8)) & 0xff;
+			va = (ua[x] >> (channel * 8)) & 0xff;
+			vb = (ub[x] >> (channel * 8)) & 0xff;
 			diff = abs (va - vb);
 			if (diff > 1) {
-			    va = get_median_32 (x, y, channel, aa, width, height, stride);
-			    vb = get_median_32 (x, y, channel, bb, width, height, stride);
+			    va = get_median_32 (x,
+						y,
+						channel,
+						aa,
+						width,
+						height,
+						stride);
+			    vb = get_median_32 (x,
+						y,
+						channel,
+						bb,
+						width,
+						height,
+						stride);
 			    diff = abs (va - vb);
 			    if (diff > 1)
 				return FALSE;
@@ -590,12 +624,24 @@ compare_images (comac_surface_t *a,
 		    for (channel = 0; channel < 3; channel++) {
 			unsigned va, vb, diff;
 
-			va = (ua[x] >> (channel*8)) & 0xff;
-			vb = (ub[x] >> (channel*8)) & 0xff;
+			va = (ua[x] >> (channel * 8)) & 0xff;
+			vb = (ub[x] >> (channel * 8)) & 0xff;
 			diff = abs (va - vb);
 			if (diff > 1) {
-			    va = get_median_32 (x, y, channel, aa, width, height, stride);
-			    vb = get_median_32 (x, y, channel, bb, width, height, stride);
+			    va = get_median_32 (x,
+						y,
+						channel,
+						aa,
+						width,
+						height,
+						stride);
+			    vb = get_median_32 (x,
+						y,
+						channel,
+						bb,
+						width,
+						height,
+						stride);
 			    diff = abs (va - vb);
 			    if (diff > 1)
 				return FALSE;
@@ -622,7 +668,6 @@ compare_images (comac_surface_t *a,
 			if (diff > 1)
 			    return FALSE;
 		    }
-
 		}
 	    }
 	    aa += stride;
@@ -681,7 +726,8 @@ checksum (const char *filename)
     gsize len;
 
     if (g_file_get_contents (filename, &data, &len, NULL)) {
-	str = g_compute_checksum_for_data (G_CHECKSUM_SHA1, (guchar *) data, len);
+	str =
+	    g_compute_checksum_for_data (G_CHECKSUM_SHA1, (guchar *) data, len);
 	g_free (data);
     }
 
@@ -788,7 +834,8 @@ clients_remove (struct clients *clients, int fd)
 
 static void
 clients_send_trace (struct clients *clients,
-		    const char * const line, const int len)
+		    const char *const line,
+		    const int len)
 {
     int i;
 
@@ -850,7 +897,9 @@ static void *
 request_image (struct client *c,
 	       struct context_closure *closure,
 	       comac_format_t format,
-	       int width, int height, int stride)
+	       int width,
+	       int height,
+	       int stride)
 {
     char buf[1024];
     unsigned long offset = -1;
@@ -858,8 +907,13 @@ request_image (struct client *c,
 
     assert (format != COMAC_FORMAT_INVALID);
 
-    len = sprintf (buf, ".image %lu %d %d %d %d\n",
-		   closure->id, format, width, height, stride);
+    len = sprintf (buf,
+		   ".image %lu %d %d %d %d\n",
+		   closure->id,
+		   format,
+		   width,
+		   height,
+		   stride);
     writen (c->sk, buf, len);
 
     readn (c->sk, &offset, sizeof (offset));
@@ -885,7 +939,8 @@ format_for_content (comac_content_t content)
 
 static void
 get_surface_size (comac_surface_t *surface,
-		  int *width, int *height,
+		  int *width,
+		  int *height,
 		  comac_format_t *format)
 {
     if (comac_surface_get_type (surface) == COMAC_SURFACE_TYPE_IMAGE) {
@@ -918,10 +973,8 @@ get_surface_size (comac_surface_t *surface,
     }
 }
 
-
 static void
-send_surface (struct client *c,
-	      struct context_closure *closure)
+send_surface (struct client *c, struct context_closure *closure)
 {
     comac_surface_t *source = closure->surface;
     comac_surface_t *image;
@@ -943,7 +996,8 @@ send_surface (struct client *c,
 
     image = comac_image_surface_create_for_data (data,
 						 format,
-						 width, height,
+						 width,
+						 height,
 						 stride);
     cr = comac_create (image);
     comac_surface_destroy (image);
@@ -964,8 +1018,7 @@ send_surface (struct client *c,
 }
 
 static void
-send_recording (struct client *c,
-		struct context_closure *closure)
+send_recording (struct client *c, struct context_closure *closure)
 {
     comac_surface_t *source = closure->surface;
     char buf[1024];
@@ -987,14 +1040,14 @@ send_recording (struct client *c,
 static comac_surface_t *
 _surface_create (void *closure,
 		 comac_content_t content,
-		 double width, double height,
+		 double width,
+		 double height,
 		 long uid)
 {
     struct client *c = closure;
     comac_surface_t *surface;
 
-    surface = comac_surface_create_similar (c->surface,
-					    content, width, height);
+    surface = comac_surface_create_similar (c->surface, content, width, height);
     if (comac_surface_get_type (surface) != COMAC_SURFACE_TYPE_IMAGE) {
 	struct surface_tag *tag;
 
@@ -1031,9 +1084,11 @@ _context_create (void *closure, comac_surface_t *surface)
 	    int width, height;
 
 	    get_surface_size (surface, &width, &height, &format);
-	    l->surface = comac_surface_create_similar (c->surface,
-						       comac_surface_get_content (surface),
-						       width, height);
+	    l->surface = comac_surface_create_similar (
+		c->surface,
+		comac_surface_get_content (surface),
+		width,
+		height);
 	    foreign = TRUE;
 	}
     }
@@ -1060,16 +1115,16 @@ _context_destroy (void *closure, void *ptr)
 		    send_recording (c, l);
 		else
 		    send_surface (c, l);
-            } else {
+	    } else {
 		exit (-1);
 	    }
 
-            comac_surface_destroy (l->original);
-            *prev = l->next;
-            free (l);
-            return;
-        }
-        prev = &l->next;
+	    comac_surface_destroy (l->original);
+	    *prev = l->next;
+	    free (l);
+	    return;
+	}
+	prev = &l->next;
     }
 }
 
@@ -1111,8 +1166,8 @@ recorder (void *arg)
     if (! writen (pfd.fd, buf, len))
 	return NULL;
 
-    client.surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA,
-						     NULL);
+    client.surface =
+	comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
 
     client.context_id = 0;
     client.csi = comac_script_interpreter_create ();
@@ -1131,7 +1186,7 @@ recorder (void *arg)
 	    }
 	    len += ret;
 
-	    for (end = len; end > 0 && buf[--end] != '\n'; )
+	    for (end = len; end > 0 && buf[--end] != '\n';)
 		;
 	    if (end > 0) {
 		buf[end] = '\0';
@@ -1277,7 +1332,7 @@ do_server (const char *path)
 		    continue;
 		}
 
-		 if (strncmp (line, ".image", 6) == 0) {
+		if (strncmp (line, ".image", 6) == 0) {
 		    if (! clients_image (&clients, pfd[n].fd, line + 7)) {
 			clients_remove (&clients, pfd[n].fd);
 			close (pfd[n].fd);
@@ -1340,10 +1395,12 @@ client_shm (const char *shm_path)
     if (fd == -1)
 	return MAP_FAILED;
 
-    base = mmap (NULL, DATA_SIZE,
+    base = mmap (NULL,
+		 DATA_SIZE,
 		 PROT_READ | PROT_WRITE,
 		 MAP_SHARED | MAP_NORESERVE,
-		 fd, 0);
+		 fd,
+		 0);
     close (fd);
 
     return base;
@@ -1393,11 +1450,17 @@ do_client (int fd,
     client.target = comac_boilerplate_get_target_by_name (target, content);
     client.context_id = 0;
 
-    client.surface = client.target->create_surface (NULL, content, 1, 1, 1, 1,
+    client.surface = client.target->create_surface (NULL,
+						    content,
+						    1,
+						    1,
+						    1,
+						    1,
 						    COMAC_BOILERPLATE_MODE_TEST,
 						    &closure);
     if (client.surface == NULL) {
-	fprintf (stderr, "Failed to create target surface: %s.\n",
+	fprintf (stderr,
+		 "Failed to create target surface: %s.\n",
 		 client.target->name);
 	return 1;
     }
@@ -1408,11 +1471,11 @@ do_client (int fd,
     if (reference != NULL) {
 	len = sprintf (buf,
 		       "client-command name=%s target=%s reference=%s\n",
-		       name, target, reference);
+		       name,
+		       target,
+		       reference);
     } else {
-	len = sprintf (buf,
-		       "client-command name=%s target=%s\n",
-		       name, target);
+	len = sprintf (buf, "client-command name=%s target=%s\n", name, target);
     }
     if (! writen (fd, buf, len))
 	return 1;
@@ -1451,7 +1514,7 @@ do_client (int fd,
 	    }
 	    len += ret;
 
-	    for (end = len; end > 0 && buf[--end] != '\n'; )
+	    for (end = len; end > 0 && buf[--end] != '\n';)
 		;
 	    if (end > 0) {
 		buf[end] = '\0';
@@ -1521,7 +1584,10 @@ main (int argc, char **argv)
 	return 1;
 
     if (strcmp (argv[1], "client") == 0) {
-	return do_client (fd, argv[2], argv[3], argv[4],
+	return do_client (fd,
+			  argv[2],
+			  argv[3],
+			  argv[4],
 			  COMAC_CONTENT_COLOR_ALPHA);
     }
 
@@ -1538,7 +1604,7 @@ main (int argc, char **argv)
 	if (! writen (fd, buf, len))
 	    return 1;
 
-	return do_exec (fd, argv+2);
+	return do_exec (fd, argv + 2);
     }
 
     if (strcmp (argv[1], "replay") == 0) {

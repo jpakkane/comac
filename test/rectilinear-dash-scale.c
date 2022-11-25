@@ -50,34 +50,34 @@ draw_dashes (comac_t *cr)
 
     /* Draw horizontal and vertical segments, each in both
      * directions. */
-    comac_move_to     (cr,  4.5,  0.5);
-    comac_rel_line_to (cr,  2.0,  0.0);
+    comac_move_to (cr, 4.5, 0.5);
+    comac_rel_line_to (cr, 2.0, 0.0);
 
-    comac_move_to     (cr, 10.5,  4.5);
-    comac_rel_line_to (cr,  0.0,  2.0);
+    comac_move_to (cr, 10.5, 4.5);
+    comac_rel_line_to (cr, 0.0, 2.0);
 
-    comac_move_to     (cr,  6.5, 10.5);
-    comac_rel_line_to (cr, -2.0,  0.0);
+    comac_move_to (cr, 6.5, 10.5);
+    comac_rel_line_to (cr, -2.0, 0.0);
 
-    comac_move_to     (cr,  0.5,  6.5);
-    comac_rel_line_to (cr,  0.0, -2.0);
+    comac_move_to (cr, 0.5, 6.5);
+    comac_rel_line_to (cr, 0.0, -2.0);
 
     /* Draw right angle turns in four directions. */
-    comac_move_to     (cr,  0.5,  2.5);
-    comac_rel_line_to (cr,  0.0, -2.0);
-    comac_rel_line_to (cr,  2.0,  0.0);
+    comac_move_to (cr, 0.5, 2.5);
+    comac_rel_line_to (cr, 0.0, -2.0);
+    comac_rel_line_to (cr, 2.0, 0.0);
 
-    comac_move_to     (cr,  8.5,  0.5);
-    comac_rel_line_to (cr,  2.0,  0.0);
-    comac_rel_line_to (cr,  0.0,  2.0);
+    comac_move_to (cr, 8.5, 0.5);
+    comac_rel_line_to (cr, 2.0, 0.0);
+    comac_rel_line_to (cr, 0.0, 2.0);
 
-    comac_move_to     (cr, 10.5,  8.5);
-    comac_rel_line_to (cr,  0.0,  2.0);
-    comac_rel_line_to (cr, -2.0,  0.0);
+    comac_move_to (cr, 10.5, 8.5);
+    comac_rel_line_to (cr, 0.0, 2.0);
+    comac_rel_line_to (cr, -2.0, 0.0);
 
-    comac_move_to     (cr,  2.5, 10.5);
-    comac_rel_line_to (cr, -2.0,  0.0);
-    comac_rel_line_to (cr,  0.0, -2.0);
+    comac_move_to (cr, 2.5, 10.5);
+    comac_rel_line_to (cr, -2.0, 0.0);
+    comac_rel_line_to (cr, 0.0, -2.0);
 
     comac_stroke (cr);
 
@@ -94,34 +94,34 @@ draw_dashes (comac_t *cr)
 
     /* Draw horizontal and vertical segments, each in both
      * directions. */
-    comac_move_to     (cr,  4.0,  0.5);
-    comac_rel_line_to (cr,  3.0,  0.0);
+    comac_move_to (cr, 4.0, 0.5);
+    comac_rel_line_to (cr, 3.0, 0.0);
 
-    comac_move_to     (cr, 10.5,  4.0);
-    comac_rel_line_to (cr,  0.0,  3.0);
+    comac_move_to (cr, 10.5, 4.0);
+    comac_rel_line_to (cr, 0.0, 3.0);
 
-    comac_move_to     (cr,  7.0, 10.5);
-    comac_rel_line_to (cr, -3.0,  0.0);
+    comac_move_to (cr, 7.0, 10.5);
+    comac_rel_line_to (cr, -3.0, 0.0);
 
-    comac_move_to     (cr,  0.5,  7.0);
-    comac_rel_line_to (cr,  0.0, -3.0);
+    comac_move_to (cr, 0.5, 7.0);
+    comac_rel_line_to (cr, 0.0, -3.0);
 
     /* Draw right angle turns in four directions. */
-    comac_move_to     (cr,  0.5,  3.0);
-    comac_rel_line_to (cr,  0.0, -2.5);
-    comac_rel_line_to (cr,  2.5,  0.0);
+    comac_move_to (cr, 0.5, 3.0);
+    comac_rel_line_to (cr, 0.0, -2.5);
+    comac_rel_line_to (cr, 2.5, 0.0);
 
-    comac_move_to     (cr,  8.0,  0.5);
-    comac_rel_line_to (cr,  2.5,  0.0);
-    comac_rel_line_to (cr,  0.0,  2.5);
+    comac_move_to (cr, 8.0, 0.5);
+    comac_rel_line_to (cr, 2.5, 0.0);
+    comac_rel_line_to (cr, 0.0, 2.5);
 
-    comac_move_to     (cr, 10.5,  8.0);
-    comac_rel_line_to (cr,  0.0,  2.5);
-    comac_rel_line_to (cr, -2.5,  0.0);
+    comac_move_to (cr, 10.5, 8.0);
+    comac_rel_line_to (cr, 0.0, 2.5);
+    comac_rel_line_to (cr, -2.5, 0.0);
 
-    comac_move_to     (cr,  3.0, 10.5);
-    comac_rel_line_to (cr, -2.5,  0.0);
-    comac_rel_line_to (cr,  0.0, -2.5);
+    comac_move_to (cr, 3.0, 10.5);
+    comac_rel_line_to (cr, -2.5, 0.0);
+    comac_rel_line_to (cr, 0.0, -2.5);
 
     comac_stroke (cr);
 
@@ -171,26 +171,32 @@ static comac_test_status_t
 aligned (comac_t *cr, int width, int height)
 {
     comac_scale (cr, 4, 2);
-    return dashes(cr);
+    return dashes (cr);
 }
 
 static comac_test_status_t
 unaligned (comac_t *cr, int width, int height)
 {
     comac_scale (cr, 3.9, 1.9);
-    return dashes(cr);
+    return dashes (cr);
 }
 
 COMAC_TEST (rectilinear_dash_scale,
-	    "Test dashed rectilinear stroke operations (covering only whole pixels) after scaling",
+	    "Test dashed rectilinear stroke operations (covering only whole "
+	    "pixels) after scaling",
 	    "stroke, dash", /* keywords */
-	    NULL, /* requirements */
-	    4*SIZE, 2*SIZE,
-	    NULL, aligned)
+	    NULL,	    /* requirements */
+	    4 * SIZE,
+	    2 * SIZE,
+	    NULL,
+	    aligned)
 
 COMAC_TEST (rectilinear_dash_scale_unaligned,
-	    "Test dashed rectilinear stroke operations (covering partial pixels) after scaling",
+	    "Test dashed rectilinear stroke operations (covering partial "
+	    "pixels) after scaling",
 	    "stroke, dash", /* keywords */
-	    NULL, /* requirements */
-	    4*SIZE, 2*SIZE,
-	    NULL, unaligned)
+	    NULL,	    /* requirements */
+	    4 * SIZE,
+	    2 * SIZE,
+	    NULL,
+	    unaligned)

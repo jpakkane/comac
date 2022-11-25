@@ -42,8 +42,11 @@ draw (comac_t *cr, int width, int height)
 
     stride = comac_format_stride_for_width (format, width) + 12;
     data = xcalloc (stride, height);
-    src = comac_image_surface_create_for_data (data, format,
-					       width, height, stride);
+    src = comac_image_surface_create_for_data (data,
+					       format,
+					       width,
+					       height,
+					       stride);
 
     cr_src = comac_create (src);
     comac_set_source_surface (cr_src, png, 0, 0);
@@ -66,6 +69,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (stride_12_image,
 	    "Test that images with a non-default stride are handled correctly.",
 	    "stride, image", /* keywords */
-	    NULL, /* requirements */
-	    256, 192,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    256,
+	    192,
+	    NULL,
+	    draw)

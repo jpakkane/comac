@@ -50,11 +50,11 @@ struct stat {
     unsigned count;
 };
 
-#define NUM_OPERATORS (COMAC_OPERATOR_HSL_LUMINOSITY+1)
-#define NUM_CAPS (COMAC_LINE_CAP_SQUARE+1)
-#define NUM_JOINS (COMAC_LINE_JOIN_BEVEL+1)
-#define NUM_ANTIALIAS (COMAC_ANTIALIAS_BEST+1)
-#define NUM_FILL_RULE (COMAC_FILL_RULE_EVEN_ODD+1)
+#define NUM_OPERATORS (COMAC_OPERATOR_HSL_LUMINOSITY + 1)
+#define NUM_CAPS (COMAC_LINE_CAP_SQUARE + 1)
+#define NUM_JOINS (COMAC_LINE_JOIN_BEVEL + 1)
+#define NUM_ANTIALIAS (COMAC_ANTIALIAS_BEST + 1)
+#define NUM_FILL_RULE (COMAC_FILL_RULE_EVEN_ODD + 1)
 
 struct extents {
     struct stat area;
@@ -70,7 +70,8 @@ struct path {
 };
 
 struct clip {
-    unsigned int type[6]; /* none, region, boxes, single path, polygon, general */
+    unsigned int
+	type[6]; /* none, region, boxes, single path, polygon, general */
 };
 
 typedef struct _comac_observation comac_observation_t;

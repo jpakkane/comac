@@ -59,6 +59,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (big_empty_box,
 	    "Tests that we tighten the bounds after tessellation.",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

@@ -53,5 +53,8 @@ paint_enabled (comac_perf_t *perf)
 void
 paint (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    comac_perf_cover_sources_and_operators (perf, "paint", do_paint, count_paint);
+    comac_perf_cover_sources_and_operators (perf,
+					    "paint",
+					    do_paint,
+					    count_paint);
 }

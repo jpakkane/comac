@@ -63,8 +63,7 @@ release (void *abstract_dst)
 }
 
 static comac_int_status_t
-set_clip_region (void *_surface,
-		 comac_region_t *region)
+set_clip_region (void *_surface, comac_region_t *region)
 {
     comac_image_surface_t *surface = _surface;
     pixman_region32_t *rgn = region ? &region->rgn : NULL;
@@ -76,8 +75,7 @@ set_clip_region (void *_surface,
 }
 
 static comac_bool_t
-has_snapshot (void *_dst,
-	      const comac_pattern_t *pattern)
+has_snapshot (void *_dst, const comac_pattern_t *pattern)
 {
     return FALSE;
 }
@@ -85,50 +83,52 @@ has_snapshot (void *_dst,
 static comac_int_status_t
 draw_image (void *_dst,
 	    comac_image_surface_t *image,
-	    int src_x, int src_y,
-	    int width, int height,
-	    int dst_x, int dst_y)
+	    int src_x,
+	    int src_y,
+	    int width,
+	    int height,
+	    int dst_x,
+	    int dst_y)
 {
-    comac_image_surface_t *dst = (comac_image_surface_t *)_dst;
+    comac_image_surface_t *dst = (comac_image_surface_t *) _dst;
 
     pixman_image_composite32 (PIXMAN_OP_SRC,
-			      image->pixman_image, NULL, dst->pixman_image,
-			      src_x, src_y,
-			      0, 0,
-			      dst_x, dst_y,
-			      width, height);
+			      image->pixman_image,
+			      NULL,
+			      dst->pixman_image,
+			      src_x,
+			      src_y,
+			      0,
+			      0,
+			      dst_x,
+			      dst_y,
+			      width,
+			      height);
     return COMAC_STATUS_SUCCESS;
 }
 
 static inline uint32_t
 color_to_uint32 (const comac_color_t *color)
 {
-    return
-        ((uint32_t)color->alpha_short >> 8 << 24) |
-        (color->red_short >> 8 << 16)   |
-        (color->green_short & 0xff00)   |
-        (color->blue_short >> 8);
+    return ((uint32_t) color->alpha_short >> 8 << 24) |
+	   (color->red_short >> 8 << 16) | (color->green_short & 0xff00) |
+	   (color->blue_short >> 8);
 }
 
 static inline comac_bool_t
-color_to_pixel (const comac_color_t	*color,
+color_to_pixel (const comac_color_t *color,
 		double opacity,
-                pixman_format_code_t	 format,
-                uint32_t		*pixel)
+		pixman_format_code_t format,
+		uint32_t *pixel)
 {
     comac_color_t opacity_color;
     uint32_t c;
 
-    if (!(format == PIXMAN_a8r8g8b8     ||
-          format == PIXMAN_x8r8g8b8     ||
-          format == PIXMAN_a8b8g8r8     ||
-          format == PIXMAN_x8b8g8r8     ||
-          format == PIXMAN_b8g8r8a8     ||
-          format == PIXMAN_b8g8r8x8     ||
-          format == PIXMAN_r5g6b5       ||
-          format == PIXMAN_b5g6r5       ||
-          format == PIXMAN_a8))
-    {
+    if (! (format == PIXMAN_a8r8g8b8 || format == PIXMAN_x8r8g8b8 ||
+	   format == PIXMAN_a8b8g8r8 || format == PIXMAN_x8b8g8r8 ||
+	   format == PIXMAN_b8g8r8a8 || format == PIXMAN_b8g8r8x8 ||
+	   format == PIXMAN_r5g6b5 || format == PIXMAN_b5g6r5 ||
+	   format == PIXMAN_a8)) {
 	return FALSE;
     }
 
@@ -143,24 +143,19 @@ color_to_pixel (const comac_color_t	*color,
     c = color_to_uint32 (color);
 
     if (PIXMAN_FORMAT_TYPE (format) == PIXMAN_TYPE_ABGR) {
-	c = ((c & 0xff000000) >>  0) |
-	    ((c & 0x00ff0000) >> 16) |
-	    ((c & 0x0000ff00) >>  0) |
-	    ((c & 0x000000ff) << 16);
+	c = ((c & 0xff000000) >> 0) | ((c & 0x00ff0000) >> 16) |
+	    ((c & 0x0000ff00) >> 0) | ((c & 0x000000ff) << 16);
     }
 
     if (PIXMAN_FORMAT_TYPE (format) == PIXMAN_TYPE_BGRA) {
-	c = ((c & 0xff000000) >> 24) |
-	    ((c & 0x00ff0000) >>  8) |
-	    ((c & 0x0000ff00) <<  8) |
-	    ((c & 0x000000ff) << 24);
+	c = ((c & 0xff000000) >> 24) | ((c & 0x00ff0000) >> 8) |
+	    ((c & 0x0000ff00) << 8) | ((c & 0x000000ff) << 24);
     }
 
     if (format == PIXMAN_a8) {
 	c = c >> 24;
     } else if (format == PIXMAN_r5g6b5 || format == PIXMAN_b5g6r5) {
-	c = ((((c) >> 3) & 0x001f) |
-	     (((c) >> 5) & 0x07e0) |
+	c = ((((c) >> 3) & 0x001f) | (((c) >> 5) & 0x07e0) |
 	     (((c) >> 8) & 0xf800));
     }
 
@@ -169,11 +164,11 @@ color_to_pixel (const comac_color_t	*color,
 }
 
 static comac_int_status_t
-fill_rectangles (void			*_dst,
-		 comac_operator_t	 op,
-		 const comac_color_t	*color,
-		 comac_rectangle_int_t	*rects,
-		 int			 num_rects)
+fill_rectangles (void *_dst,
+		 comac_operator_t op,
+		 const comac_color_t *color,
+		 comac_rectangle_int_t *rects,
+		 int num_rects)
 {
     comac_image_surface_t *dst = _dst;
     uint32_t pixel;
@@ -183,10 +178,13 @@ fill_rectangles (void			*_dst,
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     for (i = 0; i < num_rects; i++) {
-	pixman_fill ((uint32_t *) dst->data, dst->stride / sizeof (uint32_t),
+	pixman_fill ((uint32_t *) dst->data,
+		     dst->stride / sizeof (uint32_t),
 		     PIXMAN_FORMAT_BPP (dst->pixman_format),
-		     rects[i].x, rects[i].y,
-		     rects[i].width, rects[i].height,
+		     rects[i].x,
+		     rects[i].y,
+		     rects[i].width,
+		     rects[i].height,
 		     pixel);
     }
 
@@ -194,10 +192,10 @@ fill_rectangles (void			*_dst,
 }
 
 static comac_int_status_t
-fill_boxes (void		*_dst,
-	    comac_operator_t	 op,
-	    const comac_color_t	*color,
-	    comac_boxes_t	*boxes)
+fill_boxes (void *_dst,
+	    comac_operator_t op,
+	    const comac_color_t *color,
+	    comac_boxes_t *boxes)
 {
     comac_image_surface_t *dst = _dst;
     struct _comac_boxes_chunk *chunk;
@@ -215,9 +213,13 @@ fill_boxes (void		*_dst,
 	    int y1 = _comac_fixed_integer_part (chunk->base[i].p1.y);
 	    int x2 = _comac_fixed_integer_part (chunk->base[i].p2.x);
 	    int y2 = _comac_fixed_integer_part (chunk->base[i].p2.y);
-	    pixman_fill ((uint32_t *) dst->data, dst->stride / sizeof (uint32_t),
+	    pixman_fill ((uint32_t *) dst->data,
+			 dst->stride / sizeof (uint32_t),
 			 PIXMAN_FORMAT_BPP (dst->pixman_format),
-			 x1, y1, x2 - x1, y2 - y1,
+			 x1,
+			 y1,
+			 x2 - x1,
+			 y2 - y1,
 			 pixel);
 	}
     }
@@ -299,57 +301,69 @@ _pixman_operator (comac_operator_t op)
 }
 
 static comac_int_status_t
-composite (void			*_dst,
-	   comac_operator_t	op,
-	   comac_surface_t	*abstract_src,
-	   comac_surface_t	*abstract_mask,
-	   int			src_x,
-	   int			src_y,
-	   int			mask_x,
-	   int			mask_y,
-	   int			dst_x,
-	   int			dst_y,
-	   unsigned int		width,
-	   unsigned int		height)
+composite (void *_dst,
+	   comac_operator_t op,
+	   comac_surface_t *abstract_src,
+	   comac_surface_t *abstract_mask,
+	   int src_x,
+	   int src_y,
+	   int mask_x,
+	   int mask_y,
+	   int dst_x,
+	   int dst_y,
+	   unsigned int width,
+	   unsigned int height)
 {
     comac_image_surface_t *dst = _dst;
-    comac_pixman_source_t *src = (comac_pixman_source_t *)abstract_src;
-    comac_pixman_source_t *mask = (comac_pixman_source_t *)abstract_mask;
+    comac_pixman_source_t *src = (comac_pixman_source_t *) abstract_src;
+    comac_pixman_source_t *mask = (comac_pixman_source_t *) abstract_mask;
     if (mask) {
 	pixman_image_composite32 (_pixman_operator (op),
-				  src->pixman_image, mask->pixman_image, dst->pixman_image,
-				  src_x, src_y,
-				  mask_x, mask_y,
-				  dst_x, dst_y,
-				  width, height);
+				  src->pixman_image,
+				  mask->pixman_image,
+				  dst->pixman_image,
+				  src_x,
+				  src_y,
+				  mask_x,
+				  mask_y,
+				  dst_x,
+				  dst_y,
+				  width,
+				  height);
     } else {
 	pixman_image_composite32 (_pixman_operator (op),
-				  src->pixman_image, NULL, dst->pixman_image,
-				  src_x, src_y,
-				  0, 0,
-				  dst_x, dst_y,
-				  width, height);
+				  src->pixman_image,
+				  NULL,
+				  dst->pixman_image,
+				  src_x,
+				  src_y,
+				  0,
+				  0,
+				  dst_x,
+				  dst_y,
+				  width,
+				  height);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-composite_boxes (void			*_dst,
-		 comac_operator_t	op,
-		 comac_surface_t	*abstract_src,
-		 comac_surface_t	*abstract_mask,
-		 int			src_x,
-		 int			src_y,
-		 int			mask_x,
-		 int			mask_y,
-		 int			dst_x,
-		 int			dst_y,
-		 comac_boxes_t		*boxes)
+composite_boxes (void *_dst,
+		 comac_operator_t op,
+		 comac_surface_t *abstract_src,
+		 comac_surface_t *abstract_mask,
+		 int src_x,
+		 int src_y,
+		 int mask_x,
+		 int mask_y,
+		 int dst_x,
+		 int dst_y,
+		 comac_boxes_t *boxes)
 {
     comac_image_surface_t *dst = _dst;
-    comac_pixman_source_t *src = (comac_pixman_source_t *)abstract_src;
-    comac_pixman_source_t *mask = (comac_pixman_source_t *)abstract_mask;
+    comac_pixman_source_t *src = (comac_pixman_source_t *) abstract_src;
+    comac_pixman_source_t *mask = (comac_pixman_source_t *) abstract_mask;
     struct _comac_boxes_chunk *chunk;
     int i;
 
@@ -365,18 +379,30 @@ composite_boxes (void			*_dst,
 
 	    if (mask) {
 		pixman_image_composite32 (op,
-					  src->pixman_image, mask->pixman_image, dst->pixman_image,
-					  x1 + src_x, y1 + src_y,
-					  x1 + mask_x, y1 + mask_y,
-					  x1 + dst_x, y1 + dst_y,
-					  x2 - x1, y2 - y1);
+					  src->pixman_image,
+					  mask->pixman_image,
+					  dst->pixman_image,
+					  x1 + src_x,
+					  y1 + src_y,
+					  x1 + mask_x,
+					  y1 + mask_y,
+					  x1 + dst_x,
+					  y1 + dst_y,
+					  x2 - x1,
+					  y2 - y1);
 	    } else {
 		pixman_image_composite32 (op,
-					  src->pixman_image, NULL, dst->pixman_image,
-					  x1 + src_x, y1 + src_y,
-					  0, 0,
-					  x1 + dst_x, y1 + dst_y,
-					  x2 - x1, y2 - y1);
+					  src->pixman_image,
+					  NULL,
+					  dst->pixman_image,
+					  x1 + src_x,
+					  y1 + src_y,
+					  0,
+					  0,
+					  x1 + dst_x,
+					  y1 + dst_y,
+					  x2 - x1,
+					  y2 - y1);
 	    }
 	}
     }
@@ -390,7 +416,7 @@ _comac_image_mask_compositor_get (void)
     static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
     static comac_mask_compositor_t compositor;
 
-    if (_comac_atomic_init_once_enter(&once)) {
+    if (_comac_atomic_init_once_enter (&once)) {
 	_comac_mask_compositor_init (&compositor,
 				     _comac_image_traps_compositor_get ());
 	compositor.acquire = acquire;
@@ -407,7 +433,7 @@ _comac_image_mask_compositor_get (void)
 	//compositor.check_composite_boxes = check_composite_boxes;
 	compositor.composite_boxes = composite_boxes;
 
-	_comac_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave (&once);
     }
 
     return &compositor.base;

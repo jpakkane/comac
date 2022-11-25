@@ -39,7 +39,7 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
     comac_set_source_rgb (cr, 0, 0, 0);
 
-    comac_translate(cr, 2, 2);
+    comac_translate (cr, 2, 2);
 
     for (sx = 1; sx <= 4; sx++) {
 	comac_save (cr);
@@ -53,21 +53,24 @@ draw (comac_t *cr, int width, int height)
 	    comac_rectangle (cr, 0, sy + 1 + .5, sx, sy);
 	    comac_fill (cr);
 
-	    comac_rectangle (cr, sx + 1 + .5, sy + 1 + .5, sx-.5, sy-.5);
+	    comac_rectangle (cr, sx + 1 + .5, sy + 1 + .5, sx - .5, sy - .5);
 	    comac_fill (cr);
 
-	    comac_translate (cr, 2*sx + 3, 0);
+	    comac_translate (cr, 2 * sx + 3, 0);
 	}
 	comac_restore (cr);
-	comac_translate (cr, 0, 2*sy + 3);
+	comac_translate (cr, 0, 2 * sy + 3);
     }
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (unaligned_box,
-	    "Tests handling of various boundary conditions for unaligned rectangles.",
-	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    unaligned_box,
+    "Tests handling of various boundary conditions for unaligned rectangles.",
+    "fill", /* keywords */
+    NULL,   /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

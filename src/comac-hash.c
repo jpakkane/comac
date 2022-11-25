@@ -57,7 +57,7 @@
 
 #define ENTRY_IS_FREE(entry) ((entry) == NULL)
 #define ENTRY_IS_DEAD(entry) ((entry) == DEAD_ENTRY)
-#define ENTRY_IS_LIVE(entry) ((entry) >  DEAD_ENTRY)
+#define ENTRY_IS_LIVE(entry) ((entry) > DEAD_ENTRY)
 
 /*
  * This table is open-addressed with double hashing. Each table size
@@ -81,32 +81,10 @@
  */
 
 static const unsigned long hash_table_sizes[] = {
-    43,
-    73,
-    151,
-    283,
-    571,
-    1153,
-    2269,
-    4519,
-    9013,
-    18043,
-    36109,
-    72091,
-    144409,
-    288361,
-    576883,
-    1153459,
-    2307163,
-    4613893,
-    9227641,
-    18455029,
-    36911011,
-    73819861,
-    147639589,
-    295279081,
-    590559793
-};
+    43,	      73,	 151,	    283,      571,     1153,	 2269,
+    4519,     9013,	 18043,	    36109,    72091,   144409,	 288361,
+    576883,   1153459,	 2307163,   4613893,  9227641, 18455029, 36911011,
+    73819861, 147639589, 295279081, 590559793};
 
 struct _comac_hash_table {
     comac_hash_keys_equal_func_t keys_equal;
@@ -118,7 +96,7 @@ struct _comac_hash_table {
 
     unsigned long live_entries;
     unsigned long free_entries;
-    unsigned long iterating;   /* Iterating, no insert, no resize */
+    unsigned long iterating; /* Iterating, no insert, no resize */
 };
 
 /**
@@ -178,8 +156,8 @@ _comac_hash_table_create (comac_hash_keys_equal_func_t keys_equal)
     memset (&hash_table->cache, 0, sizeof (hash_table->cache));
     hash_table->table_size = &hash_table_sizes[0];
 
-    hash_table->entries = calloc (*hash_table->table_size,
-				  sizeof (comac_hash_entry_t *));
+    hash_table->entries =
+	calloc (*hash_table->table_size, sizeof (comac_hash_entry_t *));
     if (unlikely (hash_table->entries == NULL)) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	free (hash_table);
@@ -278,15 +256,12 @@ _comac_hash_table_manage (comac_hash_table_t *hash_table)
 
     tmp = *hash_table;
 
-    if (hash_table->live_entries > live_high)
-    {
+    if (hash_table->live_entries > live_high) {
 	tmp.table_size = hash_table->table_size + 1;
 	/* This code is being abused if we can't make a table big enough. */
 	assert (tmp.table_size - hash_table_sizes <
 		ARRAY_LENGTH (hash_table_sizes));
-    }
-    else if (hash_table->live_entries < live_low)
-    {
+    } else if (hash_table->live_entries < live_low) {
 	/* Can't shrink if we're at the smallest size */
 	if (hash_table->table_size == &hash_table_sizes[0])
 	    tmp.table_size = hash_table->table_size;
@@ -295,8 +270,7 @@ _comac_hash_table_manage (comac_hash_table_t *hash_table)
     }
 
     if (tmp.table_size == hash_table->table_size &&
-	hash_table->free_entries > free_low)
-    {
+	hash_table->free_entries > free_low) {
 	/* The number of live entries is within the desired bounds
 	 * (we're not going to resize the table) and we have enough
 	 * free entries. Do nothing. */
@@ -304,14 +278,15 @@ _comac_hash_table_manage (comac_hash_table_t *hash_table)
     }
 
     new_size = *tmp.table_size;
-    tmp.entries = calloc (new_size, sizeof (comac_hash_entry_t*));
+    tmp.entries = calloc (new_size, sizeof (comac_hash_entry_t *));
     if (unlikely (tmp.entries == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     for (i = 0; i < *hash_table->table_size; ++i) {
 	if (ENTRY_IS_LIVE (hash_table->entries[i])) {
-	    *_comac_hash_table_lookup_unique_key (&tmp, hash_table->entries[i])
-		= hash_table->entries[i];
+	    *_comac_hash_table_lookup_unique_key (&tmp,
+						  hash_table->entries[i]) =
+		hash_table->entries[i];
 	}
     }
 
@@ -352,7 +327,7 @@ _comac_hash_table_lookup (comac_hash_table_t *hash_table,
     entry = hash_table->entries[idx];
     if (ENTRY_IS_LIVE (entry)) {
 	if (entry->hash == hash && hash_table->keys_equal (key, entry))
-		goto insert_cache;
+	    goto insert_cache;
     } else if (ENTRY_IS_FREE (entry))
 	return NULL;
 
@@ -366,7 +341,7 @@ _comac_hash_table_lookup (comac_hash_table_t *hash_table,
 	entry = hash_table->entries[idx];
 	if (ENTRY_IS_LIVE (entry)) {
 	    if (entry->hash == hash && hash_table->keys_equal (key, entry))
-		    goto insert_cache;
+		goto insert_cache;
 	} else if (ENTRY_IS_FREE (entry))
 	    return NULL;
     } while (++i < table_size);
@@ -399,7 +374,7 @@ insert_cache:
  * %NULL, a %NULL return value indicates that the table is empty.
  **/
 void *
-_comac_hash_table_random_entry (comac_hash_table_t	   *hash_table,
+_comac_hash_table_random_entry (comac_hash_table_t *hash_table,
 				comac_hash_predicate_func_t predicate)
 {
     comac_hash_entry_t *entry;
@@ -552,9 +527,9 @@ _comac_hash_table_remove (comac_hash_table_t *hash_table,
  * functions will halt in these cases.
  **/
 void
-_comac_hash_table_foreach (comac_hash_table_t	      *hash_table,
-			   comac_hash_callback_func_t  hash_callback,
-			   void			      *closure)
+_comac_hash_table_foreach (comac_hash_table_t *hash_table,
+			   comac_hash_callback_func_t hash_callback,
+			   void *closure)
 {
     unsigned long i;
     comac_hash_entry_t *entry;
@@ -563,7 +538,7 @@ _comac_hash_table_foreach (comac_hash_table_t	      *hash_table,
     ++hash_table->iterating;
     for (i = 0; i < *hash_table->table_size; i++) {
 	entry = hash_table->entries[i];
-	if (ENTRY_IS_LIVE(entry))
+	if (ENTRY_IS_LIVE (entry))
 	    hash_callback (entry, closure);
     }
     /* If some elements were deleted during the iteration,

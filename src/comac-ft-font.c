@@ -69,28 +69,28 @@
 
 #if HAVE_UNISTD_H
 #include <unistd.h>
-#elif !defined(access)
+#elif ! defined(access)
 #define access(p, m) 0
 #endif
 
 /* Fontconfig version older than 2.6 didn't have these options */
 #ifndef FC_LCD_FILTER
-#define FC_LCD_FILTER	"lcdfilter"
+#define FC_LCD_FILTER "lcdfilter"
 #endif
 /* Some Ubuntu versions defined FC_LCD_FILTER without defining the following */
 #ifndef FC_LCD_NONE
-#define FC_LCD_NONE	0
-#define FC_LCD_DEFAULT	1
-#define FC_LCD_LIGHT	2
-#define FC_LCD_LEGACY	3
+#define FC_LCD_NONE 0
+#define FC_LCD_DEFAULT 1
+#define FC_LCD_LIGHT 2
+#define FC_LCD_LEGACY 3
 #endif
 
 /* FreeType version older than 2.3.5(?) didn't have these options */
 #ifndef FT_LCD_FILTER_NONE
-#define FT_LCD_FILTER_NONE	0
-#define FT_LCD_FILTER_DEFAULT	1
-#define FT_LCD_FILTER_LIGHT	2
-#define FT_LCD_FILTER_LEGACY	16
+#define FT_LCD_FILTER_NONE 0
+#define FT_LCD_FILTER_DEFAULT 1
+#define FT_LCD_FILTER_LIGHT 2
+#define FT_LCD_FILTER_LEGACY 16
 #endif
 
 /*  FreeType version older than 2.11 does not have the FT_RENDER_MODE_SDF enum value in FT_Render_Mode */
@@ -98,9 +98,9 @@
 #define HAVE_FT_RENDER_MODE_SDF 1
 #endif
 
-#define DOUBLE_FROM_26_6(t) ((double)(t) / 64.0)
-#define DOUBLE_TO_16_16(d) ((FT_Fixed)((d) * 65536.0))
-#define DOUBLE_FROM_16_16(t) ((double)(t) / 65536.0)
+#define DOUBLE_FROM_26_6(t) ((double) (t) / 64.0)
+#define DOUBLE_TO_16_16(d) ((FT_Fixed) ((d) *65536.0))
+#define DOUBLE_FROM_16_16(t) ((double) (t) / 65536.0)
 
 /* This is the max number of FT_face objects we keep open at once
  */
@@ -141,8 +141,8 @@
  */
 
 typedef struct _comac_ft_font_transform {
-    double  x_scale, y_scale;
-    double  shape[2][2];
+    double x_scale, y_scale;
+    double shape[2][2];
 } comac_ft_font_transform_t;
 
 /*
@@ -167,26 +167,26 @@ struct _comac_ft_unscaled_font {
     /* We temporarily scale the unscaled font as needed */
     comac_bool_t have_scale;
     comac_matrix_t current_scale;
-    double x_scale;		/* Extracted X scale factor */
-    double y_scale;             /* Extracted Y scale factor */
-    comac_bool_t have_shape;	/* true if the current scale has a non-scale component*/
+    double x_scale; /* Extracted X scale factor */
+    double y_scale; /* Extracted Y scale factor */
+    comac_bool_t
+	have_shape; /* true if the current scale has a non-scale component*/
     comac_matrix_t current_shape;
     FT_Matrix Current_Shape;
 
-    unsigned int have_color_set  : 1;
-    unsigned int have_color      : 1;  /* true if the font contains color glyphs */
-    FT_Fixed *variations;              /* variation settings that FT_Face came */
+    unsigned int have_color_set : 1;
+    unsigned int have_color : 1; /* true if the font contains color glyphs */
+    FT_Fixed *variations;	 /* variation settings that FT_Face came */
     unsigned int num_palettes;
 
     comac_mutex_t mutex;
     int lock_count;
 
-    comac_ft_font_face_t *faces;	/* Linked list of faces for this font */
+    comac_ft_font_face_t *faces; /* Linked list of faces for this font */
 };
 
 static int
-_comac_ft_unscaled_font_keys_equal (const void *key_a,
-				    const void *key_b);
+_comac_ft_unscaled_font_keys_equal (const void *key_a, const void *key_b);
 
 static void
 _comac_ft_unscaled_font_fini (comac_ft_unscaled_font_t *unscaled);
@@ -198,8 +198,8 @@ typedef struct _comac_ft_options {
 } comac_ft_options_t;
 
 static void
-_comac_ft_options_init_copy (comac_ft_options_t       *options,
-                             const comac_ft_options_t *other)
+_comac_ft_options_init_copy (comac_ft_options_t *options,
+			     const comac_ft_options_t *other)
 {
     _comac_font_options_init_copy (&options->base, &other->base);
     options->load_flags = other->load_flags;
@@ -231,12 +231,12 @@ static const comac_unscaled_font_backend_t comac_ft_unscaled_font_backend;
 #if COMAC_HAS_FC_FONT
 static comac_status_t
 _comac_ft_font_options_substitute (const comac_font_options_t *options,
-				   FcPattern                  *pattern);
+				   FcPattern *pattern);
 
 static comac_font_face_t *
-_comac_ft_resolve_pattern (FcPattern		      *pattern,
-			   const comac_matrix_t       *font_matrix,
-			   const comac_matrix_t       *ctm,
+_comac_ft_resolve_pattern (FcPattern *pattern,
+			   const comac_matrix_t *font_matrix,
+			   const comac_matrix_t *ctm,
 			   const comac_font_options_t *options);
 
 #endif
@@ -244,15 +244,14 @@ _comac_ft_resolve_pattern (FcPattern		      *pattern,
 static comac_status_t
 _ft_to_comac_error (FT_Error error)
 {
-  /* Currently we don't get many (any?) useful statuses here.
+    /* Currently we don't get many (any?) useful statuses here.
    * Populate as needed. */
-  switch (error)
-  {
-  case FT_Err_Out_Of_Memory:
-      return COMAC_STATUS_NO_MEMORY;
-  default:
-      return COMAC_STATUS_FREETYPE_ERROR;
-  }
+    switch (error) {
+    case FT_Err_Out_Of_Memory:
+	return COMAC_STATUS_NO_MEMORY;
+    default:
+	return COMAC_STATUS_FREETYPE_ERROR;
+    }
 }
 
 /*
@@ -272,7 +271,6 @@ typedef struct _comac_ft_unscaled_font_map {
 
 static comac_ft_unscaled_font_map_t *comac_ft_unscaled_font_map = NULL;
 
-
 static FT_Face
 _comac_ft_unscaled_font_lock_face (comac_ft_unscaled_font_t *unscaled);
 
@@ -281,7 +279,6 @@ _comac_ft_unscaled_font_unlock_face (comac_ft_unscaled_font_t *unscaled);
 
 static comac_bool_t
 _comac_ft_scaled_font_is_vertical (comac_scaled_font_t *scaled_font);
-
 
 static void
 _font_map_release_face_lock_held (comac_ft_unscaled_font_map_t *font_map,
@@ -332,15 +329,13 @@ FAIL:
     return _comac_error (COMAC_STATUS_NO_MEMORY);
 }
 
-
 static void
 _comac_ft_unscaled_font_map_pluck_entry (void *entry, void *closure)
 {
     comac_ft_unscaled_font_t *unscaled = entry;
     comac_ft_unscaled_font_map_t *font_map = closure;
 
-    _comac_hash_table_remove (font_map->hash_table,
-			      &unscaled->base.hash_entry);
+    _comac_hash_table_remove (font_map->hash_table, &unscaled->base.hash_entry);
 
     if (! unscaled->from_face)
 	_font_map_release_face_lock_held (font_map, unscaled);
@@ -398,10 +393,10 @@ _comac_ft_unscaled_font_map_unlock (void)
 
 static void
 _comac_ft_unscaled_font_init_key (comac_ft_unscaled_font_t *key,
-				  comac_bool_t              from_face,
-				  char			   *filename,
-				  int			    id,
-				  FT_Face		    face)
+				  comac_bool_t from_face,
+				  char *filename,
+				  int id,
+				  FT_Face face)
 {
     uintptr_t hash;
 
@@ -441,10 +436,10 @@ _comac_ft_unscaled_font_init_key (comac_ft_unscaled_font_t *key,
  **/
 static comac_status_t
 _comac_ft_unscaled_font_init (comac_ft_unscaled_font_t *unscaled,
-			      comac_bool_t              from_face,
-			      const char	       *filename,
-			      int			id,
-			      FT_Face			face)
+			      comac_bool_t from_face,
+			      const char *filename,
+			      int id,
+			      FT_Face face)
 {
     _comac_unscaled_font_init (&unscaled->base,
 			       &comac_ft_unscaled_font_backend);
@@ -455,18 +450,19 @@ _comac_ft_unscaled_font_init (comac_ft_unscaled_font_t *unscaled,
 	unscaled->from_face = TRUE;
 	_comac_ft_unscaled_font_init_key (unscaled, TRUE, NULL, id, face);
 
-
-        unscaled->have_color = FT_HAS_COLOR (face) != 0;
-        unscaled->have_color_set = TRUE;
+	unscaled->have_color = FT_HAS_COLOR (face) != 0;
+	unscaled->have_color_set = TRUE;
 
 #ifdef HAVE_FT_GET_VAR_DESIGN_COORDINATES
 	{
 	    FT_MM_Var *ft_mm_var;
-	    if (0 == FT_Get_MM_Var (face, &ft_mm_var))
-	    {
-		unscaled->variations = calloc (ft_mm_var->num_axis, sizeof (FT_Fixed));
+	    if (0 == FT_Get_MM_Var (face, &ft_mm_var)) {
+		unscaled->variations =
+		    calloc (ft_mm_var->num_axis, sizeof (FT_Fixed));
 		if (unscaled->variations)
-		    FT_Get_Var_Design_Coordinates (face, ft_mm_var->num_axis, unscaled->variations);
+		    FT_Get_Var_Design_Coordinates (face,
+						   ft_mm_var->num_axis,
+						   unscaled->variations);
 #if HAVE_FT_DONE_MM_VAR
 		FT_Done_MM_Var (face->glyph->library, ft_mm_var);
 #else
@@ -485,7 +481,11 @@ _comac_ft_unscaled_font_init (comac_ft_unscaled_font_t *unscaled,
 	if (unlikely (filename_copy == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	_comac_ft_unscaled_font_init_key (unscaled, FALSE, filename_copy, id, NULL);
+	_comac_ft_unscaled_font_init_key (unscaled,
+					  FALSE,
+					  filename_copy,
+					  id,
+					  NULL);
 
 	unscaled->have_color_set = FALSE;
     }
@@ -524,16 +524,14 @@ _comac_ft_unscaled_font_fini (comac_ft_unscaled_font_t *unscaled)
 }
 
 static int
-_comac_ft_unscaled_font_keys_equal (const void *key_a,
-				    const void *key_b)
+_comac_ft_unscaled_font_keys_equal (const void *key_a, const void *key_b)
 {
     const comac_ft_unscaled_font_t *unscaled_a = key_a;
     const comac_ft_unscaled_font_t *unscaled_b = key_b;
 
     if (unscaled_a->id == unscaled_b->id &&
-	unscaled_a->from_face == unscaled_b->from_face)
-     {
-        if (unscaled_a->from_face)
+	unscaled_a->from_face == unscaled_b->from_face) {
+	if (unscaled_a->from_face)
 	    return unscaled_a->face == unscaled_b->face;
 
 	if (unscaled_a->filename == NULL && unscaled_b->filename == NULL)
@@ -568,8 +566,8 @@ _comac_ft_unscaled_font_create_internal (comac_bool_t from_face,
     _comac_ft_unscaled_font_init_key (&key, from_face, filename, id, font_face);
 
     /* Return existing unscaled font if it exists in the hash table. */
-    unscaled = _comac_hash_table_lookup (font_map->hash_table,
-					 &key.base.hash_entry);
+    unscaled =
+	_comac_hash_table_lookup (font_map->hash_table, &key.base.hash_entry);
     if (unscaled != NULL) {
 	_comac_unscaled_font_reference (&unscaled->base);
 	goto DONE;
@@ -582,7 +580,11 @@ _comac_ft_unscaled_font_create_internal (comac_bool_t from_face,
 	goto UNWIND_FONT_MAP_LOCK;
     }
 
-    status = _comac_ft_unscaled_font_init (unscaled, from_face, filename, id, font_face);
+    status = _comac_ft_unscaled_font_init (unscaled,
+					   from_face,
+					   filename,
+					   id,
+					   font_face);
     if (unlikely (status))
 	goto UNWIND_UNSCALED_MALLOC;
 
@@ -605,7 +607,6 @@ UNWIND_FONT_MAP_LOCK:
     _comac_ft_unscaled_font_map_unlock ();
     return status;
 }
-
 
 #if COMAC_HAS_FC_FONT
 static comac_status_t
@@ -644,7 +645,9 @@ _comac_ft_unscaled_font_create_for_pattern (FcPattern *pattern,
 
 DONE:
     return _comac_ft_unscaled_font_create_internal (font_face != NULL,
-						    filename, id, font_face,
+						    filename,
+						    id,
+						    font_face,
 						    out);
 }
 #endif
@@ -653,13 +656,17 @@ static comac_status_t
 _comac_ft_unscaled_font_create_from_face (FT_Face face,
 					  comac_ft_unscaled_font_t **out)
 {
-    return _comac_ft_unscaled_font_create_internal (TRUE, NULL, face->face_index, face, out);
+    return _comac_ft_unscaled_font_create_internal (TRUE,
+						    NULL,
+						    face->face_index,
+						    face,
+						    out);
 }
 
 static comac_bool_t
 _comac_ft_unscaled_font_destroy (void *abstract_font)
 {
-    comac_ft_unscaled_font_t *unscaled  = abstract_font;
+    comac_ft_unscaled_font_t *unscaled = abstract_font;
     comac_ft_unscaled_font_map_t *font_map;
 
     font_map = _comac_ft_unscaled_font_map_lock ();
@@ -672,8 +679,7 @@ _comac_ft_unscaled_font_destroy (void *abstract_font)
 	return FALSE;
     }
 
-    _comac_hash_table_remove (font_map->hash_table,
-			      &unscaled->base.hash_entry);
+    _comac_hash_table_remove (font_map->hash_table, &unscaled->base.hash_entry);
 
     if (unscaled->from_face) {
 	/* See comments in _ft_font_face_destroy about the "zombie" state
@@ -699,7 +705,8 @@ _has_unlocked_face (const void *entry)
 {
     const comac_ft_unscaled_font_t *unscaled = entry;
 
-    return (!unscaled->from_face && unscaled->lock_count == 0 && unscaled->face);
+    return (! unscaled->from_face && unscaled->lock_count == 0 &&
+	    unscaled->face);
 }
 
 /* Ensures that an unscaled font has a face object. If we exceed
@@ -723,14 +730,13 @@ _comac_ft_unscaled_font_lock_face (comac_ft_unscaled_font_t *unscaled)
 
     /* If this unscaled font was created from an FT_Face then we just
      * returned it above. */
-    assert (!unscaled->from_face);
+    assert (! unscaled->from_face);
 
     font_map = _comac_ft_unscaled_font_map_lock ();
     {
 	assert (font_map != NULL);
 
-	while (font_map->num_open_faces >= MAX_OPEN_FACES)
-	{
+	while (font_map->num_open_faces >= MAX_OPEN_FACES) {
 	    comac_ft_unscaled_font_t *entry;
 
 	    entry = _comac_hash_table_random_entry (font_map->hash_table,
@@ -747,8 +753,7 @@ _comac_ft_unscaled_font_lock_face (comac_ft_unscaled_font_t *unscaled)
 			 unscaled->filename,
 			 unscaled->id,
 			 &face);
-    if (error)
-    {
+    if (error) {
 	unscaled->lock_count--;
 	COMAC_MUTEX_UNLOCK (unscaled->mutex);
 	_comac_error_throw (_ft_to_comac_error (error));
@@ -765,7 +770,6 @@ _comac_ft_unscaled_font_lock_face (comac_ft_unscaled_font_t *unscaled)
     return face;
 }
 
-
 /* Unlock unscaled font locked with _comac_ft_unscaled_font_lock_face
  */
 static void
@@ -778,10 +782,9 @@ _comac_ft_unscaled_font_unlock_face (comac_ft_unscaled_font_t *unscaled)
     COMAC_MUTEX_UNLOCK (unscaled->mutex);
 }
 
-
 static comac_status_t
 _compute_transform (comac_ft_font_transform_t *sf,
-		    comac_matrix_t      *scale,
+		    comac_matrix_t *scale,
 		    comac_ft_unscaled_font_t *unscaled)
 {
     comac_status_t status;
@@ -796,8 +799,9 @@ _compute_transform (comac_ft_font_transform_t *sf,
      */
 
     status = _comac_matrix_compute_basis_scale_factors (scale,
-						  &x_scale, &y_scale,
-						  1);
+							&x_scale,
+							&y_scale,
+							1);
     if (unlikely (status))
 	return status;
 
@@ -806,9 +810,9 @@ _compute_transform (comac_ft_font_transform_t *sf,
      * So, we cap them from below at 1.0 and let the FT transform
      * take care of sub-1.0 scaling. */
     if (x_scale < 1.0)
-      x_scale = 1.0;
+	x_scale = 1.0;
     if (y_scale < 1.0)
-      y_scale = 1.0;
+	y_scale = 1.0;
 
     if (unscaled && (unscaled->face->face_flags & FT_FACE_FLAG_SCALABLE) == 0) {
 	double min_distance = DBL_MAX;
@@ -847,9 +851,12 @@ _compute_transform (comac_ft_font_transform_t *sf,
     comac_matrix_scale (&normalized, 1.0 / x_scale, 1.0 / y_scale);
 
     _comac_matrix_get_affine (&normalized,
-			      &sf->shape[0][0], &sf->shape[0][1],
-			      &sf->shape[1][0], &sf->shape[1][1],
-			      NULL, NULL);
+			      &sf->shape[0][0],
+			      &sf->shape[0][1],
+			      &sf->shape[1][0],
+			      &sf->shape[1][1],
+			      NULL,
+			      NULL);
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -859,7 +866,7 @@ _compute_transform (comac_ft_font_transform_t *sf,
  */
 static comac_status_t
 _comac_ft_unscaled_font_set_scale (comac_ft_unscaled_font_t *unscaled,
-				   comac_matrix_t	      *scale)
+				   comac_matrix_t *scale)
 {
     comac_status_t status;
     comac_ft_font_transform_t sf;
@@ -868,8 +875,7 @@ _comac_ft_unscaled_font_set_scale (comac_ft_unscaled_font_t *unscaled,
 
     assert (unscaled->face != NULL);
 
-    if (unscaled->have_scale &&
-	scale->xx == unscaled->current_scale.xx &&
+    if (unscaled->have_scale && scale->xx == unscaled->current_scale.xx &&
 	scale->yx == unscaled->current_scale.yx &&
 	scale->xy == unscaled->current_scale.xy &&
 	scale->yy == unscaled->current_scale.yy)
@@ -885,30 +891,32 @@ _comac_ft_unscaled_font_set_scale (comac_ft_unscaled_font_t *unscaled,
     unscaled->x_scale = sf.x_scale;
     unscaled->y_scale = sf.y_scale;
 
-    mat.xx = DOUBLE_TO_16_16(sf.shape[0][0]);
-    mat.yx = - DOUBLE_TO_16_16(sf.shape[0][1]);
-    mat.xy = - DOUBLE_TO_16_16(sf.shape[1][0]);
-    mat.yy = DOUBLE_TO_16_16(sf.shape[1][1]);
+    mat.xx = DOUBLE_TO_16_16 (sf.shape[0][0]);
+    mat.yx = -DOUBLE_TO_16_16 (sf.shape[0][1]);
+    mat.xy = -DOUBLE_TO_16_16 (sf.shape[1][0]);
+    mat.yy = DOUBLE_TO_16_16 (sf.shape[1][1]);
 
-    unscaled->have_shape = (mat.xx != 0x10000 ||
-			    mat.yx != 0x00000 ||
-			    mat.xy != 0x00000 ||
-			    mat.yy != 0x10000);
+    unscaled->have_shape = (mat.xx != 0x10000 || mat.yx != 0x00000 ||
+			    mat.xy != 0x00000 || mat.yy != 0x10000);
 
     unscaled->Current_Shape = mat;
     comac_matrix_init (&unscaled->current_shape,
-		       sf.shape[0][0], sf.shape[0][1],
-		       sf.shape[1][0], sf.shape[1][1],
-		       0.0, 0.0);
+		       sf.shape[0][0],
+		       sf.shape[0][1],
+		       sf.shape[1][0],
+		       sf.shape[1][1],
+		       0.0,
+		       0.0);
 
-    FT_Set_Transform(unscaled->face, &mat, NULL);
+    FT_Set_Transform (unscaled->face, &mat, NULL);
 
     error = FT_Set_Char_Size (unscaled->face,
 			      sf.x_scale * 64.0 + .5,
 			      sf.y_scale * 64.0 + .5,
-			      0, 0);
+			      0,
+			      0);
     if (error)
-      return _comac_error (_ft_to_comac_error (error));
+	return _comac_error (_ft_to_comac_error (error));
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -937,9 +945,9 @@ _comac_ft_unscaled_font_set_scale (comac_ft_unscaled_font_t *unscaled,
  * like trying to convert a gray bitmap into a monochrome one)
  */
 static int
-_compute_xrender_bitmap_size(FT_Bitmap      *target,
-			     FT_GlyphSlot    slot,
-			     FT_Render_Mode  mode)
+_compute_xrender_bitmap_size (FT_Bitmap *target,
+			      FT_GlyphSlot slot,
+			      FT_Render_Mode mode)
 {
     FT_Bitmap *ftbit;
     int width, height, pitch;
@@ -963,9 +971,7 @@ _compute_xrender_bitmap_size(FT_Bitmap      *target,
 	/* fall-through */
 
     case FT_PIXEL_MODE_GRAY:
-	if (mode == FT_RENDER_MODE_LCD ||
-	    mode == FT_RENDER_MODE_LCD_V)
-	{
+	if (mode == FT_RENDER_MODE_LCD || mode == FT_RENDER_MODE_LCD_V) {
 	    /* each pixel is replicated into a 32-bit ARGB value */
 	    pitch = width * 4;
 	}
@@ -996,7 +1002,7 @@ _compute_xrender_bitmap_size(FT_Bitmap      *target,
 	break;
 #endif
 
-    default:  /* unsupported source format */
+    default: /* unsupported source format */
 	return -1;
     }
 
@@ -1023,10 +1029,10 @@ _compute_xrender_bitmap_size(FT_Bitmap      *target,
  * bgr    :: boolean, set if BGR or VBGR pixel ordering is needed
  */
 static void
-_fill_xrender_bitmap(FT_Bitmap      *target,
-		     FT_GlyphSlot    slot,
-		     FT_Render_Mode  mode,
-		     int             bgr)
+_fill_xrender_bitmap (FT_Bitmap *target,
+		      FT_GlyphSlot slot,
+		      FT_Render_Mode mode,
+		      int bgr)
 {
     FT_Bitmap *ftbit = &slot->bitmap;
     unsigned char *srcLine = ftbit->buffer;
@@ -1038,8 +1044,7 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
     int subpixel;
     int h;
 
-    subpixel = (mode == FT_RENDER_MODE_LCD ||
-		mode == FT_RENDER_MODE_LCD_V);
+    subpixel = (mode == FT_RENDER_MODE_LCD || mode == FT_RENDER_MODE_LCD_V);
 
     if (src_pitch < 0)
 	srcLine -= src_pitch * (ftbit->rows - 1);
@@ -1051,7 +1056,8 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 	if (subpixel) {
 	    /* convert mono to ARGB32 values */
 
-	    for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch) {
+	    for (h = height; h > 0;
+		 h--, srcLine += src_pitch, dstLine += pitch) {
 		int x;
 
 		for (x = 0; x < width; x++) {
@@ -1064,7 +1070,8 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 	} else if (mode == FT_RENDER_MODE_NORMAL) {
 	    /* convert mono to 8-bit gray */
 
-	    for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch) {
+	    for (h = height; h > 0;
+		 h--, srcLine += src_pitch, dstLine += pitch) {
 		int x;
 
 		for (x = 0; x < width; x++) {
@@ -1077,7 +1084,7 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 	} else {
 	    /* copy mono to mono */
 
-	    int  bytes = (width + 7) >> 3;
+	    int bytes = (width + 7) >> 3;
 
 	    for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch)
 		memcpy (dstLine, srcLine, bytes);
@@ -1088,7 +1095,8 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 	if (subpixel) {
 	    /* convert gray to ARGB32 values */
 
-	    for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch) {
+	    for (h = height; h > 0;
+		 h--, srcLine += src_pitch, dstLine += pitch) {
 		int x;
 		unsigned int *dst = (unsigned int *) dstLine;
 
@@ -1102,30 +1110,31 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 		}
 	    }
 	    target->pixel_mode = FT_PIXEL_MODE_LCD;
-        } else {
-            /* copy gray into gray */
+	} else {
+	    /* copy gray into gray */
 
-            for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch)
-                memcpy (dstLine, srcLine, width);
-        }
-        break;
+	    for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch)
+		memcpy (dstLine, srcLine, width);
+	}
+	break;
 
     case FT_PIXEL_MODE_LCD:
-	if (!bgr) {
+	if (! bgr) {
 	    /* convert horizontal RGB into ARGB32 */
 
-	    for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch) {
+	    for (h = height; h > 0;
+		 h--, srcLine += src_pitch, dstLine += pitch) {
 		int x;
 		unsigned char *src = srcLine;
 		unsigned int *dst = (unsigned int *) dstLine;
 
 		for (x = 0; x < width; x++, src += 3) {
-		    unsigned int  pix;
+		    unsigned int pix;
 
-		    pix = ((unsigned int)src[0] << 16) |
-			  ((unsigned int)src[1] <<  8) |
-			  ((unsigned int)src[2]      ) |
-			  ((unsigned int)src[1] << 24) ;
+		    pix = ((unsigned int) src[0] << 16) |
+			  ((unsigned int) src[1] << 8) |
+			  ((unsigned int) src[2]) |
+			  ((unsigned int) src[1] << 24);
 
 		    dst[x] = pix;
 		}
@@ -1133,19 +1142,20 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 	} else {
 	    /* convert horizontal BGR into ARGB32 */
 
-	    for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch) {
+	    for (h = height; h > 0;
+		 h--, srcLine += src_pitch, dstLine += pitch) {
 
 		int x;
 		unsigned char *src = srcLine;
 		unsigned int *dst = (unsigned int *) dstLine;
 
 		for (x = 0; x < width; x++, src += 3) {
-		    unsigned int  pix;
+		    unsigned int pix;
 
-		    pix = ((unsigned int)src[2] << 16) |
-			  ((unsigned int)src[1] <<  8) |
-			  ((unsigned int)src[0]      ) |
-			  ((unsigned int)src[1] << 24) ;
+		    pix = ((unsigned int) src[2] << 16) |
+			  ((unsigned int) src[1] << 8) |
+			  ((unsigned int) src[0]) |
+			  ((unsigned int) src[1] << 24);
 
 		    dst[x] = pix;
 		}
@@ -1155,36 +1165,38 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 
     case FT_PIXEL_MODE_LCD_V:
 	/* convert vertical RGB into ARGB32 */
-	if (!bgr) {
+	if (! bgr) {
 
-	    for (h = height; h > 0; h--, srcLine += 3 * src_pitch, dstLine += pitch) {
-		int x;
-		unsigned char* src = srcLine;
-		unsigned int*  dst = (unsigned int *) dstLine;
-
-		for (x = 0; x < width; x++, src += 1) {
-		    unsigned int pix;
-		    pix = ((unsigned int)src[0]           << 16) |
-			  ((unsigned int)src[src_pitch]   <<  8) |
-			  ((unsigned int)src[src_pitch*2]      ) |
-			  ((unsigned int)src[src_pitch]   << 24) ;
-		    dst[x] = pix;
-		}
-	    }
-	} else {
-
-	    for (h = height; h > 0; h--, srcLine += 3*src_pitch, dstLine += pitch) {
+	    for (h = height; h > 0;
+		 h--, srcLine += 3 * src_pitch, dstLine += pitch) {
 		int x;
 		unsigned char *src = srcLine;
 		unsigned int *dst = (unsigned int *) dstLine;
 
 		for (x = 0; x < width; x++, src += 1) {
-		    unsigned int  pix;
+		    unsigned int pix;
+		    pix = ((unsigned int) src[0] << 16) |
+			  ((unsigned int) src[src_pitch] << 8) |
+			  ((unsigned int) src[src_pitch * 2]) |
+			  ((unsigned int) src[src_pitch] << 24);
+		    dst[x] = pix;
+		}
+	    }
+	} else {
 
-		    pix = ((unsigned int)src[src_pitch * 2] << 16) |
-			  ((unsigned int)src[src_pitch]     <<  8) |
-			  ((unsigned int)src[0]                  ) |
-			  ((unsigned int)src[src_pitch]     << 24) ;
+	    for (h = height; h > 0;
+		 h--, srcLine += 3 * src_pitch, dstLine += pitch) {
+		int x;
+		unsigned char *src = srcLine;
+		unsigned int *dst = (unsigned int *) dstLine;
+
+		for (x = 0; x < width; x++, src += 1) {
+		    unsigned int pix;
+
+		    pix = ((unsigned int) src[src_pitch * 2] << 16) |
+			  ((unsigned int) src[src_pitch] << 8) |
+			  ((unsigned int) src[0]) |
+			  ((unsigned int) src[src_pitch] << 24);
 
 		    dst[x] = pix;
 		}
@@ -1195,7 +1207,7 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
 #ifdef FT_LOAD_COLOR
     case FT_PIXEL_MODE_BGRA:
 	for (h = height; h > 0; h--, srcLine += src_pitch, dstLine += pitch)
-	    memcpy (dstLine, srcLine, (size_t)width * 4);
+	    memcpy (dstLine, srcLine, (size_t) width * 4);
 	break;
 #endif
 
@@ -1204,15 +1216,14 @@ _fill_xrender_bitmap(FT_Bitmap      *target,
     }
 }
 
-
 /* Fills in val->image with an image surface created from @bitmap
  */
 static comac_status_t
-_get_bitmap_surface (FT_Bitmap		     *bitmap,
-		     FT_Library		      library,
-		     comac_bool_t	      own_buffer,
-		     comac_font_options_t    *font_options,
-		     comac_image_surface_t  **surface)
+_get_bitmap_surface (FT_Bitmap *bitmap,
+		     FT_Library library,
+		     comac_bool_t own_buffer,
+		     comac_font_options_t *font_options,
+		     comac_image_surface_t **surface)
 {
     unsigned int width, height;
     unsigned char *data;
@@ -1238,11 +1249,11 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
 	    assert (stride == bitmap->pitch);
 	} else {
 	    data = _comac_malloc_ab (height, stride);
-	    if (!data)
+	    if (! data)
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	    if (stride == bitmap->pitch) {
-		memcpy (data, bitmap->buffer, (size_t)stride * height);
+		memcpy (data, bitmap->buffer, (size_t) stride * height);
 	    } else {
 		int i;
 		unsigned char *source, *dest;
@@ -1277,14 +1288,12 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
     case FT_PIXEL_MODE_LCD_V:
     case FT_PIXEL_MODE_GRAY:
 	if (font_options->antialias != COMAC_ANTIALIAS_SUBPIXEL ||
-	    bitmap->pixel_mode == FT_PIXEL_MODE_GRAY)
-	{
+	    bitmap->pixel_mode == FT_PIXEL_MODE_GRAY) {
 	    stride = bitmap->pitch;
 
 	    /* We don't support stride not multiple of 4. */
-	    if (stride & 3)
-	    {
-		assert (!own_buffer);
+	    if (stride & 3) {
+		assert (! own_buffer);
 		goto convert;
 	    }
 
@@ -1292,10 +1301,10 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
 		data = bitmap->buffer;
 	    } else {
 		data = _comac_malloc_ab (height, stride);
-		if (!data)
+		if (! data)
 		    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-		memcpy (data, bitmap->buffer, (size_t)stride * height);
+		memcpy (data, bitmap->buffer, (size_t) stride * height);
 	    }
 
 	    format = COMAC_FORMAT_A8;
@@ -1313,14 +1322,13 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
 	    data = bitmap->buffer;
 	} else {
 	    data = _comac_malloc_ab (height, stride);
-	    if (!data)
+	    if (! data)
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	    memcpy (data, bitmap->buffer, (size_t)stride * height);
+	    memcpy (data, bitmap->buffer, (size_t) stride * height);
 	}
 
-	if (!_comac_is_little_endian ())
-	{
+	if (! _comac_is_little_endian ()) {
 	    /* Byteswap. */
 	    unsigned int i, count = height * width;
 	    uint32_t *p = (uint32_t *) data;
@@ -1333,46 +1341,44 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
     case FT_PIXEL_MODE_GRAY2:
     case FT_PIXEL_MODE_GRAY4:
     convert:
-	if (!own_buffer && library)
-	{
+	if (! own_buffer && library) {
 	    /* This is pretty much the only case that we can get in here. */
 	    /* Convert to 8bit grayscale. */
 
-	    FT_Bitmap  tmp;
-	    FT_Int     align;
-	    FT_Error   error;
+	    FT_Bitmap tmp;
+	    FT_Int align;
+	    FT_Error error;
 
 	    format = COMAC_FORMAT_A8;
 
 	    align = comac_format_stride_for_width (format, bitmap->width);
 
-	    FT_Bitmap_New( &tmp );
+	    FT_Bitmap_New (&tmp);
 
-	    error = FT_Bitmap_Convert( library, bitmap, &tmp, align );
+	    error = FT_Bitmap_Convert (library, bitmap, &tmp, align);
 	    if (error)
 		return _comac_error (_ft_to_comac_error (error));
 
-	    FT_Bitmap_Done( library, bitmap );
+	    FT_Bitmap_Done (library, bitmap);
 	    *bitmap = tmp;
 
 	    stride = bitmap->pitch;
 	    data = _comac_malloc_ab (height, stride);
-	    if (!data)
+	    if (! data)
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	    if (bitmap->num_grays != 256)
-	    {
-	      unsigned int x, y;
-	      unsigned int mul = 255 / (bitmap->num_grays - 1);
-	      FT_Byte *p = bitmap->buffer;
-	      for (y = 0; y < height; y++) {
-	        for (x = 0; x < width; x++)
-		  p[x] *= mul;
-		p += bitmap->pitch;
-	      }
+	    if (bitmap->num_grays != 256) {
+		unsigned int x, y;
+		unsigned int mul = 255 / (bitmap->num_grays - 1);
+		FT_Byte *p = bitmap->buffer;
+		for (y = 0; y < height; y++) {
+		    for (x = 0; x < width; x++)
+			p[x] *= mul;
+		    p += bitmap->pitch;
+		}
 	    }
 
-	    memcpy (data, bitmap->buffer, (size_t)stride * height);
+	    memcpy (data, bitmap->buffer, (size_t) stride * height);
 	    break;
 	}
 	/* fall through */
@@ -1384,10 +1390,12 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
     }
 
     /* XXX */
-    *surface = image = (comac_image_surface_t *)
-	comac_image_surface_create_for_data (data,
-					     format,
-					     width, height, stride);
+    *surface = image =
+	(comac_image_surface_t *) comac_image_surface_create_for_data (data,
+								       format,
+								       width,
+								       height,
+								       stride);
     if (image->base.status) {
 	free (data);
 	return (*surface)->base.status;
@@ -1419,9 +1427,9 @@ _get_bitmap_surface (FT_Bitmap		     *bitmap,
  * this version of the code path entirely.
  */
 static comac_status_t
-_render_glyph_outline (FT_Face                    face,
-		       comac_font_options_t	 *font_options,
-		       comac_image_surface_t	**surface)
+_render_glyph_outline (FT_Face face,
+		       comac_font_options_t *font_options,
+		       comac_image_surface_t **surface)
 {
     int rgba = FC_RGBA_UNKNOWN;
     int lcd_filter = FT_LCD_FILTER_DEFAULT;
@@ -1443,16 +1451,16 @@ _render_glyph_outline (FT_Face                    face,
     case COMAC_ANTIALIAS_SUBPIXEL:
     case COMAC_ANTIALIAS_BEST:
 	switch (font_options->subpixel_order) {
-	    case COMAC_SUBPIXEL_ORDER_DEFAULT:
-	    case COMAC_SUBPIXEL_ORDER_RGB:
-	    case COMAC_SUBPIXEL_ORDER_BGR:
-		render_mode = FT_RENDER_MODE_LCD;
-		break;
+	case COMAC_SUBPIXEL_ORDER_DEFAULT:
+	case COMAC_SUBPIXEL_ORDER_RGB:
+	case COMAC_SUBPIXEL_ORDER_BGR:
+	    render_mode = FT_RENDER_MODE_LCD;
+	    break;
 
-	    case COMAC_SUBPIXEL_ORDER_VRGB:
-	    case COMAC_SUBPIXEL_ORDER_VBGR:
-		render_mode = FT_RENDER_MODE_LCD_V;
-		break;
+	case COMAC_SUBPIXEL_ORDER_VRGB:
+	case COMAC_SUBPIXEL_ORDER_VBGR:
+	    render_mode = FT_RENDER_MODE_LCD_V;
+	    break;
 	}
 
 	switch (font_options->lcd_filter) {
@@ -1499,7 +1507,7 @@ _render_glyph_outline (FT_Face                    face,
 	    break;
 	case FT_RENDER_MODE_LCD:
 	case FT_RENDER_MODE_LCD_V:
-	    format= COMAC_FORMAT_ARGB32;
+	    format = COMAC_FORMAT_ARGB32;
 	    break;
 	case FT_RENDER_MODE_LIGHT:
 	case FT_RENDER_MODE_NORMAL:
@@ -1560,23 +1568,25 @@ _render_glyph_outline (FT_Face                    face,
 	if (error)
 	    return _comac_error (_ft_to_comac_error (error));
 
-	bitmap_size = _compute_xrender_bitmap_size (&bitmap,
-						    face->glyph,
-						    render_mode);
+	bitmap_size =
+	    _compute_xrender_bitmap_size (&bitmap, face->glyph, render_mode);
 	if (bitmap_size < 0)
 	    return _comac_error (COMAC_STATUS_INVALID_FORMAT);
 
 	bitmap.buffer = calloc (1, bitmap_size);
 	if (bitmap.buffer == NULL)
-		return _comac_error (COMAC_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	_fill_xrender_bitmap (&bitmap, face->glyph, render_mode,
+	_fill_xrender_bitmap (&bitmap,
+			      face->glyph,
+			      render_mode,
 			      (rgba == FC_RGBA_BGR || rgba == FC_RGBA_VBGR));
 
 	/* Note:
 	 * _get_bitmap_surface will free bitmap.buffer if there is an error
 	 */
-	status = _get_bitmap_surface (&bitmap, NULL, TRUE, font_options, surface);
+	status =
+	    _get_bitmap_surface (&bitmap, NULL, TRUE, font_options, surface);
 	if (unlikely (status))
 	    return status;
 
@@ -1586,8 +1596,8 @@ _render_glyph_outline (FT_Face                    face,
 	 * and yMax are offsets of top left relative to origin.  Another negation.
 	 */
 	comac_surface_set_device_offset (&(*surface)->base,
-					 (double)-glyphslot->bitmap_left,
-					 (double)+glyphslot->bitmap_top);
+					 (double) -glyphslot->bitmap_left,
+					 (double) +glyphslot->bitmap_top);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -1595,8 +1605,8 @@ _render_glyph_outline (FT_Face                    face,
 
 /* Converts a bitmap (or other) FT_GlyphSlot into an image */
 static comac_status_t
-_render_glyph_bitmap (FT_Face		      face,
-		      comac_font_options_t   *font_options,
+_render_glyph_bitmap (FT_Face face,
+		      comac_font_options_t *font_options,
 		      comac_image_surface_t **surface)
 {
     FT_GlyphSlot glyphslot = face->glyph;
@@ -1618,7 +1628,8 @@ _render_glyph_bitmap (FT_Face		      face,
 
     status = _get_bitmap_surface (&glyphslot->bitmap,
 				  glyphslot->library,
-				  FALSE, font_options,
+				  FALSE,
+				  font_options,
 				  surface);
     if (unlikely (status))
 	return status;
@@ -1638,8 +1649,7 @@ _render_glyph_bitmap (FT_Face		      face,
 }
 
 static comac_status_t
-_transform_glyph_bitmap (comac_matrix_t         * shape,
-			 comac_image_surface_t ** surface)
+_transform_glyph_bitmap (comac_matrix_t *shape, comac_image_surface_t **surface)
 {
     comac_matrix_t original_to_transformed;
     comac_matrix_t transformed_to_original;
@@ -1664,23 +1674,27 @@ _transform_glyph_bitmap (comac_matrix_t         * shape,
     orig_width = (*surface)->width;
     orig_height = (*surface)->height;
 
-    comac_matrix_translate (&original_to_transformed,
-			    -origin_x, -origin_y);
+    comac_matrix_translate (&original_to_transformed, -origin_x, -origin_y);
 
     /* Find the bounding box of the original bitmap under that
      * transform
      */
-    x[0] = 0;          y[0] = 0;
-    x[1] = orig_width; y[1] = 0;
-    x[2] = orig_width; y[2] = orig_height;
-    x[3] = 0;          y[3] = orig_height;
+    x[0] = 0;
+    y[0] = 0;
+    x[1] = orig_width;
+    y[1] = 0;
+    x[2] = orig_width;
+    y[2] = orig_height;
+    x[3] = 0;
+    y[3] = orig_height;
 
     for (i = 0; i < 4; i++)
-      comac_matrix_transform_point (&original_to_transformed,
-				    &x[i], &y[i]);
+	comac_matrix_transform_point (&original_to_transformed, &x[i], &y[i]);
 
-    x_min = floor (x[0]);   y_min = floor (y[0]);
-    x_max =  ceil (x[0]);   y_max =  ceil (y[0]);
+    x_min = floor (x[0]);
+    y_min = floor (y[0]);
+    x_max = ceil (x[0]);
+    y_max = ceil (y[0]);
 
     for (i = 1; i < 4; i++) {
 	if (x[i] < x_min)
@@ -1701,7 +1715,7 @@ _transform_glyph_bitmap (comac_matrix_t         * shape,
     original_to_transformed.y0 -= y_min;
 
     /* Create the transformed bitmap */
-    width  = x_max - x_min;
+    width = x_max - x_min;
     height = y_max - y_min;
 
     transformed_to_original = original_to_transformed;
@@ -1710,10 +1724,10 @@ _transform_glyph_bitmap (comac_matrix_t         * shape,
 	return status;
 
     if ((*surface)->format == COMAC_FORMAT_ARGB32 &&
-        !pixman_image_get_component_alpha ((*surface)->pixman_image))
-      image = comac_image_surface_create (COMAC_FORMAT_ARGB32, width, height);
+	! pixman_image_get_component_alpha ((*surface)->pixman_image))
+	image = comac_image_surface_create (COMAC_FORMAT_ARGB32, width, height);
     else
-      image = comac_image_surface_create (COMAC_FORMAT_A8, width, height);
+	image = comac_image_surface_create (COMAC_FORMAT_A8, width, height);
     if (unlikely (image->status))
 	return image->status;
 
@@ -1738,10 +1752,11 @@ _transform_glyph_bitmap (comac_matrix_t         * shape,
      * the origin based on the final transform.
      */
     comac_matrix_transform_point (&original_to_transformed,
-				  &origin_x, &origin_y);
+				  &origin_x,
+				  &origin_y);
 
     old_image = (*surface);
-    (*surface) = (comac_image_surface_t *)image;
+    (*surface) = (comac_image_surface_t *) image;
 
     /* Note: we converted subpixel-rendered RGBA images to grayscale,
      * so, no need to copy component alpha to new image. */
@@ -1795,26 +1810,25 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
 #endif
 
     /* Check whether to force use of embedded bitmaps */
-    if (FcPatternGetBool (pattern,
-			  FC_EMBEDDED_BITMAP, 0, &bitmap) != FcResultMatch)
+    if (FcPatternGetBool (pattern, FC_EMBEDDED_BITMAP, 0, &bitmap) !=
+	FcResultMatch)
 	bitmap = FcFalse;
 
     /* disable antialiasing if requested */
-    if (FcPatternGetBool (pattern,
-			  FC_ANTIALIAS, 0, &antialias) != FcResultMatch)
+    if (FcPatternGetBool (pattern, FC_ANTIALIAS, 0, &antialias) !=
+	FcResultMatch)
 	antialias = FcTrue;
-    
+
     if (antialias) {
 	comac_subpixel_order_t subpixel_order;
 	int lcd_filter;
 
 	/* disable hinting if requested */
-	if (FcPatternGetBool (pattern,
-			      FC_HINTING, 0, &hinting) != FcResultMatch)
+	if (FcPatternGetBool (pattern, FC_HINTING, 0, &hinting) !=
+	    FcResultMatch)
 	    hinting = FcTrue;
 
-	if (FcPatternGetInteger (pattern,
-				 FC_RGBA, 0, &rgba) != FcResultMatch)
+	if (FcPatternGetInteger (pattern, FC_RGBA, 0, &rgba) != FcResultMatch)
 	    rgba = FC_RGBA_UNKNOWN;
 
 	switch (rgba) {
@@ -1842,9 +1856,8 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
 	    ft_options.base.antialias = COMAC_ANTIALIAS_SUBPIXEL;
 	}
 
-	if (FcPatternGetInteger (pattern,
-				 FC_LCD_FILTER, 0, &lcd_filter) == FcResultMatch)
-	{
+	if (FcPatternGetInteger (pattern, FC_LCD_FILTER, 0, &lcd_filter) ==
+	    FcResultMatch) {
 	    switch (lcd_filter) {
 	    case FC_LCD_NONE:
 		ft_options.base.lcd_filter = COMAC_LCD_FILTER_NONE;
@@ -1862,11 +1875,11 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
 	}
 
 #ifdef FC_HINT_STYLE
-	if (FcPatternGetInteger (pattern,
-				 FC_HINT_STYLE, 0, &hintstyle) != FcResultMatch)
+	if (FcPatternGetInteger (pattern, FC_HINT_STYLE, 0, &hintstyle) !=
+	    FcResultMatch)
 	    hintstyle = FC_HINT_FULL;
 
-	if (!hinting)
+	if (! hinting)
 	    hintstyle = FC_HINT_NONE;
 
 	switch (hintstyle) {
@@ -1884,17 +1897,17 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
 	    ft_options.base.hint_style = COMAC_HINT_STYLE_FULL;
 	    break;
 	}
-#else /* !FC_HINT_STYLE */
-	if (!hinting) {
+#else  /* !FC_HINT_STYLE */
+	if (! hinting) {
 	    ft_options.base.hint_style = COMAC_HINT_STYLE_NONE;
 	}
 #endif /* FC_HINT_STYLE */
 
 	/* Force embedded bitmaps off if no hinting requested */
 	if (ft_options.base.hint_style == COMAC_HINT_STYLE_NONE)
-	  bitmap = FcFalse;
+	    bitmap = FcFalse;
 
-	if (!bitmap)
+	if (! bitmap)
 	    ft_options.load_flags |= FT_LOAD_NO_BITMAP;
 
     } else {
@@ -1902,15 +1915,14 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
     }
 
     /* force autohinting if requested */
-    if (FcPatternGetBool (pattern,
-			  FC_AUTOHINT, 0, &autohint) != FcResultMatch)
+    if (FcPatternGetBool (pattern, FC_AUTOHINT, 0, &autohint) != FcResultMatch)
 	autohint = FcFalse;
 
     if (autohint)
 	ft_options.load_flags |= FT_LOAD_FORCE_AUTOHINT;
 
-    if (FcPatternGetBool (pattern,
-			  FC_VERTICAL_LAYOUT, 0, &vertical_layout) != FcResultMatch)
+    if (FcPatternGetBool (pattern, FC_VERTICAL_LAYOUT, 0, &vertical_layout) !=
+	FcResultMatch)
 	vertical_layout = FcFalse;
 
     if (vertical_layout)
@@ -1919,8 +1931,7 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
 #ifndef FC_EMBOLDEN
 #define FC_EMBOLDEN "embolden"
 #endif
-    if (FcPatternGetBool (pattern,
-			  FC_EMBOLDEN, 0, &embolden) != FcResultMatch)
+    if (FcPatternGetBool (pattern, FC_EMBOLDEN, 0, &embolden) != FcResultMatch)
 	embolden = FcFalse;
 
     if (embolden)
@@ -1929,8 +1940,11 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
 #ifndef FC_FONT_VARIATIONS
 #define FC_FONT_VARIATIONS "fontvariations"
 #endif
-    if (FcPatternGetString (pattern, FC_FONT_VARIATIONS, 0, (FcChar8 **) &variations) == FcResultMatch) {
-      ft_options.base.variations = strdup (variations);
+    if (FcPatternGetString (pattern,
+			    FC_FONT_VARIATIONS,
+			    0,
+			    (FcChar8 **) &variations) == FcResultMatch) {
+	ft_options.base.variations = strdup (variations);
     }
 
     *ret = ft_options;
@@ -1938,14 +1952,13 @@ _get_pattern_ft_options (FcPattern *pattern, comac_ft_options_t *ret)
 #endif
 
 static void
-_comac_ft_options_merge (comac_ft_options_t *options,
-			 comac_ft_options_t *other)
+_comac_ft_options_merge (comac_ft_options_t *options, comac_ft_options_t *other)
 {
     int load_flags = other->load_flags;
     int load_target = FT_LOAD_TARGET_NORMAL;
 
     /* clear load target mode */
-    load_flags &= ~(FT_LOAD_TARGET_(FT_LOAD_TARGET_MODE(other->load_flags)));
+    load_flags &= ~(FT_LOAD_TARGET_ (FT_LOAD_TARGET_MODE (other->load_flags)));
 
     if (load_flags & FT_LOAD_NO_HINTING)
 	other->base.hint_style = COMAC_HINT_STYLE_NONE;
@@ -2002,7 +2015,7 @@ _comac_ft_options_merge (comac_ft_options_t *options,
 		case COMAC_SUBPIXEL_ORDER_VRGB:
 		case COMAC_SUBPIXEL_ORDER_VBGR:
 		    load_target = FT_LOAD_TARGET_LCD_V;
-		break;
+		    break;
 		}
 	    }
 	    break;
@@ -2010,21 +2023,21 @@ _comac_ft_options_merge (comac_ft_options_t *options,
     }
 
     if (other->base.variations) {
-      if (options->base.variations) {
-        char *p;
+	if (options->base.variations) {
+	    char *p;
 
-        /* 'merge' variations by concatenating - later entries win */
-        p = malloc (strlen (other->base.variations) + strlen (options->base.variations) + 2);
-        p[0] = 0;
-        strcat (p, other->base.variations);
-        strcat (p, ",");
-        strcat (p, options->base.variations);
-        free (options->base.variations);
-        options->base.variations = p;
-      }
-      else {
-        options->base.variations = strdup (other->base.variations);
-      }
+	    /* 'merge' variations by concatenating - later entries win */
+	    p = malloc (strlen (other->base.variations) +
+			strlen (options->base.variations) + 2);
+	    p[0] = 0;
+	    strcat (p, other->base.variations);
+	    strcat (p, ",");
+	    strcat (p, options->base.variations);
+	    free (options->base.variations);
+	    options->base.variations = p;
+	} else {
+	    options->base.variations = strdup (other->base.variations);
+	}
     }
 
     options->load_flags = load_flags | load_target;
@@ -2032,11 +2045,11 @@ _comac_ft_options_merge (comac_ft_options_t *options,
 }
 
 static comac_status_t
-_comac_ft_font_face_scaled_font_create (void		    *abstract_font_face,
-					const comac_matrix_t	 *font_matrix,
-					const comac_matrix_t	 *ctm,
+_comac_ft_font_face_scaled_font_create (void *abstract_font_face,
+					const comac_matrix_t *font_matrix,
+					const comac_matrix_t *ctm,
 					const comac_font_options_t *options,
-					comac_scaled_font_t       **font_out)
+					comac_scaled_font_t **font_out)
 {
     comac_ft_font_face_t *font_face = abstract_font_face;
     comac_ft_scaled_font_t *scaled_font;
@@ -2065,14 +2078,16 @@ _comac_ft_font_face_scaled_font_create (void		    *abstract_font_face,
     _comac_ft_options_merge (&scaled_font->ft_options, &font_face->ft_options);
 
     status = _comac_scaled_font_init (&scaled_font->base,
-			              &font_face->base,
-				      font_matrix, ctm, options,
+				      &font_face->base,
+				      font_matrix,
+				      ctm,
+				      options,
 				      &_comac_ft_scaled_font_backend);
     if (unlikely (status))
 	goto CLEANUP_SCALED_FONT;
 
-    status = _comac_ft_unscaled_font_set_scale (unscaled,
-				                &scaled_font->base.scale);
+    status =
+	_comac_ft_unscaled_font_set_scale (unscaled, &scaled_font->base.scale);
     if (unlikely (status)) {
 	/* This can only fail if we encounter an error with the underlying
 	 * font, so propagate the error back to the font-face. */
@@ -2081,7 +2096,6 @@ _comac_ft_font_face_scaled_font_create (void		    *abstract_font_face,
 	free (scaled_font);
 	return status;
     }
-
 
     metrics = &face->size->metrics;
 
@@ -2107,23 +2121,25 @@ _comac_ft_font_face_scaled_font_create (void		    *abstract_font_face,
 	else
 	    y_factor = 1 / unscaled->y_scale;
 
-	fs_metrics.ascent =        DOUBLE_FROM_26_6(metrics->ascender) * y_factor;
-	fs_metrics.descent =       DOUBLE_FROM_26_6(- metrics->descender) * y_factor;
-	fs_metrics.height =        DOUBLE_FROM_26_6(metrics->height) * y_factor;
-	if (!_comac_ft_scaled_font_is_vertical (&scaled_font->base)) {
-	    fs_metrics.max_x_advance = DOUBLE_FROM_26_6(metrics->max_advance) * x_factor;
+	fs_metrics.ascent = DOUBLE_FROM_26_6 (metrics->ascender) * y_factor;
+	fs_metrics.descent = DOUBLE_FROM_26_6 (-metrics->descender) * y_factor;
+	fs_metrics.height = DOUBLE_FROM_26_6 (metrics->height) * y_factor;
+	if (! _comac_ft_scaled_font_is_vertical (&scaled_font->base)) {
+	    fs_metrics.max_x_advance =
+		DOUBLE_FROM_26_6 (metrics->max_advance) * x_factor;
 	    fs_metrics.max_y_advance = 0;
 	} else {
 	    fs_metrics.max_x_advance = 0;
-	    fs_metrics.max_y_advance = DOUBLE_FROM_26_6(metrics->max_advance) * y_factor;
+	    fs_metrics.max_y_advance =
+		DOUBLE_FROM_26_6 (metrics->max_advance) * y_factor;
 	}
     } else {
 	double scale = face->units_per_EM;
 
-	fs_metrics.ascent =        face->ascender / scale;
-	fs_metrics.descent =       - face->descender / scale;
-	fs_metrics.height =        face->height / scale;
-	if (!_comac_ft_scaled_font_is_vertical (&scaled_font->base)) {
+	fs_metrics.ascent = face->ascender / scale;
+	fs_metrics.descent = -face->descender / scale;
+	fs_metrics.height = face->height / scale;
+	if (! _comac_ft_scaled_font_is_vertical (&scaled_font->base)) {
 	    fs_metrics.max_x_advance = face->max_advance_width / scale;
 	    fs_metrics.max_y_advance = 0;
 	} else {
@@ -2141,10 +2157,10 @@ _comac_ft_font_face_scaled_font_create (void		    *abstract_font_face,
     *font_out = &scaled_font->base;
     return COMAC_STATUS_SUCCESS;
 
-  CLEANUP_SCALED_FONT:
+CLEANUP_SCALED_FONT:
     _comac_unscaled_font_destroy (&unscaled->base);
     free (scaled_font);
-  FAIL:
+FAIL:
     _comac_ft_unscaled_font_unlock_face (font_face->unscaled);
     *font_out = _comac_scaled_font_create_in_error (status);
     return COMAC_STATUS_SUCCESS; /* non-backend error */
@@ -2162,7 +2178,7 @@ _comac_ft_scaled_font_fini (void *abstract_font)
     comac_ft_scaled_font_t *scaled_font = abstract_font;
 
     if (scaled_font == NULL)
-        return;
+	return;
 
     _comac_unscaled_font_destroy (&scaled_font->unscaled->base);
 }
@@ -2219,24 +2235,24 @@ _conic_to (FT_Vector *control, FT_Vector *to, void *closure)
     x3 = _comac_fixed_from_26_6 (to->x);
     y3 = _comac_fixed_from_26_6 (to->y);
 
-    x1 = x0 + 2.0/3.0 * (conic.x - x0);
-    y1 = y0 + 2.0/3.0 * (conic.y - y0);
+    x1 = x0 + 2.0 / 3.0 * (conic.x - x0);
+    y1 = y0 + 2.0 / 3.0 * (conic.y - y0);
 
-    x2 = x3 + 2.0/3.0 * (conic.x - x3);
-    y2 = y3 + 2.0/3.0 * (conic.y - y3);
+    x2 = x3 + 2.0 / 3.0 * (conic.x - x3);
+    y2 = y3 + 2.0 / 3.0 * (conic.y - y3);
 
-    if (_comac_path_fixed_curve_to (path,
-				    x1, y1,
-				    x2, y2,
-				    x3, y3) != COMAC_STATUS_SUCCESS)
+    if (_comac_path_fixed_curve_to (path, x1, y1, x2, y2, x3, y3) !=
+	COMAC_STATUS_SUCCESS)
 	return 1;
 
     return 0;
 }
 
 static int
-_cubic_to (FT_Vector *control1, FT_Vector *control2,
-	   FT_Vector *to, void *closure)
+_cubic_to (FT_Vector *control1,
+	   FT_Vector *control2,
+	   FT_Vector *to,
+	   void *closure)
 {
     comac_path_fixed_t *path = closure;
     comac_fixed_t x0, y0;
@@ -2252,31 +2268,31 @@ _cubic_to (FT_Vector *control1, FT_Vector *control2,
     x2 = _comac_fixed_from_26_6 (to->x);
     y2 = _comac_fixed_from_26_6 (to->y);
 
-    if (_comac_path_fixed_curve_to (path,
-				    x0, y0,
-				    x1, y1,
-				    x2, y2) != COMAC_STATUS_SUCCESS)
+    if (_comac_path_fixed_curve_to (path, x0, y0, x1, y1, x2, y2) !=
+	COMAC_STATUS_SUCCESS)
 	return 1;
 
     return 0;
 }
 
 static comac_status_t
-_decompose_glyph_outline (FT_Face		  face,
-			  comac_font_options_t	 *options,
-			  comac_path_fixed_t	**pathp)
+_decompose_glyph_outline (FT_Face face,
+			  comac_font_options_t *options,
+			  comac_path_fixed_t **pathp)
 {
     static const FT_Outline_Funcs outline_funcs = {
-	(FT_Outline_MoveToFunc)_move_to,
-	(FT_Outline_LineToFunc)_line_to,
-	(FT_Outline_ConicToFunc)_conic_to,
-	(FT_Outline_CubicToFunc)_cubic_to,
+	(FT_Outline_MoveToFunc) _move_to,
+	(FT_Outline_LineToFunc) _line_to,
+	(FT_Outline_ConicToFunc) _conic_to,
+	(FT_Outline_CubicToFunc) _cubic_to,
 	0, /* shift */
 	0, /* delta */
     };
     static const FT_Matrix invert_y = {
-	DOUBLE_TO_16_16 (1.0), 0,
-	0, DOUBLE_TO_16_16 (-1.0),
+	DOUBLE_TO_16_16 (1.0),
+	0,
+	0,
+	DOUBLE_TO_16_16 (-1.0),
     };
 
     FT_GlyphSlot glyph;
@@ -2284,7 +2300,7 @@ _decompose_glyph_outline (FT_Face		  face,
     comac_status_t status;
 
     path = _comac_path_fixed_create ();
-    if (!path)
+    if (! path)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     glyph = face->glyph;
@@ -2311,7 +2327,7 @@ _decompose_glyph_outline (FT_Face		  face,
  * Translate glyph to match its metrics.
  */
 static void
-_comac_ft_scaled_glyph_vertical_layout_bearing_fix (void        *abstract_font,
+_comac_ft_scaled_glyph_vertical_layout_bearing_fix (void *abstract_font,
 						    FT_GlyphSlot glyph)
 {
     comac_ft_scaled_font_t *scaled_font = abstract_font;
@@ -2322,16 +2338,15 @@ _comac_ft_scaled_glyph_vertical_layout_bearing_fix (void        *abstract_font,
 
     if (glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
 	FT_Vector_Transform (&vector, &scaled_font->unscaled->Current_Shape);
-	FT_Outline_Translate(&glyph->outline, vector.x, vector.y);
+	FT_Outline_Translate (&glyph->outline, vector.x, vector.y);
     } else if (glyph->format == FT_GLYPH_FORMAT_BITMAP) {
 	glyph->bitmap_left += vector.x / 64;
-	glyph->bitmap_top  += vector.y / 64;
+	glyph->bitmap_top += vector.y / 64;
     }
 }
 
 static void
-comac_ft_apply_variations (FT_Face                 face,
-			   comac_ft_scaled_font_t *scaled_font)
+comac_ft_apply_variations (FT_Face face, comac_ft_scaled_font_t *scaled_font)
 {
     FT_MM_Var *ft_mm_var;
     FT_Error ret;
@@ -2339,108 +2354,118 @@ comac_ft_apply_variations (FT_Face                 face,
 
     ret = FT_Get_MM_Var (face, &ft_mm_var);
     if (ret == 0) {
-        FT_Fixed *current_coords;
-        FT_Fixed *coords;
-        unsigned int i;
-        const char *p;
+	FT_Fixed *current_coords;
+	FT_Fixed *coords;
+	unsigned int i;
+	const char *p;
 
-        coords = malloc (sizeof (FT_Fixed) * ft_mm_var->num_axis);
+	coords = malloc (sizeof (FT_Fixed) * ft_mm_var->num_axis);
 	/* FIXME check coords. */
 
-	if (scaled_font->unscaled->variations)
-	{
-	    memcpy (coords, scaled_font->unscaled->variations, ft_mm_var->num_axis * sizeof (*coords));
-	}
-	else if (instance_id && instance_id <= ft_mm_var->num_namedstyles)
-	{
-	    FT_Var_Named_Style *instance = &ft_mm_var->namedstyle[instance_id - 1];
-	    memcpy (coords, instance->coords, ft_mm_var->num_axis * sizeof (*coords));
-	}
-	else
+	if (scaled_font->unscaled->variations) {
+	    memcpy (coords,
+		    scaled_font->unscaled->variations,
+		    ft_mm_var->num_axis * sizeof (*coords));
+	} else if (instance_id && instance_id <= ft_mm_var->num_namedstyles) {
+	    FT_Var_Named_Style *instance =
+		&ft_mm_var->namedstyle[instance_id - 1];
+	    memcpy (coords,
+		    instance->coords,
+		    ft_mm_var->num_axis * sizeof (*coords));
+	} else
 	    for (i = 0; i < ft_mm_var->num_axis; i++)
 		coords[i] = ft_mm_var->axis[i].def;
 
-        p = scaled_font->ft_options.base.variations;
-        while (p && *p) {
-            const char *start;
-            const char *end, *end2;
-            FT_ULong tag;
-            double value;
+	p = scaled_font->ft_options.base.variations;
+	while (p && *p) {
+	    const char *start;
+	    const char *end, *end2;
+	    FT_ULong tag;
+	    double value;
 
-            while (_comac_isspace (*p)) p++;
+	    while (_comac_isspace (*p))
+		p++;
 
-            start = p;
-            end = strchr (p, ',');
-            if (end && (end - p < 6))
-                goto skip;
+	    start = p;
+	    end = strchr (p, ',');
+	    if (end && (end - p < 6))
+		goto skip;
 
-            tag = FT_MAKE_TAG(p[0], p[1], p[2], p[3]);
+	    tag = FT_MAKE_TAG (p[0], p[1], p[2], p[3]);
 
-            p += 4;
-            while (_comac_isspace (*p)) p++;
-            if (*p == '=') p++;
+	    p += 4;
+	    while (_comac_isspace (*p))
+		p++;
+	    if (*p == '=')
+		p++;
 
-            if (p - start < 5)
-                goto skip;
+	    if (p - start < 5)
+		goto skip;
 
-            value = _comac_strtod (p, (char **) &end2);
+	    value = _comac_strtod (p, (char **) &end2);
 
-            while (end2 && _comac_isspace (*end2)) end2++;
+	    while (end2 && _comac_isspace (*end2))
+		end2++;
 
-            if (end2 && (*end2 != ',' && *end2 != '\0'))
-                goto skip;
+	    if (end2 && (*end2 != ',' && *end2 != '\0'))
+		goto skip;
 
-            for (i = 0; i < ft_mm_var->num_axis; i++) {
-                if (ft_mm_var->axis[i].tag == tag) {
-                    coords[i] = (FT_Fixed)(value*65536);
-                    break;
-                }
-            }
+	    for (i = 0; i < ft_mm_var->num_axis; i++) {
+		if (ft_mm_var->axis[i].tag == tag) {
+		    coords[i] = (FT_Fixed) (value * 65536);
+		    break;
+		}
+	    }
 
-skip:
-            p = end ? end + 1 : NULL;
-        }
+	skip:
+	    p = end ? end + 1 : NULL;
+	}
 
-        current_coords = malloc (sizeof (FT_Fixed) * ft_mm_var->num_axis);
+	current_coords = malloc (sizeof (FT_Fixed) * ft_mm_var->num_axis);
 #ifdef HAVE_FT_GET_VAR_DESIGN_COORDINATES
-        ret = FT_Get_Var_Design_Coordinates (face, ft_mm_var->num_axis, current_coords);
-        if (ret == 0) {
-            for (i = 0; i < ft_mm_var->num_axis; i++) {
-              if (coords[i] != current_coords[i])
-                break;
-            }
-            if (i == ft_mm_var->num_axis)
-              goto done;
-        }
+	ret = FT_Get_Var_Design_Coordinates (face,
+					     ft_mm_var->num_axis,
+					     current_coords);
+	if (ret == 0) {
+	    for (i = 0; i < ft_mm_var->num_axis; i++) {
+		if (coords[i] != current_coords[i])
+		    break;
+	    }
+	    if (i == ft_mm_var->num_axis)
+		goto done;
+	}
 #endif
 
-        FT_Set_Var_Design_Coordinates (face, ft_mm_var->num_axis, coords);
-done:
-        free (coords);
-        free (current_coords);
+	FT_Set_Var_Design_Coordinates (face, ft_mm_var->num_axis, coords);
+    done:
+	free (coords);
+	free (current_coords);
 #if HAVE_FT_DONE_MM_VAR
-        FT_Done_MM_Var (face->glyph->library, ft_mm_var);
+	FT_Done_MM_Var (face->glyph->library, ft_mm_var);
 #else
-        free (ft_mm_var);
+	free (ft_mm_var);
 #endif
     }
 }
 
 static comac_int_status_t
 _comac_ft_scaled_glyph_load_glyph (comac_ft_scaled_font_t *scaled_font,
-				   comac_scaled_glyph_t   *scaled_glyph,
-				   FT_Face                 face,
-				   int                     load_flags,
-				   comac_bool_t            use_em_size,
-				   comac_bool_t            vertical_layout)
+				   comac_scaled_glyph_t *scaled_glyph,
+				   FT_Face face,
+				   int load_flags,
+				   comac_bool_t use_em_size,
+				   comac_bool_t vertical_layout)
 {
     FT_Error error;
     comac_status_t status;
 
     if (use_em_size) {
 	comac_matrix_t em_size;
-	comac_matrix_init_scale (&em_size, face->units_per_EM, face->units_per_EM);
-	status = _comac_ft_unscaled_font_set_scale (scaled_font->unscaled, &em_size);
+	comac_matrix_init_scale (&em_size,
+				 face->units_per_EM,
+				 face->units_per_EM);
+	status =
+	    _comac_ft_unscaled_font_set_scale (scaled_font->unscaled, &em_size);
     } else {
 	status = _comac_ft_unscaled_font_set_scale (scaled_font->unscaled,
 						    &scaled_font->base.scale);
@@ -2451,14 +2476,14 @@ _comac_ft_scaled_glyph_load_glyph (comac_ft_scaled_font_t *scaled_font,
     comac_ft_apply_variations (face, scaled_font);
 
     error = FT_Load_Glyph (face,
-			   _comac_scaled_glyph_index(scaled_glyph),
+			   _comac_scaled_glyph_index (scaled_glyph),
 			   load_flags);
     /* XXX ignoring all other errors for now.  They are not fatal, typically
      * just a glyph-not-found. */
     if (error == FT_Err_Out_Of_Memory)
-	return  _comac_error (COMAC_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    /*
+	/*
      * synthesize glyphs if requested
      */
 #if HAVE_FT_GLYPHSLOT_EMBOLDEN
@@ -2472,59 +2497,62 @@ _comac_ft_scaled_glyph_load_glyph (comac_ft_scaled_font_t *scaled_font,
 #endif
 
     if (vertical_layout)
-	_comac_ft_scaled_glyph_vertical_layout_bearing_fix (scaled_font, face->glyph);
+	_comac_ft_scaled_glyph_vertical_layout_bearing_fix (scaled_font,
+							    face->glyph);
 
     if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
-        FT_Pos xshift, yshift;
+	FT_Pos xshift, yshift;
 
-        xshift = _comac_scaled_glyph_xphase (scaled_glyph) << 4;
-        yshift = _comac_scaled_glyph_yphase (scaled_glyph) << 4;
+	xshift = _comac_scaled_glyph_xphase (scaled_glyph) << 4;
+	yshift = _comac_scaled_glyph_yphase (scaled_glyph) << 4;
 
-        FT_Outline_Translate (&face->glyph->outline, xshift, -yshift);
+	FT_Outline_Translate (&face->glyph->outline, xshift, -yshift);
     }
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_comac_ft_scaled_glyph_init_surface (comac_ft_scaled_font_t     *scaled_font,
-				     comac_scaled_glyph_t	*scaled_glyph,
-				     comac_scaled_glyph_info_t	 info,
+_comac_ft_scaled_glyph_init_surface (comac_ft_scaled_font_t *scaled_font,
+				     comac_scaled_glyph_t *scaled_glyph,
+				     comac_scaled_glyph_info_t info,
 				     FT_Face face,
-				     const comac_color_t        *foreground_color,
+				     const comac_color_t *foreground_color,
 				     comac_bool_t vertical_layout,
 				     int load_flags)
 {
     comac_ft_unscaled_font_t *unscaled = scaled_font->unscaled;
     FT_GlyphSlot glyph;
     comac_status_t status;
-    comac_image_surface_t	*surface;
+    comac_image_surface_t *surface;
     comac_bool_t uses_foreground_color = FALSE;
 
     /* Only one info type at a time handled in this function */
-    assert (info == COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE || info == COMAC_SCALED_GLYPH_INFO_SURFACE);
+    assert (info == COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE ||
+	    info == COMAC_SCALED_GLYPH_INFO_SURFACE);
 
     if (info == COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) {
-	if (!unscaled->have_color) {
+	if (! unscaled->have_color) {
 	    scaled_glyph->color_glyph = FALSE;
 	    scaled_glyph->color_glyph_set = TRUE;
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 	}
 
 #ifdef HAVE_FT_PALETTE_SELECT
-	FT_LayerIterator  iterator;
+	FT_LayerIterator iterator;
 	FT_UInt layer_glyph_index;
 	FT_UInt layer_color_index;
 	FT_Color color;
 	FT_Palette_Data palette_data;
 
 	/* Check if there is a layer that uses the foreground color */
-	iterator.p  = NULL;
-	while (FT_Get_Color_Glyph_Layer(face,
-					_comac_scaled_glyph_index(scaled_glyph),
-					&layer_glyph_index,
-					&layer_color_index,
-					&iterator)) {
+	iterator.p = NULL;
+	while (
+	    FT_Get_Color_Glyph_Layer (face,
+				      _comac_scaled_glyph_index (scaled_glyph),
+				      &layer_glyph_index,
+				      &layer_color_index,
+				      &iterator)) {
 	    if (layer_color_index == 0xFFFF) {
 		uses_foreground_color = TRUE;
 		break;
@@ -2532,32 +2560,34 @@ _comac_ft_scaled_glyph_init_surface (comac_ft_scaled_font_t     *scaled_font,
 	}
 
 	if (uses_foreground_color) {
-	    color.red = (FT_Byte)(foreground_color->red * 0xFF);
-	    color.green = (FT_Byte)(foreground_color->green * 0xFF);
-	    color.blue = (FT_Byte)(foreground_color->blue * 0xFF);
-	    color.alpha = (FT_Byte)(foreground_color->alpha * 0xFF);
+	    color.red = (FT_Byte) (foreground_color->red * 0xFF);
+	    color.green = (FT_Byte) (foreground_color->green * 0xFF);
+	    color.blue = (FT_Byte) (foreground_color->blue * 0xFF);
+	    color.alpha = (FT_Byte) (foreground_color->alpha * 0xFF);
 	    FT_Palette_Set_Foreground_Color (face, color);
 	}
 
-	if (FT_Palette_Data_Get(face, &palette_data) == 0 && palette_data.num_palettes > 0) {
+	if (FT_Palette_Data_Get (face, &palette_data) == 0 &&
+	    palette_data.num_palettes > 0) {
 	    FT_UShort palette_index = COMAC_COLOR_PALETTE_DEFAULT;
-	    if (scaled_font->base.options.palette_index < palette_data.num_palettes)
+	    if (scaled_font->base.options.palette_index <
+		palette_data.num_palettes)
 		palette_index = scaled_font->base.options.palette_index;
 
 	    FT_Palette_Select (face, palette_index, NULL);
 	}
 #endif
 
-        load_flags &= ~FT_LOAD_MONOCHROME;
+	load_flags &= ~FT_LOAD_MONOCHROME;
 	/* clear load target mode */
-	load_flags &= ~(FT_LOAD_TARGET_(FT_LOAD_TARGET_MODE(load_flags)));
+	load_flags &= ~(FT_LOAD_TARGET_ (FT_LOAD_TARGET_MODE (load_flags)));
 	load_flags |= FT_LOAD_TARGET_NORMAL;
 #ifdef FT_LOAD_COLOR
 	load_flags |= FT_LOAD_COLOR;
 #endif
     } else { /* info == COMAC_SCALED_GLYPH_INFO_SURFACE */
 #ifdef FT_LOAD_COLOR
-        load_flags &= ~FT_LOAD_COLOR;
+	load_flags &= ~FT_LOAD_COLOR;
 #endif
     }
 
@@ -2573,14 +2603,16 @@ _comac_ft_scaled_glyph_init_surface (comac_ft_scaled_font_t     *scaled_font,
     glyph = face->glyph;
 
     if (glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
-	status = _render_glyph_outline (face, &scaled_font->ft_options.base,
-					    &surface);
+	status = _render_glyph_outline (face,
+					&scaled_font->ft_options.base,
+					&surface);
     } else {
-	status = _render_glyph_bitmap (face, &scaled_font->ft_options.base,
-					   &surface);
+	status = _render_glyph_bitmap (face,
+				       &scaled_font->ft_options.base,
+				       &surface);
 	if (likely (status == COMAC_STATUS_SUCCESS) && unscaled->have_shape) {
-	    status = _transform_glyph_bitmap (&unscaled->current_shape,
-					      &surface);
+	    status =
+		_transform_glyph_bitmap (&unscaled->current_shape, &surface);
 	    if (unlikely (status))
 		comac_surface_destroy (&surface->base);
 	}
@@ -2593,9 +2625,9 @@ _comac_ft_scaled_glyph_init_surface (comac_ft_scaled_font_t     *scaled_font,
 	/* We tried loading a color glyph and can now check if we got
 	 * a color glyph and set scaled_glyph->color_glyph
 	 * accordingly */
-	if (pixman_image_get_format (surface->pixman_image) == PIXMAN_a8r8g8b8 &&
-	    !pixman_image_get_component_alpha (surface->pixman_image))
-	{
+	if (pixman_image_get_format (surface->pixman_image) ==
+		PIXMAN_a8r8g8b8 &&
+	    ! pixman_image_get_component_alpha (surface->pixman_image)) {
 	    _comac_scaled_glyph_set_color_surface (scaled_glyph,
 						   &scaled_font->base,
 						   surface,
@@ -2622,12 +2654,12 @@ _comac_ft_scaled_glyph_init_surface (comac_ft_scaled_font_t     *scaled_font,
 }
 
 static comac_int_status_t
-_comac_ft_scaled_glyph_init (void			*abstract_font,
-			     comac_scaled_glyph_t	*scaled_glyph,
-			     comac_scaled_glyph_info_t	 info,
-			     const comac_color_t        *foreground_color)
+_comac_ft_scaled_glyph_init (void *abstract_font,
+			     comac_scaled_glyph_t *scaled_glyph,
+			     comac_scaled_glyph_info_t info,
+			     const comac_color_t *foreground_color)
 {
-    comac_text_extents_t    fs_metrics;
+    comac_text_extents_t fs_metrics;
     comac_ft_scaled_font_t *scaled_font = abstract_font;
     comac_ft_unscaled_font_t *unscaled = scaled_font->unscaled;
     FT_GlyphSlot glyph;
@@ -2640,7 +2672,7 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
     comac_bool_t scaled_glyph_loaded = FALSE;
 
     face = _comac_ft_unscaled_font_lock_face (unscaled);
-    if (!face)
+    if (! face)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     /* Ignore global advance unconditionally */
@@ -2648,7 +2680,7 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 
     if ((info & COMAC_SCALED_GLYPH_INFO_PATH) != 0 &&
 	(info & (COMAC_SCALED_GLYPH_INFO_SURFACE |
-                 COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE)) == 0) {
+		 COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE)) == 0) {
 	load_flags |= FT_LOAD_NO_BITMAP;
     }
 
@@ -2663,7 +2695,8 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 
     if (info & COMAC_SCALED_GLYPH_INFO_METRICS) {
 
-	comac_bool_t hint_metrics = scaled_font->base.options.hint_metrics != COMAC_HINT_METRICS_OFF;
+	comac_bool_t hint_metrics =
+	    scaled_font->base.options.hint_metrics != COMAC_HINT_METRICS_OFF;
 
 	/* The font metrics for color glyphs should be the same as the
 	 * outline glyphs. But just in case there aren't, request the
@@ -2672,14 +2705,15 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 	 */
 	int color_flag = 0;
 #ifdef FT_LOAD_COLOR
-	if (unscaled->have_color && scaled_font->base.options.color_mode != COMAC_COLOR_MODE_NO_COLOR)
+	if (unscaled->have_color &&
+	    scaled_font->base.options.color_mode != COMAC_COLOR_MODE_NO_COLOR)
 	    color_flag = FT_LOAD_COLOR;
 #endif
 	status = _comac_ft_scaled_glyph_load_glyph (scaled_font,
 						    scaled_glyph,
 						    face,
 						    load_flags | color_flag,
-						    !hint_metrics,
+						    ! hint_metrics,
 						    vertical_layout);
 	if (unlikely (status))
 	    goto FAIL;
@@ -2712,13 +2746,12 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 	 * FreeType, then we need to do the metric hinting ourselves.
 	 */
 
-	if (hint_metrics && (load_flags & FT_LOAD_NO_HINTING))
-	{
+	if (hint_metrics && (load_flags & FT_LOAD_NO_HINTING)) {
 	    FT_Pos x1, x2;
 	    FT_Pos y1, y2;
 	    FT_Pos advance;
 
-	    if (!vertical_layout) {
+	    if (! vertical_layout) {
 		x1 = (metrics->horiBearingX) & -64;
 		x2 = (metrics->horiBearingX + metrics->width + 63) & -64;
 		y1 = (-metrics->horiBearingY) & -64;
@@ -2729,8 +2762,8 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 		fs_metrics.x_bearing = DOUBLE_FROM_26_6 (x1) * x_factor;
 		fs_metrics.y_bearing = DOUBLE_FROM_26_6 (y1) * y_factor;
 
-		fs_metrics.width  = DOUBLE_FROM_26_6 (x2 - x1) * x_factor;
-		fs_metrics.height  = DOUBLE_FROM_26_6 (y2 - y1) * y_factor;
+		fs_metrics.width = DOUBLE_FROM_26_6 (x2 - x1) * x_factor;
+		fs_metrics.height = DOUBLE_FROM_26_6 (y2 - y1) * y_factor;
 
 		fs_metrics.x_advance = DOUBLE_FROM_26_6 (advance) * x_factor;
 		fs_metrics.y_advance = 0;
@@ -2745,36 +2778,44 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 		fs_metrics.x_bearing = DOUBLE_FROM_26_6 (x1) * x_factor;
 		fs_metrics.y_bearing = DOUBLE_FROM_26_6 (y1) * y_factor;
 
-		fs_metrics.width  = DOUBLE_FROM_26_6 (x2 - x1) * x_factor;
-		fs_metrics.height  = DOUBLE_FROM_26_6 (y2 - y1) * y_factor;
+		fs_metrics.width = DOUBLE_FROM_26_6 (x2 - x1) * x_factor;
+		fs_metrics.height = DOUBLE_FROM_26_6 (y2 - y1) * y_factor;
 
 		fs_metrics.x_advance = 0;
 		fs_metrics.y_advance = DOUBLE_FROM_26_6 (advance) * y_factor;
 	    }
-	 } else {
-	    fs_metrics.width  = DOUBLE_FROM_26_6 (metrics->width) * x_factor;
+	} else {
+	    fs_metrics.width = DOUBLE_FROM_26_6 (metrics->width) * x_factor;
 	    fs_metrics.height = DOUBLE_FROM_26_6 (metrics->height) * y_factor;
 
-	    if (!vertical_layout) {
-		fs_metrics.x_bearing = DOUBLE_FROM_26_6 (metrics->horiBearingX) * x_factor;
-		fs_metrics.y_bearing = DOUBLE_FROM_26_6 (-metrics->horiBearingY) * y_factor;
+	    if (! vertical_layout) {
+		fs_metrics.x_bearing =
+		    DOUBLE_FROM_26_6 (metrics->horiBearingX) * x_factor;
+		fs_metrics.y_bearing =
+		    DOUBLE_FROM_26_6 (-metrics->horiBearingY) * y_factor;
 
 		if (hint_metrics || glyph->format != FT_GLYPH_FORMAT_OUTLINE)
-		    fs_metrics.x_advance = DOUBLE_FROM_26_6 (metrics->horiAdvance) * x_factor;
+		    fs_metrics.x_advance =
+			DOUBLE_FROM_26_6 (metrics->horiAdvance) * x_factor;
 		else
-		    fs_metrics.x_advance = DOUBLE_FROM_16_16 (glyph->linearHoriAdvance) * x_factor;
+		    fs_metrics.x_advance =
+			DOUBLE_FROM_16_16 (glyph->linearHoriAdvance) * x_factor;
 		fs_metrics.y_advance = 0 * y_factor;
 	    } else {
-		fs_metrics.x_bearing = DOUBLE_FROM_26_6 (metrics->vertBearingX) * x_factor;
-		fs_metrics.y_bearing = DOUBLE_FROM_26_6 (metrics->vertBearingY) * y_factor;
+		fs_metrics.x_bearing =
+		    DOUBLE_FROM_26_6 (metrics->vertBearingX) * x_factor;
+		fs_metrics.y_bearing =
+		    DOUBLE_FROM_26_6 (metrics->vertBearingY) * y_factor;
 
 		fs_metrics.x_advance = 0 * x_factor;
 		if (hint_metrics || glyph->format != FT_GLYPH_FORMAT_OUTLINE)
-		    fs_metrics.y_advance = DOUBLE_FROM_26_6 (metrics->vertAdvance) * y_factor;
+		    fs_metrics.y_advance =
+			DOUBLE_FROM_26_6 (metrics->vertAdvance) * y_factor;
 		else
-		    fs_metrics.y_advance = DOUBLE_FROM_16_16 (glyph->linearVertAdvance) * y_factor;
+		    fs_metrics.y_advance =
+			DOUBLE_FROM_16_16 (glyph->linearVertAdvance) * y_factor;
 	    }
-	 }
+	}
 
 	_comac_scaled_glyph_set_metrics (scaled_glyph,
 					 &scaled_font->base,
@@ -2782,25 +2823,27 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
     }
 
     if (info & COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) {
-	status = _comac_ft_scaled_glyph_init_surface (scaled_font,
-						      scaled_glyph,
-						      COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE,
-						      face,
-						      foreground_color,
-						      vertical_layout,
-						      load_flags);
+	status = _comac_ft_scaled_glyph_init_surface (
+	    scaled_font,
+	    scaled_glyph,
+	    COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE,
+	    face,
+	    foreground_color,
+	    vertical_layout,
+	    load_flags);
 	if (unlikely (status))
 	    goto FAIL;
     }
 
     if (info & COMAC_SCALED_GLYPH_INFO_SURFACE) {
-	status = _comac_ft_scaled_glyph_init_surface (scaled_font,
-						      scaled_glyph,
-						      COMAC_SCALED_GLYPH_INFO_SURFACE,
-						      face,
-						      NULL, /* foreground color */
-						      vertical_layout,
-						      load_flags);
+	status = _comac_ft_scaled_glyph_init_surface (
+	    scaled_font,
+	    scaled_glyph,
+	    COMAC_SCALED_GLYPH_INFO_SURFACE,
+	    face,
+	    NULL, /* foreground color */
+	    vertical_layout,
+	    load_flags);
 	if (unlikely (status))
 	    goto FAIL;
     }
@@ -2812,12 +2855,13 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 	 * A kludge -- the above code will trash the outline,
 	 * so reload it. This will probably never occur though
 	 */
-	if ((info & (COMAC_SCALED_GLYPH_INFO_SURFACE | COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE)) != 0) {
+	if ((info & (COMAC_SCALED_GLYPH_INFO_SURFACE |
+		     COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE)) != 0) {
 	    scaled_glyph_loaded = FALSE;
 	    load_flags |= FT_LOAD_NO_BITMAP;
 	}
 
-	if (!scaled_glyph_loaded) {
+	if (! scaled_glyph_loaded) {
 	    status = _comac_ft_scaled_glyph_load_glyph (scaled_font,
 							scaled_glyph,
 							face,
@@ -2831,7 +2875,8 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 	}
 
 	if (glyph->format == FT_GLYPH_FORMAT_OUTLINE)
-	    status = _decompose_glyph_outline (face, &scaled_font->ft_options.base,
+	    status = _decompose_glyph_outline (face,
+					       &scaled_font->ft_options.base,
 					       &path);
 	else
 	    status = COMAC_INT_STATUS_UNSUPPORTED;
@@ -2839,19 +2884,16 @@ _comac_ft_scaled_glyph_init (void			*abstract_font,
 	if (unlikely (status))
 	    goto FAIL;
 
-	_comac_scaled_glyph_set_path (scaled_glyph,
-				      &scaled_font->base,
-				      path);
+	_comac_scaled_glyph_set_path (scaled_glyph, &scaled_font->base, path);
     }
- FAIL:
+FAIL:
     _comac_ft_unscaled_font_unlock_face (unscaled);
 
     return status;
 }
 
 static unsigned long
-_comac_ft_ucs4_to_index (void	    *abstract_font,
-			 uint32_t    ucs4)
+_comac_ft_ucs4_to_index (void *abstract_font, uint32_t ucs4)
 {
     comac_ft_scaled_font_t *scaled_font = abstract_font;
     comac_ft_unscaled_font_t *unscaled = scaled_font->unscaled;
@@ -2859,7 +2901,7 @@ _comac_ft_ucs4_to_index (void	    *abstract_font,
     FT_UInt index;
 
     face = _comac_ft_unscaled_font_lock_face (unscaled);
-    if (!face)
+    if (! face)
 	return 0;
 
 #if COMAC_HAS_FC_FONT
@@ -2873,11 +2915,11 @@ _comac_ft_ucs4_to_index (void	    *abstract_font,
 }
 
 static comac_int_status_t
-_comac_ft_load_truetype_table (void	       *abstract_font,
-                              unsigned long     tag,
-                              long              offset,
-                              unsigned char    *buffer,
-                              unsigned long    *length)
+_comac_ft_load_truetype_table (void *abstract_font,
+			       unsigned long tag,
+			       long offset,
+			       unsigned char *buffer,
+			       unsigned long *length)
 {
     comac_ft_scaled_font_t *scaled_font = abstract_font;
     comac_ft_unscaled_font_t *unscaled = scaled_font->unscaled;
@@ -2890,11 +2932,11 @@ _comac_ft_load_truetype_table (void	       *abstract_font,
     assert (length != NULL);
 
     if (_comac_ft_scaled_font_is_vertical (&scaled_font->base))
-        return COMAC_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
 #if HAVE_FT_LOAD_SFNT_TABLE
     face = _comac_ft_unscaled_font_lock_face (unscaled);
-    if (!face)
+    if (! face)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     if (FT_IS_SFNT (face)) {
@@ -2912,22 +2954,22 @@ _comac_ft_load_truetype_table (void	       *abstract_font,
 }
 
 static comac_int_status_t
-_comac_ft_index_to_ucs4(void	        *abstract_font,
-			unsigned long    index,
-			uint32_t	*ucs4)
+_comac_ft_index_to_ucs4 (void *abstract_font,
+			 unsigned long index,
+			 uint32_t *ucs4)
 {
     comac_ft_scaled_font_t *scaled_font = abstract_font;
     comac_ft_unscaled_font_t *unscaled = scaled_font->unscaled;
     FT_Face face;
-    FT_ULong  charcode;
-    FT_UInt   gindex;
+    FT_ULong charcode;
+    FT_UInt gindex;
 
     face = _comac_ft_unscaled_font_lock_face (unscaled);
-    if (!face)
+    if (! face)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     *ucs4 = (uint32_t) -1;
-    charcode = FT_Get_First_Char(face, &gindex);
+    charcode = FT_Get_First_Char (face, &gindex);
     while (gindex != 0) {
 	if (gindex == index) {
 	    *ucs4 = charcode;
@@ -2942,8 +2984,7 @@ _comac_ft_index_to_ucs4(void	        *abstract_font,
 }
 
 static comac_int_status_t
-_comac_ft_is_synthetic (void	        *abstract_font,
-			comac_bool_t    *is_synthetic)
+_comac_ft_is_synthetic (void *abstract_font, comac_bool_t *is_synthetic)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
     comac_ft_scaled_font_t *scaled_font = abstract_font;
@@ -2958,7 +2999,7 @@ _comac_ft_is_synthetic (void	        *abstract_font,
 
     *is_synthetic = FALSE;
     face = _comac_ft_unscaled_font_lock_face (unscaled);
-    if (!face)
+    if (! face)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     if (face->face_flags & FT_FACE_FLAG_MULTIPLE_MASTERS) {
@@ -2977,13 +3018,13 @@ _comac_ft_is_synthetic (void	        *abstract_font,
 	}
 
 	num_axis = mm_var->num_axis;
-	coords = _comac_malloc_ab (num_axis, sizeof(FT_Fixed));
-	if (!coords) {
+	coords = _comac_malloc_ab (num_axis, sizeof (FT_Fixed));
+	if (! coords) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto cleanup;
 	}
 
-#if FREETYPE_MAJOR > 2 || ( FREETYPE_MAJOR == 2 &&  FREETYPE_MINOR >= 8)
+#if FREETYPE_MAJOR > 2 || (FREETYPE_MAJOR == 2 && FREETYPE_MINOR >= 8)
 	/* If FT_Get_Var_Blend_Coordinates() is available, we can check if the
 	 * current design coordinates are the default coordinates. In this case
 	 * the current outlines match the font tables.
@@ -3002,7 +3043,7 @@ _comac_ft_is_synthetic (void	        *abstract_font,
 	}
 #endif
 
-      cleanup:
+    cleanup:
 	free (coords);
 #if HAVE_FT_DONE_MM_VAR
 	FT_Done_MM_Var (face->glyph->library, mm_var);
@@ -3017,11 +3058,11 @@ _comac_ft_is_synthetic (void	        *abstract_font,
 }
 
 static comac_int_status_t
-_comac_index_to_glyph_name (void	         *abstract_font,
-			    char                **glyph_names,
-			    int                   num_glyph_names,
-			    unsigned long         glyph_index,
-			    unsigned long        *glyph_array_index)
+_comac_index_to_glyph_name (void *abstract_font,
+			    char **glyph_names,
+			    int num_glyph_names,
+			    unsigned long glyph_index,
+			    unsigned long *glyph_array_index)
 {
     comac_ft_scaled_font_t *scaled_font = abstract_font;
     comac_ft_unscaled_font_t *unscaled = scaled_font->unscaled;
@@ -3031,7 +3072,7 @@ _comac_index_to_glyph_name (void	         *abstract_font,
     int i;
 
     face = _comac_ft_unscaled_font_lock_face (unscaled);
-    if (!face)
+    if (! face)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     error = FT_Get_Glyph_Name (face, glyph_index, buffer, sizeof buffer);
@@ -3057,9 +3098,8 @@ _comac_index_to_glyph_name (void	         *abstract_font,
      * we fall back to searching the entire array.
      */
 
-    if ((long)glyph_index < num_glyph_names &&
-	strcmp (glyph_names[glyph_index], buffer) == 0)
-    {
+    if ((long) glyph_index < num_glyph_names &&
+	strcmp (glyph_names[glyph_index], buffer) == 0) {
 	*glyph_array_index = glyph_index;
 
 	return COMAC_STATUS_SUCCESS;
@@ -3081,10 +3121,8 @@ _ft_is_type1 (FT_Face face)
 {
 #if HAVE_FT_GET_X11_FONT_FORMAT
     const char *font_format = FT_Get_X11_Font_Format (face);
-    if (font_format &&
-	(strcmp (font_format, "Type 1") == 0 ||
-	 strcmp (font_format, "CFF") == 0))
-    {
+    if (font_format && (strcmp (font_format, "Type 1") == 0 ||
+			strcmp (font_format, "CFF") == 0)) {
 	return TRUE;
     }
 #endif
@@ -3093,10 +3131,10 @@ _ft_is_type1 (FT_Face face)
 }
 
 static comac_int_status_t
-_comac_ft_load_type1_data (void	            *abstract_font,
-			   long              offset,
-			   unsigned char    *buffer,
-			   unsigned long    *length)
+_comac_ft_load_type1_data (void *abstract_font,
+			   long offset,
+			   unsigned char *buffer,
+			   unsigned long *length)
 {
     comac_ft_scaled_font_t *scaled_font = abstract_font;
     comac_ft_unscaled_font_t *unscaled = scaled_font->unscaled;
@@ -3108,10 +3146,10 @@ _comac_ft_load_type1_data (void	            *abstract_font,
     assert (length != NULL);
 
     if (_comac_ft_scaled_font_is_vertical (&scaled_font->base))
-        return COMAC_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     face = _comac_ft_unscaled_font_lock_face (unscaled);
-    if (!face)
+    if (! face)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 #if HAVE_FT_LOAD_SFNT_TABLE
@@ -3122,12 +3160,12 @@ _comac_ft_load_type1_data (void	            *abstract_font,
 #endif
 
     if (! _ft_is_type1 (face)) {
-        status = COMAC_INT_STATUS_UNSUPPORTED;
+	status = COMAC_INT_STATUS_UNSUPPORTED;
 	goto unlock;
     }
 
     available_length = MAX (face->stream->size - offset, 0);
-    if (!buffer) {
+    if (! buffer) {
 	*length = available_length;
     } else {
 	if (*length > available_length) {
@@ -3138,10 +3176,7 @@ _comac_ft_load_type1_data (void	            *abstract_font,
 	     * disambiguate it for the pre-processor - using the verbose function
 	     * pointer dereference for clarity.
 	     */
-	    ret = (* face->stream->read) (face->stream,
-					  offset,
-					  buffer,
-					  *length);
+	    ret = (*face->stream->read) (face->stream, offset, buffer, *length);
 	    if (ret != *length)
 		status = _comac_error (COMAC_STATUS_READ_ERROR);
 	} else {
@@ -3149,7 +3184,7 @@ _comac_ft_load_type1_data (void	            *abstract_font,
 	}
     }
 
-  unlock:
+unlock:
     _comac_ft_unscaled_font_unlock_face (unscaled);
 
     return status;
@@ -3158,9 +3193,10 @@ _comac_ft_load_type1_data (void	            *abstract_font,
 static comac_bool_t
 _comac_ft_has_color_glyphs (void *scaled)
 {
-    comac_ft_unscaled_font_t *unscaled = ((comac_ft_scaled_font_t *)scaled)->unscaled;
+    comac_ft_unscaled_font_t *unscaled =
+	((comac_ft_scaled_font_t *) scaled)->unscaled;
 
-    if (!unscaled->have_color_set) {
+    if (! unscaled->have_color_set) {
 	FT_Face face;
 	face = _comac_ft_unscaled_font_lock_face (unscaled);
 	if (unlikely (face == NULL))
@@ -3175,15 +3211,14 @@ static const comac_scaled_font_backend_t _comac_ft_scaled_font_backend = {
     COMAC_FONT_TYPE_FT,
     _comac_ft_scaled_font_fini,
     _comac_ft_scaled_glyph_init,
-    NULL,			/* text_to_glyphs */
+    NULL, /* text_to_glyphs */
     _comac_ft_ucs4_to_index,
     _comac_ft_load_truetype_table,
     _comac_ft_index_to_ucs4,
     _comac_ft_is_synthetic,
     _comac_index_to_glyph_name,
     _comac_ft_load_type1_data,
-    _comac_ft_has_color_glyphs
-};
+    _comac_ft_has_color_glyphs};
 
 /* #comac_ft_font_face_t */
 
@@ -3201,56 +3236,54 @@ _comac_ft_font_face_create_for_toy (comac_toy_font_face_t *toy_face,
     int fcweight;
 
     pattern = FcPatternCreate ();
-    if (!pattern) {
+    if (! pattern) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	return font_face->status;
     }
 
-    if (!FcPatternAddString (pattern,
-		             FC_FAMILY, (unsigned char *) toy_face->family))
-    {
+    if (! FcPatternAddString (pattern,
+			      FC_FAMILY,
+			      (unsigned char *) toy_face->family)) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	goto FREE_PATTERN;
     }
 
-    switch (toy_face->slant)
-    {
+    switch (toy_face->slant) {
     case COMAC_FONT_SLANT_ITALIC:
-        fcslant = FC_SLANT_ITALIC;
-        break;
+	fcslant = FC_SLANT_ITALIC;
+	break;
     case COMAC_FONT_SLANT_OBLIQUE:
 	fcslant = FC_SLANT_OBLIQUE;
-        break;
+	break;
     case COMAC_FONT_SLANT_NORMAL:
     default:
-        fcslant = FC_SLANT_ROMAN;
-        break;
+	fcslant = FC_SLANT_ROMAN;
+	break;
     }
 
-    if (!FcPatternAddInteger (pattern, FC_SLANT, fcslant)) {
+    if (! FcPatternAddInteger (pattern, FC_SLANT, fcslant)) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	goto FREE_PATTERN;
     }
 
-    switch (toy_face->weight)
-    {
+    switch (toy_face->weight) {
     case COMAC_FONT_WEIGHT_BOLD:
-        fcweight = FC_WEIGHT_BOLD;
-        break;
+	fcweight = FC_WEIGHT_BOLD;
+	break;
     case COMAC_FONT_WEIGHT_NORMAL:
     default:
-        fcweight = FC_WEIGHT_MEDIUM;
-        break;
+	fcweight = FC_WEIGHT_MEDIUM;
+	break;
     }
 
-    if (!FcPatternAddInteger (pattern, FC_WEIGHT, fcweight)) {
+    if (! FcPatternAddInteger (pattern, FC_WEIGHT, fcweight)) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	goto FREE_PATTERN;
     }
 
     font_face = _comac_ft_font_face_create_for_pattern (pattern);
 
- FREE_PATTERN:
+FREE_PATTERN:
     FcPatternDestroy (pattern);
 
     *font_face_out = font_face;
@@ -3278,12 +3311,10 @@ _comac_ft_font_face_destroy (void *abstract_face)
      *    font_face <------- unscaled
      */
 
-    if (font_face->unscaled &&
-	font_face->unscaled->from_face &&
-	font_face->next == NULL &&
-	font_face->unscaled->faces == font_face &&
-	COMAC_REFERENCE_COUNT_GET_VALUE (&font_face->unscaled->base.ref_count) > 1)
-    {
+    if (font_face->unscaled && font_face->unscaled->from_face &&
+	font_face->next == NULL && font_face->unscaled->faces == font_face &&
+	COMAC_REFERENCE_COUNT_GET_VALUE (&font_face->unscaled->base.ref_count) >
+	    1) {
 	_comac_unscaled_font_destroy (&font_face->unscaled->base);
 	font_face->unscaled = NULL;
 
@@ -3295,10 +3326,8 @@ _comac_ft_font_face_destroy (void *abstract_face)
 	comac_ft_font_face_t *last_face = NULL;
 
 	/* Remove face from linked list */
-	for (tmp_face = font_face->unscaled->faces;
-	     tmp_face;
-	     tmp_face = tmp_face->next)
-	{
+	for (tmp_face = font_face->unscaled->faces; tmp_face;
+	     tmp_face = tmp_face->next) {
 	    if (tmp_face == font_face) {
 		if (last_face)
 		    last_face->next = tmp_face->next;
@@ -3326,9 +3355,9 @@ _comac_ft_font_face_destroy (void *abstract_face)
 }
 
 static comac_font_face_t *
-_comac_ft_font_face_get_implementation (void                     *abstract_face,
-					const comac_matrix_t       *font_matrix,
-					const comac_matrix_t       *ctm,
+_comac_ft_font_face_get_implementation (void *abstract_face,
+					const comac_matrix_t *font_matrix,
+					const comac_matrix_t *ctm,
 					const comac_font_options_t *options)
 {
     /* The handling of font options is different depending on how the
@@ -3342,7 +3371,7 @@ _comac_ft_font_face_get_implementation (void                     *abstract_face,
      */
 
 #if COMAC_HAS_FC_FONT
-    comac_ft_font_face_t      *font_face = abstract_face;
+    comac_ft_font_face_t *font_face = abstract_face;
 
     /* If we have an unresolved pattern, resolve it and create
      * unscaled font.  Otherwise, use the ones stored in font_face.
@@ -3391,8 +3420,7 @@ const comac_font_face_backend_t _comac_ft_font_face_backend = {
 #endif
     _comac_ft_font_face_destroy,
     _comac_ft_font_face_scaled_font_create,
-    _comac_ft_font_face_get_implementation
-};
+    _comac_ft_font_face_get_implementation};
 
 #if COMAC_HAS_FC_FONT
 static comac_font_face_t *
@@ -3430,19 +3458,18 @@ _comac_ft_font_face_create_for_pattern (FcPattern *pattern)
 
 static comac_font_face_t *
 _comac_ft_font_face_create (comac_ft_unscaled_font_t *unscaled,
-			    comac_ft_options_t	     *ft_options)
+			    comac_ft_options_t *ft_options)
 {
     comac_ft_font_face_t *font_face, **prev_font_face;
 
     /* Looked for an existing matching font face */
     for (font_face = unscaled->faces, prev_font_face = &unscaled->faces;
 	 font_face;
-	 prev_font_face = &font_face->next, font_face = font_face->next)
-    {
+	 prev_font_face = &font_face->next, font_face = font_face->next) {
 	if (font_face->ft_options.load_flags == ft_options->load_flags &&
 	    font_face->ft_options.synth_flags == ft_options->synth_flags &&
-	    comac_font_options_equal (&font_face->ft_options.base, &ft_options->base))
-	{
+	    comac_font_options_equal (&font_face->ft_options.base,
+				      &ft_options->base)) {
 	    if (font_face->base.status) {
 		/* The font_face has been left in an error state, abandon it. */
 		*prev_font_face = font_face->next;
@@ -3463,9 +3490,9 @@ _comac_ft_font_face_create (comac_ft_unscaled_font_t *unscaled,
 
     /* No match found, create a new one */
     font_face = _comac_malloc (sizeof (comac_ft_font_face_t));
-    if (unlikely (!font_face)) {
+    if (unlikely (! font_face)) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
-	return (comac_font_face_t *)&_comac_font_face_nil;
+	return (comac_font_face_t *) &_comac_font_face_nil;
     }
 
     font_face->unscaled = unscaled;
@@ -3498,16 +3525,14 @@ _comac_ft_font_face_create (comac_ft_unscaled_font_t *unscaled,
 #if COMAC_HAS_FC_FONT
 static comac_status_t
 _comac_ft_font_options_substitute (const comac_font_options_t *options,
-				   FcPattern                  *pattern)
+				   FcPattern *pattern)
 {
     FcValue v;
 
-    if (options->antialias != COMAC_ANTIALIAS_DEFAULT)
-    {
-	if (FcPatternGet (pattern, FC_ANTIALIAS, 0, &v) == FcResultNoMatch)
-	{
+    if (options->antialias != COMAC_ANTIALIAS_DEFAULT) {
+	if (FcPatternGet (pattern, FC_ANTIALIAS, 0, &v) == FcResultNoMatch) {
 	    if (! FcPatternAddBool (pattern,
-			            FC_ANTIALIAS,
+				    FC_ANTIALIAS,
 				    options->antialias != COMAC_ANTIALIAS_NONE))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -3519,10 +3544,8 @@ _comac_ft_font_options_substitute (const comac_font_options_t *options,
 	}
     }
 
-    if (options->antialias != COMAC_ANTIALIAS_DEFAULT)
-    {
-	if (FcPatternGet (pattern, FC_RGBA, 0, &v) == FcResultNoMatch)
-	{
+    if (options->antialias != COMAC_ANTIALIAS_DEFAULT) {
+	if (FcPatternGet (pattern, FC_RGBA, 0, &v) == FcResultNoMatch) {
 	    int rgba;
 
 	    if (options->antialias == COMAC_ANTIALIAS_SUBPIXEL) {
@@ -3551,10 +3574,8 @@ _comac_ft_font_options_substitute (const comac_font_options_t *options,
 	}
     }
 
-    if (options->lcd_filter != COMAC_LCD_FILTER_DEFAULT)
-    {
-	if (FcPatternGet (pattern, FC_LCD_FILTER, 0, &v) == FcResultNoMatch)
-	{
+    if (options->lcd_filter != COMAC_LCD_FILTER_DEFAULT) {
+	if (FcPatternGet (pattern, FC_LCD_FILTER, 0, &v) == FcResultNoMatch) {
 	    int lcd_filter;
 
 	    switch (options->lcd_filter) {
@@ -3579,19 +3600,17 @@ _comac_ft_font_options_substitute (const comac_font_options_t *options,
 	}
     }
 
-    if (options->hint_style != COMAC_HINT_STYLE_DEFAULT)
-    {
-	if (FcPatternGet (pattern, FC_HINTING, 0, &v) == FcResultNoMatch)
-	{
+    if (options->hint_style != COMAC_HINT_STYLE_DEFAULT) {
+	if (FcPatternGet (pattern, FC_HINTING, 0, &v) == FcResultNoMatch) {
 	    if (! FcPatternAddBool (pattern,
-			            FC_HINTING,
-				    options->hint_style != COMAC_HINT_STYLE_NONE))
+				    FC_HINTING,
+				    options->hint_style !=
+					COMAC_HINT_STYLE_NONE))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
 
 #ifdef FC_HINT_STYLE
-	if (FcPatternGet (pattern, FC_HINT_STYLE, 0, &v) == FcResultNoMatch)
-	{
+	if (FcPatternGet (pattern, FC_HINT_STYLE, 0, &v) == FcResultNoMatch) {
 	    int hint_style;
 
 	    switch (options->hint_style) {
@@ -3635,7 +3654,7 @@ _comac_ft_font_options_substitute (const comac_font_options_t *options,
  **/
 void
 comac_ft_font_options_substitute (const comac_font_options_t *options,
-				  FcPattern                  *pattern)
+				  FcPattern *pattern)
 {
     if (comac_font_options_status ((comac_font_options_t *) options))
 	return;
@@ -3644,9 +3663,9 @@ comac_ft_font_options_substitute (const comac_font_options_t *options,
 }
 
 static comac_font_face_t *
-_comac_ft_resolve_pattern (FcPattern		      *pattern,
-			   const comac_matrix_t       *font_matrix,
-			   const comac_matrix_t       *ctm,
+_comac_ft_resolve_pattern (FcPattern *pattern,
+			   const comac_matrix_t *font_matrix,
+			   const comac_matrix_t *ctm,
 			   const comac_font_options_t *font_options)
 {
     comac_status_t status;
@@ -3661,31 +3680,29 @@ _comac_ft_resolve_pattern (FcPattern		      *pattern,
 
     scale = *ctm;
     scale.x0 = scale.y0 = 0;
-    comac_matrix_multiply (&scale,
-                           font_matrix,
-                           &scale);
+    comac_matrix_multiply (&scale, font_matrix, &scale);
 
     status = _compute_transform (&sf, &scale, NULL);
     if (unlikely (status))
-	return (comac_font_face_t *)&_comac_font_face_nil;
+	return (comac_font_face_t *) &_comac_font_face_nil;
 
     pattern = FcPatternDuplicate (pattern);
     if (pattern == NULL)
-	return (comac_font_face_t *)&_comac_font_face_nil;
+	return (comac_font_face_t *) &_comac_font_face_nil;
 
     if (! FcPatternAddDouble (pattern, FC_PIXEL_SIZE, sf.y_scale)) {
-	font_face = (comac_font_face_t *)&_comac_font_face_nil;
+	font_face = (comac_font_face_t *) &_comac_font_face_nil;
 	goto FREE_PATTERN;
     }
 
     if (! FcConfigSubstitute (NULL, pattern, FcMatchPattern)) {
-	font_face = (comac_font_face_t *)&_comac_font_face_nil;
+	font_face = (comac_font_face_t *) &_comac_font_face_nil;
 	goto FREE_PATTERN;
     }
 
     status = _comac_ft_font_options_substitute (font_options, pattern);
     if (status) {
-	font_face = (comac_font_face_t *)&_comac_font_face_nil;
+	font_face = (comac_font_face_t *) &_comac_font_face_nil;
 	goto FREE_PATTERN;
     }
 
@@ -3693,13 +3710,13 @@ _comac_ft_resolve_pattern (FcPattern		      *pattern,
 
     status = _comac_ft_unscaled_font_create_for_pattern (pattern, &unscaled);
     if (unlikely (status)) {
-	font_face = (comac_font_face_t *)&_comac_font_face_nil;
+	font_face = (comac_font_face_t *) &_comac_font_face_nil;
 	goto FREE_PATTERN;
     }
 
     if (unscaled == NULL) {
 	resolved = FcFontMatch (NULL, pattern, &result);
-	if (!resolved) {
+	if (! resolved) {
 	    /* We failed to find any font. Substitute twin so that the user can
 	     * see something (and hopefully recognise that the font is missing)
 	     * and not just receive a NO_MEMORY error during rendering.
@@ -3708,9 +3725,10 @@ _comac_ft_resolve_pattern (FcPattern		      *pattern,
 	    goto FREE_PATTERN;
 	}
 
-	status = _comac_ft_unscaled_font_create_for_pattern (resolved, &unscaled);
+	status =
+	    _comac_ft_unscaled_font_create_for_pattern (resolved, &unscaled);
 	if (unlikely (status || unscaled == NULL)) {
-	    font_face = (comac_font_face_t *)&_comac_font_face_nil;
+	    font_face = (comac_font_face_t *) &_comac_font_face_nil;
 	    goto FREE_RESOLVED;
 	}
     } else
@@ -3718,7 +3736,7 @@ _comac_ft_resolve_pattern (FcPattern		      *pattern,
 
     _get_pattern_ft_options (resolved, &ft_options);
     font_face = _comac_ft_font_face_create (unscaled, &ft_options);
-     _comac_ft_options_fini (&ft_options);
+    _comac_ft_options_fini (&ft_options);
     _comac_unscaled_font_destroy (&unscaled->base);
 
 FREE_RESOLVED:
@@ -3780,10 +3798,10 @@ comac_ft_font_face_create_for_pattern (FcPattern *pattern)
 
     status = _comac_ft_unscaled_font_create_for_pattern (pattern, &unscaled);
     if (unlikely (status)) {
-      if (status == COMAC_STATUS_FILE_NOT_FOUND)
-	return (comac_font_face_t *) &_comac_font_face_nil_file_not_found;
-      else
-	return (comac_font_face_t *) &_comac_font_face_nil;
+	if (status == COMAC_STATUS_FILE_NOT_FOUND)
+	    return (comac_font_face_t *) &_comac_font_face_nil_file_not_found;
+	else
+	    return (comac_font_face_t *) &_comac_font_face_nil;
     }
     if (unlikely (unscaled == NULL)) {
 	/* Store the pattern.  We will resolve it and create unscaled
@@ -3849,8 +3867,7 @@ comac_ft_font_face_create_for_pattern (FcPattern *pattern)
  * Since: 1.0
  **/
 comac_font_face_t *
-comac_ft_font_face_create_for_ft_face (FT_Face         face,
-				       int             load_flags)
+comac_ft_font_face_create_for_ft_face (FT_Face face, int load_flags)
 {
     comac_ft_unscaled_font_t *unscaled;
     comac_font_face_t *font_face;
@@ -3859,7 +3876,7 @@ comac_ft_font_face_create_for_ft_face (FT_Face         face,
 
     status = _comac_ft_unscaled_font_create_from_face (face, &unscaled);
     if (unlikely (status))
-	return (comac_font_face_t *)&_comac_font_face_nil;
+	return (comac_font_face_t *) &_comac_font_face_nil;
 
     ft_options.load_flags = load_flags;
     ft_options.synth_flags = 0;
@@ -3975,7 +3992,8 @@ comac_ft_font_face_get_synthesize (comac_font_face_t *font_face)
 FT_Face
 comac_ft_scaled_font_lock_face (comac_scaled_font_t *abstract_font)
 {
-    comac_ft_scaled_font_t *scaled_font = (comac_ft_scaled_font_t *) abstract_font;
+    comac_ft_scaled_font_t *scaled_font =
+	(comac_ft_scaled_font_t *) abstract_font;
     FT_Face face;
     comac_status_t status;
 
@@ -3989,12 +4007,13 @@ comac_ft_scaled_font_lock_face (comac_scaled_font_t *abstract_font)
 
     face = _comac_ft_unscaled_font_lock_face (scaled_font->unscaled);
     if (unlikely (face == NULL)) {
-	status = _comac_scaled_font_set_error (&scaled_font->base, COMAC_STATUS_NO_MEMORY);
+	status = _comac_scaled_font_set_error (&scaled_font->base,
+					       COMAC_STATUS_NO_MEMORY);
 	return NULL;
     }
 
     status = _comac_ft_unscaled_font_set_scale (scaled_font->unscaled,
-				                &scaled_font->base.scale);
+						&scaled_font->base.scale);
     if (unlikely (status)) {
 	_comac_ft_unscaled_font_unlock_face (scaled_font->unscaled);
 	status = _comac_scaled_font_set_error (&scaled_font->base, status);
@@ -4009,7 +4028,7 @@ comac_ft_scaled_font_lock_face (comac_scaled_font_t *abstract_font)
      * opportunity for creating deadlock. This is obviously unsafe,
      * but as documented, the user must add manual locking when using
      * this function. */
-     COMAC_MUTEX_UNLOCK (scaled_font->unscaled->mutex);
+    COMAC_MUTEX_UNLOCK (scaled_font->unscaled->mutex);
 
     return face;
 }
@@ -4028,7 +4047,8 @@ comac_ft_scaled_font_lock_face (comac_scaled_font_t *abstract_font)
 void
 comac_ft_scaled_font_unlock_face (comac_scaled_font_t *abstract_font)
 {
-    comac_ft_scaled_font_t *scaled_font = (comac_ft_scaled_font_t *) abstract_font;
+    comac_ft_scaled_font_t *scaled_font =
+	(comac_ft_scaled_font_t *) abstract_font;
 
     if (! _comac_scaled_font_is_ft (abstract_font)) {
 	_comac_error_throw (COMAC_STATUS_FONT_TYPE_MISMATCH);
@@ -4052,7 +4072,7 @@ _comac_ft_scaled_font_is_vertical (comac_scaled_font_t *scaled_font)
 {
     comac_ft_scaled_font_t *ft_scaled_font;
 
-    if (!_comac_scaled_font_is_ft (scaled_font))
+    if (! _comac_scaled_font_is_ft (scaled_font))
 	return FALSE;
 
     ft_scaled_font = (comac_ft_scaled_font_t *) scaled_font;

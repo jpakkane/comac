@@ -57,7 +57,7 @@ _comac_stroker_dash_start (comac_stroker_dash_t *dash)
        segment shrinks to zero it will be skipped over. */
     while (offset > 0.0 && offset >= dash->dashes[i]) {
 	offset -= dash->dashes[i];
-	on = !on;
+	on = ! on;
 	if (++i == dash->num_dashes)
 	    i = 0;
     }

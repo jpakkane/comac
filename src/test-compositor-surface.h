@@ -41,30 +41,29 @@
 COMAC_BEGIN_DECLS
 
 comac_surface_t *
-_comac_test_fallback_compositor_surface_create (comac_content_t	content,
-						int		width,
-						int		height);
-
-
-comac_surface_t *
-_comac_test_mask_compositor_surface_create (comac_content_t	content,
-					     int		width,
-					     int		height);
+_comac_test_fallback_compositor_surface_create (comac_content_t content,
+						int width,
+						int height);
 
 comac_surface_t *
-_comac_test_traps_compositor_surface_create (comac_content_t	content,
-					     int		width,
-					     int		height);
+_comac_test_mask_compositor_surface_create (comac_content_t content,
+					    int width,
+					    int height);
 
 comac_surface_t *
-_comac_test_spans_compositor_surface_create (comac_content_t	content,
-					     int		width,
-					     int		height);
+_comac_test_traps_compositor_surface_create (comac_content_t content,
+					     int width,
+					     int height);
 
 comac_surface_t *
-_comac_test_base_compositor_surface_create (comac_content_t	content,
-					    int			width,
-					    int			height);
+_comac_test_spans_compositor_surface_create (comac_content_t content,
+					     int width,
+					     int height);
+
+comac_surface_t *
+_comac_test_base_compositor_surface_create (comac_content_t content,
+					    int width,
+					    int height);
 
 COMAC_END_DECLS
 

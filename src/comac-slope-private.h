@@ -60,13 +60,13 @@ _comac_slope_equal (const comac_slope_t *a, const comac_slope_t *b)
 static inline comac_bool_t
 _comac_slope_backwards (const comac_slope_t *a, const comac_slope_t *b)
 {
-    return _comac_int64_negative (_comac_int64_add (_comac_int32x32_64_mul (a->dx, b->dx),
-						    _comac_int32x32_64_mul (a->dy, b->dy)));
+    return _comac_int64_negative (
+	_comac_int64_add (_comac_int32x32_64_mul (a->dx, b->dx),
+			  _comac_int32x32_64_mul (a->dy, b->dy)));
 }
 
 comac_private int
 _comac_slope_compare (const comac_slope_t *a,
-	              const comac_slope_t *b) comac_pure;
-
+		      const comac_slope_t *b) comac_pure;
 
 #endif /* _COMAC_SLOPE_PRIVATE_H */

@@ -64,8 +64,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (line_width_zero,
-	    "Test all stroke operations and all cap,join styles with line width of zero",
+	    "Test all stroke operations and all cap,join styles with line "
+	    "width of zero",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

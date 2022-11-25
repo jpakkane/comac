@@ -36,7 +36,7 @@ static comac_test_status_t
 draw_with_extend (comac_t *cr, int w, int h, comac_extend_t extend)
 {
     comac_pattern_t *pattern;
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
     comac_save (cr);
@@ -50,18 +50,19 @@ draw_with_extend (comac_t *cr, int w, int h, comac_extend_t extend)
     comac_rectangle (cr, 0, 0, w, h);
     comac_clip (cr);
 
-    comac_push_group_with_content (cr, COMAC_CONTENT_COLOR); {
-        /* A two by two checkerboard with black, red and yellow
+    comac_push_group_with_content (cr, COMAC_CONTENT_COLOR);
+    {
+	/* A two by two checkerboard with black, red and yellow
          * cells. */
-        comac_set_source_rgb (cr, 1,0,0);
-        comac_rectangle (cr, w/2, 0, w-w/2, h/2);
-        comac_fill (cr);
-        comac_set_source_rgb (cr, 1,1,0);
-        comac_rectangle (cr, 0, h/2, w/2, h-h/2);
-        comac_fill (cr);
+	comac_set_source_rgb (cr, 1, 0, 0);
+	comac_rectangle (cr, w / 2, 0, w - w / 2, h / 2);
+	comac_fill (cr);
+	comac_set_source_rgb (cr, 1, 1, 0);
+	comac_rectangle (cr, 0, h / 2, w / 2, h - h / 2);
+	comac_fill (cr);
     }
     pattern = comac_pop_group (cr);
-    comac_pattern_set_extend(pattern, extend);
+    comac_pattern_set_extend (pattern, extend);
 
     comac_restore (cr);
 
@@ -94,27 +95,37 @@ draw_pad (comac_t *cr, int w, int h)
     return draw_with_extend (cr, w, h, COMAC_EXTEND_PAD);
 }
 
-COMAC_TEST (surface_pattern_scale_down_extend_repeat,
-	    "Test interaction of downscaling a surface pattern and extend-repeat",
-            "pattern, transform, extend", /* keywords */
-	    NULL, /* requirements */
-            100, 100,
-	    NULL, draw_repeat)
+COMAC_TEST (
+    surface_pattern_scale_down_extend_repeat,
+    "Test interaction of downscaling a surface pattern and extend-repeat",
+    "pattern, transform, extend", /* keywords */
+    NULL,			  /* requirements */
+    100,
+    100,
+    NULL,
+    draw_repeat)
 COMAC_TEST (surface_pattern_scale_down_extend_none,
 	    "Test interaction of downscaling a surface pattern and extend-none",
-            "pattern, transform, extend", /* keywords */
-	    NULL, /* requirements */
-            100, 100,
-	    NULL, draw_none)
-COMAC_TEST (surface_pattern_scale_down_extend_reflect,
-	    "Test interaction of downscaling a surface pattern and extend-reflect",
-            "pattern, transform, extend", /* keywords */
-	    NULL, /* requirements */
-            100, 100,
-	    NULL, draw_reflect)
+	    "pattern, transform, extend", /* keywords */
+	    NULL,			  /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw_none)
+COMAC_TEST (
+    surface_pattern_scale_down_extend_reflect,
+    "Test interaction of downscaling a surface pattern and extend-reflect",
+    "pattern, transform, extend", /* keywords */
+    NULL,			  /* requirements */
+    100,
+    100,
+    NULL,
+    draw_reflect)
 COMAC_TEST (surface_pattern_scale_down_extend_pad,
 	    "Test interaction of downscaling a surface pattern and extend-pad",
-            "pattern, transform, extend", /* keywords */
-	    NULL, /* requirements */
-            100, 100,
-	    NULL, draw_pad)
+	    "pattern, transform, extend", /* keywords */
+	    NULL,			  /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw_pad)

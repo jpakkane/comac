@@ -43,10 +43,11 @@ static void
 usage (const char *argv0)
 {
     char const *basename = strrchr (argv0, '/');
-    basename = basename ? basename+1 : argv0;
+    basename = basename ? basename + 1 : argv0;
     g_printerr ("Usage: %s [options] file1 file2 [...]\n\n", basename);
-    g_printerr ("Draws a graph illustrating the change in performance over a series.\n");
-    exit(1);
+    g_printerr ("Draws a graph illustrating the change in performance over a "
+		"series.\n");
+    exit (1);
 }
 
 enum {
@@ -71,45 +72,60 @@ cases_to_store (test_case_t *cases)
     const char *content = NULL;
 
     store = gtk_tree_store_new (CASE_NCOLS,
-				G_TYPE_BOOLEAN, /* shown */
-				G_TYPE_BOOLEAN, /* inconsistent */
-				G_TYPE_STRING, /* backend */
-				G_TYPE_STRING, /* content */
-				G_TYPE_STRING, /* name */
-				G_TYPE_INT, /* size */
-				GDK_TYPE_COLOR, /* fg color */
+				G_TYPE_BOOLEAN,	 /* shown */
+				G_TYPE_BOOLEAN,	 /* inconsistent */
+				G_TYPE_STRING,	 /* backend */
+				G_TYPE_STRING,	 /* content */
+				G_TYPE_STRING,	 /* name */
+				G_TYPE_INT,	 /* size */
+				GDK_TYPE_COLOR,	 /* fg color */
 				G_TYPE_POINTER); /* data */
     while (cases->backend != NULL) {
 	GtkTreeIter iter;
 
 	if (backend == NULL || strcmp (backend, cases->backend)) {
 	    gtk_tree_store_append (store, &backend_iter, NULL);
-	    gtk_tree_store_set (store, &backend_iter,
-				CASE_SHOWN, TRUE,
-				CASE_BACKEND, cases->backend,
+	    gtk_tree_store_set (store,
+				&backend_iter,
+				CASE_SHOWN,
+				TRUE,
+				CASE_BACKEND,
+				cases->backend,
 				-1);
 	    backend = cases->backend;
 	    content = NULL;
 	}
 	if (content == NULL || strcmp (content, cases->content)) {
 	    gtk_tree_store_append (store, &content_iter, &backend_iter);
-	    gtk_tree_store_set (store, &content_iter,
-				CASE_SHOWN, TRUE,
-				CASE_BACKEND, cases->backend,
-				CASE_CONTENT, cases->content,
+	    gtk_tree_store_set (store,
+				&content_iter,
+				CASE_SHOWN,
+				TRUE,
+				CASE_BACKEND,
+				cases->backend,
+				CASE_CONTENT,
+				cases->content,
 				-1);
 	    content = cases->content;
 	}
 
 	gtk_tree_store_append (store, &iter, &content_iter);
-	gtk_tree_store_set (store, &iter,
-			    CASE_SHOWN, TRUE,
-			    CASE_BACKEND, cases->backend,
-			    CASE_CONTENT, cases->content,
-			    CASE_NAME, cases->name,
-			    CASE_SIZE, cases->size,
-			    CASE_FG_COLOR, &cases->color,
-			    CASE_DATA, cases,
+	gtk_tree_store_set (store,
+			    &iter,
+			    CASE_SHOWN,
+			    TRUE,
+			    CASE_BACKEND,
+			    cases->backend,
+			    CASE_CONTENT,
+			    cases->content,
+			    CASE_NAME,
+			    cases->name,
+			    CASE_SIZE,
+			    cases->size,
+			    CASE_FG_COLOR,
+			    &cases->color,
+			    CASE_DATA,
+			    cases,
 			    -1);
 	cases++;
     }
@@ -133,64 +149,69 @@ struct _app_data {
 };
 
 static void
-recurse_set_shown (GtkTreeModel *model,
-		   GtkTreeIter	*parent,
-		   gboolean	 shown)
+recurse_set_shown (GtkTreeModel *model, GtkTreeIter *parent, gboolean shown)
 {
     GtkTreeIter iter;
 
-    if (gtk_tree_model_iter_children (model, &iter, parent)) do {
-	test_case_t *c;
+    if (gtk_tree_model_iter_children (model, &iter, parent))
+	do {
+	    test_case_t *c;
 
-	gtk_tree_model_get (model, &iter, CASE_DATA, &c, -1);
-	if (c == NULL) {
-	    recurse_set_shown (model, &iter, shown);
-	} else if (shown != c->shown) {
-	    c->shown = shown;
-	    gtk_tree_store_set (GTK_TREE_STORE (model), &iter,
-				CASE_SHOWN, shown,
-				CASE_INCONSISTENT, FALSE,
-				-1);
-	}
-    } while (gtk_tree_model_iter_next (model, &iter));
+	    gtk_tree_model_get (model, &iter, CASE_DATA, &c, -1);
+	    if (c == NULL) {
+		recurse_set_shown (model, &iter, shown);
+	    } else if (shown != c->shown) {
+		c->shown = shown;
+		gtk_tree_store_set (GTK_TREE_STORE (model),
+				    &iter,
+				    CASE_SHOWN,
+				    shown,
+				    CASE_INCONSISTENT,
+				    FALSE,
+				    -1);
+	    }
+	} while (gtk_tree_model_iter_next (model, &iter));
 }
 
 static gboolean
-children_consistent (GtkTreeModel *model,
-		     GtkTreeIter  *parent)
+children_consistent (GtkTreeModel *model, GtkTreeIter *parent)
 {
     GtkTreeIter iter;
     gboolean first = TRUE;
     gboolean first_active;
 
-    if (gtk_tree_model_iter_children (model, &iter, parent)) do {
-	gboolean active, inconsistent;
+    if (gtk_tree_model_iter_children (model, &iter, parent))
+	do {
+	    gboolean active, inconsistent;
 
-	gtk_tree_model_get (model, &iter,
-			    CASE_INCONSISTENT, &inconsistent,
-			    CASE_SHOWN, &active,
-			    -1);
-	if (inconsistent)
-	    return FALSE;
+	    gtk_tree_model_get (model,
+				&iter,
+				CASE_INCONSISTENT,
+				&inconsistent,
+				CASE_SHOWN,
+				&active,
+				-1);
+	    if (inconsistent)
+		return FALSE;
 
-	if (first) {
-	    first_active = active;
-	    first = FALSE;
-	} else if (active != first_active)
-	    return FALSE;
-    } while (gtk_tree_model_iter_next (model, &iter));
+	    if (first) {
+		first_active = active;
+		first = FALSE;
+	    } else if (active != first_active)
+		return FALSE;
+	} while (gtk_tree_model_iter_next (model, &iter));
 
     return TRUE;
 }
 
 static void
-check_consistent (GtkTreeModel *model,
-		  GtkTreeIter  *child)
+check_consistent (GtkTreeModel *model, GtkTreeIter *child)
 {
     GtkTreeIter parent;
 
     if (gtk_tree_model_iter_parent (model, &parent, child)) {
-	gtk_tree_store_set (GTK_TREE_STORE (model), &parent,
+	gtk_tree_store_set (GTK_TREE_STORE (model),
+			    &parent,
 			    CASE_INCONSISTENT,
 			    ! children_consistent (model, &parent),
 			    -1);
@@ -200,8 +221,8 @@ check_consistent (GtkTreeModel *model,
 
 static void
 show_case_toggled (GtkCellRendererToggle *cell,
-		   gchar		 *str,
-		   struct _app_data	 *app)
+		   gchar *str,
+		   struct _app_data *app)
 {
     GtkTreeModel *model;
     GtkTreePath *path;
@@ -217,9 +238,12 @@ show_case_toggled (GtkCellRendererToggle *cell,
     gtk_tree_model_get_iter (model, &iter, path);
     gtk_tree_path_free (path);
 
-    gtk_tree_store_set (app->case_store, &iter,
-			CASE_SHOWN, active,
-			CASE_INCONSISTENT, FALSE,
+    gtk_tree_store_set (app->case_store,
+			&iter,
+			CASE_SHOWN,
+			active,
+			CASE_INCONSISTENT,
+			FALSE,
 			-1);
     gtk_tree_model_get (model, &iter, CASE_DATA, &c, -1);
     if (c != NULL) {
@@ -238,9 +262,7 @@ show_case_toggled (GtkCellRendererToggle *cell,
 #ifdef G_OS_UNIX
 
 static gboolean
-git_read (GIOChannel	   *io,
-	  GIOCondition	    cond,
-	  struct _app_data *app)
+git_read (GIOChannel *io, GIOCondition cond, struct _app_data *app)
 {
     int fd;
 
@@ -270,22 +292,26 @@ git_read (GIOChannel	   *io,
 }
 
 static void
-do_git (struct _app_data  *app,
-	char		 **argv)
+do_git (struct _app_data *app, char **argv)
 {
     gint output;
     GError *error = NULL;
     GtkTextIter start, stop;
     long flags;
 
-    if (! g_spawn_async_with_pipes (NULL, argv, NULL,
+    if (! g_spawn_async_with_pipes (NULL,
+				    argv,
+				    NULL,
 				    G_SPAWN_SEARCH_PATH |
-				    G_SPAWN_STDERR_TO_DEV_NULL |
-				    G_SPAWN_FILE_AND_ARGV_ZERO,
-				    NULL, NULL, NULL,
-				    NULL, &output, NULL,
-				    &error))
-    {
+					G_SPAWN_STDERR_TO_DEV_NULL |
+					G_SPAWN_FILE_AND_ARGV_ZERO,
+				    NULL,
+				    NULL,
+				    NULL,
+				    NULL,
+				    &output,
+				    NULL,
+				    &error)) {
 	g_error ("spawn failed: %s", error->message);
     }
 
@@ -308,9 +334,7 @@ do_git (struct _app_data  *app,
 #endif
 
 static void
-gv_report_selected (GraphView	     *gv,
-		    int 	      i,
-		    struct _app_data *app)
+gv_report_selected (GraphView *gv, int i, struct _app_data *app)
 {
     comac_perf_report_t *report;
     char *hyphen;
@@ -337,16 +361,16 @@ gv_report_selected (GraphView	     *gv,
 #ifdef G_OS_UNIX
 	do_git (app, argv);
 #else
-        g_print ("id: %s\n", id);
+	g_print ("id: %s\n", id);
 #endif
 	g_free (id);
     }
 }
 
 static GtkWidget *
-window_create (test_case_t	   *cases,
+window_create (test_case_t *cases,
 	       comac_perf_report_t *reports,
-	       int		    num_reports)
+	       int num_reports)
 {
     GtkWidget *window, *table, *w;
     GtkWidget *tv, *sw;
@@ -354,7 +378,6 @@ window_create (test_case_t	   *cases,
     GtkTreeViewColumn *column;
     GtkCellRenderer *renderer;
     struct _app_data *data;
-
 
     data = g_new0 (struct _app_data, 1);
     data->cases = cases;
@@ -364,7 +387,9 @@ window_create (test_case_t	   *cases,
     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title (GTK_WINDOW (window), "Comac Performance Graph");
     g_object_set_data_full (G_OBJECT (window),
-			    "app-data", data, (GDestroyNotify)g_free);
+			    "app-data",
+			    data,
+			    (GDestroyNotify) g_free);
 
     data->window = window;
 
@@ -378,41 +403,50 @@ window_create (test_case_t	   *cases,
 
     renderer = gtk_cell_renderer_toggle_new ();
     column = gtk_tree_view_column_new_with_attributes (NULL,
-	    renderer,
-	    "active", CASE_SHOWN,
-	    "inconsistent", CASE_INCONSISTENT,
-	    NULL);
+						       renderer,
+						       "active",
+						       CASE_SHOWN,
+						       "inconsistent",
+						       CASE_INCONSISTENT,
+						       NULL);
     gtk_tree_view_append_column (GTK_TREE_VIEW (tv), column);
-    g_signal_connect (renderer, "toggled",
-		      G_CALLBACK (show_case_toggled), data);
+    g_signal_connect (renderer,
+		      "toggled",
+		      G_CALLBACK (show_case_toggled),
+		      data);
 
     renderer = gtk_cell_renderer_text_new ();
     column = gtk_tree_view_column_new_with_attributes ("Backend",
-	    renderer,
-	    "text", CASE_BACKEND,
-	    NULL);
+						       renderer,
+						       "text",
+						       CASE_BACKEND,
+						       NULL);
     gtk_tree_view_append_column (GTK_TREE_VIEW (tv), column);
 
     renderer = gtk_cell_renderer_text_new ();
     column = gtk_tree_view_column_new_with_attributes ("Content",
-	    renderer,
-	    "text", CASE_CONTENT,
-	    NULL);
+						       renderer,
+						       "text",
+						       CASE_CONTENT,
+						       NULL);
     gtk_tree_view_append_column (GTK_TREE_VIEW (tv), column);
 
     renderer = gtk_cell_renderer_text_new ();
     column = gtk_tree_view_column_new_with_attributes ("Test",
-	    renderer,
-	    "text", CASE_NAME,
-	    "foreground-gdk", CASE_FG_COLOR,
-	    NULL);
+						       renderer,
+						       "text",
+						       CASE_NAME,
+						       "foreground-gdk",
+						       CASE_FG_COLOR,
+						       NULL);
     gtk_tree_view_append_column (GTK_TREE_VIEW (tv), column);
 
     renderer = gtk_cell_renderer_text_new ();
     column = gtk_tree_view_column_new_with_attributes ("Size",
-	    renderer,
-	    "text", CASE_SIZE,
-	    NULL);
+						       renderer,
+						       "text",
+						       CASE_SIZE,
+						       NULL);
     gtk_tree_view_append_column (GTK_TREE_VIEW (tv), column);
 
     gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (tv), TRUE);
@@ -424,22 +458,36 @@ window_create (test_case_t	   *cases,
 				    GTK_POLICY_AUTOMATIC);
     gtk_container_add (GTK_CONTAINER (sw), tv);
     gtk_widget_show (tv);
-    gtk_table_attach (GTK_TABLE (table), sw,
-		      0, 1, 0, 2,
-		      GTK_FILL, GTK_FILL,
-		      4, 4);
+    gtk_table_attach (GTK_TABLE (table),
+		      sw,
+		      0,
+		      1,
+		      0,
+		      2,
+		      GTK_FILL,
+		      GTK_FILL,
+		      4,
+		      4);
     gtk_widget_show (sw);
 
     /* the performance chart */
     w = graph_view_new ();
     data->gv = w;
-    g_signal_connect (w, "report-selected",
-		      G_CALLBACK (gv_report_selected), data);
-    graph_view_set_reports ((GraphView *)w, cases, reports, num_reports);
-    gtk_table_attach (GTK_TABLE (table), w,
-		      1, 2, 0, 1,
-		      GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
-		      4, 4);
+    g_signal_connect (w,
+		      "report-selected",
+		      G_CALLBACK (gv_report_selected),
+		      data);
+    graph_view_set_reports ((GraphView *) w, cases, reports, num_reports);
+    gtk_table_attach (GTK_TABLE (table),
+		      w,
+		      1,
+		      2,
+		      0,
+		      1,
+		      GTK_FILL | GTK_EXPAND,
+		      GTK_FILL | GTK_EXPAND,
+		      4,
+		      4);
     gtk_widget_show (w);
 
     /* interesting information - presumably the commit log */
@@ -451,10 +499,16 @@ window_create (test_case_t	   *cases,
 				    GTK_POLICY_AUTOMATIC);
     gtk_container_add (GTK_CONTAINER (sw), w);
     gtk_widget_show (w);
-    gtk_table_attach (GTK_TABLE (table), sw,
-		      1, 2, 1, 2,
-		      GTK_FILL, GTK_FILL | GTK_EXPAND,
-		      4, 4);
+    gtk_table_attach (GTK_TABLE (table),
+		      sw,
+		      1,
+		      2,
+		      1,
+		      2,
+		      GTK_FILL,
+		      GTK_FILL | GTK_EXPAND,
+		      4,
+		      4);
     gtk_widget_show (sw);
 
     gtk_container_add (GTK_CONTAINER (window), table);
@@ -464,19 +518,17 @@ window_create (test_case_t	   *cases,
 }
 
 static void
-name_to_color (const char *name,
-	       GdkColor   *color)
+name_to_color (const char *name, GdkColor *color)
 {
     gint v = g_str_hash (name);
 
-    color->red = ((v >>  0) & 0xff) / 384. * 0xffff;
-    color->green = ((v >>  8) & 0xff) / 384. * 0xffff;
+    color->red = ((v >> 0) & 0xff) / 384. * 0xffff;
+    color->green = ((v >> 8) & 0xff) / 384. * 0xffff;
     color->blue = ((v >> 16) & 0xff) / 384. * 0xffff;
 }
 
 static test_case_t *
-test_cases_from_reports (comac_perf_report_t *reports,
-			 int		      num_reports)
+test_cases_from_reports (comac_perf_report_t *reports, int num_reports)
 {
     test_case_t *cases, *c;
     test_report_t **tests;
@@ -491,7 +543,7 @@ test_cases_from_reports (comac_perf_report_t *reports,
 	    num_tests = j;
     }
 
-    cases = xcalloc (num_tests+1, sizeof (test_case_t));
+    cases = xcalloc (num_tests + 1, sizeof (test_case_t));
     tests = xmalloc (num_reports * sizeof (test_report_t *));
     for (i = 0; i < num_reports; i++)
 	tests[i] = reports[i].tests;
@@ -526,8 +578,7 @@ test_cases_from_reports (comac_perf_report_t *reports,
 	}
 	for (++i; i < num_reports; i++) {
 	    if (tests[i]->name &&
-		test_report_cmp_backend_then_name (tests[i], min_test) < 0)
-	    {
+		test_report_cmp_backend_then_name (tests[i], min_test) < 0) {
 		min_test = tests[i];
 	    }
 	}
@@ -544,8 +595,7 @@ test_cases_from_reports (comac_perf_report_t *reports,
 
 	for (i = 0; i < num_reports; i++) {
 	    if (tests[i]->name &&
-		test_report_cmp_backend_then_name (tests[i], min_test) == 0)
-	    {
+		test_report_cmp_backend_then_name (tests[i], min_test) == 0) {
 		tests[i]++;
 		break;
 	    }
@@ -553,8 +603,7 @@ test_cases_from_reports (comac_perf_report_t *reports,
 
 	for (++i; i < num_reports; i++) {
 	    if (tests[i]->name &&
-		test_report_cmp_backend_then_name (tests[i], min_test) == 0)
-	    {
+		test_report_cmp_backend_then_name (tests[i], min_test) == 0) {
 		double v = tests[i]->stats.min_ticks / c->baseline;
 		if (v < c->min)
 		    c->min = v;
@@ -571,8 +620,7 @@ test_cases_from_reports (comac_perf_report_t *reports,
     return cases;
 }
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
     comac_perf_report_t *reports;
     test_case_t *cases;
@@ -585,22 +633,21 @@ main (int   argc,
     if (argc < 3)
 	usage (argv[0]);
 
-    reports = xmalloc ((argc-1) * sizeof (comac_perf_report_t));
-    for (i = 1; i < argc; i++ )
-	comac_perf_report_load (&reports[i-1], argv[i], i, NULL);
+    reports = xmalloc ((argc - 1) * sizeof (comac_perf_report_t));
+    for (i = 1; i < argc; i++)
+	comac_perf_report_load (&reports[i - 1], argv[i], i, NULL);
 
-    cases = test_cases_from_reports (reports, argc-1);
+    cases = test_cases_from_reports (reports, argc - 1);
 
-    window = window_create (cases, reports, argc-1);
-    g_signal_connect (window, "delete-event",
-		      G_CALLBACK (gtk_main_quit), NULL);
+    window = window_create (cases, reports, argc - 1);
+    g_signal_connect (window, "delete-event", G_CALLBACK (gtk_main_quit), NULL);
     gtk_widget_show (window);
 
     gtk_main ();
 
     /* Pointless memory cleanup, (would be a great place for talloc) */
     free (cases);
-    for (i = 0; i < argc-1; i++) {
+    for (i = 0; i < argc - 1; i++) {
 	for (t = reports[i].tests; t->name; t++) {
 	    free (t->samples);
 	    free (t->backend);

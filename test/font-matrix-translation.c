@@ -31,20 +31,19 @@
 
 static comac_bool_t
 text_extents_equal (const comac_text_extents_t *A,
-	            const comac_text_extents_t *B)
+		    const comac_text_extents_t *B)
 {
-    return A->x_bearing == B->x_bearing &&
-	   A->y_bearing == B->y_bearing &&
-	   A->width     == B->width     &&
-	   A->height    == B->height    &&
-	   A->x_advance == B->x_advance &&
-	   A->y_advance == B->y_advance;
+    return A->x_bearing == B->x_bearing && A->y_bearing == B->y_bearing &&
+	   A->width == B->width && A->height == B->height &&
+	   A->x_advance == B->x_advance && A->y_advance == B->y_advance;
 }
 
 static comac_test_status_t
-box_text (const comac_test_context_t *ctx, comac_t *cr,
+box_text (const comac_test_context_t *ctx,
+	  comac_t *cr,
 	  const char *utf8,
-	  double x, double y)
+	  double x,
+	  double y)
 {
     double line_width;
     comac_text_extents_t extents = {0}, scaled_extents = {0};
@@ -62,24 +61,32 @@ box_text (const comac_test_context_t *ctx, comac_t *cr,
 	return comac_test_status_from_status (ctx, status);
 
     if (! text_extents_equal (&extents, &scaled_extents)) {
-        comac_test_log (ctx,
-			"Error: extents differ when they shouldn't:\n"
-			"comac_text_extents(); extents (%g, %g, %g, %g, %g, %g)\n"
-			"comac_scaled_font_text_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance,
-		        scaled_extents.x_bearing, scaled_extents.y_bearing,
-			scaled_extents.width, scaled_extents.height,
-			scaled_extents.x_advance, scaled_extents.y_advance);
-        return COMAC_TEST_FAILURE;
+	comac_test_log (
+	    ctx,
+	    "Error: extents differ when they shouldn't:\n"
+	    "comac_text_extents(); extents (%g, %g, %g, %g, %g, %g)\n"
+	    "comac_scaled_font_text_extents(); extents (%g, %g, %g, %g, %g, "
+	    "%g)\n",
+	    extents.x_bearing,
+	    extents.y_bearing,
+	    extents.width,
+	    extents.height,
+	    extents.x_advance,
+	    extents.y_advance,
+	    scaled_extents.x_bearing,
+	    scaled_extents.y_bearing,
+	    scaled_extents.width,
+	    scaled_extents.height,
+	    scaled_extents.x_advance,
+	    scaled_extents.y_advance);
+	return COMAC_TEST_FAILURE;
     }
 
     line_width = comac_get_line_width (cr);
     comac_rectangle (cr,
 		     x + extents.x_bearing - line_width / 2,
 		     y + extents.y_bearing - line_width / 2,
-		     extents.width  + line_width,
+		     extents.width + line_width,
 		     extents.height + line_width);
     comac_stroke (cr);
 
@@ -102,7 +109,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -114,7 +122,7 @@ draw (comac_t *cr, int width, int height)
 
     /* Draw text and bounding box */
     comac_set_source_rgb (cr, 0, 0, 0); /* black */
-    status = box_text (ctx, cr, TEXT, 0, - extents.y_bearing);
+    status = box_text (ctx, cr, TEXT, 0, -extents.y_bearing);
     if (status)
 	return status;
 
@@ -126,16 +134,19 @@ draw (comac_t *cr, int width, int height)
     comac_set_font_matrix (cr, &matrix);
 
     comac_set_source_rgb (cr, 0, 0, 1); /* blue */
-    status = box_text (ctx, cr, TEXT, 0, - extents.y_bearing);
+    status = box_text (ctx, cr, TEXT, 0, -extents.y_bearing);
     if (status)
 	return status;
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (font_matrix_translation,
-	    "Test that translation in a font matrix can be used to offset a string",
-	    "font", /* keywords */
-	    NULL, /* requirements */
-	    38, 34,
-	    NULL, draw)
+COMAC_TEST (
+    font_matrix_translation,
+    "Test that translation in a font matrix can be used to offset a string",
+    "font", /* keywords */
+    NULL,   /* requirements */
+    38,
+    34,
+    NULL,
+    draw)

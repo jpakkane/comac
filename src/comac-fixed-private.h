@@ -45,22 +45,26 @@
 /* Implementation */
 
 #if (COMAC_FIXED_BITS != 32)
-# error COMAC_FIXED_BITS must be 32, and the type must be a 32-bit type.
-# error To remove this limitation, you will have to fix the tessellator.
+#error COMAC_FIXED_BITS must be 32, and the type must be a 32-bit type.
+#error To remove this limitation, you will have to fix the tessellator.
 #endif
 
-#define COMAC_FIXED_ONE        ((comac_fixed_t)(1 << COMAC_FIXED_FRAC_BITS))
-#define COMAC_FIXED_ONE_DOUBLE ((double)(1 << COMAC_FIXED_FRAC_BITS))
-#define COMAC_FIXED_EPSILON    ((comac_fixed_t)(1))
+#define COMAC_FIXED_ONE ((comac_fixed_t) (1 << COMAC_FIXED_FRAC_BITS))
+#define COMAC_FIXED_ONE_DOUBLE ((double) (1 << COMAC_FIXED_FRAC_BITS))
+#define COMAC_FIXED_EPSILON ((comac_fixed_t) (1))
 
-#define COMAC_FIXED_MAX        INT32_MAX /* Maximum fixed point value */
-#define COMAC_FIXED_MIN        INT32_MIN /* Minimum fixed point value */
-#define COMAC_FIXED_MAX_DOUBLE (((double) COMAC_FIXED_MAX) / COMAC_FIXED_ONE_DOUBLE)
-#define COMAC_FIXED_MIN_DOUBLE (((double) COMAC_FIXED_MIN) / COMAC_FIXED_ONE_DOUBLE)
+#define COMAC_FIXED_MAX INT32_MAX /* Maximum fixed point value */
+#define COMAC_FIXED_MIN INT32_MIN /* Minimum fixed point value */
+#define COMAC_FIXED_MAX_DOUBLE                                                 \
+    (((double) COMAC_FIXED_MAX) / COMAC_FIXED_ONE_DOUBLE)
+#define COMAC_FIXED_MIN_DOUBLE                                                 \
+    (((double) COMAC_FIXED_MIN) / COMAC_FIXED_ONE_DOUBLE)
 
 #define COMAC_FIXED_ERROR_DOUBLE (1. / (2 * COMAC_FIXED_ONE_DOUBLE))
 
-#define COMAC_FIXED_FRAC_MASK  ((comac_fixed_t)(((comac_fixed_unsigned_t)(-1)) >> (COMAC_FIXED_BITS - COMAC_FIXED_FRAC_BITS)))
+#define COMAC_FIXED_FRAC_MASK                                                  \
+    ((comac_fixed_t) (((comac_fixed_unsigned_t) (-1)) >>                       \
+		      (COMAC_FIXED_BITS - COMAC_FIXED_FRAC_BITS)))
 #define COMAC_FIXED_WHOLE_MASK (~COMAC_FIXED_FRAC_MASK)
 
 static inline comac_fixed_t
@@ -116,8 +120,8 @@ static inline comac_fixed_t
 _comac_fixed_from_double (double d)
 {
     union {
-        double d;
-        int32_t i[2];
+	double d;
+	int32_t i[2];
     } u;
 
     u.d = d + COMAC_MAGIC_NUMBER_FIXED;
@@ -129,17 +133,17 @@ _comac_fixed_from_double (double d)
 }
 
 #else
-# error Please define a magic number for your fixed point type!
-# error See comac-fixed-private.h for details.
+#error Please define a magic number for your fixed point type!
+#error See comac-fixed-private.h for details.
 #endif
 
 static inline comac_fixed_t
 _comac_fixed_from_double_clamped (double d, double tolerance)
 {
     if (d > COMAC_FIXED_MAX_DOUBLE - tolerance)
-       d = COMAC_FIXED_MAX_DOUBLE - tolerance;
+	d = COMAC_FIXED_MAX_DOUBLE - tolerance;
     else if (d < COMAC_FIXED_MIN_DOUBLE + tolerance)
-       d = COMAC_FIXED_MIN_DOUBLE + tolerance;
+	d = COMAC_FIXED_MIN_DOUBLE + tolerance;
 
     return _comac_fixed_from_double (d);
 }
@@ -191,13 +195,13 @@ _comac_fixed_ceil (comac_fixed_t f)
 static inline comac_fixed_t
 _comac_fixed_round (comac_fixed_t f)
 {
-    return _comac_fixed_floor (f + (COMAC_FIXED_FRAC_MASK+1)/2);
+    return _comac_fixed_floor (f + (COMAC_FIXED_FRAC_MASK + 1) / 2);
 }
 
 static inline comac_fixed_t
 _comac_fixed_round_down (comac_fixed_t f)
 {
-    return _comac_fixed_floor (f + COMAC_FIXED_FRAC_MASK/2);
+    return _comac_fixed_floor (f + COMAC_FIXED_FRAC_MASK / 2);
 }
 
 static inline int
@@ -209,13 +213,13 @@ _comac_fixed_integer_part (comac_fixed_t f)
 static inline int
 _comac_fixed_integer_round (comac_fixed_t f)
 {
-    return _comac_fixed_integer_part (f + (COMAC_FIXED_FRAC_MASK+1)/2);
+    return _comac_fixed_integer_part (f + (COMAC_FIXED_FRAC_MASK + 1) / 2);
 }
 
 static inline int
 _comac_fixed_integer_round_down (comac_fixed_t f)
 {
-    return _comac_fixed_integer_part (f + COMAC_FIXED_FRAC_MASK/2);
+    return _comac_fixed_integer_part (f + COMAC_FIXED_FRAC_MASK / 2);
 }
 
 static inline int
@@ -228,18 +232,19 @@ static inline int
 _comac_fixed_integer_floor (comac_fixed_t f)
 {
     if (f >= 0)
-        return f >> COMAC_FIXED_FRAC_BITS;
+	return f >> COMAC_FIXED_FRAC_BITS;
     else
-        return -((-f - 1) >> COMAC_FIXED_FRAC_BITS) - 1;
+	return -((-f - 1) >> COMAC_FIXED_FRAC_BITS) - 1;
 }
 
 static inline int
 _comac_fixed_integer_ceil (comac_fixed_t f)
 {
     if (f > 0)
-	return ((f - 1)>>COMAC_FIXED_FRAC_BITS) + 1;
+	return ((f - 1) >> COMAC_FIXED_FRAC_BITS) + 1;
     else
-	return - ((comac_fixed_t)(-(comac_fixed_unsigned_t)f) >> COMAC_FIXED_FRAC_BITS);
+	return -((comac_fixed_t) (-(comac_fixed_unsigned_t) f) >>
+		 COMAC_FIXED_FRAC_BITS);
 }
 
 /* A bunch of explicit 16.16 operators; we need these
@@ -276,8 +281,8 @@ static inline comac_fixed_16_16_t
 _comac_fixed_16_16_from_double (double d)
 {
     union {
-        double d;
-        int32_t i[2];
+	double d;
+	int32_t i[2];
     } u;
 
     u.d = d + COMAC_MAGIC_NUMBER_FIXED_16_16;
@@ -309,14 +314,15 @@ static inline comac_fixed_t
 _comac_fixed_mul (comac_fixed_t a, comac_fixed_t b)
 {
     comac_int64_t temp = _comac_int32x32_64_mul (a, b);
-    return _comac_int64_to_int32(_comac_int64_rsl (temp, COMAC_FIXED_FRAC_BITS));
+    return _comac_int64_to_int32 (
+	_comac_int64_rsl (temp, COMAC_FIXED_FRAC_BITS));
 }
 
 /* computes round (a * b / c) */
 static inline comac_fixed_t
 _comac_fixed_mul_div (comac_fixed_t a, comac_fixed_t b, comac_fixed_t c)
 {
-    comac_int64_t ab  = _comac_int32x32_64_mul (a, b);
+    comac_int64_t ab = _comac_int32x32_64_mul (a, b);
     comac_int64_t c64 = _comac_int32_to_int64 (c);
     return _comac_int64_to_int32 (_comac_int64_divrem (ab, c64).quo);
 }
@@ -405,7 +411,7 @@ _slow_segment_intersection (const comac_point_t *seg1_p1,
 }
 
 #else
-# error Please define multiplication and other operands for your fixed-point type size
+#error Please define multiplication and other operands for your fixed-point type size
 #endif
 
 #endif /* COMAC_FIXED_PRIVATE_H */

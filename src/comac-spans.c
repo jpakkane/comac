@@ -55,8 +55,7 @@ _comac_scan_converter_status (void *abstract_converter)
 }
 
 comac_status_t
-_comac_scan_converter_set_error (void *abstract_converter,
-				 comac_status_t error)
+_comac_scan_converter_set_error (void *abstract_converter, comac_status_t error)
 {
     comac_scan_converter_t *converter = abstract_converter;
     if (error == COMAC_STATUS_SUCCESS)
@@ -80,53 +79,91 @@ _comac_nil_scan_converter_init (comac_scan_converter_t *converter,
 comac_scan_converter_t *
 _comac_scan_converter_create_in_error (comac_status_t status)
 {
-#define RETURN_NIL {\
-	    static comac_scan_converter_t nil;\
-	    _comac_nil_scan_converter_init (&nil, status);\
-	    return &nil;\
-	}
+#define RETURN_NIL                                                             \
+    {                                                                          \
+	static comac_scan_converter_t nil;                                     \
+	_comac_nil_scan_converter_init (&nil, status);                         \
+	return &nil;                                                           \
+    }
     switch (status) {
     case COMAC_STATUS_SUCCESS:
     case COMAC_STATUS_LAST_STATUS:
 	ASSERT_NOT_REACHED;
 	break;
-    case COMAC_STATUS_INVALID_RESTORE: RETURN_NIL;
-    case COMAC_STATUS_INVALID_POP_GROUP: RETURN_NIL;
-    case COMAC_STATUS_NO_CURRENT_POINT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_MATRIX: RETURN_NIL;
-    case COMAC_STATUS_INVALID_STATUS: RETURN_NIL;
-    case COMAC_STATUS_NULL_POINTER: RETURN_NIL;
-    case COMAC_STATUS_INVALID_STRING: RETURN_NIL;
-    case COMAC_STATUS_INVALID_PATH_DATA: RETURN_NIL;
-    case COMAC_STATUS_READ_ERROR: RETURN_NIL;
-    case COMAC_STATUS_WRITE_ERROR: RETURN_NIL;
-    case COMAC_STATUS_SURFACE_FINISHED: RETURN_NIL;
-    case COMAC_STATUS_SURFACE_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_PATTERN_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_INVALID_CONTENT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_FORMAT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_VISUAL: RETURN_NIL;
-    case COMAC_STATUS_FILE_NOT_FOUND: RETURN_NIL;
-    case COMAC_STATUS_INVALID_DASH: RETURN_NIL;
-    case COMAC_STATUS_INVALID_DSC_COMMENT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_INDEX: RETURN_NIL;
-    case COMAC_STATUS_CLIP_NOT_REPRESENTABLE: RETURN_NIL;
-    case COMAC_STATUS_TEMP_FILE_ERROR: RETURN_NIL;
-    case COMAC_STATUS_INVALID_STRIDE: RETURN_NIL;
-    case COMAC_STATUS_FONT_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_USER_FONT_IMMUTABLE: RETURN_NIL;
-    case COMAC_STATUS_USER_FONT_ERROR: RETURN_NIL;
-    case COMAC_STATUS_NEGATIVE_COUNT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_CLUSTERS: RETURN_NIL;
-    case COMAC_STATUS_INVALID_SLANT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_WEIGHT: RETURN_NIL;
-    case COMAC_STATUS_NO_MEMORY: RETURN_NIL;
-    case COMAC_STATUS_INVALID_SIZE: RETURN_NIL;
-    case COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED: RETURN_NIL;
-    case COMAC_STATUS_DEVICE_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_DEVICE_ERROR: RETURN_NIL;
-    case COMAC_STATUS_INVALID_MESH_CONSTRUCTION: RETURN_NIL;
-    case COMAC_STATUS_DEVICE_FINISHED: RETURN_NIL;
+    case COMAC_STATUS_INVALID_RESTORE:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_POP_GROUP:
+	RETURN_NIL;
+    case COMAC_STATUS_NO_CURRENT_POINT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_MATRIX:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_STATUS:
+	RETURN_NIL;
+    case COMAC_STATUS_NULL_POINTER:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_STRING:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_PATH_DATA:
+	RETURN_NIL;
+    case COMAC_STATUS_READ_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_WRITE_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_SURFACE_FINISHED:
+	RETURN_NIL;
+    case COMAC_STATUS_SURFACE_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_PATTERN_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_CONTENT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_FORMAT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_VISUAL:
+	RETURN_NIL;
+    case COMAC_STATUS_FILE_NOT_FOUND:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_DASH:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_DSC_COMMENT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_INDEX:
+	RETURN_NIL;
+    case COMAC_STATUS_CLIP_NOT_REPRESENTABLE:
+	RETURN_NIL;
+    case COMAC_STATUS_TEMP_FILE_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_STRIDE:
+	RETURN_NIL;
+    case COMAC_STATUS_FONT_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_USER_FONT_IMMUTABLE:
+	RETURN_NIL;
+    case COMAC_STATUS_USER_FONT_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_NEGATIVE_COUNT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_CLUSTERS:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_SLANT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_WEIGHT:
+	RETURN_NIL;
+    case COMAC_STATUS_NO_MEMORY:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_SIZE:
+	RETURN_NIL;
+    case COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED:
+	RETURN_NIL;
+    case COMAC_STATUS_DEVICE_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_DEVICE_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_MESH_CONSTRUCTION:
+	RETURN_NIL;
+    case COMAC_STATUS_DEVICE_FINISHED:
+	RETURN_NIL;
     case COMAC_STATUS_JBIG2_GLOBAL_MISSING:
     case COMAC_STATUS_PNG_ERROR:
     case COMAC_STATUS_FREETYPE_ERROR:
@@ -142,12 +179,11 @@ _comac_scan_converter_create_in_error (comac_status_t status)
 }
 
 static comac_status_t
-_comac_nil_span_renderer_render_rows (
-    void				*abstract_renderer,
-    int					 y,
-    int					 height,
-    const comac_half_open_span_t	*coverages,
-    unsigned				 num_coverages)
+_comac_nil_span_renderer_render_rows (void *abstract_renderer,
+				      int y,
+				      int height,
+				      const comac_half_open_span_t *coverages,
+				      unsigned num_coverages)
 {
     (void) y;
     (void) height;
@@ -170,9 +206,7 @@ _comac_span_renderer_status (void *abstract_renderer)
 }
 
 comac_status_t
-_comac_span_renderer_set_error (
-    void *abstract_renderer,
-    comac_status_t error)
+_comac_span_renderer_set_error (void *abstract_renderer, comac_status_t error)
 {
     comac_span_renderer_t *renderer = abstract_renderer;
     if (error == COMAC_STATUS_SUCCESS) {
@@ -198,59 +232,103 @@ _comac_nil_span_renderer_init (comac_span_renderer_t *renderer,
 comac_span_renderer_t *
 _comac_span_renderer_create_in_error (comac_status_t status)
 {
-#define RETURN_NIL {\
-	    static comac_span_renderer_t nil;\
-	    _comac_nil_span_renderer_init (&nil, status);\
-	    return &nil;\
-	}
+#define RETURN_NIL                                                             \
+    {                                                                          \
+	static comac_span_renderer_t nil;                                      \
+	_comac_nil_span_renderer_init (&nil, status);                          \
+	return &nil;                                                           \
+    }
     switch (status) {
     case COMAC_STATUS_SUCCESS:
     case COMAC_STATUS_LAST_STATUS:
 	ASSERT_NOT_REACHED;
 	break;
-    case COMAC_STATUS_INVALID_RESTORE: RETURN_NIL;
-    case COMAC_STATUS_INVALID_POP_GROUP: RETURN_NIL;
-    case COMAC_STATUS_NO_CURRENT_POINT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_MATRIX: RETURN_NIL;
-    case COMAC_STATUS_INVALID_STATUS: RETURN_NIL;
-    case COMAC_STATUS_NULL_POINTER: RETURN_NIL;
-    case COMAC_STATUS_INVALID_STRING: RETURN_NIL;
-    case COMAC_STATUS_INVALID_PATH_DATA: RETURN_NIL;
-    case COMAC_STATUS_READ_ERROR: RETURN_NIL;
-    case COMAC_STATUS_WRITE_ERROR: RETURN_NIL;
-    case COMAC_STATUS_SURFACE_FINISHED: RETURN_NIL;
-    case COMAC_STATUS_SURFACE_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_PATTERN_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_INVALID_CONTENT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_FORMAT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_VISUAL: RETURN_NIL;
-    case COMAC_STATUS_FILE_NOT_FOUND: RETURN_NIL;
-    case COMAC_STATUS_INVALID_DASH: RETURN_NIL;
-    case COMAC_STATUS_INVALID_DSC_COMMENT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_INDEX: RETURN_NIL;
-    case COMAC_STATUS_CLIP_NOT_REPRESENTABLE: RETURN_NIL;
-    case COMAC_STATUS_TEMP_FILE_ERROR: RETURN_NIL;
-    case COMAC_STATUS_INVALID_STRIDE: RETURN_NIL;
-    case COMAC_STATUS_FONT_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_USER_FONT_IMMUTABLE: RETURN_NIL;
-    case COMAC_STATUS_USER_FONT_ERROR: RETURN_NIL;
-    case COMAC_STATUS_NEGATIVE_COUNT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_CLUSTERS: RETURN_NIL;
-    case COMAC_STATUS_INVALID_SLANT: RETURN_NIL;
-    case COMAC_STATUS_INVALID_WEIGHT: RETURN_NIL;
-    case COMAC_STATUS_NO_MEMORY: RETURN_NIL;
-    case COMAC_STATUS_INVALID_SIZE: RETURN_NIL;
-    case COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED: RETURN_NIL;
-    case COMAC_STATUS_DEVICE_TYPE_MISMATCH: RETURN_NIL;
-    case COMAC_STATUS_DEVICE_ERROR: RETURN_NIL;
-    case COMAC_STATUS_INVALID_MESH_CONSTRUCTION: RETURN_NIL;
-    case COMAC_STATUS_DEVICE_FINISHED: RETURN_NIL;
-    case COMAC_STATUS_JBIG2_GLOBAL_MISSING: RETURN_NIL;
-    case COMAC_STATUS_PNG_ERROR: RETURN_NIL;
-    case COMAC_STATUS_FREETYPE_ERROR: RETURN_NIL;
-    case COMAC_STATUS_WIN32_GDI_ERROR: RETURN_NIL;
-    case COMAC_STATUS_TAG_ERROR: RETURN_NIL;
-    case COMAC_STATUS_DWRITE_ERROR: RETURN_NIL;
+    case COMAC_STATUS_INVALID_RESTORE:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_POP_GROUP:
+	RETURN_NIL;
+    case COMAC_STATUS_NO_CURRENT_POINT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_MATRIX:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_STATUS:
+	RETURN_NIL;
+    case COMAC_STATUS_NULL_POINTER:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_STRING:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_PATH_DATA:
+	RETURN_NIL;
+    case COMAC_STATUS_READ_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_WRITE_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_SURFACE_FINISHED:
+	RETURN_NIL;
+    case COMAC_STATUS_SURFACE_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_PATTERN_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_CONTENT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_FORMAT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_VISUAL:
+	RETURN_NIL;
+    case COMAC_STATUS_FILE_NOT_FOUND:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_DASH:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_DSC_COMMENT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_INDEX:
+	RETURN_NIL;
+    case COMAC_STATUS_CLIP_NOT_REPRESENTABLE:
+	RETURN_NIL;
+    case COMAC_STATUS_TEMP_FILE_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_STRIDE:
+	RETURN_NIL;
+    case COMAC_STATUS_FONT_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_USER_FONT_IMMUTABLE:
+	RETURN_NIL;
+    case COMAC_STATUS_USER_FONT_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_NEGATIVE_COUNT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_CLUSTERS:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_SLANT:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_WEIGHT:
+	RETURN_NIL;
+    case COMAC_STATUS_NO_MEMORY:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_SIZE:
+	RETURN_NIL;
+    case COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED:
+	RETURN_NIL;
+    case COMAC_STATUS_DEVICE_TYPE_MISMATCH:
+	RETURN_NIL;
+    case COMAC_STATUS_DEVICE_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_INVALID_MESH_CONSTRUCTION:
+	RETURN_NIL;
+    case COMAC_STATUS_DEVICE_FINISHED:
+	RETURN_NIL;
+    case COMAC_STATUS_JBIG2_GLOBAL_MISSING:
+	RETURN_NIL;
+    case COMAC_STATUS_PNG_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_FREETYPE_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_WIN32_GDI_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_TAG_ERROR:
+	RETURN_NIL;
+    case COMAC_STATUS_DWRITE_ERROR:
+	RETURN_NIL;
     default:
 	break;
     }

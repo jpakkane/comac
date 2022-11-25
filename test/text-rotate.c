@@ -85,7 +85,7 @@
 
 #include "comac-test.h"
 
-#define WIDTH  150
+#define WIDTH 150
 #define HEIGHT 150
 #define NUM_TEXT 20
 #define TEXT_SIZE 12
@@ -99,19 +99,26 @@ draw_quadrant (comac_t *cr,
 	       const char *text,
 	       const comac_text_extents_t *extents,
 	       const comac_matrix_t *transform,
-	       int x_off, int y_off)
+	       int x_off,
+	       int y_off)
 {
     int i;
 
-    for (i = 0; i < NUM_TEXT/4; i++) {
+    for (i = 0; i < NUM_TEXT / 4; i++) {
 	comac_save (cr);
-	comac_rotate (cr, 2*M_PI*i/NUM_TEXT);
+	comac_rotate (cr, 2 * M_PI * i / NUM_TEXT);
 	comac_transform (cr, transform);
 	comac_set_line_width (cr, 1.0);
-	comac_rectangle (cr, x_off - 0.5, y_off - 0.5, extents->width + 1, extents->height + 1);
+	comac_rectangle (cr,
+			 x_off - 0.5,
+			 y_off - 0.5,
+			 extents->width + 1,
+			 extents->height + 1);
 	comac_set_source_rgb (cr, 1, 0, 0);
 	comac_stroke (cr);
-	comac_move_to (cr, x_off - extents->x_bearing, y_off - extents->y_bearing);
+	comac_move_to (cr,
+		       x_off - extents->x_bearing,
+		       y_off - extents->y_bearing);
 	comac_set_source_rgb (cr, 0, 0, 0);
 #if COMAC_TEST_GENERATE_REFERENCE_IMAGE
 	comac_text_path (cr, text);
@@ -137,7 +144,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1., 1., 1.);
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -152,15 +160,16 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_source_rgb (cr, 0, 0, 0);
 
-    comac_translate (cr, WIDTH/2.0, HEIGHT/2.0);
+    comac_translate (cr, WIDTH / 2.0, HEIGHT / 2.0);
 
     comac_text_extents (cr, text, &extents);
 
     if (NUM_TEXT == 1) {
 	x_off = y_off = 0;
     } else {
-	y_off = - floor (0.5 + extents.height / 2.0);
-	x_off = floor (0.5 + (extents.height+1) / (2 * tan (M_PI/NUM_TEXT)));
+	y_off = -floor (0.5 + extents.height / 2.0);
+	x_off =
+	    floor (0.5 + (extents.height + 1) / (2 * tan (M_PI / NUM_TEXT)));
     }
 
     comac_save (cr);
@@ -184,6 +193,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (text_rotate,
 	    "Tests show_text under various rotations",
 	    "text, transform", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	       /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

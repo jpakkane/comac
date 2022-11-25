@@ -42,19 +42,19 @@ COMAC_BEGIN_DECLS
 
 comac_private void
 _comac_arc_path (comac_t *cr,
-		 double	  xc,
-		 double	  yc,
-		 double	  radius,
-		 double	  angle1,
-		 double	  angle2);
+		 double xc,
+		 double yc,
+		 double radius,
+		 double angle1,
+		 double angle2);
 
 comac_private void
 _comac_arc_path_negative (comac_t *cr,
-			  double   xc,
-			  double   yc,
-			  double   radius,
-			  double   angle1,
-			  double   angle2);
+			  double xc,
+			  double yc,
+			  double radius,
+			  double angle1,
+			  double angle2);
 
 COMAC_END_DECLS
 

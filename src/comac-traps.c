@@ -71,9 +71,9 @@ _comac_traps_init (comac_traps_t *traps)
 }
 
 void
-_comac_traps_limit (comac_traps_t	*traps,
-		    const comac_box_t	*limits,
-		    int			 num_limits)
+_comac_traps_limit (comac_traps_t *traps,
+		    const comac_box_t *limits,
+		    int num_limits)
 {
     int i;
 
@@ -86,8 +86,7 @@ _comac_traps_limit (comac_traps_t	*traps,
 }
 
 void
-_comac_traps_init_with_clip (comac_traps_t *traps,
-			     const comac_clip_t *clip)
+_comac_traps_init_with_clip (comac_traps_t *traps, const comac_clip_t *clip)
 {
     _comac_traps_init (traps);
     if (clip)
@@ -134,7 +133,8 @@ _comac_traps_grow (comac_traps_t *traps)
 	    memcpy (new_traps, traps->traps, sizeof (traps->traps_embedded));
     } else {
 	new_traps = _comac_realloc_ab (traps->traps,
-	                               new_size, sizeof (comac_trapezoid_t));
+				       new_size,
+				       sizeof (comac_trapezoid_t));
     }
 
     if (unlikely (new_traps == NULL)) {
@@ -149,7 +149,8 @@ _comac_traps_grow (comac_traps_t *traps)
 
 void
 _comac_traps_add_trap (comac_traps_t *traps,
-		       comac_fixed_t top, comac_fixed_t bottom,
+		       comac_fixed_t top,
+		       comac_fixed_t bottom,
 		       const comac_line_t *left,
 		       const comac_line_t *right)
 {
@@ -173,7 +174,8 @@ _comac_traps_add_trap (comac_traps_t *traps,
 
 static void
 _comac_traps_add_clipped_trap (comac_traps_t *traps,
-			       comac_fixed_t _top, comac_fixed_t _bottom,
+			       comac_fixed_t _top,
+			       comac_fixed_t _bottom,
 			       const comac_line_t *_left,
 			       const comac_line_t *_right)
 {
@@ -245,7 +247,7 @@ _comac_traps_add_clipped_trap (comac_traps_t *traps,
 static int
 _compare_point_fixed_by_y (const void *av, const void *bv)
 {
-    const comac_point_t	*a = av, *b = bv;
+    const comac_point_t *a = av, *b = bv;
     int ret = a->y - b->y;
     if (ret == 0)
 	ret = a->x - b->x;
@@ -326,13 +328,29 @@ _comac_traps_tessellate_convex_quad (comac_traps_t *traps,
 	     *  | /      \|     \ \  c.y d.y  cd   ad
 	     *  d         d       d
 	     */
-	    left.p1  = q[a]; left.p2  = q[b];
-	    right.p1 = q[a]; right.p2 = q[d];
-	    _comac_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    left.p1  = q[b]; left.p2  = q[c];
-	    _comac_traps_add_clipped_trap (traps, q[b].y, q[c].y, &left, &right);
-	    left.p1  = q[c]; left.p2  = q[d];
-	    _comac_traps_add_clipped_trap (traps, q[c].y, q[d].y, &left, &right);
+	    left.p1 = q[a];
+	    left.p2 = q[b];
+	    right.p1 = q[a];
+	    right.p2 = q[d];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[a].y,
+					   q[b].y,
+					   &left,
+					   &right);
+	    left.p1 = q[b];
+	    left.p2 = q[c];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[b].y,
+					   q[c].y,
+					   &left,
+					   &right);
+	    left.p1 = q[c];
+	    left.p2 = q[d];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[c].y,
+					   q[d].y,
+					   &left,
+					   &right);
 	} else {
 	    /* Y-sort is abcd and b is right of d, (slope(ab) <= slope (ad))
 	     *
@@ -344,13 +362,29 @@ _comac_traps_tessellate_convex_quad (comac_traps_t *traps,
 	     *  / /     |/      \ | c.y d.y  ad  cd
 	     *  d       d         d
 	     */
-	    left.p1  = q[a]; left.p2  = q[d];
-	    right.p1 = q[a]; right.p2 = q[b];
-	    _comac_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    right.p1 = q[b]; right.p2 = q[c];
-	    _comac_traps_add_clipped_trap (traps, q[b].y, q[c].y, &left, &right);
-	    right.p1 = q[c]; right.p2 = q[d];
-	    _comac_traps_add_clipped_trap (traps, q[c].y, q[d].y, &left, &right);
+	    left.p1 = q[a];
+	    left.p2 = q[d];
+	    right.p1 = q[a];
+	    right.p2 = q[b];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[a].y,
+					   q[b].y,
+					   &left,
+					   &right);
+	    right.p1 = q[b];
+	    right.p2 = q[c];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[b].y,
+					   q[c].y,
+					   &left,
+					   &right);
+	    right.p1 = q[c];
+	    right.p2 = q[d];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[c].y,
+					   q[d].y,
+					   &left,
+					   &right);
 	}
     } else {
 	if (b_left_of_d) {
@@ -364,13 +398,29 @@ _comac_traps_tessellate_convex_quad (comac_traps_t *traps,
 	     *  //         \ /     \|  d.y c.y  bc  dc
 	     *  c           c       c
 	     */
-	    left.p1  = q[a]; left.p2  = q[b];
-	    right.p1 = q[a]; right.p2 = q[d];
-	    _comac_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    left.p1  = q[b]; left.p2  = q[c];
-	    _comac_traps_add_clipped_trap (traps, q[b].y, q[d].y, &left, &right);
-	    right.p1 = q[d]; right.p2 = q[c];
-	    _comac_traps_add_clipped_trap (traps, q[d].y, q[c].y, &left, &right);
+	    left.p1 = q[a];
+	    left.p2 = q[b];
+	    right.p1 = q[a];
+	    right.p2 = q[d];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[a].y,
+					   q[b].y,
+					   &left,
+					   &right);
+	    left.p1 = q[b];
+	    left.p2 = q[c];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[b].y,
+					   q[d].y,
+					   &left,
+					   &right);
+	    right.p1 = q[d];
+	    right.p2 = q[c];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[d].y,
+					   q[c].y,
+					   &left,
+					   &right);
 	} else {
 	    /* Y-sort is abdc and b is right of d, (slope (ab) <= slope (ad))
 	     *
@@ -382,21 +432,39 @@ _comac_traps_tessellate_convex_quad (comac_traps_t *traps,
 	     *  |/     \ /         \\  d.y c.y  dc  bc
 	     *  c       c	   c
 	     */
-	    left.p1  = q[a]; left.p2  = q[d];
-	    right.p1 = q[a]; right.p2 = q[b];
-	    _comac_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    right.p1 = q[b]; right.p2 = q[c];
-	    _comac_traps_add_clipped_trap (traps, q[b].y, q[d].y, &left, &right);
-	    left.p1  = q[d]; left.p2  = q[c];
-	    _comac_traps_add_clipped_trap (traps, q[d].y, q[c].y, &left, &right);
+	    left.p1 = q[a];
+	    left.p2 = q[d];
+	    right.p1 = q[a];
+	    right.p2 = q[b];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[a].y,
+					   q[b].y,
+					   &left,
+					   &right);
+	    right.p1 = q[b];
+	    right.p2 = q[c];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[b].y,
+					   q[d].y,
+					   &left,
+					   &right);
+	    left.p1 = q[d];
+	    left.p2 = q[c];
+	    _comac_traps_add_clipped_trap (traps,
+					   q[d].y,
+					   q[c].y,
+					   &left,
+					   &right);
 	}
     }
 }
 
-static void add_tri (comac_traps_t *traps,
-		     int y1, int y2,
-		     const comac_line_t *left,
-		     const comac_line_t *right)
+static void
+add_tri (comac_traps_t *traps,
+	 int y1,
+	 int y2,
+	 const comac_line_t *left,
+	 const comac_line_t *right)
 {
     if (y2 < y1) {
 	int tmp = y1;
@@ -421,19 +489,19 @@ _comac_traps_tessellate_triangle_with_edges (comac_traps_t *traps,
     comac_line_t lines[3];
 
     if (edges[0].y <= edges[1].y) {
-	    lines[0].p1 = edges[0];
-	    lines[0].p2 = edges[1];
+	lines[0].p1 = edges[0];
+	lines[0].p2 = edges[1];
     } else {
-	    lines[0].p1 = edges[1];
-	    lines[0].p2 = edges[0];
+	lines[0].p1 = edges[1];
+	lines[0].p2 = edges[0];
     }
 
     if (edges[2].y <= edges[3].y) {
-	    lines[1].p1 = edges[2];
-	    lines[1].p2 = edges[3];
+	lines[1].p1 = edges[2];
+	lines[1].p2 = edges[3];
     } else {
-	    lines[1].p1 = edges[3];
-	    lines[1].p2 = edges[2];
+	lines[1].p1 = edges[3];
+	lines[1].p2 = edges[2];
     }
 
     if (t[1].y == t[2].y) {
@@ -442,17 +510,17 @@ _comac_traps_tessellate_triangle_with_edges (comac_traps_t *traps,
     }
 
     if (t[1].y <= t[2].y) {
-	    lines[2].p1 = t[1];
-	    lines[2].p2 = t[2];
+	lines[2].p1 = t[1];
+	lines[2].p2 = t[2];
     } else {
-	    lines[2].p1 = t[2];
-	    lines[2].p2 = t[1];
+	lines[2].p1 = t[2];
+	lines[2].p2 = t[1];
     }
 
     if (((t[1].y - t[0].y) < 0) ^ ((t[2].y - t[0].y) < 0)) {
 	add_tri (traps, t[0].y, t[1].y, &lines[0], &lines[2]);
 	add_tri (traps, t[0].y, t[2].y, &lines[1], &lines[2]);
-    } else if (abs(t[1].y - t[0].y) < abs(t[2].y - t[0].y)) {
+    } else if (abs (t[1].y - t[0].y) < abs (t[2].y - t[0].y)) {
 	add_tri (traps, t[0].y, t[1].y, &lines[0], &lines[1]);
 	add_tri (traps, t[1].y, t[2].y, &lines[2], &lines[1]);
     } else {
@@ -471,8 +539,7 @@ _comac_traps_tessellate_triangle_with_edges (comac_traps_t *traps,
  * trapezoids.
  **/
 comac_status_t
-_comac_traps_init_boxes (comac_traps_t	    *traps,
-		         const comac_boxes_t *boxes)
+_comac_traps_init_boxes (comac_traps_t *traps, const comac_boxes_t *boxes)
 {
     comac_trapezoid_t *trap;
     const struct _comac_boxes_chunk *chunk;
@@ -498,16 +565,16 @@ _comac_traps_init_boxes (comac_traps_t	    *traps,
 
 	box = chunk->base;
 	for (i = 0; i < chunk->count; i++) {
-	    trap->top    = box->p1.y;
+	    trap->top = box->p1.y;
 	    trap->bottom = box->p2.y;
 
-	    trap->left.p1   = box->p1;
+	    trap->left.p1 = box->p1;
 	    trap->left.p2.x = box->p1.x;
 	    trap->left.p2.y = box->p2.y;
 
 	    trap->right.p1.x = box->p2.x;
 	    trap->right.p1.y = box->p1.y;
-	    trap->right.p2   = box->p2;
+	    trap->right.p2 = box->p2;
 
 	    box++, trap++;
 	}
@@ -531,13 +598,13 @@ _comac_traps_tessellate_rectangle (comac_traps_t *traps,
     if (top_left->x == bottom_right->x)
 	return COMAC_STATUS_SUCCESS;
 
-     left.p1.x =  left.p2.x = top_left->x;
-     left.p1.y = right.p1.y = top_left->y;
+    left.p1.x = left.p2.x = top_left->x;
+    left.p1.y = right.p1.y = top_left->y;
     right.p1.x = right.p2.x = bottom_right->x;
-     left.p2.y = right.p2.y = bottom_right->y;
+    left.p2.y = right.p2.y = bottom_right->y;
 
-     top = top_left->y;
-     bottom = bottom_right->y;
+    top = top_left->y;
+    bottom = bottom_right->y;
 
     if (traps->num_limits) {
 	comac_bool_t reversed;
@@ -647,44 +714,56 @@ _comac_traps_translate (comac_traps_t *traps, int x, int y)
 
 void
 _comac_trapezoid_array_translate_and_scale (comac_trapezoid_t *offset_traps,
-                                            comac_trapezoid_t *src_traps,
-                                            int num_traps,
-                                            double tx, double ty,
-                                            double sx, double sy)
+					    comac_trapezoid_t *src_traps,
+					    int num_traps,
+					    double tx,
+					    double ty,
+					    double sx,
+					    double sy)
 {
     int i;
     comac_fixed_t xoff = _comac_fixed_from_double (tx);
     comac_fixed_t yoff = _comac_fixed_from_double (ty);
 
     if (sx == 1.0 && sy == 1.0) {
-        for (i = 0; i < num_traps; i++) {
-            offset_traps[i].top = src_traps[i].top + yoff;
-            offset_traps[i].bottom = src_traps[i].bottom + yoff;
-            offset_traps[i].left.p1.x = src_traps[i].left.p1.x + xoff;
-            offset_traps[i].left.p1.y = src_traps[i].left.p1.y + yoff;
-            offset_traps[i].left.p2.x = src_traps[i].left.p2.x + xoff;
-            offset_traps[i].left.p2.y = src_traps[i].left.p2.y + yoff;
-            offset_traps[i].right.p1.x = src_traps[i].right.p1.x + xoff;
-            offset_traps[i].right.p1.y = src_traps[i].right.p1.y + yoff;
-            offset_traps[i].right.p2.x = src_traps[i].right.p2.x + xoff;
-            offset_traps[i].right.p2.y = src_traps[i].right.p2.y + yoff;
-        }
+	for (i = 0; i < num_traps; i++) {
+	    offset_traps[i].top = src_traps[i].top + yoff;
+	    offset_traps[i].bottom = src_traps[i].bottom + yoff;
+	    offset_traps[i].left.p1.x = src_traps[i].left.p1.x + xoff;
+	    offset_traps[i].left.p1.y = src_traps[i].left.p1.y + yoff;
+	    offset_traps[i].left.p2.x = src_traps[i].left.p2.x + xoff;
+	    offset_traps[i].left.p2.y = src_traps[i].left.p2.y + yoff;
+	    offset_traps[i].right.p1.x = src_traps[i].right.p1.x + xoff;
+	    offset_traps[i].right.p1.y = src_traps[i].right.p1.y + yoff;
+	    offset_traps[i].right.p2.x = src_traps[i].right.p2.x + xoff;
+	    offset_traps[i].right.p2.y = src_traps[i].right.p2.y + yoff;
+	}
     } else {
-        comac_fixed_t xsc = _comac_fixed_from_double (sx);
-        comac_fixed_t ysc = _comac_fixed_from_double (sy);
+	comac_fixed_t xsc = _comac_fixed_from_double (sx);
+	comac_fixed_t ysc = _comac_fixed_from_double (sy);
 
-        for (i = 0; i < num_traps; i++) {
-            offset_traps[i].top = _comac_fixed_mul (src_traps[i].top + yoff, ysc);
-            offset_traps[i].bottom = _comac_fixed_mul (src_traps[i].bottom + yoff, ysc);
-            offset_traps[i].left.p1.x = _comac_fixed_mul (src_traps[i].left.p1.x + xoff, xsc);
-            offset_traps[i].left.p1.y = _comac_fixed_mul (src_traps[i].left.p1.y + yoff, ysc);
-            offset_traps[i].left.p2.x = _comac_fixed_mul (src_traps[i].left.p2.x + xoff, xsc);
-            offset_traps[i].left.p2.y = _comac_fixed_mul (src_traps[i].left.p2.y + yoff, ysc);
-            offset_traps[i].right.p1.x = _comac_fixed_mul (src_traps[i].right.p1.x + xoff, xsc);
-            offset_traps[i].right.p1.y = _comac_fixed_mul (src_traps[i].right.p1.y + yoff, ysc);
-            offset_traps[i].right.p2.x = _comac_fixed_mul (src_traps[i].right.p2.x + xoff, xsc);
-            offset_traps[i].right.p2.y = _comac_fixed_mul (src_traps[i].right.p2.y + yoff, ysc);
-        }
+	for (i = 0; i < num_traps; i++) {
+	    offset_traps[i].top =
+		_comac_fixed_mul (src_traps[i].top + yoff, ysc);
+	    offset_traps[i].bottom =
+		_comac_fixed_mul (src_traps[i].bottom + yoff, ysc);
+	    offset_traps[i].left.p1.x =
+		_comac_fixed_mul (src_traps[i].left.p1.x + xoff, xsc);
+	    offset_traps[i].left.p1.y =
+		_comac_fixed_mul (src_traps[i].left.p1.y + yoff, ysc);
+	    offset_traps[i].left.p2.x =
+		_comac_fixed_mul (src_traps[i].left.p2.x + xoff, xsc);
+	    offset_traps[i].left.p2.y =
+		_comac_fixed_mul (src_traps[i].left.p2.y + yoff, ysc);
+	    offset_traps[i].right.p1.x =
+		_comac_fixed_mul (src_traps[i].right.p1.x + xoff, xsc);
+	    offset_traps[i].right.p1.y =
+		_comac_fixed_mul (src_traps[i].right.p1.y + yoff, ysc);
+	    offset_traps[i].right.p2.x =
+		_comac_fixed_mul (src_traps[i].right.p2.x + xoff, xsc);
+	    offset_traps[i].right.p2.y =
+		_comac_fixed_mul (src_traps[i].right.p2.y + yoff, ysc);
+	}
     }
 }
 
@@ -714,8 +793,7 @@ _comac_trap_contains (comac_trapezoid_t *t, comac_point_t *pt)
 }
 
 comac_bool_t
-_comac_traps_contain (const comac_traps_t *traps,
-		      double x, double y)
+_comac_traps_contain (const comac_traps_t *traps, double x, double y)
 {
     int i;
     comac_point_t point;
@@ -732,15 +810,13 @@ _comac_traps_contain (const comac_traps_t *traps,
 }
 
 static comac_fixed_t
-_line_compute_intersection_x_for_y (const comac_line_t *line,
-				    comac_fixed_t y)
+_line_compute_intersection_x_for_y (const comac_line_t *line, comac_fixed_t y)
 {
     return _comac_edge_compute_intersection_x_for_y (&line->p1, &line->p2, y);
 }
 
 void
-_comac_traps_extents (const comac_traps_t *traps,
-		      comac_box_t *extents)
+_comac_traps_extents (const comac_traps_t *traps, comac_box_t *extents)
 {
     int i;
 
@@ -754,7 +830,7 @@ _comac_traps_extents (const comac_traps_t *traps,
     extents->p2.x = extents->p2.y = INT32_MIN;
 
     for (i = 0; i < traps->num_traps; i++) {
-	const comac_trapezoid_t *trap =  &traps->traps[i];
+	const comac_trapezoid_t *trap = &traps->traps[i];
 
 	if (trap->top < extents->p1.y)
 	    extents->p1.y = trap->top;
@@ -764,8 +840,7 @@ _comac_traps_extents (const comac_traps_t *traps,
 	if (trap->left.p1.x < extents->p1.x) {
 	    comac_fixed_t x = trap->left.p1.x;
 	    if (trap->top != trap->left.p1.y) {
-		x = _line_compute_intersection_x_for_y (&trap->left,
-							trap->top);
+		x = _line_compute_intersection_x_for_y (&trap->left, trap->top);
 		if (x < extents->p1.x)
 		    extents->p1.x = x;
 	    } else
@@ -808,33 +883,31 @@ _comac_traps_extents (const comac_traps_t *traps,
 static comac_bool_t
 _mono_edge_is_vertical (const comac_line_t *line)
 {
-    return _comac_fixed_integer_round_down (line->p1.x) == _comac_fixed_integer_round_down (line->p2.x);
+    return _comac_fixed_integer_round_down (line->p1.x) ==
+	   _comac_fixed_integer_round_down (line->p2.x);
 }
 
 static comac_bool_t
-_traps_are_pixel_aligned (comac_traps_t *traps,
-			  comac_antialias_t antialias)
+_traps_are_pixel_aligned (comac_traps_t *traps, comac_antialias_t antialias)
 {
     int i;
 
     if (antialias == COMAC_ANTIALIAS_NONE) {
 	for (i = 0; i < traps->num_traps; i++) {
-	    if (! _mono_edge_is_vertical (&traps->traps[i].left)   ||
-		! _mono_edge_is_vertical (&traps->traps[i].right))
-	    {
+	    if (! _mono_edge_is_vertical (&traps->traps[i].left) ||
+		! _mono_edge_is_vertical (&traps->traps[i].right)) {
 		traps->maybe_region = FALSE;
 		return FALSE;
 	    }
 	}
     } else {
 	for (i = 0; i < traps->num_traps; i++) {
-	    if (traps->traps[i].left.p1.x != traps->traps[i].left.p2.x   ||
+	    if (traps->traps[i].left.p1.x != traps->traps[i].left.p2.x ||
 		traps->traps[i].right.p1.x != traps->traps[i].right.p2.x ||
-		! _comac_fixed_is_integer (traps->traps[i].top)          ||
-		! _comac_fixed_is_integer (traps->traps[i].bottom)       ||
-		! _comac_fixed_is_integer (traps->traps[i].left.p1.x)    ||
-		! _comac_fixed_is_integer (traps->traps[i].right.p1.x))
-	    {
+		! _comac_fixed_is_integer (traps->traps[i].top) ||
+		! _comac_fixed_is_integer (traps->traps[i].bottom) ||
+		! _comac_fixed_is_integer (traps->traps[i].left.p1.x) ||
+		! _comac_fixed_is_integer (traps->traps[i].right.p1.x)) {
 		traps->maybe_region = FALSE;
 		return FALSE;
 	    }
@@ -859,11 +932,12 @@ _traps_are_pixel_aligned (comac_traps_t *traps,
  * or %COMAC_STATUS_NO_MEMORY
  **/
 comac_int_status_t
-_comac_traps_extract_region (comac_traps_t   *traps,
+_comac_traps_extract_region (comac_traps_t *traps,
 			     comac_antialias_t antialias,
 			     comac_region_t **region)
 {
-    comac_rectangle_int_t stack_rects[COMAC_STACK_ARRAY_LENGTH (comac_rectangle_int_t)];
+    comac_rectangle_int_t
+	stack_rects[COMAC_STACK_ARRAY_LENGTH (comac_rectangle_int_t)];
     comac_rectangle_int_t *rects = stack_rects;
     comac_int_status_t status;
     int i, rect_count;
@@ -878,7 +952,8 @@ _comac_traps_extract_region (comac_traps_t   *traps,
     }
 
     if (traps->num_traps > ARRAY_LENGTH (stack_rects)) {
-	rects = _comac_malloc_ab (traps->num_traps, sizeof (comac_rectangle_int_t));
+	rects =
+	    _comac_malloc_ab (traps->num_traps, sizeof (comac_rectangle_int_t));
 
 	if (unlikely (rects == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -903,12 +978,11 @@ _comac_traps_extract_region (comac_traps_t   *traps,
 	if (x2 > x1 && y2 > y1) {
 	    rects[rect_count].x = x1;
 	    rects[rect_count].y = y1;
-	    rects[rect_count].width  = x2 - x1;
+	    rects[rect_count].width = x2 - x1;
 	    rects[rect_count].height = y2 - y1;
 	    rect_count++;
 	}
     }
-
 
     *region = comac_region_create_rectangles (rects, rect_count);
     status = (*region)->status;
@@ -927,17 +1001,17 @@ _comac_traps_to_boxes (comac_traps_t *traps,
     int i;
 
     for (i = 0; i < traps->num_traps; i++) {
-	if (traps->traps[i].left.p1.x  != traps->traps[i].left.p2.x ||
+	if (traps->traps[i].left.p1.x != traps->traps[i].left.p2.x ||
 	    traps->traps[i].right.p1.x != traps->traps[i].right.p2.x)
 	    return FALSE;
     }
 
     _comac_boxes_init (boxes);
 
-    boxes->num_boxes    = traps->num_traps;
-    boxes->chunks.base  = (comac_box_t *) traps->traps;
+    boxes->num_boxes = traps->num_traps;
+    boxes->chunks.base = (comac_box_t *) traps->traps;
     boxes->chunks.count = traps->num_traps;
-    boxes->chunks.size  = traps->num_traps;
+    boxes->chunks.size = traps->num_traps;
 
     if (antialias != COMAC_ANTIALIAS_NONE) {
 	for (i = 0; i < traps->num_traps; i++) {
@@ -953,9 +1027,10 @@ _comac_traps_to_boxes (comac_traps_t *traps,
 	    boxes->chunks.base[i].p2.y = y2;
 
 	    if (boxes->is_pixel_aligned) {
-		boxes->is_pixel_aligned =
-		    _comac_fixed_is_integer (x1) && _comac_fixed_is_integer (y1) &&
-		    _comac_fixed_is_integer (x2) && _comac_fixed_is_integer (y2);
+		boxes->is_pixel_aligned = _comac_fixed_is_integer (x1) &&
+					  _comac_fixed_is_integer (y1) &&
+					  _comac_fixed_is_integer (x2) &&
+					  _comac_fixed_is_integer (y2);
 	    }
 	}
     } else {
@@ -985,20 +1060,22 @@ _sanitize_trap (comac_trapezoid_t *t)
 {
     comac_trapezoid_t s = *t;
 
-#define FIX(lr, tb, p) \
-    if (t->lr.p.y != t->tb) { \
-        t->lr.p.x = s.lr.p2.x + _comac_fixed_mul_div_floor (s.lr.p1.x - s.lr.p2.x, s.tb - s.lr.p2.y, s.lr.p1.y - s.lr.p2.y); \
-        t->lr.p.y = s.tb; \
+#define FIX(lr, tb, p)                                                         \
+    if (t->lr.p.y != t->tb) {                                                  \
+	t->lr.p.x =                                                            \
+	    s.lr.p2.x + _comac_fixed_mul_div_floor (s.lr.p1.x - s.lr.p2.x,     \
+						    s.tb - s.lr.p2.y,          \
+						    s.lr.p1.y - s.lr.p2.y);    \
+	t->lr.p.y = s.tb;                                                      \
     }
-    FIX (left,  top,    p1);
-    FIX (left,  bottom, p2);
-    FIX (right, top,    p1);
+    FIX (left, top, p1);
+    FIX (left, bottom, p2);
+    FIX (right, top, p1);
     FIX (right, bottom, p2);
 }
 
 comac_private comac_status_t
-_comac_traps_path (const comac_traps_t *traps,
-		   comac_path_fixed_t  *path)
+_comac_traps_path (const comac_traps_t *traps, comac_path_fixed_t *path)
 {
     int i;
 
@@ -1012,15 +1089,20 @@ _comac_traps_path (const comac_traps_t *traps,
 	_sanitize_trap (&trap);
 
 	status = _comac_path_fixed_move_to (path, trap.left.p1.x, trap.top);
-	if (unlikely (status)) return status;
+	if (unlikely (status))
+	    return status;
 	status = _comac_path_fixed_line_to (path, trap.right.p1.x, trap.top);
-	if (unlikely (status)) return status;
+	if (unlikely (status))
+	    return status;
 	status = _comac_path_fixed_line_to (path, trap.right.p2.x, trap.bottom);
-	if (unlikely (status)) return status;
+	if (unlikely (status))
+	    return status;
 	status = _comac_path_fixed_line_to (path, trap.left.p2.x, trap.bottom);
-	if (unlikely (status)) return status;
+	if (unlikely (status))
+	    return status;
 	status = _comac_path_fixed_close_path (path);
-	if (unlikely (status)) return status;
+	if (unlikely (status))
+	    return status;
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -1042,12 +1124,16 @@ _comac_debug_print_traps (FILE *file, const comac_traps_t *traps)
 #endif
 
     _comac_traps_extents (traps, &extents);
-    fprintf (file, "extents=(%d, %d, %d, %d)\n",
-	     extents.p1.x, extents.p1.y,
-	     extents.p2.x, extents.p2.y);
+    fprintf (file,
+	     "extents=(%d, %d, %d, %d)\n",
+	     extents.p1.x,
+	     extents.p1.y,
+	     extents.p2.x,
+	     extents.p2.y);
 
     for (n = 0; n < traps->num_traps; n++) {
-	fprintf (file, "%d %d L:(%d, %d), (%d, %d) R:(%d, %d), (%d, %d)\n",
+	fprintf (file,
+		 "%d %d L:(%d, %d), (%d, %d) R:(%d, %d), (%d, %d)\n",
 		 traps->traps[n].top,
 		 traps->traps[n].bottom,
 		 traps->traps[n].left.p1.x,
@@ -1067,8 +1153,11 @@ struct comac_trap_renderer {
 };
 
 static comac_status_t
-span_to_traps (void *abstract_renderer, int y, int h,
-	       const comac_half_open_span_t *spans, unsigned num_spans)
+span_to_traps (void *abstract_renderer,
+	       int y,
+	       int h,
+	       const comac_half_open_span_t *spans,
+	       unsigned num_spans)
 {
     struct comac_trap_renderer *r = abstract_renderer;
     comac_fixed_t top, bot;
@@ -1080,10 +1169,10 @@ span_to_traps (void *abstract_renderer, int y, int h,
     bot = _comac_fixed_from_int (y + h);
     do {
 	if (spans[0].coverage) {
-	    comac_fixed_t x0 = _comac_fixed_from_int(spans[0].x);
-	    comac_fixed_t x1 = _comac_fixed_from_int(spans[1].x);
-	    comac_line_t left = { { x0, top }, { x0, bot } },
-			 right = { { x1, top }, { x1, bot } };
+	    comac_fixed_t x0 = _comac_fixed_from_int (spans[0].x);
+	    comac_fixed_t x1 = _comac_fixed_from_int (spans[1].x);
+	    comac_line_t left = {{x0, top}, {x0, bot}},
+			 right = {{x1, top}, {x1, bot}};
 	    _comac_traps_add_trap (r->traps, top, bot, &left, &right);
 	}
 	spans++;
@@ -1093,9 +1182,9 @@ span_to_traps (void *abstract_renderer, int y, int h,
 }
 
 comac_int_status_t
-_comac_rasterise_polygon_to_traps (comac_polygon_t			*polygon,
-				   comac_fill_rule_t			 fill_rule,
-				   comac_antialias_t			 antialias,
+_comac_rasterise_polygon_to_traps (comac_polygon_t *polygon,
+				   comac_fill_rule_t fill_rule,
+				   comac_antialias_t antialias,
 				   comac_traps_t *traps)
 {
     struct comac_trap_renderer renderer;
@@ -1103,15 +1192,19 @@ _comac_rasterise_polygon_to_traps (comac_polygon_t			*polygon,
     comac_int_status_t status;
     comac_rectangle_int_t r;
 
-    TRACE ((stderr, "%s: fill_rule=%d, antialias=%d\n",
-	    __FUNCTION__, fill_rule, antialias));
-    assert(antialias == COMAC_ANTIALIAS_NONE);
+    TRACE ((stderr,
+	    "%s: fill_rule=%d, antialias=%d\n",
+	    __FUNCTION__,
+	    fill_rule,
+	    antialias));
+    assert (antialias == COMAC_ANTIALIAS_NONE);
 
     renderer.traps = traps;
     renderer.base.render_rows = span_to_traps;
 
     _comac_box_round_to_rectangle (&polygon->extents, &r);
-    converter = _comac_mono_scan_converter_create (r.x, r.y,
+    converter = _comac_mono_scan_converter_create (r.x,
+						   r.y,
 						   r.x + r.width,
 						   r.y + r.height,
 						   fill_rule);

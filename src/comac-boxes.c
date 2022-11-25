@@ -54,8 +54,8 @@ _comac_boxes_init (comac_boxes_t *boxes)
 }
 
 void
-_comac_boxes_init_from_rectangle (comac_boxes_t *boxes,
-				  int x, int y, int w, int h)
+_comac_boxes_init_from_rectangle (
+    comac_boxes_t *boxes, int x, int y, int w, int h)
 {
     _comac_boxes_init (boxes);
 
@@ -64,8 +64,7 @@ _comac_boxes_init_from_rectangle (comac_boxes_t *boxes,
 }
 
 void
-_comac_boxes_init_with_clip (comac_boxes_t *boxes,
-			     comac_clip_t *clip)
+_comac_boxes_init_with_clip (comac_boxes_t *boxes, comac_clip_t *clip)
 {
     _comac_boxes_init (boxes);
     if (clip)
@@ -93,8 +92,7 @@ _comac_boxes_init_for_array (comac_boxes_t *boxes,
 	if (! _comac_fixed_is_integer (array[n].p1.x) ||
 	    ! _comac_fixed_is_integer (array[n].p1.y) ||
 	    ! _comac_fixed_is_integer (array[n].p2.x) ||
-	    ! _comac_fixed_is_integer (array[n].p2.y))
-	{
+	    ! _comac_fixed_is_integer (array[n].p2.y)) {
 	    break;
 	}
     }
@@ -114,9 +112,9 @@ _comac_boxes_init_for_array (comac_boxes_t *boxes,
  * @param num_limits   length of the limits array
  */
 void
-_comac_boxes_limit (comac_boxes_t	*boxes,
-		    const comac_box_t	*limits,
-		    int			 num_limits)
+_comac_boxes_limit (comac_boxes_t *boxes,
+		    const comac_box_t *limits,
+		    int num_limits)
 {
     int n;
 
@@ -142,8 +140,7 @@ _comac_boxes_limit (comac_boxes_t	*boxes,
 }
 
 static void
-_comac_boxes_add_internal (comac_boxes_t *boxes,
-			   const comac_box_t *box)
+_comac_boxes_add_internal (comac_boxes_t *boxes, const comac_box_t *box)
 {
     struct _comac_boxes_chunk *chunk;
 
@@ -155,9 +152,10 @@ _comac_boxes_add_internal (comac_boxes_t *boxes,
 	int size;
 
 	size = chunk->size * 2;
-	chunk->next = _comac_malloc_ab_plus_c (size,
-					       sizeof (comac_box_t),
-					       sizeof (struct _comac_boxes_chunk));
+	chunk->next =
+	    _comac_malloc_ab_plus_c (size,
+				     sizeof (comac_box_t),
+				     sizeof (struct _comac_boxes_chunk));
 
 	if (unlikely (chunk->next == NULL)) {
 	    boxes->status = _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -285,8 +283,7 @@ _comac_boxes_add (comac_boxes_t *boxes,
  * @param box        Return buffer for the computed result.
  */
 void
-_comac_boxes_extents (const comac_boxes_t *boxes,
-		      comac_box_t *box)
+_comac_boxes_extents (const comac_boxes_t *boxes, comac_box_t *box)
 {
     const struct _comac_boxes_chunk *chunk;
     comac_box_t b;
@@ -347,8 +344,7 @@ _comac_boxes_clear (comac_boxes_t *boxes)
  *                   (the number o elements is given in num_boxes).
  */
 comac_box_t *
-_comac_boxes_to_array (const comac_boxes_t *boxes,
-		       int *num_boxes)
+_comac_boxes_to_array (const comac_boxes_t *boxes, int *num_boxes)
 {
     const struct _comac_boxes_chunk *chunk;
     comac_box_t *box;
@@ -405,8 +401,11 @@ struct comac_box_renderer {
 };
 
 static comac_status_t
-span_to_boxes (void *abstract_renderer, int y, int h,
-	       const comac_half_open_span_t *spans, unsigned num_spans)
+span_to_boxes (void *abstract_renderer,
+	       int y,
+	       int h,
+	       const comac_half_open_span_t *spans,
+	       unsigned num_spans)
 {
     struct comac_box_renderer *r = abstract_renderer;
     comac_status_t status = COMAC_STATUS_SUCCESS;
@@ -419,8 +418,8 @@ span_to_boxes (void *abstract_renderer, int y, int h,
     box.p2.y = _comac_fixed_from_int (y + h);
     do {
 	if (spans[0].coverage) {
-	    box.p1.x = _comac_fixed_from_int(spans[0].x);
-	    box.p2.x = _comac_fixed_from_int(spans[1].x);
+	    box.p1.x = _comac_fixed_from_int (spans[0].x);
+	    box.p2.x = _comac_fixed_from_int (spans[1].x);
 	    status = _comac_boxes_add (r->boxes, COMAC_ANTIALIAS_DEFAULT, &box);
 	}
 	spans++;
@@ -430,8 +429,8 @@ span_to_boxes (void *abstract_renderer, int y, int h,
 }
 
 comac_status_t
-_comac_rasterise_polygon_to_boxes (comac_polygon_t			*polygon,
-				   comac_fill_rule_t			 fill_rule,
+_comac_rasterise_polygon_to_boxes (comac_polygon_t *polygon,
+				   comac_fill_rule_t fill_rule,
 				   comac_boxes_t *boxes)
 {
     struct comac_box_renderer renderer;
@@ -442,7 +441,8 @@ _comac_rasterise_polygon_to_boxes (comac_polygon_t			*polygon,
     TRACE ((stderr, "%s: fill_rule=%d\n", __FUNCTION__, fill_rule));
 
     _comac_box_round_to_rectangle (&polygon->extents, &r);
-    converter = _comac_mono_scan_converter_create (r.x, r.y,
+    converter = _comac_mono_scan_converter_create (r.x,
+						   r.y,
 						   r.x + r.width,
 						   r.y + r.height,
 						   fill_rule);
@@ -467,7 +467,8 @@ _comac_debug_print_boxes (FILE *stream, const comac_boxes_t *boxes)
     int i;
 
     _comac_boxes_extents (boxes, &extents);
-    fprintf (stream, "boxes x %d: (%f, %f) x (%f, %f)\n",
+    fprintf (stream,
+	     "boxes x %d: (%f, %f) x (%f, %f)\n",
 	     boxes->num_boxes,
 	     _comac_fixed_to_double (extents.p1.x),
 	     _comac_fixed_to_double (extents.p1.y),
@@ -476,7 +477,9 @@ _comac_debug_print_boxes (FILE *stream, const comac_boxes_t *boxes)
 
     for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 	for (i = 0; i < chunk->count; i++) {
-	    fprintf (stderr, "  box[%d]: (%f, %f), (%f, %f)\n", i,
+	    fprintf (stderr,
+		     "  box[%d]: (%f, %f), (%f, %f)\n",
+		     i,
 		     _comac_fixed_to_double (chunk->base[i].p1.x),
 		     _comac_fixed_to_double (chunk->base[i].p1.y),
 		     _comac_fixed_to_double (chunk->base[i].p2.x),

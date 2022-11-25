@@ -38,14 +38,12 @@ draw_text (comac_t *cr)
     comac_matrix_t tm;
 
     /* skew */
-    comac_matrix_init (&tm, 1, 0,
-                       -0.25, 1,
-                       0, 0);
+    comac_matrix_init (&tm, 1, 0, -0.25, 1, 0, 0);
     comac_matrix_scale (&tm, FONT_SIZE, FONT_SIZE);
     comac_set_font_matrix (cr, &tm);
 
     comac_new_path (cr);
-    comac_move_to (cr, 50, SIZE-PAD);
+    comac_move_to (cr, 50, SIZE - PAD);
     comac_show_text (cr, "A");
 
     /* rotate and scale */
@@ -77,7 +75,8 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_source_rgb (cr, 0., 0., 0.);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
@@ -99,6 +98,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (text_transform,
 	    "Test various applications of the font matrix",
 	    "text, transform", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,	       /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

@@ -52,7 +52,7 @@ draw (comac_t *cr, int width, int height)
      * width (twice the circle's radius to get it filled completely).
      */
     comac_set_line_width (cr, 2 * RADIUS);
-    comac_arc (cr, 1, RADIUS - 1, RADIUS, 0, - M_PI / 2.0);
+    comac_arc (cr, 1, RADIUS - 1, RADIUS, 0, -M_PI / 2.0);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -61,6 +61,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (line_width_tolerance,
 	    "Test interaction of line width and tolerance when stroking arcs",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    RADIUS, RADIUS,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    RADIUS,
+	    RADIUS,
+	    NULL,
+	    draw)

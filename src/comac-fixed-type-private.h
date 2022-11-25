@@ -43,23 +43,23 @@
  * Fixed-point configuration
  */
 
-typedef int32_t		comac_fixed_16_16_t;
-typedef comac_int64_t	comac_fixed_32_32_t;
-typedef comac_int64_t	comac_fixed_48_16_t;
-typedef comac_int128_t	comac_fixed_64_64_t;
-typedef comac_int128_t	comac_fixed_96_32_t;
+typedef int32_t comac_fixed_16_16_t;
+typedef comac_int64_t comac_fixed_32_32_t;
+typedef comac_int64_t comac_fixed_48_16_t;
+typedef comac_int128_t comac_fixed_64_64_t;
+typedef comac_int128_t comac_fixed_96_32_t;
 
 /* Eventually, we should allow changing this, but I think
  * there are some assumptions in the tessellator about the
  * size of a fixed type.  For now, it must be 32.
  */
-#define COMAC_FIXED_BITS	32
+#define COMAC_FIXED_BITS 32
 
 /* The number of fractional bits.  Changing this involves
  * making sure that you compute a double-to-fixed magic number.
  * (see below).
  */
-#define COMAC_FIXED_FRAC_BITS	8
+#define COMAC_FIXED_FRAC_BITS 8
 
 /* A signed type %COMAC_FIXED_BITS in size; the main fixed point type */
 typedef int32_t comac_fixed_t;

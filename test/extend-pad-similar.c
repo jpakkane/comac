@@ -39,7 +39,9 @@ draw (comac_t *cr, int width, int height)
     /* Create a 4-pixel similar surface with my favorite four colors in each
      * quadrant. */
     surface = comac_surface_create_similar (comac_get_group_target (cr),
-					    COMAC_CONTENT_COLOR, 2, 2);
+					    COMAC_CONTENT_COLOR,
+					    2,
+					    2);
     cr_surface = comac_create (surface);
     comac_surface_destroy (surface);
 
@@ -64,9 +66,10 @@ draw (comac_t *cr, int width, int height)
     comac_fill (cr_surface);
 
     /* Now use extend pad to cover the entire surface with those 4 colors */
-    comac_set_source_surface (cr, comac_get_target (cr_surface),
-			      width/2  - 1,
-			      height/2 - 1);
+    comac_set_source_surface (cr,
+			      comac_get_target (cr_surface),
+			      width / 2 - 1,
+			      height / 2 - 1);
     comac_destroy (cr_surface);
     comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_PAD);
     comac_paint (cr);
@@ -77,6 +80,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (extend_pad_similar,
 	    "Test COMAC_EXTEND_PAD for similar surface patterns",
 	    "extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

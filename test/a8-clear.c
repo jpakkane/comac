@@ -58,7 +58,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (a8_clear,
 	    "Test clear on an a8 surface",
 	    "a8, clear", /* keywords */
-	    NULL, /* requirements */
-	    40, 40,
-	    NULL, draw)
-
+	    NULL,	 /* requirements */
+	    40,
+	    40,
+	    NULL,
+	    draw)

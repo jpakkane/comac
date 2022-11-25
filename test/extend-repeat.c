@@ -22,6 +22,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (extend_repeat,
 	    "Test COMAC_EXTEND_REPEAT for surface patterns",
 	    "extend", /* keywords */
-	    NULL, /* requirements */
-	    256 + 32*2, 192 + 32*2,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    256 + 32 * 2,
+	    192 + 32 * 2,
+	    NULL,
+	    draw)

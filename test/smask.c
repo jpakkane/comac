@@ -29,8 +29,10 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     uint32_t data[] = {
-	0x80000000, 0x80000000,
-	0x80000000, 0x80000000,
+	0x80000000,
+	0x80000000,
+	0x80000000,
+	0x80000000,
     };
 
     comac_surface_t *mask, *mask2;
@@ -39,15 +41,18 @@ draw (comac_t *cr, int width, int height)
     comac_text_extents_t extents;
 
     mask = comac_surface_create_similar (comac_get_group_target (cr),
-				         COMAC_CONTENT_ALPHA,
-					 width, height);
+					 COMAC_CONTENT_ALPHA,
+					 width,
+					 height);
     cr2 = comac_create (mask);
     comac_surface_destroy (mask);
 
-    comac_save (cr2); {
+    comac_save (cr2);
+    {
 	comac_set_operator (cr2, COMAC_OPERATOR_CLEAR);
 	comac_paint (cr2);
-    } comac_restore (cr2);
+    }
+    comac_restore (cr2);
 
     pattern = comac_pattern_create_linear (0, 0, 0, height);
     comac_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.0);
@@ -69,7 +74,10 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_destroy (pattern);
 
     mask2 = comac_image_surface_create_for_data ((unsigned char *) data,
-						COMAC_FORMAT_ARGB32, 2, 2, 8);
+						 COMAC_FORMAT_ARGB32,
+						 2,
+						 2,
+						 8);
     pattern = comac_pattern_create_for_surface (mask2);
     comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
     comac_mask (cr2, pattern);
@@ -88,17 +96,21 @@ draw (comac_t *cr, int width, int height)
     comac_set_font_size (cr2, 0.3 * height);
 
     comac_text_extents (cr2, "FG", &extents);
-    comac_move_to (cr2,
-		   floor ((width - extents.width) / 2 + 0.5) - extents.x_bearing,
-		   floor (height - extents.height - 0.5) - extents.y_bearing - 5);
+    comac_move_to (
+	cr2,
+	floor ((width - extents.width) / 2 + 0.5) - extents.x_bearing,
+	floor (height - extents.height - 0.5) - extents.y_bearing - 5);
     comac_show_text (cr2, "FG");
 
     comac_set_source_rgb (cr, 0, 0, 1.0);
     comac_paint (cr);
 
-    pattern = comac_pattern_create_radial (
-	    0.5 * width, 0.5 * height, 0,
-	    0.5 * width, 0.5 * height, 0.5 *height);
+    pattern = comac_pattern_create_radial (0.5 * width,
+					   0.5 * height,
+					   0,
+					   0.5 * width,
+					   0.5 * height,
+					   0.5 * height);
     comac_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.);
     comac_pattern_add_color_stop_rgba (pattern, 0.25, 1., 0., 0., 1.);
     comac_pattern_add_color_stop_rgba (pattern, 0.50, 1., 0., 0., .5);
@@ -118,6 +130,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (smask,
 	    "Test the support of \"soft\" masks",
 	    "smask", /* keywords */
-	    NULL, /* requirements */
-	    60, 60,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    60,
+	    60,
+	    NULL,
+	    draw)

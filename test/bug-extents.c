@@ -35,12 +35,12 @@ draw (comac_t *cr, int width, int height)
 
     comac_translate (cr, 0, -25);
 
-    comac_move_to  (cr,   50, 200);
-    comac_curve_to (cr,   50, 150, 100,  50, 150,  50);
-    comac_curve_to (cr,  200,  50, 250, 250, 200, 250);
-    comac_curve_to (cr,  150, 250, 200,  50,  50, 100);
+    comac_move_to (cr, 50, 200);
+    comac_curve_to (cr, 50, 150, 100, 50, 150, 50);
+    comac_curve_to (cr, 200, 50, 250, 250, 200, 250);
+    comac_curve_to (cr, 150, 250, 200, 50, 50, 100);
     comac_curve_to (cr, -100, 150, 200, 150, 200, 200);
-    comac_curve_to (cr,  200, 250,  50, 250,  50, 200);
+    comac_curve_to (cr, 200, 250, 50, 250, 50, 200);
 
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_fill_preserve (cr);
@@ -54,6 +54,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_extents,
 	    "Tests a bug in the computation of approximate extents",
 	    "extents", /* keywords */
-	    NULL, /* requirements */
-	    250, 250,
-	    NULL, draw)
+	    NULL,      /* requirements */
+	    250,
+	    250,
+	    NULL,
+	    draw)

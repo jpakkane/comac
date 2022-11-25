@@ -67,8 +67,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (clip_twice,
-	    "Verifies that the clip mask is updated correctly when it constructed by setting the clip path twice.",
+	    "Verifies that the clip mask is updated correctly when it "
+	    "constructed by setting the clip path twice.",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

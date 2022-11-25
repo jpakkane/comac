@@ -31,7 +31,7 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    const double alpha = 1./3;
+    const double alpha = 1. / 3;
     comac_pattern_t *pattern;
     int n;
 
@@ -63,15 +63,15 @@ draw (comac_t *cr, int width, int height)
     comac_fill (cr);
 
     /* star */
-    comac_translate (cr, -(SIZE + 2 * PAD) + SIZE/2., SIZE/2.);
+    comac_translate (cr, -(SIZE + 2 * PAD) + SIZE / 2., SIZE / 2.);
     for (n = 0; n < 5; n++) {
 	comac_line_to (cr,
-		       SIZE/2 * cos (2*n * 2*M_PI / 10),
-		       SIZE/2 * sin (2*n * 2*M_PI / 10));
+		       SIZE / 2 * cos (2 * n * 2 * M_PI / 10),
+		       SIZE / 2 * sin (2 * n * 2 * M_PI / 10));
 
 	comac_line_to (cr,
-		       SIZE/4 * cos ((2*n+1)*2*M_PI / 10),
-		       SIZE/4 * sin ((2*n+1)*2*M_PI / 10));
+		       SIZE / 4 * cos ((2 * n + 1) * 2 * M_PI / 10),
+		       SIZE / 4 * sin ((2 * n + 1) * 2 * M_PI / 10));
     }
     comac_set_source_rgba (cr, 0, 0, 0, alpha);
     comac_fill (cr);
@@ -82,6 +82,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (fill_alpha_pattern,
 	    "Tests using set_rgba();fill() over a linear gradient",
 	    "fill, alpha", /* keywords */
-	    NULL, /* requirements */
-	    2*SIZE + 4*PAD, 2*SIZE + 4*PAD,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    2 * SIZE + 4 * PAD,
+	    2 * SIZE + 4 * PAD,
+	    NULL,
+	    draw)

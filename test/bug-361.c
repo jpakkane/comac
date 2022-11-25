@@ -106,6 +106,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_361,
 	    "Bug 361 (Problem with SVG backend and masks)",
 	    "mask, operator", /* keywords */
-	    NULL, /* requirements */
-	    100, 100,
-	    NULL, draw)
+	    NULL,	      /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw)

@@ -43,8 +43,7 @@
 /* XXX Eliminate repeated paths and nested clips */
 
 static comac_status_t
-_comac_path_fixed_add_box (comac_path_fixed_t *path,
-			   const comac_box_t *box)
+_comac_path_fixed_add_box (comac_path_fixed_t *path, const comac_box_t *box)
 {
     comac_status_t status;
 
@@ -91,7 +90,8 @@ _comac_surface_clipper_intersect_clip_boxes (comac_surface_clipper_t *clipper,
 	}
     }
 
-    status = clipper->intersect_clip_path (clipper, &path,
+    status = clipper->intersect_clip_path (clipper,
+					   &path,
 					   COMAC_FILL_RULE_WINDING,
 					   0.,
 					   COMAC_ANTIALIAS_DEFAULT);
@@ -101,17 +101,18 @@ _comac_surface_clipper_intersect_clip_boxes (comac_surface_clipper_t *clipper,
 }
 
 static comac_status_t
-_comac_surface_clipper_intersect_clip_path_recursive (comac_surface_clipper_t *clipper,
-						      comac_clip_path_t *clip_path,
-						      comac_clip_path_t *end)
+_comac_surface_clipper_intersect_clip_path_recursive (
+    comac_surface_clipper_t *clipper,
+    comac_clip_path_t *clip_path,
+    comac_clip_path_t *end)
 {
     comac_status_t status;
 
     if (clip_path->prev != end) {
-	status =
-	    _comac_surface_clipper_intersect_clip_path_recursive (clipper,
-								  clip_path->prev,
-								  end);
+	status = _comac_surface_clipper_intersect_clip_path_recursive (
+	    clipper,
+	    clip_path->prev,
+	    end);
 	if (unlikely (status))
 	    return status;
     }
@@ -134,23 +135,23 @@ _comac_surface_clipper_set_clip (comac_surface_clipper_t *clipper,
 	return COMAC_STATUS_SUCCESS;
 
     /* all clipped out state should never propagate this far */
-    assert (!_comac_clip_is_all_clipped (clip));
+    assert (! _comac_clip_is_all_clipped (clip));
 
     /* XXX Is this an incremental clip? */
-    if (clipper->clip && clip &&
-	clip->num_boxes == clipper->clip->num_boxes &&
-	memcmp (clip->boxes, clipper->clip->boxes,
-		sizeof (comac_box_t) * clip->num_boxes) == 0)
-    {
+    if (clipper->clip && clip && clip->num_boxes == clipper->clip->num_boxes &&
+	memcmp (clip->boxes,
+		clipper->clip->boxes,
+		sizeof (comac_box_t) * clip->num_boxes) == 0) {
 	comac_clip_path_t *clip_path = clip->path;
 	while (clip_path != NULL && clip_path != clipper->clip->path)
 	    clip_path = clip_path->prev;
 
 	if (clip_path) {
 	    incremental = TRUE;
-	    status = _comac_surface_clipper_intersect_clip_path_recursive (clipper,
-									   clip->path,
-									   clipper->clip->path);
+	    status = _comac_surface_clipper_intersect_clip_path_recursive (
+		clipper,
+		clip->path,
+		clipper->clip->path);
 	}
     }
 
@@ -172,17 +173,19 @@ _comac_surface_clipper_set_clip (comac_surface_clipper_t *clipper,
 	return status;
 
     if (clip->path != NULL) {
-	    status = _comac_surface_clipper_intersect_clip_path_recursive (clipper,
-									   clip->path,
-									   NULL);
+	status =
+	    _comac_surface_clipper_intersect_clip_path_recursive (clipper,
+								  clip->path,
+								  NULL);
     }
 
     return status;
 }
 
 void
-_comac_surface_clipper_init (comac_surface_clipper_t *clipper,
-			     comac_surface_clipper_intersect_clip_path_func_t func)
+_comac_surface_clipper_init (
+    comac_surface_clipper_t *clipper,
+    comac_surface_clipper_intersect_clip_path_func_t func)
 {
     clipper->clip = NULL;
     clipper->intersect_clip_path = func;

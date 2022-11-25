@@ -42,7 +42,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (checkerboard,
 	    "Tests the checkerboard background",
 	    "paint", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
-
+	    NULL,    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

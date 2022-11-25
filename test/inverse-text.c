@@ -41,17 +41,20 @@ draw (comac_t *cr, int width, int height)
     comac_set_font_size (cr, TEXT_SIZE);
     comac_move_to (cr, 0, TEXT_SIZE);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Serif",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Serif",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_show_text (cr, "i-am-serif");
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_show_text (cr, " i-am-sans");
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans Mono",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans Mono",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_show_text (cr, " i-am-mono");
@@ -62,6 +65,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (inverse_text,
 	    "Tests rendering of inverse text (white-on-black)",
 	    "font, text", /* keywords */
-	    NULL, /* requirements */
-	    192, TEXT_SIZE + 4,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    192,
+	    TEXT_SIZE + 4,
+	    NULL,
+	    draw)

@@ -48,7 +48,7 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    double dashes[] = { 0.3, 7 };
+    double dashes[] = {0.3, 7};
 
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
@@ -74,6 +74,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (arc_looping_dash,
 	    "Test comac_arc for angles describing more than a complete circle",
 	    "arc", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

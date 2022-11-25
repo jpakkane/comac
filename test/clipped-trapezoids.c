@@ -28,7 +28,7 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    double dash[2] = { 8, 4 };
+    double dash[2] = {8, 4};
     double radius;
 
     radius = width;
@@ -42,34 +42,34 @@ draw (comac_t *cr, int width, int height)
     /* a rotated square - overlapping the corners */
     comac_save (cr);
     comac_save (cr);
-    comac_translate (cr, width/2, height/2);
-    comac_rotate (cr, M_PI/4);
+    comac_translate (cr, width / 2, height / 2);
+    comac_rotate (cr, M_PI / 4);
     comac_scale (cr, M_SQRT2, M_SQRT2);
-    comac_rectangle (cr, -width/2, -height/2, width, height);
+    comac_rectangle (cr, -width / 2, -height / 2, width, height);
     comac_restore (cr);
     comac_set_source_rgba (cr, 0, 1, 0, .5);
-    comac_set_line_width (cr, radius/2);
+    comac_set_line_width (cr, radius / 2);
     comac_stroke (cr);
     comac_restore (cr);
 
     /* and put some circles in the corners */
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_new_sub_path (cr);
-    comac_arc (cr, 0, 0, radius/4, 0, 2 * M_PI);
+    comac_arc (cr, 0, 0, radius / 4, 0, 2 * M_PI);
     comac_new_sub_path (cr);
-    comac_arc (cr, width, 0, radius/4, 0, 2 * M_PI);
+    comac_arc (cr, width, 0, radius / 4, 0, 2 * M_PI);
     comac_new_sub_path (cr);
-    comac_arc (cr, width, height, radius/4, 0, 2 * M_PI);
+    comac_arc (cr, width, height, radius / 4, 0, 2 * M_PI);
     comac_new_sub_path (cr);
-    comac_arc (cr, 0, height, radius/4, 0, 2 * M_PI);
+    comac_arc (cr, 0, height, radius / 4, 0, 2 * M_PI);
     comac_fill (cr);
 
     /* a couple of pixel-aligned lines */
     comac_set_source_rgb (cr, 0, 0, 1);
-    comac_move_to (cr, width/2, -height);
-    comac_rel_line_to (cr, 0, 3*height);
-    comac_move_to (cr, -width, height/2);
-    comac_rel_line_to (cr, 3*width, 0);
+    comac_move_to (cr, width / 2, -height);
+    comac_rel_line_to (cr, 0, 3 * height);
+    comac_move_to (cr, -width, height / 2);
+    comac_rel_line_to (cr, 3 * width, 0);
     comac_stroke (cr);
 
     /* a couple of dashed diagonals */
@@ -78,9 +78,9 @@ draw (comac_t *cr, int width, int height)
     comac_set_dash (cr, dash, 2, 0);
     comac_set_line_width (cr, 4.);
     comac_move_to (cr, -width, -height);
-    comac_line_to (cr, width+width, height+height);
-    comac_move_to (cr, width+width, -height);
-    comac_line_to (cr, -width, height+height);
+    comac_line_to (cr, width + width, height + height);
+    comac_move_to (cr, width + width, -height);
+    comac_line_to (cr, -width, height + height);
     comac_stroke (cr);
     comac_restore (cr);
 
@@ -90,6 +90,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clipped_trapezoids,
 	    "Tests clipping of trapezoids larger than the surface",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    40, 40,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    40,
+	    40,
+	    NULL,
+	    draw)

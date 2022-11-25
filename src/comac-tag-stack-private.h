@@ -50,11 +50,11 @@ typedef enum {
 
 /* The type of the structure tree. */
 typedef enum _comac_tag_stack_structure_type {
-    TAG_TREE_TYPE_TAGGED, /* compliant with Tagged PDF */
+    TAG_TREE_TYPE_TAGGED,    /* compliant with Tagged PDF */
     TAG_TREE_TYPE_STRUCTURE, /* valid structure but not 'Tagged PDF' compliant */
     TAG_TREE_TYPE_LINK_ONLY, /* contains Link tags only */
-    TAG_TREE_TYPE_NO_TAGS, /* no tags used */
-    TAG_TREE_TYPE_INVALID, /* invalid tag structure */
+    TAG_TREE_TYPE_NO_TAGS,   /* no tags used */
+    TAG_TREE_TYPE_INVALID,   /* invalid tag structure */
 } comac_tag_stack_structure_type_t;
 
 typedef struct _comac_tag_stack_elem {
@@ -83,12 +83,11 @@ _comac_tag_stack_get_structure_type (comac_tag_stack_t *stack);
 
 comac_private comac_int_status_t
 _comac_tag_stack_push (comac_tag_stack_t *stack,
-		       const char        *name,
-		       const char        *attributes);
+		       const char *name,
+		       const char *attributes);
 
 comac_private void
-_comac_tag_stack_set_top_data (comac_tag_stack_t *stack,
-			       void              *data);
+_comac_tag_stack_set_top_data (comac_tag_stack_t *stack, void *data);
 
 comac_private comac_int_status_t
 _comac_tag_stack_pop (comac_tag_stack_t *stack,

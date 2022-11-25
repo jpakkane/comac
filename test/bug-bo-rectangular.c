@@ -39,7 +39,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
-    comac_scale (cr, 1./256, 1./256);
+    comac_scale (cr, 1. / 256, 1. / 256);
 
     rect (cr, 0, 0, 29696, 7680);
     rect (cr, 0, 0, -15360, 15360);
@@ -62,6 +62,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_bo_rectangular,
 	    "Tests a bug found by Benjamin Otte in the rectangular tessellator",
 	    "tessellator", /* keywords */
-	    NULL, /* requirements */
-	    300, 300,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    300,
+	    300,
+	    NULL,
+	    draw)

@@ -46,23 +46,22 @@
 
 static const comac_user_data_key_t pdf_closure_key;
 
-typedef struct _pdf_target_closure
-{
-    char		*filename;
-    int 		 width;
-    int 		 height;
-    comac_surface_t	*target;
+typedef struct _pdf_target_closure {
+    char *filename;
+    int width;
+    int height;
+    comac_surface_t *target;
 } pdf_target_closure_t;
 
 static comac_surface_t *
-_comac_boilerplate_pdf_create_surface (const char		 *name,
-				       comac_content_t		  content,
-				       double			  width,
-				       double			  height,
-				       double			  max_width,
-				       double			  max_height,
-				       comac_boilerplate_mode_t   mode,
-				       void			**closure)
+_comac_boilerplate_pdf_create_surface (const char *name,
+				       comac_content_t content,
+				       double width,
+				       double height,
+				       double max_width,
+				       double max_height,
+				       comac_boilerplate_mode_t mode,
+				       void **closure)
 {
     pdf_target_closure_t *ptc;
     comac_surface_t *surface;
@@ -84,14 +83,17 @@ _comac_boilerplate_pdf_create_surface (const char		 *name,
     if (comac_surface_status (surface))
 	goto CLEANUP_FILENAME;
 
-    comac_pdf_surface_set_metadata (surface, COMAC_PDF_METADATA_CREATE_DATE, NULL);
+    comac_pdf_surface_set_metadata (surface,
+				    COMAC_PDF_METADATA_CREATE_DATE,
+				    NULL);
     comac_surface_set_fallback_resolution (surface, 72., 72.);
 
     if (content == COMAC_CONTENT_COLOR) {
 	ptc->target = surface;
 	surface = comac_surface_create_similar (ptc->target,
 						COMAC_CONTENT_COLOR,
-						ptc->width, ptc->height);
+						ptc->width,
+						ptc->height);
 	if (comac_surface_status (surface))
 	    goto CLEANUP_TARGET;
     } else {
@@ -105,9 +107,9 @@ _comac_boilerplate_pdf_create_surface (const char		 *name,
     comac_surface_destroy (surface);
     surface = comac_boilerplate_surface_create_in_error (status);
 
-  CLEANUP_TARGET:
+CLEANUP_TARGET:
     comac_surface_destroy (ptc->target);
-  CLEANUP_FILENAME:
+CLEANUP_FILENAME:
     free (ptc->filename);
     free (ptc);
     return surface;
@@ -116,8 +118,8 @@ _comac_boilerplate_pdf_create_surface (const char		 *name,
 static comac_status_t
 _comac_boilerplate_pdf_finish_surface (comac_surface_t *surface)
 {
-    pdf_target_closure_t *ptc = comac_surface_get_user_data (surface,
-							     &pdf_closure_key);
+    pdf_target_closure_t *ptc =
+	comac_surface_get_user_data (surface, &pdf_closure_key);
     comac_status_t status;
 
     if (ptc->target) {
@@ -165,14 +167,14 @@ _comac_boilerplate_pdf_finish_surface (comac_surface_t *surface)
 
 static comac_status_t
 _comac_boilerplate_pdf_surface_write_to_png (comac_surface_t *surface,
-					     const char      *filename)
+					     const char *filename)
 {
-    pdf_target_closure_t *ptc = comac_surface_get_user_data (surface, &pdf_closure_key);
-    char    command[4096];
+    pdf_target_closure_t *ptc =
+	comac_surface_get_user_data (surface, &pdf_closure_key);
+    char command[4096];
     int exitstatus;
 
-    sprintf (command, "./pdf2png %s %s 1",
-	     ptc->filename, filename);
+    sprintf (command, "./pdf2png %s %s 1", ptc->filename, filename);
 
     exitstatus = system (command);
 #if _XOPEN_SOURCE && HAVE_SIGNAL_H
@@ -186,20 +188,19 @@ _comac_boilerplate_pdf_surface_write_to_png (comac_surface_t *surface,
 }
 
 static comac_surface_t *
-_comac_boilerplate_pdf_convert_to_image (comac_surface_t *surface,
-					 int		  page)
+_comac_boilerplate_pdf_convert_to_image (comac_surface_t *surface, int page)
 {
-    pdf_target_closure_t *ptc = comac_surface_get_user_data (surface,
-							     &pdf_closure_key);
+    pdf_target_closure_t *ptc =
+	comac_surface_get_user_data (surface, &pdf_closure_key);
 
-    return comac_boilerplate_convert_to_image (ptc->filename, page+1);
+    return comac_boilerplate_convert_to_image (ptc->filename, page + 1);
 }
 
 static comac_surface_t *
 _comac_boilerplate_pdf_get_image_surface (comac_surface_t *surface,
-					  int		   page,
-					  int		   width,
-					  int		   height)
+					  int page,
+					  int width,
+					  int height)
 {
     comac_surface_t *image;
     double x_offset, y_offset;
@@ -230,11 +231,11 @@ _comac_boilerplate_pdf_cleanup (void *closure)
 
 static void
 _comac_boilerplate_pdf_force_fallbacks (comac_surface_t *abstract_surface,
-				       double		 x_pixels_per_inch,
-				       double		 y_pixels_per_inch)
+					double x_pixels_per_inch,
+					double y_pixels_per_inch)
 {
-    pdf_target_closure_t *ptc = comac_surface_get_user_data (abstract_surface,
-							     &pdf_closure_key);
+    pdf_target_closure_t *ptc =
+	comac_surface_get_user_data (abstract_surface, &pdf_closure_key);
 
     comac_paginated_surface_t *paginated;
     comac_pdf_surface_t *surface;
@@ -242,8 +243,8 @@ _comac_boilerplate_pdf_force_fallbacks (comac_surface_t *abstract_surface,
     if (ptc->target)
 	abstract_surface = ptc->target;
 
-    paginated = (comac_paginated_surface_t*) abstract_surface;
-    surface = (comac_pdf_surface_t*) paginated->target;
+    paginated = (comac_paginated_surface_t *) abstract_surface;
+    surface = (comac_pdf_surface_t *) paginated->target;
     surface->force_fallbacks = TRUE;
     comac_surface_set_fallback_resolution (&paginated->base,
 					   x_pixels_per_inch,
@@ -251,33 +252,46 @@ _comac_boilerplate_pdf_force_fallbacks (comac_surface_t *abstract_surface,
 }
 
 static const comac_boilerplate_target_t targets[] = {
-    {
-	"pdf", "pdf", ".pdf", NULL,
-	COMAC_SURFACE_TYPE_PDF,
-	COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED, 0,
-	"comac_pdf_surface_create",
-	_comac_boilerplate_pdf_create_surface,
-	comac_surface_create_similar,
-	_comac_boilerplate_pdf_force_fallbacks,
-	_comac_boilerplate_pdf_finish_surface,
-	_comac_boilerplate_pdf_get_image_surface,
-	_comac_boilerplate_pdf_surface_write_to_png,
-	_comac_boilerplate_pdf_cleanup,
-	NULL, NULL, FALSE, TRUE, TRUE
-    },
-    {
-	"pdf", "pdf", ".pdf", NULL,
-	COMAC_SURFACE_TYPE_RECORDING, COMAC_CONTENT_COLOR, 0,
-	"comac_pdf_surface_create",
-	_comac_boilerplate_pdf_create_surface,
-	comac_surface_create_similar,
-	_comac_boilerplate_pdf_force_fallbacks,
-	_comac_boilerplate_pdf_finish_surface,
-	_comac_boilerplate_pdf_get_image_surface,
-	_comac_boilerplate_pdf_surface_write_to_png,
-	_comac_boilerplate_pdf_cleanup,
-	NULL, NULL, FALSE, TRUE, TRUE
-    },
+    {"pdf",
+     "pdf",
+     ".pdf",
+     NULL,
+     COMAC_SURFACE_TYPE_PDF,
+     COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED,
+     0,
+     "comac_pdf_surface_create",
+     _comac_boilerplate_pdf_create_surface,
+     comac_surface_create_similar,
+     _comac_boilerplate_pdf_force_fallbacks,
+     _comac_boilerplate_pdf_finish_surface,
+     _comac_boilerplate_pdf_get_image_surface,
+     _comac_boilerplate_pdf_surface_write_to_png,
+     _comac_boilerplate_pdf_cleanup,
+     NULL,
+     NULL,
+     FALSE,
+     TRUE,
+     TRUE},
+    {"pdf",
+     "pdf",
+     ".pdf",
+     NULL,
+     COMAC_SURFACE_TYPE_RECORDING,
+     COMAC_CONTENT_COLOR,
+     0,
+     "comac_pdf_surface_create",
+     _comac_boilerplate_pdf_create_surface,
+     comac_surface_create_similar,
+     _comac_boilerplate_pdf_force_fallbacks,
+     _comac_boilerplate_pdf_finish_surface,
+     _comac_boilerplate_pdf_get_image_surface,
+     _comac_boilerplate_pdf_surface_write_to_png,
+     _comac_boilerplate_pdf_cleanup,
+     NULL,
+     NULL,
+     FALSE,
+     TRUE,
+     TRUE},
 };
 COMAC_BOILERPLATE (pdf, targets)
 

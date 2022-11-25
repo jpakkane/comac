@@ -43,9 +43,9 @@
  * XXX fragmentation? use Doug Lea's malloc?
  */
 
-#define BITTEST(p, n)  ((p)->map[(n) >> 3] &   (128 >> ((n) & 7)))
-#define BITSET(p, n)   ((p)->map[(n) >> 3] |=  (128 >> ((n) & 7)))
-#define BITCLEAR(p, n) ((p)->map[(n) >> 3] &= ~(128 >> ((n) & 7)))
+#define BITTEST(p, n) ((p)->map[(n) >> 3] & (128 >> ((n) &7)))
+#define BITSET(p, n) ((p)->map[(n) >> 3] |= (128 >> ((n) &7)))
+#define BITCLEAR(p, n) ((p)->map[(n) >> 3] &= ~(128 >> ((n) &7)))
 
 static void
 clear_bits (comac_mempool_t *pool, size_t first, size_t last)
@@ -58,7 +58,7 @@ clear_bits (comac_mempool_t *pool, size_t first, size_t last)
     if (n > first_full)
 	n = first_full;
     for (i = first; i < n; i++)
-	  BITCLEAR (pool, i);
+	BITCLEAR (pool, i);
 
     if (past_full > first_full) {
 	bytes = past_full - first_full;
@@ -101,7 +101,7 @@ free_blocks (comac_mempool_t *pool,
     int bits = 0;
 
     for (i = first, len = 1; i < last; i += len) {
-        /* To avoid cost quadratic in the number of different
+	/* To avoid cost quadratic in the number of different
 	 * blocks produced from this chunk of store, we have to
 	 * use the size of the previous block produced from this
 	 * chunk as the starting point to work out the size of the
@@ -127,22 +127,23 @@ free_blocks (comac_mempool_t *pool,
 
 	    if (i + next_bits > last) {
 		/* off end of chunk to be freed */
-	        break;
+		break;
 	    }
 
 	    if (i & (next_len - 1)) /* block would not be on boundary */
-	        break;
+		break;
 
 	    bits = next_bits;
 	    len = next_len;
 	}
 
 	do {
-	    if (i + len <= last && /* off end of chunk to be freed */
+	    if (i + len <= last &&    /* off end of chunk to be freed */
 		(i & (len - 1)) == 0) /* block would not be on boundary */
 		break;
 
-	    bits--; len >>=1;
+	    bits--;
+	    len >>= 1;
 	} while (len);
 
 	if (len == 0)
@@ -211,12 +212,14 @@ merge_bits (comac_mempool_t *pool, int max_bits)
     int bits;
 
     for (bits = 0; bits < max_bits - 1; bits++) {
-	comac_list_foreach_entry_safe (block, next,
+	comac_list_foreach_entry_safe (block,
+				       next,
 				       struct _comac_memblock,
 				       &pool->free[bits],
 				       link)
 	{
-	    size_t buddy_offset = (block - pool->blocks) ^ (((size_t) 1) << bits);
+	    size_t buddy_offset =
+		(block - pool->blocks) ^ (((size_t) 1) << bits);
 
 	    buddy = get_buddy (pool, buddy_offset, bits);
 	    if (buddy == NULL)
@@ -281,8 +284,10 @@ buddy_malloc (comac_mempool_t *pool, int bits)
 
 comac_status_t
 _comac_mempool_init (comac_mempool_t *pool,
-		      void *base, size_t bytes,
-		      int min_bits, int num_sizes)
+		     void *base,
+		     size_t bytes,
+		     int min_bits,
+		     int num_sizes)
 {
     uintptr_t tmp;
     int num_blocks;
@@ -292,7 +297,7 @@ _comac_mempool_init (comac_mempool_t *pool,
     tmp = ((uintptr_t) base) & ((((size_t) 1) << min_bits) - 1);
     if (tmp) {
 	tmp = (((size_t) 1) << min_bits) - tmp;
-	base = (char *)base + tmp;
+	base = (char *) base + tmp;
 	bytes -= tmp;
     }
 
@@ -352,7 +357,7 @@ _comac_mempool_free (comac_mempool_t *pool, void *storage)
     size_t block_offset;
     struct _comac_memblock *block;
 
-    block_offset = ((char *)storage - pool->base) >> pool->min_bits;
+    block_offset = ((char *) storage - pool->base) >> pool->min_bits;
     block = pool->blocks + block_offset;
 
     BITCLEAR (pool, block_offset + ((((size_t) 1) << block->bits) - 1));

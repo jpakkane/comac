@@ -61,7 +61,8 @@ typedef struct _test_paginated_surface {
 } test_paginated_surface_t;
 
 static const comac_surface_backend_t test_paginated_surface_backend;
-static const comac_paginated_surface_backend_t test_paginated_surface_paginated_backend;
+static const comac_paginated_surface_backend_t
+    test_paginated_surface_paginated_backend;
 
 comac_surface_t *
 _comac_test_paginated_surface_create (comac_surface_t *target)
@@ -76,7 +77,8 @@ _comac_test_paginated_surface_create (comac_surface_t *target)
 
     surface = _comac_malloc (sizeof (test_paginated_surface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
 			 &test_paginated_surface_backend,
@@ -86,9 +88,10 @@ _comac_test_paginated_surface_create (comac_surface_t *target)
 
     surface->target = comac_surface_reference (target);
 
-    paginated =  _comac_paginated_surface_create (&surface->base,
-						  target->content,
-						  &test_paginated_surface_paginated_backend);
+    paginated = _comac_paginated_surface_create (
+	&surface->base,
+	target->content,
+	&test_paginated_surface_paginated_backend);
     status = paginated->status;
     if (status == COMAC_STATUS_SUCCESS) {
 	/* paginated keeps the only reference to surface now, drop ours */
@@ -112,8 +115,8 @@ _test_paginated_surface_finish (void *abstract_surface)
 }
 
 static comac_bool_t
-_test_paginated_surface_get_extents (void			*abstract_surface,
-				     comac_rectangle_int_t	*rectangle)
+_test_paginated_surface_get_extents (void *abstract_surface,
+				     comac_rectangle_int_t *rectangle)
 {
     test_paginated_surface_t *surface = abstract_surface;
 
@@ -121,10 +124,10 @@ _test_paginated_surface_get_extents (void			*abstract_surface,
 }
 
 static comac_int_status_t
-_test_paginated_surface_paint (void		*abstract_surface,
-			       comac_operator_t	 op,
-			       const comac_pattern_t	*source,
-			       const comac_clip_t	*clip)
+_test_paginated_surface_paint (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_clip_t *clip)
 {
     test_paginated_surface_t *surface = abstract_surface;
 
@@ -135,63 +138,71 @@ _test_paginated_surface_paint (void		*abstract_surface,
 }
 
 static comac_int_status_t
-_test_paginated_surface_mask (void		*abstract_surface,
-			      comac_operator_t	 op,
-			      const comac_pattern_t	*source,
-			      const comac_pattern_t	*mask,
-			      const comac_clip_t	*clip)
+_test_paginated_surface_mask (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_pattern_t *mask,
+			      const comac_clip_t *clip)
 {
     test_paginated_surface_t *surface = abstract_surface;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE)
 	return COMAC_STATUS_SUCCESS;
 
-    return _comac_surface_mask (surface->target,
-				op, source, mask, clip);
+    return _comac_surface_mask (surface->target, op, source, mask, clip);
 }
 
 static comac_int_status_t
-_test_paginated_surface_stroke (void				*abstract_surface,
-				comac_operator_t		 op,
-				const comac_pattern_t		*source,
-				const comac_path_fixed_t		*path,
-				const comac_stroke_style_t		*style,
-				const comac_matrix_t			*ctm,
-				const comac_matrix_t			*ctm_inverse,
-				double				 tolerance,
-				comac_antialias_t		 antialias,
-				const comac_clip_t		*clip)
+_test_paginated_surface_stroke (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_path_fixed_t *path,
+				const comac_stroke_style_t *style,
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias,
+				const comac_clip_t *clip)
 {
     test_paginated_surface_t *surface = abstract_surface;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE)
 	return COMAC_STATUS_SUCCESS;
 
-    return _comac_surface_stroke (surface->target, op, source,
-				  path, style,
-				  ctm, ctm_inverse,
-				  tolerance, antialias,
+    return _comac_surface_stroke (surface->target,
+				  op,
+				  source,
+				  path,
+				  style,
+				  ctm,
+				  ctm_inverse,
+				  tolerance,
+				  antialias,
 				  clip);
 }
 
 static comac_int_status_t
-_test_paginated_surface_fill (void				*abstract_surface,
-			      comac_operator_t			 op,
-			      const comac_pattern_t		*source,
-			      const comac_path_fixed_t		*path,
-			      comac_fill_rule_t			 fill_rule,
-			      double				 tolerance,
-			      comac_antialias_t			 antialias,
-			      const comac_clip_t		*clip)
+_test_paginated_surface_fill (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip)
 {
     test_paginated_surface_t *surface = abstract_surface;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE)
 	return COMAC_STATUS_SUCCESS;
 
-    return _comac_surface_fill (surface->target, op, source,
-				path, fill_rule,
-				tolerance, antialias,
+    return _comac_surface_fill (surface->target,
+				op,
+				source,
+				path,
+				fill_rule,
+				tolerance,
+				antialias,
 				clip);
 }
 
@@ -204,37 +215,42 @@ _test_paginated_surface_has_show_text_glyphs (void *abstract_surface)
 }
 
 static comac_int_status_t
-_test_paginated_surface_show_text_glyphs (void			    *abstract_surface,
-					  comac_operator_t	     op,
-					  const comac_pattern_t	    *source,
-					  const char		    *utf8,
-					  int			     utf8_len,
-					  comac_glyph_t		    *glyphs,
-					  int			     num_glyphs,
-					  const comac_text_cluster_t *clusters,
-					  int			     num_clusters,
-					  comac_text_cluster_flags_t cluster_flags,
-					  comac_scaled_font_t	    *scaled_font,
-					  const comac_clip_t	    *clip)
+_test_paginated_surface_show_text_glyphs (
+    void *abstract_surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const char *utf8,
+    int utf8_len,
+    comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_text_cluster_t *clusters,
+    int num_clusters,
+    comac_text_cluster_flags_t cluster_flags,
+    comac_scaled_font_t *scaled_font,
+    const comac_clip_t *clip)
 {
     test_paginated_surface_t *surface = abstract_surface;
 
     if (surface->paginated_mode == COMAC_PAGINATED_MODE_ANALYZE)
 	return COMAC_STATUS_SUCCESS;
 
-    return _comac_surface_show_text_glyphs (surface->target, op, source,
-					    utf8, utf8_len,
-					    glyphs, num_glyphs,
-					    clusters, num_clusters,
+    return _comac_surface_show_text_glyphs (surface->target,
+					    op,
+					    source,
+					    utf8,
+					    utf8_len,
+					    glyphs,
+					    num_glyphs,
+					    clusters,
+					    num_clusters,
 					    cluster_flags,
 					    scaled_font,
 					    clip);
 }
 
-
 static comac_int_status_t
-_test_paginated_surface_set_paginated_mode (void			*abstract_surface,
-					    comac_paginated_mode_t	 mode)
+_test_paginated_surface_set_paginated_mode (void *abstract_surface,
+					    comac_paginated_mode_t mode)
 {
     test_paginated_surface_t *surface = abstract_surface;
 
@@ -280,10 +296,9 @@ static const comac_surface_backend_t test_paginated_surface_backend = {
     NULL, /* fill-stroke */
     NULL, /* replaced by show_text_glyphs */
     _test_paginated_surface_has_show_text_glyphs,
-    _test_paginated_surface_show_text_glyphs
-};
+    _test_paginated_surface_show_text_glyphs};
 
-static const comac_paginated_surface_backend_t test_paginated_surface_paginated_backend = {
-    NULL, /* start_page */
-    _test_paginated_surface_set_paginated_mode
-};
+static const comac_paginated_surface_backend_t
+    test_paginated_surface_paginated_backend = {
+	NULL, /* start_page */
+	_test_paginated_surface_set_paginated_mode};

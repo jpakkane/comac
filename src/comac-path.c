@@ -51,7 +51,7 @@
  * generate simple masks.
  **/
 
-static const comac_path_t _comac_path_nil = { COMAC_STATUS_NO_MEMORY, NULL, 0 };
+static const comac_path_t _comac_path_nil = {COMAC_STATUS_NO_MEMORY, NULL, 0};
 
 /* Closure for path interpretation. */
 typedef struct comac_path_count {
@@ -59,8 +59,7 @@ typedef struct comac_path_count {
 } cpc_t;
 
 static comac_status_t
-_cpc_move_to (void *closure,
-	      const comac_point_t *point)
+_cpc_move_to (void *closure, const comac_point_t *point)
 {
     cpc_t *cpc = closure;
 
@@ -70,8 +69,7 @@ _cpc_move_to (void *closure,
 }
 
 static comac_status_t
-_cpc_line_to (void *closure,
-	      const comac_point_t *point)
+_cpc_line_to (void *closure, const comac_point_t *point)
 {
     cpc_t *cpc = closure;
 
@@ -81,10 +79,10 @@ _cpc_line_to (void *closure,
 }
 
 static comac_status_t
-_cpc_curve_to (void		*closure,
-	       const comac_point_t	*p1,
-	       const comac_point_t	*p2,
-	       const comac_point_t	*p3)
+_cpc_curve_to (void *closure,
+	       const comac_point_t *p1,
+	       const comac_point_t *p2,
+	       const comac_point_t *p3)
 {
     cpc_t *cpc = closure;
 
@@ -104,10 +102,10 @@ _cpc_close_path (void *closure)
 }
 
 static int
-_comac_path_count (comac_path_t		*path,
-		   comac_path_fixed_t	*path_fixed,
-		   double		 tolerance,
-		   comac_bool_t		 flatten)
+_comac_path_count (comac_path_t *path,
+		   comac_path_fixed_t *path_fixed,
+		   double tolerance,
+		   comac_bool_t flatten)
 {
     comac_status_t status;
     cpc_t cpc;
@@ -143,8 +141,7 @@ typedef struct comac_path_populate {
 } cpp_t;
 
 static comac_status_t
-_cpp_move_to (void *closure,
-	      const comac_point_t *point)
+_cpp_move_to (void *closure, const comac_point_t *point)
 {
     cpp_t *cpp = closure;
     comac_path_data_t *data = cpp->data;
@@ -168,8 +165,7 @@ _cpp_move_to (void *closure,
 }
 
 static comac_status_t
-_cpp_line_to (void *closure,
-	      const comac_point_t *point)
+_cpp_line_to (void *closure, const comac_point_t *point)
 {
     cpp_t *cpp = closure;
     comac_path_data_t *data = cpp->data;
@@ -193,10 +189,10 @@ _cpp_line_to (void *closure,
 }
 
 static comac_status_t
-_cpp_curve_to (void			*closure,
-	       const comac_point_t	*p1,
-	       const comac_point_t	*p2,
-	       const comac_point_t	*p3)
+_cpp_curve_to (void *closure,
+	       const comac_point_t *p1,
+	       const comac_point_t *p2,
+	       const comac_point_t *p3)
 {
     cpp_t *cpp = closure;
     comac_path_data_t *data = cpp->data;
@@ -249,10 +245,10 @@ _cpp_close_path (void *closure)
 }
 
 static comac_status_t
-_comac_path_populate (comac_path_t		*path,
-		      comac_path_fixed_t	*path_fixed,
-		      comac_t			*cr,
-		      comac_bool_t		 flatten)
+_comac_path_populate (comac_path_t *path,
+		      comac_path_fixed_t *path_fixed,
+		      comac_t *cr,
+		      comac_bool_t flatten)
 {
     comac_status_t status;
     cpp_t cpp;
@@ -269,11 +265,11 @@ _comac_path_populate (comac_path_t		*path,
 						   comac_get_tolerance (cr));
     } else {
 	status = _comac_path_fixed_interpret (path_fixed,
-					  _cpp_move_to,
-					  _cpp_line_to,
-					  _cpp_curve_to,
-					  _cpp_close_path,
-					  &cpp);
+					      _cpp_move_to,
+					      _cpp_line_to,
+					      _cpp_curve_to,
+					      _cpp_close_path,
+					      &cpp);
     }
 
     if (unlikely (status))
@@ -292,12 +288,12 @@ _comac_path_create_in_error (comac_status_t status)
 
     /* special case NO_MEMORY so as to avoid allocations */
     if (status == COMAC_STATUS_NO_MEMORY)
-	return (comac_path_t*) &_comac_path_nil;
+	return (comac_path_t *) &_comac_path_nil;
 
     path = _comac_malloc (sizeof (comac_path_t));
     if (unlikely (path == NULL)) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
-	return (comac_path_t*) &_comac_path_nil;
+	return (comac_path_t *) &_comac_path_nil;
     }
 
     path->num_data = 0;
@@ -309,32 +305,31 @@ _comac_path_create_in_error (comac_status_t status)
 
 static comac_path_t *
 _comac_path_create_internal (comac_path_fixed_t *path_fixed,
-			     comac_t		*cr,
-			     comac_bool_t	 flatten)
+			     comac_t *cr,
+			     comac_bool_t flatten)
 {
     comac_path_t *path;
 
     path = _comac_malloc (sizeof (comac_path_t));
     if (unlikely (path == NULL)) {
 	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
-	return (comac_path_t*) &_comac_path_nil;
+	return (comac_path_t *) &_comac_path_nil;
     }
 
-    path->num_data = _comac_path_count (path, path_fixed,
-					comac_get_tolerance (cr),
-					flatten);
+    path->num_data =
+	_comac_path_count (path, path_fixed, comac_get_tolerance (cr), flatten);
     if (path->num_data < 0) {
 	free (path);
-	return (comac_path_t*) &_comac_path_nil;
+	return (comac_path_t *) &_comac_path_nil;
     }
 
     if (path->num_data) {
-	path->data = _comac_malloc_ab (path->num_data,
-				       sizeof (comac_path_data_t));
+	path->data =
+	    _comac_malloc_ab (path->num_data, sizeof (comac_path_data_t));
 	if (unlikely (path->data == NULL)) {
 	    free (path);
 	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
-	    return (comac_path_t*) &_comac_path_nil;
+	    return (comac_path_t *) &_comac_path_nil;
 	}
 
 	path->status = _comac_path_populate (path, path_fixed, cr, flatten);
@@ -388,8 +383,7 @@ comac_path_destroy (comac_path_t *path)
  * data==%NULL.
  **/
 comac_path_t *
-_comac_path_create (comac_path_fixed_t	*path,
-		    comac_t		*cr)
+_comac_path_create (comac_path_fixed_t *path, comac_t *cr)
 {
     return _comac_path_create_internal (path, cr, FALSE);
 }
@@ -410,8 +404,7 @@ _comac_path_create (comac_path_fixed_t	*path,
  * data==%NULL.
  **/
 comac_path_t *
-_comac_path_create_flat (comac_path_fixed_t *path,
-			 comac_t	    *cr)
+_comac_path_create_flat (comac_path_fixed_t *path, comac_t *cr)
 {
     return _comac_path_create_internal (path, cr, TRUE);
 }
@@ -427,8 +420,7 @@ _comac_path_create_flat (comac_path_fixed_t *path,
  * is invalid, and %COMAC_STATUS_SUCCESS otherwise.
  **/
 comac_status_t
-_comac_path_append_to_context (const comac_path_t	*path,
-			       comac_t			*cr)
+_comac_path_append_to_context (const comac_path_t *path, comac_t *cr)
 {
     const comac_path_data_t *p, *end;
 
@@ -454,9 +446,12 @@ _comac_path_append_to_context (const comac_path_t	*path,
 		return _comac_error (COMAC_STATUS_INVALID_PATH_DATA);
 
 	    comac_curve_to (cr,
-			    p[1].point.x, p[1].point.y,
-			    p[2].point.x, p[2].point.y,
-			    p[3].point.x, p[3].point.y);
+			    p[1].point.x,
+			    p[1].point.y,
+			    p[2].point.x,
+			    p[2].point.y,
+			    p[3].point.x,
+			    p[3].point.y);
 	    break;
 
 	case COMAC_PATH_CLOSE_PATH:

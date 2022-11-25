@@ -34,14 +34,17 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_t *pattern;
 
     surface = comac_image_surface_create_for_data ((unsigned char *) &color,
-						   COMAC_FORMAT_ARGB32, 1, 1, 4);
+						   COMAC_FORMAT_ARGB32,
+						   1,
+						   1,
+						   4);
     pattern = comac_pattern_create_for_surface (surface);
     comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
 
     /* Several different means of making mostly the same color (though
      * we can't get anything but alpha==1.0 out of
      * comac_set_source_rgb. */
-    for (i=0; i < width; i++) {
+    for (i = 0; i < width; i++) {
 	switch (i) {
 	case 0:
 	    comac_set_source_rgb (cr, .6, .7, .8);
@@ -76,6 +79,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (set_source,
 	    "Tests calls to various set_source functions",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    5, 5,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    5,
+	    5,
+	    NULL,
+	    draw)

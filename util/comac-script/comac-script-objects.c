@@ -40,23 +40,21 @@
 #include <string.h>
 
 csi_status_t
-csi_array_new (csi_t *ctx,
-	       csi_integer_t initial_size,
-	       csi_object_t *obj)
+csi_array_new (csi_t *ctx, csi_integer_t initial_size, csi_object_t *obj)
 
 {
     csi_array_t *array;
 
     if (ctx->free_array == NULL ||
-	ctx->free_array->stack.size <= initial_size)
-    {
+	ctx->free_array->stack.size <= initial_size) {
 	csi_status_t status;
 
 	array = _csi_slab_alloc (ctx, sizeof (csi_array_t));
 	if (_csi_unlikely (array == NULL))
 	    return _csi_error (CSI_STATUS_NO_MEMORY);
 
-	status = _csi_stack_init (ctx, &array->stack,
+	status = _csi_stack_init (ctx,
+				  &array->stack,
 				  initial_size ? initial_size : 32);
 	if (_csi_unlikely (status)) {
 	    _csi_slab_free (ctx, array, sizeof (csi_array_t));
@@ -93,7 +91,8 @@ csi_array_put (csi_t *ctx,
 	    return status;
 
 	memset (array->stack.objects + array->stack.len,
-		0, (elem - array->stack.len + 1) * sizeof (csi_object_t));
+		0,
+		(elem - array->stack.len + 1) * sizeof (csi_object_t));
 	array->stack.len = elem + 1;
     }
 
@@ -120,9 +119,7 @@ csi_array_get (csi_t *ctx,
 }
 
 csi_status_t
-csi_array_append (csi_t *ctx,
-		  csi_array_t *array,
-		  csi_object_t *obj)
+csi_array_append (csi_t *ctx, csi_array_t *array, csi_object_t *obj)
 {
     return _csi_stack_push (ctx, &array->stack, csi_object_reference (obj));
 }
@@ -140,12 +137,10 @@ _csi_array_execute (csi_t *ctx, csi_array_t *array)
 	csi_object_t *obj = &array->stack.objects[i];
 
 	if (obj->type & CSI_OBJECT_ATTR_EXECUTABLE) {
-	    if (obj->type == (CSI_OBJECT_TYPE_ARRAY |
-			      CSI_OBJECT_ATTR_EXECUTABLE))
-	    {
+	    if (obj->type ==
+		(CSI_OBJECT_TYPE_ARRAY | CSI_OBJECT_ATTR_EXECUTABLE)) {
 		status = _csi_push_ostack_copy (ctx, &array->stack.objects[i]);
-	    }
-	    else
+	    } else
 		status = csi_object_execute (ctx, &array->stack.objects[i]);
 	} else
 	    status = _csi_push_ostack_copy (ctx, &array->stack.objects[i]);
@@ -190,8 +185,7 @@ _dictionary_name_equal (const void *_a, const void *_b)
 }
 
 csi_status_t
-csi_dictionary_new (csi_t *ctx,
-		    csi_object_t *obj)
+csi_dictionary_new (csi_t *ctx, csi_object_t *obj)
 
 {
     csi_dictionary_t *dict;
@@ -206,8 +200,8 @@ csi_dictionary_new (csi_t *ctx,
 	if (_csi_unlikely (dict == NULL))
 	    return _csi_error (CSI_STATUS_NO_MEMORY);
 
-	status = _csi_hash_table_init (&dict->hash_table,
-				       _dictionary_name_equal);
+	status =
+	    _csi_hash_table_init (&dict->hash_table, _dictionary_name_equal);
 	if (_csi_unlikely (status)) {
 	    _csi_slab_free (ctx, dict, sizeof (csi_dictionary_t));
 	    return status;
@@ -243,16 +237,13 @@ _dictionary_entry_pluck (void *entry, void *data)
 }
 
 void
-csi_dictionary_free (csi_t *ctx,
-		     csi_dictionary_t *dict)
+csi_dictionary_free (csi_t *ctx, csi_dictionary_t *dict)
 {
     struct _dictionary_entry_pluck data;
 
     data.ctx = ctx;
     data.hash_table = &dict->hash_table;
-    _csi_hash_table_foreach (&dict->hash_table,
-			     _dictionary_entry_pluck,
-			     &data);
+    _csi_hash_table_foreach (&dict->hash_table, _dictionary_entry_pluck, &data);
 
 #if CSI_DEBUG_MALLOC
     _csi_hash_table_fini (&dict->hash_table);
@@ -275,8 +266,8 @@ csi_dictionary_put (csi_t *ctx,
     csi_dictionary_entry_t *entry;
     csi_status_t status;
 
-    entry = _csi_hash_table_lookup (&dict->hash_table,
-				    (csi_hash_entry_t *) &name);
+    entry =
+	_csi_hash_table_lookup (&dict->hash_table, (csi_hash_entry_t *) &name);
     if (entry != NULL) {
 	/* replace the existing entry */
 	csi_object_free (ctx, &entry->value);
@@ -308,8 +299,8 @@ csi_dictionary_get (csi_t *ctx,
 {
     csi_dictionary_entry_t *entry;
 
-    entry = _csi_hash_table_lookup (&dict->hash_table,
-				    (csi_hash_entry_t *) &name);
+    entry =
+	_csi_hash_table_lookup (&dict->hash_table, (csi_hash_entry_t *) &name);
     if (_csi_unlikely (entry == NULL))
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
@@ -318,22 +309,19 @@ csi_dictionary_get (csi_t *ctx,
 }
 
 csi_boolean_t
-csi_dictionary_has (csi_dictionary_t *dict,
-		    csi_name_t name)
+csi_dictionary_has (csi_dictionary_t *dict, csi_name_t name)
 {
     return _csi_hash_table_lookup (&dict->hash_table,
 				   (csi_hash_entry_t *) &name) != NULL;
 }
 
 void
-csi_dictionary_remove (csi_t *ctx,
-		       csi_dictionary_t *dict,
-		       csi_name_t name)
+csi_dictionary_remove (csi_t *ctx, csi_dictionary_t *dict, csi_name_t name)
 {
     csi_dictionary_entry_t *entry;
 
-    entry = _csi_hash_table_lookup (&dict->hash_table,
-				    (csi_hash_entry_t *) &name);
+    entry =
+	_csi_hash_table_lookup (&dict->hash_table, (csi_hash_entry_t *) &name);
     if (entry != NULL) {
 	_csi_hash_table_remove (&dict->hash_table, &entry->hash_entry);
 	csi_object_free (ctx, &entry->value);
@@ -342,8 +330,7 @@ csi_dictionary_remove (csi_t *ctx,
 }
 
 csi_status_t
-csi_matrix_new (csi_t *ctx,
-		csi_object_t *obj)
+csi_matrix_new (csi_t *ctx, csi_object_t *obj)
 {
     csi_matrix_t *matrix;
 
@@ -362,9 +349,7 @@ csi_matrix_new (csi_t *ctx,
 }
 
 csi_status_t
-csi_matrix_new_from_array (csi_t *ctx,
-			   csi_object_t *obj,
-			   csi_array_t *array)
+csi_matrix_new_from_array (csi_t *ctx, csi_object_t *obj, csi_array_t *array)
 {
     csi_matrix_t *matrix;
 
@@ -413,9 +398,7 @@ csi_matrix_new_from_matrix (csi_t *ctx,
 }
 
 csi_status_t
-csi_matrix_new_from_values (csi_t *ctx,
-			    csi_object_t *obj,
-			    double v[6])
+csi_matrix_new_from_values (csi_t *ctx, csi_object_t *obj, double v[6])
 {
     csi_matrix_t *matrix;
 
@@ -434,18 +417,13 @@ csi_matrix_new_from_values (csi_t *ctx,
 }
 
 void
-csi_matrix_free (csi_t *ctx,
-		 csi_matrix_t *obj)
+csi_matrix_free (csi_t *ctx, csi_matrix_t *obj)
 {
     _csi_slab_free (ctx, obj, sizeof (csi_matrix_t));
 }
 
-
 csi_status_t
-csi_name_new (csi_t *ctx,
-	      csi_object_t *obj,
-	      const char *str,
-	      int len)
+csi_name_new (csi_t *ctx, csi_object_t *obj, const char *str, int len)
 {
     csi_status_t status;
 
@@ -460,9 +438,7 @@ csi_name_new (csi_t *ctx,
 }
 
 csi_status_t
-csi_name_new_static (csi_t *ctx,
-		     csi_object_t *obj,
-		     const char *str)
+csi_name_new_static (csi_t *ctx, csi_object_t *obj, const char *str)
 {
     csi_status_t status;
 
@@ -477,10 +453,7 @@ csi_name_new_static (csi_t *ctx,
 }
 
 csi_status_t
-csi_string_new (csi_t *ctx,
-		csi_object_t *obj,
-		const char *str,
-		int len)
+csi_string_new (csi_t *ctx, csi_object_t *obj, const char *str, int len)
 {
     csi_string_t *string;
 
@@ -522,11 +495,8 @@ csi_string_new (csi_t *ctx,
 }
 
 csi_status_t
-csi_string_deflate_new (csi_t *ctx,
-			csi_object_t *obj,
-			void *bytes,
-			int in_len,
-			int out_len)
+csi_string_deflate_new (
+    csi_t *ctx, csi_object_t *obj, void *bytes, int in_len, int out_len)
 {
     csi_status_t status;
     csi_string_t *string;
@@ -544,7 +514,7 @@ csi_string_deflate_new (csi_t *ctx,
 
 csi_status_t
 csi_string_new_from_bytes (csi_t *ctx,
-	                   csi_object_t *obj,
+			   csi_object_t *obj,
 			   char *bytes,
 			   unsigned int len)
 {
@@ -617,7 +587,7 @@ csi_object_execute (csi_t *ctx, csi_object_t *obj)
     csi_status_t status;
     csi_object_t indirect;
 
- INDIRECT:
+INDIRECT:
     switch (obj->type & CSI_OBJECT_TYPE_MASK) {
     case CSI_OBJECT_TYPE_NAME:
 	status = _csi_name_lookup (ctx, obj->datum.name, &indirect);
@@ -673,8 +643,7 @@ csi_object_reference (csi_object_t *obj)
 }
 
 void
-csi_object_free (csi_t *ctx,
-		 csi_object_t *obj)
+csi_object_free (csi_t *ctx, csi_object_t *obj)
 {
     if (CSI_OBJECT_IS_COMAC (obj)) {
 	switch (obj->type & CSI_OBJECT_TYPE_MASK) {
@@ -721,9 +690,7 @@ csi_object_free (csi_t *ctx,
 }
 
 csi_status_t
-csi_object_as_file (csi_t *ctx,
-		    csi_object_t *src,
-		    csi_object_t *file)
+csi_object_as_file (csi_t *ctx, csi_object_t *src, csi_object_t *file)
 {
     int type = csi_object_get_type (src);
     switch (type) {
@@ -731,7 +698,7 @@ csi_object_as_file (csi_t *ctx,
 	*file = *csi_object_reference (src);
 	return CSI_STATUS_SUCCESS;
     case CSI_OBJECT_TYPE_STRING:
-	 return csi_file_new_from_string (ctx, file, src->datum.string);
+	return csi_file_new_from_string (ctx, file, src->datum.string);
     case CSI_OBJECT_TYPE_ARRAY:
 #if 0
 	if (src->type & CSI_OBJECT_ATTR_EXECUTABLE)
@@ -743,8 +710,7 @@ csi_object_as_file (csi_t *ctx,
 }
 
 static int
-lexcmp (void const *a, size_t alen,
-	void const *b, size_t blen)
+lexcmp (void const *a, size_t alen, void const *b, size_t blen)
 {
     size_t len = alen < blen ? alen : blen;
     int cmp = memcmp (a, b, len);
@@ -756,8 +722,7 @@ lexcmp (void const *a, size_t alen,
 }
 
 csi_boolean_t
-csi_object_eq (csi_object_t *a,
-	       csi_object_t *b)
+csi_object_eq (csi_object_t *a, csi_object_t *b)
 {
     csi_object_type_t atype = csi_object_get_type (a);
     csi_object_type_t btype = csi_object_get_type (b);
@@ -798,8 +763,12 @@ csi_object_eq (csi_object_t *a,
     if (atype < btype) {
 	csi_object_t *c;
 	csi_object_type_t ctype;
-	c = a; a = b; b = c;
-	ctype = atype; atype = btype; btype = ctype;
+	c = a;
+	a = b;
+	b = c;
+	ctype = atype;
+	atype = btype;
+	btype = ctype;
     }
 
     switch ((int) atype) {
@@ -811,8 +780,7 @@ csi_object_eq (csi_object_t *a,
     case CSI_OBJECT_TYPE_REAL:
 	if (btype == CSI_OBJECT_TYPE_INTEGER) {
 	    return a->datum.real == b->datum.integer;
-	}
-	else if (btype == CSI_OBJECT_TYPE_BOOLEAN) {
+	} else if (btype == CSI_OBJECT_TYPE_BOOLEAN) {
 	    return a->datum.real == b->datum.boolean;
 	}
 	break;
@@ -835,20 +803,18 @@ csi_object_eq (csi_object_t *a,
 }
 
 csi_status_t
-csi_object_compare (csi_object_t *a,
-		    csi_object_t *b,
-		    int *out)
+csi_object_compare (csi_object_t *a, csi_object_t *b, int *out)
 {
     csi_object_type_t atype = csi_object_get_type (a);
     csi_object_type_t btype = csi_object_get_type (b);
     int sign;
 
-    if (csi_object_eq (a, b)){
+    if (csi_object_eq (a, b)) {
 	*out = 0;
 	return CSI_STATUS_SUCCESS;
     }
 
-#define CMP(x,y) ((x) < (y) ? -1 : +1)
+#define CMP(x, y) ((x) < (y) ? -1 : +1)
 
     if (atype == btype) {
 	switch (atype) {
@@ -864,7 +830,7 @@ csi_object_compare (csi_object_t *a,
 	case CSI_OBJECT_TYPE_NAME: {
 	    const char *x = (char const *) a->datum.name;
 	    const char *y = (char const *) b->datum.name;
-	    *out = lexcmp (x, strlen(x), y, strlen (y));
+	    *out = lexcmp (x, strlen (x), y, strlen (y));
 	    return CSI_STATUS_SUCCESS;
 	}
 	case CSI_OBJECT_TYPE_STRING:
@@ -893,15 +859,19 @@ csi_object_compare (csi_object_t *a,
     if (atype < btype) {
 	csi_object_t *c;
 	csi_object_type_t ctype;
-	c = a; a = b; b = c;
-	ctype = atype; atype = btype; btype = ctype;
+	c = a;
+	a = b;
+	b = c;
+	ctype = atype;
+	atype = btype;
+	btype = ctype;
 	sign = -1;
     }
 
     switch ((int) atype) {
     case CSI_OBJECT_TYPE_INTEGER:
 	if (btype == CSI_OBJECT_TYPE_BOOLEAN) {
-	    *out = sign * CMP (a->datum.integer, !!b->datum.boolean);
+	    *out = sign * CMP (a->datum.integer, ! ! b->datum.boolean);
 	    return CSI_STATUS_SUCCESS;
 	}
 	break;
@@ -909,9 +879,8 @@ csi_object_compare (csi_object_t *a,
 	if (btype == CSI_OBJECT_TYPE_INTEGER) {
 	    *out = sign * CMP (a->datum.real, b->datum.integer);
 	    return CSI_STATUS_SUCCESS;
-	}
-	else if (btype == CSI_OBJECT_TYPE_BOOLEAN) {
-	    *out = sign * CMP (a->datum.real, !!b->datum.boolean);
+	} else if (btype == CSI_OBJECT_TYPE_BOOLEAN) {
+	    *out = sign * CMP (a->datum.real, ! ! b->datum.boolean);
 	    return CSI_STATUS_SUCCESS;
 	}
 	break;
@@ -933,6 +902,6 @@ csi_object_compare (csi_object_t *a,
 
 #undef CMP
 
- TYPE_CHECK_ERROR:
+TYPE_CHECK_ERROR:
     return _csi_error (CSI_STATUS_SCRIPT_INVALID_TYPE);
 }

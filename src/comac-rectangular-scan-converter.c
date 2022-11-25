@@ -82,7 +82,8 @@ typedef struct {
 	comac_freepool_t pool;
     } coverage;
 
-    comac_half_open_span_t spans_stack[COMAC_STACK_ARRAY_LENGTH (comac_half_open_span_t)];
+    comac_half_open_span_t
+	spans_stack[COMAC_STACK_ARRAY_LENGTH (comac_half_open_span_t)];
     comac_half_open_span_t *spans;
     unsigned int num_spans;
     unsigned int size_spans;
@@ -91,8 +92,7 @@ typedef struct {
 } sweep_line_t;
 
 static inline int
-rectangle_compare_start (const rectangle_t *a,
-			 const rectangle_t *b)
+rectangle_compare_start (const rectangle_t *a, const rectangle_t *b)
 {
     int cmp;
 
@@ -104,8 +104,7 @@ rectangle_compare_start (const rectangle_t *a,
 }
 
 static inline int
-rectangle_compare_stop (const rectangle_t *a,
-			const rectangle_t *b)
+rectangle_compare_stop (const rectangle_t *a, const rectangle_t *b)
 {
     return a->bottom_y - b->bottom_y;
 }
@@ -134,12 +133,12 @@ pqueue_grow (pqueue_t *pq)
     pq->max_size *= 2;
 
     if (pq->elements == pq->elements_embedded) {
-	new_elements = _comac_malloc_ab (pq->max_size,
-					 sizeof (rectangle_t *));
+	new_elements = _comac_malloc_ab (pq->max_size, sizeof (rectangle_t *));
 	if (unlikely (new_elements == NULL))
 	    return FALSE;
 
-	memcpy (new_elements, pq->elements_embedded,
+	memcpy (new_elements,
+		pq->elements_embedded,
 		sizeof (pq->elements_embedded));
     } else {
 	new_elements = _comac_realloc_ab (pq->elements,
@@ -161,8 +160,7 @@ pqueue_push (sweep_line_t *sweep, rectangle_t *rectangle)
 
     if (unlikely (sweep->stop.size + 1 == sweep->stop.max_size)) {
 	if (unlikely (! pqueue_grow (&sweep->stop)))
-	    longjmp (sweep->jmpbuf,
-		     _comac_error (COMAC_STATUS_NO_MEMORY));
+	    longjmp (sweep->jmpbuf, _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     elements = sweep->stop.elements;
@@ -170,8 +168,7 @@ pqueue_push (sweep_line_t *sweep, rectangle_t *rectangle)
 	 i != PQ_FIRST_ENTRY &&
 	 rectangle_compare_stop (rectangle,
 				 elements[parent = PQ_PARENT_INDEX (i)]) < 0;
-	 i = parent)
-    {
+	 i = parent) {
 	elements[i] = elements[parent];
     }
 
@@ -191,14 +188,10 @@ pqueue_pop (pqueue_t *pq)
 	return;
     }
 
-    for (i = PQ_FIRST_ENTRY;
-	 (child = PQ_LEFT_CHILD_INDEX (i)) <= pq->size;
-	 i = child)
-    {
+    for (i = PQ_FIRST_ENTRY; (child = PQ_LEFT_CHILD_INDEX (i)) <= pq->size;
+	 i = child) {
 	if (child != pq->size &&
-	    rectangle_compare_stop (elements[child+1],
-				    elements[child]) < 0)
-	{
+	    rectangle_compare_stop (elements[child + 1], elements[child]) < 0) {
 	    child++;
 	}
 
@@ -258,7 +251,7 @@ add_cell (sweep_line_t *sweep, int x, int covered, int uncovered)
     cell = sweep->coverage.cursor;
     if (cell->x > x) {
 	do {
-	    UNROLL3({
+	    UNROLL3 ({
 		if (cell->prev->x < x)
 		    break;
 		cell = cell->prev;
@@ -269,7 +262,7 @@ add_cell (sweep_line_t *sweep, int x, int covered, int uncovered)
 	    goto found;
 
 	do {
-	    UNROLL3({
+	    UNROLL3 ({
 		cell = cell->next;
 		if (cell->x >= x)
 		    break;
@@ -284,8 +277,7 @@ add_cell (sweep_line_t *sweep, int x, int covered, int uncovered)
 
 	c = _comac_freepool_alloc (&sweep->coverage.pool);
 	if (unlikely (c == NULL)) {
-	    longjmp (sweep->jmpbuf,
-		     _comac_error (COMAC_STATUS_NO_MEMORY));
+	    longjmp (sweep->jmpbuf, _comac_error (COMAC_STATUS_NO_MEMORY));
 	}
 
 	cell->prev->next = c;
@@ -307,7 +299,7 @@ found:
 }
 
 static inline void
-_active_edges_to_spans (sweep_line_t	*sweep)
+_active_edges_to_spans (sweep_line_t *sweep)
 {
     int32_t y = sweep->current_y;
     rectangle_t *rectangle;
@@ -327,10 +319,8 @@ _active_edges_to_spans (sweep_line_t	*sweep)
     /* XXX cell coverage only changes when a rectangle appears or
      * disappears. Try only modifying coverage at such times.
      */
-    for (rectangle = sweep->head.next;
-	 rectangle != &sweep->tail;
-	 rectangle = rectangle->next)
-    {
+    for (rectangle = sweep->head.next; rectangle != &sweep->tail;
+	 rectangle = rectangle->next) {
 	int height;
 	int frac, i;
 
@@ -346,22 +336,18 @@ _active_edges_to_spans (sweep_line_t	*sweep)
 
 	i = _comac_fixed_integer_part (rectangle->left),
 	frac = _comac_fixed_fractional_part (rectangle->left);
-	add_cell (sweep, i,
-		  (COMAC_FIXED_ONE-frac) * height,
-		  frac * height);
+	add_cell (sweep, i, (COMAC_FIXED_ONE - frac) * height, frac * height);
 
 	i = _comac_fixed_integer_part (rectangle->right),
 	frac = _comac_fixed_fractional_part (rectangle->right);
-	add_cell (sweep, i,
-		  -(COMAC_FIXED_ONE-frac) * height,
-		  -frac * height);
+	add_cell (sweep, i, -(COMAC_FIXED_ONE - frac) * height, -frac * height);
     }
 
-    if (2*sweep->coverage.count >= sweep->size_spans) {
+    if (2 * sweep->coverage.count >= sweep->size_spans) {
 	unsigned size;
 
 	size = sweep->size_spans;
-	while (size <= 2*sweep->coverage.count)
+	while (size <= 2 * sweep->coverage.count)
 	    size <<= 1;
 
 	if (sweep->spans != sweep->spans_stack)
@@ -376,7 +362,8 @@ _active_edges_to_spans (sweep_line_t	*sweep)
 
     prev_coverage = coverage = 0;
     prev_x = INT_MIN;
-    for (cell = sweep->coverage.head.next; cell != &sweep->coverage.tail; cell = cell->next) {
+    for (cell = sweep->coverage.head.next; cell != &sweep->coverage.tail;
+	 cell = cell->next) {
 	if (cell->x != prev_x && coverage != prev_coverage) {
 	    int n = sweep->num_spans++;
 	    int c = coverage >> (COMAC_FIXED_FRAC_BITS * 2 - 8);
@@ -419,8 +406,7 @@ _active_edges_to_spans (sweep_line_t	*sweep)
 }
 
 static inline void
-sweep_line_delete (sweep_line_t	*sweep,
-			     rectangle_t	*rectangle)
+sweep_line_delete (sweep_line_t *sweep, rectangle_t *rectangle)
 {
     if (sweep->insert_cursor == rectangle)
 	sweep->insert_cursor = rectangle->next;
@@ -432,8 +418,7 @@ sweep_line_delete (sweep_line_t	*sweep,
 }
 
 static inline void
-sweep_line_insert (sweep_line_t	*sweep,
-		   rectangle_t	*rectangle)
+sweep_line_insert (sweep_line_t *sweep, rectangle_t *rectangle)
 {
     rectangle_t *pos;
 
@@ -441,7 +426,7 @@ sweep_line_insert (sweep_line_t	*sweep,
     if (pos->left != rectangle->left) {
 	if (pos->left > rectangle->left) {
 	    do {
-		UNROLL3({
+		UNROLL3 ({
 		    if (pos->prev->left < rectangle->left)
 			break;
 		    pos = pos->prev;
@@ -449,7 +434,7 @@ sweep_line_insert (sweep_line_t	*sweep,
 	    } while (TRUE);
 	} else {
 	    do {
-		UNROLL3({
+		UNROLL3 ({
 		    pos = pos->next;
 		    if (pos->left >= rectangle->left)
 			break;
@@ -477,7 +462,8 @@ render_rows (sweep_line_t *sweep_line,
     _active_edges_to_spans (sweep_line);
 
     status = renderer->render_rows (renderer,
-				    sweep_line->current_y, height,
+				    sweep_line->current_y,
+				    height,
 				    sweep_line->spans,
 				    sweep_line->num_spans);
     if (unlikely (status))
@@ -486,7 +472,7 @@ render_rows (sweep_line_t *sweep_line,
 
 static comac_status_t
 generate (comac_rectangular_scan_converter_t *self,
-	  comac_span_renderer_t	*renderer,
+	  comac_span_renderer_t *renderer,
 	  rectangle_t **rectangles)
 {
     sweep_line_t sweep_line;
@@ -504,7 +490,8 @@ generate (comac_rectangular_scan_converter_t *self,
     start = *sweep_line.start++;
     do {
 	if (start->top_y != sweep_line.current_y) {
-	    render_rows (&sweep_line, renderer,
+	    render_rows (&sweep_line,
+			 renderer,
 			 start->top_y - sweep_line.current_y);
 	    sweep_line.current_y = start->top_y;
 	}
@@ -532,7 +519,8 @@ generate (comac_rectangular_scan_converter_t *self,
 
 	while (stop != NULL && stop->bottom_y < start->top_y) {
 	    if (stop->bottom_y != sweep_line.current_y) {
-		render_rows (&sweep_line, renderer,
+		render_rows (&sweep_line,
+			     renderer,
 			     stop->bottom_y - sweep_line.current_y);
 		sweep_line.current_y = stop->bottom_y;
 	    }
@@ -548,7 +536,7 @@ generate (comac_rectangular_scan_converter_t *self,
 	}
     } while (TRUE);
 
-  end:
+end:
     render_rows (&sweep_line, renderer, 1);
 
     stop = peek_stop (&sweep_line);
@@ -559,9 +547,11 @@ generate (comac_rectangular_scan_converter_t *self,
 	    goto out;
     }
 
-    while (++sweep_line.current_y < _comac_fixed_integer_part (self->extents.p2.y)) {
+    while (++sweep_line.current_y <
+	   _comac_fixed_integer_part (self->extents.p2.y)) {
 	if (stop->bottom_y != sweep_line.current_y) {
-	    render_rows (&sweep_line, renderer,
+	    render_rows (&sweep_line,
+			 renderer,
 			 stop->bottom_y - sweep_line.current_y);
 	    sweep_line.current_y = stop->bottom_y;
 	}
@@ -574,18 +564,19 @@ generate (comac_rectangular_scan_converter_t *self,
 	    if (stop == NULL)
 		goto out;
 	} while (stop->bottom_y == sweep_line.current_y);
-
     }
 
-  out:
+out:
     sweep_line_fini (&sweep_line);
 
     return status;
 }
-static void generate_row(comac_span_renderer_t *renderer,
-			 const rectangle_t *r,
-			 int y, int h,
-			 uint16_t coverage)
+static void
+generate_row (comac_span_renderer_t *renderer,
+	      const rectangle_t *r,
+	      int y,
+	      int h,
+	      uint16_t coverage)
 {
     comac_half_open_span_t spans[4];
     unsigned int num_spans = 0;
@@ -627,33 +618,39 @@ static void generate_row(comac_span_renderer_t *renderer,
 
 static comac_status_t
 generate_box (comac_rectangular_scan_converter_t *self,
-	      comac_span_renderer_t	*renderer)
+	      comac_span_renderer_t *renderer)
 {
     const rectangle_t *r = self->chunks.base;
     int y1 = _comac_fixed_integer_part (r->top);
     int y2 = _comac_fixed_integer_part (r->bottom);
     if (y2 > y1) {
 	if (! _comac_fixed_is_integer (r->top)) {
-	    generate_row(renderer, r, y1, 1,
-			 256 - _comac_fixed_fractional_part (r->top));
+	    generate_row (renderer,
+			  r,
+			  y1,
+			  1,
+			  256 - _comac_fixed_fractional_part (r->top));
 	    y1++;
 	}
 
 	if (y2 > y1)
-	    generate_row(renderer, r, y1, y2-y1, 256);
+	    generate_row (renderer, r, y1, y2 - y1, 256);
 
 	if (! _comac_fixed_is_integer (r->bottom))
-	    generate_row(renderer, r, y2, 1,
-			 _comac_fixed_fractional_part (r->bottom));
+	    generate_row (renderer,
+			  r,
+			  y2,
+			  1,
+			  _comac_fixed_fractional_part (r->bottom));
     } else
-	generate_row(renderer, r, y1, 1, r->bottom - r->top);
+	generate_row (renderer, r, y1, 1, r->bottom - r->top);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_comac_rectangular_scan_converter_generate (void			*converter,
-					    comac_span_renderer_t	*renderer)
+_comac_rectangular_scan_converter_generate (void *converter,
+					    comac_span_renderer_t *renderer)
 {
     comac_rectangular_scan_converter_t *self = converter;
     rectangle_t *rectangles_stack[COMAC_STACK_ARRAY_LENGTH (rectangle_t *)];
@@ -663,10 +660,12 @@ _comac_rectangular_scan_converter_generate (void			*converter,
     int i, j;
 
     if (unlikely (self->num_rectangles == 0)) {
-	return renderer->render_rows (renderer,
-				      _comac_fixed_integer_part (self->extents.p1.y),
-				      _comac_fixed_integer_part (self->extents.p2.y - self->extents.p1.y),
-				      NULL, 0);
+	return renderer->render_rows (
+	    renderer,
+	    _comac_fixed_integer_part (self->extents.p1.y),
+	    _comac_fixed_integer_part (self->extents.p2.y - self->extents.p1.y),
+	    NULL,
+	    0);
     }
 
     if (self->num_rectangles == 1)
@@ -674,8 +673,8 @@ _comac_rectangular_scan_converter_generate (void			*converter,
 
     rectangles = rectangles_stack;
     if (unlikely (self->num_rectangles >= ARRAY_LENGTH (rectangles_stack))) {
-	rectangles = _comac_malloc_ab (self->num_rectangles + 1,
-				       sizeof (rectangle_t *));
+	rectangles =
+	    _comac_malloc_ab (self->num_rectangles + 1, sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
@@ -710,9 +709,10 @@ _allocate_rectangle (comac_rectangular_scan_converter_t *self)
 	int size;
 
 	size = chunk->size * 2;
-	chunk->next = _comac_malloc_ab_plus_c (size,
-					       sizeof (rectangle_t),
-					       sizeof (struct _comac_rectangular_scan_converter_chunk));
+	chunk->next = _comac_malloc_ab_plus_c (
+	    size,
+	    sizeof (rectangle_t),
+	    sizeof (struct _comac_rectangular_scan_converter_chunk));
 
 	if (unlikely (chunk->next == NULL))
 	    return NULL;
@@ -730,9 +730,8 @@ _allocate_rectangle (comac_rectangular_scan_converter_t *self)
 }
 
 comac_status_t
-_comac_rectangular_scan_converter_add_box (comac_rectangular_scan_converter_t *self,
-					   const comac_box_t *box,
-					   int dir)
+_comac_rectangular_scan_converter_add_box (
+    comac_rectangular_scan_converter_t *self, const comac_box_t *box, int dir)
 {
     rectangle_t *rectangle;
 
@@ -741,7 +740,7 @@ _comac_rectangular_scan_converter_add_box (comac_rectangular_scan_converter_t *s
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     rectangle->dir = dir;
-    rectangle->left  = MAX (box->p1.x, self->extents.p1.x);
+    rectangle->left = MAX (box->p1.x, self->extents.p1.x);
     rectangle->right = MIN (box->p2.x, self->extents.p2.x);
     if (unlikely (rectangle->right <= rectangle->left)) {
 	self->tail->count--;
@@ -749,7 +748,7 @@ _comac_rectangular_scan_converter_add_box (comac_rectangular_scan_converter_t *s
     }
 
     rectangle->top = MAX (box->p1.y, self->extents.p1.y);
-    rectangle->top_y  = _comac_fixed_integer_floor (rectangle->top);
+    rectangle->top_y = _comac_fixed_integer_floor (rectangle->top);
     rectangle->bottom = MIN (box->p2.y, self->extents.p2.y);
     rectangle->bottom_y = _comac_fixed_integer_floor (rectangle->bottom);
     if (likely (rectangle->bottom > rectangle->top))
@@ -773,8 +772,9 @@ _comac_rectangular_scan_converter_destroy (void *converter)
 }
 
 void
-_comac_rectangular_scan_converter_init (comac_rectangular_scan_converter_t *self,
-					const comac_rectangle_int_t *extents)
+_comac_rectangular_scan_converter_init (
+    comac_rectangular_scan_converter_t *self,
+    const comac_rectangle_int_t *extents)
 {
     self->base.destroy = _comac_rectangular_scan_converter_destroy;
     self->base.generate = _comac_rectangular_scan_converter_generate;

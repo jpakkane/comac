@@ -56,9 +56,12 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (leaky_dash,
-	    "Exercises bug #4863 in which a dashed stroke leaks into half the rectangle being filled"
+	    "Exercises bug #4863 in which a dashed stroke leaks into half the "
+	    "rectangle being filled"
 	    "\nknown bug (#4863) which has existed since the 1.0 release",
 	    "dash, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

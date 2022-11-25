@@ -27,7 +27,7 @@
 #include "comac-perf.h"
 
 static comac_surface_t *
-generate_random_waveform(comac_t *target, int width, int height)
+generate_random_waveform (comac_t *target, int width, int height)
 {
     comac_surface_t *surface;
     comac_t *cr;
@@ -37,13 +37,13 @@ generate_random_waveform(comac_t *target, int width, int height)
 
     surface = comac_surface_create_similar (comac_get_target (target),
 					    COMAC_CONTENT_ALPHA,
-					    width, height);
+					    width,
+					    height);
     cr = comac_create (surface);
 
     r = height / 2;
 
-    for (i = 0; i < width; i++)
-    {
+    for (i = 0; i < width; i++) {
 	r += rand () % (height / 4) - (height / 8);
 	if (r < 0)
 	    r = 0;

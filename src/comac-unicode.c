@@ -43,76 +43,66 @@
 #include "comacint.h"
 #include "comac-error-private.h"
 
-#define UTF8_COMPUTE(Char, Mask, Len)					      \
-  if (Char < 128)							      \
-    {									      \
-      Len = 1;								      \
-      Mask = 0x7f;							      \
-    }									      \
-  else if ((Char & 0xe0) == 0xc0)					      \
-    {									      \
-      Len = 2;								      \
-      Mask = 0x1f;							      \
-    }									      \
-  else if ((Char & 0xf0) == 0xe0)					      \
-    {									      \
-      Len = 3;								      \
-      Mask = 0x0f;							      \
-    }									      \
-  else if ((Char & 0xf8) == 0xf0)					      \
-    {									      \
-      Len = 4;								      \
-      Mask = 0x07;							      \
-    }									      \
-  else if ((Char & 0xfc) == 0xf8)					      \
-    {									      \
-      Len = 5;								      \
-      Mask = 0x03;							      \
-    }									      \
-  else if ((Char & 0xfe) == 0xfc)					      \
-    {									      \
-      Len = 6;								      \
-      Mask = 0x01;							      \
-    }									      \
-  else									      \
-    Len = -1;
+#define UTF8_COMPUTE(Char, Mask, Len)                                          \
+    if (Char < 128) {                                                          \
+	Len = 1;                                                               \
+	Mask = 0x7f;                                                           \
+    } else if ((Char & 0xe0) == 0xc0) {                                        \
+	Len = 2;                                                               \
+	Mask = 0x1f;                                                           \
+    } else if ((Char & 0xf0) == 0xe0) {                                        \
+	Len = 3;                                                               \
+	Mask = 0x0f;                                                           \
+    } else if ((Char & 0xf8) == 0xf0) {                                        \
+	Len = 4;                                                               \
+	Mask = 0x07;                                                           \
+    } else if ((Char & 0xfc) == 0xf8) {                                        \
+	Len = 5;                                                               \
+	Mask = 0x03;                                                           \
+    } else if ((Char & 0xfe) == 0xfc) {                                        \
+	Len = 6;                                                               \
+	Mask = 0x01;                                                           \
+    } else                                                                     \
+	Len = -1;
 
-#define UTF8_LENGTH(Char)              \
-  ((Char) < 0x80 ? 1 :                 \
-   ((Char) < 0x800 ? 2 :               \
-    ((Char) < 0x10000 ? 3 :            \
-     ((Char) < 0x200000 ? 4 :          \
-      ((Char) < 0x4000000 ? 5 : 6)))))
+#define UTF8_LENGTH(Char)                                                      \
+    ((Char) < 0x80                                                             \
+	 ? 1                                                                   \
+	 : ((Char) < 0x800                                                     \
+		? 2                                                            \
+		: ((Char) < 0x10000                                            \
+		       ? 3                                                     \
+		       : ((Char) < 0x200000 ? 4                                \
+					    : ((Char) < 0x4000000 ? 5 : 6)))))
 
-#define UTF8_GET(Result, Chars, Count, Mask, Len)			      \
-  (Result) = (Chars)[0] & (Mask);					      \
-  for ((Count) = 1; (Count) < (Len); ++(Count))				      \
-    {									      \
-      if (((Chars)[(Count)] & 0xc0) != 0x80)				      \
-	{								      \
-	  (Result) = -1;						      \
-	  break;							      \
-	}								      \
-      (Result) <<= 6;							      \
-      (Result) |= ((Chars)[(Count)] & 0x3f);				      \
+#define UTF8_GET(Result, Chars, Count, Mask, Len)                              \
+    (Result) = (Chars)[0] & (Mask);                                            \
+    for ((Count) = 1; (Count) < (Len); ++(Count)) {                            \
+	if (((Chars)[(Count)] & 0xc0) != 0x80) {                               \
+	    (Result) = -1;                                                     \
+	    break;                                                             \
+	}                                                                      \
+	(Result) <<= 6;                                                        \
+	(Result) |= ((Chars)[(Count)] & 0x3f);                                 \
     }
 
-#define UNICODE_VALID(Char)                   \
-    ((Char) < 0x110000 &&                     \
-     (((Char) & 0xFFFFF800) != 0xD800))
+#define UNICODE_VALID(Char)                                                    \
+    ((Char) < 0x110000 && (((Char) &0xFFFFF800) != 0xD800))
 
 static const char utf8_skip_data[256] = {
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-    3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
-};
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+    4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 1, 1};
 
-#define UTF8_NEXT_CHAR(p) ((p) + utf8_skip_data[*(unsigned char *)(p)])
+#define UTF8_NEXT_CHAR(p) ((p) + utf8_skip_data[*(unsigned char *) (p)])
 
 /* Converts a sequence of bytes encoded as UTF-8 to a Unicode character.
  * If @p does not point to a valid UTF-8 encoded character, results are
@@ -127,7 +117,7 @@ _utf8_get_char (const unsigned char *p)
 
     UTF8_COMPUTE (c, mask, len);
     if (len == -1)
-	return (uint32_t)-1;
+	return (uint32_t) -1;
     UTF8_GET (result, p, i, mask, len);
 
     return result;
@@ -137,8 +127,7 @@ _utf8_get_char (const unsigned char *p)
  * and return (uint32_t)-2 on incomplete trailing character
  */
 static uint32_t
-_utf8_get_char_extended (const unsigned char *p,
-			 long		      max_len)
+_utf8_get_char_extended (const unsigned char *p, long max_len)
 {
     int i, len;
     uint32_t wc = (unsigned char) *p;
@@ -146,7 +135,7 @@ _utf8_get_char_extended (const unsigned char *p,
     if (wc < 0x80) {
 	return wc;
     } else if (wc < 0xc0) {
-	return (uint32_t)-1;
+	return (uint32_t) -1;
     } else if (wc < 0xe0) {
 	len = 2;
 	wc &= 0x1f;
@@ -163,33 +152,33 @@ _utf8_get_char_extended (const unsigned char *p,
 	len = 6;
 	wc &= 0x01;
     } else {
-	return (uint32_t)-1;
+	return (uint32_t) -1;
     }
 
     if (max_len >= 0 && len > max_len) {
 	for (i = 1; i < max_len; i++) {
-	    if ((((unsigned char *)p)[i] & 0xc0) != 0x80)
-		return (uint32_t)-1;
+	    if ((((unsigned char *) p)[i] & 0xc0) != 0x80)
+		return (uint32_t) -1;
 	}
-	return (uint32_t)-2;
+	return (uint32_t) -2;
     }
 
     for (i = 1; i < len; ++i) {
-	uint32_t ch = ((unsigned char *)p)[i];
+	uint32_t ch = ((unsigned char *) p)[i];
 
 	if ((ch & 0xc0) != 0x80) {
 	    if (ch)
-		return (uint32_t)-1;
+		return (uint32_t) -1;
 	    else
-		return (uint32_t)-2;
+		return (uint32_t) -2;
 	}
 
 	wc <<= 6;
 	wc |= (ch & 0x3f);
     }
 
-    if (UTF8_LENGTH(wc) != len)
-	return (uint32_t)-1;
+    if (UTF8_LENGTH (wc) != len)
+	return (uint32_t) -1;
 
     return wc;
 }
@@ -208,8 +197,7 @@ _utf8_get_char_extended (const unsigned char *p,
  * Returns: the number of bytes forming the character returned.
  **/
 int
-_comac_utf8_get_char_validated (const char *p,
-				uint32_t   *unicode)
+_comac_utf8_get_char_validated (const char *p, uint32_t *unicode)
 {
     int i, mask = 0, len;
     uint32_t result;
@@ -218,7 +206,7 @@ _comac_utf8_get_char_validated (const char *p,
     UTF8_COMPUTE (c, mask, len);
     if (len == -1) {
 	if (unicode)
-	    *unicode = (uint32_t)-1;
+	    *unicode = (uint32_t) -1;
 	return 1;
     }
     UTF8_GET (result, p, i, mask, len);
@@ -250,21 +238,20 @@ _comac_utf8_get_char_validated (const char *p,
  **/
 comac_status_t
 _comac_utf8_to_ucs4 (const char *str,
-		     int	 len,
-		     uint32_t  **result,
-		     int	*items_written)
+		     int len,
+		     uint32_t **result,
+		     int *items_written)
 {
     uint32_t *str32 = NULL;
     int n_chars, i;
     const unsigned char *in;
-    const unsigned char * const ustr = (const unsigned char *) str;
+    const unsigned char *const ustr = (const unsigned char *) str;
 
     in = ustr;
     n_chars = 0;
-    while ((len < 0 || ustr + len - in > 0) && *in)
-    {
+    while ((len < 0 || ustr + len - in > 0) && *in) {
 	uint32_t wc = _utf8_get_char_extended (in, ustr + len - in);
-	if (wc & 0x80000000 || !UNICODE_VALID (wc))
+	if (wc & 0x80000000 || ! UNICODE_VALID (wc))
 	    return _comac_error (COMAC_STATUS_INVALID_STRING);
 
 	n_chars++;
@@ -276,11 +263,11 @@ _comac_utf8_to_ucs4 (const char *str,
 
     if (result) {
 	str32 = _comac_malloc_ab (n_chars + 1, sizeof (uint32_t));
-	if (!str32)
+	if (! str32)
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	in = ustr;
-	for (i=0; i < n_chars; i++) {
+	for (i = 0; i < n_chars; i++) {
 	    str32[i] = _utf8_get_char (in);
 	    in = UTF8_NEXT_CHAR (in);
 	}
@@ -307,8 +294,7 @@ _comac_utf8_to_ucs4 (const char *str,
  * unicode character
  **/
 int
-_comac_ucs4_to_utf8 (uint32_t  unicode,
-		     char     *utf8)
+_comac_ucs4_to_utf8 (uint32_t unicode, char *utf8)
 {
     int bytes;
     char *p;
@@ -327,7 +313,7 @@ _comac_ucs4_to_utf8 (uint32_t  unicode,
 	return 0;
     }
 
-    if (!utf8)
+    if (! utf8)
 	return bytes;
 
     p = utf8 + bytes;
@@ -352,8 +338,7 @@ _comac_ucs4_to_utf8 (uint32_t  unicode,
  * invalid unicode character
  **/
 int
-_comac_ucs4_to_utf16 (uint32_t  unicode,
-		      uint16_t *utf16)
+_comac_ucs4_to_utf16 (uint32_t unicode, uint16_t *utf16)
 {
     if (unicode < 0x10000) {
 	if (utf16)
@@ -394,20 +379,20 @@ _comac_ucs4_to_utf16 (uint32_t  unicode,
  **/
 comac_status_t
 _comac_utf8_to_utf16 (const char *str,
-		      int	  len,
+		      int len,
 		      uint16_t **result,
-		      int	*items_written)
+		      int *items_written)
 {
     uint16_t *str16 = NULL;
     int n16, i;
     const unsigned char *in;
-    const unsigned char * const ustr = (const unsigned char *) str;
+    const unsigned char *const ustr = (const unsigned char *) str;
 
     in = ustr;
     n16 = 0;
     while ((len < 0 || ustr + len - in > 0) && *in) {
 	uint32_t wc = _utf8_get_char_extended (in, ustr + len - in);
-	if (wc & 0x80000000 || !UNICODE_VALID (wc))
+	if (wc & 0x80000000 || ! UNICODE_VALID (wc))
 	    return _comac_error (COMAC_STATUS_INVALID_STRING);
 
 	if (wc < 0x10000)
@@ -422,7 +407,7 @@ _comac_utf8_to_utf16 (const char *str,
     }
 
     str16 = _comac_malloc_ab (n16 + 1, sizeof (uint16_t));
-    if (!str16)
+    if (! str16)
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     in = ustr;

@@ -112,8 +112,8 @@ _comac_array_grow_by (comac_array_t *array, unsigned int additional)
 	new_size = new_size * 2;
 
     array->size = new_size;
-    new_elements = _comac_realloc_ab (array->elements,
-			              array->size, array->element_size);
+    new_elements =
+	_comac_realloc_ab (array->elements, array->size, array->element_size);
 
     if (unlikely (new_elements == NULL)) {
 	array->size = old_size;
@@ -181,7 +181,7 @@ _comac_array_index (comac_array_t *array, unsigned int index)
 
     assert (index < array->num_elements);
 
-    return array->elements + (size_t)index * array->element_size;
+    return array->elements + (size_t) index * array->element_size;
 }
 
 /**
@@ -225,7 +225,7 @@ _comac_array_index_const (const comac_array_t *array, unsigned int index)
 
     assert (index < array->num_elements);
 
-    return array->elements + (size_t)index * array->element_size;
+    return array->elements + (size_t) index * array->element_size;
 }
 
 /**
@@ -237,8 +237,8 @@ _comac_array_index_const (const comac_array_t *array, unsigned int index)
  **/
 void
 _comac_array_copy_element (const comac_array_t *array,
-			   unsigned int         index,
-			   void                *dst)
+			   unsigned int index,
+			   void *dst)
 {
     memcpy (dst, _comac_array_index_const (array, index), array->element_size);
 }
@@ -259,8 +259,7 @@ _comac_array_copy_element (const comac_array_t *array,
  * operation.
  **/
 comac_status_t
-_comac_array_append (comac_array_t	*array,
-		     const void		*element)
+_comac_array_append (comac_array_t *array, const void *element)
 {
     return _comac_array_append_multiple (array, element, 1);
 }
@@ -278,9 +277,9 @@ _comac_array_append (comac_array_t	*array,
  * operation.
  **/
 comac_status_t
-_comac_array_append_multiple (comac_array_t	*array,
-			      const void	*elements,
-			      unsigned int	 num_elements)
+_comac_array_append_multiple (comac_array_t *array,
+			      const void *elements,
+			      unsigned int num_elements)
 {
     comac_status_t status;
     void *dest;
@@ -289,7 +288,7 @@ _comac_array_append_multiple (comac_array_t	*array,
     if (unlikely (status))
 	return status;
 
-    memcpy (dest, elements, (size_t)num_elements * array->element_size);
+    memcpy (dest, elements, (size_t) num_elements * array->element_size);
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -308,9 +307,9 @@ _comac_array_append_multiple (comac_array_t	*array,
  * operation.
  **/
 comac_status_t
-_comac_array_allocate (comac_array_t	 *array,
-		       unsigned int	  num_elements,
-		       void		**elements)
+_comac_array_allocate (comac_array_t *array,
+		       unsigned int num_elements,
+		       void **elements)
 {
     comac_status_t status;
 
@@ -320,7 +319,8 @@ _comac_array_allocate (comac_array_t	 *array,
 
     assert (array->num_elements + num_elements <= array->size);
 
-    *elements = array->elements + (size_t)array->num_elements * array->element_size;
+    *elements =
+	array->elements + (size_t) array->num_elements * array->element_size;
 
     array->num_elements += num_elements;
 
@@ -409,7 +409,7 @@ _comac_user_data_array_fini (comac_user_data_array_t *array)
  * Return value: the user data previously attached or %NULL.
  **/
 void *
-_comac_user_data_array_get_data (comac_user_data_array_t     *array,
+_comac_user_data_array_get_data (comac_user_data_array_t *array,
 				 const comac_user_data_key_t *key)
 {
     unsigned int i, num_slots;
@@ -446,10 +446,10 @@ _comac_user_data_array_get_data (comac_user_data_array_t     *array,
  * slot could not be allocated for the user data.
  **/
 comac_status_t
-_comac_user_data_array_set_data (comac_user_data_array_t     *array,
+_comac_user_data_array_set_data (comac_user_data_array_t *array,
 				 const comac_user_data_key_t *key,
-				 void			     *user_data,
-				 comac_destroy_func_t	      destroy)
+				 void *user_data,
+				 comac_destroy_func_t destroy)
 {
     comac_status_t status;
     unsigned int i, num_slots;
@@ -476,7 +476,7 @@ _comac_user_data_array_set_data (comac_user_data_array_t     *array,
 	    break;
 	}
 	if (user_data && slots[i].user_data == NULL) {
-	    slot = &slots[i];	/* Have to keep searching for an exact match */
+	    slot = &slots[i]; /* Have to keep searching for an exact match */
 	}
     }
 
@@ -496,8 +496,8 @@ _comac_user_data_array_set_data (comac_user_data_array_t     *array,
 }
 
 comac_status_t
-_comac_user_data_array_copy (comac_user_data_array_t	*dst,
-			     const comac_user_data_array_t	*src)
+_comac_user_data_array_copy (comac_user_data_array_t *dst,
+			     const comac_user_data_array_t *src)
 {
     /* discard any existing user-data */
     if (dst->num_elements != 0) {
@@ -508,7 +508,7 @@ _comac_user_data_array_copy (comac_user_data_array_t	*dst,
     /* don't call _comac_array_append_multiple if there's nothing to do,
      * as it assumes at least 1 element is to be appended */
     if (src->num_elements == 0)
-        return COMAC_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     return _comac_array_append_multiple (dst,
 					 _comac_array_index_const (src, 0),
@@ -516,7 +516,7 @@ _comac_user_data_array_copy (comac_user_data_array_t	*dst,
 }
 
 void
-_comac_user_data_array_foreach (comac_user_data_array_t     *array,
+_comac_user_data_array_foreach (comac_user_data_array_t *array,
 				void (*func) (const void *key,
 					      void *elt,
 					      void *closure),
@@ -534,7 +534,8 @@ _comac_user_data_array_foreach (comac_user_data_array_t     *array,
 }
 
 void
-_comac_array_sort (const comac_array_t *array, int (*compar)(const void *, const void *))
+_comac_array_sort (const comac_array_t *array,
+		   int (*compar) (const void *, const void *))
 {
     qsort (array->elements, array->num_elements, array->element_size, compar);
 }

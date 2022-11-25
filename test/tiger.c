@@ -27,40 +27,42 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-	unsigned int i;
+    unsigned int i;
 
-	comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
-	comac_set_source_rgba (cr, 0.1, 0.2, 0.3, 1.0);
-	comac_paint (cr);
-	comac_set_operator (cr, COMAC_OPERATOR_OVER);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_rgba (cr, 0.1, 0.2, 0.3, 1.0);
+    comac_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
 
-	comac_translate (cr, width/2, height/2);
-	comac_scale (cr, .85, .85);
+    comac_translate (cr, width / 2, height / 2);
+    comac_scale (cr, .85, .85);
 
-	for (i = 0; i < ARRAY_LENGTH(tiger_commands); i++) {
-		const struct command *cmd = &tiger_commands[i];
-		switch (cmd->type) {
-		case 'm':
-			comac_move_to (cr, cmd->x0, cmd->y0);
-			break;
-		case 'l':
-			comac_line_to (cr, cmd->x0, cmd->y0);
-			break;
-		case 'c':
-			comac_curve_to (cr,
-					cmd->x0, cmd->y0,
-					cmd->x1, cmd->y1,
-					cmd->x2, cmd->y2);
-			break;
-		case 'f':
-			comac_set_source_rgba (cr,
-					       cmd->x0, cmd->y0, cmd->x1, cmd->y1);
-			comac_fill (cr);
-			break;
-		}
+    for (i = 0; i < ARRAY_LENGTH (tiger_commands); i++) {
+	const struct command *cmd = &tiger_commands[i];
+	switch (cmd->type) {
+	case 'm':
+	    comac_move_to (cr, cmd->x0, cmd->y0);
+	    break;
+	case 'l':
+	    comac_line_to (cr, cmd->x0, cmd->y0);
+	    break;
+	case 'c':
+	    comac_curve_to (cr,
+			    cmd->x0,
+			    cmd->y0,
+			    cmd->x1,
+			    cmd->y1,
+			    cmd->x2,
+			    cmd->y2);
+	    break;
+	case 'f':
+	    comac_set_source_rgba (cr, cmd->x0, cmd->y0, cmd->x1, cmd->y1);
+	    comac_fill (cr);
+	    break;
 	}
+    }
 
-	return COMAC_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
@@ -73,13 +75,17 @@ a1_draw (comac_t *cr, int width, int height)
 COMAC_TEST (tiger,
 	    "Check the fidelity of the rasterisation.",
 	    "raster", /* keywords */
-	    NULL, /* requirements */
-	    500, 500,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    500,
+	    500,
+	    NULL,
+	    draw)
 
 COMAC_TEST (a1_tiger,
 	    "Check the fidelity of the rasterisation.",
-	    "fill", /* keywords */
+	    "fill",	     /* keywords */
 	    "target=raster", /* requirements */
-	    500, 500,
-	    NULL, a1_draw)
+	    500,
+	    500,
+	    NULL,
+	    a1_draw)

@@ -24,8 +24,8 @@
  *
  * Based on an example by Dirk "krit" Schulze found during WebKit integration.
  */
- 
- /*  Copyright (C) 2021 Heiko Lewin <hlewin@gmx.de> 
+
+/*  Copyright (C) 2021 Heiko Lewin <hlewin@gmx.de> 
   *  Added error margin for point comparisons */
 
 #include "comac-test.h"
@@ -36,14 +36,15 @@
 
 /* Test the idempotency of path construction and copying */
 
-
 /* The error to be expected from double<->fixed conversions */
-#define EXPECTED_ERROR (0.5 / (1<<COMAC_FIXED_FRAC_BITS))
+#define EXPECTED_ERROR (0.5 / (1 << COMAC_FIXED_FRAC_BITS))
 
-static int compare_points( double *p1, double *p2 ) {
-    for(int i=0; i<2; ++i) {
-	double error = fabs(p2[i]-p1[i]);
-	if(error > EXPECTED_ERROR) {
+static int
+compare_points (double *p1, double *p2)
+{
+    for (int i = 0; i < 2; ++i) {
+	double error = fabs (p2[i] - p1[i]);
+	if (error > EXPECTED_ERROR) {
 	    return 1;
 	}
     }
@@ -54,20 +55,40 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_path_data_t path_data[] = {
-	{ { COMAC_PATH_MOVE_TO, 2 }, },
-	{ .point={ 95.000000, 40.000000 }, },
+	{
+	    {COMAC_PATH_MOVE_TO, 2},
+	},
+	{
+	    .point = {95.000000, 40.000000},
+	},
 
-	{ { COMAC_PATH_LINE_TO, 2 }, },
-	{ .point={ 94.960533, 41.255810 }, },
+	{
+	    {COMAC_PATH_LINE_TO, 2},
+	},
+	{
+	    .point = {94.960533, 41.255810},
+	},
 
-	{ { COMAC_PATH_LINE_TO, 2 }, },
-	{ .point={ 94.842293, 42.50666 }, },
+	{
+	    {COMAC_PATH_LINE_TO, 2},
+	},
+	{
+	    .point = {94.842293, 42.50666},
+	},
 
-	{ { COMAC_PATH_LINE_TO, 2 }, },
-	{ .point={ 94.645744, 43.747627 }, },
+	{
+	    {COMAC_PATH_LINE_TO, 2},
+	},
+	{
+	    .point = {94.645744, 43.747627},
+	},
 
-	{ { COMAC_PATH_LINE_TO, 2 }, },
-	{ .point={ 94.371666, 44.973797 }, },
+	{
+	    {COMAC_PATH_LINE_TO, 2},
+	},
+	{
+	    .point = {94.371666, 44.973797},
+	},
     };
     const comac_test_context_t *ctx = comac_test_get_context (cr);
     comac_path_t path, *path_copy;
@@ -85,12 +106,10 @@ draw (comac_t *cr, int width, int height)
     if (path_copy->status)
 	return comac_test_status_from_status (ctx, path_copy->status);
 
-    for (i = j = n = 0;
-	 i < path.num_data && j < path_copy->num_data;
+    for (i = j = n = 0; i < path.num_data && j < path_copy->num_data;
 	 i += path.data[i].header.length,
-	 j += path_copy->data[j].header.length,
-	 n++)
-    {
+	j += path_copy->data[j].header.length,
+	n++) {
 	const comac_path_data_t *src, *dst;
 
 	src = &path.data[i];
@@ -100,18 +119,23 @@ draw (comac_t *cr, int width, int height)
 	    comac_test_log (ctx,
 			    "Paths differ in header type after %d operations.\n"
 			    "Expected path operation %d, found %d.\n",
-			    n, src->header.type, dst->header.type);
+			    n,
+			    src->header.type,
+			    dst->header.type);
 	    result = FAIL;
 	    break;
 	}
 
-	if (compare_points ((double*)&src[1].point, (double*)&dst[1].point)) {
+	if (compare_points ((double *) &src[1].point,
+			    (double *) &dst[1].point)) {
 	    comac_test_log (ctx,
 			    "Paths differ in coordinates after %d operations.\n"
 			    "Expected point (%f, %f), found (%f, %f).\n",
 			    n,
-			    src[1].point.x, src[1].point.y,
-			    dst[1].point.x, dst[1].point.y);
+			    src[1].point.x,
+			    src[1].point.y,
+			    dst[1].point.x,
+			    dst[1].point.y);
 	    result = FAIL;
 	    break;
 	}
@@ -124,6 +148,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (path_precision,
 	    "Check that the path append/copy is idempotent.",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

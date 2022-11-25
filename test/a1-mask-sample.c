@@ -28,11 +28,11 @@
 
 #include "comac-test.h"
 
-#define POINTS	10
-#define STEP	(1.0 / POINTS)
-#define PAD	1
-#define WIDTH	(PAD + POINTS * 2 + PAD)
-#define HEIGHT	(WIDTH)
+#define POINTS 10
+#define STEP (1.0 / POINTS)
+#define PAD 1
+#define WIDTH (PAD + POINTS * 2 + PAD)
+#define HEIGHT (WIDTH)
 
 /* A single, opaque pixel */
 static const uint32_t black_pixel = 0xffffffff;
@@ -44,9 +44,12 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_t *mask;
     int i, j;
 
-    surface = comac_image_surface_create_for_data ((unsigned char *) &black_pixel,
-						   COMAC_FORMAT_A8,
-						   1, 1, 4);
+    surface =
+	comac_image_surface_create_for_data ((unsigned char *) &black_pixel,
+					     COMAC_FORMAT_A8,
+					     1,
+					     1,
+					     4);
     mask = comac_pattern_create_for_surface (surface);
     comac_pattern_set_filter (mask, COMAC_FILTER_NEAREST);
     comac_surface_destroy (surface);
@@ -77,7 +80,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (a1_mask_sample,
 	    "Test sample position when masking with FILTER_NEAREST",
-	    "image, alpha", /* keywords */
+	    "image, alpha",  /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

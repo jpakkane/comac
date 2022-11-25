@@ -40,18 +40,15 @@
 #include "comacint.h"
 
 comac_private comac_path_t *
-_comac_path_create (comac_path_fixed_t *path,
-		    comac_t		*cr);
+_comac_path_create (comac_path_fixed_t *path, comac_t *cr);
 
 comac_private comac_path_t *
-_comac_path_create_flat (comac_path_fixed_t *path,
-			 comac_t	    *cr);
+_comac_path_create_flat (comac_path_fixed_t *path, comac_t *cr);
 
 comac_private comac_path_t *
 _comac_path_create_in_error (comac_status_t status);
 
 comac_private comac_status_t
-_comac_path_append_to_context (const comac_path_t	*path,
-			       comac_t			*cr);
+_comac_path_append_to_context (const comac_path_t *path, comac_t *cr);
 
 #endif /* COMAC_PATH_DATA_PRIVATE_H */

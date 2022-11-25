@@ -57,7 +57,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_move_to (cr, 4, 54);
     comac_text_path (cr, "Is comac's twin giza?");
-    comac_set_line_width (cr, 2/16.);
+    comac_set_line_width (cr, 2 / 16.);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -65,7 +65,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (twin_antialias_none,
 	    "Tests the internal font (with antialiasing disabled)",
-	    "twin, font", /* keywords */
+	    "twin, font",    /* keywords */
 	    "target=raster", /* requirements */
-	    140, 60,
-	    NULL, draw)
+	    140,
+	    60,
+	    NULL,
+	    draw)

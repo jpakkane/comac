@@ -38,15 +38,14 @@ typedef comac_int64_t comac_time_t;
 
 #define _comac_time_add _comac_int64_add
 #define _comac_time_sub _comac_int64_sub
-#define _comac_time_gt  _comac_int64_gt
-#define _comac_time_lt  _comac_int64_lt
+#define _comac_time_gt _comac_int64_gt
+#define _comac_time_lt _comac_int64_lt
 
-#define _comac_time_to_double   _comac_int64_to_double
+#define _comac_time_to_double _comac_int64_to_double
 #define _comac_time_from_double _comac_double_to_int64
 
 comac_private int
-_comac_time_cmp (const void *a,
-		 const void *b);
+_comac_time_cmp (const void *a, const void *b);
 
 comac_private double
 _comac_time_to_s (comac_time_t t);

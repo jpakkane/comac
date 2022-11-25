@@ -31,12 +31,12 @@
  */
 
 #include "../src/comac-fixed-type-private.h"
-#define PRECISION (int)(1 << COMAC_FIXED_FRAC_BITS)
+#define PRECISION (int) (1 << COMAC_FIXED_FRAC_BITS)
 
-#define WIDTH ((PRECISION/2+1)*3)
-#define HEIGHT ((PRECISION/2+1)*3)
+#define WIDTH ((PRECISION / 2 + 1) * 3)
+#define HEIGHT ((PRECISION / 2 + 1) * 3)
 
-#define SUBPIXEL(v) ((v)/(double)(PRECISION/2))
+#define SUBPIXEL(v) ((v) / (double) (PRECISION / 2))
 
 static comac_test_status_t
 rectangles (comac_t *cr, int width, int height)
@@ -51,7 +51,11 @@ rectangles (comac_t *cr, int width, int height)
 
     for (x = 0; x < WIDTH; x += 3) {
 	for (y = 0; y < HEIGHT; y += 3) {
-	    comac_rectangle (cr, x + SUBPIXEL (y/3) - .5, y + SUBPIXEL (x/3) - .5, .5, .5);
+	    comac_rectangle (cr,
+			     x + SUBPIXEL (y / 3) - .5,
+			     y + SUBPIXEL (x / 3) - .5,
+			     .5,
+			     .5);
 	}
     }
     comac_fill (cr);
@@ -73,7 +77,9 @@ triangles (comac_t *cr, int width, int height)
     for (x = 0; x < WIDTH; x += 3) {
 	for (y = 0; y < HEIGHT; y += 3) {
 	    /* a rectangle with a diagonal to force tessellation */
-	    comac_move_to (cr, x + SUBPIXEL (y/3) - .5, y + SUBPIXEL (x/3) - .5);
+	    comac_move_to (cr,
+			   x + SUBPIXEL (y / 3) - .5,
+			   y + SUBPIXEL (x / 3) - .5);
 	    comac_rel_line_to (cr, .5, .5);
 	    comac_rel_line_to (cr, 0, -.5);
 	    comac_rel_line_to (cr, -.5, 0);
@@ -90,12 +96,16 @@ COMAC_TEST (a1_rasterisation_rectangles,
 	    "Check the fidelity of the rasterisation.",
 	    "rasterisation", /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, rectangles)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    rectangles)
 
 COMAC_TEST (a1_rasterisation_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    "rasterisation", /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, triangles)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    triangles)

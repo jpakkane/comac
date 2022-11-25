@@ -44,9 +44,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (white_in_noop,
-	    "Test an invalid optimization of the IN operator with white sources",
-	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    white_in_noop,
+    "Test an invalid optimization of the IN operator with white sources",
+    "operator", /* keywords */
+    NULL,	/* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

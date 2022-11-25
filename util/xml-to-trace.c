@@ -11,9 +11,7 @@ struct trace {
 };
 
 static void
-start_element (void *closure,
-	       const char *element,
-	       const char **attr)
+start_element (void *closure, const char *element, const char **attr)
 {
     struct trace *trace = closure;
 
@@ -38,9 +36,7 @@ start_element (void *closure,
 
 	fprintf (trace->stream, "<< /content //%s", content);
 	if (width != NULL && height != NULL) {
-	    fprintf (trace->stream,
-		     " /width %s /height %s",
-		     width, height);
+	    fprintf (trace->stream, " /width %s /height %s", width, height);
 	}
 	if (trace->surface_depth++ == 0)
 	    fprintf (trace->stream, " >> surface context\n");
@@ -66,8 +62,11 @@ start_element (void *closure,
 	}
 
 	fprintf (trace->stream,
-		 "<< /format //%s /width %s /height %s /mime-type (image/png) /source <{",
-		 format, width, height);
+		 "<< /format //%s /width %s /height %s /mime-type (image/png) "
+		 "/source <{",
+		 format,
+		 width,
+		 height);
 	assert (trace->tail == NULL);
 	trace->tail = "}> >> image pattern\n";
     } else if (strcmp (element, "solid") == 0) {
@@ -125,7 +124,12 @@ start_element (void *closure,
 
 	fprintf (trace->stream,
 		 "%s %s %s %s %s %s radial\n",
-		 x1, y1, r1, x2, y2, r2);
+		 x1,
+		 y1,
+		 r1,
+		 x2,
+		 y2,
+		 r2);
     } else if (strcmp (element, "matrix") == 0) {
 	fprintf (trace->stream, "[ ");
 	trace->tail = " ] set-matrix\n";
@@ -173,9 +177,7 @@ start_element (void *closure,
 }
 
 static void
-cdata (void *closure,
-       const XML_Char *s,
-       int len)
+cdata (void *closure, const XML_Char *s, int len)
 {
     struct trace *trace = closure;
 
@@ -184,8 +186,7 @@ cdata (void *closure,
 }
 
 static void
-end_element (void *closure,
-	     const char *element)
+end_element (void *closure, const char *element)
 {
     struct trace *trace = closure;
 
@@ -246,7 +247,8 @@ main (int argc, char **argv)
 	done = feof (stdin);
 
 	if (XML_Parse (p, buf, len, done) == XML_STATUS_ERROR) {
-	    fprintf (stderr, "Parse error at line %ld:\n%s\n",
+	    fprintf (stderr,
+		     "Parse error at line %ld:\n%s\n",
 		     XML_GetCurrentLineNumber (p),
 		     XML_ErrorString (XML_GetErrorCode (p)));
 	    exit (-1);

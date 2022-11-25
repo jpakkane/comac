@@ -40,17 +40,23 @@ create_test_window (Display *display,
     Window window = None;
 
     colormap = XCreateColormap (display,
-			    RootWindow (display, visual_info->screen),
-			    visual_info->visual,
-			    AllocNone);
+				RootWindow (display, visual_info->screen),
+				visual_info->visual,
+				AllocNone);
     window_attributes.colormap = colormap;
     window_attributes.border_pixel = 0;
-    window = XCreateWindow (display, RootWindow (display, visual_info->screen),
-			    -1, -1, 1, 1, 0,
+    window = XCreateWindow (display,
+			    RootWindow (display, visual_info->screen),
+			    -1,
+			    -1,
+			    1,
+			    1,
+			    0,
 			    visual_info->depth,
 			    InputOutput,
 			    visual_info->visual,
-			    CWBorderPixel | CWColormap, &window_attributes);
+			    CWBorderPixel | CWColormap,
+			    &window_attributes);
     XFreeColormap (display, colormap);
 
     XFlush (display);
@@ -60,9 +66,9 @@ create_test_window (Display *display,
 static comac_bool_t
 multithread_makecurrent_available (Display *display)
 {
-    const char *extensions = glXQueryExtensionsString (display,
-						       DefaultScreen (display));
-    return !! strstr(extensions, "GLX_MESA_multithread_makecurrent");
+    const char *extensions =
+	glXQueryExtensionsString (display, DefaultScreen (display));
+    return ! ! strstr (extensions, "GLX_MESA_multithread_makecurrent");
 }
 
 static void
@@ -76,15 +82,17 @@ draw_to_surface (comac_surface_t *surface)
 static comac_test_status_t
 preamble (comac_test_context_t *test_ctx)
 {
-    int rgba_attribs[] = {
-	GLX_RGBA,
-	GLX_RED_SIZE, 1,
-	GLX_GREEN_SIZE, 1,
-	GLX_BLUE_SIZE, 1,
-	GLX_ALPHA_SIZE, 1,
-	GLX_DOUBLEBUFFER,
-	None
-    };
+    int rgba_attribs[] = {GLX_RGBA,
+			  GLX_RED_SIZE,
+			  1,
+			  GLX_GREEN_SIZE,
+			  1,
+			  GLX_BLUE_SIZE,
+			  1,
+			  GLX_ALPHA_SIZE,
+			  1,
+			  GLX_DOUBLEBUFFER,
+			  None};
 
     XVisualInfo *visual_info;
     GLXContext glx_context;
@@ -98,7 +106,8 @@ preamble (comac_test_context_t *test_ctx)
     if (display == NULL)
 	return COMAC_TEST_UNTESTED;
 
-    visual_info = glXChooseVisual (display, DefaultScreen (display), rgba_attribs);
+    visual_info =
+	glXChooseVisual (display, DefaultScreen (display), rgba_attribs);
     if (visual_info == NULL) {
 	XCloseDisplay (display);
 	return COMAC_TEST_UNTESTED;
@@ -138,8 +147,8 @@ preamble (comac_test_context_t *test_ctx)
 	assert (None == glXGetCurrentContext ());
     }
 
-    window_surface = comac_gl_surface_create_for_window (device, test_window,
-							 1, 1);
+    window_surface =
+	comac_gl_surface_create_for_window (device, test_window, 1, 1);
     assert (comac_surface_status (window_surface) == COMAC_STATUS_SUCCESS);
 
     draw_to_surface (window_surface);
@@ -167,7 +176,7 @@ preamble (comac_test_context_t *test_ctx)
     assert (display == glXGetCurrentDisplay ());
     assert (glx_context == glXGetCurrentContext ());
 
-    glXDestroyContext(display, glx_context);
+    glXDestroyContext (display, glx_context);
     XDestroyWindow (display, test_window);
     XCloseDisplay (display);
 
@@ -175,8 +184,11 @@ preamble (comac_test_context_t *test_ctx)
 }
 
 COMAC_TEST (gl_device_creation_changes_context,
-	    "Test that using the Comac GL backend leaves the current GL context in the appropriate state",
+	    "Test that using the Comac GL backend leaves the current GL "
+	    "context in the appropriate state",
 	    "gl", /* keywords */
 	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    0,
+	    0,
+	    preamble,
+	    NULL)

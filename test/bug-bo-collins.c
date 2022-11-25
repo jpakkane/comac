@@ -71,6 +71,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_bo_collins,
 	    "Exercises a bug discovered by S. Christian Collins",
 	    "clip, rectangular", /* keywords */
-	    NULL, /* requirements */
-	    80, 80,
-	    NULL, draw)
+	    NULL,		 /* requirements */
+	    80,
+	    80,
+	    NULL,
+	    draw)

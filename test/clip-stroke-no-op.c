@@ -50,18 +50,23 @@ draw (comac_t *cr, int width, int height)
     /* This clip operation should fail to work. But with comac 1.9, if all the 
      * 3 cases above happen, the clip will not work and the paint will happen.
      */
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	comac_set_source_rgba (cr, 1, 0.5, 0.5, 1);
 	comac_clip_preserve (cr);
 	comac_paint (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     return COMAC_TEST_SUCCESS;
 }
 
 COMAC_TEST (clip_stroke_no_op,
-	    "Exercises a bug found by Benjamin Otte whereby a no-op clip is nullified by a stroke",
+	    "Exercises a bug found by Benjamin Otte whereby a no-op clip is "
+	    "nullified by a stroke",
 	    "clip, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

@@ -55,7 +55,9 @@
 #include "comac-surface-snapshot-inline.h"
 #include "comac-surface-subsurface-private.h"
 
-#define PIXMAN_MAX_INT ((pixman_fixed_1 >> 1) - pixman_fixed_e) /* need to ensure deltas also fit */
+#define PIXMAN_MAX_INT                                                         \
+    ((pixman_fixed_1 >> 1) -                                                   \
+     pixman_fixed_e) /* need to ensure deltas also fit */
 
 #if COMAC_NO_MUTEX
 #define PIXMAN_HAS_ATOMIC_OPS 1
@@ -77,9 +79,9 @@ _pixman_transparent_image (void)
     if (unlikely (image == NULL)) {
 	pixman_color_t color;
 
-	color.red   = 0x00;
+	color.red = 0x00;
 	color.green = 0x00;
-	color.blue  = 0x00;
+	color.blue = 0x00;
 	color.alpha = 0x00;
 
 	image = pixman_image_create_solid_fill (&color);
@@ -87,8 +89,8 @@ _pixman_transparent_image (void)
 	    return NULL;
 
 	if (_comac_atomic_ptr_cmpxchg (&__pixman_transparent_image,
-				       NULL, image))
-	{
+				       NULL,
+				       image)) {
 	    pixman_image_ref (image);
 	}
     } else {
@@ -109,18 +111,16 @@ _pixman_black_image (void)
     if (unlikely (image == NULL)) {
 	pixman_color_t color;
 
-	color.red   = 0x00;
+	color.red = 0x00;
 	color.green = 0x00;
-	color.blue  = 0x00;
+	color.blue = 0x00;
 	color.alpha = 0xffff;
 
 	image = pixman_image_create_solid_fill (&color);
 	if (unlikely (image == NULL))
 	    return NULL;
 
-	if (_comac_atomic_ptr_cmpxchg (&__pixman_black_image,
-				       NULL, image))
-	{
+	if (_comac_atomic_ptr_cmpxchg (&__pixman_black_image, NULL, image)) {
 	    pixman_image_ref (image);
 	}
     } else {
@@ -141,18 +141,16 @@ _pixman_white_image (void)
     if (unlikely (image == NULL)) {
 	pixman_color_t color;
 
-	color.red   = 0xffff;
+	color.red = 0xffff;
 	color.green = 0xffff;
-	color.blue  = 0xffff;
+	color.blue = 0xffff;
 	color.alpha = 0xffff;
 
 	image = pixman_image_create_solid_fill (&color);
 	if (unlikely (image == NULL))
 	    return NULL;
 
-	if (_comac_atomic_ptr_cmpxchg (&__pixman_white_image,
-				       NULL, image))
-	{
+	if (_comac_atomic_ptr_cmpxchg (&__pixman_white_image, NULL, image)) {
 	    pixman_image_ref (image);
 	}
     } else {
@@ -165,7 +163,7 @@ _pixman_white_image (void)
 static uint32_t
 hars_petruska_f54_1_random (void)
 {
-#define rol(x,k) ((x << k) | (x >> (32-k)))
+#define rol(x, k) ((x << k) | (x >> (32 - k)))
     static uint32_t x;
     return x = (x ^ rol (x, 5) ^ rol (x, 24)) + 0x37798849;
 #undef rol
@@ -200,7 +198,6 @@ _pixman_white_image (void)
 }
 #endif /* !PIXMAN_HAS_ATOMIC_OPS */
 
-
 pixman_image_t *
 _pixman_image_for_color (const comac_color_t *comac_color)
 {
@@ -216,15 +213,13 @@ _pixman_image_for_color (const comac_color_t *comac_color)
     if (COMAC_COLOR_IS_OPAQUE (comac_color)) {
 	if (comac_color->red_short <= 0x00ff &&
 	    comac_color->green_short <= 0x00ff &&
-	    comac_color->blue_short <= 0x00ff)
-	{
+	    comac_color->blue_short <= 0x00ff) {
 	    return _pixman_black_image ();
 	}
 
 	if (comac_color->red_short >= 0xff00 &&
 	    comac_color->green_short >= 0xff00 &&
-	    comac_color->blue_short >= 0xff00)
-	{
+	    comac_color->blue_short >= 0xff00) {
 	    return _pixman_white_image ();
 	}
     }
@@ -238,9 +233,9 @@ _pixman_image_for_color (const comac_color_t *comac_color)
     }
 #endif
 
-    color.red   = comac_color->red_short;
+    color.red = comac_color->red_short;
     color.green = comac_color->green_short;
-    color.blue  = comac_color->blue_short;
+    color.blue = comac_color->blue_short;
     color.alpha = comac_color->alpha_short;
 
     image = pixman_image_create_solid_fill (&color);
@@ -262,7 +257,6 @@ UNLOCK:
 #endif
     return image;
 }
-
 
 void
 _comac_image_reset_static_data (void)
@@ -291,12 +285,13 @@ _comac_image_reset_static_data (void)
 static pixman_image_t *
 _pixman_image_for_gradient (const comac_gradient_pattern_t *pattern,
 			    const comac_rectangle_int_t *extents,
-			    int *ix, int *iy)
+			    int *ix,
+			    int *iy)
 {
-    pixman_image_t	  *pixman_image;
+    pixman_image_t *pixman_image;
     pixman_gradient_stop_t pixman_stops_static[2];
     pixman_gradient_stop_t *pixman_stops = pixman_stops_static;
-    pixman_transform_t      pixman_transform;
+    pixman_transform_t pixman_transform;
     comac_matrix_t matrix;
     comac_circle_double_t extremes[2];
     pixman_point_fixed_t p1, p2;
@@ -305,22 +300,26 @@ _pixman_image_for_gradient (const comac_gradient_pattern_t *pattern,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    if (pattern->n_stops > ARRAY_LENGTH(pixman_stops_static)) {
+    if (pattern->n_stops > ARRAY_LENGTH (pixman_stops_static)) {
 	pixman_stops = _comac_malloc_ab (pattern->n_stops,
-					 sizeof(pixman_gradient_stop_t));
+					 sizeof (pixman_gradient_stop_t));
 	if (unlikely (pixman_stops == NULL))
 	    return NULL;
     }
 
     for (i = 0; i < pattern->n_stops; i++) {
-	pixman_stops[i].x = _comac_fixed_16_16_from_double (pattern->stops[i].offset);
-	pixman_stops[i].color.red   = pattern->stops[i].color.red_short;
+	pixman_stops[i].x =
+	    _comac_fixed_16_16_from_double (pattern->stops[i].offset);
+	pixman_stops[i].color.red = pattern->stops[i].color.red_short;
 	pixman_stops[i].color.green = pattern->stops[i].color.green_short;
-	pixman_stops[i].color.blue  = pattern->stops[i].color.blue_short;
+	pixman_stops[i].color.blue = pattern->stops[i].color.blue_short;
 	pixman_stops[i].color.alpha = pattern->stops[i].color.alpha_short;
     }
 
-    _comac_gradient_pattern_fit_to_range (pattern, PIXMAN_MAX_INT >> 1, &matrix, extremes);
+    _comac_gradient_pattern_fit_to_range (pattern,
+					  PIXMAN_MAX_INT >> 1,
+					  &matrix,
+					  extremes);
 
     p1.x = _comac_fixed_16_16_from_double (extremes[0].center.x);
     p1.y = _comac_fixed_16_16_from_double (extremes[0].center.y);
@@ -328,16 +327,20 @@ _pixman_image_for_gradient (const comac_gradient_pattern_t *pattern,
     p2.y = _comac_fixed_16_16_from_double (extremes[1].center.y);
 
     if (pattern->base.type == COMAC_PATTERN_TYPE_LINEAR) {
-	pixman_image = pixman_image_create_linear_gradient (&p1, &p2,
+	pixman_image = pixman_image_create_linear_gradient (&p1,
+							    &p2,
 							    pixman_stops,
 							    pattern->n_stops);
     } else {
 	pixman_fixed_t r1, r2;
 
-	r1   = _comac_fixed_16_16_from_double (extremes[0].radius);
-	r2   = _comac_fixed_16_16_from_double (extremes[1].radius);
+	r1 = _comac_fixed_16_16_from_double (extremes[0].radius);
+	r2 = _comac_fixed_16_16_from_double (extremes[1].radius);
 
-	pixman_image = pixman_image_create_radial_gradient (&p1, &p2, r1, r2,
+	pixman_image = pixman_image_create_radial_gradient (&p1,
+							    &p2,
+							    r1,
+							    r2,
 							    pixman_stops,
 							    pattern->n_stops);
     }
@@ -349,14 +352,17 @@ _pixman_image_for_gradient (const comac_gradient_pattern_t *pattern,
 	return NULL;
 
     *ix = *iy = 0;
-    status = _comac_matrix_to_pixman_matrix_offset (&matrix, pattern->base.filter,
-						    extents->x + extents->width/2.,
-						    extents->y + extents->height/2.,
-						    &pixman_transform, ix, iy);
+    status = _comac_matrix_to_pixman_matrix_offset (
+	&matrix,
+	pattern->base.filter,
+	extents->x + extents->width / 2.,
+	extents->y + extents->height / 2.,
+	&pixman_transform,
+	ix,
+	iy);
     if (status != COMAC_INT_STATUS_NOTHING_TO_DO) {
 	if (unlikely (status != COMAC_INT_STATUS_SUCCESS) ||
-	    ! pixman_image_set_transform (pixman_image, &pixman_transform))
-	{
+	    ! pixman_image_set_transform (pixman_image, &pixman_transform)) {
 	    pixman_image_unref (pixman_image);
 	    return NULL;
 	}
@@ -390,7 +396,8 @@ _pixman_image_for_gradient (const comac_gradient_pattern_t *pattern,
 static pixman_image_t *
 _pixman_image_for_mesh (const comac_mesh_pattern_t *pattern,
 			const comac_rectangle_int_t *extents,
-			int *tx, int *ty)
+			int *tx,
+			int *ty)
 {
     pixman_image_t *image;
     int width, height;
@@ -408,9 +415,11 @@ _pixman_image_for_mesh (const comac_mesh_pattern_t *pattern,
 
     _comac_mesh_pattern_rasterize (pattern,
 				   pixman_image_get_data (image),
-				   width, height,
+				   width,
+				   height,
 				   pixman_image_get_stride (image),
-				   *tx, *ty);
+				   *tx,
+				   *ty);
     return image;
 }
 
@@ -421,8 +430,7 @@ struct acquire_source_cleanup {
 };
 
 static void
-_acquire_source_cleanup (pixman_image_t *pixman_image,
-			 void *closure)
+_acquire_source_cleanup (pixman_image_t *pixman_image, void *closure)
 {
     struct acquire_source_cleanup *data = closure;
 
@@ -433,8 +441,7 @@ _acquire_source_cleanup (pixman_image_t *pixman_image,
 }
 
 static void
-_defer_free_cleanup (pixman_image_t *pixman_image,
-		     void *closure)
+_defer_free_cleanup (pixman_image_t *pixman_image, void *closure)
 {
     comac_surface_destroy (closure);
 }
@@ -467,8 +474,9 @@ _pixel_to_solid (comac_image_surface_t *image, int x, int y)
 	return NULL;
 
     case COMAC_FORMAT_A1:
-	pixel = *(uint8_t *) (image->data + y * image->stride + x/8);
-	return pixel & (1 << (x&7)) ? _pixman_black_image () : _pixman_transparent_image ();
+	pixel = *(uint8_t *) (image->data + y * image->stride + x / 8);
+	return pixel & (1 << (x & 7)) ? _pixman_black_image ()
+				      : _pixman_transparent_image ();
 
     case COMAC_FORMAT_A8:
 	color.alpha = *(uint8_t *) (image->data + y * image->stride + x);
@@ -504,15 +512,17 @@ _pixel_to_solid (comac_image_surface_t *image, int x, int y)
 
 	/* convert 10bpc to 16bpc */
 	color.alpha = 0xffff;
-	color.red = expand_channel((pixel >> 20) & 0x3fff, 10);
-	color.green = expand_channel((pixel >> 10) & 0x3fff, 10);
-	color.blue = expand_channel(pixel & 0x3fff, 10);
+	color.red = expand_channel ((pixel >> 20) & 0x3fff, 10);
+	color.green = expand_channel ((pixel >> 10) & 0x3fff, 10);
+	color.blue = expand_channel (pixel & 0x3fff, 10);
 	return pixman_image_create_solid_fill (&color);
 
     case COMAC_FORMAT_ARGB32:
     case COMAC_FORMAT_RGB24:
 	pixel = *(uint32_t *) (image->data + y * image->stride + 4 * x);
-	color.alpha = image->format == COMAC_FORMAT_ARGB32 ? (pixel >> 24) | (pixel >> 16 & 0xff00) : 0xffff;
+	color.alpha = image->format == COMAC_FORMAT_ARGB32
+			  ? (pixel >> 24) | (pixel >> 16 & 0xff00)
+			  : 0xffff;
 	if (color.alpha == 0)
 	    return _pixman_transparent_image ();
 	if (pixel == 0xffffffff)
@@ -527,23 +537,22 @@ _pixel_to_solid (comac_image_surface_t *image, int x, int y)
 
     case COMAC_FORMAT_RGB96F:
     case COMAC_FORMAT_RGBA128F:
-	if (image->format == COMAC_FORMAT_RGBA128F)
-	{
-	    rgba = (float *)&image->data[y * image->stride + 16 * x];
+	if (image->format == COMAC_FORMAT_RGBA128F) {
+	    rgba = (float *) &image->data[y * image->stride + 16 * x];
 	    color.alpha = 65535.f * rgba[3];
 
 	    if (color.alpha == 0)
 		return _pixman_transparent_image ();
-	}
-	else
-	{
-	    rgba = (float *)&image->data[y * image->stride + 12 * x];
+	} else {
+	    rgba = (float *) &image->data[y * image->stride + 12 * x];
 	    color.alpha = 0xffff;
 	}
 
-	if (color.alpha == 0xffff && rgba[0] == 0.f && rgba[1] == 0.f && rgba[2] == 0.f)
+	if (color.alpha == 0xffff && rgba[0] == 0.f && rgba[1] == 0.f &&
+	    rgba[2] == 0.f)
 	    return _pixman_black_image ();
-	if (color.alpha == 0xffff && rgba[0] == 1.f && rgba[1] == 1.f && rgba[2] == 1.f)
+	if (color.alpha == 0xffff && rgba[0] == 1.f && rgba[1] == 1.f &&
+	    rgba[2] == 1.f)
 	    return _pixman_white_image ();
 
 	color.red = rgba[0] * 65535.f;
@@ -556,8 +565,7 @@ _pixel_to_solid (comac_image_surface_t *image, int x, int y)
 /* ========================================================================== */
 
 /* Index into filter table */
-typedef enum
-{
+typedef enum {
     KERNEL_IMPULSE,
     KERNEL_BOX,
     KERNEL_LINEAR,
@@ -574,20 +582,19 @@ typedef enum
    If the frequency is higher than 1/2, such as when r is less than 1,
    this may need to integrate several samples, see cubic for examples.
 */
-typedef double (* kernel_func_t) (double x, double r);
+typedef double (*kernel_func_t) (double x, double r);
 
 /* Return maximum number of pixels that will be non-zero. Except for
    impluse this is the maximum of 2 and the width of the non-zero part
    of the filter rounded up to the next integer.
 */
-typedef int (* kernel_width_func_t) (double r);
+typedef int (*kernel_width_func_t) (double r);
 
 /* Table of filters */
-typedef struct
-{
-    kernel_t		kernel;
-    kernel_func_t	func;
-    kernel_width_func_t	width;
+typedef struct {
+    kernel_t kernel;
+    kernel_func_t func;
+    kernel_width_func_t width;
 } filter_info_t;
 
 /* PIXMAN_KERNEL_IMPULSE: Returns pixel nearest the center.  This
@@ -622,14 +629,14 @@ impulse_width (double r)
 static double
 box_kernel (double x, double r)
 {
-    return MAX (0.0, MIN (MIN (r, 1.0),
-			  MIN ((r + 1) / 2 - x, (r + 1) / 2 + x)));
+    return MAX (0.0,
+		MIN (MIN (r, 1.0), MIN ((r + 1) / 2 - x, (r + 1) / 2 + x)));
 }
 
 static int
 box_width (double r)
 {
-    return r < 1.0 ? 2 : ceil(r + 1);
+    return r < 1.0 ? 2 : ceil (r + 1);
 }
 
 /* PIXMAN_KERNEL_LINEAR: Weighted sum of the two pixels nearest the
@@ -647,7 +654,7 @@ box_width (double r)
 static double
 linear_kernel (double x, double r)
 {
-    return MAX (1.0 - fabs(x), 0.0);
+    return MAX (1.0 - fabs (x), 0.0);
 }
 
 static int
@@ -666,27 +673,22 @@ general_cubic (double x, double r, double B, double C)
 {
     double ax;
     if (r < 1.0)
-	return
-	    general_cubic(x * 2 - .5, r * 2, B, C) +
-	    general_cubic(x * 2 + .5, r * 2, B, C);
+	return general_cubic (x * 2 - .5, r * 2, B, C) +
+	       general_cubic (x * 2 + .5, r * 2, B, C);
 
     ax = fabs (x / r);
 
-    if (ax < 1)
-    {
-	return (((12 - 9 * B - 6 * C) * ax +
-		 (-18 + 12 * B + 6 * C)) * ax * ax +
-		(6 - 2 * B)) / 6;
-    }
-    else if (ax < 2)
-    {
-	return ((((-B - 6 * C) * ax +
-		 (6 * B + 30 * C)) * ax +
-		(-12 * B - 48 * C)) * ax +
-		(8 * B + 24 * C)) / 6;
-    }
-    else
-    {
+    if (ax < 1) {
+	return (((12 - 9 * B - 6 * C) * ax + (-18 + 12 * B + 6 * C)) * ax * ax +
+		(6 - 2 * B)) /
+	       6;
+    } else if (ax < 2) {
+	return ((((-B - 6 * C) * ax + (6 * B + 30 * C)) * ax +
+		 (-12 * B - 48 * C)) *
+		    ax +
+		(8 * B + 24 * C)) /
+	       6;
+    } else {
 	return 0.0;
     }
 }
@@ -719,7 +721,7 @@ cubic_kernel (double x, double r)
 static double
 mitchell_kernel (double x, double r)
 {
-    return general_cubic (x, r, 1/3.0, 1/3.0);
+    return general_cubic (x, r, 1 / 3.0, 1 / 3.0);
 }
 
 /* PIXMAN_KERNEL_NOTCH: Cubic recommended by the Mitchell-Netravali
@@ -757,9 +759,8 @@ static double
 lanczos3_kernel (double x, double r)
 {
     if (r < 1.0)
-	return
-	    lanczos3_kernel (x * 2 - .5, r * 2) +
-	    lanczos3_kernel (x * 2 + .5, r * 2);
+	return lanczos3_kernel (x * 2 - .5, r * 2) +
+	       lanczos3_kernel (x * 2 + .5, r * 2);
     else
 	return lanczos (x / r, 3.0);
 }
@@ -778,7 +779,7 @@ lanczos3_width (double r)
 static double
 nice_kernel (double x, double r)
 {
-    return lanczos3_kernel (x, r * (4.0/3));
+    return lanczos3_kernel (x, r * (4.0 / 3));
 }
 
 static int
@@ -800,35 +801,32 @@ static double
 tent_kernel (double x, double r)
 {
     if (r < 1.0)
-	return box_kernel(x, r);
+	return box_kernel (x, r);
     else
-	return MAX (1.0 - fabs(x / r), 0.0);
+	return MAX (1.0 - fabs (x / r), 0.0);
 }
 
 static int
 tent_width (double r)
 {
-    return r < 1.0 ? 2 : ceil(2 * r);
+    return r < 1.0 ? 2 : ceil (2 * r);
 }
 
-
-static const filter_info_t filters[] =
-{
-    { KERNEL_IMPULSE,		impulse_kernel,   impulse_width },
-    { KERNEL_BOX,		box_kernel,       box_width },
-    { KERNEL_LINEAR,		linear_kernel,    linear_width },
-    { KERNEL_MITCHELL,		mitchell_kernel,  cubic_width },
-    { KERNEL_NOTCH,		notch_kernel,     cubic_width },
-    { KERNEL_CATMULL_ROM,	cubic_kernel,     cubic_width },
-    { KERNEL_LANCZOS3,		lanczos3_kernel,  lanczos3_width },
-    { KERNEL_LANCZOS3_STRETCHED,nice_kernel,      nice_width },
-    { KERNEL_TENT,		tent_kernel,	  tent_width }
-};
+static const filter_info_t filters[] = {
+    {KERNEL_IMPULSE, impulse_kernel, impulse_width},
+    {KERNEL_BOX, box_kernel, box_width},
+    {KERNEL_LINEAR, linear_kernel, linear_width},
+    {KERNEL_MITCHELL, mitchell_kernel, cubic_width},
+    {KERNEL_NOTCH, notch_kernel, cubic_width},
+    {KERNEL_CATMULL_ROM, cubic_kernel, cubic_width},
+    {KERNEL_LANCZOS3, lanczos3_kernel, lanczos3_width},
+    {KERNEL_LANCZOS3_STRETCHED, nice_kernel, nice_width},
+    {KERNEL_TENT, tent_kernel, tent_width}};
 
 /* Fills in one dimension of the filter array */
-static void get_filter(kernel_t filter, double r,
-		       int width, int subsample,
-		       pixman_fixed_t* out)
+static void
+get_filter (
+    kernel_t filter, double r, int width, int subsample, pixman_fixed_t *out)
 {
     int i;
     pixman_fixed_t *p = out;
@@ -837,15 +835,13 @@ static void get_filter(kernel_t filter, double r,
     kernel_func_t func = filters[filter].func;
 
     /* special-case the impulse filter: */
-    if (width <= 1)
-    {
+    if (width <= 1) {
 	for (i = 0; i < n_phases; ++i)
 	    *p++ = pixman_fixed_1;
 	return;
     }
 
-    for (i = 0; i < n_phases; ++i)
-    {
+    for (i = 0; i < n_phases; ++i) {
 	double frac = (i + .5) * step;
 	/* Center of left-most pixel: */
 	double x1 = ceil (frac - width / 2.0 - 0.5) - frac + 0.5;
@@ -853,15 +849,14 @@ static void get_filter(kernel_t filter, double r,
 	pixman_fixed_t new_total = 0;
 	int j;
 
-	for (j = 0; j < width; ++j)
-	{
-	    double v = func(x1 + j, r);
+	for (j = 0; j < width; ++j) {
+	    double v = func (x1 + j, r);
 	    total += v;
 	    p[j] = pixman_double_to_fixed (v);
 	}
 
 	/* Normalize */
-        total = 1 / total;
+	total = 1 / total;
 	for (j = 0; j < width; ++j)
 	    new_total += (p[j] *= total);
 
@@ -872,43 +867,42 @@ static void get_filter(kernel_t filter, double r,
     }
 }
 
-
 /* Create the parameter list for a SEPARABLE_CONVOLUTION filter
  * with the given kernels and scale parameters. 
  */
 static pixman_fixed_t *
-create_separable_convolution (int *n_values,
-			      kernel_t xfilter,
-			      double sx,
-			      kernel_t yfilter,
-			      double sy)
+create_separable_convolution (
+    int *n_values, kernel_t xfilter, double sx, kernel_t yfilter, double sy)
 {
     int xwidth, xsubsample, ywidth, ysubsample, size_x, size_y;
     pixman_fixed_t *params;
 
-    xwidth = filters[xfilter].width(sx);
+    xwidth = filters[xfilter].width (sx);
     xsubsample = 0;
     if (xwidth > 1)
-	while (sx * (1 << xsubsample) <= 128.0) xsubsample++;
+	while (sx * (1 << xsubsample) <= 128.0)
+	    xsubsample++;
     size_x = (1 << xsubsample) * xwidth;
 
-    ywidth = filters[yfilter].width(sy);
+    ywidth = filters[yfilter].width (sy);
     ysubsample = 0;
     if (ywidth > 1)
-	while (sy * (1 << ysubsample) <= 128.0) ysubsample++;
+	while (sy * (1 << ysubsample) <= 128.0)
+	    ysubsample++;
     size_y = (1 << ysubsample) * ywidth;
 
     *n_values = 4 + size_x + size_y;
     params = _comac_malloc (*n_values * sizeof (pixman_fixed_t));
-    if (!params) return 0;
+    if (! params)
+	return 0;
 
     params[0] = pixman_int_to_fixed (xwidth);
     params[1] = pixman_int_to_fixed (ywidth);
     params[2] = pixman_int_to_fixed (xsubsample);
     params[3] = pixman_int_to_fixed (ysubsample);
 
-    get_filter(xfilter, sx, xwidth, xsubsample, params + 4);
-    get_filter(yfilter, sy, ywidth, ysubsample, params + 4 + size_x);
+    get_filter (xfilter, sx, xwidth, xsubsample, params + 4);
+    get_filter (yfilter, sy, ywidth, ysubsample, params + 4 + size_x);
 
     return params;
 }
@@ -919,30 +913,29 @@ static comac_bool_t
 _pixman_image_set_properties (pixman_image_t *pixman_image,
 			      const comac_pattern_t *pattern,
 			      const comac_rectangle_int_t *extents,
-			      int *ix,int *iy)
+			      int *ix,
+			      int *iy)
 {
     pixman_transform_t pixman_transform;
     comac_int_status_t status;
 
-    status = _comac_matrix_to_pixman_matrix_offset (&pattern->matrix,
-						    pattern->filter,
-						    extents->x + extents->width/2.,
-						    extents->y + extents->height/2.,
-						    &pixman_transform, ix, iy);
-    if (status == COMAC_INT_STATUS_NOTHING_TO_DO)
-    {
+    status = _comac_matrix_to_pixman_matrix_offset (
+	&pattern->matrix,
+	pattern->filter,
+	extents->x + extents->width / 2.,
+	extents->y + extents->height / 2.,
+	&pixman_transform,
+	ix,
+	iy);
+    if (status == COMAC_INT_STATUS_NOTHING_TO_DO) {
 	/* If the transform is an identity, we don't need to set it
 	 * and we can use any filtering, so choose the fastest one. */
 	pixman_image_set_filter (pixman_image, PIXMAN_FILTER_NEAREST, NULL, 0);
-    }
-    else if (unlikely (status != COMAC_INT_STATUS_SUCCESS ||
-		       ! pixman_image_set_transform (pixman_image,
-						     &pixman_transform)))
-    {
+    } else if (unlikely (status != COMAC_INT_STATUS_SUCCESS ||
+			 ! pixman_image_set_transform (pixman_image,
+						       &pixman_transform))) {
 	return FALSE;
-    }
-    else
-    {
+    } else {
 	pixman_filter_t pixman_filter;
 	kernel_t kernel;
 	double dx, dy;
@@ -960,8 +953,10 @@ _pixman_image_set_properties (pixman_image_t *pixman_image,
 	/* Clip at maximum pixman_fixed number. Besides making it
 	 * passable to pixman, this avoids errors from inf and nan.
 	 */
-	if (! (dx < 0x7FFF)) dx = 0x7FFF;
-	if (! (dy < 0x7FFF)) dy = 0x7FFF;
+	if (! (dx < 0x7FFF))
+	    dx = 0x7FFF;
+	if (! (dy < 0x7FFF))
+	    dy = 0x7FFF;
 
 	switch (pattern->filter) {
 	case COMAC_FILTER_FAST:
@@ -972,29 +967,44 @@ _pixman_image_set_properties (pixman_image_t *pixman_image,
 	    kernel = KERNEL_BOX;
 	    /* Clip the filter size to prevent extreme slowness. This
 	       value could be raised if 2-pass filtering is done */
-	    if (dx > 16.0) dx = 16.0;
-	    if (dy > 16.0) dy = 16.0;
+	    if (dx > 16.0)
+		dx = 16.0;
+	    if (dy > 16.0)
+		dy = 16.0;
 	    /* Match the bilinear filter for scales > .75: */
-	    if (dx < 1.0/0.75) dx = 1.0;
-	    if (dy < 1.0/0.75) dy = 1.0;
+	    if (dx < 1.0 / 0.75)
+		dx = 1.0;
+	    if (dy < 1.0 / 0.75)
+		dy = 1.0;
 	    break;
 	case COMAC_FILTER_BEST:
 	    pixman_filter = PIXMAN_FILTER_SEPARABLE_CONVOLUTION;
 	    kernel = KERNEL_CATMULL_ROM; /* LANCZOS3 is better but not much */
 	    /* Clip the filter size to prevent extreme slowness. This
 	       value could be raised if 2-pass filtering is done */
-	    if (dx > 16.0) { dx = 16.0; kernel = KERNEL_BOX; }
+	    if (dx > 16.0) {
+		dx = 16.0;
+		kernel = KERNEL_BOX;
+	    }
 	    /* blur up to 2x scale, then blend to square pixels for larger: */
 	    else if (dx < 1.0) {
-		if (dx < 1.0/128) dx = 1.0/127;
-		else if (dx < 0.5) dx = 1.0 / (1.0 / dx - 1.0);
-		else dx = 1.0;
+		if (dx < 1.0 / 128)
+		    dx = 1.0 / 127;
+		else if (dx < 0.5)
+		    dx = 1.0 / (1.0 / dx - 1.0);
+		else
+		    dx = 1.0;
 	    }
-	    if (dy > 16.0) { dy = 16.0; kernel = KERNEL_BOX; }
-	    else if (dy < 1.0) {
-		if (dy < 1.0/128) dy = 1.0/127;
-		else if (dy < 0.5) dy = 1.0 / (1.0 / dy - 1.0);
-		else dy = 1.0;
+	    if (dy > 16.0) {
+		dy = 16.0;
+		kernel = KERNEL_BOX;
+	    } else if (dy < 1.0) {
+		if (dy < 1.0 / 128)
+		    dy = 1.0 / 127;
+		else if (dy < 0.5)
+		    dy = 1.0 / (1.0 / dy - 1.0);
+		else
+		    dy = 1.0;
 	    }
 	    break;
 	case COMAC_FILTER_NEAREST:
@@ -1016,10 +1026,15 @@ _pixman_image_set_properties (pixman_image_t *pixman_image,
 	if (pixman_filter == PIXMAN_FILTER_SEPARABLE_CONVOLUTION) {
 	    int n_params;
 	    pixman_fixed_t *params;
-	    params = create_separable_convolution
-		(&n_params, kernel, dx, kernel, dy);
-	    pixman_image_set_filter (pixman_image, pixman_filter,
-				     params, n_params);
+	    params = create_separable_convolution (&n_params,
+						   kernel,
+						   dx,
+						   kernel,
+						   dy);
+	    pixman_image_set_filter (pixman_image,
+				     pixman_filter,
+				     params,
+				     n_params);
 	    free (params);
 	} else {
 	    pixman_image_set_filter (pixman_image, pixman_filter, NULL, 0);
@@ -1060,18 +1075,20 @@ struct proxy {
 };
 
 static comac_status_t
-proxy_acquire_source_image (void			 *abstract_surface,
-			    comac_image_surface_t	**image_out,
-			    void			**image_extra)
+proxy_acquire_source_image (void *abstract_surface,
+			    comac_image_surface_t **image_out,
+			    void **image_extra)
 {
     struct proxy *proxy = abstract_surface;
-    return _comac_surface_acquire_source_image (proxy->image, image_out, image_extra);
+    return _comac_surface_acquire_source_image (proxy->image,
+						image_out,
+						image_extra);
 }
 
 static void
-proxy_release_source_image (void			*abstract_surface,
-			    comac_image_surface_t	*image,
-			    void			*image_extra)
+proxy_release_source_image (void *abstract_surface,
+			    comac_image_surface_t *image,
+			    void *image_extra)
 {
     struct proxy *proxy = abstract_surface;
     _comac_surface_release_source_image (proxy->image, image, image_extra);
@@ -1083,7 +1100,7 @@ proxy_finish (void *abstract_surface)
     return COMAC_STATUS_SUCCESS;
 }
 
-static const comac_surface_backend_t proxy_backend  = {
+static const comac_surface_backend_t proxy_backend = {
     COMAC_INTERNAL_SURFACE_TYPE_NULL,
     proxy_finish,
     NULL,
@@ -1099,8 +1116,7 @@ static const comac_surface_backend_t proxy_backend  = {
 };
 
 static comac_surface_t *
-attach_proxy (comac_surface_t *source,
-	      comac_surface_t *image)
+attach_proxy (comac_surface_t *source, comac_surface_t *image)
 {
     struct proxy *proxy;
 
@@ -1108,7 +1124,11 @@ attach_proxy (comac_surface_t *source,
     if (unlikely (proxy == NULL))
 	return _comac_surface_create_in_error (COMAC_STATUS_NO_MEMORY);
 
-    _comac_surface_init (&proxy->base, &proxy_backend, NULL, image->content, FALSE);
+    _comac_surface_init (&proxy->base,
+			 &proxy_backend,
+			 NULL,
+			 image->content,
+			 FALSE);
 
     proxy->image = image;
     _comac_surface_attach_snapshot (source, &proxy->base, NULL);
@@ -1117,8 +1137,7 @@ attach_proxy (comac_surface_t *source,
 }
 
 static void
-detach_proxy (comac_surface_t *source,
-	      comac_surface_t *proxy)
+detach_proxy (comac_surface_t *source, comac_surface_t *proxy)
 {
     comac_surface_finish (proxy);
     comac_surface_destroy (proxy);
@@ -1127,7 +1146,7 @@ detach_proxy (comac_surface_t *source,
 static comac_surface_t *
 get_proxy (comac_surface_t *proxy)
 {
-    return ((struct proxy *)proxy)->image;
+    return ((struct proxy *) proxy)->image;
 }
 
 static pixman_image_t *
@@ -1136,7 +1155,8 @@ _pixman_image_for_recording (comac_image_surface_t *dst,
 			     comac_bool_t is_mask,
 			     const comac_rectangle_int_t *extents,
 			     const comac_rectangle_int_t *sample,
-			     int *ix, int *iy)
+			     int *ix,
+			     int *iy)
 {
     comac_surface_t *source, *clone, *proxy;
     comac_rectangle_int_t limit;
@@ -1177,14 +1197,18 @@ _pixman_image_for_recording (comac_image_surface_t *dst,
 	y2 = limit.y + limit.height;
 
 	_comac_matrix_transform_bounding_box (&matrix,
-					      &x1, &y1, &x2, &y2, NULL);
+					      &x1,
+					      &y1,
+					      &x2,
+					      &y2,
+					      NULL);
 
 	limit.x = floor (x1);
 	limit.y = floor (y1);
-	limit.width  = ceil (x2) - limit.x;
+	limit.width = ceil (x2) - limit.x;
 	limit.height = ceil (y2) - limit.y;
-	sx = (double)src_limit.width / limit.width;
-	sy = (double)src_limit.height / limit.height;
+	sx = (double) src_limit.width / limit.width;
+	sy = (double) src_limit.height / limit.height;
     }
     tx = limit.x;
     ty = limit.y;
@@ -1197,12 +1221,14 @@ _pixman_image_for_recording (comac_image_surface_t *dst,
     }
 
     if (is_mask) {
-	    clone = comac_image_surface_create (COMAC_FORMAT_A8,
-						limit.width, limit.height);
+	clone = comac_image_surface_create (COMAC_FORMAT_A8,
+					    limit.width,
+					    limit.height);
     } else {
 	if (dst->base.content == source->content)
 	    clone = comac_image_surface_create (dst->format,
-						limit.width, limit.height);
+						limit.width,
+						limit.height);
 	else
 	    clone = _comac_image_surface_create_with_content (source->content,
 							      limit.width,
@@ -1217,7 +1243,7 @@ _pixman_image_for_recording (comac_image_surface_t *dst,
 	m = &matrix;
     } else {
 	comac_matrix_init_scale (&matrix, sx, sy);
-	comac_matrix_translate (&matrix, src_limit.x/sx, src_limit.y/sy);
+	comac_matrix_translate (&matrix, src_limit.x / sx, src_limit.y / sy);
 	m = &matrix;
     }
 
@@ -1231,7 +1257,8 @@ _pixman_image_for_recording (comac_image_surface_t *dst,
     }
 
 done:
-    pixman_image = pixman_image_ref (((comac_image_surface_t *)clone)->pixman_image);
+    pixman_image =
+	pixman_image_ref (((comac_image_surface_t *) clone)->pixman_image);
     comac_surface_destroy (clone);
 
     if (extend == COMAC_EXTEND_NONE) {
@@ -1241,18 +1268,20 @@ done:
 	comac_pattern_union_t tmp_pattern;
 	_comac_pattern_init_static_copy (&tmp_pattern.base, &pattern->base);
 	matrix = pattern->base.matrix;
-	status = comac_matrix_invert(&matrix);
+	status = comac_matrix_invert (&matrix);
 	assert (status == COMAC_STATUS_SUCCESS);
 	comac_matrix_translate (&matrix, src_limit.x, src_limit.y);
 	comac_matrix_scale (&matrix, sx, sy);
-	status = comac_matrix_invert(&matrix);
+	status = comac_matrix_invert (&matrix);
 	assert (status == COMAC_STATUS_SUCCESS);
 	comac_pattern_set_matrix (&tmp_pattern.base, &matrix);
 	if (! _pixman_image_set_properties (pixman_image,
-					    &tmp_pattern.base, extents,
-					    ix, iy)) {
+					    &tmp_pattern.base,
+					    extents,
+					    ix,
+					    iy)) {
 	    pixman_image_unref (pixman_image);
-	    pixman_image= NULL;
+	    pixman_image = NULL;
 	}
     }
 
@@ -1265,7 +1294,8 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 			   comac_bool_t is_mask,
 			   const comac_rectangle_int_t *extents,
 			   const comac_rectangle_int_t *sample,
-			   int *ix, int *iy)
+			   int *ix,
+			   int *iy)
 {
     comac_extend_t extend = pattern->base.extend;
     pixman_image_t *pixman_image;
@@ -1275,16 +1305,20 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
     *ix = *iy = 0;
     pixman_image = NULL;
     if (pattern->surface->type == COMAC_SURFACE_TYPE_RECORDING)
-	return _pixman_image_for_recording(dst, pattern,
-					   is_mask, extents, sample,
-					   ix, iy);
+	return _pixman_image_for_recording (dst,
+					    pattern,
+					    is_mask,
+					    extents,
+					    sample,
+					    ix,
+					    iy);
 
     if (pattern->surface->type == COMAC_SURFACE_TYPE_IMAGE &&
 	(! is_mask || ! pattern->base.has_component_alpha ||
-	 (pattern->surface->content & COMAC_CONTENT_COLOR) == 0))
-    {
+	 (pattern->surface->content & COMAC_CONTENT_COLOR) == 0)) {
 	comac_surface_t *defer_free = NULL;
-	comac_image_surface_t *source = (comac_image_surface_t *) pattern->surface;
+	comac_image_surface_t *source =
+	    (comac_image_surface_t *) pattern->surface;
 	comac_surface_type_t type;
 
 	if (_comac_surface_is_snapshot (&source->base)) {
@@ -1294,33 +1328,25 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 
 	type = source->base.backend->type;
 	if (type == COMAC_SURFACE_TYPE_IMAGE) {
-	    if (extend != COMAC_EXTEND_NONE &&
-		sample->x >= 0 &&
-		sample->y >= 0 &&
-		sample->x + sample->width  <= source->width &&
-		sample->y + sample->height <= source->height)
-	    {
+	    if (extend != COMAC_EXTEND_NONE && sample->x >= 0 &&
+		sample->y >= 0 && sample->x + sample->width <= source->width &&
+		sample->y + sample->height <= source->height) {
 		extend = COMAC_EXTEND_NONE;
 	    }
 
 	    if (sample->width == 1 && sample->height == 1) {
-		if (sample->x < 0 ||
-		    sample->y < 0 ||
-		    sample->x >= source->width ||
-		    sample->y >= source->height)
-		{
+		if (sample->x < 0 || sample->y < 0 ||
+		    sample->x >= source->width || sample->y >= source->height) {
 		    if (extend == COMAC_EXTEND_NONE) {
 			comac_surface_destroy (defer_free);
 			return _pixman_transparent_image ();
 		    }
-		}
-		else
-		{
-		    pixman_image = _pixel_to_solid (source,
-						    sample->x, sample->y);
-                    if (pixman_image) {
+		} else {
+		    pixman_image =
+			_pixel_to_solid (source, sample->x, sample->y);
+		    if (pixman_image) {
 			comac_surface_destroy (defer_free);
-                        return pixman_image;
+			return pixman_image;
 		    }
 		}
 	    }
@@ -1330,8 +1356,8 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 	    if (extend == COMAC_EXTEND_NONE &&
 		_comac_matrix_is_pixman_translation (&pattern->base.matrix,
 						     pattern->base.filter,
-						     ix, iy))
-	    {
+						     ix,
+						     iy)) {
 		comac_surface_destroy (defer_free);
 		return pixman_image_ref (source->pixman_image);
 	    }
@@ -1359,21 +1385,19 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 	    sub = (comac_surface_subsurface_t *) source;
 	    source = (comac_image_surface_t *) sub->target;
 
-	    if (sample->x >= 0 &&
-		sample->y >= 0 &&
-		sample->x + sample->width  <= sub->extents.width &&
-		sample->y + sample->height <= sub->extents.height)
-	    {
+	    if (sample->x >= 0 && sample->y >= 0 &&
+		sample->x + sample->width <= sub->extents.width &&
+		sample->y + sample->height <= sub->extents.height) {
 		is_contained = TRUE;
 	    }
 
 	    if (sample->width == 1 && sample->height == 1) {
 		if (is_contained) {
 		    pixman_image = _pixel_to_solid (source,
-                                                    sub->extents.x + sample->x,
-                                                    sub->extents.y + sample->y);
-                    if (pixman_image)
-                        return pixman_image;
+						    sub->extents.x + sample->x,
+						    sub->extents.y + sample->y);
+		    if (pixman_image)
+			return pixman_image;
 		} else {
 		    if (extend == COMAC_EXTEND_NONE)
 			return _pixman_transparent_image ();
@@ -1386,8 +1410,8 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 	    if (is_contained &&
 		_comac_matrix_is_pixman_translation (&pattern->base.matrix,
 						     pattern->base.filter,
-						     ix, iy))
-	    {
+						     ix,
+						     iy)) {
 		return pixman_image_ref (source->pixman_image);
 	    }
 #endif
@@ -1395,14 +1419,17 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 	    /* Avoid sub-byte offsets, force a copy in that case. */
 	    if (PIXMAN_FORMAT_BPP (source->pixman_format) >= 8) {
 		if (is_contained) {
-		    void *data = source->data
-			+ sub->extents.x * PIXMAN_FORMAT_BPP(source->pixman_format)/8
-			+ sub->extents.y * source->stride;
-		    pixman_image = pixman_image_create_bits (source->pixman_format,
-							     sub->extents.width,
-							     sub->extents.height,
-							     data,
-							     source->stride);
+		    void *data = source->data +
+				 sub->extents.x *
+				     PIXMAN_FORMAT_BPP (source->pixman_format) /
+				     8 +
+				 sub->extents.y * source->stride;
+		    pixman_image =
+			pixman_image_create_bits (source->pixman_format,
+						  sub->extents.width,
+						  sub->extents.height,
+						  data,
+						  source->stride);
 		    if (unlikely (pixman_image == NULL))
 			return NULL;
 		} else {
@@ -1420,7 +1447,9 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 	void *extra;
 	comac_status_t status;
 
-	status = _comac_surface_acquire_source_image (pattern->surface, &image, &extra);
+	status = _comac_surface_acquire_source_image (pattern->surface,
+						      &image,
+						      &extra);
 	if (unlikely (status))
 	    return NULL;
 
@@ -1430,13 +1459,17 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 						 (uint32_t *) image->data,
 						 image->stride);
 	if (unlikely (pixman_image == NULL)) {
-	    _comac_surface_release_source_image (pattern->surface, image, extra);
+	    _comac_surface_release_source_image (pattern->surface,
+						 image,
+						 extra);
 	    return NULL;
 	}
 
 	cleanup = _comac_malloc (sizeof (*cleanup));
 	if (unlikely (cleanup == NULL)) {
-	    _comac_surface_release_source_image (pattern->surface, image, extra);
+	    _comac_surface_release_source_image (pattern->surface,
+						 image,
+						 extra);
 	    pixman_image_unref (pixman_image);
 	    return NULL;
 	}
@@ -1445,14 +1478,17 @@ _pixman_image_for_surface (comac_image_surface_t *dst,
 	cleanup->image = image;
 	cleanup->image_extra = extra;
 	pixman_image_set_destroy_function (pixman_image,
-					   _acquire_source_cleanup, cleanup);
+					   _acquire_source_cleanup,
+					   cleanup);
     }
 
     if (! _pixman_image_set_properties (pixman_image,
-					&pattern->base, extents,
-					ix, iy)) {
+					&pattern->base,
+					extents,
+					ix,
+					iy)) {
 	pixman_image_unref (pixman_image);
-	pixman_image= NULL;
+	pixman_image = NULL;
     }
 
     return pixman_image;
@@ -1466,8 +1502,7 @@ struct raster_source_cleanup {
 };
 
 static void
-_raster_source_cleanup (pixman_image_t *pixman_image,
-			void *closure)
+_raster_source_cleanup (pixman_image_t *pixman_image, void *closure)
 {
     struct raster_source_cleanup *data = closure;
 
@@ -1475,8 +1510,7 @@ _raster_source_cleanup (pixman_image_t *pixman_image,
 					 data->image,
 					 data->image_extra);
 
-    _comac_raster_source_pattern_release (data->pattern,
-					  data->surface);
+    _comac_raster_source_pattern_release (data->pattern, data->surface);
 
     free (data);
 }
@@ -1487,7 +1521,8 @@ _pixman_image_for_raster (comac_image_surface_t *dst,
 			  comac_bool_t is_mask,
 			  const comac_rectangle_int_t *extents,
 			  const comac_rectangle_int_t *sample,
-			  int *ix, int *iy)
+			  int *ix,
+			  int *iy)
 {
     pixman_image_t *pixman_image;
     struct raster_source_cleanup *cleanup;
@@ -1500,8 +1535,8 @@ _pixman_image_for_raster (comac_image_surface_t *dst,
 
     *ix = *iy = 0;
 
-    surface = _comac_raster_source_pattern_acquire (&pattern->base,
-						    &dst->base, NULL);
+    surface =
+	_comac_raster_source_pattern_acquire (&pattern->base, &dst->base, NULL);
     if (unlikely (surface == NULL || surface->status))
 	return NULL;
 
@@ -1538,13 +1573,16 @@ _pixman_image_for_raster (comac_image_surface_t *dst,
     cleanup->image = image;
     cleanup->image_extra = extra;
     pixman_image_set_destroy_function (pixman_image,
-				       _raster_source_cleanup, cleanup);
+				       _raster_source_cleanup,
+				       cleanup);
 
     if (! _pixman_image_set_properties (pixman_image,
-					&pattern->base, extents,
-					ix, iy)) {
+					&pattern->base,
+					extents,
+					ix,
+					iy)) {
 	pixman_image_unref (pixman_image);
-	pixman_image= NULL;
+	pixman_image = NULL;
     }
 
     return pixman_image;
@@ -1556,7 +1594,8 @@ _pixman_image_for_pattern (comac_image_surface_t *dst,
 			   comac_bool_t is_mask,
 			   const comac_rectangle_int_t *extents,
 			   const comac_rectangle_int_t *sample,
-			   int *tx, int *ty)
+			   int *tx,
+			   int *ty)
 {
     *tx = *ty = 0;
 
@@ -1569,28 +1608,42 @@ _pixman_image_for_pattern (comac_image_surface_t *dst,
     default:
 	ASSERT_NOT_REACHED;
     case COMAC_PATTERN_TYPE_SOLID:
-	return _pixman_image_for_color (&((const comac_solid_pattern_t *) pattern)->color);
+	return _pixman_image_for_color (
+	    &((const comac_solid_pattern_t *) pattern)->color);
 
     case COMAC_PATTERN_TYPE_RADIAL:
     case COMAC_PATTERN_TYPE_LINEAR:
-	return _pixman_image_for_gradient ((const comac_gradient_pattern_t *) pattern,
-					   extents, tx, ty);
+	return _pixman_image_for_gradient (
+	    (const comac_gradient_pattern_t *) pattern,
+	    extents,
+	    tx,
+	    ty);
 
     case COMAC_PATTERN_TYPE_MESH:
 	return _pixman_image_for_mesh ((const comac_mesh_pattern_t *) pattern,
-					   extents, tx, ty);
+				       extents,
+				       tx,
+				       ty);
 
     case COMAC_PATTERN_TYPE_SURFACE:
-	return _pixman_image_for_surface (dst,
-					  (const comac_surface_pattern_t *) pattern,
-					  is_mask, extents, sample,
-					  tx, ty);
+	return _pixman_image_for_surface (
+	    dst,
+	    (const comac_surface_pattern_t *) pattern,
+	    is_mask,
+	    extents,
+	    sample,
+	    tx,
+	    ty);
 
     case COMAC_PATTERN_TYPE_RASTER_SOURCE:
-	return _pixman_image_for_raster (dst,
-					 (const comac_raster_source_pattern_t *) pattern,
-					 is_mask, extents, sample,
-					 tx, ty);
+	return _pixman_image_for_raster (
+	    dst,
+	    (const comac_raster_source_pattern_t *) pattern,
+	    is_mask,
+	    extents,
+	    sample,
+	    tx,
+	    ty);
     }
 }
 
@@ -1611,11 +1664,12 @@ const comac_surface_backend_t _comac_image_source_backend = {
 
 comac_surface_t *
 _comac_image_source_create_for_pattern (comac_surface_t *dst,
-					 const comac_pattern_t *pattern,
-					 comac_bool_t is_mask,
-					 const comac_rectangle_int_t *extents,
-					 const comac_rectangle_int_t *sample,
-					 int *src_x, int *src_y)
+					const comac_pattern_t *pattern,
+					comac_bool_t is_mask,
+					const comac_rectangle_int_t *extents,
+					const comac_rectangle_int_t *sample,
+					int *src_x,
+					int *src_y)
 {
     comac_image_source_t *source;
 
@@ -1623,13 +1677,17 @@ _comac_image_source_create_for_pattern (comac_surface_t *dst,
 
     source = _comac_malloc (sizeof (comac_image_source_t));
     if (unlikely (source == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     source->pixman_image =
-	_pixman_image_for_pattern ((comac_image_surface_t *)dst,
-				   pattern, is_mask,
-				   extents, sample,
-				   src_x, src_y);
+	_pixman_image_for_pattern ((comac_image_surface_t *) dst,
+				   pattern,
+				   is_mask,
+				   extents,
+				   sample,
+				   src_x,
+				   src_y);
     if (unlikely (source->pixman_image == NULL)) {
 	free (source);
 	return _comac_surface_create_in_error (COMAC_STATUS_NO_MEMORY);

@@ -41,8 +41,8 @@ static void
 triangle (comac_t *cr, double x, double y, double h)
 {
     comac_move_to (cr, x, y);
-    comac_line_to (cr, x+h/2, y+h);
-    comac_line_to (cr, x+h, y);
+    comac_line_to (cr, x + h / 2, y + h);
+    comac_line_to (cr, x + h, y);
     comac_close_path (cr);
 }
 
@@ -62,7 +62,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
     triangle (cr, 0, 0, SIZE);
     triangle (cr, 0, 0, SIZE);
-    triangle (cr, SIZE/2-20, SIZE/2 - 20, 40);
+    triangle (cr, SIZE / 2 - 20, SIZE / 2 - 20, 40);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -71,6 +71,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (big_little_triangle,
 	    "Tests that we tighten the bounds after tessellation.",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

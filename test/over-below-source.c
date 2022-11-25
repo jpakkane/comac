@@ -52,7 +52,7 @@ draw (comac_t *cr, int width, int height)
 
     /* A red triangle with SOURCE */
     comac_move_to (cr, SIZE / 2, SIZE / 2);
-    comac_line_to (cr, SIZE,     SIZE / 2);
+    comac_line_to (cr, SIZE, SIZE / 2);
     comac_line_to (cr, SIZE / 2, SIZE);
     comac_close_path (cr);
 
@@ -65,8 +65,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (over_below_source,
-	    "A simple test drawing a circle with OVER before a triangle drawn with SOURCE",
+	    "A simple test drawing a circle with OVER before a triangle drawn "
+	    "with SOURCE",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

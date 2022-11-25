@@ -83,11 +83,15 @@ static comac_surface_t *
 similar (comac_t *cr)
 {
     return source (comac_surface_create_similar (comac_get_target (cr),
-						 COMAC_CONTENT_COLOR, 2, 2));
+						 COMAC_CONTENT_COLOR,
+						 2,
+						 2));
 }
 
 static comac_t *
-extend (comac_t *cr, comac_surface_t *(*surface)(comac_t *), comac_extend_t mode)
+extend (comac_t *cr,
+	comac_surface_t *(*surface) (comac_t *),
+	comac_extend_t mode)
 {
     comac_surface_t *s;
 
@@ -96,12 +100,12 @@ extend (comac_t *cr, comac_surface_t *(*surface)(comac_t *), comac_extend_t mode
 
     /* Now use extend modes to cover most of the surface with those 4 colors */
     s = surface (cr);
-    comac_set_source_surface (cr, s, SIZE/2 - 1, SIZE/2 - 1);
+    comac_set_source_surface (cr, s, SIZE / 2 - 1, SIZE / 2 - 1);
     comac_surface_destroy (s);
 
     comac_pattern_set_extend (comac_get_source (cr), mode);
 
-    comac_rectangle (cr, 10, 10, SIZE-20, SIZE-20);
+    comac_rectangle (cr, 10, 10, SIZE - 20, SIZE - 20);
     comac_clip (cr);
     comac_paint (cr);
 
@@ -109,29 +113,25 @@ extend (comac_t *cr, comac_surface_t *(*surface)(comac_t *), comac_extend_t mode
 }
 
 static comac_t *
-extend_none (comac_t *cr,
-	     comac_surface_t *(*pattern)(comac_t *))
+extend_none (comac_t *cr, comac_surface_t *(*pattern) (comac_t *) )
 {
     return extend (cr, pattern, COMAC_EXTEND_NONE);
 }
 
 static comac_t *
-extend_pad (comac_t *cr,
-	    comac_surface_t *(*pattern)(comac_t *))
+extend_pad (comac_t *cr, comac_surface_t *(*pattern) (comac_t *) )
 {
     return extend (cr, pattern, COMAC_EXTEND_PAD);
 }
 
 static comac_t *
-extend_repeat (comac_t *cr,
-	       comac_surface_t *(*pattern)(comac_t *))
+extend_repeat (comac_t *cr, comac_surface_t *(*pattern) (comac_t *) )
 {
     return extend (cr, pattern, COMAC_EXTEND_REPEAT);
 }
 
 static comac_t *
-extend_reflect (comac_t *cr,
-	       comac_surface_t *(*pattern)(comac_t *))
+extend_reflect (comac_t *cr, comac_surface_t *(*pattern) (comac_t *) )
 {
     return extend (cr, pattern, COMAC_EXTEND_REFLECT);
 }
@@ -142,7 +142,9 @@ record_create (comac_t *target)
     comac_surface_t *surface;
     comac_t *cr;
 
-    surface = comac_recording_surface_create (comac_surface_get_content (comac_get_target (target)), NULL);
+    surface = comac_recording_surface_create (
+	comac_surface_get_content (comac_get_target (target)),
+	NULL);
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
@@ -162,10 +164,11 @@ record_get (comac_t *target)
 
 static comac_test_status_t
 record_replay (comac_t *cr,
-	       comac_t *(*func)(comac_t *,
-				comac_surface_t *(*pattern)(comac_t *)),
-	       comac_surface_t *(*pattern)(comac_t *),
-	       int width, int height)
+	       comac_t *(*func) (comac_t *,
+				 comac_surface_t *(*pattern) (comac_t *) ),
+	       comac_surface_t *(*pattern) (comac_t *),
+	       int width,
+	       int height)
 {
     comac_surface_t *surface;
     int x, y;
@@ -240,49 +243,65 @@ record_extend_reflect_similar (comac_t *cr, int width, int height)
 COMAC_TEST (record_extend_none,
 	    "Test COMAC_EXTEND_NONE for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_none)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_none)
 COMAC_TEST (record_extend_pad,
 	    "Test COMAC_EXTEND_PAD for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_pad)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_pad)
 COMAC_TEST (record_extend_repeat,
 	    "Test COMAC_EXTEND_REPEAT for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_repeat)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_repeat)
 COMAC_TEST (record_extend_reflect,
 	    "Test COMAC_EXTEND_REFLECT for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_reflect)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_reflect)
 
 COMAC_TEST (record_extend_none_similar,
 	    "Test COMAC_EXTEND_NONE for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_none_similar)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_none_similar)
 COMAC_TEST (record_extend_pad_similar,
 	    "Test COMAC_EXTEND_PAD for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_pad_similar)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_pad_similar)
 COMAC_TEST (record_extend_repeat_similar,
 	    "Test COMAC_EXTEND_REPEAT for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_repeat_similar)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_repeat_similar)
 COMAC_TEST (record_extend_reflect_similar,
 	    "Test COMAC_EXTEND_REFLECT for recorded surface patterns",
 	    "record, extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, record_extend_reflect_similar)
+	    NULL,	      /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    record_extend_reflect_similar)

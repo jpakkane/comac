@@ -32,19 +32,19 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_paint (cr);
 
-    comac_set_antialias(cr, COMAC_ANTIALIAS_NONE);
-    comac_move_to(cr, 85, -465);
-    comac_line_to(cr, 3, 4.1);
-    comac_line_to(cr, -145, -25);
-    comac_close_path(cr);
-    comac_clip(cr);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
+    comac_move_to (cr, 85, -465);
+    comac_line_to (cr, 3, 4.1);
+    comac_line_to (cr, -145, -25);
+    comac_close_path (cr);
+    comac_clip (cr);
 
-    comac_set_antialias(cr, COMAC_ANTIALIAS_DEFAULT);
-    comac_move_to(cr, -139, -524);
-    comac_line_to(cr, 78, 44);
-    comac_line_to(cr, -229, -10);
-    comac_close_path(cr);
-    comac_clip(cr);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_DEFAULT);
+    comac_move_to (cr, -139, -524);
+    comac_line_to (cr, 78, 44);
+    comac_line_to (cr, -229, -10);
+    comac_close_path (cr);
+    comac_clip (cr);
 
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
@@ -55,6 +55,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_complex_bug61592,
 	    "Exercise a bug found in 1.12",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    8, 5,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    8,
+	    5,
+	    NULL,
+	    draw)

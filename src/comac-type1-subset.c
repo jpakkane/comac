@@ -39,7 +39,6 @@
  * http://partners.adobe.com/public/developer/en/font/T1_SPEC.PDF
  */
 
-
 #define _DEFAULT_SOURCE /* for snprintf(), strdup() */
 #include "comacint.h"
 
@@ -55,7 +54,6 @@
 #include <ctype.h>
 
 #define TYPE1_STACKSIZE 24 /* Defined in Type 1 Font Format */
-
 
 typedef struct {
     int subset_index;
@@ -75,10 +73,10 @@ typedef struct _comac_type1_font_subset {
 	double ascent, descent;
 	double units_per_em;
 
-	const char    *data;
-	unsigned long  header_size;
-	unsigned long  data_size;
-	unsigned long  trailer_size;
+	const char *data;
+	unsigned long header_size;
+	unsigned long data_size;
+	unsigned long trailer_size;
     } base;
 
     /* Num glyphs in subset. May be greater than
@@ -153,24 +151,23 @@ typedef struct _comac_type1_font_subset {
 	int sp;
     } ps_stack;
 
-
 } comac_type1_font_subset_t;
 
-
 static comac_status_t
-_comac_type1_font_subset_init (comac_type1_font_subset_t  *font,
+_comac_type1_font_subset_init (comac_type1_font_subset_t *font,
 			       comac_scaled_font_subset_t *scaled_font_subset,
-			       comac_bool_t                hex_encode)
+			       comac_bool_t hex_encode)
 {
     memset (font, 0, sizeof (*font));
     font->scaled_font_subset = scaled_font_subset;
 
     _comac_array_init (&font->glyphs_array, sizeof (glyph_data_t));
     _comac_array_init (&font->glyph_names_array, sizeof (char *));
-    font->scaled_subset_index_to_glyphs = calloc (scaled_font_subset->num_glyphs, sizeof font->scaled_subset_index_to_glyphs[0]);
+    font->scaled_subset_index_to_glyphs =
+	calloc (scaled_font_subset->num_glyphs,
+		sizeof font->scaled_subset_index_to_glyphs[0]);
     if (unlikely (font->scaled_subset_index_to_glyphs == NULL))
-        return _comac_error (COMAC_STATUS_NO_MEMORY);
-
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     font->type1_subset_index_to_glyphs = NULL;
     font->base.num_glyphs = 0;
@@ -198,7 +195,7 @@ comac_type1_font_subset_use_glyph (comac_type1_font_subset_t *font, int glyph)
 }
 
 static comac_bool_t
-is_ps_delimiter(int c)
+is_ps_delimiter (int c)
 {
     static const char delimiters[] = "()[]{}<>/% \t\r\n";
 
@@ -217,8 +214,10 @@ find_token (const char *buffer, const char *end, const char *token)
     length = strlen (token);
     for (i = 0; buffer + i < end - length + 1; i++)
 	if (memcmp (buffer + i, token, length) == 0)
-	    if ((i == 0 || token[0] == '/' || is_ps_delimiter(buffer[i - 1])) &&
-		(buffer + i == end - length || is_ps_delimiter(buffer[i + length])))
+	    if ((i == 0 || token[0] == '/' ||
+		 is_ps_delimiter (buffer[i - 1])) &&
+		(buffer + i == end - length ||
+		 is_ps_delimiter (buffer[i + length])))
 		return buffer + i;
 
     return NULL;
@@ -234,40 +233,43 @@ comac_type1_font_subset_find_segments (comac_type1_font_subset_t *font)
     p = (unsigned char *) font->type1_data;
     font->type1_end = font->type1_data + font->type1_length;
     if (font->type1_length >= 2 && p[0] == 0x80 && p[1] == 0x01) {
-	if (font->type1_end < (char *)(p + 6))
+	if (font->type1_end < (char *) (p + 6))
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 	font->header_segment_size =
 	    p[2] | (p[3] << 8) | (p[4] << 16) | ((unsigned int) p[5] << 24);
 	font->header_segment = (char *) p + 6;
 
 	p += 6 + font->header_segment_size;
-	if (font->type1_end < (char *)(p + 6))
+	if (font->type1_end < (char *) (p + 6))
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 	font->eexec_segment_size =
 	    p[2] | (p[3] << 8) | (p[4] << 16) | ((unsigned int) p[5] << 24);
 	font->eexec_segment = (char *) p + 6;
 	font->eexec_segment_is_ascii = (p[1] == 1);
 
-        p += 6 + font->eexec_segment_size;
-	while (font->type1_end >= (char *)(p + 6) && p[1] != 0x03) {
-	    size = p[2] | (p[3] << 8) | (p[4] << 16) | ((unsigned int) p[5] << 24);
-	    if (font->type1_end < (char *)(p + 6 + size))
+	p += 6 + font->eexec_segment_size;
+	while (font->type1_end >= (char *) (p + 6) && p[1] != 0x03) {
+	    size =
+		p[2] | (p[3] << 8) | (p[4] << 16) | ((unsigned int) p[5] << 24);
+	    if (font->type1_end < (char *) (p + 6 + size))
 		return COMAC_INT_STATUS_UNSUPPORTED;
 	    p += 6 + size;
-        }
-        font->type1_end = (char *) p;
+	}
+	font->type1_end = (char *) p;
     } else {
 	eexec_token = find_token ((char *) p, font->type1_end, "eexec");
 	if (eexec_token == NULL)
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-	font->header_segment_size = eexec_token - (char *) p + strlen ("eexec\n");
+	font->header_segment_size =
+	    eexec_token - (char *) p + strlen ("eexec\n");
 	font->header_segment = (char *) p;
-	font->eexec_segment_size = font->type1_length - font->header_segment_size;
+	font->eexec_segment_size =
+	    font->type1_length - font->header_segment_size;
 	font->eexec_segment = (char *) p + font->header_segment_size;
 	font->eexec_segment_is_ascii = TRUE;
 	for (i = 0; i < 4; i++) {
-	    if (!_comac_isxdigit (font->eexec_segment[i]))
+	    if (! _comac_isxdigit (font->eexec_segment[i]))
 		font->eexec_segment_is_ascii = FALSE;
 	}
     }
@@ -296,33 +298,30 @@ comac_type1_font_erase_dict_key (comac_type1_font_subset_t *font,
     do {
 	start = find_token (start, segment_end, key);
 	if (start) {
-	    p = start + strlen(key);
+	    p = start + strlen (key);
 	    /* skip integers or array of integers */
 	    while (p < segment_end &&
-		   (_comac_isspace(*p) ||
-		    _comac_isdigit(*p) ||
-		    *p == '[' ||
-		    *p == ']'))
-	    {
+		   (_comac_isspace (*p) || _comac_isdigit (*p) || *p == '[' ||
+		    *p == ']')) {
 		p++;
 	    }
 
-	    if (p + 3 < segment_end && memcmp(p, "def", 3) == 0) {
+	    if (p + 3 < segment_end && memcmp (p, "def", 3) == 0) {
 		/* erase definition of the key */
-		memset((char *) start, ' ', p + 3 - start);
+		memset ((char *) start, ' ', p + 3 - start);
 	    }
-	    start += strlen(key);
+	    start += strlen (key);
 	}
     } while (start);
 }
 
 static comac_status_t
 comac_type1_font_subset_get_matrix (comac_type1_font_subset_t *font,
-				    const char                *name,
-				    double                    *a,
-				    double                    *b,
-				    double                    *c,
-				    double                    *d)
+				    const char *name,
+				    double *a,
+				    double *b,
+				    double *c,
+				    double *d)
 {
     const char *start, *end, *segment_end;
     int ret, s_max, i, j;
@@ -344,7 +343,7 @@ comac_type1_font_subset_get_matrix (comac_type1_font_subset_t *font,
     if (end == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    s_max = end - start + 5*decimal_point_len + 1;
+    s_max = end - start + 5 * decimal_point_len + 1;
     s = _comac_malloc (s_max);
     if (unlikely (s == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -353,7 +352,7 @@ comac_type1_font_subset_get_matrix (comac_type1_font_subset_t *font,
     j = 0;
     while (i < end - start && j < s_max - decimal_point_len) {
 	if (start[i] == '.') {
-	    strncpy(s + j, decimal_point, decimal_point_len + 1);
+	    strncpy (s + j, decimal_point, decimal_point_len + 1);
 	    i++;
 	    j += decimal_point_len;
 	} else {
@@ -363,7 +362,7 @@ comac_type1_font_subset_get_matrix (comac_type1_font_subset_t *font,
     s[j] = 0;
 
     start = strpbrk (s, "{[");
-    if (!start) {
+    if (! start) {
 	free (s);
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
@@ -371,7 +370,7 @@ comac_type1_font_subset_get_matrix (comac_type1_font_subset_t *font,
     start++;
     ret = 0;
     if (*start)
-	ret = sscanf(start, "%lf %lf %lf %lf", a, b, c, d);
+	ret = sscanf (start, "%lf %lf %lf %lf", a, b, c, d);
 
     free (s);
 
@@ -388,7 +387,8 @@ comac_type1_font_subset_get_bbox (comac_type1_font_subset_t *font)
     double x_min, y_min, x_max, y_max;
     double xx, yx, xy, yy;
 
-    status = comac_type1_font_subset_get_matrix (font, "/FontBBox",
+    status = comac_type1_font_subset_get_matrix (font,
+						 "/FontBBox",
 						 &x_min,
 						 &y_min,
 						 &x_max,
@@ -396,8 +396,12 @@ comac_type1_font_subset_get_bbox (comac_type1_font_subset_t *font)
     if (unlikely (status))
 	return status;
 
-    status = comac_type1_font_subset_get_matrix (font, "/FontMatrix",
-						 &xx, &yx, &xy, &yy);
+    status = comac_type1_font_subset_get_matrix (font,
+						 "/FontMatrix",
+						 &xx,
+						 &yx,
+						 &xy,
+						 &yy);
     if (unlikely (status))
 	return status;
 
@@ -405,7 +409,7 @@ comac_type1_font_subset_get_bbox (comac_type1_font_subset_t *font)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Freetype uses 1/yy to get units per EM */
-    font->base.units_per_em = 1.0/yy;
+    font->base.units_per_em = 1.0 / yy;
 
     /* If the FontMatrix is not a uniform scale the metrics we extract
      * from the font won't match what FreeType returns */
@@ -441,7 +445,7 @@ comac_type1_font_subset_get_fontname (comac_type1_font_subset_t *font)
     if (end == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    while (end > start && _comac_isspace(end[-1]))
+    while (end > start && _comac_isspace (end[-1]))
 	end--;
 
     s = _comac_malloc (end - start + 1);
@@ -452,13 +456,13 @@ comac_type1_font_subset_get_fontname (comac_type1_font_subset_t *font)
     s[end - start] = 0;
 
     start = strchr (s, '/');
-    if (!start++ || !start) {
+    if (! start++ || ! start) {
 	free (s);
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
     /* If font name is prefixed with a subset tag, strip it off. */
-    if (strlen(start) > 7 && start[6] == '+') {
+    if (strlen (start) > 7 && start[6] == '+') {
 	for (i = 0; i < 6; i++) {
 	    if (start[i] < 'A' || start[i] > 'Z')
 		break;
@@ -479,7 +483,7 @@ comac_type1_font_subset_get_fontname (comac_type1_font_subset_t *font)
 
 static comac_status_t
 comac_type1_font_subset_write_header (comac_type1_font_subset_t *font,
-					 const char *name)
+				      const char *name)
 {
     const char *start, *end, *segment_end;
     unsigned int i;
@@ -522,8 +526,9 @@ comac_type1_font_subset_write_header (comac_type1_font_subset_t *font,
 	start += 9;
 	while (start < segment_end && _comac_isspace (*start))
 	    start++;
-	if (start + 5 < segment_end && memcmp(start, "known", 5) == 0) {
-	    _comac_output_stream_write (font->output, font->header_segment,
+	if (start + 5 < segment_end && memcmp (start, "known", 5) == 0) {
+	    _comac_output_stream_write (font->output,
+					font->header_segment,
 					start + 5 - font->header_segment);
 	    _comac_output_stream_printf (font->output, " pop false ");
 	    end = start + 5;
@@ -534,8 +539,7 @@ comac_type1_font_subset_write_header (comac_type1_font_subset_t *font,
     if (start == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    _comac_output_stream_write (font->output, end,
-				start - end);
+    _comac_output_stream_write (font->output, end, start - end);
 
     _comac_output_stream_printf (font->output, "/FontName /%s def", name);
 
@@ -554,7 +558,8 @@ comac_type1_font_subset_write_header (comac_type1_font_subset_t *font,
 				 "0 1 255 {1 index exch /.notdef put} for\n");
     if (font->scaled_font_subset->is_latin) {
 	for (i = 1; i < 256; i++) {
-	    int subset_glyph = font->scaled_font_subset->latin_to_subset_glyph_index[i];
+	    int subset_glyph =
+		font->scaled_font_subset->latin_to_subset_glyph_index[i];
 
 	    if (subset_glyph > 0) {
 		_comac_output_stream_printf (font->output,
@@ -601,7 +606,8 @@ hex_to_int (int ch)
 
 static comac_status_t
 comac_type1_font_subset_write_encrypted (comac_type1_font_subset_t *font,
-					 const char *data, unsigned int length)
+					 const char *data,
+					 unsigned int length)
 {
     const unsigned char *in, *end;
     int c, p;
@@ -613,7 +619,8 @@ comac_type1_font_subset_write_encrypted (comac_type1_font_subset_t *font,
     while (in < end) {
 	p = *in++;
 	c = p ^ (font->eexec_key >> 8);
-	font->eexec_key = (c + font->eexec_key) * COMAC_TYPE1_ENCRYPT_C1 + COMAC_TYPE1_ENCRYPT_C2;
+	font->eexec_key = (c + font->eexec_key) * COMAC_TYPE1_ENCRYPT_C1 +
+			  COMAC_TYPE1_ENCRYPT_C2;
 
 	if (font->hex_encode) {
 	    digits[0] = hex_digits[c >> 4];
@@ -695,10 +702,10 @@ comac_type1_font_subset_decrypt_eexec_segment (comac_type1_font_subset_t *font)
 static const char *
 skip_token (const char *p, const char *end)
 {
-    while (p < end && _comac_isspace(*p))
+    while (p < end && _comac_isspace (*p))
 	p++;
 
-    while (p < end && !_comac_isspace(*p))
+    while (p < end && ! _comac_isspace (*p))
 	p++;
 
     if (p == end)
@@ -708,13 +715,15 @@ skip_token (const char *p, const char *end)
 }
 
 static void
-comac_type1_font_subset_decrypt_charstring (const unsigned char *in, int size, unsigned char *out)
+comac_type1_font_subset_decrypt_charstring (const unsigned char *in,
+					    int size,
+					    unsigned char *out)
 {
     unsigned short r = COMAC_TYPE1_CHARSTRING_KEY;
     int c, p, i;
 
     for (i = 0; i < size; i++) {
-        c = *in++;
+	c = *in++;
 	p = c ^ (r >> 8);
 	r = (c + r) * COMAC_TYPE1_ENCRYPT_C1 + COMAC_TYPE1_ENCRYPT_C2;
 	*out++ = p;
@@ -725,16 +734,16 @@ static const unsigned char *
 comac_type1_font_subset_decode_integer (const unsigned char *p, int *integer)
 {
     if (*p <= 246) {
-        *integer = *p++ - 139;
+	*integer = *p++ - 139;
     } else if (*p <= 250) {
-        *integer = (p[0] - 247) * 256 + p[1] + 108;
-        p += 2;
+	*integer = (p[0] - 247) * 256 + p[1] + 108;
+	p += 2;
     } else if (*p <= 254) {
-        *integer = -(p[0] - 251) * 256 - p[1] - 108;
-        p += 2;
+	*integer = -(p[0] - 251) * 256 - p[1] - 108;
+	p += 2;
     } else {
-        *integer = ((uint32_t)p[1] << 24) | (p[2] << 16) | (p[3] << 8) | p[4];
-        p += 5;
+	*integer = ((uint32_t) p[1] << 24) | (p[2] << 16) | (p[3] << 8) | p[4];
+	p += 5;
     }
 
     return p;
@@ -754,7 +763,8 @@ use_standard_encoding_glyph (comac_type1_font_subset_t *font, int index)
 	return COMAC_STATUS_SUCCESS;
 
     for (i = 0; i < font->base.num_glyphs; i++) {
-	if (font->glyph_names[i] &&  strcmp (font->glyph_names[i], glyph_name) == 0) {
+	if (font->glyph_names[i] &&
+	    strcmp (font->glyph_names[i], glyph_name) == 0) {
 	    comac_type1_font_subset_use_glyph (font, i);
 
 	    return COMAC_STATUS_SUCCESS;
@@ -764,32 +774,31 @@ use_standard_encoding_glyph (comac_type1_font_subset_t *font, int index)
     return COMAC_INT_STATUS_UNSUPPORTED;
 }
 
-
-#define TYPE1_CHARSTRING_COMMAND_HSTEM		 0x01
-#define TYPE1_CHARSTRING_COMMAND_VSTEM		 0x03
-#define TYPE1_CHARSTRING_COMMAND_VMOVETO	 0x04
-#define TYPE1_CHARSTRING_COMMAND_RLINETO	 0x05
-#define TYPE1_CHARSTRING_COMMAND_HLINETO	 0x06
-#define TYPE1_CHARSTRING_COMMAND_VLINETO	 0x07
-#define TYPE1_CHARSTRING_COMMAND_RRCURVETO	 0x08
-#define TYPE1_CHARSTRING_COMMAND_CLOSEPATH	 0x09
-#define TYPE1_CHARSTRING_COMMAND_CALLSUBR	 0x0a
-#define TYPE1_CHARSTRING_COMMAND_RETURN		 0x0b
-#define TYPE1_CHARSTRING_COMMAND_ESCAPE		 0x0c
-#define TYPE1_CHARSTRING_COMMAND_HSBW		 0x0d
-#define TYPE1_CHARSTRING_COMMAND_ENDCHAR	 0x0e
-#define TYPE1_CHARSTRING_COMMAND_RMOVETO	 0x15
-#define TYPE1_CHARSTRING_COMMAND_HMOVETO	 0x16
-#define TYPE1_CHARSTRING_COMMAND_VHCURVETO	 0x1e
-#define TYPE1_CHARSTRING_COMMAND_HVCURVETO	 0x1f
-#define TYPE1_CHARSTRING_COMMAND_DOTSECTION	 0x0c00
-#define TYPE1_CHARSTRING_COMMAND_VSTEM3		 0x0c01
-#define TYPE1_CHARSTRING_COMMAND_HSTEM3		 0x0c02
-#define TYPE1_CHARSTRING_COMMAND_SEAC		 0x0c06
-#define TYPE1_CHARSTRING_COMMAND_SBW		 0x0c07
-#define TYPE1_CHARSTRING_COMMAND_DIV		 0x0c0c
-#define TYPE1_CHARSTRING_COMMAND_CALLOTHERSUBR   0x0c10
-#define TYPE1_CHARSTRING_COMMAND_POP	         0x0c11
+#define TYPE1_CHARSTRING_COMMAND_HSTEM 0x01
+#define TYPE1_CHARSTRING_COMMAND_VSTEM 0x03
+#define TYPE1_CHARSTRING_COMMAND_VMOVETO 0x04
+#define TYPE1_CHARSTRING_COMMAND_RLINETO 0x05
+#define TYPE1_CHARSTRING_COMMAND_HLINETO 0x06
+#define TYPE1_CHARSTRING_COMMAND_VLINETO 0x07
+#define TYPE1_CHARSTRING_COMMAND_RRCURVETO 0x08
+#define TYPE1_CHARSTRING_COMMAND_CLOSEPATH 0x09
+#define TYPE1_CHARSTRING_COMMAND_CALLSUBR 0x0a
+#define TYPE1_CHARSTRING_COMMAND_RETURN 0x0b
+#define TYPE1_CHARSTRING_COMMAND_ESCAPE 0x0c
+#define TYPE1_CHARSTRING_COMMAND_HSBW 0x0d
+#define TYPE1_CHARSTRING_COMMAND_ENDCHAR 0x0e
+#define TYPE1_CHARSTRING_COMMAND_RMOVETO 0x15
+#define TYPE1_CHARSTRING_COMMAND_HMOVETO 0x16
+#define TYPE1_CHARSTRING_COMMAND_VHCURVETO 0x1e
+#define TYPE1_CHARSTRING_COMMAND_HVCURVETO 0x1f
+#define TYPE1_CHARSTRING_COMMAND_DOTSECTION 0x0c00
+#define TYPE1_CHARSTRING_COMMAND_VSTEM3 0x0c01
+#define TYPE1_CHARSTRING_COMMAND_HSTEM3 0x0c02
+#define TYPE1_CHARSTRING_COMMAND_SEAC 0x0c06
+#define TYPE1_CHARSTRING_COMMAND_SBW 0x0c07
+#define TYPE1_CHARSTRING_COMMAND_DIV 0x0c0c
+#define TYPE1_CHARSTRING_COMMAND_CALLOTHERSUBR 0x0c10
+#define TYPE1_CHARSTRING_COMMAND_POP 0x0c11
 #define TYPE1_CHARSTRING_COMMAND_SETCURRENTPOINT 0x0c21
 
 /* Parse the charstring, including recursing into subroutines. Find
@@ -797,9 +806,9 @@ use_standard_encoding_glyph (comac_type1_font_subset_t *font, int index)
  * SEAC operator. */
 static comac_status_t
 comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
-					  int                        glyph,
-					  const char                *encrypted_charstring,
-					  int                        encrypted_charstring_length)
+					  int glyph,
+					  const char *encrypted_charstring,
+					  int encrypted_charstring_length)
 {
     comac_status_t status;
     unsigned char *charstring;
@@ -811,15 +820,15 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
     if (unlikely (charstring == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    comac_type1_font_subset_decrypt_charstring ((const unsigned char *)
-						encrypted_charstring,
-						encrypted_charstring_length,
-						charstring);
+    comac_type1_font_subset_decrypt_charstring (
+	(const unsigned char *) encrypted_charstring,
+	encrypted_charstring_length,
+	charstring);
     end = charstring + encrypted_charstring_length;
     p = charstring + font->lenIV;
     status = COMAC_STATUS_SUCCESS;
     while (p < end) {
-        if (*p < 32) {
+	if (*p < 32) {
 	    command = *p++;
 	    switch (command) {
 	    case TYPE1_CHARSTRING_COMMAND_HSTEM:
@@ -844,7 +853,8 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
 	    case TYPE1_CHARSTRING_COMMAND_CALLSUBR:
 		if (font->subset_subrs && font->build_stack.sp > 0) {
 		    double int_val;
-		    if (modf(font->build_stack.stack[--font->build_stack.sp], &int_val) == 0.0) {
+		    if (modf (font->build_stack.stack[--font->build_stack.sp],
+			      &int_val) == 0.0) {
 			int subr_num = int_val;
 			if (subr_num >= 0 && subr_num < font->num_subrs) {
 			    font->subrs[subr_num].used = TRUE;
@@ -866,7 +876,8 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
 		    goto cleanup;
 		}
 
-		font->glyphs[glyph].width = font->build_stack.stack[1]/font->base.units_per_em;
+		font->glyphs[glyph].width =
+		    font->build_stack.stack[1] / font->base.units_per_em;
 		font->build_stack.sp = 0;
 		break;
 
@@ -894,11 +905,15 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
 			goto cleanup;
 		    }
 
-		    status = use_standard_encoding_glyph (font, font->build_stack.stack[3]);
+		    status = use_standard_encoding_glyph (
+			font,
+			font->build_stack.stack[3]);
 		    if (unlikely (status))
 			goto cleanup;
 
-		    status = use_standard_encoding_glyph (font, font->build_stack.stack[4]);
+		    status = use_standard_encoding_glyph (
+			font,
+			font->build_stack.stack[4]);
 		    if (unlikely (status))
 			goto cleanup;
 
@@ -911,7 +926,8 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
 			goto cleanup;
 		    }
 
-		    font->glyphs[glyph].width = font->build_stack.stack[2]/font->base.units_per_em;
+		    font->glyphs[glyph].width =
+			font->build_stack.stack[2] / font->base.units_per_em;
 		    font->build_stack.sp = 0;
 		    break;
 
@@ -920,14 +936,17 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
 			status = COMAC_INT_STATUS_UNSUPPORTED;
 			goto cleanup;
 		    } else {
-			double num1 = font->build_stack.stack[font->build_stack.sp - 2];
-			double num2 = font->build_stack.stack[font->build_stack.sp - 1];
+			double num1 =
+			    font->build_stack.stack[font->build_stack.sp - 2];
+			double num2 =
+			    font->build_stack.stack[font->build_stack.sp - 1];
 			font->build_stack.sp--;
 			if (num2 == 0.0) {
 			    status = COMAC_INT_STATUS_UNSUPPORTED;
 			    goto cleanup;
 			}
-			font->build_stack.stack[font->build_stack.sp - 1] = num1/num2;
+			font->build_stack.stack[font->build_stack.sp - 1] =
+			    num1 / num2;
 		    }
 		    break;
 
@@ -940,9 +959,10 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
 		    font->build_stack.sp--;
 		    font->ps_stack.sp = 0;
 		    while (font->build_stack.sp)
-			font->ps_stack.stack[font->ps_stack.sp++] = font->build_stack.stack[--font->build_stack.sp];
+			font->ps_stack.stack[font->ps_stack.sp++] =
+			    font->build_stack.stack[--font->build_stack.sp];
 
-                    break;
+		    break;
 
 		case TYPE1_CHARSTRING_COMMAND_POP:
 		    if (font->ps_stack.sp < 1) {
@@ -953,13 +973,14 @@ comac_type1_font_subset_parse_charstring (comac_type1_font_subset_t *font,
 		    /* T1 spec states that if the interpreter does not
 		     * support executing the callothersub, the results
 		     * must be taken from the callothersub arguments. */
-		    font->build_stack.stack[font->build_stack.sp++] = font->ps_stack.stack[--font->ps_stack.sp];
+		    font->build_stack.stack[font->build_stack.sp++] =
+			font->ps_stack.stack[--font->ps_stack.sp];
 		    break;
 		}
 		break;
 	    }
 	} else {
-            /* integer argument */
+	    /* integer argument */
 	    if (font->build_stack.sp < TYPE1_STACKSIZE) {
 		int val;
 		p = comac_type1_font_subset_decode_integer (p, &val);
@@ -980,8 +1001,10 @@ cleanup:
 static comac_status_t
 comac_type1_font_subset_build_subr_list (comac_type1_font_subset_t *font,
 					 int subr_number,
-					 const char *encrypted_charstring, int encrypted_charstring_length,
-					 const char *np, int np_length)
+					 const char *encrypted_charstring,
+					 int encrypted_charstring_length,
+					 const char *np,
+					 int np_length)
 {
 
     font->subrs[subr_number].subr_string = encrypted_charstring;
@@ -995,25 +1018,30 @@ comac_type1_font_subset_build_subr_list (comac_type1_font_subset_t *font,
 static comac_status_t
 write_used_subrs (comac_type1_font_subset_t *font,
 		  int subr_number,
-		  const char *subr_string, int subr_string_length,
-		  const char *np, int np_length)
+		  const char *subr_string,
+		  int subr_string_length,
+		  const char *np,
+		  int np_length)
 {
     comac_status_t status;
     char buffer[256];
     int length;
 
-    if (!font->subrs[subr_number].used)
+    if (! font->subrs[subr_number].used)
 	return COMAC_STATUS_SUCCESS;
 
-    length = snprintf (buffer, sizeof buffer,
+    length = snprintf (buffer,
+		       sizeof buffer,
 		       "dup %d %d %s ",
-		       subr_number, subr_string_length, font->rd);
+		       subr_number,
+		       subr_string_length,
+		       font->rd);
     status = comac_type1_font_subset_write_encrypted (font, buffer, length);
     if (unlikely (status))
 	return status;
 
     status = comac_type1_font_subset_write_encrypted (font,
-					              subr_string,
+						      subr_string,
 						      subr_string_length);
     if (unlikely (status))
 	return status;
@@ -1032,15 +1060,17 @@ write_used_subrs (comac_type1_font_subset_t *font,
 
 typedef comac_status_t (*subr_func_t) (comac_type1_font_subset_t *font,
 				       int subr_number,
-				       const char *subr_string, int subr_string_length,
-				       const char *np, int np_length);
+				       const char *subr_string,
+				       int subr_string_length,
+				       const char *np,
+				       int np_length);
 
 static comac_status_t
-comac_type1_font_for_each_subr (comac_type1_font_subset_t  *font,
-				const char                 *array_start,
-				const char                 *cleartext_end,
-				subr_func_t                 func,
-				const char                **array_end)
+comac_type1_font_for_each_subr (comac_type1_font_subset_t *font,
+				const char *array_start,
+				const char *cleartext_end,
+				subr_func_t func,
+				const char **array_end)
 {
     const char *p, *subr_string;
     char *end;
@@ -1085,24 +1115,22 @@ comac_type1_font_for_each_subr (comac_type1_font_subset_t  *font,
 
 	/* Skip binary data and | or NP token. */
 	p = skip_token (subr_string + subr_length, cleartext_end);
-	while (p < cleartext_end && _comac_isspace(*p))
+	while (p < cleartext_end && _comac_isspace (*p))
 	    p++;
 
 	/* Some fonts have "noaccess put" instead of "NP" */
 	if (p + 3 < cleartext_end && strncmp (p, "put", 3) == 0) {
 	    p = skip_token (p, cleartext_end);
-	    while (p < cleartext_end && _comac_isspace(*p))
+	    while (p < cleartext_end && _comac_isspace (*p))
 		p++;
 
 	    np = subr_string + subr_length;
 	    np_length = p - np;
 	}
 
-	status = func (font, subr_num,
-		       subr_string, subr_length, np, np_length);
+	status = func (font, subr_num, subr_string, subr_length, np, np_length);
 	if (unlikely (status))
 	    return status;
-
     }
 
     *array_end = (char *) p;
@@ -1113,8 +1141,10 @@ comac_type1_font_for_each_subr (comac_type1_font_subset_t  *font,
 static comac_status_t
 comac_type1_font_subset_build_glyph_list (comac_type1_font_subset_t *font,
 					  int glyph_number,
-					  const char *name, int name_length,
-					  const char *encrypted_charstring, int encrypted_charstring_length)
+					  const char *name,
+					  int name_length,
+					  const char *encrypted_charstring,
+					  int encrypted_charstring_length)
 {
     char *s;
     glyph_data_t glyph;
@@ -1143,8 +1173,10 @@ comac_type1_font_subset_build_glyph_list (comac_type1_font_subset_t *font,
 static comac_status_t
 write_used_glyphs (comac_type1_font_subset_t *font,
 		   int glyph_number,
-		   const char *name, int name_length,
-		   const char *charstring, int charstring_length)
+		   const char *name,
+		   int name_length,
+		   const char *charstring,
+		   int charstring_length)
 {
     comac_status_t status;
     char buffer[256];
@@ -1173,20 +1205,24 @@ write_used_glyphs (comac_type1_font_subset_t *font,
 	    wa_name = _comac_winansi_to_glyphname (ch);
 	    if (wa_name) {
 		name = wa_name;
-		name_length = strlen(name);
+		name_length = strlen (name);
 	    }
 	}
     }
 
-    length = snprintf (buffer, sizeof buffer,
+    length = snprintf (buffer,
+		       sizeof buffer,
 		       "/%.*s %d %s ",
-		       name_length, name, charstring_length, font->rd);
+		       name_length,
+		       name,
+		       charstring_length,
+		       font->rd);
     status = comac_type1_font_subset_write_encrypted (font, buffer, length);
     if (unlikely (status))
 	return status;
 
     status = comac_type1_font_subset_write_encrypted (font,
-					              charstring,
+						      charstring,
 						      charstring_length);
     if (unlikely (status))
 	return status;
@@ -1201,8 +1237,10 @@ write_used_glyphs (comac_type1_font_subset_t *font,
 
 typedef comac_status_t (*glyph_func_t) (comac_type1_font_subset_t *font,
 					int glyph_number,
-			                const char *name, int name_length,
-			                const char *charstring, int charstring_length);
+					const char *name,
+					int name_length,
+					const char *charstring,
+					int charstring_length);
 
 static comac_status_t
 comac_type1_font_subset_for_each_glyph (comac_type1_font_subset_t *font,
@@ -1248,7 +1286,7 @@ comac_type1_font_subset_for_each_glyph (comac_type1_font_subset_t *font,
 
 	/* Skip binary data and |- or ND token. */
 	p = skip_token (charstring + charstring_length, dict_end);
-	while (p < dict_end && _comac_isspace(*p))
+	while (p < dict_end && _comac_isspace (*p))
 	    p++;
 
 	/* In case any of the skip_token() calls above reached EOF, p will
@@ -1256,9 +1294,12 @@ comac_type1_font_subset_for_each_glyph (comac_type1_font_subset_t *font,
 	if (p == dict_end)
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-	status = func (font, glyph_count++,
-		       name, name_length,
-		       charstring, charstring_length);
+	status = func (font,
+		       glyph_count++,
+		       name,
+		       name_length,
+		       charstring,
+		       charstring_length);
 	if (unlikely (status))
 	    return status;
     }
@@ -1268,13 +1309,13 @@ comac_type1_font_subset_for_each_glyph (comac_type1_font_subset_t *font,
     return COMAC_STATUS_SUCCESS;
 }
 
-
 static comac_status_t
 comac_type1_font_subset_write_private_dict (comac_type1_font_subset_t *font,
-					    const char                *name)
+					    const char *name)
 {
     comac_status_t status;
-    const char *p, *subrs, *charstrings, *array_start, *array_end, *dict_start, *dict_end;
+    const char *p, *subrs, *charstrings, *array_start, *array_end, *dict_start,
+	*dict_end;
     const char *lenIV_start, *lenIV_end, *closefile_token;
     char buffer[32], *lenIV_str, *subr_count_end, *glyph_count_end;
     int ret, lenIV, length;
@@ -1303,32 +1344,34 @@ comac_type1_font_subset_write_private_dict (comac_type1_font_subset_t *font,
        each encrypted charstring. The default is 4, but this can be
        overridden in the private dict. */
     font->lenIV = 4;
-    if ((lenIV_start = find_token (font->cleartext, font->cleartext_end, "/lenIV")) != NULL) {
-        lenIV_start += 6;
-        lenIV_end = find_token (lenIV_start, font->cleartext_end, "def");
-        if (lenIV_end == NULL)
+    if ((lenIV_start =
+	     find_token (font->cleartext, font->cleartext_end, "/lenIV")) !=
+	NULL) {
+	lenIV_start += 6;
+	lenIV_end = find_token (lenIV_start, font->cleartext_end, "def");
+	if (lenIV_end == NULL)
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-        lenIV_str = _comac_malloc (lenIV_end - lenIV_start + 1);
-        if (unlikely (lenIV_str == NULL))
+	lenIV_str = _comac_malloc (lenIV_end - lenIV_start + 1);
+	if (unlikely (lenIV_str == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-        strncpy (lenIV_str, lenIV_start, lenIV_end - lenIV_start);
-        lenIV_str[lenIV_end - lenIV_start] = 0;
+	strncpy (lenIV_str, lenIV_start, lenIV_end - lenIV_start);
+	lenIV_str[lenIV_end - lenIV_start] = 0;
 
-        ret = sscanf(lenIV_str, "%d", &lenIV);
-        free(lenIV_str);
+	ret = sscanf (lenIV_str, "%d", &lenIV);
+	free (lenIV_str);
 
-        if (unlikely (ret <= 0))
+	if (unlikely (ret <= 0))
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-        /* Apparently some fonts signal unencrypted charstrings with a negative lenIV,
+	/* Apparently some fonts signal unencrypted charstrings with a negative lenIV,
            though this is not part of the Type 1 Font Format specification.  See, e.g.
            http://lists.gnu.org/archive/html/freetype-devel/2000-06/msg00064.html. */
-        if (unlikely (lenIV < 0))
+	if (unlikely (lenIV < 0))
 	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-        font->lenIV = lenIV;
+	font->lenIV = lenIV;
     }
 
     /* Find start of Subrs */
@@ -1351,7 +1394,7 @@ comac_type1_font_subset_write_private_dict (comac_type1_font_subset_t *font,
 
     font->subrs = calloc (font->num_subrs, sizeof (font->subrs[0]));
     if (unlikely (font->subrs == NULL))
-        return _comac_error (COMAC_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     /* look for "dup" which marks the beginning of the first subr */
     array_start = find_token (subr_count_end, font->cleartext_end, "dup");
@@ -1359,12 +1402,13 @@ comac_type1_font_subset_write_private_dict (comac_type1_font_subset_t *font,
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Read in the subroutines */
-    status = comac_type1_font_for_each_subr (font,
-					     array_start,
-					     font->cleartext_end,
-					     comac_type1_font_subset_build_subr_list,
-					     &array_end);
-    if (unlikely(status))
+    status =
+	comac_type1_font_for_each_subr (font,
+					array_start,
+					font->cleartext_end,
+					comac_type1_font_subset_build_subr_list,
+					&array_end);
+    if (unlikely (status))
 	return status;
 
     p = array_end;
@@ -1393,23 +1437,26 @@ skip_subrs:
     /* Now that we have the private dictionary broken down in
      * sections, do the first pass through the glyph definitions to
      * build a list of glyph names and charstrings. */
-    status = comac_type1_font_subset_for_each_glyph (font,
-						     dict_start,
-						     font->cleartext_end,
-						     comac_type1_font_subset_build_glyph_list,
-						     &dict_end);
-    if (unlikely(status))
+    status = comac_type1_font_subset_for_each_glyph (
+	font,
+	dict_start,
+	font->cleartext_end,
+	comac_type1_font_subset_build_glyph_list,
+	&dict_end);
+    if (unlikely (status))
 	return status;
 
     font->glyphs = _comac_array_index (&font->glyphs_array, 0);
     font->glyph_names = _comac_array_index (&font->glyph_names_array, 0);
     font->base.num_glyphs = _comac_array_num_elements (&font->glyphs_array);
-    font->type1_subset_index_to_glyphs = calloc (font->base.num_glyphs, sizeof font->type1_subset_index_to_glyphs[0]);
+    font->type1_subset_index_to_glyphs =
+	calloc (font->base.num_glyphs,
+		sizeof font->type1_subset_index_to_glyphs[0]);
     if (unlikely (font->type1_subset_index_to_glyphs == NULL))
-        return _comac_error (COMAC_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     backend = font->scaled_font_subset->scaled_font->backend;
-    if (!backend->index_to_glyph_name)
+    if (! backend->index_to_glyph_name)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Find the glyph number corresponding to each glyph in the subset
@@ -1418,12 +1465,13 @@ skip_subrs:
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
 	unsigned long index;
 
-	status = backend->index_to_glyph_name (font->scaled_font_subset->scaled_font,
-					       font->glyph_names,
-					       font->base.num_glyphs,
-					       font->scaled_font_subset->glyphs[i],
-					       &index);
-	if (unlikely(status))
+	status =
+	    backend->index_to_glyph_name (font->scaled_font_subset->scaled_font,
+					  font->glyph_names,
+					  font->base.num_glyphs,
+					  font->scaled_font_subset->glyphs[i],
+					  &index);
+	if (unlikely (status))
 	    return status;
 
 	comac_type1_font_subset_use_glyph (font, index);
@@ -1438,10 +1486,11 @@ skip_subrs:
 	glyph = font->type1_subset_index_to_glyphs[j];
 	font->build_stack.sp = 0;
 	font->ps_stack.sp = 0;
-	status = comac_type1_font_subset_parse_charstring (font,
-							   glyph,
-							   font->glyphs[glyph].encrypted_charstring,
-							   font->glyphs[glyph].encrypted_charstring_length);
+	status = comac_type1_font_subset_parse_charstring (
+	    font,
+	    glyph,
+	    font->glyphs[glyph].encrypted_charstring,
+	    font->glyphs[glyph].encrypted_charstring_length);
 	if (unlikely (status))
 	    return status;
     }
@@ -1467,8 +1516,10 @@ skip_subrs:
     /* Start outputting the private dict */
     if (font->subset_subrs) {
 	/* First output everything up to the start of the Subrs array. */
-	status = comac_type1_font_subset_write_encrypted (font, font->cleartext,
-							  array_start - font->cleartext);
+	status = comac_type1_font_subset_write_encrypted (font,
+							  font->cleartext,
+							  array_start -
+							      font->cleartext);
 	if (unlikely (status))
 	    return status;
 
@@ -1494,16 +1545,18 @@ skip_subrs:
 	return status;
 
     /* Write out new charstring count */
-    length = snprintf (buffer, sizeof buffer,
-		       "/CharStrings %d", font->num_glyphs);
+    length =
+	snprintf (buffer, sizeof buffer, "/CharStrings %d", font->num_glyphs);
     status = comac_type1_font_subset_write_encrypted (font, buffer, length);
     if (unlikely (status))
 	return status;
 
     /* Write out text between the charstring count and the first
      * charstring definition */
-    status = comac_type1_font_subset_write_encrypted (font, glyph_count_end,
-	                                          dict_start - glyph_count_end);
+    status =
+	comac_type1_font_subset_write_encrypted (font,
+						 glyph_count_end,
+						 dict_start - glyph_count_end);
     if (unlikely (status))
 	return status;
 
@@ -1519,8 +1572,10 @@ skip_subrs:
 
     /* Output what's left between the end of the glyph definitions and
      * the end of the private dict to the output. */
-    status = comac_type1_font_subset_write_encrypted (font, p,
-	                        closefile_token - p + strlen ("closefile") + 1);
+    status = comac_type1_font_subset_write_encrypted (
+	font,
+	p,
+	closefile_token - p + strlen ("closefile") + 1);
     if (unlikely (status))
 	return status;
 
@@ -1531,29 +1586,30 @@ skip_subrs:
 }
 
 static comac_status_t
-comac_type1_font_subset_write_trailer(comac_type1_font_subset_t *font)
+comac_type1_font_subset_write_trailer (comac_type1_font_subset_t *font)
 {
     const char *cleartomark_token;
     int i;
     static const char zeros[65] =
 	"0000000000000000000000000000000000000000000000000000000000000000\n";
 
-
     for (i = 0; i < 8; i++)
 	_comac_output_stream_write (font->output, zeros, sizeof zeros);
 
-    cleartomark_token = find_token (font->type1_data, font->type1_end, "cleartomark");
+    cleartomark_token =
+	find_token (font->type1_data, font->type1_end, "cleartomark");
     if (cleartomark_token) {
 	/* Some fonts have conditional save/restore around the entire
 	 * font dict, so we need to retain whatever postscript code
 	 * that may come after 'cleartomark'. */
 
-	_comac_output_stream_write (font->output, cleartomark_token,
+	_comac_output_stream_write (font->output,
+				    cleartomark_token,
 				    font->type1_end - cleartomark_token);
 	if (*(font->type1_end - 1) != '\n')
 	    _comac_output_stream_printf (font->output, "\n");
 
-    } else if (!font->eexec_segment_is_ascii) {
+    } else if (! font->eexec_segment_is_ascii) {
 	/* Fonts embedded in PDF may omit the fixed-content portion
 	 * that includes the 'cleartomark' operator. Type 1 in PDF is
 	 * always binary. */
@@ -1596,7 +1652,8 @@ comac_type1_font_subset_write (comac_type1_font_subset_t *font,
 	font->rd = "-|";
 	font->nd = "|-";
 	font->np = "|";
-    } else if (find_token (font->cleartext, font->cleartext_end, "/RD") != NULL) {
+    } else if (find_token (font->cleartext, font->cleartext_end, "/RD") !=
+	       NULL) {
 	font->rd = "RD";
 	font->nd = "ND";
 	font->np = "NP";
@@ -1621,15 +1678,14 @@ comac_type1_font_subset_write (comac_type1_font_subset_t *font,
 	return status;
 
     font->base.data_size = _comac_output_stream_get_position (font->output) -
-	font->base.header_size;
+			   font->base.header_size;
 
     status = comac_type1_font_subset_write_trailer (font);
     if (unlikely (status))
 	return status;
 
-    font->base.trailer_size =
-	_comac_output_stream_get_position (font->output) -
-	font->base.header_size - font->base.data_size;
+    font->base.trailer_size = _comac_output_stream_get_position (font->output) -
+			      font->base.header_size - font->base.data_size;
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -1649,8 +1705,7 @@ check_fontdata_is_type1 (const unsigned char *data, long length)
 }
 
 static comac_status_t
-comac_type1_font_subset_generate (void       *abstract_font,
-				  const char *name)
+comac_type1_font_subset_generate (void *abstract_font, const char *name)
 
 {
     comac_type1_font_subset_t *font = abstract_font;
@@ -1659,10 +1714,13 @@ comac_type1_font_subset_generate (void       *abstract_font,
     unsigned long data_length;
 
     scaled_font = font->scaled_font_subset->scaled_font;
-    if (!scaled_font->backend->load_type1_data)
+    if (! scaled_font->backend->load_type1_data)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    status = scaled_font->backend->load_type1_data (scaled_font, 0, NULL, &data_length);
+    status = scaled_font->backend->load_type1_data (scaled_font,
+						    0,
+						    NULL,
+						    &data_length);
     if (status)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
@@ -1671,13 +1729,16 @@ comac_type1_font_subset_generate (void       *abstract_font,
     if (unlikely (font->type1_data == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = scaled_font->backend->load_type1_data (scaled_font, 0,
-						    (unsigned char *) font->type1_data,
-						    &data_length);
+    status = scaled_font->backend->load_type1_data (
+	scaled_font,
+	0,
+	(unsigned char *) font->type1_data,
+	&data_length);
     if (unlikely (status))
-        return status;
+	return status;
 
-    if (!check_fontdata_is_type1 ((unsigned char *)font->type1_data, data_length))
+    if (! check_fontdata_is_type1 ((unsigned char *) font->type1_data,
+				   data_length))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     status = _comac_array_grow_by (&font->contents, 4096);
@@ -1735,10 +1796,10 @@ _comac_type1_font_subset_fini (comac_type1_font_subset_t *font)
 }
 
 comac_status_t
-_comac_type1_subset_init (comac_type1_subset_t		*type1_subset,
-			  const char			*name,
-			  comac_scaled_font_subset_t	*scaled_font_subset,
-                          comac_bool_t                   hex_encode)
+_comac_type1_subset_init (comac_type1_subset_t *type1_subset,
+			  const char *name,
+			  comac_scaled_font_subset_t *scaled_font_subset,
+			  comac_bool_t hex_encode)
 {
     comac_type1_font_subset_t font;
     comac_status_t status;
@@ -1750,7 +1811,9 @@ _comac_type1_subset_init (comac_type1_subset_t		*type1_subset,
 
     /* We need to use a fallback font if this font differs from the type1 outlines. */
     if (scaled_font_subset->scaled_font->backend->is_synthetic) {
-	status = scaled_font_subset->scaled_font->backend->is_synthetic (scaled_font_subset->scaled_font, &is_synthetic);
+	status = scaled_font_subset->scaled_font->backend->is_synthetic (
+	    scaled_font_subset->scaled_font,
+	    &is_synthetic);
 	if (unlikely (status))
 	    return status;
 
@@ -1758,7 +1821,8 @@ _comac_type1_subset_init (comac_type1_subset_t		*type1_subset,
 	    return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
-    status = _comac_type1_font_subset_init (&font, scaled_font_subset, hex_encode);
+    status =
+	_comac_type1_font_subset_init (&font, scaled_font_subset, hex_encode);
     if (unlikely (status))
 	return status;
 
@@ -1769,14 +1833,18 @@ _comac_type1_subset_init (comac_type1_subset_t		*type1_subset,
     if (font.base.base_font) {
 	type1_subset->base_font = strdup (font.base.base_font);
     } else {
-        snprintf(buf, sizeof (buf), "ComacFont-%u-%u",
-                 scaled_font_subset->font_id, scaled_font_subset->subset_id);
+	snprintf (buf,
+		  sizeof (buf),
+		  "ComacFont-%u-%u",
+		  scaled_font_subset->font_id,
+		  scaled_font_subset->subset_id);
 	type1_subset->base_font = strdup (buf);
     }
     if (unlikely (type1_subset->base_font == NULL))
 	goto fail1;
 
-    type1_subset->widths = calloc (sizeof (double), scaled_font_subset->num_glyphs);
+    type1_subset->widths =
+	calloc (sizeof (double), scaled_font_subset->num_glyphs);
     if (unlikely (type1_subset->widths == NULL))
 	goto fail2;
 
@@ -1792,15 +1860,13 @@ _comac_type1_subset_init (comac_type1_subset_t		*type1_subset,
     type1_subset->ascent = font.base.ascent;
     type1_subset->descent = font.base.descent;
 
-    length = font.base.header_size +
-	     font.base.data_size +
-	     font.base.trailer_size;
+    length =
+	font.base.header_size + font.base.data_size + font.base.trailer_size;
     type1_subset->data = _comac_malloc (length);
     if (unlikely (type1_subset->data == NULL))
 	goto fail3;
 
-    memcpy (type1_subset->data,
-	    _comac_array_index (&font.contents, 0), length);
+    memcpy (type1_subset->data, _comac_array_index (&font.contents, 0), length);
 
     type1_subset->header_length = font.base.header_size;
     type1_subset->data_length = font.base.data_size;
@@ -1808,11 +1874,11 @@ _comac_type1_subset_init (comac_type1_subset_t		*type1_subset,
 
     return _comac_type1_font_subset_fini (&font);
 
- fail3:
+fail3:
     free (type1_subset->widths);
- fail2:
+fail2:
     free (type1_subset->base_font);
- fail1:
+fail1:
     _comac_type1_font_subset_fini (&font);
 
     return status;
@@ -1833,10 +1899,11 @@ _comac_type1_scaled_font_is_type1 (comac_scaled_font_t *scaled_font)
     unsigned long length;
     unsigned char buf[64];
 
-    if (!scaled_font->backend->load_type1_data)
+    if (! scaled_font->backend->load_type1_data)
 	return FALSE;
 
-    status = scaled_font->backend->load_type1_data (scaled_font, 0, NULL, &length);
+    status =
+	scaled_font->backend->load_type1_data (scaled_font, 0, NULL, &length);
     if (status)
 	return FALSE;
 
@@ -1844,7 +1911,8 @@ _comac_type1_scaled_font_is_type1 (comac_scaled_font_t *scaled_font)
     if (length > sizeof (buf))
 	length = sizeof (buf);
 
-    status = scaled_font->backend->load_type1_data (scaled_font, 0, buf, &length);
+    status =
+	scaled_font->backend->load_type1_data (scaled_font, 0, buf, &length);
     if (status)
 	return FALSE;
 

@@ -50,15 +50,14 @@
 #include "comac-scaled-font-subsets-private.h"
 
 static comac_status_t
-_comac_pdf_operators_end_text (comac_pdf_operators_t    *pdf_operators);
-
+_comac_pdf_operators_end_text (comac_pdf_operators_t *pdf_operators);
 
 void
-_comac_pdf_operators_init (comac_pdf_operators_t	*pdf_operators,
-			   comac_output_stream_t	*stream,
-			   comac_matrix_t		*comac_to_pdf,
-			   comac_scaled_font_subsets_t  *font_subsets,
-			   comac_bool_t                  ps)
+_comac_pdf_operators_init (comac_pdf_operators_t *pdf_operators,
+			   comac_output_stream_t *stream,
+			   comac_matrix_t *comac_to_pdf,
+			   comac_scaled_font_subsets_t *font_subsets,
+			   comac_bool_t ps)
 {
     pdf_operators->stream = stream;
     pdf_operators->comac_to_pdf = *comac_to_pdf;
@@ -73,15 +72,16 @@ _comac_pdf_operators_init (comac_pdf_operators_t	*pdf_operators,
 }
 
 comac_status_t
-_comac_pdf_operators_fini (comac_pdf_operators_t	*pdf_operators)
+_comac_pdf_operators_fini (comac_pdf_operators_t *pdf_operators)
 {
     return _comac_pdf_operators_flush (pdf_operators);
 }
 
 void
-_comac_pdf_operators_set_font_subsets_callback (comac_pdf_operators_t		     *pdf_operators,
-						comac_pdf_operators_use_font_subset_t use_font_subset,
-						void				     *closure)
+_comac_pdf_operators_set_font_subsets_callback (
+    comac_pdf_operators_t *pdf_operators,
+    comac_pdf_operators_use_font_subset_t use_font_subset,
+    void *closure)
 {
     pdf_operators->use_font_subset = use_font_subset;
     pdf_operators->use_font_subset_closure = closure;
@@ -92,16 +92,16 @@ _comac_pdf_operators_set_font_subsets_callback (comac_pdf_operators_t		     *pdf
  * this function.
  */
 void
-_comac_pdf_operators_set_stream (comac_pdf_operators_t	 *pdf_operators,
-				 comac_output_stream_t   *stream)
+_comac_pdf_operators_set_stream (comac_pdf_operators_t *pdf_operators,
+				 comac_output_stream_t *stream)
 {
     pdf_operators->stream = stream;
     pdf_operators->has_line_style = FALSE;
 }
 
 void
-_comac_pdf_operators_set_comac_to_pdf_matrix (comac_pdf_operators_t *pdf_operators,
-					      comac_matrix_t	    *comac_to_pdf)
+_comac_pdf_operators_set_comac_to_pdf_matrix (
+    comac_pdf_operators_t *pdf_operators, comac_matrix_t *comac_to_pdf)
 {
     pdf_operators->comac_to_pdf = *comac_to_pdf;
     pdf_operators->has_line_style = FALSE;
@@ -109,7 +109,7 @@ _comac_pdf_operators_set_comac_to_pdf_matrix (comac_pdf_operators_t *pdf_operato
 
 comac_private void
 _comac_pdf_operators_enable_actual_text (comac_pdf_operators_t *pdf_operators,
-					 comac_bool_t 	  	enable)
+					 comac_bool_t enable)
 {
     pdf_operators->use_actual_text = enable;
 }
@@ -126,7 +126,7 @@ _comac_pdf_operators_enable_actual_text (comac_pdf_operators_t *pdf_operators,
  *
  */
 comac_status_t
-_comac_pdf_operators_flush (comac_pdf_operators_t	 *pdf_operators)
+_comac_pdf_operators_flush (comac_pdf_operators_t *pdf_operators)
 {
     comac_status_t status = COMAC_STATUS_SUCCESS;
 
@@ -173,7 +173,6 @@ typedef enum _comac_word_wrap_state {
     WRAP_STATE_HEXSTRING
 } comac_word_wrap_state_t;
 
-
 typedef struct _word_wrap_stream {
     comac_output_stream_t base;
     comac_output_stream_t *output;
@@ -182,15 +181,14 @@ typedef struct _word_wrap_stream {
     int column;
     comac_word_wrap_state_t state;
     comac_bool_t in_escape;
-    int		 escape_digits;
+    int escape_digits;
 } word_wrap_stream_t;
-
-
 
 /* Emit word bytes up to the next delimiter character */
 static int
 _word_wrap_stream_count_word_up_to (word_wrap_stream_t *stream,
-				   const unsigned char *data, int length)
+				    const unsigned char *data,
+				    int length)
 {
     const unsigned char *s = data;
     int count = 0;
@@ -212,13 +210,13 @@ _word_wrap_stream_count_word_up_to (word_wrap_stream_t *stream,
     return count;
 }
 
-
 /* Emit hexstring bytes up to either the end of the ASCII hexstring or the number
  * of columns remaining.
  */
 static int
 _word_wrap_stream_count_hexstring_up_to (word_wrap_stream_t *stream,
-					 const unsigned char *data, int length)
+					 const unsigned char *data,
+					 int length)
 {
     const unsigned char *s = data;
     int count = 0;
@@ -255,7 +253,8 @@ _word_wrap_stream_count_hexstring_up_to (word_wrap_stream_t *stream,
  */
 static int
 _word_wrap_stream_count_string_up_to (word_wrap_stream_t *stream,
-				      const unsigned char *data, int length)
+				      const unsigned char *data,
+				      int length)
 {
     const unsigned char *s = data;
     int count = 0;
@@ -264,7 +263,7 @@ _word_wrap_stream_count_string_up_to (word_wrap_stream_t *stream,
     while (length--) {
 	count++;
 	stream->column++;
-	if (!stream->in_escape) {
+	if (! stream->in_escape) {
 	    if (*s == ')') {
 		stream->state = WRAP_STATE_DELIMITER;
 		break;
@@ -272,12 +271,13 @@ _word_wrap_stream_count_string_up_to (word_wrap_stream_t *stream,
 	    if (*s == '\\') {
 		stream->in_escape = TRUE;
 		stream->escape_digits = 0;
-	    } else if (stream->ps_output && stream->column > stream->max_column) {
+	    } else if (stream->ps_output &&
+		       stream->column > stream->max_column) {
 		newline = TRUE;
 		break;
 	    }
 	} else {
-	    if (!_comac_isdigit(*s) || ++stream->escape_digits == 3)
+	    if (! _comac_isdigit (*s) || ++stream->escape_digits == 3)
 		stream->in_escape = FALSE;
 	}
 	s++;
@@ -295,9 +295,9 @@ _word_wrap_stream_count_string_up_to (word_wrap_stream_t *stream,
 }
 
 static comac_status_t
-_word_wrap_stream_write (comac_output_stream_t  *base,
-			 const unsigned char	*data,
-			 unsigned int		 length)
+_word_wrap_stream_write (comac_output_stream_t *base,
+			 const unsigned char *data,
+			 unsigned int length)
 {
     word_wrap_stream_t *stream = (word_wrap_stream_t *) base;
     int count;
@@ -308,7 +308,8 @@ _word_wrap_stream_write (comac_output_stream_t  *base,
 	    count = _word_wrap_stream_count_word_up_to (stream, data, length);
 	    break;
 	case WRAP_STATE_HEXSTRING:
-	    count = _word_wrap_stream_count_hexstring_up_to (stream, data, length);
+	    count =
+		_word_wrap_stream_count_hexstring_up_to (stream, data, length);
 	    break;
 	case WRAP_STATE_STRING:
 	    count = _word_wrap_stream_count_string_up_to (stream, data, length);
@@ -324,7 +325,7 @@ _word_wrap_stream_write (comac_output_stream_t  *base,
 		stream->state = WRAP_STATE_HEXSTRING;
 	    } else if (*data == '(') {
 		stream->state = WRAP_STATE_STRING;
-	    } else if (!_comac_isspace (*data)) {
+	    } else if (! _comac_isspace (*data)) {
 		stream->state = WRAP_STATE_WORD;
 	    }
 	    if (*data != '\n')
@@ -352,7 +353,9 @@ _word_wrap_stream_close (comac_output_stream_t *base)
 }
 
 static comac_output_stream_t *
-_word_wrap_stream_create (comac_output_stream_t *output, comac_bool_t ps, int max_column)
+_word_wrap_stream_create (comac_output_stream_t *output,
+			  comac_bool_t ps,
+			  int max_column)
 {
     word_wrap_stream_t *stream;
 
@@ -381,16 +384,15 @@ _word_wrap_stream_create (comac_output_stream_t *output, comac_bool_t ps, int ma
 }
 
 typedef struct _pdf_path_info {
-    comac_output_stream_t   *output;
-    comac_matrix_t	    *path_transform;
-    comac_line_cap_t         line_cap;
-    comac_point_t            last_move_to_point;
-    comac_bool_t             has_sub_path;
+    comac_output_stream_t *output;
+    comac_matrix_t *path_transform;
+    comac_line_cap_t line_cap;
+    comac_point_t last_move_to_point;
+    comac_bool_t has_sub_path;
 } pdf_path_info_t;
 
 static comac_status_t
-_comac_pdf_path_move_to (void *closure,
-			 const comac_point_t *point)
+_comac_pdf_path_move_to (void *closure, const comac_point_t *point)
 {
     pdf_path_info_t *info = closure;
     double x = _comac_fixed_to_double (point->x);
@@ -399,38 +401,33 @@ _comac_pdf_path_move_to (void *closure,
     info->last_move_to_point = *point;
     info->has_sub_path = FALSE;
     comac_matrix_transform_point (info->path_transform, &x, &y);
-    _comac_output_stream_printf (info->output,
-				 "%g %g m ", x, y);
+    _comac_output_stream_printf (info->output, "%g %g m ", x, y);
 
     return _comac_output_stream_get_status (info->output);
 }
 
 static comac_status_t
-_comac_pdf_path_line_to (void *closure,
-			 const comac_point_t *point)
+_comac_pdf_path_line_to (void *closure, const comac_point_t *point)
 {
     pdf_path_info_t *info = closure;
     double x = _comac_fixed_to_double (point->x);
     double y = _comac_fixed_to_double (point->y);
 
-    if (info->line_cap != COMAC_LINE_CAP_ROUND &&
-	! info->has_sub_path &&
+    if (info->line_cap != COMAC_LINE_CAP_ROUND && ! info->has_sub_path &&
 	point->x == info->last_move_to_point.x &&
-	point->y == info->last_move_to_point.y)
-    {
+	point->y == info->last_move_to_point.y) {
 	return COMAC_STATUS_SUCCESS;
     }
 
     info->has_sub_path = TRUE;
     comac_matrix_transform_point (info->path_transform, &x, &y);
-    _comac_output_stream_printf (info->output,
-				 "%g %g l ", x, y);
+    _comac_output_stream_printf (info->output, "%g %g l ", x, y);
 
     return _comac_output_stream_get_status (info->output);
 }
 
 static comac_status_t
-_comac_pdf_path_curve_to (void          *closure,
+_comac_pdf_path_curve_to (void *closure,
 			  const comac_point_t *b,
 			  const comac_point_t *c,
 			  const comac_point_t *d)
@@ -449,7 +446,12 @@ _comac_pdf_path_curve_to (void          *closure,
     comac_matrix_transform_point (info->path_transform, &dx, &dy);
     _comac_output_stream_printf (info->output,
 				 "%g %g %g %g %g %g c ",
-				 bx, by, cx, cy, dx, dy);
+				 bx,
+				 by,
+				 cx,
+				 cy,
+				 dx,
+				 dy);
     return _comac_output_stream_get_status (info->output);
 }
 
@@ -458,14 +460,11 @@ _comac_pdf_path_close_path (void *closure)
 {
     pdf_path_info_t *info = closure;
 
-    if (info->line_cap != COMAC_LINE_CAP_ROUND &&
-	! info->has_sub_path)
-    {
+    if (info->line_cap != COMAC_LINE_CAP_ROUND && ! info->has_sub_path) {
 	return COMAC_STATUS_SUCCESS;
     }
 
-    _comac_output_stream_printf (info->output,
-				 "h\n");
+    _comac_output_stream_printf (info->output, "h\n");
 
     return _comac_output_stream_get_status (info->output);
 }
@@ -482,7 +481,10 @@ _comac_pdf_path_rectangle (pdf_path_info_t *info, comac_box_t *box)
     comac_matrix_transform_point (info->path_transform, &x2, &y2);
     _comac_output_stream_printf (info->output,
 				 "%g %g %g %g re ",
-				 x1, y1, x2 - x1, y2 - y1);
+				 x1,
+				 y1,
+				 x2 - x1,
+				 y2 - y1);
 
     return _comac_output_stream_get_status (info->output);
 }
@@ -497,17 +499,19 @@ _comac_pdf_path_rectangle (pdf_path_info_t *info, comac_box_t *box)
  * the stroke workaround will not modify the path being emitted.
  */
 static comac_status_t
-_comac_pdf_operators_emit_path (comac_pdf_operators_t	*pdf_operators,
-				const comac_path_fixed_t*path,
-				comac_matrix_t          *path_transform,
-				comac_line_cap_t         line_cap)
+_comac_pdf_operators_emit_path (comac_pdf_operators_t *pdf_operators,
+				const comac_path_fixed_t *path,
+				comac_matrix_t *path_transform,
+				comac_line_cap_t line_cap)
 {
     comac_output_stream_t *word_wrap;
     comac_status_t status, status2;
     pdf_path_info_t info;
     comac_box_t box;
 
-    word_wrap = _word_wrap_stream_create (pdf_operators->stream, pdf_operators->ps_output, 72);
+    word_wrap = _word_wrap_stream_create (pdf_operators->stream,
+					  pdf_operators->ps_output,
+					  72);
     status = _comac_output_stream_get_status (word_wrap);
     if (unlikely (status))
 	return _comac_output_stream_destroy (word_wrap);
@@ -536,9 +540,9 @@ _comac_pdf_operators_emit_path (comac_pdf_operators_t	*pdf_operators,
 }
 
 comac_int_status_t
-_comac_pdf_operators_clip (comac_pdf_operators_t	*pdf_operators,
-			   const comac_path_fixed_t	*path,
-			   comac_fill_rule_t		 fill_rule)
+_comac_pdf_operators_clip (comac_pdf_operators_t *pdf_operators,
+			   const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule)
 {
     const char *pdf_operator;
     comac_status_t status;
@@ -572,9 +576,7 @@ _comac_pdf_operators_clip (comac_pdf_operators_t	*pdf_operators,
 	break;
     }
 
-    _comac_output_stream_printf (pdf_operators->stream,
-				 "%s n\n",
-				 pdf_operator);
+    _comac_output_stream_printf (pdf_operators->stream, "%s n\n", pdf_operator);
 
     return _comac_output_stream_get_status (pdf_operators->stream);
 }
@@ -612,9 +614,9 @@ _comac_pdf_line_join (comac_line_join_t join)
 }
 
 comac_int_status_t
-_comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t		*pdf_operators,
-					const comac_stroke_style_t	*style,
-					double				 scale)
+_comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t *pdf_operators,
+					const comac_stroke_style_t *style,
+					double scale)
 {
     double *dash = style->dash;
     int num_dashes = style->num_dashes;
@@ -642,7 +644,9 @@ _comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t		*pdf_operators,
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	    memcpy (dash, style->dash, num_dashes * sizeof (double));
-	    memcpy (dash + num_dashes, style->dash, num_dashes * sizeof (double));
+	    memcpy (dash + num_dashes,
+		    style->dash,
+		    num_dashes * sizeof (double));
 
 	    num_dashes *= 2;
 	}
@@ -677,14 +681,18 @@ _comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t		*pdf_operators,
 		     * cannot exist, so the rotation of 2 elements
 		     * will always be safe */
 		    memcpy (last_two, dash + num_dashes - 2, sizeof (last_two));
-		    memmove (dash + 2, dash, (num_dashes - 2) * sizeof (double));
+		    memmove (dash + 2,
+			     dash,
+			     (num_dashes - 2) * sizeof (double));
 		    memcpy (dash, last_two, sizeof (last_two));
 		    dash_offset += dash[0] + dash[1];
 		    i = 2;
 		}
-		dash[i-1] += dash[i+1];
+		dash[i - 1] += dash[i + 1];
 		num_dashes -= 2;
-		memmove (dash + i, dash + i + 2, (num_dashes - i) * sizeof (double));
+		memmove (dash + i,
+			 dash + i + 2,
+			 (num_dashes - i) * sizeof (double));
 		/* If we might have just rotated, it's possible that
 		 * we rotated a 0.0 value to the front of the list.
 		 * Set i to -2 so it will get incremented to 0. */
@@ -694,21 +702,24 @@ _comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t		*pdf_operators,
 	}
     }
 
-    if (!pdf_operators->has_line_style || pdf_operators->line_width != line_width) {
+    if (! pdf_operators->has_line_style ||
+	pdf_operators->line_width != line_width) {
 	_comac_output_stream_printf (pdf_operators->stream,
 				     "%f w\n",
 				     line_width);
 	pdf_operators->line_width = line_width;
     }
 
-    if (!pdf_operators->has_line_style || pdf_operators->line_cap != style->line_cap) {
+    if (! pdf_operators->has_line_style ||
+	pdf_operators->line_cap != style->line_cap) {
 	_comac_output_stream_printf (pdf_operators->stream,
 				     "%d J\n",
 				     _comac_pdf_line_cap (style->line_cap));
 	pdf_operators->line_cap = style->line_cap;
     }
 
-    if (!pdf_operators->has_line_style || pdf_operators->line_join != style->line_join) {
+    if (! pdf_operators->has_line_style ||
+	pdf_operators->line_join != style->line_join) {
 	_comac_output_stream_printf (pdf_operators->stream,
 				     "%d j\n",
 				     _comac_pdf_line_join (style->line_join));
@@ -720,21 +731,26 @@ _comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t		*pdf_operators,
 
 	_comac_output_stream_printf (pdf_operators->stream, "[");
 	for (d = 0; d < num_dashes; d++)
-	    _comac_output_stream_printf (pdf_operators->stream, " %f", dash[d] * scale);
-	_comac_output_stream_printf (pdf_operators->stream, "] %f d\n",
+	    _comac_output_stream_printf (pdf_operators->stream,
+					 " %f",
+					 dash[d] * scale);
+	_comac_output_stream_printf (pdf_operators->stream,
+				     "] %f d\n",
 				     dash_offset * scale);
 	pdf_operators->has_dashes = TRUE;
-    } else if (!pdf_operators->has_line_style || pdf_operators->has_dashes) {
+    } else if (! pdf_operators->has_line_style || pdf_operators->has_dashes) {
 	_comac_output_stream_printf (pdf_operators->stream, "[] 0.0 d\n");
 	pdf_operators->has_dashes = FALSE;
     }
     if (dash != style->dash)
-        free (dash);
+	free (dash);
 
-    if (!pdf_operators->has_line_style || pdf_operators->miter_limit != style->miter_limit) {
-	_comac_output_stream_printf (pdf_operators->stream,
-				     "%f M ",
-				     style->miter_limit < 1.0 ? 1.0 : style->miter_limit);
+    if (! pdf_operators->has_line_style ||
+	pdf_operators->miter_limit != style->miter_limit) {
+	_comac_output_stream_printf (
+	    pdf_operators->stream,
+	    "%f M ",
+	    style->miter_limit < 1.0 ? 1.0 : style->miter_limit);
 	pdf_operators->miter_limit = style->miter_limit;
     }
     pdf_operators->has_line_style = TRUE;
@@ -764,17 +780,17 @@ _comac_matrix_factor_out_scale (comac_matrix_t *m, double *scale)
     if (fabs (m->yy) > s)
 	s = fabs (m->yy);
     *scale = s;
-    s = 1.0/s;
+    s = 1.0 / s;
     comac_matrix_scale (m, s, s);
 }
 
 static comac_int_status_t
-_comac_pdf_operators_emit_stroke (comac_pdf_operators_t		*pdf_operators,
-				  const comac_path_fixed_t	*path,
-				  const comac_stroke_style_t	*style,
-				  const comac_matrix_t		*ctm,
-				  const comac_matrix_t		*ctm_inverse,
-				  const char			*pdf_operator)
+_comac_pdf_operators_emit_stroke (comac_pdf_operators_t *pdf_operators,
+				  const comac_path_fixed_t *path,
+				  const comac_stroke_style_t *style,
+				  const comac_matrix_t *ctm,
+				  const comac_matrix_t *ctm_inverse,
+				  const char *pdf_operator)
 {
     comac_int_status_t status;
     comac_matrix_t m, path_transform;
@@ -791,9 +807,8 @@ _comac_pdf_operators_emit_stroke (comac_pdf_operators_t		*pdf_operators,
      * stroke. There are other ctm cases that could be optimized
      * however this is the most common.
      */
-    if (fabs(ctm->xx) == 1.0 && fabs(ctm->yy) == 1.0 &&
-	fabs(ctm->xy) == 0.0 && fabs(ctm->yx) == 0.0)
-    {
+    if (fabs (ctm->xx) == 1.0 && fabs (ctm->yy) == 1.0 &&
+	fabs (ctm->xy) == 0.0 && fabs (ctm->yx) == 0.0) {
 	has_ctm = FALSE;
     }
 
@@ -828,7 +843,8 @@ _comac_pdf_operators_emit_stroke (comac_pdf_operators_t		*pdf_operators,
 	comac_matrix_multiply (&m, &m, &pdf_operators->comac_to_pdf);
     }
 
-    status = _comac_pdf_operators_emit_stroke_style (pdf_operators, style, scale);
+    status =
+	_comac_pdf_operators_emit_stroke_style (pdf_operators, style, scale);
     if (status == COMAC_INT_STATUS_NOTHING_TO_DO)
 	return COMAC_STATUS_SUCCESS;
     if (unlikely (status))
@@ -859,11 +875,11 @@ _comac_pdf_operators_emit_stroke (comac_pdf_operators_t		*pdf_operators,
 }
 
 comac_int_status_t
-_comac_pdf_operators_stroke (comac_pdf_operators_t		*pdf_operators,
-			     const comac_path_fixed_t		*path,
-			     const comac_stroke_style_t		*style,
-			     const comac_matrix_t		*ctm,
-			     const comac_matrix_t		*ctm_inverse)
+_comac_pdf_operators_stroke (comac_pdf_operators_t *pdf_operators,
+			     const comac_path_fixed_t *path,
+			     const comac_stroke_style_t *style,
+			     const comac_matrix_t *ctm,
+			     const comac_matrix_t *ctm_inverse)
 {
     return _comac_pdf_operators_emit_stroke (pdf_operators,
 					     path,
@@ -874,9 +890,9 @@ _comac_pdf_operators_stroke (comac_pdf_operators_t		*pdf_operators,
 }
 
 comac_int_status_t
-_comac_pdf_operators_fill (comac_pdf_operators_t	*pdf_operators,
-			   const comac_path_fixed_t	*path,
-			   comac_fill_rule_t		fill_rule)
+_comac_pdf_operators_fill (comac_pdf_operators_t *pdf_operators,
+			   const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule)
 {
     const char *pdf_operator;
     comac_status_t status;
@@ -905,20 +921,18 @@ _comac_pdf_operators_fill (comac_pdf_operators_t	*pdf_operators,
 	break;
     }
 
-    _comac_output_stream_printf (pdf_operators->stream,
-				 "%s\n",
-				 pdf_operator);
+    _comac_output_stream_printf (pdf_operators->stream, "%s\n", pdf_operator);
 
     return _comac_output_stream_get_status (pdf_operators->stream);
 }
 
 comac_int_status_t
-_comac_pdf_operators_fill_stroke (comac_pdf_operators_t		*pdf_operators,
-				  const comac_path_fixed_t	*path,
-				  comac_fill_rule_t		 fill_rule,
-				  const comac_stroke_style_t	*style,
-				  const comac_matrix_t		*ctm,
-				  const comac_matrix_t		*ctm_inverse)
+_comac_pdf_operators_fill_stroke (comac_pdf_operators_t *pdf_operators,
+				  const comac_path_fixed_t *path,
+				  comac_fill_rule_t fill_rule,
+				  const comac_stroke_style_t *style,
+				  const comac_matrix_t *ctm,
+				  const comac_matrix_t *ctm_inverse)
 {
     const char *operator;
 
@@ -926,10 +940,10 @@ _comac_pdf_operators_fill_stroke (comac_pdf_operators_t		*pdf_operators,
     default:
 	ASSERT_NOT_REACHED;
     case COMAC_FILL_RULE_WINDING:
-	operator = "B";
+	operator= "B";
 	break;
     case COMAC_FILL_RULE_EVEN_ODD:
-	operator = "B*";
+	operator= "B*";
 	break;
     }
 
@@ -944,7 +958,7 @@ _comac_pdf_operators_fill_stroke (comac_pdf_operators_t		*pdf_operators,
 static void
 _comac_pdf_operators_emit_glyph_index (comac_pdf_operators_t *pdf_operators,
 				       comac_output_stream_t *stream,
-				       unsigned int 	      glyph)
+				       unsigned int glyph)
 {
     if (pdf_operators->is_latin) {
 	if (glyph == '(' || glyph == ')' || glyph == '\\')
@@ -966,19 +980,24 @@ _comac_pdf_operators_emit_glyph_index (comac_pdf_operators_t *pdf_operators,
 /* Emit the string of glyphs using the 'Tj' operator. This requires
  * that the glyphs are positioned at their natural glyph advances. */
 static comac_status_t
-_comac_pdf_operators_emit_glyph_string (comac_pdf_operators_t   *pdf_operators,
-					comac_output_stream_t  	*stream)
+_comac_pdf_operators_emit_glyph_string (comac_pdf_operators_t *pdf_operators,
+					comac_output_stream_t *stream)
 {
     int i;
 
-    _comac_output_stream_printf (stream, "%s", pdf_operators->is_latin ? "(" : "<");
+    _comac_output_stream_printf (stream,
+				 "%s",
+				 pdf_operators->is_latin ? "(" : "<");
     for (i = 0; i < pdf_operators->num_glyphs; i++) {
-	_comac_pdf_operators_emit_glyph_index (pdf_operators,
-					       stream,
-					       pdf_operators->glyphs[i].glyph_index);
+	_comac_pdf_operators_emit_glyph_index (
+	    pdf_operators,
+	    stream,
+	    pdf_operators->glyphs[i].glyph_index);
 	pdf_operators->cur_x += pdf_operators->glyphs[i].x_advance;
     }
-    _comac_output_stream_printf (stream, "%sTj\n", pdf_operators->is_latin ? ")" : ">");
+    _comac_output_stream_printf (stream,
+				 "%sTj\n",
+				 pdf_operators->is_latin ? ")" : ">");
 
     return _comac_output_stream_get_status (stream);
 }
@@ -993,19 +1012,20 @@ _comac_pdf_operators_emit_glyph_string (comac_pdf_operators_t   *pdf_operators,
  */
 static comac_status_t
 _comac_pdf_operators_emit_glyph_string_with_positioning (
-    comac_pdf_operators_t   *pdf_operators,
-    comac_output_stream_t   *stream)
+    comac_pdf_operators_t *pdf_operators, comac_output_stream_t *stream)
 {
     int i;
 
-    _comac_output_stream_printf (stream, "[%s", pdf_operators->is_latin ? "(" : "<");
+    _comac_output_stream_printf (stream,
+				 "[%s",
+				 pdf_operators->is_latin ? "(" : "<");
     for (i = 0; i < pdf_operators->num_glyphs; i++) {
-	if (pdf_operators->glyphs[i].x_position != pdf_operators->cur_x)
-	{
-	    double delta = pdf_operators->glyphs[i].x_position - pdf_operators->cur_x;
+	if (pdf_operators->glyphs[i].x_position != pdf_operators->cur_x) {
+	    double delta =
+		pdf_operators->glyphs[i].x_position - pdf_operators->cur_x;
 	    int rounded_delta;
 
-	    delta = -1000.0*delta;
+	    delta = -1000.0 * delta;
 	    /* As the delta is in 1/1000 of a unit of text space,
 	     * rounding to an integer should still provide sufficient
 	     * precision. We round the delta before adding to Tm_x so
@@ -1014,39 +1034,38 @@ _comac_pdf_operators_emit_glyph_string_with_positioning (
 	     * calculating subsequent deltas.
 	     */
 	    rounded_delta = _comac_lround (delta);
-	    if (abs(rounded_delta) < 3)
+	    if (abs (rounded_delta) < 3)
 		rounded_delta = 0;
 	    if (rounded_delta != 0) {
 		if (pdf_operators->is_latin) {
-		    _comac_output_stream_printf (stream,
-						 ")%d(",
-						 rounded_delta);
+		    _comac_output_stream_printf (stream, ")%d(", rounded_delta);
 		} else {
-		    _comac_output_stream_printf (stream,
-						 ">%d<",
-						 rounded_delta);
+		    _comac_output_stream_printf (stream, ">%d<", rounded_delta);
 		}
 	    }
 
 	    /* Convert the rounded delta back to text
 	     * space before adding to the current text
 	     * position. */
-	    delta = rounded_delta/-1000.0;
+	    delta = rounded_delta / -1000.0;
 	    pdf_operators->cur_x += delta;
 	}
 
-	_comac_pdf_operators_emit_glyph_index (pdf_operators,
-					       stream,
-					       pdf_operators->glyphs[i].glyph_index);
+	_comac_pdf_operators_emit_glyph_index (
+	    pdf_operators,
+	    stream,
+	    pdf_operators->glyphs[i].glyph_index);
 	pdf_operators->cur_x += pdf_operators->glyphs[i].x_advance;
     }
-    _comac_output_stream_printf (stream, "%s]TJ\n", pdf_operators->is_latin ? ")" : ">");
+    _comac_output_stream_printf (stream,
+				 "%s]TJ\n",
+				 pdf_operators->is_latin ? ")" : ">");
 
     return _comac_output_stream_get_status (stream);
 }
 
 static comac_status_t
-_comac_pdf_operators_flush_glyphs (comac_pdf_operators_t    *pdf_operators)
+_comac_pdf_operators_flush_glyphs (comac_pdf_operators_t *pdf_operators)
 {
     comac_output_stream_t *word_wrap_stream;
     comac_status_t status, status2;
@@ -1056,7 +1075,9 @@ _comac_pdf_operators_flush_glyphs (comac_pdf_operators_t    *pdf_operators)
     if (pdf_operators->num_glyphs == 0)
 	return COMAC_STATUS_SUCCESS;
 
-    word_wrap_stream = _word_wrap_stream_create (pdf_operators->stream, pdf_operators->ps_output, 72);
+    word_wrap_stream = _word_wrap_stream_create (pdf_operators->stream,
+						 pdf_operators->ps_output,
+						 72);
     status = _comac_output_stream_get_status (word_wrap_stream);
     if (unlikely (status))
 	return _comac_output_stream_destroy (word_wrap_stream);
@@ -1064,7 +1085,8 @@ _comac_pdf_operators_flush_glyphs (comac_pdf_operators_t    *pdf_operators)
     /* Check if glyph advance used to position every glyph */
     x = pdf_operators->cur_x;
     for (i = 0; i < pdf_operators->num_glyphs; i++) {
-	if (fabs(pdf_operators->glyphs[i].x_position - x) > GLYPH_POSITION_TOLERANCE)
+	if (fabs (pdf_operators->glyphs[i].x_position - x) >
+	    GLYPH_POSITION_TOLERANCE)
 	    break;
 	x += pdf_operators->glyphs[i].x_advance;
     }
@@ -1073,7 +1095,8 @@ _comac_pdf_operators_flush_glyphs (comac_pdf_operators_t    *pdf_operators)
 							 word_wrap_stream);
     } else {
 	status = _comac_pdf_operators_emit_glyph_string_with_positioning (
-	    pdf_operators, word_wrap_stream);
+	    pdf_operators,
+	    word_wrap_stream);
     }
 
     pdf_operators->num_glyphs = 0;
@@ -1086,19 +1109,22 @@ _comac_pdf_operators_flush_glyphs (comac_pdf_operators_t    *pdf_operators)
 }
 
 static comac_status_t
-_comac_pdf_operators_add_glyph (comac_pdf_operators_t             *pdf_operators,
+_comac_pdf_operators_add_glyph (comac_pdf_operators_t *pdf_operators,
 				comac_scaled_font_subsets_glyph_t *glyph,
-				double 			           x_position)
+				double x_position)
 {
     double x, y;
 
     x = glyph->x_advance;
     y = glyph->y_advance;
     if (glyph->is_scaled)
-	comac_matrix_transform_distance (&pdf_operators->font_matrix_inverse, &x, &y);
+	comac_matrix_transform_distance (&pdf_operators->font_matrix_inverse,
+					 &x,
+					 &y);
 
     pdf_operators->glyphs[pdf_operators->num_glyphs].x_position = x_position;
-    pdf_operators->glyphs[pdf_operators->num_glyphs].glyph_index = glyph->subset_glyph_index;
+    pdf_operators->glyphs[pdf_operators->num_glyphs].glyph_index =
+	glyph->subset_glyph_index;
     pdf_operators->glyphs[pdf_operators->num_glyphs].x_advance = x;
     pdf_operators->glyph_buf_x_pos += x;
     pdf_operators->num_glyphs++;
@@ -1110,8 +1136,8 @@ _comac_pdf_operators_add_glyph (comac_pdf_operators_t             *pdf_operators
 
 /* Use 'Tm' operator to set the PDF text matrix. */
 static comac_status_t
-_comac_pdf_operators_set_text_matrix (comac_pdf_operators_t  *pdf_operators,
-				      comac_matrix_t         *matrix)
+_comac_pdf_operators_set_text_matrix (comac_pdf_operators_t *pdf_operators,
+				      comac_matrix_t *matrix)
 {
     comac_matrix_t inverse;
     comac_status_t status;
@@ -1126,7 +1152,8 @@ _comac_pdf_operators_set_text_matrix (comac_pdf_operators_t  *pdf_operators,
     pdf_operators->cur_x = 0;
     pdf_operators->cur_y = 0;
     pdf_operators->glyph_buf_x_pos = 0;
-    _comac_output_stream_print_matrix (pdf_operators->stream, &pdf_operators->text_matrix);
+    _comac_output_stream_print_matrix (pdf_operators->stream,
+				       &pdf_operators->text_matrix);
     _comac_output_stream_printf (pdf_operators->stream, " Tm\n");
 
     pdf_operators->comac_to_pdftext = *matrix;
@@ -1145,9 +1172,9 @@ _comac_pdf_operators_set_text_matrix (comac_pdf_operators_t  *pdf_operators,
  * 'Td' operator is used to transform the text matrix.
  */
 static comac_status_t
-_comac_pdf_operators_set_text_position (comac_pdf_operators_t  *pdf_operators,
-					double 			x,
-					double 			y)
+_comac_pdf_operators_set_text_position (comac_pdf_operators_t *pdf_operators,
+					double x,
+					double y)
 {
     comac_matrix_t translate, inverse;
     comac_status_t status;
@@ -1165,9 +1192,9 @@ _comac_pdf_operators_set_text_position (comac_pdf_operators_t  *pdf_operators,
     pdf_operators->text_matrix.x0 = x;
     pdf_operators->text_matrix.y0 = y;
     comac_matrix_multiply (&translate, &pdf_operators->text_matrix, &inverse);
-    if (fabs(translate.x0) < TEXT_MATRIX_TOLERANCE)
+    if (fabs (translate.x0) < TEXT_MATRIX_TOLERANCE)
 	translate.x0 = 0.0;
-    if (fabs(translate.y0) < TEXT_MATRIX_TOLERANCE)
+    if (fabs (translate.y0) < TEXT_MATRIX_TOLERANCE)
 	translate.y0 = 0.0;
     _comac_output_stream_printf (pdf_operators->stream,
 				 "%f %f Td\n",
@@ -1191,8 +1218,9 @@ _comac_pdf_operators_set_text_position (comac_pdf_operators_t  *pdf_operators,
  * as we use the 'Tm' operator to set the font scale.
  */
 static comac_status_t
-_comac_pdf_operators_set_font_subset (comac_pdf_operators_t             *pdf_operators,
-				      comac_scaled_font_subsets_glyph_t *subset_glyph)
+_comac_pdf_operators_set_font_subset (
+    comac_pdf_operators_t *pdf_operators,
+    comac_scaled_font_subsets_glyph_t *subset_glyph)
 {
     comac_status_t status;
 
@@ -1201,9 +1229,10 @@ _comac_pdf_operators_set_font_subset (comac_pdf_operators_t             *pdf_ope
 				 subset_glyph->font_id,
 				 subset_glyph->subset_id);
     if (pdf_operators->use_font_subset) {
-	status = pdf_operators->use_font_subset (subset_glyph->font_id,
-						 subset_glyph->subset_id,
-						 pdf_operators->use_font_subset_closure);
+	status = pdf_operators->use_font_subset (
+	    subset_glyph->font_id,
+	    subset_glyph->subset_id,
+	    pdf_operators->use_font_subset_closure);
 	if (unlikely (status))
 	    return status;
     }
@@ -1220,7 +1249,7 @@ _comac_pdf_operators_set_font_subset (comac_pdf_operators_t             *pdf_ope
 }
 
 static comac_status_t
-_comac_pdf_operators_begin_text (comac_pdf_operators_t    *pdf_operators)
+_comac_pdf_operators_begin_text (comac_pdf_operators_t *pdf_operators)
 {
     _comac_output_stream_printf (pdf_operators->stream, "BT\n");
 
@@ -1232,7 +1261,7 @@ _comac_pdf_operators_begin_text (comac_pdf_operators_t    *pdf_operators)
 }
 
 static comac_status_t
-_comac_pdf_operators_end_text (comac_pdf_operators_t    *pdf_operators)
+_comac_pdf_operators_end_text (comac_pdf_operators_t *pdf_operators)
 {
     comac_status_t status;
 
@@ -1252,23 +1281,22 @@ _comac_pdf_operators_end_text (comac_pdf_operators_t    *pdf_operators)
 static comac_bool_t
 _comac_matrix_scale_equal (comac_matrix_t *a, comac_matrix_t *b)
 {
-    return (a->xx == b->xx &&
-	    a->xy == b->xy &&
-	    a->yx == b->yx &&
+    return (a->xx == b->xx && a->xy == b->xy && a->yx == b->yx &&
 	    a->yy == b->yy);
 }
 
 static comac_status_t
 _comac_pdf_operators_begin_actualtext (comac_pdf_operators_t *pdf_operators,
-				       const char 	     *utf8,
-				       int		      utf8_len)
+				       const char *utf8,
+				       int utf8_len)
 {
     uint16_t *utf16;
     int utf16_len;
     comac_status_t status;
     int i;
 
-    _comac_output_stream_printf (pdf_operators->stream, "/Span << /ActualText <feff");
+    _comac_output_stream_printf (pdf_operators->stream,
+				 "/Span << /ActualText <feff");
     if (utf8_len) {
 	status = _comac_utf8_to_utf16 (utf8, utf8_len, &utf16, &utf16_len);
 	if (unlikely (status))
@@ -1276,7 +1304,8 @@ _comac_pdf_operators_begin_actualtext (comac_pdf_operators_t *pdf_operators,
 
 	for (i = 0; i < utf16_len; i++) {
 	    _comac_output_stream_printf (pdf_operators->stream,
-					 "%04x", (int) (utf16[i]));
+					 "%04x",
+					 (int) (utf16[i]));
 	}
 	free (utf16);
     }
@@ -1286,7 +1315,7 @@ _comac_pdf_operators_begin_actualtext (comac_pdf_operators_t *pdf_operators,
 }
 
 static comac_status_t
-_comac_pdf_operators_end_actualtext (comac_pdf_operators_t    *pdf_operators)
+_comac_pdf_operators_end_actualtext (comac_pdf_operators_t *pdf_operators)
 {
     _comac_output_stream_printf (pdf_operators->stream, "EMC\n");
 
@@ -1294,22 +1323,23 @@ _comac_pdf_operators_end_actualtext (comac_pdf_operators_t    *pdf_operators)
 }
 
 static comac_status_t
-_comac_pdf_operators_emit_glyph (comac_pdf_operators_t             *pdf_operators,
-				 comac_glyph_t              	   *glyph,
-				 comac_scaled_font_subsets_glyph_t *subset_glyph)
+_comac_pdf_operators_emit_glyph (
+    comac_pdf_operators_t *pdf_operators,
+    comac_glyph_t *glyph,
+    comac_scaled_font_subsets_glyph_t *subset_glyph)
 {
     double x, y;
     comac_status_t status;
 
     if (pdf_operators->is_new_text_object ||
 	pdf_operators->font_id != subset_glyph->font_id ||
-	pdf_operators->subset_id != subset_glyph->subset_id)
-    {
+	pdf_operators->subset_id != subset_glyph->subset_id) {
 	status = _comac_pdf_operators_flush_glyphs (pdf_operators);
 	if (unlikely (status))
 	    return status;
 
-	status = _comac_pdf_operators_set_font_subset (pdf_operators, subset_glyph);
+	status =
+	    _comac_pdf_operators_set_font_subset (pdf_operators, subset_glyph);
 	if (unlikely (status))
 	    return status;
 
@@ -1331,9 +1361,8 @@ _comac_pdf_operators_emit_glyph (comac_pdf_operators_t             *pdf_operator
      * PDF consumers that do not handle very large position
      * adjustments in TJ.
      */
-    if (fabs(x - pdf_operators->glyph_buf_x_pos) > 10 ||
-	fabs(y - pdf_operators->cur_y) > GLYPH_POSITION_TOLERANCE)
-    {
+    if (fabs (x - pdf_operators->glyph_buf_x_pos) > 10 ||
+	fabs (y - pdf_operators->cur_y) > GLYPH_POSITION_TOLERANCE) {
 	status = _comac_pdf_operators_flush_glyphs (pdf_operators);
 	if (unlikely (status))
 	    return status;
@@ -1349,9 +1378,7 @@ _comac_pdf_operators_emit_glyph (comac_pdf_operators_t             *pdf_operator
 	y = 0.0;
     }
 
-    status = _comac_pdf_operators_add_glyph (pdf_operators,
-					     subset_glyph,
-					     x);
+    status = _comac_pdf_operators_add_glyph (pdf_operators, subset_glyph, x);
     return status;
 }
 
@@ -1359,13 +1386,13 @@ _comac_pdf_operators_emit_glyph (comac_pdf_operators_t             *pdf_operator
  * empty string.
  */
 static comac_int_status_t
-_comac_pdf_operators_emit_cluster (comac_pdf_operators_t      *pdf_operators,
-				   const char                 *utf8,
-				   int                         utf8_len,
-				   comac_glyph_t              *glyphs,
-				   int                         num_glyphs,
-				   comac_text_cluster_flags_t  cluster_flags,
-				   comac_scaled_font_t	      *scaled_font)
+_comac_pdf_operators_emit_cluster (comac_pdf_operators_t *pdf_operators,
+				   const char *utf8,
+				   int utf8_len,
+				   comac_glyph_t *glyphs,
+				   int num_glyphs,
+				   comac_text_cluster_flags_t cluster_flags,
+				   comac_scaled_font_t *scaled_font)
 {
     comac_scaled_font_subsets_glyph_t subset_glyph;
     comac_glyph_t *cur_glyph;
@@ -1384,12 +1411,13 @@ _comac_pdf_operators_emit_cluster (comac_pdf_operators_t      *pdf_operators,
      * use of ActualText.
      */
     if (num_glyphs == 1 && utf8_len != 0) {
-	status = _comac_scaled_font_subsets_map_glyph (pdf_operators->font_subsets,
-						       scaled_font,
-						       glyphs->index,
-						       utf8,
-						       utf8_len,
-						       &subset_glyph);
+	status =
+	    _comac_scaled_font_subsets_map_glyph (pdf_operators->font_subsets,
+						  scaled_font,
+						  glyphs->index,
+						  utf8,
+						  utf8_len,
+						  &subset_glyph);
 	if (unlikely (status))
 	    return status;
 
@@ -1411,7 +1439,9 @@ _comac_pdf_operators_emit_cluster (comac_pdf_operators_t      *pdf_operators,
 	if (unlikely (status))
 	    return status;
 
-	status = _comac_pdf_operators_begin_actualtext (pdf_operators, utf8, utf8_len);
+	status = _comac_pdf_operators_begin_actualtext (pdf_operators,
+							utf8,
+							utf8_len);
 	if (unlikely (status))
 	    return status;
     }
@@ -1424,11 +1454,13 @@ _comac_pdf_operators_emit_cluster (comac_pdf_operators_t      *pdf_operators,
     /* XXX
      * If no glyphs, we should put *something* here for the text to be selectable. */
     for (i = 0; i < num_glyphs; i++) {
-	status = _comac_scaled_font_subsets_map_glyph (pdf_operators->font_subsets,
-						       scaled_font,
-						       cur_glyph->index,
-						       NULL, -1,
-						       &subset_glyph);
+	status =
+	    _comac_scaled_font_subsets_map_glyph (pdf_operators->font_subsets,
+						  scaled_font,
+						  cur_glyph->index,
+						  NULL,
+						  -1,
+						  &subset_glyph);
 	if (unlikely (status))
 	    return status;
 
@@ -1456,15 +1488,15 @@ _comac_pdf_operators_emit_cluster (comac_pdf_operators_t      *pdf_operators,
 }
 
 comac_int_status_t
-_comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t	  *pdf_operators,
-				       const char                 *utf8,
-				       int                         utf8_len,
-				       comac_glyph_t              *glyphs,
-				       int                         num_glyphs,
+_comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t *pdf_operators,
+				       const char *utf8,
+				       int utf8_len,
+				       comac_glyph_t *glyphs,
+				       int num_glyphs,
 				       const comac_text_cluster_t *clusters,
-				       int                         num_clusters,
-				       comac_text_cluster_flags_t  cluster_flags,
-				       comac_scaled_font_t	  *scaled_font)
+				       int num_clusters,
+				       comac_text_cluster_flags_t cluster_flags,
+				       comac_scaled_font_t *scaled_font)
 {
     comac_status_t status;
     int i;
@@ -1497,8 +1529,8 @@ _comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t	  *pdf_operators,
     comac_matrix_multiply (&text_matrix, &invert_y_axis, &text_matrix);
 
     if (pdf_operators->is_new_text_object ||
-	! _comac_matrix_scale_equal (&pdf_operators->text_matrix, &text_matrix))
-    {
+	! _comac_matrix_scale_equal (&pdf_operators->text_matrix,
+				     &text_matrix)) {
 	status = _comac_pdf_operators_flush_glyphs (pdf_operators);
 	if (unlikely (status))
 	    return status;
@@ -1508,7 +1540,8 @@ _comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t	  *pdf_operators,
 	comac_matrix_transform_point (&pdf_operators->comac_to_pdf, &x, &y);
 	text_matrix.x0 = x;
 	text_matrix.y0 = y;
-	status = _comac_pdf_operators_set_text_matrix (pdf_operators, &text_matrix);
+	status =
+	    _comac_pdf_operators_set_text_matrix (pdf_operators, &text_matrix);
 	if (status == COMAC_STATUS_INVALID_MATRIX)
 	    return COMAC_STATUS_SUCCESS;
 	if (unlikely (status))
@@ -1535,18 +1568,19 @@ _comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t	  *pdf_operators,
 		return status;
 
 	    cur_text += clusters[i].num_bytes;
-	    if (!(cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD))
+	    if (! (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD))
 		cur_glyph += clusters[i].num_glyphs;
 	}
     } else {
 	for (i = 0; i < num_glyphs; i++) {
-	    status = _comac_pdf_operators_emit_cluster (pdf_operators,
-							NULL,
-							-1, /* no unicode string available */
-							&glyphs[i],
-							1,
-							FALSE,
-							scaled_font);
+	    status = _comac_pdf_operators_emit_cluster (
+		pdf_operators,
+		NULL,
+		-1, /* no unicode string available */
+		&glyphs[i],
+		1,
+		FALSE,
+		scaled_font);
 	    if (unlikely (status))
 		return status;
 	}
@@ -1557,8 +1591,8 @@ _comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t	  *pdf_operators,
 
 comac_int_status_t
 _comac_pdf_operators_tag_begin (comac_pdf_operators_t *pdf_operators,
-				const char            *tag_name,
-				int                    mcid)
+				const char *tag_name,
+				int mcid)
 {
     comac_status_t status;
 

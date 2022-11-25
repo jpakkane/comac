@@ -29,10 +29,10 @@
 #include <stdio.h>
 #include <math.h>
 
-#define PAT_SIZE  64
-#define PAD (PAT_SIZE/8)
-#define WIDTH (PAT_SIZE*4 + PAD*5)
-#define HEIGHT (PAT_SIZE + PAD*2)
+#define PAT_SIZE 64
+#define PAD (PAT_SIZE / 8)
+#define WIDTH (PAT_SIZE * 4 + PAD * 5)
+#define HEIGHT (PAT_SIZE + PAD * 2)
 
 /* Test case based on bug 89232 - painting a recording surface to a pdf/ps surface
  * omits objects on the recording surface with negative coordinates even though
@@ -47,16 +47,15 @@
  * 4) same as 1) but also rotated 45 deg
  */
 
-
 static void
-transform_extents(comac_rectangle_t *extents, comac_matrix_t *mat)
+transform_extents (comac_rectangle_t *extents, comac_matrix_t *mat)
 {
     double x1, y1, x2, y2, x, y;
 
-#define UPDATE_BBOX \
-    x1 = x < x1 ? x : x1; \
-    y1 = y < y1 ? y : y1; \
-    x2 = x > x2 ? x : x2; \
+#define UPDATE_BBOX                                                            \
+    x1 = x < x1 ? x : x1;                                                      \
+    y1 = y < y1 ? y : y1;                                                      \
+    x2 = x > x2 ? x : x2;                                                      \
     y2 = y > y2 ? y : y2;
 
     x = extents->x;
@@ -98,9 +97,10 @@ create_pattern (comac_matrix_t *mat, comac_bool_t bounded)
     int square;
 
     if (bounded) {
-	comac_rectangle_t extents = { 0, 0, PAT_SIZE, PAT_SIZE };
+	comac_rectangle_t extents = {0, 0, PAT_SIZE, PAT_SIZE};
 	transform_extents (&extents, mat);
-	surf = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+	surf = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA,
+					       &extents);
     } else {
 	surf = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
     }
@@ -108,8 +108,8 @@ create_pattern (comac_matrix_t *mat, comac_bool_t bounded)
     cr = comac_create (surf);
     comac_transform (cr, mat);
 
-    border  = PAT_SIZE/8;
-    square = (PAT_SIZE - 2*border)/2;
+    border = PAT_SIZE / 8;
+    square = (PAT_SIZE - 2 * border) / 2;
 
     comac_rectangle (cr, 0, 0, PAT_SIZE, PAT_SIZE);
     comac_clip (cr);
@@ -153,7 +153,7 @@ record_extents (comac_t *cr, int width, int height, comac_bool_t bounded)
 
     /* record surface extents (-PAT_SIZE/2, -PAT_SIZE/2) to (PAT_SIZE/2, PAT_SIZE/2) */
     comac_translate (cr, PAD, PAD);
-    comac_matrix_init_translate (&mat, -PAT_SIZE/2, -PAT_SIZE/2);
+    comac_matrix_init_translate (&mat, -PAT_SIZE / 2, -PAT_SIZE / 2);
     pat = create_pattern (&mat, bounded);
     comac_set_source (cr, pat);
     comac_pattern_destroy (pat);
@@ -161,7 +161,9 @@ record_extents (comac_t *cr, int width, int height, comac_bool_t bounded)
 
     /* record surface extents (-10*PAT_SIZE/2, -10*PAT_SIZE/2) to (10*PAT_SIZE/2, 10*PAT_SIZE/2) */
     comac_translate (cr, PAT_SIZE + PAD, 0);
-    comac_matrix_init_translate (&mat, -10.0*PAT_SIZE/2, -10.0*PAT_SIZE/2);
+    comac_matrix_init_translate (&mat,
+				 -10.0 * PAT_SIZE / 2,
+				 -10.0 * PAT_SIZE / 2);
     comac_matrix_scale (&mat, 10, 10);
     pat = create_pattern (&mat, bounded);
     comac_set_source (cr, pat);
@@ -170,7 +172,9 @@ record_extents (comac_t *cr, int width, int height, comac_bool_t bounded)
 
     /* record surface extents (-0.1*PAT_SIZE/2, -0.1*PAT_SIZE/2) to (0.1*PAT_SIZE/2, 0.1*PAT_SIZE/2) */
     comac_translate (cr, PAT_SIZE + PAD, 0);
-    comac_matrix_init_translate (&mat, -0.1*PAT_SIZE/2, -0.1*PAT_SIZE/2);
+    comac_matrix_init_translate (&mat,
+				 -0.1 * PAT_SIZE / 2,
+				 -0.1 * PAT_SIZE / 2);
     comac_matrix_scale (&mat, 0.1, 0.1);
     pat = create_pattern (&mat, bounded);
     comac_set_source (cr, pat);
@@ -179,9 +183,11 @@ record_extents (comac_t *cr, int width, int height, comac_bool_t bounded)
 
     /* record surface centered on (0,0) and rotated 45 deg */
     comac_translate (cr, PAT_SIZE + PAD, 0);
-    comac_matrix_init_translate (&mat, -PAT_SIZE/sqrt(2), -PAT_SIZE/sqrt(2));
-    comac_matrix_rotate (&mat, M_PI/4.0);
-    comac_matrix_translate (&mat, PAT_SIZE/2, -PAT_SIZE/2);
+    comac_matrix_init_translate (&mat,
+				 -PAT_SIZE / sqrt (2),
+				 -PAT_SIZE / sqrt (2));
+    comac_matrix_rotate (&mat, M_PI / 4.0);
+    comac_matrix_translate (&mat, PAT_SIZE / 2, -PAT_SIZE / 2);
     pat = create_pattern (&mat, bounded);
     comac_set_source (cr, pat);
     comac_pattern_destroy (pat);
@@ -193,25 +199,30 @@ record_extents (comac_t *cr, int width, int height, comac_bool_t bounded)
 static comac_test_status_t
 record_neg_extents_bounded (comac_t *cr, int width, int height)
 {
-    return record_extents(cr, width, height, TRUE);
+    return record_extents (cr, width, height, TRUE);
 }
 
 static comac_test_status_t
 record_neg_extents_unbounded (comac_t *cr, int width, int height)
 {
-    return record_extents(cr, width, height, FALSE);
+    return record_extents (cr, width, height, FALSE);
 }
 
-
 COMAC_TEST (record_neg_extents_unbounded,
-	    "Paint unbounded recording pattern with untransformed extents outside of target extents",
+	    "Paint unbounded recording pattern with untransformed extents "
+	    "outside of target extents",
 	    "record,transform,pattern", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, record_neg_extents_unbounded)
+	    NULL,			/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    record_neg_extents_unbounded)
 COMAC_TEST (record_neg_extents_bounded,
-	    "Paint bounded recording pattern with untransformed extents outside of target extents",
+	    "Paint bounded recording pattern with untransformed extents "
+	    "outside of target extents",
 	    "record,transform,pattern", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, record_neg_extents_bounded)
+	    NULL,			/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    record_neg_extents_bounded)

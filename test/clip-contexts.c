@@ -45,10 +45,14 @@ draw (comac_t *cr, int width, int height)
 
     /* first create an empty, non-overlappiny clip */
     cr2 = comac_create (comac_get_target (cr));
-    comac_rectangle (cr2, 0, 0, SIZE/2-2, SIZE/2-2);
+    comac_rectangle (cr2, 0, 0, SIZE / 2 - 2, SIZE / 2 - 2);
     comac_clip (cr2);
 
-    comac_rectangle (cr2, SIZE/2+2, SIZE/2+2, SIZE/2-2, SIZE/2-2);
+    comac_rectangle (cr2,
+		     SIZE / 2 + 2,
+		     SIZE / 2 + 2,
+		     SIZE / 2 - 2,
+		     SIZE / 2 - 2);
     comac_clip (cr2);
 
     /* and apply the clip onto the surface, empty nothing should be painted */
@@ -56,7 +60,11 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr2);
 
     /* switch back to the original, and set only the last clip */
-    comac_rectangle (cr, SIZE/2+2, SIZE/2+2, SIZE/2-2, SIZE/2-2);
+    comac_rectangle (cr,
+		     SIZE / 2 + 2,
+		     SIZE / 2 + 2,
+		     SIZE / 2 - 2,
+		     SIZE / 2 - 2);
     comac_clip (cr);
 
     comac_set_source_rgba (cr, 0, 0, 1, .5);
@@ -70,6 +78,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_contexts,
 	    "Test clipping with 2 separate contexts",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

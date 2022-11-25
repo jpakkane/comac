@@ -47,11 +47,12 @@ vertical (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     comac_set_source_rgba (cr, 1, 1, 1, 1);
-    for (x = -HEIGHT*PRECISION-2; x <= (WIDTH+HEIGHT)*PRECISION+2; x += 4) {
-	comac_move_to (cr, x / (double)PRECISION - 2, -2);
+    for (x = -HEIGHT * PRECISION - 2; x <= (WIDTH + HEIGHT) * PRECISION + 2;
+	 x += 4) {
+	comac_move_to (cr, x / (double) PRECISION - 2, -2);
 	comac_rel_line_to (cr, 0, HEIGHT + 4);
     }
-    comac_set_line_width (cr, 2 / (double)PRECISION);
+    comac_set_line_width (cr, 2 / (double) PRECISION);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -66,11 +67,12 @@ horizontal (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     comac_set_source_rgba (cr, 1, 1, 1, 1);
-    for (x = -HEIGHT*PRECISION-2; x <= (WIDTH+HEIGHT)*PRECISION+2; x += 4) {
-	comac_move_to (cr, -2, x / (double)PRECISION - 2);
+    for (x = -HEIGHT * PRECISION - 2; x <= (WIDTH + HEIGHT) * PRECISION + 2;
+	 x += 4) {
+	comac_move_to (cr, -2, x / (double) PRECISION - 2);
 	comac_rel_line_to (cr, HEIGHT + 4, 0);
     }
-    comac_set_line_width (cr, 2 / (double)PRECISION);
+    comac_set_line_width (cr, 2 / (double) PRECISION);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -85,11 +87,12 @@ diagonal (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     comac_set_source_rgba (cr, 1, 1, 1, 1);
-    for (x = -HEIGHT*PRECISION-2; x <= (WIDTH+HEIGHT)*PRECISION+2; x += 6) {
-	comac_move_to (cr, x / (double)PRECISION - 2, -2);
+    for (x = -HEIGHT * PRECISION - 2; x <= (WIDTH + HEIGHT) * PRECISION + 2;
+	 x += 6) {
+	comac_move_to (cr, x / (double) PRECISION - 2, -2);
 	comac_rel_line_to (cr, HEIGHT + 4, HEIGHT + 4);
     }
-    comac_set_line_width (cr, 2 / (double)PRECISION);
+    comac_set_line_width (cr, 2 / (double) PRECISION);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -97,21 +100,27 @@ diagonal (comac_t *cr, int width, int height)
 
 COMAC_TEST (sample_vertical,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,		  /* keywords */
 	    "target=raster slow", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, vertical)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    vertical)
 
 COMAC_TEST (sample_horizontal,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,		  /* keywords */
 	    "target=raster slow", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, horizontal)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    horizontal)
 
 COMAC_TEST (sample_diagonal,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,		  /* keywords */
 	    "target=raster slow", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, diagonal)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    diagonal)

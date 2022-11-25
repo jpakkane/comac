@@ -35,7 +35,8 @@ create_source_surface (int size)
 {
     comac_surface_t *surface;
     char *filename;
-    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
+    const char *path =
+	comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
     xasprintf (&filename, "%s/%s.pdf", path, BASENAME);
     surface = comac_pdf_surface_create (filename, size, size);
@@ -48,6 +49,8 @@ create_source_surface (int size)
 COMAC_TEST (pdf_surface_source,
 	    "Test using a PDF surface as the source",
 	    "source", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    preamble, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    preamble,
+	    draw)

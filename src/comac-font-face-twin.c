@@ -47,10 +47,7 @@
  * Ported to comac user font and extended by Behdad Esfahbod.
  */
 
-
-
 static comac_user_data_key_t twin_properties_key;
-
 
 /*
  * Face properties
@@ -62,94 +59,81 @@ static comac_user_data_key_t twin_properties_key;
 
 /* CSS weight */
 typedef enum {
-  TWIN_WEIGHT_THIN = 100,
-  TWIN_WEIGHT_ULTRALIGHT = 200,
-  TWIN_WEIGHT_LIGHT = 300,
-  TWIN_WEIGHT_BOOK = 380,
-  TWIN_WEIGHT_NORMAL = 400,
-  TWIN_WEIGHT_MEDIUM = 500,
-  TWIN_WEIGHT_SEMIBOLD = 600,
-  TWIN_WEIGHT_BOLD = 700,
-  TWIN_WEIGHT_ULTRABOLD = 800,
-  TWIN_WEIGHT_HEAVY = 900,
-  TWIN_WEIGHT_ULTRAHEAVY = 1000
+    TWIN_WEIGHT_THIN = 100,
+    TWIN_WEIGHT_ULTRALIGHT = 200,
+    TWIN_WEIGHT_LIGHT = 300,
+    TWIN_WEIGHT_BOOK = 380,
+    TWIN_WEIGHT_NORMAL = 400,
+    TWIN_WEIGHT_MEDIUM = 500,
+    TWIN_WEIGHT_SEMIBOLD = 600,
+    TWIN_WEIGHT_BOLD = 700,
+    TWIN_WEIGHT_ULTRABOLD = 800,
+    TWIN_WEIGHT_HEAVY = 900,
+    TWIN_WEIGHT_ULTRAHEAVY = 1000
 } twin_face_weight_t;
 
 /* CSS stretch */
 typedef enum {
-  TWIN_STRETCH_ULTRA_CONDENSED,
-  TWIN_STRETCH_EXTRA_CONDENSED,
-  TWIN_STRETCH_CONDENSED,
-  TWIN_STRETCH_SEMI_CONDENSED,
-  TWIN_STRETCH_NORMAL,
-  TWIN_STRETCH_SEMI_EXPANDED,
-  TWIN_STRETCH_EXPANDED,
-  TWIN_STRETCH_EXTRA_EXPANDED,
-  TWIN_STRETCH_ULTRA_EXPANDED
+    TWIN_STRETCH_ULTRA_CONDENSED,
+    TWIN_STRETCH_EXTRA_CONDENSED,
+    TWIN_STRETCH_CONDENSED,
+    TWIN_STRETCH_SEMI_CONDENSED,
+    TWIN_STRETCH_NORMAL,
+    TWIN_STRETCH_SEMI_EXPANDED,
+    TWIN_STRETCH_EXPANDED,
+    TWIN_STRETCH_EXTRA_EXPANDED,
+    TWIN_STRETCH_ULTRA_EXPANDED
 } twin_face_stretch_t;
 
-typedef struct
-{
-  int value;
-  const char str[16];
+typedef struct {
+    int value;
+    const char str[16];
 } FieldMap;
 
-static const FieldMap slant_map[] = {
-  { COMAC_FONT_SLANT_NORMAL, "" },
-  { COMAC_FONT_SLANT_NORMAL, "Roman" },
-  { COMAC_FONT_SLANT_OBLIQUE, "Oblique" },
-  { COMAC_FONT_SLANT_ITALIC, "Italic" }
-};
+static const FieldMap slant_map[] = {{COMAC_FONT_SLANT_NORMAL, ""},
+				     {COMAC_FONT_SLANT_NORMAL, "Roman"},
+				     {COMAC_FONT_SLANT_OBLIQUE, "Oblique"},
+				     {COMAC_FONT_SLANT_ITALIC, "Italic"}};
 
-static const FieldMap smallcaps_map[] = {
-  { FALSE, "" },
-  { TRUE, "Small-Caps" }
-};
+static const FieldMap smallcaps_map[] = {{FALSE, ""}, {TRUE, "Small-Caps"}};
 
-static const FieldMap weight_map[] = {
-  { TWIN_WEIGHT_THIN, "Thin" },
-  { TWIN_WEIGHT_ULTRALIGHT, "Ultra-Light" },
-  { TWIN_WEIGHT_ULTRALIGHT, "Extra-Light" },
-  { TWIN_WEIGHT_LIGHT, "Light" },
-  { TWIN_WEIGHT_BOOK, "Book" },
-  { TWIN_WEIGHT_NORMAL, "" },
-  { TWIN_WEIGHT_NORMAL, "Regular" },
-  { TWIN_WEIGHT_MEDIUM, "Medium" },
-  { TWIN_WEIGHT_SEMIBOLD, "Semi-Bold" },
-  { TWIN_WEIGHT_SEMIBOLD, "Demi-Bold" },
-  { TWIN_WEIGHT_BOLD, "Bold" },
-  { TWIN_WEIGHT_ULTRABOLD, "Ultra-Bold" },
-  { TWIN_WEIGHT_ULTRABOLD, "Extra-Bold" },
-  { TWIN_WEIGHT_HEAVY, "Heavy" },
-  { TWIN_WEIGHT_HEAVY, "Black" },
-  { TWIN_WEIGHT_ULTRAHEAVY, "Ultra-Heavy" },
-  { TWIN_WEIGHT_ULTRAHEAVY, "Extra-Heavy" },
-  { TWIN_WEIGHT_ULTRAHEAVY, "Ultra-Black" },
-  { TWIN_WEIGHT_ULTRAHEAVY, "Extra-Black" }
-};
+static const FieldMap weight_map[] = {{TWIN_WEIGHT_THIN, "Thin"},
+				      {TWIN_WEIGHT_ULTRALIGHT, "Ultra-Light"},
+				      {TWIN_WEIGHT_ULTRALIGHT, "Extra-Light"},
+				      {TWIN_WEIGHT_LIGHT, "Light"},
+				      {TWIN_WEIGHT_BOOK, "Book"},
+				      {TWIN_WEIGHT_NORMAL, ""},
+				      {TWIN_WEIGHT_NORMAL, "Regular"},
+				      {TWIN_WEIGHT_MEDIUM, "Medium"},
+				      {TWIN_WEIGHT_SEMIBOLD, "Semi-Bold"},
+				      {TWIN_WEIGHT_SEMIBOLD, "Demi-Bold"},
+				      {TWIN_WEIGHT_BOLD, "Bold"},
+				      {TWIN_WEIGHT_ULTRABOLD, "Ultra-Bold"},
+				      {TWIN_WEIGHT_ULTRABOLD, "Extra-Bold"},
+				      {TWIN_WEIGHT_HEAVY, "Heavy"},
+				      {TWIN_WEIGHT_HEAVY, "Black"},
+				      {TWIN_WEIGHT_ULTRAHEAVY, "Ultra-Heavy"},
+				      {TWIN_WEIGHT_ULTRAHEAVY, "Extra-Heavy"},
+				      {TWIN_WEIGHT_ULTRAHEAVY, "Ultra-Black"},
+				      {TWIN_WEIGHT_ULTRAHEAVY, "Extra-Black"}};
 
 static const FieldMap stretch_map[] = {
-  { TWIN_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
-  { TWIN_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
-  { TWIN_STRETCH_CONDENSED,       "Condensed" },
-  { TWIN_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
-  { TWIN_STRETCH_NORMAL,          "" },
-  { TWIN_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
-  { TWIN_STRETCH_EXPANDED,        "Expanded" },
-  { TWIN_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
-  { TWIN_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
-};
+    {TWIN_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed"},
+    {TWIN_STRETCH_EXTRA_CONDENSED, "Extra-Condensed"},
+    {TWIN_STRETCH_CONDENSED, "Condensed"},
+    {TWIN_STRETCH_SEMI_CONDENSED, "Semi-Condensed"},
+    {TWIN_STRETCH_NORMAL, ""},
+    {TWIN_STRETCH_SEMI_EXPANDED, "Semi-Expanded"},
+    {TWIN_STRETCH_EXPANDED, "Expanded"},
+    {TWIN_STRETCH_EXTRA_EXPANDED, "Extra-Expanded"},
+    {TWIN_STRETCH_ULTRA_EXPANDED, "Ultra-Expanded"}};
 
 static const FieldMap monospace_map[] = {
-  { FALSE, "" },
-  { TRUE, "Mono" },
-  { TRUE, "Monospace" }
-};
-
+    {FALSE, ""}, {TRUE, "Mono"}, {TRUE, "Monospace"}};
 
 typedef struct _twin_face_properties {
-    comac_font_slant_t  slant;
-    twin_face_weight_t  weight;
+    comac_font_slant_t slant;
+    twin_face_weight_t weight;
     twin_face_stretch_t stretch;
 
     /* lets have some fun */
@@ -158,51 +142,45 @@ typedef struct _twin_face_properties {
 } twin_face_properties_t;
 
 static comac_bool_t
-field_matches (const char *s1,
-               const char *s2,
-               int len)
+field_matches (const char *s1, const char *s2, int len)
 {
-  int c1, c2;
+    int c1, c2;
 
-  while (len && *s1 && *s2)
-    {
-#define TOLOWER(c) \
-   (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
+    while (len && *s1 && *s2) {
+#define TOLOWER(c) (((c) >= 'A' && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
 
-      c1 = TOLOWER (*s1);
-      c2 = TOLOWER (*s2);
-      if (c1 != c2) {
-        if (c1 == '-') {
-          s1++;
-          continue;
-        }
-        return FALSE;
-      }
-      s1++; s2++;
-      len--;
+	c1 = TOLOWER (*s1);
+	c2 = TOLOWER (*s2);
+	if (c1 != c2) {
+	    if (c1 == '-') {
+		s1++;
+		continue;
+	    }
+	    return FALSE;
+	}
+	s1++;
+	s2++;
+	len--;
     }
 
-  return len == 0 && *s1 == '\0';
+    return len == 0 && *s1 == '\0';
 }
 
 static comac_bool_t
-parse_int (const char *word,
-	   size_t      wordlen,
-	   int        *out)
+parse_int (const char *word, size_t wordlen, int *out)
 {
-  char *end;
-  long val = strtol (word, &end, 10);
-  int i = val;
+    char *end;
+    long val = strtol (word, &end, 10);
+    int i = val;
 
-  if (end != word && (end == word + wordlen) && val >= 0 && val == i)
-    {
-      if (out)
-        *out = i;
+    if (end != word && (end == word + wordlen) && val >= 0 && val == i) {
+	if (out)
+	    *out = i;
 
-      return TRUE;
+	return TRUE;
     }
 
-  return FALSE;
+    return FALSE;
 }
 
 static comac_bool_t
@@ -213,61 +191,58 @@ find_field (const char *what,
 	    int len,
 	    int *val)
 {
-  int i;
-  comac_bool_t had_prefix = FALSE;
+    int i;
+    comac_bool_t had_prefix = FALSE;
 
-  if (what)
-    {
-      i = strlen (what);
-      if (len > i && 0 == strncmp (what, str, i) && str[i] == '=')
-	{
-	  str += i + 1;
-	  len -= i + 1;
-	  had_prefix = TRUE;
+    if (what) {
+	i = strlen (what);
+	if (len > i && 0 == strncmp (what, str, i) && str[i] == '=') {
+	    str += i + 1;
+	    len -= i + 1;
+	    had_prefix = TRUE;
 	}
     }
 
-  for (i=0; i<n_elements; i++)
-    {
-      if (map[i].str[0] && field_matches (map[i].str, str, len))
-	{
-	  if (val)
-	    *val = map[i].value;
-	  return TRUE;
+    for (i = 0; i < n_elements; i++) {
+	if (map[i].str[0] && field_matches (map[i].str, str, len)) {
+	    if (val)
+		*val = map[i].value;
+	    return TRUE;
 	}
     }
 
-  if (!what || had_prefix)
-    return parse_int (str, len, val);
+    if (! what || had_prefix)
+	return parse_int (str, len, val);
 
-  return FALSE;
+    return FALSE;
 }
 
 static void
-parse_field (twin_face_properties_t *props,
-	     const char *str,
-	     int len)
+parse_field (twin_face_properties_t *props, const char *str, int len)
 {
-  if (field_matches ("Normal", str, len))
-    return;
+    if (field_matches ("Normal", str, len))
+	return;
 
-#define FIELD(NAME) \
-  if (find_field (STRINGIFY (NAME), NAME##_map, ARRAY_LENGTH (NAME##_map), str, len, \
-		  (int *)(void *)&props->NAME)) \
-      return; \
+#define FIELD(NAME)                                                            \
+    if (find_field (STRINGIFY (NAME),                                          \
+		    NAME##_map,                                                \
+		    ARRAY_LENGTH (NAME##_map),                                 \
+		    str,                                                       \
+		    len,                                                       \
+		    (int *) (void *) &props->NAME))                            \
+	return;
 
-  FIELD (weight);
-  FIELD (slant);
-  FIELD (stretch);
-  FIELD (smallcaps);
-  FIELD (monospace);
+    FIELD (weight);
+    FIELD (slant);
+    FIELD (stretch);
+    FIELD (smallcaps);
+    FIELD (monospace);
 
 #undef FIELD
 }
 
 static void
-face_props_parse (twin_face_properties_t *props,
-	     const char *s)
+face_props_parse (twin_face_properties_t *props, const char *s)
 {
     const char *start, *end;
 
@@ -276,11 +251,11 @@ face_props_parse (twin_face_properties_t *props,
 	    continue;
 
 	if (start < end)
-		parse_field (props, start, end - start);
+	    parse_field (props, start, end - start);
 	start = end + 1;
     }
     if (start < end)
-	    parse_field (props, start, end - start);
+	parse_field (props, start, end - start);
 }
 
 static twin_face_properties_t *
@@ -292,15 +267,16 @@ twin_font_face_create_properties (comac_font_face_t *twin_face)
     if (unlikely (props == NULL))
 	return NULL;
 
-    props->stretch  = TWIN_STRETCH_NORMAL;
+    props->stretch = TWIN_STRETCH_NORMAL;
     props->slant = COMAC_FONT_SLANT_NORMAL;
     props->weight = TWIN_WEIGHT_NORMAL;
     props->monospace = FALSE;
     props->smallcaps = FALSE;
 
     if (unlikely (comac_font_face_set_user_data (twin_face,
-					    &twin_properties_key,
-					    props, free))) {
+						 &twin_properties_key,
+						 props,
+						 free))) {
 	free (props);
 	return NULL;
     }
@@ -319,72 +295,72 @@ twin_font_face_set_properties_from_toy (comac_font_face_t *twin_face,
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     props->slant = toy_face->slant;
-    props->weight = toy_face->weight == COMAC_FONT_WEIGHT_NORMAL ?
-		    TWIN_WEIGHT_NORMAL : TWIN_WEIGHT_BOLD;
+    props->weight = toy_face->weight == COMAC_FONT_WEIGHT_NORMAL
+			? TWIN_WEIGHT_NORMAL
+			: TWIN_WEIGHT_BOLD;
     face_props_parse (props, toy_face->family);
 
     return COMAC_STATUS_SUCCESS;
 }
-
 
 /*
  * Scaled properties
  */
 
 typedef struct _twin_scaled_properties {
-	twin_face_properties_t *face_props;
+    twin_face_properties_t *face_props;
 
-	comac_bool_t snap; /* hint outlines */
+    comac_bool_t snap; /* hint outlines */
 
-	double weight; /* unhinted pen width */
-	double penx, peny; /* hinted pen width */
-	double marginl, marginr; /* hinted side margins */
+    double weight;	     /* unhinted pen width */
+    double penx, peny;	     /* hinted pen width */
+    double marginl, marginr; /* hinted side margins */
 
-	double stretch; /* stretch factor */
+    double stretch; /* stretch factor */
 } twin_scaled_properties_t;
 
 static void
-compute_hinting_scale (comac_t *cr,
-		       double x, double y,
-		       double *scale, double *inv)
+compute_hinting_scale (
+    comac_t *cr, double x, double y, double *scale, double *inv)
 {
     comac_user_to_device_distance (cr, &x, &y);
-    *scale = x == 0 ? y : y == 0 ? x :sqrt (x*x + y*y);
+    *scale = x == 0 ? y : y == 0 ? x : sqrt (x * x + y * y);
     *inv = 1 / *scale;
 }
 
 static void
 compute_hinting_scales (comac_t *cr,
-			double *x_scale, double *x_scale_inv,
-			double *y_scale, double *y_scale_inv)
+			double *x_scale,
+			double *x_scale_inv,
+			double *y_scale,
+			double *y_scale_inv)
 {
     double x, y;
 
-    x = 1; y = 0;
+    x = 1;
+    y = 0;
     compute_hinting_scale (cr, x, y, x_scale, x_scale_inv);
 
-    x = 0; y = 1;
+    x = 0;
+    y = 1;
     compute_hinting_scale (cr, x, y, y_scale, y_scale_inv);
 }
 
-#define SNAPXI(p)	(_comac_round ((p) * x_scale) * x_scale_inv)
-#define SNAPYI(p)	(_comac_round ((p) * y_scale) * y_scale_inv)
+#define SNAPXI(p) (_comac_round ((p) *x_scale) * x_scale_inv)
+#define SNAPYI(p) (_comac_round ((p) *y_scale) * y_scale_inv)
 
 /* This controls the global font size */
-#define F(g)		((g) / 72.)
+#define F(g) ((g) / 72.)
 
 static void
-twin_hint_pen_and_margins(comac_t *cr,
-			  double *penx, double *peny,
-			  double *marginl, double *marginr)
+twin_hint_pen_and_margins (
+    comac_t *cr, double *penx, double *peny, double *marginl, double *marginr)
 {
     double x_scale, x_scale_inv;
     double y_scale, y_scale_inv;
     double margin;
 
-    compute_hinting_scales (cr,
-			    &x_scale, &x_scale_inv,
-			    &y_scale, &y_scale_inv);
+    compute_hinting_scales (cr, &x_scale, &x_scale_inv, &y_scale, &y_scale_inv);
 
     *penx = SNAPXI (*penx);
     if (*penx < x_scale_inv)
@@ -407,7 +383,7 @@ twin_hint_pen_and_margins(comac_t *cr,
 
 static comac_status_t
 twin_scaled_font_compute_properties (comac_scaled_font_t *scaled_font,
-				     comac_t           *cr)
+				     comac_t *cr)
 {
     comac_status_t status;
     twin_scaled_properties_t *props;
@@ -416,9 +392,9 @@ twin_scaled_font_compute_properties (comac_scaled_font_t *scaled_font,
     if (unlikely (props == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-
-    props->face_props = comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
-						       &twin_properties_key);
+    props->face_props = comac_font_face_get_user_data (
+	comac_scaled_font_get_font_face (scaled_font),
+	&twin_properties_key);
 
     props->snap = scaled_font->options.hint_style > COMAC_HINT_STYLE_NONE;
 
@@ -429,18 +405,21 @@ twin_scaled_font_compute_properties (comac_scaled_font_t *scaled_font,
     props->penx = props->peny = props->weight;
     props->marginl = props->marginr = F (4);
     if (scaled_font->options.hint_style > COMAC_HINT_STYLE_SLIGHT)
-	twin_hint_pen_and_margins(cr,
-				  &props->penx, &props->peny,
-				  &props->marginl, &props->marginr);
+	twin_hint_pen_and_margins (cr,
+				   &props->penx,
+				   &props->peny,
+				   &props->marginl,
+				   &props->marginr);
 
     /* stretch */
-    props->stretch = 1 + .1 * ((int) props->face_props->stretch - (int) TWIN_STRETCH_NORMAL);
-
+    props->stretch =
+	1 + .1 * ((int) props->face_props->stretch - (int) TWIN_STRETCH_NORMAL);
 
     /* Save it */
     status = comac_scaled_font_set_user_data (scaled_font,
 					      &twin_properties_key,
-					      props, free);
+					      props,
+					      free);
     if (unlikely (status))
 	goto FREE_PROPS;
 
@@ -451,20 +430,19 @@ FREE_PROPS:
     return status;
 }
 
-
 /*
  * User-font implementation
  */
 
 static comac_status_t
-twin_scaled_font_init (comac_scaled_font_t  *scaled_font,
-		       comac_t              *cr,
+twin_scaled_font_init (comac_scaled_font_t *scaled_font,
+		       comac_t *cr,
 		       comac_font_extents_t *metrics)
 {
-  metrics->ascent  = F (54);
-  metrics->descent = 1 - metrics->ascent;
+    metrics->ascent = F (54);
+    metrics->descent = 1 - metrics->ascent;
 
-  return twin_scaled_font_compute_properties (scaled_font, cr);
+    return twin_scaled_font_compute_properties (scaled_font, cr);
 }
 
 #define TWIN_GLYPH_MAX_SNAP_X 4
@@ -479,30 +457,26 @@ typedef struct {
     double snapped_y[TWIN_GLYPH_MAX_SNAP_Y];
 } twin_snap_info_t;
 
-#define twin_glyph_left(g)      ((g)[0])
-#define twin_glyph_right(g)     ((g)[1])
-#define twin_glyph_ascent(g)    ((g)[2])
-#define twin_glyph_descent(g)   ((g)[3])
+#define twin_glyph_left(g) ((g)[0])
+#define twin_glyph_right(g) ((g)[1])
+#define twin_glyph_ascent(g) ((g)[2])
+#define twin_glyph_descent(g) ((g)[3])
 
-#define twin_glyph_n_snap_x(g)  ((g)[4])
-#define twin_glyph_n_snap_y(g)  ((g)[5])
-#define twin_glyph_snap_x(g)    (&g[6])
-#define twin_glyph_snap_y(g)    (twin_glyph_snap_x(g) + twin_glyph_n_snap_x(g))
-#define twin_glyph_draw(g)      (twin_glyph_snap_y(g) + twin_glyph_n_snap_y(g))
+#define twin_glyph_n_snap_x(g) ((g)[4])
+#define twin_glyph_n_snap_y(g) ((g)[5])
+#define twin_glyph_snap_x(g) (&g[6])
+#define twin_glyph_snap_y(g) (twin_glyph_snap_x (g) + twin_glyph_n_snap_x (g))
+#define twin_glyph_draw(g) (twin_glyph_snap_y (g) + twin_glyph_n_snap_y (g))
 
 static void
-twin_compute_snap (comac_t             *cr,
-		   twin_snap_info_t    *info,
-		   const signed char   *b)
+twin_compute_snap (comac_t *cr, twin_snap_info_t *info, const signed char *b)
 {
-    int			s, n;
-    const signed char	*snap;
+    int s, n;
+    const signed char *snap;
     double x_scale, x_scale_inv;
     double y_scale, y_scale_inv;
 
-    compute_hinting_scales (cr,
-			    &x_scale, &x_scale_inv,
-			    &y_scale, &y_scale_inv);
+    compute_hinting_scales (cr, &x_scale, &x_scale_inv, &y_scale, &y_scale_inv);
 
     snap = twin_glyph_snap_x (b);
     n = twin_glyph_n_snap_x (b);
@@ -526,40 +500,39 @@ twin_compute_snap (comac_t             *cr,
 static double
 twin_snap (int8_t v, int n, int8_t *snap, double *snapped)
 {
-    int	s;
+    int s;
 
-    if (!n)
-	return F(v);
+    if (! n)
+	return F (v);
 
     if (snap[0] == v)
 	return snapped[0];
 
-    for (s = 0; s < n - 1; s++)
-    {
-	if (snap[s+1] == v)
-	    return snapped[s+1];
+    for (s = 0; s < n - 1; s++) {
+	if (snap[s + 1] == v)
+	    return snapped[s + 1];
 
-	if (snap[s] <= v && v <= snap[s+1])
-	{
+	if (snap[s] <= v && v <= snap[s + 1]) {
 	    int before = snap[s];
-	    int after = snap[s+1];
+	    int after = snap[s + 1];
 	    int dist = after - before;
 	    double snap_before = snapped[s];
-	    double snap_after = snapped[s+1];
+	    double snap_after = snapped[s + 1];
 	    double dist_before = v - before;
-	    return snap_before + (snap_after - snap_before) * dist_before / dist;
+	    return snap_before +
+		   (snap_after - snap_before) * dist_before / dist;
 	}
     }
-    return F(v);
+    return F (v);
 }
 
-#define SNAPX(p)	twin_snap (p, info.n_snap_x, info.snap_x, info.snapped_x)
-#define SNAPY(p)	twin_snap (p, info.n_snap_y, info.snap_y, info.snapped_y)
+#define SNAPX(p) twin_snap (p, info.n_snap_x, info.snap_x, info.snapped_x)
+#define SNAPY(p) twin_snap (p, info.n_snap_y, info.snap_y, info.snapped_y)
 
 static comac_status_t
-twin_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
-			       unsigned long         glyph,
-			       comac_t              *cr,
+twin_scaled_font_render_glyph (comac_scaled_font_t *scaled_font,
+			       unsigned long glyph,
+			       comac_t *cr,
 			       comac_text_extents_t *metrics)
 {
     double x1, y1, x2, y2, x3, y3;
@@ -588,29 +561,33 @@ twin_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 
     /* slant */
     if (props->face_props->slant != COMAC_FONT_SLANT_NORMAL) {
-	comac_matrix_t shear = { 1, 0, -.2, 1, 0, 0};
+	comac_matrix_t shear = {1, 0, -.2, 1, 0, 0};
 	comac_transform (cr, &shear);
     }
 
     b = _comac_twin_outlines +
-	_comac_twin_charmap[unlikely (glyph >= ARRAY_LENGTH (_comac_twin_charmap)) ? 0 : glyph];
-    g = twin_glyph_draw(b);
-    w = twin_glyph_right(b);
-    gw = F(w);
+	_comac_twin_charmap[unlikely (glyph >=
+				      ARRAY_LENGTH (_comac_twin_charmap))
+				? 0
+				: glyph];
+    g = twin_glyph_draw (b);
+    w = twin_glyph_right (b);
+    gw = F (w);
 
     marginl = props->marginl;
 
     /* monospace */
     if (props->face_props->monospace) {
-	double monow = F(24);
-	double extra =  props->penx + props->marginl + props->marginr;
+	double monow = F (24);
+	double extra = props->penx + props->marginl + props->marginr;
 	comac_scale (cr, (monow + extra) / (gw + extra), 1);
 	gw = monow;
 
 	/* resnap margin for new transform */
 	{
 	    double x, y, x_scale, x_scale_inv;
-	    x = 1; y = 0;
+	    x = 1;
+	    y = 0;
 	    compute_hinting_scale (cr, x, y, &x_scale, &x_scale_inv);
 	    marginl = SNAPXI (marginl);
 	}
@@ -627,7 +604,8 @@ twin_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 	info.n_snap_x = info.n_snap_y = 0;
 
     /* advance width */
-    metrics->x_advance = gw * props->stretch + props->penx + props->marginl + props->marginr;
+    metrics->x_advance =
+	gw * props->stretch + props->penx + props->marginl + props->marginr;
 
     /* glyph shape */
     for (;;) {
@@ -636,28 +614,28 @@ twin_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 	    comac_close_path (cr);
 	    /* fall through */
 	case 'm':
-	    x1 = SNAPX(*g++);
-	    y1 = SNAPY(*g++);
+	    x1 = SNAPX (*g++);
+	    y1 = SNAPY (*g++);
 	    comac_move_to (cr, x1, y1);
 	    continue;
 	case 'L':
 	    comac_close_path (cr);
 	    /* fall through */
 	case 'l':
-	    x1 = SNAPX(*g++);
-	    y1 = SNAPY(*g++);
+	    x1 = SNAPX (*g++);
+	    y1 = SNAPY (*g++);
 	    comac_line_to (cr, x1, y1);
 	    continue;
 	case 'C':
 	    comac_close_path (cr);
 	    /* fall through */
 	case 'c':
-	    x1 = SNAPX(*g++);
-	    y1 = SNAPY(*g++);
-	    x2 = SNAPX(*g++);
-	    y2 = SNAPY(*g++);
-	    x3 = SNAPX(*g++);
-	    y3 = SNAPY(*g++);
+	    x1 = SNAPX (*g++);
+	    y1 = SNAPY (*g++);
+	    x2 = SNAPX (*g++);
+	    y2 = SNAPY (*g++);
+	    x3 = SNAPX (*g++);
+	    y3 = SNAPY (*g++);
 	    comac_curve_to (cr, x1, y1, x2, y2, x3, y3);
 	    continue;
 	case 'E':
@@ -684,8 +662,8 @@ twin_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 
 static comac_status_t
 twin_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
-				   unsigned long        unicode,
-				   unsigned long       *glyph)
+				   unsigned long unicode,
+				   unsigned long *glyph)
 {
     /* We use an identity charmap.  Which means we could live
      * with no unicode_to_glyph method too.  But we define this
@@ -700,7 +678,6 @@ twin_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
     return COMAC_STATUS_SUCCESS;
 }
 
-
 /*
  * Face constructor
  */
@@ -711,9 +688,12 @@ _comac_font_face_twin_create_internal (void)
     comac_font_face_t *twin_font_face;
 
     twin_font_face = comac_user_font_face_create ();
-    comac_user_font_face_set_init_func             (twin_font_face, twin_scaled_font_init);
-    comac_user_font_face_set_render_glyph_func     (twin_font_face, twin_scaled_font_render_glyph);
-    comac_user_font_face_set_unicode_to_glyph_func (twin_font_face, twin_scaled_font_unicode_to_glyph);
+    comac_user_font_face_set_init_func (twin_font_face, twin_scaled_font_init);
+    comac_user_font_face_set_render_glyph_func (twin_font_face,
+						twin_scaled_font_render_glyph);
+    comac_user_font_face_set_unicode_to_glyph_func (
+	twin_font_face,
+	twin_scaled_font_unicode_to_glyph);
 
     return twin_font_face;
 }
@@ -733,8 +713,8 @@ _comac_font_face_twin_create_fallback (void)
 }
 
 comac_status_t
-_comac_font_face_twin_create_for_toy (comac_toy_font_face_t   *toy_face,
-				      comac_font_face_t      **font_face)
+_comac_font_face_twin_create_for_toy (comac_toy_font_face_t *toy_face,
+				      comac_font_face_t **font_face)
 {
     comac_status_t status;
     comac_font_face_t *twin_font_face;

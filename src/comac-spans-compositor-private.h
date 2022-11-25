@@ -56,47 +56,53 @@ struct comac_spans_compositor {
 #define COMAC_SPANS_COMPOSITOR_HAS_LERP 0x1
 
     /* pixel-aligned fast paths */
-    comac_int_status_t (*fill_boxes)	(void			*surface,
-					 comac_operator_t	 op,
-					 const comac_color_t	*color,
-					 comac_boxes_t		*boxes);
+    comac_int_status_t (*fill_boxes) (void *surface,
+				      comac_operator_t op,
+				      const comac_color_t *color,
+				      comac_boxes_t *boxes);
 
     comac_int_status_t (*draw_image_boxes) (void *surface,
 					    comac_image_surface_t *image,
 					    comac_boxes_t *boxes,
-					    int dx, int dy);
+					    int dx,
+					    int dy);
 
     comac_int_status_t (*copy_boxes) (void *surface,
 				      comac_surface_t *src,
 				      comac_boxes_t *boxes,
 				      const comac_rectangle_int_t *extents,
-				      int dx, int dy);
+				      int dx,
+				      int dy);
 
-    comac_surface_t * (*pattern_to_surface) (comac_surface_t *dst,
-					     const comac_pattern_t *pattern,
-					     comac_bool_t is_mask,
-					     const comac_rectangle_int_t *extents,
-					     const comac_rectangle_int_t *sample,
-					     int *src_x, int *src_y);
+    comac_surface_t *(*pattern_to_surface) (
+	comac_surface_t *dst,
+	const comac_pattern_t *pattern,
+	comac_bool_t is_mask,
+	const comac_rectangle_int_t *extents,
+	const comac_rectangle_int_t *sample,
+	int *src_x,
+	int *src_y);
 
-    comac_int_status_t (*composite_boxes) (void			*surface,
-					   comac_operator_t	 op,
-					   comac_surface_t	*source,
-					   comac_surface_t	*mask,
-					   int			 src_x,
-					   int			 src_y,
-					   int			 mask_x,
-					   int			 mask_y,
-					   int			 dst_x,
-					   int			 dst_y,
-					   comac_boxes_t		*boxes,
-					   const comac_rectangle_int_t  *extents);
+    comac_int_status_t (*composite_boxes) (
+	void *surface,
+	comac_operator_t op,
+	comac_surface_t *source,
+	comac_surface_t *mask,
+	int src_x,
+	int src_y,
+	int mask_x,
+	int mask_y,
+	int dst_x,
+	int dst_y,
+	comac_boxes_t *boxes,
+	const comac_rectangle_int_t *extents);
 
     /* general shape masks using a span renderer */
-    comac_int_status_t (*renderer_init) (comac_abstract_span_renderer_t *renderer,
-					 const comac_composite_rectangles_t *extents,
-					 comac_antialias_t antialias,
-					 comac_bool_t	 needs_clip);
+    comac_int_status_t (*renderer_init) (
+	comac_abstract_span_renderer_t *renderer,
+	const comac_composite_rectangles_t *extents,
+	comac_antialias_t antialias,
+	comac_bool_t needs_clip);
 
     void (*renderer_fini) (comac_abstract_span_renderer_t *renderer,
 			   comac_int_status_t status);
@@ -104,7 +110,7 @@ struct comac_spans_compositor {
 
 comac_private void
 _comac_spans_compositor_init (comac_spans_compositor_t *compositor,
-			      const comac_compositor_t  *delegate);
+			      const comac_compositor_t *delegate);
 
 COMAC_END_DECLS
 

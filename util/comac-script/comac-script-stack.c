@@ -68,7 +68,8 @@ _csi_stack_fini (csi_t *ctx, csi_stack_t *stack)
 csi_status_t
 _csi_stack_roll (csi_t *ctx,
 		 csi_stack_t *stack,
-		 csi_integer_t mod, csi_integer_t n)
+		 csi_integer_t mod,
+		 csi_integer_t n)
 {
     csi_object_t stack_copy[128];
     csi_object_t *copy;
@@ -79,14 +80,14 @@ _csi_stack_roll (csi_t *ctx,
 	last = stack->len - 1;
 	stack_copy[0] = stack->objects[last];
 	for (i = last; --n; i--)
-	    stack->objects[i] = stack->objects[i-1];
+	    stack->objects[i] = stack->objects[i - 1];
 	stack->objects[i] = stack_copy[0];
 	return CSI_STATUS_SUCCESS;
     case -1:
 	last = stack->len - 1;
 	stack_copy[0] = stack->objects[i = last - n + 1];
 	for (; --n; i++)
-	    stack->objects[i] = stack->objects[i+1];
+	    stack->objects[i] = stack->objects[i + 1];
 	stack->objects[i] = stack_copy[0];
 	return CSI_STATUS_SUCCESS;
     }
@@ -135,20 +136,20 @@ _csi_stack_grow (csi_t *ctx, csi_stack_t *stack, csi_integer_t cnt)
 	newsize *= 2;
     } while (newsize <= cnt);
 
-    newstack = _csi_realloc (ctx,
-			     stack->objects,
-			     newsize * sizeof (csi_object_t));
+    newstack =
+	_csi_realloc (ctx, stack->objects, newsize * sizeof (csi_object_t));
     if (_csi_unlikely (newstack == NULL))
 	return _csi_error (CSI_STATUS_NO_MEMORY);
 
     stack->objects = newstack;
-    stack->size  = newsize;
+    stack->size = newsize;
 
     return CSI_STATUS_SUCCESS;
 }
 
 csi_status_t
-_csi_stack_push_internal (csi_t *ctx, csi_stack_t *stack,
+_csi_stack_push_internal (csi_t *ctx,
+			  csi_stack_t *stack,
 			  const csi_object_t *obj)
 {
     csi_status_t status;
@@ -167,7 +168,7 @@ _csi_stack_peek (csi_stack_t *stack, csi_integer_t i)
     if (_csi_unlikely (stack->len < i))
 	return NULL;
 
-    return &stack->objects[stack->len - i -1];
+    return &stack->objects[stack->len - i - 1];
 }
 
 void

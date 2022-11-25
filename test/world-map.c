@@ -134,18 +134,24 @@ draw_world_map_both (comac_t *cr, int width, int height)
 COMAC_TEST (world_map,
 	    "Tests a complex drawing (part of the performance suite)",
 	    "fill, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_world_map_both)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_world_map_both)
 COMAC_TEST (world_map_stroke,
 	    "Tests a complex drawing (part of the performance suite)",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_world_map_stroke)
+	    NULL,     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_world_map_stroke)
 COMAC_TEST (world_map_fill,
 	    "Tests a complex drawing (part of the performance suite)",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_world_map_fill)
+	    NULL,   /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_world_map_fill)

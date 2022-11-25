@@ -39,11 +39,12 @@ typedef enum {
     LONG_LINES_CROPPED = 0x1,
     LONG_LINES_ONCE = 0x2,
 } long_lines_crop_t;
-#define NUM_LINES    20
-#define LONG_FACTOR  50.0
+#define NUM_LINES 20
+#define LONG_FACTOR 50.0
 
 static comac_time_t
-do_long_lines (comac_t *cr, int width, int height, int loops, long_lines_crop_t crop)
+do_long_lines (
+    comac_t *cr, int width, int height, int loops, long_lines_crop_t crop)
 {
     int i;
     double x, y, dx, dy, min_x, min_y, max_x, max_y;
@@ -63,8 +64,8 @@ do_long_lines (comac_t *cr, int width, int height, int loops, long_lines_crop_t 
 	comac_set_source_rgb (cr, 1.0, 0.0, 0.0); /* red */
     }
 
-    min_x = x = - outer_width / 2.0;
-    min_y = y = - outer_height / 2.0;
+    min_x = x = -outer_width / 2.0;
+    min_y = y = -outer_height / 2.0;
     max_x = outer_width / 2.0;
     max_y = outer_height / 2.0;
     dx = outer_width / NUM_LINES;
@@ -129,7 +130,11 @@ long_lines_cropped (comac_t *cr, int width, int height, int loops)
 static comac_time_t
 long_lines_cropped_once (comac_t *cr, int width, int height, int loops)
 {
-    return do_long_lines (cr, width, height, loops, LONG_LINES_CROPPED | LONG_LINES_ONCE);
+    return do_long_lines (cr,
+			  width,
+			  height,
+			  loops,
+			  LONG_LINES_CROPPED | LONG_LINES_ONCE);
 }
 
 comac_bool_t
@@ -142,7 +147,13 @@ void
 long_lines (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     comac_perf_run (perf, "long-lines-uncropped", long_lines_uncropped, NULL);
-    comac_perf_run (perf, "long-lines-uncropped-once", long_lines_uncropped_once, NULL);
+    comac_perf_run (perf,
+		    "long-lines-uncropped-once",
+		    long_lines_uncropped_once,
+		    NULL);
     comac_perf_run (perf, "long-lines-cropped", long_lines_cropped, NULL);
-    comac_perf_run (perf, "long-lines-cropped-once", long_lines_cropped_once, NULL);
+    comac_perf_run (perf,
+		    "long-lines-cropped-once",
+		    long_lines_cropped_once,
+		    NULL);
 }

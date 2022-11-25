@@ -38,16 +38,14 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_t *pattern;
     unsigned int i, j;
 
-    comac_extend_t extend[NUM_EXTEND] = {
-	COMAC_EXTEND_NONE,
-	COMAC_EXTEND_REPEAT,
-	COMAC_EXTEND_REFLECT,
-	COMAC_EXTEND_PAD
-    };
+    comac_extend_t extend[NUM_EXTEND] = {COMAC_EXTEND_NONE,
+					 COMAC_EXTEND_REPEAT,
+					 COMAC_EXTEND_REFLECT,
+					 COMAC_EXTEND_PAD};
 
     comac_test_paint_checkered (cr);
 
-    pattern = comac_pattern_create_linear (0, 2*PAD, 0, HEIGHT - 2*PAD);
+    pattern = comac_pattern_create_linear (0, 2 * PAD, 0, HEIGHT - 2 * PAD);
 
     comac_pattern_add_color_stop_rgb (pattern, 0, 0, 0, 1);
     comac_pattern_add_color_stop_rgb (pattern, 1, 0, 0, 1);
@@ -55,8 +53,8 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, PAD, PAD);
 
     for (i = 0; i < 2; i++) {
-        comac_save (cr);
-	
+	comac_save (cr);
+
 	for (j = 0; j < NUM_EXTEND; j++) {
 	    comac_pattern_set_extend (pattern, extend[j]);
 
@@ -65,18 +63,18 @@ draw (comac_t *cr, int width, int height)
 	    comac_clip (cr);
 
 	    if (i & 1) {
-	        comac_set_source_rgb (cr, 0, 1, 0);
+		comac_set_source_rgb (cr, 0, 1, 0);
 		comac_mask (cr, pattern);
 	    } else {
-	        comac_set_source (cr, pattern);
-	        comac_paint (cr);
+		comac_set_source (cr, pattern);
+		comac_paint (cr);
 	    }
 
-	    comac_translate (cr, WIDTH+PAD, 0);
+	    comac_translate (cr, WIDTH + PAD, 0);
 	}
 
 	comac_restore (cr);
-	comac_translate (cr, 0, HEIGHT+PAD);
+	comac_translate (cr, 0, HEIGHT + PAD);
     }
 
     comac_pattern_destroy (pattern);
@@ -87,6 +85,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (linear_gradient_extend,
 	    "Tests gradient to solid reduction of linear gradients",
 	    "linear, pattern, extend", /* keywords */
-	    NULL, /* requirements */
-	    (WIDTH+PAD) * NUM_EXTEND + PAD, 2*(HEIGHT + PAD) + PAD,
-	    NULL, draw)
+	    NULL,		       /* requirements */
+	    (WIDTH + PAD) * NUM_EXTEND + PAD,
+	    2 * (HEIGHT + PAD) + PAD,
+	    NULL,
+	    draw)

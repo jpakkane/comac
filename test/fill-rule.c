@@ -64,7 +64,7 @@
 #include "comac-test.h"
 
 #define LITTLE_STAR_SIZE 20
-#define BIG_STAR_SIZE    80
+#define BIG_STAR_SIZE 80
 
 /* The SVG start trimmed down, but still showing the bug (originally) */
 static void
@@ -122,6 +122,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (fill_rule,
 	    "Tests comac_set_fill_rule with some star shapes",
 	    "fill, path", /* keywords */
-	    NULL, /* requirements */
-	    BIG_STAR_SIZE * 2 + 3, BIG_STAR_SIZE + LITTLE_STAR_SIZE + 3,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    BIG_STAR_SIZE * 2 + 3,
+	    BIG_STAR_SIZE + LITTLE_STAR_SIZE + 3,
+	    NULL,
+	    draw)

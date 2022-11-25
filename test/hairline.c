@@ -38,162 +38,200 @@
  * https://comacgraphics.org/cookbook/ellipses/ 
  */
 static comac_test_status_t
-draw (comac_t *cr, int width, int height, double scale_width, double scale_height, comac_bool_t fit_to_scale, comac_bool_t correct_scale)
+draw (comac_t *cr,
+      int width,
+      int height,
+      double scale_width,
+      double scale_height,
+      comac_bool_t fit_to_scale,
+      comac_bool_t correct_scale)
 {
-	comac_matrix_t save_matrix;
-	double fit_width = fit_to_scale ? scale_width : 1.0;
-	double fit_height = fit_to_scale ? scale_height : 1.0;
-	double fit_max = MAX(fit_width, fit_height);
-	double dash[] = {3.0};
+    comac_matrix_t save_matrix;
+    double fit_width = fit_to_scale ? scale_width : 1.0;
+    double fit_height = fit_to_scale ? scale_height : 1.0;
+    double fit_max = MAX (fit_width, fit_height);
+    double dash[] = {3.0};
 
-	if (comac_get_hairline (cr) == TRUE) {
-		return COMAC_TEST_ERROR;
-	}
+    if (comac_get_hairline (cr) == TRUE) {
+	return COMAC_TEST_ERROR;
+    }
 
-	/* Clear background */
-	comac_set_source_rgb (cr, 1, 1, 1);
-	comac_paint (cr);
+    /* Clear background */
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-	comac_set_source_rgb (cr, 0, 0, 0);
-	comac_set_line_width (cr, 100.0); /* If everything is working right, this value should never get used */
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_line_width (
+	cr,
+	100.0); /* If everything is working right, this value should never get used */
 
-	/* Hairline sample */
-	if (correct_scale) {
-		comac_get_matrix (cr, &save_matrix);
-	}
+    /* Hairline sample */
+    if (correct_scale) {
+	comac_get_matrix (cr, &save_matrix);
+    }
+    comac_scale (cr, scale_width, scale_height);
+
+    comac_set_hairline (cr, TRUE);
+    if (comac_get_hairline (cr) == FALSE) {
+	return COMAC_TEST_ERROR;
+    }
+
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_move_to (cr, width / fit_width / 2, 0);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_move_to (cr, 0, height / fit_height / 2);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_move_to (cr, width / fit_width / 4, 0);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_arc (cr,
+	       width / fit_width / 2,
+	       height / fit_height / 2,
+	       width / fit_max / 4,
+	       M_PI * 0.5,
+	       M_PI * 1.0);
+
+    if (correct_scale) {
+	comac_set_matrix (cr, &save_matrix);
+    }
+    comac_stroke (cr);
+
+    /* Dashed sample */
+    if (correct_scale) {
+	comac_get_matrix (cr, &save_matrix);
 	comac_scale (cr, scale_width, scale_height);
+    }
+    comac_set_dash (cr, dash, 1, 0);
+    comac_arc (cr,
+	       width / fit_width / 2,
+	       height / fit_height / 2,
+	       width / fit_max / 4,
+	       M_PI * 1.0,
+	       M_PI * 1.5);
+    if (correct_scale) {
+	comac_set_matrix (cr, &save_matrix);
+    }
+    comac_stroke (cr);
 
-	comac_set_hairline (cr, TRUE);
-	if (comac_get_hairline (cr) == FALSE) {
-		return COMAC_TEST_ERROR;
-	}
+    /* Control sample */
+    if (correct_scale) {
+	comac_get_matrix (cr, &save_matrix);
+	comac_scale (cr, scale_width, scale_height);
+    }
 
-	comac_move_to (cr, 0, 0);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_move_to (cr, width/fit_width/2, 0);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_move_to (cr, 0, height/fit_height/2);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_move_to (cr, width/fit_width/4, 0);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_arc (cr, width/fit_width/2, height/fit_height/2, width/fit_max/4, M_PI*0.5, M_PI*1.0);
+    comac_set_line_width (cr, 3.0);
+    comac_set_hairline (cr, FALSE);
+    if (comac_get_hairline (cr) == TRUE) {
+	return COMAC_TEST_ERROR;
+    }
 
-	if (correct_scale) {
-		comac_set_matrix (cr, &save_matrix);
-	}
-	comac_stroke (cr);
+    comac_set_dash (cr, 0, 0, 0);
 
-	/* Dashed sample */
-	if (correct_scale) {
-		comac_get_matrix (cr, &save_matrix);
-		comac_scale (cr, scale_width, scale_height);
-	}
-	comac_set_dash (cr, dash, 1, 0);
-	comac_arc (cr, width/fit_width/2, height/fit_height/2, width/fit_max/4, M_PI*1.0, M_PI*1.5);
-	if (correct_scale) {
-		comac_set_matrix (cr, &save_matrix);
-	}
-	comac_stroke (cr);
+    comac_move_to (cr, width / fit_width, height / fit_height);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_move_to (cr, width / fit_width / 2, height / fit_height);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_move_to (cr, width / fit_width, height / fit_height / 2);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_move_to (cr, width / fit_width * 0.75, height / fit_height);
+    comac_line_to (cr, width / fit_width / 2, height / fit_height / 2);
+    comac_arc (cr,
+	       width / fit_width / 2,
+	       height / fit_height / 2,
+	       width / fit_max / 4,
+	       M_PI * 1.5,
+	       M_PI * 2.0);
 
-	/* Control sample */
-	if (correct_scale) {
-		comac_get_matrix (cr, &save_matrix);
-		comac_scale (cr, scale_width, scale_height);
-	}
+    if (correct_scale) {
+	comac_set_matrix (cr, &save_matrix);
+    }
+    comac_stroke (cr);
 
-	comac_set_line_width (cr, 3.0);
-	comac_set_hairline (cr, FALSE);
-	if (comac_get_hairline (cr) == TRUE) {
-		return COMAC_TEST_ERROR;
-	}
+    /* Dashed sample */
+    if (correct_scale) {
+	comac_get_matrix (cr, &save_matrix);
+	comac_scale (cr, scale_width, scale_height);
+    }
+    comac_set_dash (cr, dash, 1, 0);
+    comac_arc (cr,
+	       width / fit_width / 2,
+	       height / fit_height / 2,
+	       width / fit_max / 4,
+	       0,
+	       M_PI * 0.5);
+    if (correct_scale) {
+	comac_set_matrix (cr, &save_matrix);
+    }
+    comac_stroke (cr);
 
-	comac_set_dash (cr, 0, 0, 0);
-
-	comac_move_to (cr, width/fit_width, height/fit_height);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_move_to (cr, width/fit_width/2, height/fit_height);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_move_to (cr, width/fit_width, height/fit_height/2);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_move_to (cr, width/fit_width*0.75, height/fit_height);
-	comac_line_to (cr, width/fit_width/2, height/fit_height/2);
-	comac_arc (cr, width/fit_width/2, height/fit_height/2, width/fit_max/4, M_PI*1.5, M_PI*2.0);
-
-	if (correct_scale) {
-		comac_set_matrix (cr, &save_matrix);
-	}
-	comac_stroke (cr);
-
-	/* Dashed sample */
-	if (correct_scale) {
-		comac_get_matrix (cr, &save_matrix);
-		comac_scale (cr, scale_width, scale_height);
-	}
-	comac_set_dash (cr, dash, 1, 0);
-	comac_arc (cr, width/fit_width/2, height/fit_height/2, width/fit_max/4, 0, M_PI*0.5);
-	if (correct_scale) {
-		comac_set_matrix (cr, &save_matrix);
-	}
-	comac_stroke (cr);
-
-	return COMAC_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
 draw_typical (comac_t *cr, int width, int height)
 {
-	return draw (cr, width, height, 1.0, 1.0, TRUE, TRUE);
+    return draw (cr, width, height, 1.0, 1.0, TRUE, TRUE);
 }
 
 static comac_test_status_t
 draw_scaled (comac_t *cr, int width, int height)
 {
-	return draw (cr, width, height, 0.5, 0.5, FALSE, TRUE);
+    return draw (cr, width, height, 0.5, 0.5, FALSE, TRUE);
 }
 
 static comac_test_status_t
 draw_anisotropic (comac_t *cr, int width, int height)
 {
-	return draw (cr, width, height, 2.0, 5.0, TRUE, TRUE);
+    return draw (cr, width, height, 2.0, 5.0, TRUE, TRUE);
 }
 
 static comac_test_status_t
 draw_anisotropic_incorrect (comac_t *cr, int width, int height)
 {
-	return draw (cr, width, height, 2.0, 5.0, TRUE, FALSE);
+    return draw (cr, width, height, 2.0, 5.0, TRUE, FALSE);
 }
 
 COMAC_TEST (hairline,
-		    "Tests hairlines are drawn at a single pixel width",
-			"path, stroke, hairline", /* keywords */
-			NULL, /* requirements */
-			49, 49,
-			NULL, draw_typical)
+	    "Tests hairlines are drawn at a single pixel width",
+	    "path, stroke, hairline", /* keywords */
+	    NULL,		      /* requirements */
+	    49,
+	    49,
+	    NULL,
+	    draw_typical)
 
 COMAC_TEST (hairline_big,
-		    "Tests hairlines are drawn at a single pixel width",
-			"path, stroke, hairline", /* keywords */
-			NULL, /* requirements */
-			99, 99,
-			NULL, draw_typical)
+	    "Tests hairlines are drawn at a single pixel width",
+	    "path, stroke, hairline", /* keywords */
+	    NULL,		      /* requirements */
+	    99,
+	    99,
+	    NULL,
+	    draw_typical)
 
 COMAC_TEST (hairline_scaled,
-		    "Tests hairlines are drawn at a single pixel width",
-			"path, stroke, hairline", /* keywords */
-			NULL, /* requirements */
-			99, 99,
-			NULL, draw_scaled)
+	    "Tests hairlines are drawn at a single pixel width",
+	    "path, stroke, hairline", /* keywords */
+	    NULL,		      /* requirements */
+	    99,
+	    99,
+	    NULL,
+	    draw_scaled)
 
 COMAC_TEST (hairline_anisotropic,
-		    "Tests hairlines with a really lopsided scale parameter",
-			"path, stroke, hairline", /* keywords */
-			NULL, /* requirements */
-			99, 99,
-			NULL, draw_anisotropic)
+	    "Tests hairlines with a really lopsided scale parameter",
+	    "path, stroke, hairline", /* keywords */
+	    NULL,		      /* requirements */
+	    99,
+	    99,
+	    NULL,
+	    draw_anisotropic)
 
 COMAC_TEST (hairline_anisotropic_incorrect,
-		    "Tests hairlines with a really lopsided scale parameter",
-			"path, stroke, hairline", /* keywords */
-			NULL, /* requirements */
-			99, 99,
-			NULL, draw_anisotropic_incorrect)
+	    "Tests hairlines with a really lopsided scale parameter",
+	    "path, stroke, hairline", /* keywords */
+	    NULL,		      /* requirements */
+	    99,
+	    99,
+	    NULL,
+	    draw_anisotropic_incorrect)

@@ -76,7 +76,6 @@ struct symbol {
     unsigned int line;
 };
 
-
 static void
 _symtab_fini (struct symtab *symtab)
 {
@@ -106,10 +105,15 @@ _symtab_init (struct symtab *symtab, const char *filename)
     if (! bfd_check_format_matches (symtab->bfd, bfd_object, &matching))
 	goto BAIL;
 
-    symcount = bfd_read_minisymbols (symtab->bfd, false, (void **) &symtab->syms, &size);
+    symcount = bfd_read_minisymbols (symtab->bfd,
+				     false,
+				     (void **) &symtab->syms,
+				     &size);
     if (symcount == 0) {
-	symcount = bfd_read_minisymbols (symtab->bfd, true /* dynamic */ ,
-		(void **) &symtab->syms, &size);
+	symcount = bfd_read_minisymbols (symtab->bfd,
+					 true /* dynamic */,
+					 (void **) &symtab->syms,
+					 &size);
     }
     if (symcount < 0)
 	goto BAIL;
@@ -128,9 +132,7 @@ BAIL:
  * This is called via bfd_map_over_sections.
  */
 static void
-find_address_in_section (bfd *abfd,
-			 asection *section,
-			 void *data)
+find_address_in_section (bfd *abfd, asection *section, void *data)
 {
     bfd_vma vma;
     bfd_size_type size;
@@ -151,8 +153,9 @@ find_address_in_section (bfd *abfd,
     if (symbol->pc >= vma + size)
 	return;
 
-    symbol->found = bfd_find_nearest_line (symtab->bfd, section,
-	                                   symtab->syms,
+    symbol->found = bfd_find_nearest_line (symtab->bfd,
+					   section,
+					   symtab->syms,
 					   symbol->pc - vma,
 					   &symbol->filename,
 					   &symbol->functionname,
@@ -173,7 +176,10 @@ _symbol_init (struct symbol *symbol, struct symtab *symtab, bfd_vma addr)
 }
 
 static void
-_symbol_print (struct symbol *symbol, char *buf, int buflen, const char *filename)
+_symbol_print (struct symbol *symbol,
+	       char *buf,
+	       int buflen,
+	       const char *filename)
 {
     const char *name, *h;
     char path[1024];
@@ -199,8 +205,7 @@ _symbol_print (struct symbol *symbol, char *buf, int buflen, const char *filenam
 	filename = h + 1;
 
     if (symbol->line) {
-	snprintf (buf, buflen, "%s() [%s:%u]",
-		  name, filename, symbol->line);
+	snprintf (buf, buflen, "%s() [%s:%u]", name, filename, symbol->line);
     } else {
 	snprintf (buf, buflen, "%s() [%s]", name, filename);
     }
@@ -209,8 +214,8 @@ _symbol_print (struct symbol *symbol, char *buf, int buflen, const char *filenam
 
 struct file_match {
     const char *file;
-    ElfW(Addr) address;
-    ElfW(Addr) base;
+    ElfW (Addr) address;
+    ElfW (Addr) base;
     void *hdr;
 };
 
@@ -220,16 +225,15 @@ find_matching_file (struct dl_phdr_info *info, size_t size, void *data)
     struct file_match *match = data;
     /* This code is modeled from Gfind_proc_info-lsb.c:callback() from libunwind */
     long n;
-    const ElfW(Phdr) *phdr;
-    ElfW(Addr) load_base = info->dlpi_addr;
+    const ElfW (Phdr) * phdr;
+    ElfW (Addr) load_base = info->dlpi_addr;
 
     phdr = info->dlpi_phdr;
     for (n = info->dlpi_phnum; --n >= 0; phdr++) {
 	if (phdr->p_type == PT_LOAD) {
-	    ElfW(Addr) vaddr = phdr->p_vaddr + load_base;
+	    ElfW (Addr) vaddr = phdr->p_vaddr + load_base;
 	    if (match->address >= vaddr &&
-		match->address < vaddr + phdr->p_memsz)
-	    {
+		match->address < vaddr + phdr->p_memsz) {
 		/* we found a match */
 		match->file = info->dlpi_name;
 		match->base = info->dlpi_addr;
@@ -262,12 +266,11 @@ lookup_symbol (char *buf, int buflen, const void *ptr)
     int bucket;
     int len;
 
-    bucket = (uintptr_t) ptr % (sizeof (symbol_cache_hash) / sizeof (symbol_cache_hash[0]));
+    bucket = (uintptr_t) ptr %
+	     (sizeof (symbol_cache_hash) / sizeof (symbol_cache_hash[0]));
     pthread_mutex_lock (&symbol_cache_mutex);
-    for (cache = symbol_cache_hash[bucket];
-	 cache != NULL;
-	 cache = cache->hash_next)
-    {
+    for (cache = symbol_cache_hash[bucket]; cache != NULL;
+	 cache = cache->hash_next) {
 	if (cache->ptr == ptr) {
 	    if (cache->hash_prev != NULL) {
 		cache->hash_prev->hash_next = cache->hash_next;
@@ -286,11 +289,10 @@ lookup_symbol (char *buf, int buflen, const void *ptr)
     pthread_mutex_unlock (&symbol_cache_mutex);
 
     match.file = NULL;
-    match.address = (ElfW(Addr)) ptr;
+    match.address = (ElfW (Addr)) ptr;
     dl_iterate_phdr (find_matching_file, &match);
 
-    snprintf (buf, buflen, "0x%llx",
-	      (long long unsigned int) match.address);
+    snprintf (buf, buflen, "0x%llx", (long long unsigned int) match.address);
 
     if (match.file == NULL || *match.file == '\0')
 	match.file = "/proc/self/exe";

@@ -29,7 +29,7 @@
 
 #include "comac-test.h"
 
-#define WIDTH  31
+#define WIDTH 31
 #define HEIGHT 22
 #define TEXT_SIZE 12
 
@@ -43,7 +43,8 @@ draw (comac_t *cr, comac_subpixel_order_t order)
     comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -96,28 +97,36 @@ draw_vbgr (comac_t *cr, int width, int height)
 
 COMAC_TEST (text_antialias_subpixel_rgb,
 	    "Tests text rendering with rgb subpixel antialiasing",
-	    "text", /* keywords */
+	    "text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_rgb)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_rgb)
 
 COMAC_TEST (text_antialias_subpixel_bgr,
 	    "Tests text rendering with bgr subpixel antialiasing",
-	    "text", /* keywords */
+	    "text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_bgr)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_bgr)
 
 COMAC_TEST (text_antialias_subpixel_vrgb,
 	    "Tests text rendering with vertical rgb subpixel antialiasing",
-	    "text", /* keywords */
+	    "text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_vrgb)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_vrgb)
 
 COMAC_TEST (text_antialias_subpixel_vbgr,
 	    "Tests text rendering with vertical bgr subpixel antialiasing",
-	    "text", /* keywords */
+	    "text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_vbgr)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_vbgr)

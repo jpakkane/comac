@@ -44,16 +44,16 @@ draw (comac_t *cr, int width, int height)
     comac_surface_destroy (image);
 
     comac_set_source_rgba (cr2, 1, 0, 0, 1);
-    comac_rectangle (cr2, 0, 0, SIZE2/2, SIZE2/2);
+    comac_rectangle (cr2, 0, 0, SIZE2 / 2, SIZE2 / 2);
     comac_fill (cr2);
     comac_set_source_rgba (cr2, 0, 1, 0, 1);
-    comac_rectangle (cr2, SIZE2/2, 0, SIZE2/2, SIZE2/2);
+    comac_rectangle (cr2, SIZE2 / 2, 0, SIZE2 / 2, SIZE2 / 2);
     comac_fill (cr2);
     comac_set_source_rgba (cr2, 0, 0, 1, 1);
-    comac_rectangle (cr2, 0, SIZE2/2, SIZE2/2, SIZE2/2);
+    comac_rectangle (cr2, 0, SIZE2 / 2, SIZE2 / 2, SIZE2 / 2);
     comac_fill (cr2);
     comac_set_source_rgba (cr2, 1, 1, 0, 1);
-    comac_rectangle (cr2, SIZE2/2, SIZE2/2, SIZE2/2, SIZE2/2);
+    comac_rectangle (cr2, SIZE2 / 2, SIZE2 / 2, SIZE2 / 2, SIZE2 / 2);
     comac_fill (cr2);
 
     pat = comac_pattern_create_for_surface (comac_get_target (cr2));
@@ -76,9 +76,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (composite_integer_translate_over_repeat,
-	    "Test simple compositing: integer-translation 32->32 OVER, with repeat",
-	    "composite", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    composite_integer_translate_over_repeat,
+    "Test simple compositing: integer-translation 32->32 OVER, with repeat",
+    "composite", /* keywords */
+    NULL,	 /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

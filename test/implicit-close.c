@@ -33,9 +33,9 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
-    comac_move_to (cr, SIZE,    0);
+    comac_move_to (cr, SIZE, 0);
     comac_rel_line_to (cr, 0, SIZE);
-    comac_rel_line_to (cr, -SIZE,    0);
+    comac_rel_line_to (cr, -SIZE, 0);
 
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_fill_preserve (cr);
@@ -49,6 +49,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (implicit_close,
 	    "Test implicitly closing paths",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

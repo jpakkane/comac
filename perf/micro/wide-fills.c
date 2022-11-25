@@ -24,7 +24,6 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-
 /* This is a variant on wide strokes where we precompute
  * a simplified stroke-to-path.
  * When we have a real stroke-to-path, it would useful to compare the cost
@@ -40,8 +39,8 @@ uniform_random (double minval, double maxval)
 {
     static uint32_t const poly = 0x9a795537U;
     uint32_t n = 32;
-    while (n-->0)
-	state = 2*state < state ? (2*state ^ poly) : 2*state;
+    while (n-- > 0)
+	state = 2 * state < state ? (2 * state ^ poly) : 2 * state;
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
@@ -153,7 +152,7 @@ do_wide_fills (comac_t *cr, int width, int height, int loops)
 	comac_translate (cr,
 			 uniform_random (0, width),
 			 uniform_random (0, height));
-	comac_rotate (cr, uniform_random (-M_PI,M_PI));
+	comac_rotate (cr, uniform_random (-M_PI, M_PI));
 	comac_rectangle (cr, 0, 0, uniform_random (0, width), 5);
 	comac_restore (cr);
     }

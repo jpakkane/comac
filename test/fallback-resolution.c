@@ -57,8 +57,8 @@
  *          draw a long strip of images, one for each page...
  */
 
-#define INCHES_TO_POINTS(in) ((in) * 72.0)
-#define SIZE INCHES_TO_POINTS(2)
+#define INCHES_TO_POINTS(in) ((in) *72.0)
+#define SIZE INCHES_TO_POINTS (2)
 
 /* comac_set_tolerance() is not respected by the PS/PDF backends currently */
 #define SET_TOLERANCE 0
@@ -70,7 +70,7 @@ draw (comac_t *cr, double width, double height)
 {
     const char *text = "comac";
     comac_text_extents_t extents;
-    const double dash[2] = { 8, 16 };
+    const double dash[2] = {8, 16};
     comac_pattern_t *pattern;
 
     comac_save (cr);
@@ -79,9 +79,7 @@ draw (comac_t *cr, double width, double height)
 
     comac_set_line_width (cr, .05 * SIZE / 2.0);
 
-    comac_arc (cr, SIZE / 2.0, SIZE / 2.0,
-	       0.875 * SIZE / 2.0,
-	       0, 2.0 * M_PI);
+    comac_arc (cr, SIZE / 2.0, SIZE / 2.0, 0.875 * SIZE / 2.0, 0, 2.0 * M_PI);
     comac_stroke (cr);
 
     /* use dashes to demonstrate bugs:
@@ -90,18 +88,14 @@ draw (comac_t *cr, double width, double height)
      */
     comac_save (cr);
     comac_set_dash (cr, dash, 2, 0);
-    comac_arc (cr, SIZE / 2.0, SIZE / 2.0,
-	       0.75 * SIZE / 2.0,
-	       0, 2.0 * M_PI);
+    comac_arc (cr, SIZE / 2.0, SIZE / 2.0, 0.75 * SIZE / 2.0, 0, 2.0 * M_PI);
     comac_stroke (cr);
     comac_restore (cr);
 
     comac_save (cr);
-    comac_rectangle (cr, 0, 0, SIZE/2, SIZE);
+    comac_rectangle (cr, 0, 0, SIZE / 2, SIZE);
     comac_clip (cr);
-    comac_arc (cr, SIZE / 2.0, SIZE / 2.0,
-	       0.6 * SIZE / 2.0,
-	       0, 2.0 * M_PI);
+    comac_arc (cr, SIZE / 2.0, SIZE / 2.0, 0.6 * SIZE / 2.0, 0, 2.0 * M_PI);
     comac_fill (cr);
     comac_restore (cr);
 
@@ -109,24 +103,23 @@ draw (comac_t *cr, double width, double height)
      *   https://bugs.launchpad.net/inkscape/+bug/234546
      */
     comac_save (cr);
-    comac_rectangle (cr, SIZE/2, 0, SIZE/2, SIZE);
+    comac_rectangle (cr, SIZE / 2, 0, SIZE / 2, SIZE);
     comac_clip (cr);
-    pattern = comac_pattern_create_linear (SIZE/2, 0, SIZE, 0);
+    pattern = comac_pattern_create_linear (SIZE / 2, 0, SIZE, 0);
     comac_pattern_add_color_stop_rgba (pattern, 0, 0, 0, 0, 1.);
     comac_pattern_add_color_stop_rgba (pattern, 1, 0, 0, 0, 0.);
     comac_set_source (cr, pattern);
     comac_pattern_destroy (pattern);
-    comac_arc (cr, SIZE / 2.0, SIZE / 2.0,
-	       0.6 * SIZE / 2.0,
-	       0, 2.0 * M_PI);
+    comac_arc (cr, SIZE / 2.0, SIZE / 2.0, 0.6 * SIZE / 2.0, 0, 2.0 * M_PI);
     comac_fill (cr);
     comac_restore (cr);
 
     comac_set_source_rgb (cr, 1, 1, 1); /* white */
     comac_set_font_size (cr, .25 * SIZE / 2.0);
     comac_text_extents (cr, text, &extents);
-    comac_move_to (cr, (SIZE-extents.width)/2.0-extents.x_bearing,
-		       (SIZE-extents.height)/2.0-extents.y_bearing);
+    comac_move_to (cr,
+		   (SIZE - extents.width) / 2.0 - extents.x_bearing,
+		   (SIZE - extents.height) / 2.0 - extents.y_bearing);
     comac_show_text (cr, text);
 
     comac_restore (cr);
@@ -136,8 +129,10 @@ static void
 _xunlink (const comac_test_context_t *ctx, const char *pathname)
 {
     if (unlink (pathname) < 0 && errno != ENOENT) {
-	comac_test_log (ctx, "Error: Cannot remove %s: %s\n",
-			pathname, strerror (errno));
+	comac_test_log (ctx,
+			"Error: Cannot remove %s: %s\n",
+			pathname,
+			strerror (errno));
 	exit (1);
     }
 }
@@ -163,20 +158,23 @@ check_result (comac_test_context_t *ctx,
     if (target->finish_surface != NULL) {
 	status = target->finish_surface (surface);
 	if (status) {
-	    comac_test_log (ctx, "Error: Failed to finish surface: %s\n",
-		    comac_status_to_string (status));
+	    comac_test_log (ctx,
+			    "Error: Failed to finish surface: %s\n",
+			    comac_status_to_string (status));
 	    comac_surface_destroy (surface);
 	    return FALSE;
 	}
     }
 
-    xasprintf (&png_name,  "%s.out.png", base_name);
+    xasprintf (&png_name, "%s.out.png", base_name);
     xasprintf (&diff_name, "%s.diff.png", base_name);
 
     test_image = target->get_image_surface (surface, 0, SIZE, SIZE);
     if (comac_surface_status (test_image)) {
-	comac_test_log (ctx, "Error: Failed to extract page: %s\n",
-		        comac_status_to_string (comac_surface_status (test_image)));
+	comac_test_log (
+	    ctx,
+	    "Error: Failed to extract page: %s\n",
+	    comac_status_to_string (comac_surface_status (test_image)));
 	comac_surface_destroy (test_image);
 	free (png_name);
 	free (diff_name);
@@ -186,8 +184,9 @@ check_result (comac_test_context_t *ctx,
     _xunlink (ctx, png_name);
     status = comac_surface_write_to_png (test_image, png_name);
     if (status) {
-	comac_test_log (ctx, "Error: Failed to write output image: %s\n",
-		comac_status_to_string (status));
+	comac_test_log (ctx,
+			"Error: Failed to write output image: %s\n",
+			comac_status_to_string (status));
 	comac_surface_destroy (test_image);
 	free (png_name);
 	free (diff_name);
@@ -204,21 +203,25 @@ check_result (comac_test_context_t *ctx,
 					      COMAC_TEST_REF_SUFFIX,
 					      COMAC_TEST_PNG_EXTENSION);
     if (ref_name == NULL) {
-	comac_test_log (ctx, "Error: Cannot find reference image for %s\n",
-		        base_name);
+	comac_test_log (ctx,
+			"Error: Cannot find reference image for %s\n",
+			base_name);
 	comac_surface_destroy (test_image);
 	free (png_name);
 	free (diff_name);
 	return FALSE;
     }
 
-
-    ref_image = comac_test_get_reference_image (ctx, ref_name,
-	    target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
+    ref_image = comac_test_get_reference_image (
+	ctx,
+	ref_name,
+	target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
     if (comac_surface_status (ref_image)) {
-	comac_test_log (ctx, "Error: Cannot open reference image for %s: %s\n",
-		        ref_name,
-		comac_status_to_string (comac_surface_status (ref_image)));
+	comac_test_log (
+	    ctx,
+	    "Error: Cannot open reference image for %s: %s\n",
+	    ref_name,
+	    comac_status_to_string (comac_surface_status (ref_image)));
 	comac_surface_destroy (ref_image);
 	comac_surface_destroy (test_image);
 	free (png_name);
@@ -227,26 +230,24 @@ check_result (comac_test_context_t *ctx,
 	return FALSE;
     }
 
-    diff_image = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-	    SIZE, SIZE);
+    diff_image = comac_image_surface_create (COMAC_FORMAT_ARGB32, SIZE, SIZE);
 
     ret = TRUE;
-    status = image_diff (ctx,
-	    test_image, ref_image, diff_image,
-	    &result);
+    status = image_diff (ctx, test_image, ref_image, diff_image, &result);
     _xunlink (ctx, diff_name);
     if (status) {
-	comac_test_log (ctx, "Error: Failed to compare images: %s\n",
+	comac_test_log (ctx,
+			"Error: Failed to compare images: %s\n",
 			comac_status_to_string (status));
 	ret = FALSE;
-    } else if (image_diff_is_failure (&result, target->error_tolerance))
-    {
+    } else if (image_diff_is_failure (&result, target->error_tolerance)) {
 	ret = FALSE;
 
 	status = comac_surface_write_to_png (diff_image, diff_name);
 	if (status) {
-	    comac_test_log (ctx, "Error: Failed to write differences image: %s\n",
-		    comac_status_to_string (status));
+	    comac_test_log (ctx,
+			    "Error: Failed to write differences image: %s\n",
+			    comac_status_to_string (status));
 	}
     }
 
@@ -268,7 +269,8 @@ generate_reference (double ppi_x, double ppi_y, const char *filename)
     comac_status_t status;
 
     surface = comac_image_surface_create (COMAC_FORMAT_RGB24,
-	                                  SIZE*ppi_x/72, SIZE*ppi_y/72);
+					  SIZE * ppi_x / 72,
+					  SIZE * ppi_y / 72);
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
@@ -295,12 +297,14 @@ generate_reference (double ppi_x, double ppi_y, const char *filename)
     comac_set_tolerance (cr, 3.0);
 #endif
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	comac_set_source_rgb (cr, 1, 1, 1);
 	comac_paint (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
-    comac_scale (cr, ppi_x/72., ppi_y/72.);
+    comac_scale (cr, ppi_x / 72., ppi_y / 72.);
     draw (cr, SIZE, SIZE);
 
     surface = comac_surface_reference (comac_get_target (cr));
@@ -308,7 +312,7 @@ generate_reference (double ppi_x, double ppi_y, const char *filename)
 
     target = comac_image_surface_create (COMAC_FORMAT_RGB24, SIZE, SIZE);
     cr = comac_create (target);
-    comac_scale (cr, 72./ppi_x, 72./ppi_y);
+    comac_scale (cr, 72. / ppi_x, 72. / ppi_y);
     comac_set_source_surface (cr, surface, 0, 0);
     comac_paint (cr);
 
@@ -316,8 +320,10 @@ generate_reference (double ppi_x, double ppi_y, const char *filename)
     comac_destroy (cr);
 
     if (status) {
-	fprintf (stderr, "Failed to generate reference image '%s': %s\n",
-		 filename, comac_status_to_string (status));
+	fprintf (stderr,
+		 "Failed to generate reference image '%s': %s\n",
+		 filename,
+		 comac_status_to_string (status));
 	exit (1);
     }
 }
@@ -332,31 +338,34 @@ preamble (comac_test_context_t *ctx)
     struct {
 	double x, y;
     } ppi[] = {
-	{ 576, 576 },
-	{ 576, 72 },
+	{576, 576},
+	{576, 72},
 
-	{ 288, 288 },
-	{ 288, 72 },
+	{288, 288},
+	{288, 72},
 
-	{ 144, 144 },
-	{ 144, 72 },
+	{144, 144},
+	{144, 72},
 
-	{ 72, 576 },
-	{ 72, 288 },
-	{ 72, 144 },
-	{ 72, 72 },
+	{72, 576},
+	{72, 288},
+	{72, 144},
+	{72, 72},
     };
     unsigned int i;
     int n, num_ppi;
-    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
+    const char *path =
+	comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
     num_ppi = ARRAY_LENGTH (ppi);
 
 #if GENERATE_REFERENCE
     for (n = 0; n < num_ppi; n++) {
 	char *ref_name;
-	xasprintf (&ref_name, "reference/fallback-resolution.ppi%gx%g.ref.png",
-		   ppi[n].x, ppi[n].y);
+	xasprintf (&ref_name,
+		   "reference/fallback-resolution.ppi%gx%g.ref.png",
+		   ppi[n].x,
+		   ppi[n].y);
 	generate_reference (ppi[n].x, ppi[n].y, ref_name);
 	free (ref_name);
     }
@@ -377,14 +386,18 @@ preamble (comac_test_context_t *ctx)
 	    continue;
 
 	format = comac_boilerplate_content_name (target->content);
-	xasprintf (&base_name, "%s/fallback-resolution.%s.%s",
-		   path, target->name,
+	xasprintf (&base_name,
+		   "%s/fallback-resolution.%s.%s",
+		   path,
+		   target->name,
 		   format);
 
 	surface = (target->create_surface) (base_name,
 					    target->content,
-					    SIZE, SIZE,
-					    SIZE, SIZE,
+					    SIZE,
+					    SIZE,
+					    SIZE,
+					    SIZE,
 					    COMAC_BOILERPLATE_MODE_TEST,
 					    &closure);
 
@@ -408,21 +421,28 @@ preamble (comac_test_context_t *ctx)
 	    char *test_name;
 	    comac_bool_t pass;
 
-	    xasprintf (&test_name, "fallback-resolution.ppi%gx%g",
-		       ppi[n].x, ppi[n].y);
-	    xasprintf (&base_name, "%s/%s.%s.%s",
-		       path, test_name,
+	    xasprintf (&test_name,
+		       "fallback-resolution.ppi%gx%g",
+		       ppi[n].x,
+		       ppi[n].y);
+	    xasprintf (&base_name,
+		       "%s/%s.%s.%s",
+		       path,
+		       test_name,
 		       target->name,
 		       format);
 
 	    surface = (target->create_surface) (base_name,
 						target->content,
-						SIZE + 25, SIZE + 25,
-						SIZE + 25, SIZE + 25,
+						SIZE + 25,
+						SIZE + 25,
+						SIZE + 25,
+						SIZE + 25,
 						COMAC_BOILERPLATE_MODE_TEST,
 						&closure);
 	    if (surface == NULL || comac_surface_status (surface)) {
-		comac_test_log (ctx, "Failed to generate surface: %s.%s\n",
+		comac_test_log (ctx,
+				"Failed to generate surface: %s.%s\n",
 				target->name,
 				format);
 		free (base_name);
@@ -431,9 +451,12 @@ preamble (comac_test_context_t *ctx)
 		continue;
 	    }
 
-	    comac_test_log (ctx,
-			    "Testing fallback-resolution %gx%g with %s target\n",
-			    ppi[n].x, ppi[n].y, target->name);
+	    comac_test_log (
+		ctx,
+		"Testing fallback-resolution %gx%g with %s target\n",
+		ppi[n].x,
+		ppi[n].y,
+		target->name);
 	    printf ("%s:\t", base_name);
 	    fflush (stdout);
 
@@ -446,39 +469,48 @@ preamble (comac_test_context_t *ctx)
 
 	    comac_surface_set_device_offset (surface, 25, 25);
 
-	    comac_save (cr); {
+	    comac_save (cr);
+	    {
 		comac_set_source_rgb (cr, 1, 1, 1);
 		comac_paint (cr);
-	    } comac_restore (cr);
+	    }
+	    comac_restore (cr);
 
 	    /* First draw the top half in a conventional way. */
-	    comac_save (cr); {
+	    comac_save (cr);
+	    {
 		comac_rectangle (cr, 0, 0, SIZE, SIZE / 2.0);
 		comac_clip (cr);
 
 		draw (cr, SIZE, SIZE);
-	    } comac_restore (cr);
+	    }
+	    comac_restore (cr);
 
 	    /* Then draw the bottom half in a separate group,
 	     * (exposing a bug in 1.6.4 with the group not being
 	     * rendered with the correct fallback resolution). */
-	    comac_save (cr); {
+	    comac_save (cr);
+	    {
 		comac_rectangle (cr, 0, SIZE / 2.0, SIZE, SIZE / 2.0);
 		comac_clip (cr);
 
-		comac_push_group (cr); {
+		comac_push_group (cr);
+		{
 		    draw (cr, SIZE, SIZE);
-		} comac_pop_group_to_source (cr);
+		}
+		comac_pop_group_to_source (cr);
 
 		comac_paint (cr);
-	    } comac_restore (cr);
+	    }
+	    comac_restore (cr);
 
 	    status = comac_status (cr);
 	    comac_destroy (cr);
 
 	    pass = FALSE;
 	    if (status) {
-		comac_test_log (ctx, "Error: Failed to create target surface: %s\n",
+		comac_test_log (ctx,
+				"Error: Failed to create target surface: %s\n",
 				comac_status_to_string (status));
 		ret = COMAC_TEST_FAILURE;
 	    } else {
@@ -510,6 +542,8 @@ preamble (comac_test_context_t *ctx)
 COMAC_TEST (fallback_resolution,
 	    "Check handling of fallback resolutions",
 	    "fallback", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,	/* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

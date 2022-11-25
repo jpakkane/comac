@@ -72,8 +72,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (surface_finish_twice,
-	    "Test to exercise a crash when calling comac_surface_finish twice on the same surface.",
+	    "Test to exercise a crash when calling comac_surface_finish twice "
+	    "on the same surface.",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

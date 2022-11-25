@@ -26,10 +26,10 @@
 #include "comac-test.h"
 #include <stdlib.h>
 
-#define PAD		1
-#define LINE_WIDTH	2
-#define HEIGHT		(PAD + 4 * (LINE_WIDTH + PAD))
-#define WIDTH		16
+#define PAD 1
+#define LINE_WIDTH 2
+#define HEIGHT (PAD + 4 * (LINE_WIDTH + PAD))
+#define WIDTH 16
 
 static void
 line (comac_t *cr)
@@ -82,6 +82,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (dash_no_dash,
 	    "Tests that we can actually turn dashing on and off again",
 	    "dash, stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

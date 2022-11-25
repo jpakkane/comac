@@ -67,13 +67,14 @@
  * We can replace ceil(x) with (int)(x+1) since x will never be an
  * integer for any likely value of %COMAC_FIXED_FRAC_BITS.
  */
-#define FIXED_POINT_DECIMAL_DIGITS ((int)(COMAC_FIXED_FRAC_BITS*0.301029996 + 1))
+#define FIXED_POINT_DECIMAL_DIGITS                                             \
+    ((int) (COMAC_FIXED_FRAC_BITS * 0.301029996 + 1))
 
 void
-_comac_output_stream_init (comac_output_stream_t            *stream,
-			   comac_output_stream_write_func_t  write_func,
-			   comac_output_stream_flush_func_t  flush_func,
-			   comac_output_stream_close_func_t  close_func)
+_comac_output_stream_init (comac_output_stream_t *stream,
+			   comac_output_stream_write_func_t write_func,
+			   comac_output_stream_flush_func_t flush_func,
+			   comac_output_stream_close_func_t close_func)
 {
     stream->write_func = write_func;
     stream->flush_func = flush_func;
@@ -93,7 +94,7 @@ const comac_output_stream_t _comac_output_stream_nil = {
     NULL, /* write_func */
     NULL, /* flush_func */
     NULL, /* close_func */
-    0,    /* position */
+    0,	  /* position */
     COMAC_STATUS_NO_MEMORY,
     FALSE /* closed */
 };
@@ -102,22 +103,22 @@ static const comac_output_stream_t _comac_output_stream_nil_write_error = {
     NULL, /* write_func */
     NULL, /* flush_func */
     NULL, /* close_func */
-    0,    /* position */
+    0,	  /* position */
     COMAC_STATUS_WRITE_ERROR,
     FALSE /* closed */
 };
 
 typedef struct _comac_output_stream_with_closure {
-    comac_output_stream_t	 base;
-    comac_write_func_t		 write_func;
-    comac_close_func_t		 close_func;
-    void			*closure;
+    comac_output_stream_t base;
+    comac_write_func_t write_func;
+    comac_close_func_t close_func;
+    void *closure;
 } comac_output_stream_with_closure_t;
-
 
 static comac_status_t
 closure_write (comac_output_stream_t *stream,
-	       const unsigned char *data, unsigned int length)
+	       const unsigned char *data,
+	       unsigned int length)
 {
     comac_output_stream_with_closure_t *stream_with_closure =
 	(comac_output_stream_with_closure_t *) stream;
@@ -126,7 +127,8 @@ closure_write (comac_output_stream_t *stream,
 	return COMAC_STATUS_SUCCESS;
 
     return stream_with_closure->write_func (stream_with_closure->closure,
-					    data, length);
+					    data,
+					    length);
 }
 
 static comac_status_t
@@ -142,9 +144,9 @@ closure_close (comac_output_stream_t *stream)
 }
 
 comac_output_stream_t *
-_comac_output_stream_create (comac_write_func_t		write_func,
-			     comac_close_func_t		close_func,
-			     void			*closure)
+_comac_output_stream_create (comac_write_func_t write_func,
+			     comac_close_func_t close_func,
+			     void *closure)
 {
     comac_output_stream_with_closure_t *stream;
 
@@ -155,7 +157,9 @@ _comac_output_stream_create (comac_write_func_t		write_func,
     }
 
     _comac_output_stream_init (&stream->base,
-			       closure_write, NULL, closure_close);
+			       closure_write,
+			       NULL,
+			       closure_close);
     stream->write_func = write_func;
     stream->close_func = close_func;
     stream->closure = closure;
@@ -195,8 +199,7 @@ _comac_output_stream_flush (comac_output_stream_t *stream)
 	return stream->status;
 
     if (stream == &_comac_output_stream_nil ||
-	stream == &_comac_output_stream_nil_write_error)
-    {
+	stream == &_comac_output_stream_nil_write_error) {
 	return stream->status;
     }
 
@@ -219,8 +222,7 @@ _comac_output_stream_close (comac_output_stream_t *stream)
 	return stream->status;
 
     if (stream == &_comac_output_stream_nil ||
-	stream == &_comac_output_stream_nil_write_error)
-    {
+	stream == &_comac_output_stream_nil_write_error) {
 	return stream->status;
     }
 
@@ -244,8 +246,7 @@ _comac_output_stream_destroy (comac_output_stream_t *stream)
     assert (stream != NULL);
 
     if (stream == &_comac_output_stream_nil ||
-	stream == &_comac_output_stream_nil_write_error)
-    {
+	stream == &_comac_output_stream_nil_write_error) {
 	return stream->status;
     }
 
@@ -257,7 +258,8 @@ _comac_output_stream_destroy (comac_output_stream_t *stream)
 
 void
 _comac_output_stream_write (comac_output_stream_t *stream,
-			    const void *data, size_t length)
+			    const void *data,
+			    size_t length)
 {
     if (length == 0)
 	return;
@@ -301,7 +303,10 @@ _comac_output_stream_write_hex_string (comac_output_stream_t *stream,
  * into comac (see COPYING). -- Kristian Høgsberg <krh@redhat.com>
  */
 static void
-_comac_dtostr (char *buffer, size_t size, double d, comac_bool_t limited_precision)
+_comac_dtostr (char *buffer,
+	       size_t size,
+	       double d,
+	       comac_bool_t limited_precision)
 {
     const char *decimal_point;
     int decimal_point_len;
@@ -382,10 +387,7 @@ _comac_dtostr (char *buffer, size_t size, double d, comac_bool_t limited_precisi
     }
 }
 
-enum {
-    LENGTH_MODIFIER_LONG = 0x100,
-    LENGTH_MODIFIER_LONG_LONG = 0x200
-};
+enum { LENGTH_MODIFIER_LONG = 0x100, LENGTH_MODIFIER_LONG_LONG = 0x200 };
 
 /* Here's a limited reimplementation of printf.  The reason for doing
  * this is primarily to special case handling of doubles.  We want
@@ -397,7 +399,8 @@ enum {
  */
 void
 _comac_output_stream_vprintf (comac_output_stream_t *stream,
-			      const char *fmt, va_list ap)
+			      const char *fmt,
+			      va_list ap)
 {
 #define SINGLE_FMT_BUFFER_SIZE 32
     char buffer[512], single_fmt[SINGLE_FMT_BUFFER_SIZE];
@@ -429,11 +432,11 @@ _comac_output_stream_vprintf (comac_output_stream_t *stream,
 	if (*f == '0')
 	    f++;
 
-        var_width = FALSE;
-        if (*f == '*') {
-            var_width = TRUE;
+	var_width = FALSE;
+	if (*f == '*') {
+	    var_width = TRUE;
 	    f++;
-        }
+	}
 
 	while (_comac_isdigit (*f))
 	    f++;
@@ -474,27 +477,35 @@ _comac_output_stream_vprintf (comac_output_stream_t *stream,
 	case 'o':
 	case 'x':
 	case 'X':
-            if (var_width) {
-                width = va_arg (ap, int);
-                snprintf (buffer, sizeof buffer,
-                          single_fmt, width, va_arg (ap, int));
-            } else {
-                snprintf (buffer, sizeof buffer, single_fmt, va_arg (ap, int));
-            }
+	    if (var_width) {
+		width = va_arg (ap, int);
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  width,
+			  va_arg (ap, int));
+	    } else {
+		snprintf (buffer, sizeof buffer, single_fmt, va_arg (ap, int));
+	    }
 	    break;
 	case 'd' | LENGTH_MODIFIER_LONG:
 	case 'u' | LENGTH_MODIFIER_LONG:
 	case 'o' | LENGTH_MODIFIER_LONG:
 	case 'x' | LENGTH_MODIFIER_LONG:
 	case 'X' | LENGTH_MODIFIER_LONG:
-            if (var_width) {
-                width = va_arg (ap, int);
-                snprintf (buffer, sizeof buffer,
-                          single_fmt, width, va_arg (ap, long int));
-            } else {
-                snprintf (buffer, sizeof buffer,
-                          single_fmt, va_arg (ap, long int));
-            }
+	    if (var_width) {
+		width = va_arg (ap, int);
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  width,
+			  va_arg (ap, long int));
+	    } else {
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  va_arg (ap, long int));
+	    }
 	    break;
 	case 'd' | LENGTH_MODIFIER_LONG_LONG:
 	case 'u' | LENGTH_MODIFIER_LONG_LONG:
@@ -503,21 +514,25 @@ _comac_output_stream_vprintf (comac_output_stream_t *stream,
 	case 'X' | LENGTH_MODIFIER_LONG_LONG:
 	    if (var_width) {
 		width = va_arg (ap, int);
-		snprintf (buffer, sizeof buffer,
-			  single_fmt, width, va_arg (ap, long long int));
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  width,
+			  va_arg (ap, long long int));
 	    } else {
-		snprintf (buffer, sizeof buffer,
-			  single_fmt, va_arg (ap, long long int));
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  va_arg (ap, long long int));
 	    }
 	    break;
 	case 's': {
 	    /* Write out strings as they may be larger than the buffer. */
 	    const char *s = va_arg (ap, const char *);
-	    int len = strlen(s);
+	    int len = strlen (s);
 	    _comac_output_stream_write (stream, s, len);
 	    buffer[0] = 0;
-	    }
-	    break;
+	} break;
 	case 'f':
 	    _comac_dtostr (buffer, sizeof buffer, va_arg (ap, double), FALSE);
 	    break;
@@ -540,7 +555,8 @@ _comac_output_stream_vprintf (comac_output_stream_t *stream,
 
 void
 _comac_output_stream_printf (comac_output_stream_t *stream,
-			     const char *fmt, ...)
+			     const char *fmt,
+			     ...)
 {
     va_list ap;
 
@@ -557,7 +573,7 @@ _comac_output_stream_printf (comac_output_stream_t *stream,
 
 void
 _comac_output_stream_print_matrix (comac_output_stream_t *stream,
-				   const comac_matrix_t  *matrix)
+				   const comac_matrix_t *matrix)
 {
     comac_matrix_t m;
     double s, e;
@@ -572,22 +588,27 @@ _comac_output_stream_print_matrix (comac_output_stream_t *stream,
 	s = fabs (m.yy);
 
     e = s * MATRIX_ROUNDING_TOLERANCE;
-    if (fabs(m.xx) < e)
+    if (fabs (m.xx) < e)
 	m.xx = 0;
-    if (fabs(m.xy) < e)
+    if (fabs (m.xy) < e)
 	m.xy = 0;
-    if (fabs(m.yx) < e)
+    if (fabs (m.yx) < e)
 	m.yx = 0;
-    if (fabs(m.yy) < e)
+    if (fabs (m.yy) < e)
 	m.yy = 0;
-    if (fabs(m.x0) < e)
+    if (fabs (m.x0) < e)
 	m.x0 = 0;
-    if (fabs(m.y0) < e)
+    if (fabs (m.y0) < e)
 	m.y0 = 0;
 
     _comac_output_stream_printf (stream,
 				 "%f %f %f %f %f %f",
-				 m.xx, m.yx, m.xy, m.yy, m.x0, m.y0);
+				 m.xx,
+				 m.yx,
+				 m.xy,
+				 m.yy,
+				 m.x0,
+				 m.y0);
 }
 
 long long
@@ -605,15 +626,15 @@ _comac_output_stream_get_status (comac_output_stream_t *stream)
 /* Maybe this should be a configure time option, so embedded targets
  * don't have to pull in stdio. */
 
-
 typedef struct _stdio_stream {
-    comac_output_stream_t	 base;
-    FILE			*file;
+    comac_output_stream_t base;
+    FILE *file;
 } stdio_stream_t;
 
 static comac_status_t
 stdio_write (comac_output_stream_t *base,
-	     const unsigned char *data, unsigned int length)
+	     const unsigned char *data,
+	     unsigned int length)
 {
     stdio_stream_t *stream = (stdio_stream_t *) base;
 
@@ -666,7 +687,9 @@ _comac_output_stream_create_for_file (FILE *file)
     }
 
     _comac_output_stream_init (&stream->base,
-			       stdio_write, stdio_flush, stdio_flush);
+			       stdio_write,
+			       stdio_flush,
+			       stdio_flush);
     stream->file = file;
 
     return &stream->base;
@@ -694,7 +717,8 @@ _comac_output_stream_create_for_filename (const char *filename)
 	    return (comac_output_stream_t *) &_comac_output_stream_nil;
 	default:
 	    _comac_error_throw (COMAC_STATUS_WRITE_ERROR);
-	    return (comac_output_stream_t *) &_comac_output_stream_nil_write_error;
+	    return (
+		comac_output_stream_t *) &_comac_output_stream_nil_write_error;
 	}
     }
 
@@ -706,21 +730,23 @@ _comac_output_stream_create_for_filename (const char *filename)
     }
 
     _comac_output_stream_init (&stream->base,
-			       stdio_write, stdio_flush, stdio_close);
+			       stdio_write,
+			       stdio_flush,
+			       stdio_close);
     stream->file = file;
 
     return &stream->base;
 }
 
-
 typedef struct _memory_stream {
-    comac_output_stream_t	base;
-    comac_array_t		array;
+    comac_output_stream_t base;
+    comac_array_t array;
 } memory_stream_t;
 
 static comac_status_t
 memory_write (comac_output_stream_t *base,
-	      const unsigned char *data, unsigned int length)
+	      const unsigned char *data,
+	      unsigned int length)
 {
     memory_stream_t *stream = (memory_stream_t *) base;
 
@@ -809,7 +835,8 @@ _comac_memory_stream_length (comac_output_stream_t *base)
 
 static comac_status_t
 null_write (comac_output_stream_t *base,
-	    const unsigned char *data, unsigned int length)
+	    const unsigned char *data,
+	    unsigned int length)
 {
     return COMAC_STATUS_SUCCESS;
 }

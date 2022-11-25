@@ -33,18 +33,18 @@
 #define WIDTH 60
 #define HEIGHT 40
 
-static const  struct color {
+static const struct color {
     double red, green, blue;
 } color[] = {
-    { 1, 1, 1 },
-    { 0, 0, 0 },
-    { 1, 0, 0 },
-    { 0, 1, 0 },
-    { 0, 0, 1 },
-    { 1, 1, 0 },
-    { 0, 1, 1 },
-    { 1, 0, 1 },
-    { .5, .5, .5 },
+    {1, 1, 1},
+    {0, 0, 0},
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
+    {1, 1, 0},
+    {0, 1, 1},
+    {1, 0, 1},
+    {.5, .5, .5},
 };
 
 #define NUM_COLORS ARRAY_LENGTH (color)
@@ -68,10 +68,10 @@ object (comac_t *cr, const struct color *fg, const struct color *bg)
 
     comac_set_source_rgb (cr, bg->red, bg->green, bg->blue);
     comac_set_line_width (cr, 4.);
-    comac_move_to (cr, 4, HEIGHT-4);
-    comac_line_to (cr, WIDTH-12, 4);
-    comac_move_to (cr, 12, HEIGHT-4);
-    comac_line_to (cr, WIDTH-4, 4);
+    comac_move_to (cr, 4, HEIGHT - 4);
+    comac_line_to (cr, WIDTH - 12, 4);
+    comac_move_to (cr, 12, HEIGHT - 4);
+    comac_line_to (cr, WIDTH - 4, 4);
     comac_stroke (cr);
 }
 
@@ -96,5 +96,7 @@ COMAC_TEST (aliasing,
 	    "Check for subpixel aliasing and color fringing",
 	    "rasterisation", /* keywords */
 	    "target=raster", /* requirements */
-	    NUM_COLORS * WIDTH, NUM_COLORS * HEIGHT,
-	    NULL, draw)
+	    NUM_COLORS *WIDTH,
+	    NUM_COLORS *HEIGHT,
+	    NULL,
+	    draw)

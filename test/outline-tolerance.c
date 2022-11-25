@@ -45,8 +45,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (outline_tolerance,
-	    "Rectangle drawn incorrectly when it has zero height and miter limit greater than 1.414",
+	    "Rectangle drawn incorrectly when it has zero height and miter "
+	    "limit greater than 1.414",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    100, 50,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    100,
+	    50,
+	    NULL,
+	    draw)

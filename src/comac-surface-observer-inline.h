@@ -47,13 +47,15 @@ _comac_surface_observer_get_target (comac_surface_t *surface)
 static inline comac_bool_t
 _comac_surface_is_observer (comac_surface_t *surface)
 {
-    return surface->backend->type == (comac_surface_type_t)COMAC_INTERNAL_SURFACE_TYPE_OBSERVER;
+    return surface->backend->type ==
+	   (comac_surface_type_t) COMAC_INTERNAL_SURFACE_TYPE_OBSERVER;
 }
 
 static inline comac_bool_t
 _comac_device_is_observer (comac_device_t *device)
 {
-    return device->backend->type == (comac_device_type_t)COMAC_INTERNAL_DEVICE_TYPE_OBSERVER;
+    return device->backend->type ==
+	   (comac_device_type_t) COMAC_INTERNAL_DEVICE_TYPE_OBSERVER;
 }
 
 #endif /* COMAC_SURFACE_OBSERVER_INLINE_H */

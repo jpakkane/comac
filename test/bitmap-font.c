@@ -40,18 +40,19 @@
 
 static comac_bool_t
 font_extents_equal (const comac_font_extents_t *A,
-	            const comac_font_extents_t *B)
+		    const comac_font_extents_t *B)
 {
-    return
-	COMAC_TEST_DOUBLE_EQUALS (A->ascent,  B->ascent)  &&
-	COMAC_TEST_DOUBLE_EQUALS (A->descent, B->descent) &&
-	COMAC_TEST_DOUBLE_EQUALS (A->height,  B->height)  &&
-	COMAC_TEST_DOUBLE_EQUALS (A->max_x_advance, B->max_x_advance) &&
-	COMAC_TEST_DOUBLE_EQUALS (A->max_y_advance, B->max_y_advance);
+    return COMAC_TEST_DOUBLE_EQUALS (A->ascent, B->ascent) &&
+	   COMAC_TEST_DOUBLE_EQUALS (A->descent, B->descent) &&
+	   COMAC_TEST_DOUBLE_EQUALS (A->height, B->height) &&
+	   COMAC_TEST_DOUBLE_EQUALS (A->max_x_advance, B->max_x_advance) &&
+	   COMAC_TEST_DOUBLE_EQUALS (A->max_y_advance, B->max_y_advance);
 }
 
 static comac_test_status_t
-check_font_extents (const comac_test_context_t *ctx, comac_t *cr, const char *comment)
+check_font_extents (const comac_test_context_t *ctx,
+		    comac_t *cr,
+		    const char *comment)
 {
     comac_font_extents_t font_extents, ref_font_extents = {11, 2, 13, 6, 0};
     comac_status_t status;
@@ -64,19 +65,23 @@ check_font_extents (const comac_test_context_t *ctx, comac_t *cr, const char *co
 	return comac_test_status_from_status (ctx, status);
 
     if (! font_extents_equal (&font_extents, &ref_font_extents)) {
-	comac_test_log (ctx, "Error: %s: comac_font_extents(); extents (%g, %g, %g, %g, %g)\n",
-			comment,
-		        font_extents.ascent, font_extents.descent,
-			font_extents.height,
-			font_extents.max_x_advance, font_extents.max_y_advance);
+	comac_test_log (
+	    ctx,
+	    "Error: %s: comac_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+	    comment,
+	    font_extents.ascent,
+	    font_extents.descent,
+	    font_extents.height,
+	    font_extents.max_x_advance,
+	    font_extents.max_y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
     return COMAC_TEST_SUCCESS;
 }
 
-#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
-#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#if ! defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#define S_ISREG(m) (((m) &S_IFMT) == S_IFREG)
 #endif
 
 static comac_test_status_t
@@ -95,11 +100,14 @@ draw (comac_t *cr, int width, int height)
     xasprintf (&filename, "%s/%s", ctx->srcdir, FONT);
 
     if (stat (filename, &stat_buf) || ! S_ISREG (stat_buf.st_mode)) {
-	comac_test_log (ctx, "Error finding font: %s: file not found?\n", filename);
+	comac_test_log (ctx,
+			"Error finding font: %s: file not found?\n",
+			filename);
 	return COMAC_TEST_FAILURE;
     }
 
-    pattern = FcFreeTypeQuery ((unsigned char *)filename, 0, NULL, &face_count);
+    pattern =
+	FcFreeTypeQuery ((unsigned char *) filename, 0, NULL, &face_count);
     if (! pattern) {
 	comac_test_log (ctx, "FcFreeTypeQuery failed.\n");
 	free (filename);
@@ -111,7 +119,8 @@ draw (comac_t *cr, int width, int height)
 
     status = comac_font_face_status (font_face);
     if (status) {
-	comac_test_log (ctx, "Error creating font face for %s: %s\n",
+	comac_test_log (ctx,
+			"Error creating font face for %s: %s\n",
 			filename,
 			comac_status_to_string (status));
 	free (filename);
@@ -120,8 +129,11 @@ draw (comac_t *cr, int width, int height)
 
     free (filename);
     if (comac_font_face_get_type (font_face) != COMAC_FONT_TYPE_FT) {
-	comac_test_log (ctx, "Unexpected value from comac_font_face_get_type: %d (expected %d)\n",
-			comac_font_face_get_type (font_face), COMAC_FONT_TYPE_FT);
+	comac_test_log (ctx,
+			"Unexpected value from comac_font_face_get_type: %d "
+			"(expected %d)\n",
+			comac_font_face_get_type (font_face),
+			COMAC_FONT_TYPE_FT);
 	comac_font_face_destroy (font_face);
 	return COMAC_TEST_FAILURE;
     }
@@ -132,14 +144,15 @@ draw (comac_t *cr, int width, int height)
 
     font_options = comac_font_options_create ();
 
-#define CHECK_FONT_EXTENTS(comment) do {\
-    comac_test_status_t test_status; \
-    test_status = check_font_extents (ctx, cr, (comment)); \
-    if (test_status != COMAC_TEST_SUCCESS) { \
-	comac_font_options_destroy (font_options); \
-	return test_status; \
-    } \
-} while (0)
+#define CHECK_FONT_EXTENTS(comment)                                            \
+    do {                                                                       \
+	comac_test_status_t test_status;                                       \
+	test_status = check_font_extents (ctx, cr, (comment));                 \
+	if (test_status != COMAC_TEST_SUCCESS) {                               \
+	    comac_font_options_destroy (font_options);                         \
+	    return test_status;                                                \
+	}                                                                      \
+    } while (0)
 
     comac_font_extents (cr, &font_extents);
     CHECK_FONT_EXTENTS ("default");
@@ -219,8 +232,11 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (bitmap_font,
 	    "Test drawing with a font consisting only of bitmaps"
-	    "\nThe PDF and PS backends embed a slightly distorted font for the rotated case.",
+	    "\nThe PDF and PS backends embed a slightly distorted font for the "
+	    "rotated case.",
 	    "text", /* keywords */
-	    "ft", /* requirements */
-	    246 + 1, 2 * TEXT_SIZE,
-	    NULL, draw)
+	    "ft",   /* requirements */
+	    246 + 1,
+	    2 * TEXT_SIZE,
+	    NULL,
+	    draw)

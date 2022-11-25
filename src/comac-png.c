@@ -75,11 +75,10 @@
  **/
 
 struct png_read_closure_t {
-    comac_read_func_t		 read_func;
-    void			*closure;
-    comac_output_stream_t	*png_data;
+    comac_read_func_t read_func;
+    void *closure;
+    comac_output_stream_t *png_data;
 };
-
 
 /* Unpremultiplies data and converts native endian ARGB => RGBA bytes */
 static void
@@ -88,31 +87,32 @@ unpremultiply_data (png_structp png, png_row_infop row_info, png_bytep data)
     unsigned int i;
 
     for (i = 0; i < row_info->rowbytes; i += 4) {
-        uint8_t *b = &data[i];
-        uint32_t pixel;
-        uint8_t  alpha;
+	uint8_t *b = &data[i];
+	uint32_t pixel;
+	uint8_t alpha;
 
 	memcpy (&pixel, b, sizeof (uint32_t));
 	alpha = (pixel & 0xff000000) >> 24;
-        if (alpha == 0) {
+	if (alpha == 0) {
 	    b[0] = b[1] = b[2] = b[3] = 0;
 	} else {
-            b[0] = (((pixel & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
-            b[1] = (((pixel & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
-            b[2] = (((pixel & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
+	    b[0] = (((pixel & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
+	    b[1] = (((pixel & 0x00ff00) >> 8) * 255 + alpha / 2) / alpha;
+	    b[2] = (((pixel & 0x0000ff) >> 0) * 255 + alpha / 2) / alpha;
 	    b[3] = alpha;
 	}
     }
 }
 
-static uint16_t f_to_u16(float val)
+static uint16_t
+f_to_u16 (float val)
 {
     if (val < 0)
 	return 0;
     else if (val > 1)
 	return 65535;
     else
-	return (uint16_t)(val * 65535.f);
+	return (uint16_t) (val * 65535.f);
 }
 
 static void
@@ -129,10 +129,10 @@ unpremultiply_float (float *f, uint16_t *d16, unsigned width)
 	a = *f++;
 
 	if (a > 0) {
-	    *d16++ = f_to_u16(r / a);
-	    *d16++ = f_to_u16(g / a);
-	    *d16++ = f_to_u16(b / a);
-	    *d16++ = f_to_u16(a);
+	    *d16++ = f_to_u16 (r / a);
+	    *d16++ = f_to_u16 (g / a);
+	    *d16++ = f_to_u16 (b / a);
+	    *d16++ = f_to_u16 (a);
 	} else {
 	    *d16++ = 0;
 	    *d16++ = 0;
@@ -152,21 +152,22 @@ premultiply_float (float *f, const uint16_t *d16, unsigned int width)
 	float a = d16[i * 4 + 3] / 65535.f;
 
 	f[i * 4 + 3] = a;
-	f[i * 4 + 2] = (float)d16[i * 4 + 2] / 65535.f * a;
-	f[i * 4 + 1] = (float)d16[i * 4 + 1] / 65535.f * a;
-	f[i * 4] = (float)d16[i * 4] / 65535.f * a;
+	f[i * 4 + 2] = (float) d16[i * 4 + 2] / 65535.f * a;
+	f[i * 4 + 1] = (float) d16[i * 4 + 1] / 65535.f * a;
+	f[i * 4] = (float) d16[i * 4] / 65535.f * a;
     }
 }
 
-static void convert_u16_to_float (float *f, const uint16_t *d16, unsigned int width)
+static void
+convert_u16_to_float (float *f, const uint16_t *d16, unsigned int width)
 {
     /* Convert d16 in place back to float */
     unsigned int i = width;
 
     while (i--) {
-	f[i * 3 + 2] = (float)d16[i * 4 + 2] / 65535.f;
-	f[i * 3 + 1] = (float)d16[i * 4 + 1] / 65535.f;
-	f[i * 3] = (float)d16[i * 4] / 65535.f;
+	f[i * 3 + 2] = (float) d16[i * 4 + 2] / 65535.f;
+	f[i * 3 + 1] = (float) d16[i * 4 + 1] / 65535.f;
+	f[i * 3] = (float) d16[i * 4] / 65535.f;
     }
 }
 
@@ -176,9 +177,9 @@ convert_float_to_u16 (float *f, uint16_t *d16, unsigned int width)
     unsigned int i;
 
     for (i = 0; i < width; i++) {
-	*d16++ = f_to_u16(*f++);
-	*d16++ = f_to_u16(*f++);
-	*d16++ = f_to_u16(*f++);
+	*d16++ = f_to_u16 (*f++);
+	*d16++ = f_to_u16 (*f++);
+	*d16++ = f_to_u16 (*f++);
 	*d16++ = 0;
     }
 }
@@ -190,14 +191,14 @@ convert_data_to_bytes (png_structp png, png_row_infop row_info, png_bytep data)
     unsigned int i;
 
     for (i = 0; i < row_info->rowbytes; i += 4) {
-        uint8_t *b = &data[i];
-        uint32_t pixel;
+	uint8_t *b = &data[i];
+	uint32_t pixel;
 
 	memcpy (&pixel, b, sizeof (uint32_t));
 
 	b[0] = (pixel & 0xff0000) >> 16;
-	b[1] = (pixel & 0x00ff00) >>  8;
-	b[2] = (pixel & 0x0000ff) >>  0;
+	b[1] = (pixel & 0x00ff00) >> 8;
+	b[2] = (pixel & 0x0000ff) >> 0;
 	b[3] = 0;
     }
 }
@@ -207,8 +208,7 @@ convert_data_to_bytes (png_structp png, png_row_infop row_info, png_bytep data)
  * return.
  */
 static void
-png_simple_error_callback (png_structp png,
-	                   png_const_charp error_msg)
+png_simple_error_callback (png_structp png, png_const_charp error_msg)
 {
     comac_status_t *error = png_get_error_ptr (png);
 
@@ -224,8 +224,7 @@ png_simple_error_callback (png_structp png,
 }
 
 static void
-png_simple_warning_callback (png_structp png,
-	                     png_const_charp error_msg)
+png_simple_warning_callback (png_structp png, png_const_charp error_msg)
 {
     /* png does not expect to abort and will try to tidy up and continue
      * loading the image after a warning. So we also want to return the
@@ -236,7 +235,6 @@ png_simple_warning_callback (png_structp png,
      */
 }
 
-
 /* Starting with libpng-1.2.30, we must explicitly specify an output_flush_fn.
  * Otherwise, we will segfault if we are writing to a stream. */
 static void
@@ -245,14 +243,12 @@ png_simple_output_flush_fn (png_structp png_ptr)
 }
 
 static comac_status_t
-write_png (comac_surface_t	*surface,
-	   png_rw_ptr		write_func,
-	   void			*closure)
+write_png (comac_surface_t *surface, png_rw_ptr write_func, void *closure)
 {
     int i;
     comac_int_status_t status;
     comac_image_surface_t *image;
-    comac_image_surface_t * volatile clone;
+    comac_image_surface_t *volatile clone;
     void *image_extra;
     png_struct *png;
     png_info *info;
@@ -262,14 +258,13 @@ write_png (comac_surface_t	*surface,
     int bpc;
     unsigned char *volatile u16_copy = NULL;
 
-    status = _comac_surface_acquire_source_image (surface,
-						  &image,
-						  &image_extra);
+    status =
+	_comac_surface_acquire_source_image (surface, &image, &image_extra);
 
     if (status == COMAC_INT_STATUS_UNSUPPORTED)
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
     else if (unlikely (status))
-        return status;
+	return status;
 
     /* PNG complains about "Image width or height is zero in IHDR" */
     if (image->width == 0 || image->height == 0) {
@@ -279,49 +274,51 @@ write_png (comac_surface_t	*surface,
 
     /* Don't coerce to a lower resolution format */
     if (image->format == COMAC_FORMAT_RGB96F ||
-        image->format == COMAC_FORMAT_RGBA128F) {
+	image->format == COMAC_FORMAT_RGBA128F) {
 	u16_copy = _comac_malloc_ab (image->width * 8, image->height);
-	if (!u16_copy) {
+	if (! u16_copy) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto BAIL1;
 	}
-	clone = (comac_image_surface_t *)comac_surface_reference (&image->base);
+	clone =
+	    (comac_image_surface_t *) comac_surface_reference (&image->base);
     } else {
-	  /* Handle the various fallback formats (e.g. low bit-depth XServers)
+	/* Handle the various fallback formats (e.g. low bit-depth XServers)
 	  * by coercing them to a simpler format using pixman.
 	  */
-	  clone = _comac_image_surface_coerce (image);
-	  status = clone->base.status;
+	clone = _comac_image_surface_coerce (image);
+	status = clone->base.status;
     }
     if (unlikely (status))
-        goto BAIL1;
+	goto BAIL1;
 
-    rows = _comac_malloc_ab (clone->height, sizeof (png_byte*));
+    rows = _comac_malloc_ab (clone->height, sizeof (png_byte *));
     if (unlikely (rows == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto BAIL2;
     }
 
-    if (!u16_copy) {
+    if (! u16_copy) {
 	for (i = 0; i < clone->height; i++)
-	    rows[i] = (png_byte *)clone->data + i * clone->stride;
+	    rows[i] = (png_byte *) clone->data + i * clone->stride;
     } else {
 	for (i = 0; i < clone->height; i++) {
-	    float *float_line = (float *)&clone->data[i * clone->stride];
-	    uint16_t *u16_line = (uint16_t *)&u16_copy[i * clone->width * 8];
+	    float *float_line = (float *) &clone->data[i * clone->stride];
+	    uint16_t *u16_line = (uint16_t *) &u16_copy[i * clone->width * 8];
 
 	    if (image->format == COMAC_FORMAT_RGBA128F)
 		unpremultiply_float (float_line, u16_line, clone->width);
 	    else
 		convert_float_to_u16 (float_line, u16_line, clone->width);
 
-	    rows[i] = (png_byte *)u16_line;
+	    rows[i] = (png_byte *) u16_line;
 	}
     }
 
-    png = png_create_write_struct (PNG_LIBPNG_VER_STRING, &status,
-	                           png_simple_error_callback,
-	                           png_simple_warning_callback);
+    png = png_create_write_struct (PNG_LIBPNG_VER_STRING,
+				   &status,
+				   png_simple_error_callback,
+				   png_simple_warning_callback);
     if (unlikely (png == NULL)) {
 	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto BAIL3;
@@ -382,9 +379,11 @@ write_png (comac_surface_t	*surface,
 	goto BAIL4;
     }
 
-    png_set_IHDR (png, info,
+    png_set_IHDR (png,
+		  info,
 		  clone->width,
-		  clone->height, bpc,
+		  clone->height,
+		  bpc,
 		  png_color_type,
 		  PNG_INTERLACE_NONE,
 		  PNG_COMPRESSION_TYPE_DEFAULT,
@@ -479,8 +478,7 @@ stdio_write_func (png_structp png, png_bytep data, png_size_t size)
  * Since: 1.0
  **/
 comac_status_t
-comac_surface_write_to_png (comac_surface_t	*surface,
-			    const char		*filename)
+comac_surface_write_to_png (comac_surface_t *surface, const char *filename)
 {
     FILE *fp;
     comac_status_t status;
@@ -514,8 +512,8 @@ comac_surface_write_to_png (comac_surface_t	*surface,
 }
 
 struct png_write_closure_t {
-    comac_write_func_t		 write_func;
-    void			*closure;
+    comac_write_func_t write_func;
+    void *closure;
 };
 
 static void
@@ -552,9 +550,9 @@ stream_write_func (png_structp png, png_bytep data, png_size_t size)
  * Since: 1.0
  **/
 comac_status_t
-comac_surface_write_to_png_stream (comac_surface_t	*surface,
-				   comac_write_func_t	write_func,
-				   void			*closure)
+comac_surface_write_to_png_stream (comac_surface_t *surface,
+				   comac_write_func_t write_func,
+				   void *closure)
 {
     struct png_write_closure_t png_closure;
 
@@ -579,30 +577,29 @@ multiply_alpha (int alpha, int color)
 
 /* Premultiplies data and converts RGBA bytes => native endian */
 static void
-premultiply_data (png_structp   png,
-                  png_row_infop row_info,
-                  png_bytep     data)
+premultiply_data (png_structp png, png_row_infop row_info, png_bytep data)
 {
     unsigned int i;
 
     for (i = 0; i < row_info->rowbytes; i += 4) {
-	uint8_t *base  = &data[i];
-	uint8_t  alpha = base[3];
+	uint8_t *base = &data[i];
+	uint8_t alpha = base[3];
 	uint32_t p;
 
 	if (alpha == 0) {
 	    p = 0;
 	} else {
-	    uint8_t  red   = base[0];
-	    uint8_t  green = base[1];
-	    uint8_t  blue  = base[2];
+	    uint8_t red = base[0];
+	    uint8_t green = base[1];
+	    uint8_t blue = base[2];
 
 	    if (alpha != 0xff) {
-		red   = multiply_alpha (alpha, red);
+		red = multiply_alpha (alpha, red);
 		green = multiply_alpha (alpha, green);
-		blue  = multiply_alpha (alpha, blue);
+		blue = multiply_alpha (alpha, blue);
 	    }
-	    p = ((uint32_t)alpha << 24) | (red << 16) | (green << 8) | (blue << 0);
+	    p = ((uint32_t) alpha << 24) | (red << 16) | (green << 8) |
+		(blue << 0);
 	}
 	memcpy (base, &p, sizeof (uint32_t));
     }
@@ -615,10 +612,10 @@ convert_bytes_to_data (png_structp png, png_row_infop row_info, png_bytep data)
     unsigned int i;
 
     for (i = 0; i < row_info->rowbytes; i += 4) {
-	uint8_t *base  = &data[i];
-	uint8_t  red   = base[0];
-	uint8_t  green = base[1];
-	uint8_t  blue  = base[2];
+	uint8_t *base = &data[i];
+	uint8_t red = base[0];
+	uint8_t green = base[1];
+	uint8_t blue = base[2];
 	uint32_t pixel;
 
 	pixel = (0xffu << 24) | (red << 16) | (green << 8) | (blue << 0);
@@ -666,11 +663,11 @@ stream_read_func (png_structp png, png_bytep data, png_size_t size)
 static comac_surface_t *
 read_png (struct png_read_closure_t *png_closure)
 {
-    comac_surface_t * volatile surface;
+    comac_surface_t *volatile surface;
     png_struct *png = NULL;
     png_info *info;
-    png_byte * volatile data = NULL;
-    png_byte ** volatile row_pointers = NULL;
+    png_byte *volatile data = NULL;
+    png_byte **volatile row_pointers = NULL;
     png_uint_32 png_width, png_height;
     int depth, color_type, interlace, stride;
     unsigned int i;
@@ -683,17 +680,19 @@ read_png (struct png_read_closure_t *png_closure)
 
     /* XXX: Perhaps we'll want some other error handlers? */
     png = png_create_read_struct (PNG_LIBPNG_VER_STRING,
-                                  &status,
-	                          png_simple_error_callback,
-	                          png_simple_warning_callback);
+				  &status,
+				  png_simple_error_callback,
+				  png_simple_warning_callback);
     if (unlikely (png == NULL)) {
-	surface = _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	surface = _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 	goto BAIL;
     }
 
     info = png_create_info_struct (png);
     if (unlikely (info == NULL)) {
-	surface = _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	surface = _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 	goto BAIL;
     }
 
@@ -717,9 +716,15 @@ read_png (struct png_read_closure_t *png_closure)
     png_set_swap (png);
 #endif
 
-    png_get_IHDR (png, info,
-                  &png_width, &png_height, &depth,
-                  &color_type, &interlace, NULL, NULL);
+    png_get_IHDR (png,
+		  info,
+		  &png_width,
+		  &png_height,
+		  &depth,
+		  &color_type,
+		  &interlace,
+		  NULL,
+		  NULL);
     if (unlikely (status)) { /* catch any early warnings */
 	surface = _comac_surface_create_in_error (status);
 	goto BAIL;
@@ -727,98 +732,107 @@ read_png (struct png_read_closure_t *png_closure)
 
     /* convert palette/gray image to rgb */
     if (color_type == PNG_COLOR_TYPE_PALETTE)
-        png_set_palette_to_rgb (png);
+	png_set_palette_to_rgb (png);
 
     /* expand gray bit depth if needed */
     if (color_type == PNG_COLOR_TYPE_GRAY) {
 #if PNG_LIBPNG_VER >= 10209
-        png_set_expand_gray_1_2_4_to_8 (png);
+	png_set_expand_gray_1_2_4_to_8 (png);
 #else
-        png_set_gray_1_2_4_to_8 (png);
+	png_set_gray_1_2_4_to_8 (png);
 #endif
     }
 
     /* transform transparency to alpha */
     if (png_get_valid (png, info, PNG_INFO_tRNS))
-        png_set_tRNS_to_alpha (png);
+	png_set_tRNS_to_alpha (png);
 
     if (depth < 8)
-        png_set_packing (png);
+	png_set_packing (png);
 
     /* convert grayscale to RGB */
     if (color_type == PNG_COLOR_TYPE_GRAY ||
-	color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-    {
+	color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
 	png_set_gray_to_rgb (png);
     }
 
     if (interlace != PNG_INTERLACE_NONE)
-        png_set_interlace_handling (png);
+	png_set_interlace_handling (png);
 
     png_set_filler (png, 0xff, PNG_FILLER_AFTER);
 
     /* recheck header after setting EXPAND options */
     png_read_update_info (png, info);
-    png_get_IHDR (png, info,
-                  &png_width, &png_height, &depth,
-                  &color_type, &interlace, NULL, NULL);
+    png_get_IHDR (png,
+		  info,
+		  &png_width,
+		  &png_height,
+		  &depth,
+		  &color_type,
+		  &interlace,
+		  NULL,
+		  NULL);
     if ((depth != 8 && depth != 16) ||
 	! (color_type == PNG_COLOR_TYPE_RGB ||
-	   color_type == PNG_COLOR_TYPE_RGB_ALPHA))
-    {
-	surface = _comac_surface_create_in_error (_comac_error (COMAC_STATUS_READ_ERROR));
+	   color_type == PNG_COLOR_TYPE_RGB_ALPHA)) {
+	surface = _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_READ_ERROR));
 	goto BAIL;
     }
 
     switch (color_type) {
-	default:
-	    ASSERT_NOT_REACHED;
-	    /* fall-through just in case ;-) */
+    default:
+	ASSERT_NOT_REACHED;
+	/* fall-through just in case ;-) */
 
-	case PNG_COLOR_TYPE_RGB_ALPHA:
-	    if (depth == 8) {
-		format = COMAC_FORMAT_ARGB32;
-		png_set_read_user_transform_fn (png, premultiply_data);
-	    } else {
-		format = COMAC_FORMAT_RGBA128F;
-	    }
-	    break;
+    case PNG_COLOR_TYPE_RGB_ALPHA:
+	if (depth == 8) {
+	    format = COMAC_FORMAT_ARGB32;
+	    png_set_read_user_transform_fn (png, premultiply_data);
+	} else {
+	    format = COMAC_FORMAT_RGBA128F;
+	}
+	break;
 
-	case PNG_COLOR_TYPE_RGB:
-	    if (depth == 8) {
-		format = COMAC_FORMAT_RGB24;
-		png_set_read_user_transform_fn (png, convert_bytes_to_data);
-	    } else {
-		format = COMAC_FORMAT_RGB96F;
-	    }
-	    break;
+    case PNG_COLOR_TYPE_RGB:
+	if (depth == 8) {
+	    format = COMAC_FORMAT_RGB24;
+	    png_set_read_user_transform_fn (png, convert_bytes_to_data);
+	} else {
+	    format = COMAC_FORMAT_RGB96F;
+	}
+	break;
     }
 
     stride = comac_format_stride_for_width (format, png_width);
     if (stride < 0) {
-	surface = _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_STRIDE));
+	surface = _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_STRIDE));
 	goto BAIL;
     }
 
     data = _comac_malloc_ab (png_height, stride);
     if (unlikely (data == NULL)) {
-	surface = _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	surface = _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 	goto BAIL;
     }
 
     row_pointers = _comac_malloc_ab (png_height, sizeof (char *));
     if (unlikely (row_pointers == NULL)) {
-	surface = _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	surface = _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 	goto BAIL;
     }
 
     for (i = 0; i < png_height; i++)
-        row_pointers[i] = &data[i * (ptrdiff_t)stride];
+	row_pointers[i] = &data[i * (ptrdiff_t) stride];
 
     png_read_image (png, row_pointers);
     png_read_end (png, info);
 
-    if (unlikely (status)) { /* catch any late warnings - probably hit an error already */
+    if (unlikely (
+	    status)) { /* catch any late warnings - probably hit an error already */
 	surface = _comac_surface_create_in_error (status);
 	goto BAIL;
     }
@@ -827,8 +841,8 @@ read_png (struct png_read_closure_t *png_closure)
 	i = png_height;
 
 	while (i--) {
-	    float *float_line = (float *)row_pointers[i];
-	    uint16_t *u16_line = (uint16_t *)row_pointers[i];
+	    float *float_line = (float *) row_pointers[i];
+	    uint16_t *u16_line = (uint16_t *) row_pointers[i];
 
 	    premultiply_float (float_line, u16_line, png_width);
 	}
@@ -836,20 +850,23 @@ read_png (struct png_read_closure_t *png_closure)
 	i = png_height;
 
 	while (i--) {
-	    float *float_line = (float *)row_pointers[i];
-	    uint16_t *u16_line = (uint16_t *)row_pointers[i];
+	    float *float_line = (float *) row_pointers[i];
+	    uint16_t *u16_line = (uint16_t *) row_pointers[i];
 
 	    convert_u16_to_float (float_line, u16_line, png_width);
 	}
     }
 
-    surface = comac_image_surface_create_for_data (data, format,
-						   png_width, png_height,
+    surface = comac_image_surface_create_for_data (data,
+						   format,
+						   png_width,
+						   png_height,
 						   stride);
     if (surface->status)
 	goto BAIL;
 
-    _comac_image_surface_assume_ownership_of_data ((comac_image_surface_t*)surface);
+    _comac_image_surface_assume_ownership_of_data (
+	(comac_image_surface_t *) surface);
     data = NULL;
 
     _comac_debug_check_image_surface_is_defined (surface);
@@ -877,7 +894,7 @@ read_png (struct png_read_closure_t *png_closure)
 	goto BAIL;
     }
 
- BAIL:
+BAIL:
     free (row_pointers);
     free (data);
     if (png != NULL)
@@ -976,8 +993,8 @@ comac_image_surface_create_from_png (const char *filename)
  * Since: 1.0
  **/
 comac_surface_t *
-comac_image_surface_create_from_png_stream (comac_read_func_t	read_func,
-					    void		*closure)
+comac_image_surface_create_from_png_stream (comac_read_func_t read_func,
+					    void *closure)
 {
     struct png_read_closure_t png_closure;
 

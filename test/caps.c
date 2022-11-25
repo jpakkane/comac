@@ -25,9 +25,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 10.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
@@ -38,7 +38,7 @@ make_path (comac_t *cr)
     for (i = 0; i <= 3; i++) {
 	comac_new_sub_path (cr);
 	comac_move_to (cr, -SIZE / 2, 0.);
-	comac_line_to (cr,  SIZE / 2, 0.);
+	comac_line_to (cr, SIZE / 2, 0.);
 	comac_rotate (cr, M_PI / 4.);
     }
     comac_restore (cr);
@@ -107,32 +107,35 @@ draw_05 (comac_t *cr, int width, int height)
 COMAC_TEST (caps,
 	    "Test caps",
 	    "stroke, caps", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	    /* requirements */
 	    PAD + SIZE + PAD,
 	    3 * (PAD + SIZE) + PAD,
-	    NULL, draw_10)
+	    NULL,
+	    draw_10)
 
 COMAC_TEST (caps_2,
 	    "Test normal caps",
 	    "stroke, caps", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	    /* requirements */
 	    PAD + SIZE + PAD,
 	    3 * (PAD + SIZE) + PAD,
-	    NULL, draw_2)
+	    NULL,
+	    draw_2)
 
 COMAC_TEST (caps_1,
 	    "Test hairline caps",
 	    "stroke, caps", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	    /* requirements */
 	    PAD + SIZE + PAD,
 	    3 * (PAD + SIZE) + PAD,
-	    NULL, draw_1)
+	    NULL,
+	    draw_1)
 
 COMAC_TEST (caps_05,
 	    "Test fine caps",
 	    "stroke, caps", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	    /* requirements */
 	    PAD + SIZE + PAD,
 	    3 * (PAD + SIZE) + PAD,
-	    NULL, draw_05)
-
+	    NULL,
+	    draw_05)

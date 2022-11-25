@@ -61,8 +61,8 @@ fill (comac_t *cr)
     comac_arc_negative (cr, 10, 10, 6.5, 2 * M_PI, 0);
 
     comac_move_to (cr, -1, 19);
-    comac_line_to (cr,  1, 21);
-    comac_line_to (cr, 21,  1);
+    comac_line_to (cr, 1, 21);
+    comac_line_to (cr, 21, 1);
     comac_line_to (cr, 19, -1);
     comac_line_to (cr, -1, 19);
 
@@ -108,22 +108,14 @@ clip_mask (comac_t *cr)
     comac_clip (cr);
 }
 
-static void (* const clip_funcs[])(comac_t *cr) = {
-    clip_simple,
-    clip_unaligned,
-    clip_aligned,
-    clip_mask
-};
+static void (*const clip_funcs[]) (comac_t *cr) = {
+    clip_simple, clip_unaligned, clip_aligned, clip_mask};
 
 static double translations[][2] = {
-    { 10, 10 },
-    { WIDTH, 0 },
-    { -WIDTH, HEIGHT },
-    { WIDTH, 0 }
-};
+    {10, 10}, {WIDTH, 0}, {-WIDTH, HEIGHT}, {WIDTH, 0}};
 
 static comac_test_status_t
-draw (comac_t *cr, void (*shapes)(comac_t *))
+draw (comac_t *cr, void (*shapes) (comac_t *))
 {
     unsigned int i;
     comac_set_source_rgb (cr, 1, 1, 1);
@@ -134,7 +126,7 @@ draw (comac_t *cr, void (*shapes)(comac_t *))
 
 	comac_save (cr);
 	comac_scale (cr, 2, 2);
-	clip_funcs[i] (cr);
+	clip_funcs[i](cr);
 	shapes (cr);
 	comac_restore (cr);
     }
@@ -165,20 +157,28 @@ draw_fill_eo (comac_t *cr, int width, int height)
 COMAC_TEST (clip_stroke_unbounded,
 	    "Tests unbounded stroke through complex clips.",
 	    "clip, stroke, unbounded", /* keywords */
-	    NULL, /* requirements */
-	    2 * WIDTH, 2 * HEIGHT,
-	    NULL, draw_stroke)
+	    NULL,		       /* requirements */
+	    2 * WIDTH,
+	    2 * HEIGHT,
+	    NULL,
+	    draw_stroke)
 
-COMAC_TEST (clip_fill_nz_unbounded,
-	    "Tests unbounded fill through complex clips (with winding fill rule).",
-	    "clip, fill, unbounded", /* keywords */
-	    NULL, /* requirements */
-	    2 * WIDTH, 2 * HEIGHT,
-	    NULL, draw_fill_nz)
+COMAC_TEST (
+    clip_fill_nz_unbounded,
+    "Tests unbounded fill through complex clips (with winding fill rule).",
+    "clip, fill, unbounded", /* keywords */
+    NULL,		     /* requirements */
+    2 * WIDTH,
+    2 * HEIGHT,
+    NULL,
+    draw_fill_nz)
 
-COMAC_TEST (clip_fill_eo_unbounded,
-	    "Tests unbounded fill through complex clips (with even-odd fill rule).",
-	    "clip, fill, unbounded", /* keywords */
-	    NULL, /* requirements */
-	    2 * WIDTH, 2 * HEIGHT,
-	    NULL, draw_fill_eo)
+COMAC_TEST (
+    clip_fill_eo_unbounded,
+    "Tests unbounded fill through complex clips (with even-odd fill rule).",
+    "clip, fill, unbounded", /* keywords */
+    NULL,		     /* requirements */
+    2 * WIDTH,
+    2 * HEIGHT,
+    NULL,
+    draw_fill_eo)

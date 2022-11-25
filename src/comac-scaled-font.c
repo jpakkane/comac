@@ -225,7 +225,8 @@ _comac_scaled_glyph_fini (comac_scaled_font_t *scaled_font,
 	 * surfaces to free and free it in
 	 * _comac_scaled_font_thaw_cache() after
 	 * _comac_scaled_glyph_page_cache_mutex is unlocked. */
-	status = _comac_array_append (&scaled_font->recording_surfaces_to_free, &scaled_glyph->recording_surface);
+	status = _comac_array_append (&scaled_font->recording_surfaces_to_free,
+				      &scaled_glyph->recording_surface);
 	assert (status == COMAC_STATUS_SUCCESS);
     }
 
@@ -235,34 +236,34 @@ _comac_scaled_glyph_fini (comac_scaled_font_t *scaled_font,
 
 #define ZOMBIE 0
 static const comac_scaled_font_t _comac_scaled_font_nil = {
-    { ZOMBIE },			/* hash_entry */
-    COMAC_STATUS_NO_MEMORY,	/* status */
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    { 0, 0, 0, NULL },		/* user_data */
-    NULL,			/* original_font_face */
-    NULL,			/* font_face */
-    { 1., 0., 0., 1., 0, 0},	/* font_matrix */
-    { 1., 0., 0., 1., 0, 0},	/* ctm */
-    { COMAC_ANTIALIAS_DEFAULT,	/* options */
-      COMAC_SUBPIXEL_ORDER_DEFAULT,
-      COMAC_HINT_STYLE_DEFAULT,
-      COMAC_HINT_METRICS_DEFAULT} ,
-    FALSE,			/* placeholder */
-    FALSE,			/* holdover */
-    TRUE,			/* finished */
-    { 1., 0., 0., 1., 0, 0},	/* scale */
-    { 1., 0., 0., 1., 0, 0},	/* scale_inverse */
-    1.,				/* max_scale */
-    { 0., 0., 0., 0., 0. },	/* extents */
-    { 0., 0., 0., 0., 0. },	/* fs_extents */
-    COMAC_MUTEX_NIL_INITIALIZER,/* mutex */
-    NULL,			/* glyphs */
-    { NULL, NULL },		/* pages */
-    FALSE,			/* cache_frozen */
-    FALSE,			/* global_cache_frozen */
-    { 0, 0, sizeof(comac_surface_t*), NULL }, /* recording_surfaces_to_free */
-    { NULL, NULL },		/* privates */
-    NULL			/* backend */
+    {ZOMBIE},			   /* hash_entry */
+    COMAC_STATUS_NO_MEMORY,	   /* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    {0, 0, 0, NULL},		   /* user_data */
+    NULL,			   /* original_font_face */
+    NULL,			   /* font_face */
+    {1., 0., 0., 1., 0, 0},	   /* font_matrix */
+    {1., 0., 0., 1., 0, 0},	   /* ctm */
+    {COMAC_ANTIALIAS_DEFAULT,	   /* options */
+     COMAC_SUBPIXEL_ORDER_DEFAULT,
+     COMAC_HINT_STYLE_DEFAULT,
+     COMAC_HINT_METRICS_DEFAULT},
+    FALSE,				      /* placeholder */
+    FALSE,				      /* holdover */
+    TRUE,				      /* finished */
+    {1., 0., 0., 1., 0, 0},		      /* scale */
+    {1., 0., 0., 1., 0, 0},		      /* scale_inverse */
+    1.,					      /* max_scale */
+    {0., 0., 0., 0., 0.},		      /* extents */
+    {0., 0., 0., 0., 0.},		      /* fs_extents */
+    COMAC_MUTEX_NIL_INITIALIZER,	      /* mutex */
+    NULL,				      /* glyphs */
+    {NULL, NULL},			      /* pages */
+    FALSE,				      /* cache_frozen */
+    FALSE,				      /* global_cache_frozen */
+    {0, 0, sizeof (comac_surface_t *), NULL}, /* recording_surfaces_to_free */
+    {NULL, NULL},			      /* privates */
+    NULL				      /* backend */
 };
 
 /**
@@ -370,7 +371,8 @@ typedef struct _comac_scaled_font_map {
 static comac_scaled_font_map_t *comac_scaled_font_map;
 
 static int
-_comac_scaled_font_keys_equal (const void *abstract_key_a, const void *abstract_key_b);
+_comac_scaled_font_keys_equal (const void *abstract_key_a,
+			       const void *abstract_key_b);
 
 static comac_scaled_font_map_t *
 _comac_scaled_font_map_lock (void)
@@ -378,7 +380,8 @@ _comac_scaled_font_map_lock (void)
     COMAC_MUTEX_LOCK (_comac_scaled_font_map_mutex);
 
     if (comac_scaled_font_map == NULL) {
-	comac_scaled_font_map = _comac_malloc (sizeof (comac_scaled_font_map_t));
+	comac_scaled_font_map =
+	    _comac_malloc (sizeof (comac_scaled_font_map_t));
 	if (unlikely (comac_scaled_font_map == NULL))
 	    goto CLEANUP_MUTEX_LOCK;
 
@@ -394,10 +397,10 @@ _comac_scaled_font_map_lock (void)
 
     return comac_scaled_font_map;
 
- CLEANUP_SCALED_FONT_MAP:
+CLEANUP_SCALED_FONT_MAP:
     free (comac_scaled_font_map);
     comac_scaled_font_map = NULL;
- CLEANUP_MUTEX_LOCK:
+CLEANUP_MUTEX_LOCK:
     COMAC_MUTEX_UNLOCK (_comac_scaled_font_map_mutex);
     _comac_error_throw (COMAC_STATUS_NO_MEMORY);
     return NULL;
@@ -406,7 +409,7 @@ _comac_scaled_font_map_lock (void)
 static void
 _comac_scaled_font_map_unlock (void)
 {
-   COMAC_MUTEX_UNLOCK (_comac_scaled_font_map_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_scaled_font_map_mutex);
 }
 
 void
@@ -419,7 +422,7 @@ _comac_scaled_font_map_destroy (void)
 
     font_map = comac_scaled_font_map;
     if (unlikely (font_map == NULL)) {
-        goto CLEANUP_MUTEX_LOCK;
+	goto CLEANUP_MUTEX_LOCK;
     }
 
     scaled_font = font_map->mru_scaled_font;
@@ -432,8 +435,9 @@ _comac_scaled_font_map_destroy (void)
     /* remove scaled_fonts starting from the end so that font_map->holdovers
      * is always in a consistent state when we release the mutex. */
     while (font_map->num_holdovers) {
-	scaled_font = font_map->holdovers[font_map->num_holdovers-1];
-	assert (! COMAC_REFERENCE_COUNT_HAS_REFERENCE (&scaled_font->ref_count));
+	scaled_font = font_map->holdovers[font_map->num_holdovers - 1];
+	assert (
+	    ! COMAC_REFERENCE_COUNT_HAS_REFERENCE (&scaled_font->ref_count));
 	_comac_hash_table_remove (font_map->hash_table,
 				  &scaled_font->hash_entry);
 
@@ -453,7 +457,7 @@ _comac_scaled_font_map_destroy (void)
     free (comac_scaled_font_map);
     comac_scaled_font_map = NULL;
 
- CLEANUP_MUTEX_LOCK:
+CLEANUP_MUTEX_LOCK:
     COMAC_MUTEX_UNLOCK (_comac_scaled_font_map_mutex);
 }
 
@@ -463,8 +467,8 @@ _comac_scaled_glyph_page_destroy (comac_scaled_font_t *scaled_font,
 {
     unsigned int n;
 
-    assert (!scaled_font->cache_frozen);
-    assert (!scaled_font->global_cache_frozen);
+    assert (! scaled_font->cache_frozen);
+    assert (! scaled_font->global_cache_frozen);
 
     for (n = 0; n < page->num_glyphs; n++) {
 	_comac_hash_table_remove (scaled_font->glyphs,
@@ -508,7 +512,8 @@ _comac_scaled_glyph_page_pluck (void *closure)
  */
 
 comac_status_t
-_comac_scaled_font_register_placeholder_and_unlock_font_map (comac_scaled_font_t *scaled_font)
+_comac_scaled_font_register_placeholder_and_unlock_font_map (
+    comac_scaled_font_t *scaled_font)
 {
     comac_status_t status;
     comac_scaled_font_t *placeholder_scaled_font;
@@ -535,8 +540,8 @@ _comac_scaled_font_register_placeholder_and_unlock_font_map (comac_scaled_font_t
 
     placeholder_scaled_font->placeholder = TRUE;
 
-    placeholder_scaled_font->hash_entry.hash
-	= _comac_scaled_font_compute_hash (placeholder_scaled_font);
+    placeholder_scaled_font->hash_entry.hash =
+	_comac_scaled_font_compute_hash (placeholder_scaled_font);
     status = _comac_hash_table_insert (comac_scaled_font_map->hash_table,
 				       &placeholder_scaled_font->hash_entry);
     if (unlikely (status))
@@ -547,24 +552,25 @@ _comac_scaled_font_register_placeholder_and_unlock_font_map (comac_scaled_font_t
 
     return COMAC_STATUS_SUCCESS;
 
-  FINI_PLACEHOLDER:
+FINI_PLACEHOLDER:
     _comac_scaled_font_fini_internal (placeholder_scaled_font);
-  FREE_PLACEHOLDER:
+FREE_PLACEHOLDER:
     free (placeholder_scaled_font);
 
     return _comac_scaled_font_set_error (scaled_font, status);
 }
 
 void
-_comac_scaled_font_unregister_placeholder_and_lock_font_map (comac_scaled_font_t *scaled_font)
+_comac_scaled_font_unregister_placeholder_and_lock_font_map (
+    comac_scaled_font_t *scaled_font)
 {
     comac_scaled_font_t *placeholder_scaled_font;
 
     COMAC_MUTEX_LOCK (_comac_scaled_font_map_mutex);
 
     /* temporary hash value to match the placeholder */
-    scaled_font->hash_entry.hash
-	= _comac_scaled_font_compute_hash (scaled_font);
+    scaled_font->hash_entry.hash =
+	_comac_scaled_font_compute_hash (scaled_font);
     placeholder_scaled_font =
 	_comac_hash_table_lookup (comac_scaled_font_map->hash_table,
 				  &scaled_font->hash_entry);
@@ -584,7 +590,8 @@ _comac_scaled_font_unregister_placeholder_and_lock_font_map (comac_scaled_font_t
 }
 
 static void
-_comac_scaled_font_placeholder_wait_for_creation_to_finish (comac_scaled_font_t *placeholder_scaled_font)
+_comac_scaled_font_placeholder_wait_for_creation_to_finish (
+    comac_scaled_font_t *placeholder_scaled_font)
 {
     /* reference the place holder so it doesn't go away */
     comac_scaled_font_reference (placeholder_scaled_font);
@@ -608,12 +615,11 @@ _comac_scaled_font_placeholder_wait_for_creation_to_finish (comac_scaled_font_t 
  * well tested with binary data.
  */
 
-#define FNV_64_PRIME ((uint64_t)0x00000100000001B3)
-#define FNV1_64_INIT ((uint64_t)0xcbf29ce484222325)
+#define FNV_64_PRIME ((uint64_t) 0x00000100000001B3)
+#define FNV1_64_INIT ((uint64_t) 0xcbf29ce484222325)
 
 static uint64_t
-_hash_matrix_fnv (const comac_matrix_t	*matrix,
-		  uint64_t		 hval)
+_hash_matrix_fnv (const comac_matrix_t *matrix, uint64_t hval)
 {
     const uint8_t *buffer = (const uint8_t *) matrix;
     int len = sizeof (comac_matrix_t);
@@ -657,10 +663,10 @@ _comac_scaled_font_compute_hash (comac_scaled_font_t *scaled_font)
 }
 
 static void
-_comac_scaled_font_init_key (comac_scaled_font_t        *scaled_font,
-			     comac_font_face_t	        *font_face,
-			     const comac_matrix_t       *font_matrix,
-			     const comac_matrix_t       *ctm,
+_comac_scaled_font_init_key (comac_scaled_font_t *scaled_font,
+			     comac_font_face_t *font_face,
+			     const comac_matrix_t *font_matrix,
+			     const comac_matrix_t *ctm,
 			     const comac_font_options_t *options)
 {
     scaled_font->status = COMAC_STATUS_SUCCESS;
@@ -686,30 +692,30 @@ _comac_scaled_font_keys_equal (const void *abstract_key_a,
     const comac_scaled_font_t *key_b = abstract_key_b;
 
     return key_a->original_font_face == key_b->original_font_face &&
-	    memcmp ((unsigned char *)(&key_a->font_matrix.xx),
-		    (unsigned char *)(&key_b->font_matrix.xx),
-		    sizeof(comac_matrix_t)) == 0 &&
-	    memcmp ((unsigned char *)(&key_a->ctm.xx),
-		    (unsigned char *)(&key_b->ctm.xx),
-		    sizeof(comac_matrix_t)) == 0 &&
-	    comac_font_options_equal (&key_a->options, &key_b->options);
+	   memcmp ((unsigned char *) (&key_a->font_matrix.xx),
+		   (unsigned char *) (&key_b->font_matrix.xx),
+		   sizeof (comac_matrix_t)) == 0 &&
+	   memcmp ((unsigned char *) (&key_a->ctm.xx),
+		   (unsigned char *) (&key_b->ctm.xx),
+		   sizeof (comac_matrix_t)) == 0 &&
+	   comac_font_options_equal (&key_a->options, &key_b->options);
 }
 
 static comac_bool_t
 _comac_scaled_font_matches (const comac_scaled_font_t *scaled_font,
-	                    const comac_font_face_t *font_face,
+			    const comac_font_face_t *font_face,
 			    const comac_matrix_t *font_matrix,
 			    const comac_matrix_t *ctm,
 			    const comac_font_options_t *options)
 {
     return scaled_font->original_font_face == font_face &&
-	    memcmp ((unsigned char *)(&scaled_font->font_matrix.xx),
-		    (unsigned char *)(&font_matrix->xx),
-		    sizeof(comac_matrix_t)) == 0 &&
-	    memcmp ((unsigned char *)(&scaled_font->ctm.xx),
-		    (unsigned char *)(&ctm->xx),
-		    sizeof(comac_matrix_t)) == 0 &&
-	    comac_font_options_equal (&scaled_font->options, options);
+	   memcmp ((unsigned char *) (&scaled_font->font_matrix.xx),
+		   (unsigned char *) (&font_matrix->xx),
+		   sizeof (comac_matrix_t)) == 0 &&
+	   memcmp ((unsigned char *) (&scaled_font->ctm.xx),
+		   (unsigned char *) (&ctm->xx),
+		   sizeof (comac_matrix_t)) == 0 &&
+	   comac_font_options_equal (&scaled_font->options, options);
 }
 
 /*
@@ -717,11 +723,11 @@ _comac_scaled_font_matches (const comac_scaled_font_t *scaled_font,
  */
 
 comac_status_t
-_comac_scaled_font_init (comac_scaled_font_t               *scaled_font,
-			 comac_font_face_t		   *font_face,
-			 const comac_matrix_t              *font_matrix,
-			 const comac_matrix_t              *ctm,
-			 const comac_font_options_t	   *options,
+_comac_scaled_font_init (comac_scaled_font_t *scaled_font,
+			 comac_font_face_t *font_face,
+			 const comac_matrix_t *font_matrix,
+			 const comac_matrix_t *ctm,
+			 const comac_font_options_t *options,
 			 const comac_scaled_font_backend_t *backend)
 {
     comac_status_t status;
@@ -745,8 +751,9 @@ _comac_scaled_font_init (comac_scaled_font_t               *scaled_font,
 			   &scaled_font->font_matrix,
 			   &scaled_font->ctm);
 
-    scaled_font->max_scale = MAX (fabs (scaled_font->scale.xx) + fabs (scaled_font->scale.xy),
-				  fabs (scaled_font->scale.yx) + fabs (scaled_font->scale.yy));
+    scaled_font->max_scale =
+	MAX (fabs (scaled_font->scale.xx) + fabs (scaled_font->scale.xy),
+	     fabs (scaled_font->scale.yx) + fabs (scaled_font->scale.yy));
     scaled_font->scale_inverse = scaled_font->scale;
     status = comac_matrix_invert (&scaled_font->scale_inverse);
     if (unlikely (status)) {
@@ -759,9 +766,12 @@ _comac_scaled_font_init (comac_scaled_font_t               *scaled_font,
 	 *
 	 * Also, the check for == 0. below may be too harsh...
 	 */
-        if (_comac_matrix_is_scale_0 (&scaled_font->scale)) {
+	if (_comac_matrix_is_scale_0 (&scaled_font->scale)) {
 	    comac_matrix_init (&scaled_font->scale_inverse,
-			       0, 0, 0, 0,
+			       0,
+			       0,
+			       0,
+			       0,
 			       -scaled_font->scale.x0,
 			       -scaled_font->scale.y0);
 	} else
@@ -775,7 +785,8 @@ _comac_scaled_font_init (comac_scaled_font_t               *scaled_font,
     comac_list_init (&scaled_font->glyph_pages);
     scaled_font->cache_frozen = FALSE;
     scaled_font->global_cache_frozen = FALSE;
-    _comac_array_init (&scaled_font->recording_surfaces_to_free, sizeof (comac_surface_t *));
+    _comac_array_init (&scaled_font->recording_surfaces_to_free,
+		       sizeof (comac_surface_t *));
 
     scaled_font->holdover = FALSE;
     scaled_font->finished = FALSE;
@@ -797,15 +808,19 @@ _comac_scaled_font_init (comac_scaled_font_t               *scaled_font,
     return COMAC_STATUS_SUCCESS;
 }
 
-static void _comac_scaled_font_free_recording_surfaces (comac_scaled_font_t *scaled_font)
+static void
+_comac_scaled_font_free_recording_surfaces (comac_scaled_font_t *scaled_font)
 {
     int num_recording_surfaces;
     comac_surface_t *surface;
 
-    num_recording_surfaces = _comac_array_num_elements (&scaled_font->recording_surfaces_to_free);
+    num_recording_surfaces =
+	_comac_array_num_elements (&scaled_font->recording_surfaces_to_free);
     if (num_recording_surfaces > 0) {
 	for (int i = 0; i < num_recording_surfaces; i++) {
-	    _comac_array_copy_element (&scaled_font->recording_surfaces_to_free, i, &surface);
+	    _comac_array_copy_element (&scaled_font->recording_surfaces_to_free,
+				       i,
+				       &surface);
 	    comac_surface_finish (surface);
 	    comac_surface_destroy (surface);
 	}
@@ -854,7 +869,8 @@ _comac_scaled_font_reset_cache (comac_scaled_font_t *scaled_font)
     comac_list_foreach_entry (page,
 			      comac_scaled_glyph_page_t,
 			      &scaled_font->glyph_pages,
-			      link) {
+			      link)
+    {
 	comac_scaled_glyph_page_cache.size -= page->cache_entry.size;
 	_comac_hash_table_remove (comac_scaled_glyph_page_cache.hash_table,
 				  (comac_hash_entry_t *) &page->cache_entry);
@@ -877,17 +893,19 @@ _comac_scaled_font_reset_cache (comac_scaled_font_t *scaled_font)
 }
 
 comac_status_t
-_comac_scaled_font_set_metrics (comac_scaled_font_t	    *scaled_font,
-				comac_font_extents_t	    *fs_metrics)
+_comac_scaled_font_set_metrics (comac_scaled_font_t *scaled_font,
+				comac_font_extents_t *fs_metrics)
 {
     comac_status_t status;
-    double  font_scale_x, font_scale_y;
+    double font_scale_x, font_scale_y;
 
     scaled_font->fs_extents = *fs_metrics;
 
-    status = _comac_matrix_compute_basis_scale_factors (&scaled_font->font_matrix,
-						  &font_scale_x, &font_scale_y,
-						  1);
+    status =
+	_comac_matrix_compute_basis_scale_factors (&scaled_font->font_matrix,
+						   &font_scale_x,
+						   &font_scale_y,
+						   1);
     if (unlikely (status))
 	return status;
 
@@ -899,8 +917,10 @@ _comac_scaled_font_set_metrics (comac_scaled_font_t	    *scaled_font,
     scaled_font->extents.ascent = fs_metrics->ascent * font_scale_y;
     scaled_font->extents.descent = fs_metrics->descent * font_scale_y;
     scaled_font->extents.height = fs_metrics->height * font_scale_y;
-    scaled_font->extents.max_x_advance = fs_metrics->max_x_advance * font_scale_x;
-    scaled_font->extents.max_y_advance = fs_metrics->max_y_advance * font_scale_y;
+    scaled_font->extents.max_x_advance =
+	fs_metrics->max_x_advance * font_scale_x;
+    scaled_font->extents.max_y_advance =
+	fs_metrics->max_y_advance * font_scale_y;
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -948,11 +968,11 @@ _comac_scaled_font_fini (comac_scaled_font_t *scaled_font)
 }
 
 void
-_comac_scaled_font_attach_private (comac_scaled_font_t *scaled_font,
-				   comac_scaled_font_private_t *private,
-				   const void *key,
-				   void (*destroy) (comac_scaled_font_private_t *,
-						    comac_scaled_font_t *))
+_comac_scaled_font_attach_private (
+    comac_scaled_font_t *scaled_font,
+    comac_scaled_font_private_t *private,
+    const void *key,
+    void (*destroy) (comac_scaled_font_private_t *, comac_scaled_font_t *))
 {
     private->key = key;
     private->destroy = destroy;
@@ -965,8 +985,10 @@ _comac_scaled_font_find_private (comac_scaled_font_t *scaled_font,
 {
     comac_scaled_font_private_t *priv;
 
-    comac_list_foreach_entry (priv, comac_scaled_font_private_t,
-			      &scaled_font->dev_privates, link)
+    comac_list_foreach_entry (priv,
+			      comac_scaled_font_private_t,
+			      &scaled_font->dev_privates,
+			      link)
     {
 	if (priv->key == key) {
 	    if (priv->link.prev != &scaled_font->dev_privates)
@@ -979,12 +1001,13 @@ _comac_scaled_font_find_private (comac_scaled_font_t *scaled_font,
 }
 
 void
-_comac_scaled_glyph_attach_private (comac_scaled_glyph_t *scaled_glyph,
-				   comac_scaled_glyph_private_t *private,
-				   const void *key,
-				   void (*destroy) (comac_scaled_glyph_private_t *,
-						    comac_scaled_glyph_t *,
-						    comac_scaled_font_t *))
+_comac_scaled_glyph_attach_private (
+    comac_scaled_glyph_t *scaled_glyph,
+    comac_scaled_glyph_private_t *private,
+    const void *key,
+    void (*destroy) (comac_scaled_glyph_private_t *,
+		     comac_scaled_glyph_t *,
+		     comac_scaled_font_t *))
 {
     private->key = key;
     private->destroy = destroy;
@@ -993,12 +1016,14 @@ _comac_scaled_glyph_attach_private (comac_scaled_glyph_t *scaled_glyph,
 
 comac_scaled_glyph_private_t *
 _comac_scaled_glyph_find_private (comac_scaled_glyph_t *scaled_glyph,
-				 const void *key)
+				  const void *key)
 {
     comac_scaled_glyph_private_t *priv;
 
-    comac_list_foreach_entry (priv, comac_scaled_glyph_private_t,
-			      &scaled_glyph->dev_privates, link)
+    comac_list_foreach_entry (priv,
+			      comac_scaled_glyph_private_t,
+			      &scaled_glyph->dev_privates,
+			      link)
     {
 	if (priv->key == key) {
 	    if (priv->link.prev != &scaled_glyph->dev_privates)
@@ -1033,9 +1058,9 @@ _comac_scaled_glyph_find_private (comac_scaled_glyph_t *scaled_glyph,
  * Since: 1.0
  **/
 comac_scaled_font_t *
-comac_scaled_font_create (comac_font_face_t          *font_face,
-			  const comac_matrix_t       *font_matrix,
-			  const comac_matrix_t       *ctm,
+comac_scaled_font_create (comac_font_face_t *font_face,
+			  const comac_matrix_t *font_matrix,
+			  const comac_matrix_t *ctm,
 			  const comac_font_options_t *options)
 {
     comac_status_t status;
@@ -1050,11 +1075,13 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
 
     det = _comac_matrix_compute_determinant (font_matrix);
     if (! ISFINITE (det))
-	return _comac_scaled_font_create_in_error (_comac_error (COMAC_STATUS_INVALID_MATRIX));
+	return _comac_scaled_font_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_MATRIX));
 
     det = _comac_matrix_compute_determinant (ctm);
     if (! ISFINITE (det))
-	return _comac_scaled_font_create_in_error (_comac_error (COMAC_STATUS_INVALID_MATRIX));
+	return _comac_scaled_font_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_MATRIX));
 
     status = comac_font_options_status ((comac_font_options_t *) options);
     if (unlikely (status))
@@ -1065,13 +1092,15 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
 
     font_map = _comac_scaled_font_map_lock ();
     if (unlikely (font_map == NULL))
-	return _comac_scaled_font_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_scaled_font_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     scaled_font = font_map->mru_scaled_font;
-    if (scaled_font != NULL &&
-	_comac_scaled_font_matches (scaled_font,
-	                            font_face, font_matrix, ctm, options))
-    {
+    if (scaled_font != NULL && _comac_scaled_font_matches (scaled_font,
+							   font_face,
+							   font_matrix,
+							   ctm,
+							   options)) {
 	assert (scaled_font->hash_entry.hash != ZOMBIE);
 	assert (! scaled_font->placeholder);
 
@@ -1096,14 +1125,14 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
     _comac_scaled_font_init_key (&key, font_face, font_matrix, ctm, options);
 
     while ((scaled_font = _comac_hash_table_lookup (font_map->hash_table,
-						    &key.hash_entry)))
-    {
+						    &key.hash_entry))) {
 	if (! scaled_font->placeholder)
 	    break;
 
 	/* If the scaled font is being created (happens for user-font),
 	 * just wait until it's done, then retry */
-	_comac_scaled_font_placeholder_wait_for_creation_to_finish (scaled_font);
+	_comac_scaled_font_placeholder_wait_for_creation_to_finish (
+	    scaled_font);
     }
 
     if (scaled_font != NULL) {
@@ -1120,8 +1149,9 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
 		    if (font_map->holdovers[i] == scaled_font) {
 			font_map->num_holdovers--;
 			memmove (&font_map->holdovers[i],
-				 &font_map->holdovers[i+1],
-				 (font_map->num_holdovers - i) * sizeof (comac_scaled_font_t*));
+				 &font_map->holdovers[i + 1],
+				 (font_map->num_holdovers - i) *
+				     sizeof (comac_scaled_font_t *));
 			break;
 		    }
 		}
@@ -1160,7 +1190,6 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
 	scaled_font->hash_entry.hash = ZOMBIE;
     }
 
-
     /* Otherwise create it and insert it into the hash table. */
     if (font_face->backend->get_implementation != NULL) {
 	font_face = font_face->backend->get_implementation (font_face,
@@ -1173,8 +1202,11 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
 	}
     }
 
-    status = font_face->backend->scaled_font_create (font_face, font_matrix,
-						     ctm, options, &scaled_font);
+    status = font_face->backend->scaled_font_create (font_face,
+						     font_matrix,
+						     ctm,
+						     options,
+						     &scaled_font);
     /* Did we leave the backend in an error state? */
     if (unlikely (status)) {
 	status = _comac_font_face_set_error (font_face, status);
@@ -1210,7 +1242,8 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
     scaled_font->original_font_face =
 	comac_font_face_reference (original_font_face);
 
-    scaled_font->hash_entry.hash = _comac_scaled_font_compute_hash(scaled_font);
+    scaled_font->hash_entry.hash =
+	_comac_scaled_font_compute_hash (scaled_font);
 
     status = _comac_hash_table_insert (font_map->hash_table,
 				       &scaled_font->hash_entry);
@@ -1241,7 +1274,8 @@ comac_scaled_font_create (comac_font_face_t          *font_face,
     return scaled_font;
 }
 
-static comac_scaled_font_t *_comac_scaled_font_nil_objects[COMAC_STATUS_LAST_STATUS + 1];
+static comac_scaled_font_t
+    *_comac_scaled_font_nil_objects[COMAC_STATUS_LAST_STATUS + 1];
 
 /* XXX This should disappear in favour of a common pool of error objects. */
 comac_scaled_font_t *
@@ -1279,10 +1313,8 @@ _comac_scaled_font_reset_static_data (void)
     int status;
 
     COMAC_MUTEX_LOCK (_comac_scaled_font_error_mutex);
-    for (status = COMAC_STATUS_SUCCESS;
-	 status <= COMAC_STATUS_LAST_STATUS;
-	 status++)
-    {
+    for (status = COMAC_STATUS_SUCCESS; status <= COMAC_STATUS_LAST_STATUS;
+	 status++) {
 	free (_comac_scaled_font_nil_objects[status]);
 	_comac_scaled_font_nil_objects[status] = NULL;
     }
@@ -1316,7 +1348,7 @@ comac_scaled_font_t *
 comac_scaled_font_reference (comac_scaled_font_t *scaled_font)
 {
     if (scaled_font == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&scaled_font->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&scaled_font->ref_count))
 	return scaled_font;
 
     assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&scaled_font->ref_count));
@@ -1345,7 +1377,7 @@ comac_scaled_font_destroy (comac_scaled_font_t *scaled_font)
     assert (COMAC_MUTEX_IS_UNLOCKED (_comac_scaled_font_map_mutex));
 
     if (scaled_font == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&scaled_font->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&scaled_font->ref_count))
 	return;
 
     assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&scaled_font->ref_count));
@@ -1362,8 +1394,7 @@ comac_scaled_font_destroy (comac_scaled_font_t *scaled_font)
     /* Another thread may have resurrected the font whilst we waited */
     if (! COMAC_REFERENCE_COUNT_HAS_REFERENCE (&scaled_font->ref_count)) {
 	if (! scaled_font->placeholder &&
-	    scaled_font->hash_entry.hash != ZOMBIE)
-	{
+	    scaled_font->hash_entry.hash != ZOMBIE) {
 	    /* Another thread may have already inserted us into the holdovers */
 	    if (scaled_font->holdover)
 		goto unlock;
@@ -1377,7 +1408,8 @@ comac_scaled_font_destroy (comac_scaled_font_t *scaled_font)
 
 	    if (font_map->num_holdovers == COMAC_SCALED_FONT_MAX_HOLDOVERS) {
 		lru = font_map->holdovers[0];
-		assert (! COMAC_REFERENCE_COUNT_HAS_REFERENCE (&lru->ref_count));
+		assert (
+		    ! COMAC_REFERENCE_COUNT_HAS_REFERENCE (&lru->ref_count));
 
 		_comac_hash_table_remove (font_map->hash_table,
 					  &lru->hash_entry);
@@ -1385,7 +1417,8 @@ comac_scaled_font_destroy (comac_scaled_font_t *scaled_font)
 		font_map->num_holdovers--;
 		memmove (&font_map->holdovers[0],
 			 &font_map->holdovers[1],
-			 font_map->num_holdovers * sizeof (comac_scaled_font_t*));
+			 font_map->num_holdovers *
+			     sizeof (comac_scaled_font_t *));
 	    }
 
 	    font_map->holdovers[font_map->num_holdovers++] = scaled_font;
@@ -1394,7 +1427,7 @@ comac_scaled_font_destroy (comac_scaled_font_t *scaled_font)
 	    lru = scaled_font;
     }
 
-  unlock:
+unlock:
     _comac_scaled_font_map_unlock ();
 
     /* If we pulled an item from the holdovers array, (while the font
@@ -1424,7 +1457,7 @@ unsigned int
 comac_scaled_font_get_reference_count (comac_scaled_font_t *scaled_font)
 {
     if (scaled_font == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&scaled_font->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&scaled_font->ref_count))
 	return 0;
 
     return COMAC_REFERENCE_COUNT_GET_VALUE (&scaled_font->ref_count);
@@ -1445,11 +1478,10 @@ comac_scaled_font_get_reference_count (comac_scaled_font_t *scaled_font)
  * Since: 1.4
  **/
 void *
-comac_scaled_font_get_user_data (comac_scaled_font_t	     *scaled_font,
+comac_scaled_font_get_user_data (comac_scaled_font_t *scaled_font,
 				 const comac_user_data_key_t *key)
 {
-    return _comac_user_data_array_get_data (&scaled_font->user_data,
-					    key);
+    return _comac_user_data_array_get_data (&scaled_font->user_data, key);
 }
 
 /**
@@ -1471,16 +1503,18 @@ comac_scaled_font_get_user_data (comac_scaled_font_t	     *scaled_font,
  * Since: 1.4
  **/
 comac_status_t
-comac_scaled_font_set_user_data (comac_scaled_font_t	     *scaled_font,
+comac_scaled_font_set_user_data (comac_scaled_font_t *scaled_font,
 				 const comac_user_data_key_t *key,
-				 void			     *user_data,
-				 comac_destroy_func_t	      destroy)
+				 void *user_data,
+				 comac_destroy_func_t destroy)
 {
     if (COMAC_REFERENCE_COUNT_IS_INVALID (&scaled_font->ref_count))
 	return scaled_font->status;
 
     return _comac_user_data_array_set_data (&scaled_font->user_data,
-					    key, user_data, destroy);
+					    key,
+					    user_data,
+					    destroy);
 }
 
 /* Public font API follows. */
@@ -1495,13 +1529,13 @@ comac_scaled_font_set_user_data (comac_scaled_font_t	     *scaled_font,
  * Since: 1.0
  **/
 void
-comac_scaled_font_extents (comac_scaled_font_t  *scaled_font,
+comac_scaled_font_extents (comac_scaled_font_t *scaled_font,
 			   comac_font_extents_t *extents)
 {
     if (scaled_font->status) {
-	extents->ascent  = 0.0;
+	extents->ascent = 0.0;
 	extents->descent = 0.0;
-	extents->height  = 0.0;
+	extents->height = 0.0;
 	extents->max_x_advance = 0.0;
 	extents->max_y_advance = 0.0;
 	return;
@@ -1534,9 +1568,9 @@ comac_scaled_font_extents (comac_scaled_font_t  *scaled_font,
  * Since: 1.2
  **/
 void
-comac_scaled_font_text_extents (comac_scaled_font_t   *scaled_font,
-				const char            *utf8,
-				comac_text_extents_t  *extents)
+comac_scaled_font_text_extents (comac_scaled_font_t *scaled_font,
+				const char *utf8,
+				comac_text_extents_t *extents)
 {
     comac_status_t status;
     comac_glyph_t *glyphs = NULL;
@@ -1548,10 +1582,15 @@ comac_scaled_font_text_extents (comac_scaled_font_t   *scaled_font,
     if (utf8 == NULL)
 	goto ZERO_EXTENTS;
 
-    status = comac_scaled_font_text_to_glyphs (scaled_font, 0., 0.,
-					       utf8, -1,
-					       &glyphs, &num_glyphs,
-					       NULL, NULL,
+    status = comac_scaled_font_text_to_glyphs (scaled_font,
+					       0.,
+					       0.,
+					       utf8,
+					       -1,
+					       &glyphs,
+					       &num_glyphs,
+					       NULL,
+					       NULL,
 					       NULL);
     if (unlikely (status)) {
 	status = _comac_scaled_font_set_error (scaled_font, status);
@@ -1566,7 +1605,7 @@ comac_scaled_font_text_extents (comac_scaled_font_t   *scaled_font,
 ZERO_EXTENTS:
     extents->x_bearing = 0.0;
     extents->y_bearing = 0.0;
-    extents->width  = 0.0;
+    extents->width = 0.0;
     extents->height = 0.0;
     extents->x_advance = 0.0;
     extents->y_advance = 0.0;
@@ -1593,10 +1632,10 @@ ZERO_EXTENTS:
  * Since: 1.0
  **/
 void
-comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
-				 const comac_glyph_t   *glyphs,
-				 int                    num_glyphs,
-				 comac_text_extents_t  *extents)
+comac_scaled_font_glyph_extents (comac_scaled_font_t *scaled_font,
+				 const comac_glyph_t *glyphs,
+				 int num_glyphs,
+				 comac_text_extents_t *extents)
 {
     comac_status_t status;
     int i;
@@ -1606,7 +1645,7 @@ comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
 
     extents->x_bearing = 0.0;
     extents->y_bearing = 0.0;
-    extents->width  = 0.0;
+    extents->width = 0.0;
     extents->height = 0.0;
     extents->x_advance = 0.0;
     extents->y_advance = 0.0;
@@ -1632,7 +1671,7 @@ comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
     _comac_scaled_font_freeze_cache (scaled_font);
 
     for (i = 0; i < num_glyphs; i++) {
-	double			left, top, right, bottom;
+	double left, top, right, bottom;
 
 	status = _comac_scaled_glyph_lookup (scaled_font,
 					     glyphs[i].index,
@@ -1645,7 +1684,8 @@ comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
 	}
 
 	/* "Ink" extents should skip "invisible" glyphs */
-	if (scaled_glyph->metrics.width == 0 || scaled_glyph->metrics.height == 0)
+	if (scaled_glyph->metrics.width == 0 ||
+	    scaled_glyph->metrics.height == 0)
 	    continue;
 
 	left = scaled_glyph->metrics.x_bearing + glyphs[i].x;
@@ -1653,17 +1693,21 @@ comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
 	top = scaled_glyph->metrics.y_bearing + glyphs[i].y;
 	bottom = top + scaled_glyph->metrics.height;
 
-	if (!visible) {
+	if (! visible) {
 	    visible = TRUE;
 	    min_x = left;
 	    max_x = right;
 	    min_y = top;
 	    max_y = bottom;
 	} else {
-	    if (left < min_x) min_x = left;
-	    if (right > max_x) max_x = right;
-	    if (top < min_y) min_y = top;
-	    if (bottom > max_y) max_y = bottom;
+	    if (left < min_x)
+		min_x = left;
+	    if (right > max_x)
+		max_x = right;
+	    if (top < min_y)
+		min_y = top;
+	    if (bottom > max_y)
+		max_y = bottom;
 	}
     }
 
@@ -1680,7 +1724,7 @@ comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
     }
 
     if (num_glyphs) {
-        double x0, y0, x1, y1;
+	double x0, y0, x1, y1;
 
 	x0 = glyphs[0].x;
 	y0 = glyphs[0].y;
@@ -1696,14 +1740,14 @@ comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
 	extents->y_advance = 0.0;
     }
 
- UNLOCK:
+UNLOCK:
     _comac_scaled_font_thaw_cache (scaled_font);
     return;
 
 ZERO_EXTENTS:
     extents->x_bearing = 0.0;
     extents->y_bearing = 0.0;
-    extents->width  = 0.0;
+    extents->width = 0.0;
     extents->height = 0.0;
     extents->x_advance = 0.0;
     extents->y_advance = 0.0;
@@ -1711,13 +1755,14 @@ ZERO_EXTENTS:
 
 #define GLYPH_LUT_SIZE 64
 static comac_status_t
-comac_scaled_font_text_to_glyphs_internal_cached (comac_scaled_font_t		 *scaled_font,
-						    double			  x,
-						    double			  y,
-						    const char			 *utf8,
-						    comac_glyph_t		 *glyphs,
-						    comac_text_cluster_t	**clusters,
-						    int				  num_chars)
+comac_scaled_font_text_to_glyphs_internal_cached (
+    comac_scaled_font_t *scaled_font,
+    double x,
+    double y,
+    const char *utf8,
+    comac_glyph_t *glyphs,
+    comac_text_cluster_t **clusters,
+    int num_chars)
 {
     struct glyph_lut_elt {
 	unsigned long index;
@@ -1755,11 +1800,12 @@ comac_scaled_font_text_to_glyphs_internal_cached (comac_scaled_font_t		 *scaled_
 	    unsigned long g;
 
 	    g = scaled_font->backend->ucs4_to_index (scaled_font, unicode);
-	    status = _comac_scaled_glyph_lookup (scaled_font,
-						 g,
-						 COMAC_SCALED_GLYPH_INFO_METRICS,
-						 NULL, /* foreground color */
-						 &scaled_glyph);
+	    status =
+		_comac_scaled_glyph_lookup (scaled_font,
+					    g,
+					    COMAC_SCALED_GLYPH_INFO_METRICS,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 	    if (unlikely (status))
 		return status;
 
@@ -1775,7 +1821,7 @@ comac_scaled_font_text_to_glyphs_internal_cached (comac_scaled_font_t		 *scaled_
 	}
 
 	if (clusters) {
-	    (*clusters)[i].num_bytes  = num_bytes;
+	    (*clusters)[i].num_bytes = num_bytes;
 	    (*clusters)[i].num_glyphs = 1;
 	}
     }
@@ -1784,13 +1830,14 @@ comac_scaled_font_text_to_glyphs_internal_cached (comac_scaled_font_t		 *scaled_
 }
 
 static comac_status_t
-comac_scaled_font_text_to_glyphs_internal_uncached (comac_scaled_font_t	 *scaled_font,
-						  double		  x,
-						  double		  y,
-						  const char		 *utf8,
-						  comac_glyph_t		 *glyphs,
-						  comac_text_cluster_t	**clusters,
-						  int			  num_chars)
+comac_scaled_font_text_to_glyphs_internal_uncached (
+    comac_scaled_font_t *scaled_font,
+    double x,
+    double y,
+    const char *utf8,
+    comac_glyph_t *glyphs,
+    comac_text_cluster_t **clusters,
+    int num_chars)
 {
     const char *p;
     int i;
@@ -1816,11 +1863,12 @@ comac_scaled_font_text_to_glyphs_internal_uncached (comac_scaled_font_t	 *scaled
 	 * one-character strings by skipping glyph lookup.
 	 */
 	if (num_chars > 1) {
-	    status = _comac_scaled_glyph_lookup (scaled_font,
-					     g,
-					     COMAC_SCALED_GLYPH_INFO_METRICS,
-					     NULL, /* foreground color */
-					     &scaled_glyph);
+	    status =
+		_comac_scaled_glyph_lookup (scaled_font,
+					    g,
+					    COMAC_SCALED_GLYPH_INFO_METRICS,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 	    if (unlikely (status))
 		return status;
 
@@ -1831,7 +1879,7 @@ comac_scaled_font_text_to_glyphs_internal_uncached (comac_scaled_font_t	 *scaled
 	glyphs[i].index = g;
 
 	if (clusters) {
-	    (*clusters)[i].num_bytes  = num_bytes;
+	    (*clusters)[i].num_bytes = num_bytes;
 	    (*clusters)[i].num_glyphs = 1;
 	}
     }
@@ -1976,15 +2024,15 @@ comac_scaled_font_text_to_glyphs_internal_uncached (comac_scaled_font_t	 *scaled
  **/
 #define CACHING_THRESHOLD 16
 comac_status_t
-comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
-				  double		 x,
-				  double		 y,
-				  const char	        *utf8,
-				  int		         utf8_len,
-				  comac_glyph_t	       **glyphs,
-				  int		        *num_glyphs,
+comac_scaled_font_text_to_glyphs (comac_scaled_font_t *scaled_font,
+				  double x,
+				  double y,
+				  const char *utf8,
+				  int utf8_len,
+				  comac_glyph_t **glyphs,
+				  int *num_glyphs,
 				  comac_text_cluster_t **clusters,
-				  int		        *num_clusters,
+				  int *num_clusters,
 				  comac_text_cluster_flags_t *cluster_flags)
 {
     int num_chars = 0;
@@ -1999,8 +2047,7 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
     /* A slew of sanity checks */
 
     /* glyphs and num_glyphs can't be NULL */
-    if (glyphs     == NULL ||
-	num_glyphs == NULL) {
+    if (glyphs == NULL || num_glyphs == NULL) {
 	status = _comac_error (COMAC_STATUS_NULL_POINTER);
 	goto BAIL;
     }
@@ -2010,8 +2057,7 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
 	utf8_len = 0;
 
     /* No NULLs for non-NULLs! */
-    if ((utf8_len && utf8          == NULL) ||
-	(clusters && num_clusters  == NULL) ||
+    if ((utf8_len && utf8 == NULL) || (clusters && num_clusters == NULL) ||
 	(clusters && cluster_flags == NULL)) {
 	status = _comac_error (COMAC_STATUS_NULL_POINTER);
 	goto BAIL;
@@ -2029,7 +2075,7 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
     if (clusters && *clusters == NULL)
 	*num_clusters = 0;
 
-    if (!clusters && num_clusters) {
+    if (! clusters && num_clusters) {
 	num_clusters = NULL;
     }
 
@@ -2037,13 +2083,12 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
 	*cluster_flags = FALSE;
     }
 
-    if (!clusters && cluster_flags) {
+    if (! clusters && cluster_flags) {
 	cluster_flags = NULL;
     }
 
     /* Apart from that, no negatives */
-    if (utf8_len < 0 ||
-	*num_glyphs < 0 ||
+    if (utf8_len < 0 || *num_glyphs < 0 ||
 	(num_clusters && *num_clusters < 0)) {
 	status = _comac_error (COMAC_STATUS_NEGATIVE_COUNT);
 	goto BAIL;
@@ -2065,18 +2110,23 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
     orig_clusters = clusters ? *clusters : NULL;
 
     if (scaled_font->backend->text_to_glyphs) {
-	status = scaled_font->backend->text_to_glyphs (scaled_font, x, y,
-						       utf8, utf8_len,
-						       glyphs, num_glyphs,
-						       clusters, num_clusters,
+	status = scaled_font->backend->text_to_glyphs (scaled_font,
+						       x,
+						       y,
+						       utf8,
+						       utf8_len,
+						       glyphs,
+						       num_glyphs,
+						       clusters,
+						       num_clusters,
 						       cluster_flags);
-        if (status != COMAC_INT_STATUS_UNSUPPORTED) {
+	if (status != COMAC_INT_STATUS_UNSUPPORTED) {
 	    if (status == COMAC_INT_STATUS_SUCCESS) {
-	        /* The checks here are crude; we only should do them in
+		/* The checks here are crude; we only should do them in
 		 * user-font backend, but they don't hurt here.  This stuff
 		 * can be hard to get right. */
 
-	        if (*num_glyphs < 0) {
+		if (*num_glyphs < 0) {
 		    status = _comac_error (COMAC_STATUS_NEGATIVE_COUNT);
 		    goto DONE;
 		}
@@ -2096,15 +2146,17 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
 		    }
 
 		    /* Don't trust the backend, validate clusters! */
-		    status =
-			_comac_validate_text_clusters (utf8, utf8_len,
-						       *glyphs, *num_glyphs,
-						       *clusters, *num_clusters,
-						       *cluster_flags);
+		    status = _comac_validate_text_clusters (utf8,
+							    utf8_len,
+							    *glyphs,
+							    *num_glyphs,
+							    *clusters,
+							    *num_clusters,
+							    *cluster_flags);
 		}
 	    }
 
-            goto DONE;
+	    goto DONE;
 	}
     }
 
@@ -2130,20 +2182,23 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
 
     if (num_chars > CACHING_THRESHOLD)
 	status = comac_scaled_font_text_to_glyphs_internal_cached (scaled_font,
-								     x, y,
-								     utf8,
-								     *glyphs,
-								     clusters,
-								     num_chars);
-    else
-	status = comac_scaled_font_text_to_glyphs_internal_uncached (scaled_font,
-								   x, y,
+								   x,
+								   y,
 								   utf8,
 								   *glyphs,
 								   clusters,
 								   num_chars);
+    else
+	status =
+	    comac_scaled_font_text_to_glyphs_internal_uncached (scaled_font,
+								x,
+								y,
+								utf8,
+								*glyphs,
+								clusters,
+								num_chars);
 
- DONE: /* error that should be logged on scaled_font happened */
+DONE: /* error that should be logged on scaled_font happened */
     _comac_scaled_font_thaw_cache (scaled_font);
 
     if (unlikely (status)) {
@@ -2164,7 +2219,7 @@ comac_scaled_font_text_to_glyphs (comac_scaled_font_t   *scaled_font,
 
     return _comac_scaled_font_set_error (scaled_font, status);
 
- BAIL: /* error with input arguments */
+BAIL: /* error with input arguments */
 
     if (num_glyphs)
 	*num_glyphs = 0;
@@ -2185,16 +2240,15 @@ _range_contains_glyph (const comac_box_t *extents,
     if (left == right || top == bottom)
 	return FALSE;
 
-    return right > extents->p1.x &&
-	   left < extents->p2.x &&
-	   bottom > extents->p1.y &&
-	   top < extents->p2.y;
+    return right > extents->p1.x && left < extents->p2.x &&
+	   bottom > extents->p1.y && top < extents->p2.y;
 }
 
 static comac_status_t
-_comac_scaled_font_single_glyph_device_extents (comac_scaled_font_t	 *scaled_font,
-						const comac_glyph_t	 *glyph,
-						comac_rectangle_int_t   *extents)
+_comac_scaled_font_single_glyph_device_extents (
+    comac_scaled_font_t *scaled_font,
+    const comac_glyph_t *glyph,
+    comac_rectangle_int_t *extents)
 {
     comac_scaled_glyph_t *scaled_glyph;
     comac_status_t status;
@@ -2206,7 +2260,9 @@ _comac_scaled_font_single_glyph_device_extents (comac_scaled_font_t	 *scaled_fon
 					 NULL, /* foreground color */
 					 &scaled_glyph);
     if (likely (status == COMAC_STATUS_SUCCESS)) {
-	comac_bool_t round_xy = _comac_font_options_get_round_glyph_positions (&scaled_font->options) == COMAC_ROUND_GLYPH_POS_ON;
+	comac_bool_t round_xy =
+	    _comac_font_options_get_round_glyph_positions (
+		&scaled_font->options) == COMAC_ROUND_GLYPH_POS_ON;
 	comac_box_t box;
 	comac_fixed_t v;
 
@@ -2234,17 +2290,18 @@ _comac_scaled_font_single_glyph_device_extents (comac_scaled_font_t	 *scaled_fon
  * Compute a device-space bounding box for the glyphs.
  */
 comac_status_t
-_comac_scaled_font_glyph_device_extents (comac_scaled_font_t	 *scaled_font,
-					 const comac_glyph_t	 *glyphs,
-					 int                      num_glyphs,
-					 comac_rectangle_int_t   *extents,
+_comac_scaled_font_glyph_device_extents (comac_scaled_font_t *scaled_font,
+					 const comac_glyph_t *glyphs,
+					 int num_glyphs,
+					 comac_rectangle_int_t *extents,
 					 comac_bool_t *overlap_out)
 {
     comac_status_t status = COMAC_STATUS_SUCCESS;
-    comac_box_t box = { { INT_MAX, INT_MAX }, { INT_MIN, INT_MIN }};
+    comac_box_t box = {{INT_MAX, INT_MAX}, {INT_MIN, INT_MIN}};
     comac_scaled_glyph_t *glyph_cache[64];
     comac_bool_t overlap = overlap_out ? FALSE : TRUE;
-    comac_round_glyph_positions_t round_glyph_positions = _comac_font_options_get_round_glyph_positions (&scaled_font->options);
+    comac_round_glyph_positions_t round_glyph_positions =
+	_comac_font_options_get_round_glyph_positions (&scaled_font->options);
     int i;
 
     if (unlikely (scaled_font->status))
@@ -2263,19 +2320,19 @@ _comac_scaled_font_glyph_device_extents (comac_scaled_font_t	 *scaled_font,
     memset (glyph_cache, 0, sizeof (glyph_cache));
 
     for (i = 0; i < num_glyphs; i++) {
-	comac_scaled_glyph_t	*scaled_glyph;
+	comac_scaled_glyph_t *scaled_glyph;
 	comac_fixed_t x, y, x1, y1, x2, y2;
 	int cache_index = glyphs[i].index % ARRAY_LENGTH (glyph_cache);
 
 	scaled_glyph = glyph_cache[cache_index];
 	if (scaled_glyph == NULL ||
-	    _comac_scaled_glyph_index (scaled_glyph) != glyphs[i].index)
-	{
-	    status = _comac_scaled_glyph_lookup (scaled_font,
-						 glyphs[i].index,
-						 COMAC_SCALED_GLYPH_INFO_METRICS,
-						 NULL, /* foreground color */
-						 &scaled_glyph);
+	    _comac_scaled_glyph_index (scaled_glyph) != glyphs[i].index) {
+	    status =
+		_comac_scaled_glyph_lookup (scaled_font,
+					    glyphs[i].index,
+					    COMAC_SCALED_GLYPH_INFO_METRICS,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 	    if (unlikely (status))
 		break;
 
@@ -2299,10 +2356,14 @@ _comac_scaled_font_glyph_device_extents (comac_scaled_font_t	 *scaled_font,
 	if (overlap == FALSE)
 	    overlap = _range_contains_glyph (&box, x1, y1, x2, y2);
 
-	if (x1 < box.p1.x) box.p1.x = x1;
-	if (x2 > box.p2.x) box.p2.x = x2;
-	if (y1 < box.p1.y) box.p1.y = y1;
-	if (y2 > box.p2.y) box.p2.y = y2;
+	if (x1 < box.p1.x)
+	    box.p1.x = x1;
+	if (x2 > box.p2.x)
+	    box.p2.x = x2;
+	if (y1 < box.p1.y)
+	    box.p1.y = y1;
+	if (y2 > box.p2.y)
+	    box.p2.y = y2;
     }
 
     _comac_scaled_font_thaw_cache (scaled_font);
@@ -2323,19 +2384,17 @@ _comac_scaled_font_glyph_device_extents (comac_scaled_font_t	 *scaled_font,
 }
 
 comac_bool_t
-_comac_scaled_font_glyph_approximate_extents (comac_scaled_font_t	 *scaled_font,
-					      const comac_glyph_t	 *glyphs,
-					      int                      num_glyphs,
-					      comac_rectangle_int_t   *extents)
+_comac_scaled_font_glyph_approximate_extents (comac_scaled_font_t *scaled_font,
+					      const comac_glyph_t *glyphs,
+					      int num_glyphs,
+					      comac_rectangle_int_t *extents)
 {
     double x0, x1, y0, y1, pad;
     int i;
 
     /* If any of the factors are suspect (i.e. the font is broken), bail */
     if (scaled_font->fs_extents.max_x_advance == 0 ||
-	scaled_font->fs_extents.height == 0 ||
-	scaled_font->max_scale == 0)
-    {
+	scaled_font->fs_extents.height == 0 || scaled_font->max_scale == 0) {
 	return FALSE;
     }
 
@@ -2347,16 +2406,20 @@ _comac_scaled_font_glyph_approximate_extents (comac_scaled_font_t	 *scaled_font,
 	double g;
 
 	g = glyphs[i].x;
-	if (g < x0) x0 = g;
-	if (g > x1) x1 = g;
+	if (g < x0)
+	    x0 = g;
+	if (g > x1)
+	    x1 = g;
 
 	g = glyphs[i].y;
-	if (g < y0) y0 = g;
-	if (g > y1) y1 = g;
+	if (g < y0)
+	    y0 = g;
+	if (g > y1)
+	    y1 = g;
     }
 
-    pad = MAX(scaled_font->fs_extents.max_x_advance,
-	      scaled_font->fs_extents.height);
+    pad = MAX (scaled_font->fs_extents.max_x_advance,
+	       scaled_font->fs_extents.height);
     pad *= scaled_font->max_scale;
 
     extents->x = floor (x0 - pad);
@@ -2419,7 +2482,8 @@ _add_unit_rectangle_to_path (comac_path_fixed_t *path,
 static comac_status_t
 _trace_mask_to_path (comac_image_surface_t *mask,
 		     comac_path_fixed_t *path,
-		     double tx, double ty)
+		     double tx,
+		     double ty)
 {
     const uint8_t *row;
     int rows, cols, bytes_per_row;
@@ -2444,7 +2508,7 @@ _trace_mask_to_path (comac_image_surface_t *mask,
 	const uint8_t *byte_ptr = row;
 	x = 0;
 	py = _comac_fixed_from_int (y);
-	for (cols = bytes_per_row; cols--; ) {
+	for (cols = bytes_per_row; cols--;) {
 	    uint8_t byte = *byte_ptr++;
 	    if (byte == 0) {
 		x += 8;
@@ -2455,9 +2519,8 @@ _trace_mask_to_path (comac_image_surface_t *mask,
 	    for (bit = 1 << 7; bit && x < mask->width; bit >>= 1, x++) {
 		if (byte & bit) {
 		    px = _comac_fixed_from_int (x);
-		    status = _add_unit_rectangle_to_path (path,
-							  px + x0,
-							  py + y0);
+		    status =
+			_add_unit_rectangle_to_path (path, px + x0, py + y0);
 		    if (unlikely (status))
 			goto BAIL;
 		}
@@ -2474,11 +2537,11 @@ BAIL:
 comac_status_t
 _comac_scaled_font_glyph_path (comac_scaled_font_t *scaled_font,
 			       const comac_glyph_t *glyphs,
-			       int		    num_glyphs,
-			       comac_path_fixed_t  *path)
+			       int num_glyphs,
+			       comac_path_fixed_t *path)
 {
     comac_int_status_t status;
-    int	i;
+    int i;
 
     status = scaled_font->status;
     if (unlikely (status))
@@ -2494,31 +2557,35 @@ _comac_scaled_font_glyph_path (comac_scaled_font_t *scaled_font,
 					     NULL, /* foreground color */
 					     &scaled_glyph);
 	if (status == COMAC_INT_STATUS_SUCCESS) {
-	    status = _comac_path_fixed_append (path,
-					       scaled_glyph->path,
-					       _comac_fixed_from_double (glyphs[i].x),
-					       _comac_fixed_from_double (glyphs[i].y));
+	    status = _comac_path_fixed_append (
+		path,
+		scaled_glyph->path,
+		_comac_fixed_from_double (glyphs[i].x),
+		_comac_fixed_from_double (glyphs[i].y));
 
 	} else if (status == COMAC_INT_STATUS_UNSUPPORTED) {
 	    /* If the font is incapable of providing a path, then we'll
 	     * have to trace our own from a surface.
 	     */
-	    status = _comac_scaled_glyph_lookup (scaled_font,
-						 glyphs[i].index,
-						 COMAC_SCALED_GLYPH_INFO_SURFACE,
-						 NULL, /* foreground color */
-						 &scaled_glyph);
+	    status =
+		_comac_scaled_glyph_lookup (scaled_font,
+					    glyphs[i].index,
+					    COMAC_SCALED_GLYPH_INFO_SURFACE,
+					    NULL, /* foreground color */
+					    &scaled_glyph);
 	    if (unlikely (status))
 		goto BAIL;
 
-	    status = _trace_mask_to_path (scaled_glyph->surface, path,
-					  glyphs[i].x, glyphs[i].y);
+	    status = _trace_mask_to_path (scaled_glyph->surface,
+					  path,
+					  glyphs[i].x,
+					  glyphs[i].y);
 	}
 
 	if (unlikely (status))
 	    goto BAIL;
     }
-  BAIL:
+BAIL:
     _comac_scaled_font_thaw_cache (scaled_font);
 
     return _comac_scaled_font_set_error (scaled_font, status);
@@ -2542,8 +2609,10 @@ _comac_scaled_glyph_set_metrics (comac_scaled_glyph_t *scaled_glyph,
 {
     comac_bool_t first = TRUE;
     double hm, wm;
-    double min_user_x = 0.0, max_user_x = 0.0, min_user_y = 0.0, max_user_y = 0.0;
-    double min_device_x = 0.0, max_device_x = 0.0, min_device_y = 0.0, max_device_y = 0.0;
+    double min_user_x = 0.0, max_user_x = 0.0, min_user_y = 0.0,
+	   max_user_y = 0.0;
+    double min_device_x = 0.0, max_device_x = 0.0, min_device_y = 0.0,
+	   max_device_y = 0.0;
     double device_x_advance, device_y_advance;
 
     scaled_glyph->fs_metrics = *fs_metrics;
@@ -2555,32 +2624,38 @@ _comac_scaled_glyph_set_metrics (comac_scaled_glyph_t *scaled_glyph,
 	    /* Transform this corner to user space */
 	    x = fs_metrics->x_bearing + fs_metrics->width * wm;
 	    y = fs_metrics->y_bearing + fs_metrics->height * hm;
-	    comac_matrix_transform_point (&scaled_font->font_matrix,
-					  &x, &y);
+	    comac_matrix_transform_point (&scaled_font->font_matrix, &x, &y);
 	    if (first) {
 		min_user_x = max_user_x = x;
 		min_user_y = max_user_y = y;
 	    } else {
-		if (x < min_user_x) min_user_x = x;
-		if (x > max_user_x) max_user_x = x;
-		if (y < min_user_y) min_user_y = y;
-		if (y > max_user_y) max_user_y = y;
+		if (x < min_user_x)
+		    min_user_x = x;
+		if (x > max_user_x)
+		    max_user_x = x;
+		if (y < min_user_y)
+		    min_user_y = y;
+		if (y > max_user_y)
+		    max_user_y = y;
 	    }
 
 	    /* Transform this corner to device space from glyph origin */
 	    x = fs_metrics->x_bearing + fs_metrics->width * wm;
 	    y = fs_metrics->y_bearing + fs_metrics->height * hm;
-	    comac_matrix_transform_distance (&scaled_font->scale,
-					     &x, &y);
+	    comac_matrix_transform_distance (&scaled_font->scale, &x, &y);
 
 	    if (first) {
 		min_device_x = max_device_x = x;
 		min_device_y = max_device_y = y;
 	    } else {
-		if (x < min_device_x) min_device_x = x;
-		if (x > max_device_x) max_device_x = x;
-		if (y < min_device_y) min_device_y = y;
-		if (y > max_device_y) max_device_y = y;
+		if (x < min_device_x)
+		    min_device_x = x;
+		if (x > max_device_x)
+		    max_device_x = x;
+		if (y < min_device_y)
+		    min_device_y = y;
+		if (y > max_device_y)
+		    max_device_y = y;
 	    }
 	    first = FALSE;
 	}
@@ -2666,8 +2741,8 @@ _comac_scaled_glyph_set_recording_surface (comac_scaled_glyph_t *scaled_glyph,
 
 void
 _comac_scaled_glyph_set_color_surface (comac_scaled_glyph_t *scaled_glyph,
-	                               comac_scaled_font_t *scaled_font,
-	                               comac_image_surface_t *surface,
+				       comac_scaled_font_t *scaled_font,
+				       comac_image_surface_t *surface,
 				       comac_bool_t uses_foreground_color)
 {
     if (scaled_glyph->color_surface != NULL)
@@ -2695,12 +2770,12 @@ _comac_scaled_glyph_page_can_remove (const void *closure)
 
     scaled_font = page->scaled_font;
 
-    if (!COMAC_MUTEX_TRY_LOCK (scaled_font->mutex))
-       return FALSE;
+    if (! COMAC_MUTEX_TRY_LOCK (scaled_font->mutex))
+	return FALSE;
 
     if (scaled_font->cache_frozen != 0) {
-       COMAC_MUTEX_UNLOCK (scaled_font->mutex);
-       return FALSE;
+	COMAC_MUTEX_UNLOCK (scaled_font->mutex);
+	return FALSE;
     }
 
     return TRUE;
@@ -2717,13 +2792,13 @@ _comac_scaled_font_allocate_glyph (comac_scaled_font_t *scaled_font,
 
     /* only the first page in the list may contain available slots */
     if (! comac_list_is_empty (&scaled_font->glyph_pages)) {
-        page = comac_list_last_entry (&scaled_font->glyph_pages,
-                                      comac_scaled_glyph_page_t,
-                                      link);
-        if (page->num_glyphs < COMAC_SCALED_GLYPH_PAGE_SIZE) {
-            *scaled_glyph = &page->glyphs[page->num_glyphs++];
-            return COMAC_STATUS_SUCCESS;
-        }
+	page = comac_list_last_entry (&scaled_font->glyph_pages,
+				      comac_scaled_glyph_page_t,
+				      link);
+	if (page->num_glyphs < COMAC_SCALED_GLYPH_PAGE_SIZE) {
+	    *scaled_glyph = &page->glyphs[page->num_glyphs++];
+	    return COMAC_STATUS_SUCCESS;
+	}
     }
 
     page = _comac_malloc (sizeof (comac_scaled_glyph_page_t));
@@ -2770,16 +2845,16 @@ _comac_scaled_font_allocate_glyph (comac_scaled_font_t *scaled_font,
 
 static void
 _comac_scaled_font_free_last_glyph (comac_scaled_font_t *scaled_font,
-			           comac_scaled_glyph_t *scaled_glyph)
+				    comac_scaled_glyph_t *scaled_glyph)
 {
     comac_scaled_glyph_page_t *page;
 
     assert (scaled_font->cache_frozen);
     assert (! comac_list_is_empty (&scaled_font->glyph_pages));
     page = comac_list_last_entry (&scaled_font->glyph_pages,
-                                  comac_scaled_glyph_page_t,
-                                  link);
-    assert (scaled_glyph == &page->glyphs[page->num_glyphs-1]);
+				  comac_scaled_glyph_page_t,
+				  link);
+    assert (scaled_glyph == &page->glyphs[page->num_glyphs - 1]);
 
     _comac_scaled_glyph_fini (scaled_font, scaled_glyph);
 
@@ -2791,9 +2866,10 @@ _comac_scaled_font_free_last_glyph (comac_scaled_font_t *scaled_font,
 	/* Temporarily disconnect callback to avoid recursive locking */
 	comac_scaled_glyph_page_cache.entry_destroy = NULL;
 	_comac_cache_remove (&comac_scaled_glyph_page_cache,
-		             &page->cache_entry);
+			     &page->cache_entry);
 	_comac_scaled_glyph_page_destroy (scaled_font, page);
-	comac_scaled_glyph_page_cache.entry_destroy = _comac_scaled_glyph_page_pluck;
+	comac_scaled_glyph_page_cache.entry_destroy =
+	    _comac_scaled_glyph_page_pluck;
 	COMAC_MUTEX_UNLOCK (_comac_scaled_glyph_page_cache_mutex);
 
 	COMAC_MUTEX_UNLOCK (scaled_font->mutex);
@@ -2836,20 +2912,20 @@ comac_int_status_t
 _comac_scaled_glyph_lookup (comac_scaled_font_t *scaled_font,
 			    unsigned long index,
 			    comac_scaled_glyph_info_t info,
-			    const comac_color_t   *foreground_color,
+			    const comac_color_t *foreground_color,
 			    comac_scaled_glyph_t **scaled_glyph_ret)
 {
-    comac_int_status_t		 status = COMAC_INT_STATUS_SUCCESS;
-    comac_scaled_glyph_t	*scaled_glyph;
-    comac_scaled_glyph_info_t	 need_info;
-    comac_hash_entry_t           key;
+    comac_int_status_t status = COMAC_INT_STATUS_SUCCESS;
+    comac_scaled_glyph_t *scaled_glyph;
+    comac_scaled_glyph_info_t need_info;
+    comac_hash_entry_t key;
 
     *scaled_glyph_ret = NULL;
 
     if (unlikely (scaled_font->status))
 	return scaled_font->status;
 
-    assert (COMAC_MUTEX_IS_LOCKED(scaled_font->mutex));
+    assert (COMAC_MUTEX_IS_LOCKED (scaled_font->mutex));
     assert (scaled_font->cache_frozen);
 
     if (COMAC_INJECT_FAULT ())
@@ -2873,11 +2949,11 @@ _comac_scaled_glyph_lookup (comac_scaled_font_t *scaled_font,
 	comac_list_init (&scaled_glyph->dev_privates);
 
 	/* ask backend to initialize metrics and shape fields */
-	status =
-	    scaled_font->backend->scaled_glyph_init (scaled_font,
-						     scaled_glyph,
-						     info | COMAC_SCALED_GLYPH_INFO_METRICS,
-						     foreground_color);
+	status = scaled_font->backend->scaled_glyph_init (
+	    scaled_font,
+	    scaled_glyph,
+	    info | COMAC_SCALED_GLYPH_INFO_METRICS,
+	    foreground_color);
 	if (unlikely (status)) {
 	    _comac_scaled_font_free_last_glyph (scaled_font, scaled_glyph);
 	    goto err;
@@ -2899,7 +2975,7 @@ _comac_scaled_glyph_lookup (comac_scaled_font_t *scaled_font,
 
     /* If this is not a color glyph, don't try loading the color surface again. */
     if ((need_info & COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) &&
-	scaled_glyph->color_glyph_set && !scaled_glyph->color_glyph)
+	scaled_glyph->color_glyph_set && ! scaled_glyph->color_glyph)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* If requesting a color surface for a glyph that has used the
@@ -2907,8 +2983,8 @@ _comac_scaled_glyph_lookup (comac_scaled_font_t *scaled_font,
      * foreground color has changed, request a new image. */
     if ((info & COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) &&
 	scaled_glyph->uses_foreground_color &&
-	!_comac_color_equal (foreground_color, &scaled_glyph->foreground_color))
-    {
+	! _comac_color_equal (foreground_color,
+			      &scaled_glyph->foreground_color)) {
 	need_info |= COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE;
     }
 
@@ -2944,7 +3020,6 @@ _comac_scaled_font_get_max_scale (comac_scaled_font_t *scaled_font)
     return scaled_font->max_scale;
 }
 
-
 /**
  * comac_scaled_font_get_font_face:
  * @scaled_font: a #comac_scaled_font_t
@@ -2963,7 +3038,7 @@ comac_font_face_t *
 comac_scaled_font_get_font_face (comac_scaled_font_t *scaled_font)
 {
     if (scaled_font->status)
-	return (comac_font_face_t*) &_comac_font_face_nil;
+	return (comac_font_face_t *) &_comac_font_face_nil;
 
     if (scaled_font->original_font_face != NULL)
 	return scaled_font->original_font_face;
@@ -2982,8 +3057,8 @@ comac_scaled_font_get_font_face (comac_scaled_font_t *scaled_font)
  * Since: 1.2
  **/
 void
-comac_scaled_font_get_font_matrix (comac_scaled_font_t	*scaled_font,
-				   comac_matrix_t	*font_matrix)
+comac_scaled_font_get_font_matrix (comac_scaled_font_t *scaled_font,
+				   comac_matrix_t *font_matrix)
 {
     if (scaled_font->status) {
 	comac_matrix_init_identity (font_matrix);
@@ -3006,8 +3081,8 @@ comac_scaled_font_get_font_matrix (comac_scaled_font_t	*scaled_font,
  * Since: 1.2
  **/
 void
-comac_scaled_font_get_ctm (comac_scaled_font_t	*scaled_font,
-			   comac_matrix_t	*ctm)
+comac_scaled_font_get_ctm (comac_scaled_font_t *scaled_font,
+			   comac_matrix_t *ctm)
 {
     if (scaled_font->status) {
 	comac_matrix_init_identity (ctm);
@@ -3030,8 +3105,8 @@ comac_scaled_font_get_ctm (comac_scaled_font_t	*scaled_font,
  * Since: 1.8
  **/
 void
-comac_scaled_font_get_scale_matrix (comac_scaled_font_t	*scaled_font,
-				    comac_matrix_t	*scale_matrix)
+comac_scaled_font_get_scale_matrix (comac_scaled_font_t *scaled_font,
+				    comac_matrix_t *scale_matrix)
 {
     if (scaled_font->status) {
 	comac_matrix_init_identity (scale_matrix);
@@ -3052,8 +3127,8 @@ comac_scaled_font_get_scale_matrix (comac_scaled_font_t	*scaled_font,
  * Since: 1.2
  **/
 void
-comac_scaled_font_get_font_options (comac_scaled_font_t		*scaled_font,
-				    comac_font_options_t	*options)
+comac_scaled_font_get_font_options (comac_scaled_font_t *scaled_font,
+				    comac_font_options_t *options)
 {
     if (comac_font_options_status (options))
 	return;
@@ -3069,8 +3144,9 @@ comac_scaled_font_get_font_options (comac_scaled_font_t		*scaled_font,
 comac_bool_t
 _comac_scaled_font_has_color_glyphs (comac_scaled_font_t *scaled_font)
 {
-    if (scaled_font->backend != NULL && scaled_font->backend->has_color_glyphs != NULL)
-        return scaled_font->backend->has_color_glyphs (scaled_font);
+    if (scaled_font->backend != NULL &&
+	scaled_font->backend->has_color_glyphs != NULL)
+	return scaled_font->backend->has_color_glyphs (scaled_font);
     else
-       return FALSE;
+	return FALSE;
 }

@@ -28,24 +28,25 @@
 #include "comac-test.h"
 
 /* Lengths of the dashes of the dash patterns */
-static const double dashes[] = { 2, 2, 4, 4 };
+static const double dashes[] = {2, 2, 4, 4};
 /* Dash offset in userspace units
  * They always grow by 2, so the dash pattern is
  * should be shifted by the same amount each time */
-static const double frac_offset[] = { 0, 2, 4, 6 };
+static const double frac_offset[] = {0, 2, 4, 6};
 /* Dash offset relative to the whole dash pattern
  * This corresponds to the non-inverted part only if
  * the dash pattern has odd length, so the expected result
  * is the same for every int_offset if the pattern has
  * even length, and inverted each time (or shifted by half
  * period, which is the same) if the pattern has odd length. */
-static const double int_offset[] = { -2, -1, 0, 1, 2 };
+static const double int_offset[] = {-2, -1, 0, 1, 2};
 
 #define PAD 6
 #define STROKE_LENGTH 32
 #define IMAGE_WIDTH (PAD + (STROKE_LENGTH + PAD) * ARRAY_LENGTH (dashes))
-#define IMAGE_HEIGHT (PAD + PAD * ARRAY_LENGTH (int_offset) + PAD * ARRAY_LENGTH (frac_offset) * ARRAY_LENGTH (int_offset))
-
+#define IMAGE_HEIGHT                                                           \
+    (PAD + PAD * ARRAY_LENGTH (int_offset) +                                   \
+     PAD * ARRAY_LENGTH (frac_offset) * ARRAY_LENGTH (int_offset))
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -64,9 +65,18 @@ draw (comac_t *cr, int width, int height)
 	total += dashes[k];
 	for (i = 0; i < ARRAY_LENGTH (frac_offset); ++i) {
 	    for (j = 0; j < ARRAY_LENGTH (int_offset); ++j) {
-		comac_set_dash (cr, dashes, k + 1, frac_offset[i] + total * int_offset[j]);
-		comac_move_to (cr, (STROKE_LENGTH + PAD) * k + PAD, PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
-		comac_line_to (cr, (STROKE_LENGTH + PAD) * (k + 1), PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
+		comac_set_dash (cr,
+				dashes,
+				k + 1,
+				frac_offset[i] + total * int_offset[j]);
+		comac_move_to (
+		    cr,
+		    (STROKE_LENGTH + PAD) * k + PAD,
+		    PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
+		comac_line_to (
+		    cr,
+		    (STROKE_LENGTH + PAD) * (k + 1),
+		    PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
 		comac_stroke (cr);
 	    }
 	}
@@ -78,6 +88,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (dash_offset,
 	    "Tests dashes of different length with various offsets",
 	    "stroke, dash", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

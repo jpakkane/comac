@@ -32,7 +32,7 @@ draw (comac_t *cr, int width, int height)
 {
     comac_paint (cr); /* opaque background */
 
-    comac_rectangle (cr,  20, 20, 0, 0);
+    comac_rectangle (cr, 20, 20, 0, 0);
     comac_clip (cr);
 
     comac_push_group (cr); /* => 0x0 group */
@@ -60,6 +60,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_empty_group,
 	    "Test handling of groups with everything clipped",
 	    "clip, group", /* keywords */
-	    NULL, /* requirements */
-	    40, 40,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    40,
+	    40,
+	    NULL,
+	    draw)

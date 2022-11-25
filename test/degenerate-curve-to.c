@@ -44,51 +44,31 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
 
     /* entirely degenerate */
-    comac_move_to (cr,
-		    2.5, 2.5);
-    comac_curve_to (cr,
-		    2.5, 2.5,
-		    2.5, 2.5,
-		    2.5, 2.5);
+    comac_move_to (cr, 2.5, 2.5);
+    comac_curve_to (cr, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5);
     comac_stroke (cr);
 
     /* horizontal */
-    comac_move_to (cr,
-		     5.5, 2.5);
-    comac_curve_to (cr,
-		    22.0, 2.5,
-		    -0.5, 2.5,
-		     5.5, 2.5);
+    comac_move_to (cr, 5.5, 2.5);
+    comac_curve_to (cr, 22.0, 2.5, -0.5, 2.5, 5.5, 2.5);
     comac_stroke (cr);
 
     /* vertical */
-    comac_move_to (cr,
-		    7.5,  0.0);
-    comac_curve_to (cr,
-		    7.5, 11.0,
-		    7.5,  0.0,
-		    7.5,  0.0);
+    comac_move_to (cr, 7.5, 0.0);
+    comac_curve_to (cr, 7.5, 11.0, 7.5, 0.0, 7.5, 0.0);
     comac_stroke (cr);
 
     comac_translate (cr, 15, 0);
 
     /* horizontal/vertical */
-    comac_move_to (cr,
-		     5.5,  0.5);
-    comac_curve_to (cr,
-		    -0.5,  0.5,
-		     5.5, 10.5,
-		     5.5,  0.5);
+    comac_move_to (cr, 5.5, 0.5);
+    comac_curve_to (cr, -0.5, 0.5, 5.5, 10.5, 5.5, 0.5);
 
     comac_translate (cr, 10, 0);
 
     /* vertical/horizontal */
-    comac_move_to (cr,
-		     5.5,  0.0);
-    comac_curve_to (cr,
-		     5.5, 11.0,
-		    10.5,  0.0,
-		     5.5,  0.0);
+    comac_move_to (cr, 5.5, 0.0);
+    comac_curve_to (cr, 5.5, 11.0, 10.5, 0.0, 5.5, 0.0);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -97,7 +77,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (degenerate_curve_to,
 	    "Test optimization treating degenerate curve_to as line_to",
 	    "path", /* keywords */
-	    NULL, /* requirements */
+	    NULL,   /* requirements */
 	    40,
 	    5,
-	    NULL, draw)
+	    NULL,
+	    draw)

@@ -62,6 +62,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (a1_fill,
 	    "Test filling of an a1-surface and use as mask",
 	    "a1, alpha, fill, mask", /* keywords */
-	    "target=raster", /* requirements */
-	    100, 100,
-	    NULL, draw)
+	    "target=raster",	     /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw)

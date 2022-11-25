@@ -36,7 +36,8 @@ draw (comac_t *cr, int width, int height)
 
     similar = comac_surface_create_similar (comac_get_target (cr),
 					    COMAC_CONTENT_COLOR_ALPHA,
-					    20, 20);
+					    20,
+					    20);
 
     /* copy the centre */
     cr_similar = comac_create (similar);
@@ -48,7 +49,10 @@ draw (comac_t *cr, int width, int height)
 
     /* fill the centre */
     region = comac_surface_create_for_rectangle (comac_get_target (cr),
-						 20, 20, 20, 20);
+						 20,
+						 20,
+						 20,
+						 20);
     cr_region = comac_create (region);
     comac_surface_destroy (region);
 
@@ -90,9 +94,13 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (subsurface_modify_child,
-	    "Tests source clipping with later modifications",
-	    "subsurface", /* keywords */
-	    "target=raster", /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
-	    60, 60,
-	    NULL, draw)
+COMAC_TEST (
+    subsurface_modify_child,
+    "Tests source clipping with later modifications",
+    "subsurface", /* keywords */
+    "target=raster",
+    /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
+    60,
+    60,
+    NULL,
+    draw)

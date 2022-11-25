@@ -46,21 +46,21 @@
 
 /* Markers with no parameters. All other markers are followed by a two
  * byte length of the parameters. */
-#define TEM       0x01
+#define TEM 0x01
 #define RST_begin 0xd0
-#define RST_end   0xd7
-#define SOI       0xd8
-#define EOI       0xd9
+#define RST_end 0xd7
+#define SOI 0xd8
+#define EOI 0xd9
 
 /* Start of frame markers. */
-#define SOF0  0xc0
-#define SOF1  0xc1
-#define SOF2  0xc2
-#define SOF3  0xc3
-#define SOF5  0xc5
-#define SOF6  0xc6
-#define SOF7  0xc7
-#define SOF9  0xc9
+#define SOF0 0xc0
+#define SOF1 0xc1
+#define SOF2 0xc2
+#define SOF3 0xc3
+#define SOF5 0xc5
+#define SOF6 0xc6
+#define SOF7 0xc7
+#define SOF9 0xc9
 #define SOF10 0xca
 #define SOF11 0xcb
 #define SOF13 0xcd
@@ -88,9 +88,9 @@ _jpeg_extract_info (comac_image_info_t *info, const unsigned char *p)
 }
 
 comac_int_status_t
-_comac_image_info_get_jpeg_info (comac_image_info_t	*info,
-				 const unsigned char	*data,
-				 unsigned long		 length)
+_comac_image_info_get_jpeg_info (comac_image_info_t *info,
+				 const unsigned char *data,
+				 unsigned long length)
 {
     const unsigned char *p = data;
 
@@ -158,8 +158,7 @@ _comac_image_info_get_jpeg_info (comac_image_info_t	*info,
 #define JPX_IMAGE_HEADER 0x69686472
 
 static const unsigned char _jpx_signature[] = {
-    0x00, 0x00, 0x00, 0x0c, 0x6a, 0x50, 0x20, 0x20, 0x0d, 0x0a, 0x87, 0x0a
-};
+    0x00, 0x00, 0x00, 0x0c, 0x6a, 0x50, 0x20, 0x20, 0x0d, 0x0a, 0x87, 0x0a};
 
 static const unsigned char *
 _jpx_next_box (const unsigned char *p)
@@ -180,7 +179,7 @@ _jpx_match_box (const unsigned char *p, const unsigned char *end, uint32_t type)
 
     if (p + 8 < end) {
 	length = get_unaligned_be32 (p);
-	if (get_unaligned_be32 (p + 4) == type &&  p + length < end)
+	if (get_unaligned_be32 (p + 4) == type && p + length < end)
 	    return TRUE;
     }
 
@@ -209,19 +208,19 @@ _jpx_extract_info (const unsigned char *p, comac_image_info_t *info)
 }
 
 comac_int_status_t
-_comac_image_info_get_jpx_info (comac_image_info_t	*info,
-				const unsigned char	*data,
-				unsigned long		 length)
+_comac_image_info_get_jpx_info (comac_image_info_t *info,
+				const unsigned char *data,
+				unsigned long length)
 {
     const unsigned char *p = data;
     const unsigned char *end = data + length;
 
     /* First 12 bytes must be the JPEG 2000 signature box. */
-    if (length < ARRAY_LENGTH(_jpx_signature) ||
-	memcmp(p, _jpx_signature, ARRAY_LENGTH(_jpx_signature)) != 0)
+    if (length < ARRAY_LENGTH (_jpx_signature) ||
+	memcmp (p, _jpx_signature, ARRAY_LENGTH (_jpx_signature)) != 0)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    p += ARRAY_LENGTH(_jpx_signature);
+    p += ARRAY_LENGTH (_jpx_signature);
 
     /* Next box must be a File Type Box */
     if (! _jpx_match_box (p, end, JPX_FILETYPE))
@@ -231,7 +230,7 @@ _comac_image_info_get_jpx_info (comac_image_info_t	*info,
 
     /* Locate the JP2 header box. */
     p = _jpx_find_box (p, end, JPX_JP2_HEADER);
-    if (!p)
+    if (! p)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Step into the JP2 header box. First box must be the Image
@@ -254,29 +253,29 @@ _comac_image_info_get_jpx_info (comac_image_info_t	*info,
 
 #define PNG_IHDR 0x49484452
 
-static const unsigned char _png_magic[8] = { 137, 80, 78, 71, 13, 10, 26, 10 };
+static const unsigned char _png_magic[8] = {137, 80, 78, 71, 13, 10, 26, 10};
 
 comac_int_status_t
-_comac_image_info_get_png_info (comac_image_info_t     *info,
-                               const unsigned char     *data,
-                               unsigned long            length)
+_comac_image_info_get_png_info (comac_image_info_t *info,
+				const unsigned char *data,
+				unsigned long length)
 {
     const unsigned char *p = data;
     const unsigned char *end = data + length;
 
     if (length < 8 || memcmp (data, _png_magic, 8) != 0)
-       return COMAC_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     p += 8;
 
     /* The first chunk must be IDHR. IDHR has 13 bytes of data plus
      * the 12 bytes of overhead for the chunk. */
     if (p + 13 + 12 > end)
-       return COMAC_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     p += 4;
     if (get_unaligned_be32 (p) != PNG_IHDR)
-       return COMAC_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     p += 4;
     info->width = get_unaligned_be32 (p);
@@ -289,7 +288,7 @@ _comac_image_info_get_png_info (comac_image_info_t     *info,
 static const unsigned char *
 _jbig2_find_data_end (const unsigned char *p,
 		      const unsigned char *end,
-		      int                  type)
+		      int type)
 {
     unsigned char end_seq[2];
     int mmr;
@@ -326,11 +325,11 @@ _jbig2_find_data_end (const unsigned char *p,
 }
 
 static const unsigned char *
-_jbig2_get_next_segment (const unsigned char  *p,
-			 const unsigned char  *end,
-			 int                  *type,
+_jbig2_get_next_segment (const unsigned char *p,
+			 const unsigned char *end,
+			 int *type,
 			 const unsigned char **data,
-			 unsigned long        *data_len)
+			 unsigned long *data_len)
 {
     unsigned long seg_num;
     comac_bool_t big_page_size;
@@ -349,7 +348,7 @@ _jbig2_get_next_segment (const unsigned char  *p,
     num_segs = p[0] >> 5;
     if (num_segs == 7) {
 	num_segs = get_unaligned_be32 (p) & 0x1fffffff;
-	ref_seg_bytes = 4 + ((num_segs + 1)/8);
+	ref_seg_bytes = 4 + ((num_segs + 1) / 8);
     } else {
 	ref_seg_bytes = 1;
     }
@@ -374,7 +373,7 @@ _jbig2_get_next_segment (const unsigned char  *p,
     if (*data_len == 0xffffffff) {
 	/* if data length is -1 we have to scan through the data to find the end */
 	p = _jbig2_find_data_end (*data, end, *type);
-	if (!p || p >= end)
+	if (! p || p >= end)
 	    return NULL;
 
 	*data_len = p - *data;
@@ -398,9 +397,9 @@ _jbig2_extract_info (comac_image_info_t *info, const unsigned char *p)
 }
 
 comac_int_status_t
-_comac_image_info_get_jbig2_info (comac_image_info_t	*info,
-				  const unsigned char	*data,
-				  unsigned long		 length)
+_comac_image_info_get_jbig2_info (comac_image_info_t *info,
+				  const unsigned char *data,
+				  unsigned long length)
 {
     const unsigned char *p = data;
     const unsigned char *end = data + length;
@@ -409,7 +408,11 @@ _comac_image_info_get_jbig2_info (comac_image_info_t	*info,
     unsigned long seg_data_len;
 
     while (p && p < end) {
-	p = _jbig2_get_next_segment (p, end, &seg_type, &seg_data, &seg_data_len);
+	p = _jbig2_get_next_segment (p,
+				     end,
+				     &seg_type,
+				     &seg_data,
+				     &seg_data_len);
 	if (p && seg_type == 48 && seg_data_len > 8) {
 	    /* page information segment */
 	    _jbig2_extract_info (info, seg_data);

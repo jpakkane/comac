@@ -49,10 +49,10 @@ typedef struct comac_in_fill {
 } comac_in_fill_t;
 
 static void
-_comac_in_fill_init (comac_in_fill_t	*in_fill,
-		     double		 tolerance,
-		     double		 x,
-		     double		 y)
+_comac_in_fill_init (comac_in_fill_t *in_fill,
+		     double tolerance,
+		     double x,
+		     double y)
 {
     in_fill->on_edge = FALSE;
     in_fill->winding = 0;
@@ -125,10 +125,9 @@ _comac_in_fill_add_edge (comac_in_fill_t *in_fill,
     if ((p1->x == in_fill->x && p1->y == in_fill->y) ||
 	(p2->x == in_fill->x && p2->y == in_fill->y) ||
 	(! (p2->y < in_fill->y || p1->y > in_fill->y ||
-	   (p1->x > in_fill->x && p2->x > in_fill->x) ||
-	   (p1->x < in_fill->x && p2->x < in_fill->x)) &&
-	 edge_compare_for_y_against_x (p1, p2, in_fill->y, in_fill->x) == 0))
-    {
+	    (p1->x > in_fill->x && p2->x > in_fill->x) ||
+	    (p1->x < in_fill->x && p2->x < in_fill->x)) &&
+	 edge_compare_for_y_against_x (p1, p2, in_fill->y, in_fill->x) == 0)) {
 	in_fill->on_edge = TRUE;
 	return;
     }
@@ -142,15 +141,13 @@ _comac_in_fill_add_edge (comac_in_fill_t *in_fill,
 	return;
 
     if ((p1->x <= in_fill->x && p2->x <= in_fill->x) ||
-	edge_compare_for_y_against_x (p1, p2, in_fill->y, in_fill->x) < 0)
-    {
+	edge_compare_for_y_against_x (p1, p2, in_fill->y, in_fill->x) < 0) {
 	in_fill->winding += dir;
     }
 }
 
 static comac_status_t
-_comac_in_fill_move_to (void *closure,
-			const comac_point_t *point)
+_comac_in_fill_move_to (void *closure, const comac_point_t *point)
 {
     comac_in_fill_t *in_fill = closure;
 
@@ -169,8 +166,7 @@ _comac_in_fill_move_to (void *closure,
 }
 
 static comac_status_t
-_comac_in_fill_line_to (void *closure,
-			const comac_point_t *point)
+_comac_in_fill_line_to (void *closure, const comac_point_t *point)
 {
     comac_in_fill_t *in_fill = closure;
 
@@ -185,8 +181,8 @@ _comac_in_fill_line_to (void *closure,
 
 static comac_status_t
 _comac_in_fill_add_point (void *closure,
-                          const comac_point_t *point,
-                          const comac_slope_t *tangent)
+			  const comac_point_t *point,
+			  const comac_slope_t *tangent)
 {
     return _comac_in_fill_line_to (closure, point);
 };
@@ -203,21 +199,30 @@ _comac_in_fill_curve_to (void *closure,
 
     /* first reject based on bbox */
     bot = top = in_fill->current_point.y;
-    if (b->y < top) top = b->y;
-    if (b->y > bot) bot = b->y;
-    if (c->y < top) top = c->y;
-    if (c->y > bot) bot = c->y;
-    if (d->y < top) top = d->y;
-    if (d->y > bot) bot = d->y;
+    if (b->y < top)
+	top = b->y;
+    if (b->y > bot)
+	bot = b->y;
+    if (c->y < top)
+	top = c->y;
+    if (c->y > bot)
+	bot = c->y;
+    if (d->y < top)
+	top = d->y;
+    if (d->y > bot)
+	bot = d->y;
     if (bot < in_fill->y || top > in_fill->y) {
 	in_fill->current_point = *d;
 	return COMAC_STATUS_SUCCESS;
     }
 
     left = in_fill->current_point.x;
-    if (b->x < left) left = b->x;
-    if (c->x < left) left = c->x;
-    if (d->x < left) left = d->x;
+    if (b->x < left)
+	left = b->x;
+    if (c->x < left)
+	left = c->x;
+    if (d->x < left)
+	left = d->x;
     if (left > in_fill->x) {
 	in_fill->current_point = *d;
 	return COMAC_STATUS_SUCCESS;
@@ -227,8 +232,10 @@ _comac_in_fill_curve_to (void *closure,
     if (! _comac_spline_init (&spline,
 			      _comac_in_fill_add_point,
 			      in_fill,
-			      &in_fill->current_point, b, c, d))
-    {
+			      &in_fill->current_point,
+			      b,
+			      c,
+			      d)) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -252,11 +259,11 @@ _comac_in_fill_close_path (void *closure)
 }
 
 comac_bool_t
-_comac_path_fixed_in_fill (const comac_path_fixed_t	*path,
-			   comac_fill_rule_t	 fill_rule,
-			   double		 tolerance,
-			   double		 x,
-			   double		 y)
+_comac_path_fixed_in_fill (const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule,
+			   double tolerance,
+			   double x,
+			   double y)
 {
     comac_in_fill_t in_fill;
     comac_status_t status;
@@ -279,18 +286,19 @@ _comac_path_fixed_in_fill (const comac_path_fixed_t	*path,
 
     if (in_fill.on_edge) {
 	is_inside = TRUE;
-    } else switch (fill_rule) {
-    case COMAC_FILL_RULE_EVEN_ODD:
-	is_inside = in_fill.winding & 1;
-	break;
-    case COMAC_FILL_RULE_WINDING:
-	is_inside = in_fill.winding != 0;
-	break;
-    default:
-	ASSERT_NOT_REACHED;
-	is_inside = FALSE;
-	break;
-    }
+    } else
+	switch (fill_rule) {
+	case COMAC_FILL_RULE_EVEN_ODD:
+	    is_inside = in_fill.winding & 1;
+	    break;
+	case COMAC_FILL_RULE_WINDING:
+	    is_inside = in_fill.winding != 0;
+	    break;
+	default:
+	    ASSERT_NOT_REACHED;
+	    is_inside = FALSE;
+	    break;
+	}
 
     _comac_in_fill_fini (&in_fill);
 

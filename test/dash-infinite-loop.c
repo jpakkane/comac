@@ -47,7 +47,7 @@ do_dash (comac_t *cr, double dx, double dy, double offset)
 {
     /* Set the dash pattern to be predominantly ON so that we can
      * create a reference image by just ignoring the dashing. */
-    static double dash[] = { EPS, EPS/512 };
+    static double dash[] = {EPS, EPS / 512};
     comac_set_dash (cr, dash, 2, offset);
     comac_move_to (cr, 10, 10);
     comac_rel_line_to (cr, dx, dy);
@@ -58,26 +58,29 @@ do_dash (comac_t *cr, double dx, double dy, double offset)
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    (void)width; (void)height;
+    (void) width;
+    (void) height;
 
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
-    comac_set_source_rgb (cr, 0,0,0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
     comac_set_line_width (cr, 10);
 
     /* The following calls will wedge in various places that try
      * to advance the dashing in a loop inside the stroker. */
     do_dash (cr, 30, 30, 0); /* _comac_stroker_line_to_dashed */
-    do_dash (cr, 30,  0, 0); /* _comac_rectilinear_stroker_line_to_dashed */
+    do_dash (cr, 30, 0, 0);  /* _comac_rectilinear_stroker_line_to_dashed */
     do_dash (cr, 30, 30, 1); /* _comac_stroker_dash_start */
 
     return COMAC_TEST_SUCCESS;
 }
 
 COMAC_TEST (dash_infinite_loop,
-            "Test dashing with extremely small dash lengths.",
-            "dash",
-            NULL,
-            100, 100,
-            NULL, draw);
+	    "Test dashing with extremely small dash lengths.",
+	    "dash",
+	    NULL,
+	    100,
+	    100,
+	    NULL,
+	    draw);

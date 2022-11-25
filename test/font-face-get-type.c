@@ -39,7 +39,8 @@ preamble (comac_test_context_t *ctx)
     surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
     cr = comac_create (surface);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
@@ -48,8 +49,11 @@ preamble (comac_test_context_t *ctx)
     font_face = comac_get_font_face (cr);
 
     if (comac_font_face_get_type (font_face) != COMAC_FONT_TYPE_TOY) {
-	comac_test_log (ctx, "Unexpected value %d from comac_font_face_get_type (expected %d)\n",
-			comac_font_face_get_type (font_face), COMAC_FONT_TYPE_TOY);
+	comac_test_log (
+	    ctx,
+	    "Unexpected value %d from comac_font_face_get_type (expected %d)\n",
+	    comac_font_face_get_type (font_face),
+	    COMAC_FONT_TYPE_TOY);
 	status = COMAC_TEST_FAILURE;
 	goto done;
     }
@@ -59,7 +63,9 @@ preamble (comac_test_context_t *ctx)
     scaled_font = comac_get_scaled_font (cr);
 
     if (comac_scaled_font_get_font_face (scaled_font) != font_face) {
-	comac_test_log (ctx, "Font face returned from the scaled font is different from that returned by the context\n");
+	comac_test_log (ctx,
+			"Font face returned from the scaled font is different "
+			"from that returned by the context\n");
 	status = COMAC_TEST_FAILURE;
 	goto done;
     }
@@ -74,6 +80,8 @@ done:
 COMAC_TEST (font_face_get_type,
 	    "Check the returned type from comac_select_font_face.",
 	    "font", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,   /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

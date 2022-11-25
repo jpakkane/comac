@@ -94,8 +94,7 @@ _comac_clip_contains_rectangle_box (const comac_clip_t *clip,
 	if (box->p1.x >= clip->boxes[i].p1.x &&
 	    box->p1.y >= clip->boxes[i].p1.y &&
 	    box->p2.x <= clip->boxes[i].p2.x &&
-	    box->p2.y <= clip->boxes[i].p2.y)
-	{
+	    box->p2.y <= clip->boxes[i].p2.y) {
 	    return TRUE;
 	}
     }
@@ -104,13 +103,12 @@ _comac_clip_contains_rectangle_box (const comac_clip_t *clip,
 }
 
 comac_bool_t
-_comac_clip_contains_box (const comac_clip_t *clip,
-			  const comac_box_t *box)
+_comac_clip_contains_box (const comac_clip_t *clip, const comac_box_t *box)
 {
     comac_rectangle_int_t rect;
 
     _comac_box_round_to_rectangle (box, &rect);
-    return _comac_clip_contains_rectangle_box(clip, &rect, box);
+    return _comac_clip_contains_rectangle_box (clip, &rect, box);
 }
 
 comac_bool_t
@@ -179,12 +177,9 @@ _comac_clip_intersect_rectangle_box (comac_clip_t *clip,
     /* Does the new box wholly subsume the clip? Perform a cheap check
      * for the common condition of a single clip rectangle.
      */
-    if (clip->num_boxes == 1 &&
-	clip->boxes[0].p1.x >= box->p1.x &&
-	clip->boxes[0].p1.y >= box->p1.y &&
-	clip->boxes[0].p2.x <= box->p2.x &&
-	clip->boxes[0].p2.y <= box->p2.y)
-    {
+    if (clip->num_boxes == 1 && clip->boxes[0].p1.x >= box->p1.x &&
+	clip->boxes[0].p1.y >= box->p1.y && clip->boxes[0].p2.x <= box->p2.x &&
+	clip->boxes[0].p2.y <= box->p2.y) {
 	return clip;
     }
 
@@ -216,17 +211,17 @@ _comac_clip_intersect_rectangle_box (comac_clip_t *clip,
 
     extents_box = clip->boxes[0];
     for (i = 1; i < clip->num_boxes; i++) {
-	    if (clip->boxes[i].p1.x < extents_box.p1.x)
-		extents_box.p1.x = clip->boxes[i].p1.x;
+	if (clip->boxes[i].p1.x < extents_box.p1.x)
+	    extents_box.p1.x = clip->boxes[i].p1.x;
 
-	    if (clip->boxes[i].p1.y < extents_box.p1.y)
-		extents_box.p1.y = clip->boxes[i].p1.y;
+	if (clip->boxes[i].p1.y < extents_box.p1.y)
+	    extents_box.p1.y = clip->boxes[i].p1.y;
 
-	    if (clip->boxes[i].p2.x > extents_box.p2.x)
-		extents_box.p2.x = clip->boxes[i].p2.x;
+	if (clip->boxes[i].p2.x > extents_box.p2.x)
+	    extents_box.p2.x = clip->boxes[i].p2.x;
 
-	    if (clip->boxes[i].p2.y > extents_box.p2.y)
-		extents_box.p2.y = clip->boxes[i].p2.y;
+	if (clip->boxes[i].p2.y > extents_box.p2.y)
+	    extents_box.p2.y = clip->boxes[i].p2.y;
     }
 
     if (clip->path == NULL) {
@@ -249,8 +244,7 @@ _comac_clip_intersect_rectangle_box (comac_clip_t *clip,
 }
 
 comac_clip_t *
-_comac_clip_intersect_box (comac_clip_t *clip,
-			   const comac_box_t *box)
+_comac_clip_intersect_box (comac_clip_t *clip, const comac_box_t *box)
 {
     comac_rectangle_int_t r;
 
@@ -283,8 +277,7 @@ _comac_boxes_copy_to_clip (const comac_boxes_t *boxes, comac_clip_t *clip)
     }
 
     clip->boxes = _comac_boxes_to_array (boxes, &clip->num_boxes);
-    if (unlikely (clip->boxes == NULL))
-    {
+    if (unlikely (clip->boxes == NULL)) {
 	_comac_clip_set_all_clipped (clip);
 	return FALSE;
     }
@@ -293,8 +286,7 @@ _comac_boxes_copy_to_clip (const comac_boxes_t *boxes, comac_clip_t *clip)
 }
 
 comac_clip_t *
-_comac_clip_intersect_boxes (comac_clip_t *clip,
-			     const comac_boxes_t *boxes)
+_comac_clip_intersect_boxes (comac_clip_t *clip, const comac_boxes_t *boxes)
 {
     comac_boxes_t clip_boxes;
     comac_box_t limits;
@@ -314,7 +306,8 @@ _comac_clip_intersect_boxes (comac_clip_t *clip,
 
     if (clip->num_boxes) {
 	_comac_boxes_init_for_array (&clip_boxes, clip->boxes, clip->num_boxes);
-	if (unlikely (_comac_boxes_intersect (&clip_boxes, boxes, &clip_boxes))) {
+	if (unlikely (
+		_comac_boxes_intersect (&clip_boxes, boxes, &clip_boxes))) {
 	    clip = _comac_clip_set_all_clipped (clip);
 	    goto out;
 	}
@@ -357,7 +350,7 @@ out:
 }
 
 comac_clip_t *
-_comac_clip_intersect_rectangle (comac_clip_t       *clip,
+_comac_clip_intersect_rectangle (comac_clip_t *clip,
 				 const comac_rectangle_int_t *r)
 {
     comac_box_t box;
@@ -387,7 +380,8 @@ static void
 _add_clipped_edge (struct reduce *r,
 		   const comac_point_t *p1,
 		   const comac_point_t *p2,
-		   int y1, int y2)
+		   int y1,
+		   int y2)
 {
     comac_fixed_t x;
 
@@ -409,9 +403,7 @@ _add_clipped_edge (struct reduce *r,
 }
 
 static void
-_add_edge (struct reduce *r,
-	   const comac_point_t *p1,
-	   const comac_point_t *p2)
+_add_edge (struct reduce *r, const comac_point_t *p1, const comac_point_t *p2)
 {
     int top, bottom;
     int top_y, bot_y;
@@ -452,10 +444,10 @@ _add_edge (struct reduce *r,
 	} else {
 	    int p1_y, p2_y;
 
-	    p1_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
-							     limits->p1.x);
-	    p2_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
-							     limits->p2.x);
+	    p1_y =
+		_comac_edge_compute_intersection_y_for_x (p1, p2, limits->p1.x);
+	    p2_y =
+		_comac_edge_compute_intersection_y_for_x (p1, p2, limits->p2.x);
 	    if (p1_y < p2_y) {
 		top_y = p1_y;
 		bot_y = p2_y;
@@ -481,8 +473,7 @@ _add_edge (struct reduce *r,
 }
 
 static comac_status_t
-_reduce_line_to (void *closure,
-		       const comac_point_t *point)
+_reduce_line_to (void *closure, const comac_point_t *point)
 {
     struct reduce *r = closure;
 
@@ -501,8 +492,7 @@ _reduce_close (void *closure)
 }
 
 static comac_status_t
-_reduce_move_to (void *closure,
-		 const comac_point_t *point)
+_reduce_move_to (void *closure, const comac_point_t *point)
 {
     struct reduce *r = closure;
     comac_status_t status;
@@ -524,7 +514,7 @@ _comac_clip_reduce_to_boxes (comac_clip_t *clip)
     comac_clip_path_t *clip_path;
     comac_status_t status;
 
-	return clip;
+    return clip;
     if (clip->path == NULL)
 	return clip;
 
@@ -535,8 +525,10 @@ _comac_clip_reduce_to_boxes (comac_clip_t *clip)
 
     r.limit.p1.x = _comac_fixed_from_int (clip->extents.x);
     r.limit.p1.y = _comac_fixed_from_int (clip->extents.y);
-    r.limit.p2.x = _comac_fixed_from_int (clip->extents.x + clip->extents.width);
-    r.limit.p2.y = _comac_fixed_from_int (clip->extents.y + clip->extents.height);
+    r.limit.p2.x =
+	_comac_fixed_from_int (clip->extents.x + clip->extents.width);
+    r.limit.p2.y =
+	_comac_fixed_from_int (clip->extents.y + clip->extents.height);
 
     clip_path = clip->path;
     do {

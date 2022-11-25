@@ -79,8 +79,7 @@ typedef struct _comac_bo_sweep_line {
 } comac_bo_sweep_line_t;
 
 static inline int
-_comac_point_compare (const comac_point_t *a,
-		      const comac_point_t *b)
+_comac_point_compare (const comac_point_t *a, const comac_point_t *b)
 {
     int cmp;
 
@@ -92,8 +91,7 @@ _comac_point_compare (const comac_point_t *a,
 }
 
 static inline int
-_comac_bo_edge_compare (const comac_bo_edge_t	*a,
-			const comac_bo_edge_t	*b)
+_comac_bo_edge_compare (const comac_bo_edge_t *a, const comac_bo_edge_t *b)
 {
     int cmp;
 
@@ -105,8 +103,7 @@ _comac_bo_edge_compare (const comac_bo_edge_t	*a,
 }
 
 static inline int
-comac_bo_event_compare (const comac_bo_event_t *a,
-			const comac_bo_event_t *b)
+comac_bo_event_compare (const comac_bo_event_t *a, const comac_bo_event_t *b)
 {
     int cmp;
 
@@ -133,8 +130,8 @@ COMAC_COMBSORT_DECLARE (_comac_bo_event_queue_sort,
 
 static void
 _comac_bo_sweep_line_init (comac_bo_sweep_line_t *sweep_line,
-			   comac_bo_event_t	**events,
-			   int			  num_events)
+			   comac_bo_event_t **events,
+			   int num_events)
 {
     _comac_bo_event_queue_sort (events, num_events);
     events[num_events] = NULL;
@@ -146,8 +143,8 @@ _comac_bo_sweep_line_init (comac_bo_sweep_line_t *sweep_line,
 }
 
 static void
-_comac_bo_sweep_line_insert (comac_bo_sweep_line_t	*sweep_line,
-			     comac_bo_edge_t		*edge)
+_comac_bo_sweep_line_insert (comac_bo_sweep_line_t *sweep_line,
+			     comac_bo_edge_t *edge)
 {
     if (sweep_line->current_edge != NULL) {
 	comac_bo_edge_t *prev, *next;
@@ -194,8 +191,8 @@ _comac_bo_sweep_line_insert (comac_bo_sweep_line_t	*sweep_line,
 }
 
 static void
-_comac_bo_sweep_line_delete (comac_bo_sweep_line_t	*sweep_line,
-			     comac_bo_edge_t	*edge)
+_comac_bo_sweep_line_delete (comac_bo_sweep_line_t *sweep_line,
+			     comac_bo_edge_t *edge)
 {
     if (edge->prev != NULL)
 	edge->prev->next = edge->next;
@@ -216,10 +213,10 @@ edges_collinear (const comac_bo_edge_t *a, const comac_bo_edge_t *b)
 }
 
 static comac_status_t
-_comac_bo_edge_end_trap (comac_bo_edge_t	*left,
-			 int32_t		 bot,
-			 comac_bool_t		 do_traps,
-			 void			*container)
+_comac_bo_edge_end_trap (comac_bo_edge_t *left,
+			 int32_t bot,
+			 comac_bool_t do_traps,
+			 void *container)
 {
     comac_bo_trap_t *trap = &left->deferred_trap;
     comac_status_t status = COMAC_STATUS_SUCCESS;
@@ -228,9 +225,11 @@ _comac_bo_edge_end_trap (comac_bo_edge_t	*left,
     if (likely (trap->top < bot)) {
 	if (do_traps) {
 	    _comac_traps_add_trap (container,
-				   trap->top, bot,
-				   &left->edge.line, &trap->right->edge.line);
-	    status =  _comac_traps_status ((comac_traps_t *) container);
+				   trap->top,
+				   bot,
+				   &left->edge.line,
+				   &trap->right->edge.line);
+	    status = _comac_traps_status ((comac_traps_t *) container);
 	} else {
 	    comac_box_t box;
 
@@ -238,7 +237,8 @@ _comac_bo_edge_end_trap (comac_bo_edge_t	*left,
 	    box.p1.y = trap->top;
 	    box.p2.x = trap->right->edge.line.p1.x;
 	    box.p2.y = bot;
-	    status = _comac_boxes_add (container, COMAC_ANTIALIAS_DEFAULT, &box);
+	    status =
+		_comac_boxes_add (container, COMAC_ANTIALIAS_DEFAULT, &box);
 	}
     }
 
@@ -253,11 +253,11 @@ _comac_bo_edge_end_trap (comac_bo_edge_t	*left,
  * right edge differs from `edge->next', or do nothing if the new
  * trapezoid would be a continuation of the existing one. */
 static inline comac_status_t
-_comac_bo_edge_start_or_continue_trap (comac_bo_edge_t	*left,
-				       comac_bo_edge_t  *right,
-				       int               top,
-				       comac_bool_t	 do_traps,
-				       void		*container)
+_comac_bo_edge_start_or_continue_trap (comac_bo_edge_t *left,
+				       comac_bo_edge_t *right,
+				       int top,
+				       comac_bool_t do_traps,
+				       void *container)
 {
     comac_status_t status;
 
@@ -265,8 +265,8 @@ _comac_bo_edge_start_or_continue_trap (comac_bo_edge_t	*left,
 	return COMAC_STATUS_SUCCESS;
 
     if (left->deferred_trap.right != NULL) {
-	if (right != NULL && edges_collinear (left->deferred_trap.right, right))
-	{
+	if (right != NULL &&
+	    edges_collinear (left->deferred_trap.right, right)) {
 	    /* continuation on right, so just swap edges */
 	    left->deferred_trap.right = right;
 	    return COMAC_STATUS_SUCCESS;
@@ -286,11 +286,11 @@ _comac_bo_edge_start_or_continue_trap (comac_bo_edge_t	*left,
 }
 
 static inline comac_status_t
-_active_edges_to_traps (comac_bo_edge_t		*left,
-			int32_t			 top,
-			comac_fill_rule_t	 fill_rule,
-			comac_bool_t		 do_traps,
-			void			*container)
+_active_edges_to_traps (comac_bo_edge_t *left,
+			int32_t top,
+			comac_fill_rule_t fill_rule,
+			comac_bool_t do_traps,
+			void *container)
 {
     comac_bo_edge_t *right;
     comac_status_t status;
@@ -321,7 +321,10 @@ _active_edges_to_traps (comac_bo_edge_t		*left,
 	    right = left->next;
 	    while (right != NULL) {
 		if (right->deferred_trap.right != NULL) {
-		    status = _comac_bo_edge_end_trap (right, top, do_traps, container);
+		    status = _comac_bo_edge_end_trap (right,
+						      top,
+						      do_traps,
+						      container);
 		    if (unlikely (status))
 			return status;
 		}
@@ -330,8 +333,7 @@ _active_edges_to_traps (comac_bo_edge_t		*left,
 		if (in_out == 0) {
 		    /* skip co-linear edges */
 		    if (right->next == NULL ||
-			! edges_collinear (right, right->next))
-		    {
+			! edges_collinear (right, right->next)) {
 			break;
 		    }
 		}
@@ -339,8 +341,11 @@ _active_edges_to_traps (comac_bo_edge_t		*left,
 		right = right->next;
 	    }
 
-	    status = _comac_bo_edge_start_or_continue_trap (left, right, top,
-							    do_traps, container);
+	    status = _comac_bo_edge_start_or_continue_trap (left,
+							    right,
+							    top,
+							    do_traps,
+							    container);
 	    if (unlikely (status))
 		return status;
 
@@ -355,7 +360,10 @@ _active_edges_to_traps (comac_bo_edge_t		*left,
 	    right = left->next;
 	    while (right != NULL) {
 		if (right->deferred_trap.right != NULL) {
-		    status = _comac_bo_edge_end_trap (right, top, do_traps, container);
+		    status = _comac_bo_edge_end_trap (right,
+						      top,
+						      do_traps,
+						      container);
 		    if (unlikely (status))
 			return status;
 		}
@@ -376,8 +384,11 @@ _active_edges_to_traps (comac_bo_edge_t		*left,
 		right = right->next;
 	    }
 
-	    status = _comac_bo_edge_start_or_continue_trap (left, right, top,
-							    do_traps, container);
+	    status = _comac_bo_edge_start_or_continue_trap (left,
+							    right,
+							    top,
+							    do_traps,
+							    container);
 	    if (unlikely (status))
 		return status;
 
@@ -391,11 +402,11 @@ _active_edges_to_traps (comac_bo_edge_t		*left,
 }
 
 static comac_status_t
-_comac_bentley_ottmann_tessellate_rectilinear (comac_bo_event_t   **start_events,
-					       int			 num_events,
-					       comac_fill_rule_t	 fill_rule,
-					       comac_bool_t		 do_traps,
-					       void			*container)
+_comac_bentley_ottmann_tessellate_rectilinear (comac_bo_event_t **start_events,
+					       int num_events,
+					       comac_fill_rule_t fill_rule,
+					       comac_bool_t do_traps,
+					       void *container)
 {
     comac_bo_sweep_line_t sweep_line;
     comac_bo_event_t *event;
@@ -407,7 +418,9 @@ _comac_bentley_ottmann_tessellate_rectilinear (comac_bo_event_t   **start_events
 	if (event->point.y != sweep_line.current_y) {
 	    status = _active_edges_to_traps (sweep_line.head,
 					     sweep_line.current_y,
-					     fill_rule, do_traps, container);
+					     fill_rule,
+					     do_traps,
+					     container);
 	    if (unlikely (status))
 		return status;
 
@@ -425,7 +438,8 @@ _comac_bentley_ottmann_tessellate_rectilinear (comac_bo_event_t   **start_events
 	    if (event->edge->deferred_trap.right != NULL) {
 		status = _comac_bo_edge_end_trap (event->edge,
 						  sweep_line.current_y,
-						  do_traps, container);
+						  do_traps,
+						  container);
 		if (unlikely (status))
 		    return status;
 	    }
@@ -438,9 +452,10 @@ _comac_bentley_ottmann_tessellate_rectilinear (comac_bo_event_t   **start_events
 }
 
 comac_status_t
-_comac_bentley_ottmann_tessellate_rectilinear_polygon_to_boxes (const comac_polygon_t *polygon,
-								comac_fill_rule_t	  fill_rule,
-								comac_boxes_t *boxes)
+_comac_bentley_ottmann_tessellate_rectilinear_polygon_to_boxes (
+    const comac_polygon_t *polygon,
+    comac_fill_rule_t fill_rule,
+    comac_boxes_t *boxes)
 {
     comac_status_t status;
     comac_bo_event_t stack_events[COMAC_STACK_ARRAY_LENGTH (comac_bo_event_t)];
@@ -463,8 +478,8 @@ _comac_bentley_ottmann_tessellate_rectilinear_polygon_to_boxes (const comac_poly
     if (num_events > ARRAY_LENGTH (stack_events)) {
 	events = _comac_malloc_ab_plus_c (num_events,
 					  sizeof (comac_bo_event_t) +
-					  sizeof (comac_bo_edge_t) +
-					  sizeof (comac_bo_event_t *),
+					      sizeof (comac_bo_edge_t) +
+					      sizeof (comac_bo_event_t *),
 					  sizeof (comac_bo_event_t *));
 	if (unlikely (events == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -494,9 +509,11 @@ _comac_bentley_ottmann_tessellate_rectilinear_polygon_to_boxes (const comac_poly
 	j++;
     }
 
-    status = _comac_bentley_ottmann_tessellate_rectilinear (event_ptrs, j,
+    status = _comac_bentley_ottmann_tessellate_rectilinear (event_ptrs,
+							    j,
 							    fill_rule,
-							    FALSE, boxes);
+							    FALSE,
+							    boxes);
     if (events != stack_events)
 	free (events);
 
@@ -504,8 +521,8 @@ _comac_bentley_ottmann_tessellate_rectilinear_polygon_to_boxes (const comac_poly
 }
 
 comac_status_t
-_comac_bentley_ottmann_tessellate_rectilinear_traps (comac_traps_t *traps,
-						     comac_fill_rule_t fill_rule)
+_comac_bentley_ottmann_tessellate_rectilinear_traps (
+    comac_traps_t *traps, comac_fill_rule_t fill_rule)
 {
     comac_bo_event_t stack_events[COMAC_STACK_ARRAY_LENGTH (comac_bo_event_t)];
     comac_bo_event_t *events;
@@ -529,8 +546,8 @@ _comac_bentley_ottmann_tessellate_rectilinear_traps (comac_traps_t *traps,
     if (i > ARRAY_LENGTH (stack_events)) {
 	events = _comac_malloc_ab_plus_c (i,
 					  sizeof (comac_bo_event_t) +
-					  sizeof (comac_bo_edge_t) +
-					  sizeof (comac_bo_event_t *),
+					      sizeof (comac_bo_edge_t) +
+					      sizeof (comac_bo_event_t *),
 					  sizeof (comac_bo_event_t *));
 	if (unlikely (events == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -588,9 +605,11 @@ _comac_bentley_ottmann_tessellate_rectilinear_traps (comac_traps_t *traps,
     }
 
     _comac_traps_clear (traps);
-    status = _comac_bentley_ottmann_tessellate_rectilinear (event_ptrs, j,
+    status = _comac_bentley_ottmann_tessellate_rectilinear (event_ptrs,
+							    j,
 							    fill_rule,
-							    TRUE, traps);
+							    TRUE,
+							    traps);
     traps->is_rectilinear = TRUE;
 
     if (events != stack_events)

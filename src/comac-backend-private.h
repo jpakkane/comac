@@ -57,13 +57,20 @@ struct _comac_backend {
     comac_status_t (*push_group) (void *cr, comac_content_t content);
     comac_pattern_t *(*pop_group) (void *cr);
 
-    comac_status_t (*set_source_rgba) (void *cr, double red, double green, double blue, double alpha);
-    comac_status_t (*set_source_surface) (void *cr, comac_surface_t *surface, double x, double y);
+    comac_status_t (*set_source_rgba) (
+	void *cr, double red, double green, double blue, double alpha);
+    comac_status_t (*set_source_surface) (void *cr,
+					  comac_surface_t *surface,
+					  double x,
+					  double y);
     comac_status_t (*set_source) (void *cr, comac_pattern_t *source);
     comac_pattern_t *(*get_source) (void *cr);
 
     comac_status_t (*set_antialias) (void *cr, comac_antialias_t antialias);
-    comac_status_t (*set_dash) (void *cr, const double *dashes, int num_dashes, double offset);
+    comac_status_t (*set_dash) (void *cr,
+				const double *dashes,
+				int num_dashes,
+				double offset);
     comac_status_t (*set_fill_rule) (void *cr, comac_fill_rule_t fill_rule);
     comac_status_t (*set_line_cap) (void *cr, comac_line_cap_t line_cap);
     comac_status_t (*set_line_join) (void *cr, comac_line_join_t line_join);
@@ -75,7 +82,10 @@ struct _comac_backend {
     comac_status_t (*set_tolerance) (void *cr, double tolerance);
 
     comac_antialias_t (*get_antialias) (void *cr);
-    void (*get_dash) (void *cr, double *dashes, int *num_dashes, double *offset);
+    void (*get_dash) (void *cr,
+		      double *dashes,
+		      int *num_dashes,
+		      double *offset);
     comac_fill_rule_t (*get_fill_rule) (void *cr);
     comac_line_cap_t (*get_line_cap) (void *cr);
     comac_line_join_t (*get_line_join) (void *cr);
@@ -110,16 +120,42 @@ struct _comac_backend {
     comac_status_t (*rel_move_to) (void *cr, double dx, double dy);
     comac_status_t (*line_to) (void *cr, double x, double y);
     comac_status_t (*rel_line_to) (void *cr, double dx, double dy);
-    comac_status_t (*curve_to) (void *cr, double x1, double y1, double x2, double y2, double x3, double y3);
-    comac_status_t (*rel_curve_to) (void *cr, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3);
-    comac_status_t (*arc_to) (void *cr, double x1, double y1, double x2, double y2, double radius);
-    comac_status_t (*rel_arc_to) (void *cr, double dx1, double dy1, double dx2, double dy2, double radius);
+    comac_status_t (*curve_to) (void *cr,
+				double x1,
+				double y1,
+				double x2,
+				double y2,
+				double x3,
+				double y3);
+    comac_status_t (*rel_curve_to) (void *cr,
+				    double dx1,
+				    double dy1,
+				    double dx2,
+				    double dy2,
+				    double dx3,
+				    double dy3);
+    comac_status_t (*arc_to) (
+	void *cr, double x1, double y1, double x2, double y2, double radius);
+    comac_status_t (*rel_arc_to) (void *cr,
+				  double dx1,
+				  double dy1,
+				  double dx2,
+				  double dy2,
+				  double radius);
     comac_status_t (*close_path) (void *cr);
 
-    comac_status_t (*arc) (void *cr, double xc, double yc, double radius, double angle1, double angle2, comac_bool_t forward);
-    comac_status_t (*rectangle) (void *cr, double x, double y, double width, double height);
+    comac_status_t (*arc) (void *cr,
+			   double xc,
+			   double yc,
+			   double radius,
+			   double angle1,
+			   double angle2,
+			   comac_bool_t forward);
+    comac_status_t (*rectangle) (
+	void *cr, double x, double y, double width, double height);
 
-    void (*path_extents) (void *cr, double *x1, double *y1, double *x2, double *y2);
+    void (*path_extents) (
+	void *cr, double *x1, double *y1, double *x2, double *y2);
     comac_bool_t (*has_current_point) (void *cr);
     comac_bool_t (*get_current_point) (void *cr, double *x, double *y);
 
@@ -131,8 +167,12 @@ struct _comac_backend {
 
     comac_status_t (*clip) (void *cr);
     comac_status_t (*clip_preserve) (void *cr);
-    comac_status_t (*in_clip) (void *cr, double x, double y, comac_bool_t *inside);
-    comac_status_t (*clip_extents) (void *cr, double *x1, double *y1, double *x2, double *y2);
+    comac_status_t (*in_clip) (void *cr,
+			       double x,
+			       double y,
+			       comac_bool_t *inside);
+    comac_status_t (*clip_extents) (
+	void *cr, double *x1, double *y1, double *x2, double *y2);
     comac_status_t (*reset_clip) (void *cr);
     comac_rectangle_list_t *(*clip_copy_rectangle_list) (void *cr);
 
@@ -142,30 +182,42 @@ struct _comac_backend {
 
     comac_status_t (*stroke) (void *cr);
     comac_status_t (*stroke_preserve) (void *cr);
-    comac_status_t (*in_stroke) (void *cr, double x, double y, comac_bool_t *inside);
-    comac_status_t (*stroke_extents) (void *cr, double *x1, double *y1, double *x2, double *y2);
+    comac_status_t (*in_stroke) (void *cr,
+				 double x,
+				 double y,
+				 comac_bool_t *inside);
+    comac_status_t (*stroke_extents) (
+	void *cr, double *x1, double *y1, double *x2, double *y2);
 
     comac_status_t (*fill) (void *cr);
     comac_status_t (*fill_preserve) (void *cr);
-    comac_status_t (*in_fill) (void *cr, double x, double y, comac_bool_t *inside);
-    comac_status_t (*fill_extents) (void *cr, double *x1, double *y1, double *x2, double *y2);
+    comac_status_t (*in_fill) (void *cr,
+			       double x,
+			       double y,
+			       comac_bool_t *inside);
+    comac_status_t (*fill_extents) (
+	void *cr, double *x1, double *y1, double *x2, double *y2);
 
     comac_status_t (*set_font_face) (void *cr, comac_font_face_t *font_face);
     comac_font_face_t *(*get_font_face) (void *cr);
     comac_status_t (*set_font_size) (void *cr, double size);
     comac_status_t (*set_font_matrix) (void *cr, const comac_matrix_t *matrix);
     void (*get_font_matrix) (void *cr, comac_matrix_t *matrix);
-    comac_status_t (*set_font_options) (void *cr, const comac_font_options_t *options);
+    comac_status_t (*set_font_options) (void *cr,
+					const comac_font_options_t *options);
     void (*get_font_options) (void *cr, comac_font_options_t *options);
-    comac_status_t (*set_scaled_font) (void *cr, comac_scaled_font_t *scaled_font);
+    comac_status_t (*set_scaled_font) (void *cr,
+				       comac_scaled_font_t *scaled_font);
     comac_scaled_font_t *(*get_scaled_font) (void *cr);
     comac_status_t (*font_extents) (void *cr, comac_font_extents_t *extents);
 
     comac_status_t (*glyphs) (void *cr,
-			      const comac_glyph_t *glyphs, int num_glyphs,
+			      const comac_glyph_t *glyphs,
+			      int num_glyphs,
 			      comac_glyph_text_info_t *info);
     comac_status_t (*glyph_path) (void *cr,
-				  const comac_glyph_t *glyphs, int num_glyphs);
+				  const comac_glyph_t *glyphs,
+				  int num_glyphs);
 
     comac_status_t (*glyph_extents) (void *cr,
 				     const comac_glyph_t *glyphs,
@@ -175,7 +227,9 @@ struct _comac_backend {
     comac_status_t (*copy_page) (void *cr);
     comac_status_t (*show_page) (void *cr);
 
-    comac_status_t (*tag_begin) (void *cr, const char *tag_name, const char *attributes);
+    comac_status_t (*tag_begin) (void *cr,
+				 const char *tag_name,
+				 const char *attributes);
     comac_status_t (*tag_end) (void *cr, const char *tag_name);
 };
 

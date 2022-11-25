@@ -47,15 +47,12 @@
  * monolithic comacint.h. So, for now, just include comacint.h instead
  * if you want to include this file. */
 
-typedef comac_bool_t
-(*comac_hash_keys_equal_func_t) (const void *key_a, const void *key_b);
+typedef comac_bool_t (*comac_hash_keys_equal_func_t) (const void *key_a,
+						      const void *key_b);
 
-typedef comac_bool_t
-(*comac_hash_predicate_func_t) (const void *entry);
+typedef comac_bool_t (*comac_hash_predicate_func_t) (const void *entry);
 
-typedef void
-(*comac_hash_callback_func_t) (void *entry,
-			       void *closure);
+typedef void (*comac_hash_callback_func_t) (void *entry, void *closure);
 
 comac_private comac_hash_table_t *
 _comac_hash_table_create (comac_hash_keys_equal_func_t keys_equal);
@@ -64,11 +61,11 @@ comac_private void
 _comac_hash_table_destroy (comac_hash_table_t *hash_table);
 
 comac_private void *
-_comac_hash_table_lookup (comac_hash_table_t  *hash_table,
-			  comac_hash_entry_t  *key);
+_comac_hash_table_lookup (comac_hash_table_t *hash_table,
+			  comac_hash_entry_t *key);
 
 comac_private void *
-_comac_hash_table_random_entry (comac_hash_table_t	   *hash_table,
+_comac_hash_table_random_entry (comac_hash_table_t *hash_table,
 				comac_hash_predicate_func_t predicate);
 
 comac_private comac_status_t
@@ -80,8 +77,8 @@ _comac_hash_table_remove (comac_hash_table_t *hash_table,
 			  comac_hash_entry_t *key);
 
 comac_private void
-_comac_hash_table_foreach (comac_hash_table_t	      *hash_table,
-			   comac_hash_callback_func_t  hash_callback,
-			   void			      *closure);
+_comac_hash_table_foreach (comac_hash_table_t *hash_table,
+			   comac_hash_callback_func_t hash_callback,
+			   void *closure);
 
 #endif

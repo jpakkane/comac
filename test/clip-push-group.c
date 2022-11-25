@@ -44,10 +44,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1, 0, 0); /* red */
     comac_paint (cr);
 
-    comac_arc (cr,
-	       SIZE / 2, SIZE / 2,
-	       SIZE / 2 - PAD,
-	       0, 2 * M_PI);
+    comac_arc (cr, SIZE / 2, SIZE / 2, SIZE / 2 - PAD, 0, 2 * M_PI);
     comac_clip (cr);
 
     comac_push_group (cr);
@@ -59,9 +56,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (clip_push_group,
-	    "Test that push_group doesn't crash after setting a surface-based clip",
-	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    clip_push_group,
+    "Test that push_group doesn't crash after setting a surface-based clip",
+    "clip", /* keywords */
+    NULL,   /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

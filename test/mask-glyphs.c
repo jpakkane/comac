@@ -37,7 +37,8 @@ _image_to_glyphs (comac_surface_t *image,
 		  int channel,
 		  int level,
 		  comac_scaled_font_t *scaled_font,
-		  double tx, double ty,
+		  double tx,
+		  double ty,
 		  comac_glyph_t *glyphs,
 		  int *num_glyphs)
 {
@@ -63,18 +64,22 @@ _image_to_glyphs (comac_surface_t *image,
 		comac_glyph_t *glyphs_p = &glyphs[n];
 		comac_status_t status;
 
-		xx = 4 * (x - width/2.) + width/2.;
-		yy = 4 * (y - height/2.) + height/2.;
+		xx = 4 * (x - width / 2.) + width / 2.;
+		yy = 4 * (y - height / 2.) + height / 2.;
 
 		zz = z / 1000.;
-		xx = xx + zz*(width/2. - xx);
-		yy = yy + zz*(height/2. - yy);
+		xx = xx + zz * (width / 2. - xx);
+		yy = yy + zz * (height / 2. - yy);
 
 		comac_scaled_font_text_to_glyphs (scaled_font,
-						  tx + xx, ty + yy,
-						  &c, 1,
-						  &glyphs_p, &count,
-						  NULL, NULL,
+						  tx + xx,
+						  ty + yy,
+						  &c,
+						  1,
+						  &glyphs_p,
+						  &count,
+						  NULL,
+						  NULL,
 						  NULL);
 		status = comac_scaled_font_status (scaled_font);
 		if (status)
@@ -92,9 +97,7 @@ _image_to_glyphs (comac_surface_t *image,
 }
 
 static comac_status_t
-_render_image (comac_t *cr,
-	       int width, int height,
-	       comac_surface_t *image)
+_render_image (comac_t *cr, int width, int height, comac_surface_t *image)
 {
     int ww, hh;
     comac_glyph_t *glyphs;
@@ -107,9 +110,9 @@ _render_image (comac_t *cr,
 	double green;
 	double blue;
     } channel[3] = {
-	{  0, 0.9, 0.3, 0.4 },
-	{  8, 0.4, 0.9, 0.3 },
-	{ 16, 0.3, 0.4, 0.9 },
+	{0, 0.9, 0.3, 0.4},
+	{8, 0.4, 0.9, 0.3},
+	{16, 0.3, 0.4, 0.9},
     };
     unsigned int n, i;
 
@@ -132,17 +135,20 @@ _render_image (comac_t *cr,
 	    comac_status_t status;
 	    int num_glyphs;
 
-	    status = _image_to_glyphs (image, channel[i].shift, n,
+	    status = _image_to_glyphs (image,
+				       channel[i].shift,
+				       n,
 				       scaled_font,
-				       tx, ty, glyphs, &num_glyphs);
+				       tx,
+				       ty,
+				       glyphs,
+				       &num_glyphs);
 	    if (status) {
 		comac_glyph_free (glyphs);
 		return status;
 	    }
 
-	    comac_set_source_rgba (cr,
-				   0, 0, 0,
-				   .15 + .85 * n / 255.);
+	    comac_set_source_rgba (cr, 0, 0, 0, .15 + .85 * n / 255.);
 	    comac_show_glyphs (cr, glyphs, num_glyphs);
 	}
 	mask = comac_pop_group (cr);
@@ -182,6 +188,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mask_glyphs,
 	    "Creates a mask using a distorted array of overlapping glyphs",
 	    "mask, glyphs", /* keywords */
-	    "slow", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    "slow",	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

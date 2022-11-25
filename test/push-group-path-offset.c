@@ -68,10 +68,13 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (push_group_path_offset,
-	    "Exercises a bug in Comac 1.9 where existing paths applied the target's"
-            " device offset twice when comac_push_group() was called.",
-	    "group, path", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    push_group_path_offset,
+    "Exercises a bug in Comac 1.9 where existing paths applied the target's"
+    " device offset twice when comac_push_group() was called.",
+    "group, path", /* keywords */
+    NULL,	   /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

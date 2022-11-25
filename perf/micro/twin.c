@@ -4,10 +4,7 @@
 #include "comac-perf.h"
 
 static comac_time_t
-do_twin (comac_t *cr,
-	 int width,
-	 int height,
-	 int loops)
+do_twin (comac_t *cr, int width, int height, int loops)
 {
     int i, j, h;
     unsigned char s[2] = {0, 0};
@@ -25,7 +22,7 @@ do_twin (comac_t *cr,
 
     while (loops--) {
 	h = 2;
-	for (i = 8; i < 48; i >= 24 ? i+=3 : i++) {
+	for (i = 8; i < 48; i >= 24 ? i += 3 : i++) {
 	    comac_set_font_size (cr, i);
 	    for (j = 33; j < 128; j++) {
 		if (j == 33 || (j == 80 && i > 24)) {
@@ -50,10 +47,7 @@ twin_enabled (comac_perf_t *perf)
 }
 
 void
-twin (comac_perf_t *perf,
-      comac_t      *cr,
-      int           width,
-      int           height)
+twin (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     comac_perf_run (perf, "twin", do_twin, NULL);
 }

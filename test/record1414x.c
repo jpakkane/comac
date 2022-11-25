@@ -42,13 +42,23 @@
 
 #define GENERATE_REF 0
 
-static uint32_t data[16] = {
-    0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
-    0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
+static uint32_t data[16] = {0xffffffff,
+			    0xffffffff,
+			    0xffff0000,
+			    0xffff0000,
+			    0xffffffff,
+			    0xffffffff,
+			    0xffff0000,
+			    0xffff0000,
 
-    0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff,
-    0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
-};
+			    0xff00ff00,
+			    0xff00ff00,
+			    0xff0000ff,
+			    0xff0000ff,
+			    0xff00ff00,
+			    0xff00ff00,
+			    0xff0000ff,
+			    0xff0000ff};
 
 static const char *png_filename = "romedalen.png";
 
@@ -73,13 +83,16 @@ paint_alpha (comac_t *cr)
     comac_surface_t *surface;
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_test_paint_checkered (cr);
 
     comac_scale (cr, 4, 4);
 
-    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_set_source_surface (cr, surface, 2, 2);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint_with_alpha (cr, 0.5);
 
@@ -97,7 +110,7 @@ paint_alpha_solid_clip (comac_t *cr)
     comac_rectangle (cr, 2.5, 2.5, 27, 27);
     comac_clip (cr);
 
-    comac_set_source_rgb (cr, 1., 0.,0.);
+    comac_set_source_rgb (cr, 1., 0., 0.);
     comac_paint_with_alpha (cr, 0.5);
 
     return cr;
@@ -109,7 +122,10 @@ paint_alpha_clip (comac_t *cr)
     comac_surface_t *surface;
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_test_paint_checkered (cr);
 
@@ -118,7 +134,7 @@ paint_alpha_clip (comac_t *cr)
 
     comac_scale (cr, 4, 4);
 
-    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_set_source_surface (cr, surface, 2, 2);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint_with_alpha (cr, 0.5);
 
@@ -134,7 +150,10 @@ paint_alpha_clip_mask (comac_t *cr)
     comac_surface_t *surface;
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_test_paint_checkered (cr);
 
@@ -146,7 +165,7 @@ paint_alpha_clip_mask (comac_t *cr)
 
     comac_scale (cr, 4, 4);
 
-    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_set_source_surface (cr, surface, 2, 2);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint_with_alpha (cr, 0.5);
 
@@ -168,17 +187,20 @@ select_font_face (comac_t *cr)
     comac_set_font_size (cr, TEXT_SIZE);
     comac_move_to (cr, 0, TEXT_SIZE);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Serif",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Serif",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_show_text (cr, "i-am-serif");
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_show_text (cr, " i-am-sans");
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans Mono",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans Mono",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_show_text (cr, " i-am-mono");
@@ -189,7 +211,7 @@ select_font_face (comac_t *cr)
 static comac_t *
 fill_alpha (comac_t *cr)
 {
-    const double alpha = 1./3;
+    const double alpha = 1. / 3;
     int n;
 
     /* flatten to white */
@@ -216,15 +238,15 @@ fill_alpha (comac_t *cr)
     comac_fill (cr);
 
     /* star */
-    comac_translate (cr, -(SIZE + 2 * PAD) + SIZE/2., SIZE/2.);
+    comac_translate (cr, -(SIZE + 2 * PAD) + SIZE / 2., SIZE / 2.);
     for (n = 0; n < 5; n++) {
 	comac_line_to (cr,
-		       SIZE/2 * cos (2*n * 2*M_PI / 10),
-		       SIZE/2 * sin (2*n * 2*M_PI / 10));
+		       SIZE / 2 * cos (2 * n * 2 * M_PI / 10),
+		       SIZE / 2 * sin (2 * n * 2 * M_PI / 10));
 
 	comac_line_to (cr,
-		       SIZE/4 * cos ((2*n+1)*2*M_PI / 10),
-		       SIZE/4 * sin ((2*n+1)*2*M_PI / 10));
+		       SIZE / 4 * cos ((2 * n + 1) * 2 * M_PI / 10),
+		       SIZE / 4 * sin ((2 * n + 1) * 2 * M_PI / 10));
     }
     comac_set_source_rgba (cr, 0, 0, 0, alpha);
     comac_fill (cr);
@@ -243,8 +265,8 @@ self_intersecting (comac_t *cr)
     comac_set_source_rgb (cr, 1, 0, 0); /* red */
 
     /* First draw the desired shape with a fill */
-    comac_rectangle (cr, 0.5, 0.5,  4.0, 4.0);
-    comac_rectangle (cr, 3.5, 3.5,  4.0, 4.0);
+    comac_rectangle (cr, 0.5, 0.5, 4.0, 4.0);
+    comac_rectangle (cr, 3.5, 3.5, 4.0, 4.0);
     comac_rectangle (cr, 3.5, 1.5, -2.0, 2.0);
     comac_rectangle (cr, 6.5, 4.5, -2.0, 2.0);
 
@@ -253,11 +275,11 @@ self_intersecting (comac_t *cr)
     /* Then try the same thing with a stroke */
     comac_translate (cr, 0, 10);
     comac_move_to (cr, 1.0, 1.0);
-    comac_rel_line_to (cr,  3.0,  0.0);
-    comac_rel_line_to (cr,  0.0,  6.0);
-    comac_rel_line_to (cr,  3.0,  0.0);
-    comac_rel_line_to (cr,  0.0, -3.0);
-    comac_rel_line_to (cr, -6.0,  0.0);
+    comac_rel_line_to (cr, 3.0, 0.0);
+    comac_rel_line_to (cr, 0.0, 6.0);
+    comac_rel_line_to (cr, 3.0, 0.0);
+    comac_rel_line_to (cr, 0.0, -3.0);
+    comac_rel_line_to (cr, -6.0, 0.0);
     comac_close_path (cr);
 
     comac_set_line_width (cr, 1.0);
@@ -272,14 +294,12 @@ draw_text_transform (comac_t *cr)
     comac_matrix_t tm;
 
     /* skew */
-    comac_matrix_init (&tm, 1, 0,
-                       -0.25, 1,
-                       0, 0);
+    comac_matrix_init (&tm, 1, 0, -0.25, 1, 0, 0);
     comac_matrix_scale (&tm, TT_FONT_SIZE, TT_FONT_SIZE);
     comac_set_font_matrix (cr, &tm);
 
     comac_new_path (cr);
-    comac_move_to (cr, 50, TT_SIZE-TT_PAD);
+    comac_move_to (cr, 50, TT_SIZE - TT_PAD);
     comac_show_text (cr, "A");
 
     /* rotate and scale */
@@ -311,7 +331,8 @@ text_transform (comac_t *cr)
 
     comac_set_source_rgb (cr, 0., 0., 0.);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
@@ -338,7 +359,9 @@ record_create (comac_t *target)
     comac_surface_t *surface;
     comac_t *cr;
 
-    surface = comac_recording_surface_create (comac_surface_get_content (comac_get_target (target)), NULL);
+    surface = comac_recording_surface_create (
+	comac_surface_get_content (comac_get_target (target)),
+	NULL);
     cr = comac_test_create (surface, comac_test_get_context (target));
     comac_surface_destroy (surface);
 
@@ -357,7 +380,7 @@ record_get (comac_t *target)
 }
 
 static comac_test_status_t
-record_replay (comac_t *cr, comac_t *(*func)(comac_t *), int width, int height)
+record_replay (comac_t *cr, comac_t *(*func) (comac_t *), int width, int height)
 {
     comac_surface_t *surface;
     int x, y;
@@ -445,54 +468,73 @@ record_text_transform (comac_t *cr, int width, int height)
 COMAC_TEST (record1414x_paint,
 	    "Test replayed calls to comac_paint",
 	    "paint, record", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*8, M_SQRT2*8,
-	    NULL, record_paint)
+	    NULL,	     /* requirements */
+	    M_SQRT2 * 8,
+	    M_SQRT2 * 8,
+	    NULL,
+	    record_paint)
 COMAC_TEST (record1414x_paint_alpha,
 	    "Simple test of comac_paint_with_alpha",
 	    "record, paint, alpha", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*32, M_SQRT2*32,
-	    NULL, record_paint_alpha)
+	    NULL,		    /* requirements */
+	    M_SQRT2 * 32,
+	    M_SQRT2 * 32,
+	    NULL,
+	    record_paint_alpha)
 COMAC_TEST (record1414x_paint_alpha_solid_clip,
 	    "Simple test of comac_paint_with_alpha+unaligned clip",
 	    "record, paint, alpha, clip", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*32, M_SQRT2*32,
-	    NULL, record_paint_alpha_solid_clip)
+	    NULL,			  /* requirements */
+	    M_SQRT2 * 32,
+	    M_SQRT2 * 32,
+	    NULL,
+	    record_paint_alpha_solid_clip)
 COMAC_TEST (record1414x_paint_alpha_clip,
 	    "Simple test of comac_paint_with_alpha+unaligned clip",
 	    "record, paint, alpha, clip", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*32, M_SQRT2*32,
-	    NULL, record_paint_alpha_clip)
+	    NULL,			  /* requirements */
+	    M_SQRT2 * 32,
+	    M_SQRT2 * 32,
+	    NULL,
+	    record_paint_alpha_clip)
 COMAC_TEST (record1414x_paint_alpha_clip_mask,
 	    "Simple test of comac_paint_with_alpha+triangular clip",
 	    "record, paint, alpha, clip", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*32, M_SQRT2*32,
-	    NULL, record_paint_alpha_clip_mask)
+	    NULL,			  /* requirements */
+	    M_SQRT2 * 32,
+	    M_SQRT2 * 32,
+	    NULL,
+	    record_paint_alpha_clip_mask)
 COMAC_TEST (record1414x_fill_alpha,
 	    "Tests using set_rgba();fill()",
 	    "record, fill, alpha", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*(2*SIZE + 4*PAD), M_SQRT2*(2*SIZE + 4*PAD),
-	    NULL, record_fill_alpha)
-COMAC_TEST (record1414x_select_font_face,
-	    "Tests using comac_select_font_face to draw text in different faces",
-	    "record, font", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*192, M_SQRT2*(TEXT_SIZE + 4),
-	    NULL, record_select_font_face)
+	    NULL,		   /* requirements */
+	    M_SQRT2 * (2 * SIZE + 4 * PAD),
+	    M_SQRT2 * (2 * SIZE + 4 * PAD),
+	    NULL,
+	    record_fill_alpha)
+COMAC_TEST (
+    record1414x_select_font_face,
+    "Tests using comac_select_font_face to draw text in different faces",
+    "record, font", /* keywords */
+    NULL,	    /* requirements */
+    M_SQRT2 * 192,
+    M_SQRT2 *(TEXT_SIZE + 4),
+    NULL,
+    record_select_font_face)
 COMAC_TEST (record1414x_self_intersecting,
 	    "Test strokes of self-intersecting paths",
 	    "record, stroke, trap", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*10, M_SQRT2*20,
-	    NULL, record_self_intersecting)
+	    NULL,		    /* requirements */
+	    M_SQRT2 * 10,
+	    M_SQRT2 * 20,
+	    NULL,
+	    record_self_intersecting)
 COMAC_TEST (record1414x_text_transform,
 	    "Test various applications of the font matrix",
 	    "record, text, transform", /* keywords */
-	    NULL, /* requirements */
-	    M_SQRT2*TT_SIZE, M_SQRT2*TT_SIZE,
-	    NULL, record_text_transform)
+	    NULL,		       /* requirements */
+	    M_SQRT2 *TT_SIZE,
+	    M_SQRT2 *TT_SIZE,
+	    NULL,
+	    record_text_transform)

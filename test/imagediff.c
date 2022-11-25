@@ -38,15 +38,16 @@ static void
 _xunlink (const char *pathname)
 {
     if (unlink (pathname) < 0 && errno != ENOENT) {
-	fprintf (stderr, "  Error: Cannot remove %s: %s\n",
-			pathname, strerror (errno));
+	fprintf (stderr,
+		 "  Error: Cannot remove %s: %s\n",
+		 pathname,
+		 strerror (errno));
 	exit (1);
     }
 }
 
 void
-comac_test_logv (const comac_test_context_t *ctx,
-		 const char *fmt, va_list va)
+comac_test_logv (const comac_test_context_t *ctx, const char *fmt, va_list va)
 {
     vfprintf (stderr, fmt, va);
 }
@@ -77,9 +78,10 @@ flatten_surface (comac_surface_t **surface, int x, int y)
     comac_surface_t *flat;
     comac_t *cr;
 
-    flat = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-				       comac_image_surface_get_width (*surface) - x,
-				       comac_image_surface_get_height (*surface) - y);
+    flat = comac_image_surface_create (
+	COMAC_FORMAT_ARGB32,
+	comac_image_surface_get_width (*surface) - x,
+	comac_image_surface_get_height (*surface) - y);
     comac_surface_set_device_offset (flat, -x, -y);
 
     cr = comac_create (flat);
@@ -107,9 +109,10 @@ extract_sub_surface (comac_surface_t **surface, int x, int y)
     comac_surface_t *sub;
     comac_t *cr;
 
-    sub = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-				      comac_image_surface_get_width (*surface) - x,
-				      comac_image_surface_get_height (*surface) - y);
+    sub = comac_image_surface_create (
+	COMAC_FORMAT_ARGB32,
+	comac_image_surface_get_width (*surface) - x,
+	comac_image_surface_get_height (*surface) - y);
 
     /* We don't use a device offset like flatten_surface. That's not
      * for any important reason, (the results should be
@@ -158,9 +161,8 @@ write_png (comac_surface_t *surface, const char *filename)
     } else
 	png_file = stdout;
 
-    status = comac_surface_write_to_png_stream (surface,
-						stdio_write_func,
-						png_file);
+    status =
+	comac_surface_write_to_png_stream (surface, stdio_write_func, png_file);
 
     if (png_file != stdout)
 	fclose (png_file);
@@ -172,10 +174,10 @@ static comac_status_t
 png_diff (const char *filename_a,
 	  const char *filename_b,
 	  const char *filename_diff,
-	  int		ax,
-	  int		ay,
-	  int		bx,
-	  int		by,
+	  int ax,
+	  int ay,
+	  int bx,
+	  int by,
 	  buffer_diff_result_t *result)
 {
     comac_surface_t *surface_a;
@@ -186,16 +188,20 @@ png_diff (const char *filename_a,
     surface_a = comac_image_surface_create_from_png (filename_a);
     status = comac_surface_status (surface_a);
     if (status) {
-	fprintf (stderr, "Error: Failed to create surface from %s: %s\n",
-		 filename_a, comac_status_to_string (status));
+	fprintf (stderr,
+		 "Error: Failed to create surface from %s: %s\n",
+		 filename_a,
+		 comac_status_to_string (status));
 	return status;
     }
 
     surface_b = comac_image_surface_create_from_png (filename_b);
     status = comac_surface_status (surface_b);
     if (status) {
-	fprintf (stderr, "Error: Failed to create surface from %s: %s\n",
-		 filename_b, comac_status_to_string (status));
+	fprintf (stderr,
+		 "Error: Failed to create surface from %s: %s\n",
+		 filename_b,
+		 comac_status_to_string (status));
 	comac_surface_destroy (surface_a);
 	return status;
     }
@@ -212,24 +218,29 @@ png_diff (const char *filename_a,
 
     status = comac_surface_status (surface_a);
     if (status) {
-	fprintf (stderr, "Error: Failed to extract surface from %s: %s\n",
-		 filename_a, comac_status_to_string (status));
+	fprintf (stderr,
+		 "Error: Failed to extract surface from %s: %s\n",
+		 filename_a,
+		 comac_status_to_string (status));
 	comac_surface_destroy (surface_a);
 	comac_surface_destroy (surface_b);
 	return status;
     }
     status = comac_surface_status (surface_b);
     if (status) {
-	fprintf (stderr, "Error: Failed to extract surface from %s: %s\n",
-		 filename_b, comac_status_to_string (status));
+	fprintf (stderr,
+		 "Error: Failed to extract surface from %s: %s\n",
+		 filename_b,
+		 comac_status_to_string (status));
 	comac_surface_destroy (surface_a);
 	comac_surface_destroy (surface_b);
 	return status;
     }
 
-    surface_diff = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-					       comac_image_surface_get_width (surface_a),
-					       comac_image_surface_get_height (surface_a));
+    surface_diff =
+	comac_image_surface_create (COMAC_FORMAT_ARGB32,
+				    comac_image_surface_get_width (surface_a),
+				    comac_image_surface_get_height (surface_a));
     status = comac_surface_status (surface_diff);
     if (status) {
 	fprintf (stderr,
@@ -239,16 +250,12 @@ png_diff (const char *filename_a,
 	return COMAC_STATUS_NO_MEMORY;
     }
 
-    status = image_diff (NULL,
-			 surface_a, surface_b, surface_diff,
-			 result);
+    status = image_diff (NULL, surface_a, surface_b, surface_diff, result);
 
     if (filename_diff)
 	_xunlink (filename_diff);
 
-    if (status == COMAC_STATUS_SUCCESS &&
-	result->pixels_changed)
-    {
+    if (status == COMAC_STATUS_SUCCESS && result->pixels_changed) {
 	status = write_png (surface_diff, filename_diff);
     }
 
@@ -268,9 +275,15 @@ main (int argc, char *argv[])
     unsigned int ax, ay, bx, by;
 
     if (argc != 3 && argc != 7) {
-	fprintf (stderr, "Usage: %s image1.png image2.png [ax ay bx by]\n", argv[0]);
-	fprintf (stderr, "Computes an output image designed to present a \"visual diff\" such that even\n");
-	fprintf (stderr, "small errors in single pixels are readily apparent in the output.\n");
+	fprintf (stderr,
+		 "Usage: %s image1.png image2.png [ax ay bx by]\n",
+		 argv[0]);
+	fprintf (stderr,
+		 "Computes an output image designed to present a \"visual "
+		 "diff\" such that even\n");
+	fprintf (stderr,
+		 "small errors in single pixels are readily apparent in the "
+		 "output.\n");
 	fprintf (stderr, "The output image is written on stdout.\n");
 	exit (1);
     }
@@ -287,13 +300,16 @@ main (int argc, char *argv[])
     status = png_diff (argv[1], argv[2], NULL, ax, ay, bx, by, &result);
 
     if (status) {
-	fprintf (stderr, "Error comparing images: %s\n",
+	fprintf (stderr,
+		 "Error comparing images: %s\n",
 		 comac_status_to_string (status));
 	return 1;
     }
 
     if (result.pixels_changed)
-	fprintf (stderr, "Total pixels changed: %d with a maximum channel difference of %d.\n",
+	fprintf (stderr,
+		 "Total pixels changed: %d with a maximum channel difference "
+		 "of %d.\n",
 		 result.pixels_changed,
 		 result.max_diff);
 

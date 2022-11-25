@@ -42,7 +42,7 @@
 #include "comac-script.h"
 #endif
 
-#include <stdio.h> /* snprintf */
+#include <stdio.h>  /* snprintf */
 #include <stdlib.h> /* mkstemp */
 #include <string.h>
 
@@ -64,12 +64,12 @@
 #endif
 
 #ifdef HAVE_MMAP
-# ifdef HAVE_UNISTD_H
-#  include <sys/mman.h>
-#  include <unistd.h>
-# else
-#  undef HAVE_MMAP
-# endif
+#ifdef HAVE_UNISTD_H
+#include <sys/mman.h>
+#include <unistd.h>
+#else
+#undef HAVE_MMAP
+#endif
 #endif
 
 typedef struct _csi_proxy {
@@ -90,15 +90,13 @@ typedef struct _csi_blob {
 static const comac_user_data_key_t _csi_proxy_key;
 static const comac_user_data_key_t _csi_blob_key;
 
-enum mime_type {
-    MIME_TYPE_NONE = 0,
-    MIME_TYPE_PNG
-};
+enum mime_type { MIME_TYPE_NONE = 0, MIME_TYPE_PNG };
 
-#define check(CNT) do {\
-    if (_csi_unlikely (! _csi_check_ostack (ctx, (CNT)))) \
-	return _csi_error (CSI_STATUS_INVALID_SCRIPT); \
-} while (0)
+#define check(CNT)                                                             \
+    do {                                                                       \
+	if (_csi_unlikely (! _csi_check_ostack (ctx, (CNT))))                  \
+	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);                     \
+    } while (0)
 #define pop(CNT) _csi_pop_ostack (ctx, (CNT))
 #define push(OBJ) _csi_push_ostack (ctx, (OBJ))
 
@@ -232,7 +230,7 @@ _csi_ostack_get_boolean (csi_t *ctx, unsigned int i, csi_boolean_t *out)
 	*out = obj->datum.boolean;
 	break;
     case CSI_OBJECT_TYPE_INTEGER:
-	*out = !! obj->datum.integer;
+	*out = ! ! obj->datum.integer;
 	break;
     case CSI_OBJECT_TYPE_REAL:
 	*out = obj->datum.real != 0.;
@@ -362,15 +360,15 @@ _csi_ostack_get_pattern (csi_t *ctx, unsigned int i, comac_pattern_t **out)
 }
 
 static csi_status_t
-_csi_ostack_get_scaled_font (csi_t *ctx, unsigned int i,
+_csi_ostack_get_scaled_font (csi_t *ctx,
+			     unsigned int i,
 			     comac_scaled_font_t **out)
 {
     csi_object_t *obj;
 
     obj = _csi_peek_ostack (ctx, i);
-    if (_csi_unlikely
-	(csi_object_get_type (obj) != CSI_OBJECT_TYPE_SCALED_FONT))
-    {
+    if (_csi_unlikely (csi_object_get_type (obj) !=
+		       CSI_OBJECT_TYPE_SCALED_FONT)) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
@@ -431,9 +429,8 @@ _csi_ostack_get_dictionary (csi_t *ctx, unsigned int i, csi_dictionary_t **out)
     csi_object_t *obj;
 
     obj = _csi_peek_ostack (ctx, i);
-    if (_csi_unlikely
-	(csi_object_get_type (obj) != CSI_OBJECT_TYPE_DICTIONARY))
-    {
+    if (_csi_unlikely (csi_object_get_type (obj) !=
+		       CSI_OBJECT_TYPE_DICTIONARY)) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
@@ -456,13 +453,14 @@ _csi_ostack_get_matrix (csi_t *ctx, unsigned int i, comac_matrix_t *out)
 
     case CSI_OBJECT_TYPE_ARRAY:
 	if (obj->datum.array->stack.len == 6) {
-	    comac_matrix_init (out,
-			       csi_number_get_value (&obj->datum.array->stack.objects[0]),
-			       csi_number_get_value (&obj->datum.array->stack.objects[1]),
-			       csi_number_get_value (&obj->datum.array->stack.objects[2]),
-			       csi_number_get_value (&obj->datum.array->stack.objects[3]),
-			       csi_number_get_value (&obj->datum.array->stack.objects[4]),
-			       csi_number_get_value (&obj->datum.array->stack.objects[5]));
+	    comac_matrix_init (
+		out,
+		csi_number_get_value (&obj->datum.array->stack.objects[0]),
+		csi_number_get_value (&obj->datum.array->stack.objects[1]),
+		csi_number_get_value (&obj->datum.array->stack.objects[2]),
+		csi_number_get_value (&obj->datum.array->stack.objects[3]),
+		csi_number_get_value (&obj->datum.array->stack.objects[4]),
+		csi_number_get_value (&obj->datum.array->stack.objects[5]));
 	    return CSI_STATUS_SUCCESS;
 	}
 	/* else fall through */
@@ -611,9 +609,8 @@ end_dict_construction (csi_t *ctx)
 	check (2);
 
 	name = _csi_peek_ostack (ctx, 1);
-	if (_csi_unlikely
-	    (csi_object_get_type (name) != CSI_OBJECT_TYPE_NAME))
-	{
+	if (_csi_unlikely (csi_object_get_type (name) !=
+			   CSI_OBJECT_TYPE_NAME)) {
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 	}
 
@@ -638,8 +635,7 @@ end_array_construction (csi_t *ctx)
 	check (len + 1);
 
 	if (csi_object_get_type (_csi_peek_ostack (ctx, len)) ==
-	    CSI_OBJECT_TYPE_MARK)
-	{
+	    CSI_OBJECT_TYPE_MARK) {
 	    break;
 	}
 
@@ -698,34 +694,26 @@ _add (csi_t *ctx)
 
     type_a = csi_object_get_type (A);
     if (_csi_unlikely (! (type_a == CSI_OBJECT_TYPE_INTEGER ||
-			    type_a == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_a == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
     type_b = csi_object_get_type (B);
     if (_csi_unlikely (! (type_b == CSI_OBJECT_TYPE_INTEGER ||
-			    type_b == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_b == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
     pop (2);
 
-    if (type_a == CSI_OBJECT_TYPE_REAL &&
-	type_b == CSI_OBJECT_TYPE_REAL)
-    {
+    if (type_a == CSI_OBJECT_TYPE_REAL && type_b == CSI_OBJECT_TYPE_REAL) {
 	return _csi_push_ostack_real (ctx, A->datum.real + B->datum.real);
 
-    }
-    else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
-	     type_b == CSI_OBJECT_TYPE_INTEGER)
-    {
+    } else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
+	       type_b == CSI_OBJECT_TYPE_INTEGER) {
 	return _csi_push_ostack_integer (ctx,
 					 A->datum.integer + B->datum.integer);
-    }
-    else
-    {
+    } else {
 	double v;
 
 	if (type_a == CSI_OBJECT_TYPE_REAL)
@@ -904,9 +892,9 @@ _bind_substitute (csi_t *ctx, csi_array_t *array)
 	if (obj->type == (CSI_OBJECT_TYPE_NAME | CSI_OBJECT_ATTR_EXECUTABLE)) {
 	    csi_dictionary_entry_t *entry;
 
-	    entry = _csi_hash_table_lookup (&dict->hash_table,
-					    (csi_hash_entry_t *)
-					    &obj->datum.name);
+	    entry =
+		_csi_hash_table_lookup (&dict->hash_table,
+					(csi_hash_entry_t *) &obj->datum.name);
 	    if (entry != NULL)
 		*obj = entry->value;
 	} else if (csi_object_is_procedure (obj)) {
@@ -1037,7 +1025,9 @@ _context (csi_t *ctx)
     else
 	cr = comac_create (surface);
 
-    proxy = _csi_proxy_create (ctx, cr, NULL,
+    proxy = _csi_proxy_create (ctx,
+			       cr,
+			       NULL,
 			       ctx->hooks.context_destroy,
 			       ctx->hooks.closure);
     if (_csi_unlikely (proxy == NULL)) {
@@ -1045,8 +1035,8 @@ _context (csi_t *ctx)
 	return _csi_error (CSI_STATUS_NO_MEMORY);
     }
 
-    status = comac_set_user_data (cr, &_csi_proxy_key,
-				  proxy, _csi_proxy_destroy);
+    status =
+	comac_set_user_data (cr, &_csi_proxy_key, proxy, _csi_proxy_destroy);
     if (_csi_unlikely (status)) {
 	_csi_proxy_destroy (proxy);
 	comac_destroy (cr);
@@ -1073,25 +1063,23 @@ _copy (csi_t *ctx)
     type = csi_object_get_type (obj);
     switch (type) {
 	/*XXX array, string, dictionary, etc */
-    case CSI_OBJECT_TYPE_INTEGER:
-	{
-	    long i, n;
+    case CSI_OBJECT_TYPE_INTEGER: {
+	long i, n;
 
-	    n = obj->datum.integer;
-	    if (_csi_unlikely (n < 0))
-		return _csi_error (CSI_STATUS_INVALID_SCRIPT);
-	    check (n);
+	n = obj->datum.integer;
+	if (_csi_unlikely (n < 0))
+	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
+	check (n);
 
-	    for (i = n; i--; ) {
-		csi_status_t status;
+	for (i = n; i--;) {
+	    csi_status_t status;
 
-		status = _csi_push_ostack_copy (ctx,
-						_csi_peek_ostack (ctx, n-1));
-		if (_csi_unlikely (status))
-		    return status;
-	    }
-	    break;
+	    status = _csi_push_ostack_copy (ctx, _csi_peek_ostack (ctx, n - 1));
+	    if (_csi_unlikely (status))
+		return status;
 	}
+	break;
+    }
     default:
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
@@ -1165,7 +1153,12 @@ _curve_to (csi_t *ctx)
 	break;
     case CSI_OBJECT_TYPE_PATTERN:
 	comac_mesh_pattern_curve_to (obj->datum.pattern,
-				     x1, y1, x2, y2, x3, y3);
+				     x1,
+				     y1,
+				     x2,
+				     y2,
+				     x3,
+				     y3);
 	break;
 	/* XXX handle path object */
     }
@@ -1195,8 +1188,7 @@ _cvi (csi_t *ctx)
     case CSI_OBJECT_TYPE_STRING:
 	if (! _csi_parse_number (&obj,
 				 val->datum.string->string,
-				 val->datum.string->len))
-	{
+				 val->datum.string->len)) {
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 	}
 
@@ -1232,8 +1224,7 @@ _cvr (csi_t *ctx)
     case CSI_OBJECT_TYPE_STRING:
 	if (! _csi_parse_number (&obj,
 				 val->datum.string->string,
-				 val->datum.string->len))
-	{
+				 val->datum.string->len)) {
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 	}
 
@@ -1295,34 +1286,26 @@ _div (csi_t *ctx)
 
     type_a = csi_object_get_type (A);
     if (_csi_unlikely (! (type_a == CSI_OBJECT_TYPE_INTEGER ||
-			    type_a == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_a == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
     type_b = csi_object_get_type (B);
     if (_csi_unlikely (! (type_b == CSI_OBJECT_TYPE_INTEGER ||
-			    type_b == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_b == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
     pop (2);
 
-    if (type_a == CSI_OBJECT_TYPE_REAL &&
-	type_b == CSI_OBJECT_TYPE_REAL)
-    {
+    if (type_a == CSI_OBJECT_TYPE_REAL && type_b == CSI_OBJECT_TYPE_REAL) {
 	return _csi_push_ostack_real (ctx, A->datum.real / B->datum.real);
 
-    }
-    else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
-	     type_b == CSI_OBJECT_TYPE_INTEGER)
-    {
+    } else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
+	       type_b == CSI_OBJECT_TYPE_INTEGER) {
 	return _csi_push_ostack_integer (ctx,
 					 A->datum.integer / B->datum.integer);
-    }
-    else
-    {
+    } else {
 	double v;
 
 	if (type_a == CSI_OBJECT_TYPE_REAL)
@@ -1398,19 +1381,19 @@ _filter (csi_t *ctx)
     const struct filters {
 	const char *name;
 	csi_status_t (*constructor) (csi_t *t,
-				       csi_object_t *,
-				       csi_dictionary_t *,
-				       csi_object_t *);
-    } filters[] = {
-	{ "ascii85", csi_file_new_ascii85_decode },
+				     csi_object_t *,
+				     csi_dictionary_t *,
+				     csi_object_t *);
+    } filters[] =
+    { {"ascii85", csi_file_new_ascii85_decode},
 #if HAVE_ZLIB
-	{ "deflate", csi_file_new_deflate_decode },
+      {"deflate", csi_file_new_deflate_decode},
 #endif
 #if 0
 	{ "lzw", csi_file_new_lzw_decode },
 #endif
-	{ NULL, NULL }
-    }, *filter;
+      {NULL, NULL} },
+      *filter;
     int cnt;
 
     check (2);
@@ -1486,9 +1469,9 @@ _type3_init (comac_scaled_font_t *scaled_font,
     if (array->stack.len != 5)
 	return COMAC_STATUS_USER_FONT_ERROR;
 
-    metrics->ascent  = csi_number_get_value (&array->stack.objects[0]);
+    metrics->ascent = csi_number_get_value (&array->stack.objects[0]);
     metrics->descent = csi_number_get_value (&array->stack.objects[1]);
-    metrics->height  = csi_number_get_value (&array->stack.objects[2]);
+    metrics->height = csi_number_get_value (&array->stack.objects[2]);
     metrics->max_x_advance = csi_number_get_value (&array->stack.objects[3]);
     metrics->max_y_advance = csi_number_get_value (&array->stack.objects[4]);
 
@@ -1593,7 +1576,8 @@ _type3_render (comac_scaled_font_t *scaled_font,
     if (csi_object_get_type (glyph) == CSI_OBJECT_TYPE_NULL)
 	return COMAC_STATUS_SUCCESS; /* .notdef */
 
-    if (_csi_unlikely (csi_object_get_type (glyph) != CSI_OBJECT_TYPE_DICTIONARY))
+    if (_csi_unlikely (csi_object_get_type (glyph) !=
+		       CSI_OBJECT_TYPE_DICTIONARY))
 	return COMAC_STATUS_USER_FONT_ERROR;
 
     status = csi_name_new_static (ctx, &key, "metrics");
@@ -1608,8 +1592,7 @@ _type3_render (comac_scaled_font_t *scaled_font,
 	if (_csi_unlikely (status))
 	    return COMAC_STATUS_USER_FONT_ERROR;
 
-	if (_csi_unlikely (csi_object_get_type (&obj) !=
-			     CSI_OBJECT_TYPE_ARRAY))
+	if (_csi_unlikely (csi_object_get_type (&obj) != CSI_OBJECT_TYPE_ARRAY))
 	    return COMAC_STATUS_USER_FONT_ERROR;
 
 	array = obj.datum.array;
@@ -1774,8 +1757,10 @@ inflate_string (csi_t *ctx, csi_string_t *src)
 
     case ZLIB:
 #if HAVE_ZLIB
-	if (uncompress ((Bytef *) bytes, &len,
-			(Bytef *) src->string, src->len) != Z_OK)
+	if (uncompress ((Bytef *) bytes,
+			&len,
+			(Bytef *) src->string,
+			src->len) != Z_OK)
 #endif
 	{
 	    _csi_free (ctx, bytes);
@@ -1785,8 +1770,10 @@ inflate_string (csi_t *ctx, csi_string_t *src)
 
     case LZO:
 #if HAVE_LZO
-	if (lzo2a_decompress ((Bytef *) src->string, src->len,
-			      (Bytef *) bytes, &len,
+	if (lzo2a_decompress ((Bytef *) src->string,
+			      src->len,
+			      (Bytef *) bytes,
+			      &len,
 			      NULL))
 #endif
 	{
@@ -1803,7 +1790,8 @@ inflate_string (csi_t *ctx, csi_string_t *src)
 static csi_status_t
 _ft_create_for_source (csi_t *ctx,
 		       csi_string_t *source,
-		       int index, int load_flags,
+		       int index,
+		       int load_flags,
 		       comac_font_face_t **font_face_out)
 {
     csi_blob_t tmpl;
@@ -1820,7 +1808,9 @@ _ft_create_for_source (csi_t *ctx,
     /* check for an existing FT_Face (kept alive by the font cache) */
     /* XXX index/flags */
     _csi_blob_init (&tmpl, (uint8_t *) source->string, source->len);
-    _csi_blob_hash (&tmpl, (uint32_t *) source->string, source->len / sizeof (uint32_t));
+    _csi_blob_hash (&tmpl,
+		    (uint32_t *) source->string,
+		    source->len / sizeof (uint32_t));
     link = _csi_list_find (ctx->_faces, _csi_blob_equal, &tmpl);
     if (link) {
 	if (--source->base.ref == 0)
@@ -1886,10 +1876,7 @@ _ft_create_for_source (csi_t *ctx,
     data->blob.bytes = tmpl.bytes;
 #endif
 
-    err = FT_New_Memory_Face (_ft_lib,
-			      bytes, len,
-			      index,
-			      &data->face);
+    err = FT_New_Memory_Face (_ft_lib, bytes, len, index, &data->face);
     if (_csi_unlikely (err != FT_Err_Ok)) {
 	_ft_done_face (data);
 
@@ -1902,7 +1889,8 @@ _ft_create_for_source (csi_t *ctx,
     font_face = comac_ft_font_face_create_for_ft_face (data->face, load_flags);
     status = comac_font_face_set_user_data (font_face,
 					    &_csi_blob_key,
-					    data, _ft_done_face);
+					    data,
+					    _ft_done_face);
     if (_csi_unlikely (status)) {
 	_ft_done_face (data);
 	comac_font_face_destroy (font_face);
@@ -1930,7 +1918,9 @@ _ft_create_for_pattern (csi_t *ctx,
     void *bytes;
 
     _csi_blob_init (&tmpl, (uint8_t *) string->string, string->len);
-    _csi_blob_hash (&tmpl, (uint32_t *) string->string, string->len / sizeof (uint32_t));
+    _csi_blob_hash (&tmpl,
+		    (uint32_t *) string->string,
+		    string->len / sizeof (uint32_t));
     link = _csi_list_find (ctx->_faces, _csi_blob_equal, &tmpl);
     if (link) {
 	if (--string->base.ref == 0)
@@ -1949,17 +1939,15 @@ _ft_create_for_pattern (csi_t *ctx,
     }
 
     pattern = FcNameParse (bytes);
-    if (!pattern)
-    {
-      /* Fontconfig's representation of charset changed mid 2014;
+    if (! pattern) {
+	/* Fontconfig's representation of charset changed mid 2014;
        * We used to record charset before that.  Remove everything
        * after charset if that's present, and try again.  */
-      char *s = strstr ((char *) bytes, ":charset=");
-      if (s)
-      {
-	*s = '\0';
-	pattern = FcNameParse (bytes);
-      }
+	char *s = strstr ((char *) bytes, ":charset=");
+	if (s) {
+	    *s = '\0';
+	    pattern = FcNameParse (bytes);
+	}
     }
     if (bytes != tmpl.bytes)
 	_csi_free (ctx, bytes);
@@ -1984,9 +1972,8 @@ retry:
 
 	/* Try a manual fallback process by eliminating specific requests */
 
-	if (FcPatternGetString (pattern,
-				FC_FILE, 0,
-				(FcChar8 **) &filename) == FcResultMatch) {
+	if (FcPatternGetString (pattern, FC_FILE, 0, (FcChar8 **) &filename) ==
+	    FcResultMatch) {
 	    FcPatternDel (pattern, FC_FILE);
 	    goto retry;
 	}
@@ -2020,7 +2007,8 @@ retry:
 
     status = comac_font_face_set_user_data (font_face,
 					    &_csi_blob_key,
-					    data, _ft_done_face);
+					    data,
+					    _ft_done_face);
     if (_csi_unlikely (status)) {
 	_ft_done_face (data);
 	comac_font_face_destroy (font_face);
@@ -2069,12 +2057,10 @@ _ft_type42_create (csi_t *ctx,
 	    obj.datum.object->ref++;
 	    break;
 	default:
-	    return  _csi_error (CSI_STATUS_INVALID_SCRIPT);
+	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 	}
 
-	return _ft_create_for_pattern (ctx,
-				       obj.datum.string,
-				       font_face_out);
+	return _ft_create_for_pattern (ctx, obj.datum.string, font_face_out);
     }
 
     status = csi_name_new_static (ctx, &key, "source");
@@ -2116,8 +2102,10 @@ _ft_type42_create (csi_t *ctx,
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 	}
 
-	return _ft_create_for_source (ctx, obj.datum.string,
-				      index, flags,
+	return _ft_create_for_source (ctx,
+				      obj.datum.string,
+				      index,
+				      flags,
 				      font_face_out);
     }
 
@@ -2139,7 +2127,7 @@ _fc_strcpy (csi_t *ctx, const char *str)
     else
 	len = strlen (str);
 
-    ret = _csi_alloc (ctx, len+1);
+    ret = _csi_alloc (ctx, len + 1);
     if (_csi_unlikely (ret == NULL))
 	return NULL;
 
@@ -2161,7 +2149,8 @@ _select_font (const char *name)
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
-    comac_select_font_face (cr, name,
+    comac_select_font_face (cr,
+			    name,
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     face = comac_font_face_reference (comac_get_font_face (cr));
@@ -2228,7 +2217,7 @@ _ft_type42_fallback_create (csi_t *ctx,
 	    obj.datum.object->ref++;
 	    break;
 	default:
-	    return  _csi_error (CSI_STATUS_INVALID_SCRIPT);
+	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 	}
 
 	return _ft_fallback_create_for_pattern (ctx,
@@ -2297,7 +2286,8 @@ _font (csi_t *ctx)
 
     status = comac_font_face_set_user_data (font_face,
 					    &_csi_proxy_key,
-					    proxy, _csi_proxy_destroy);
+					    proxy,
+					    _csi_proxy_destroy);
     if (_csi_unlikely (status)) {
 	_csi_proxy_destroy (proxy);
 	comac_font_face_destroy (font_face);
@@ -2378,8 +2368,7 @@ _ge (csi_t *ctx)
 }
 
 static csi_status_t
-_proxy_get (csi_proxy_t *proxy,
-	    csi_name_t key)
+_proxy_get (csi_proxy_t *proxy, csi_name_t key)
 {
     csi_object_t obj;
     csi_status_t status;
@@ -2395,9 +2384,7 @@ _proxy_get (csi_proxy_t *proxy,
 }
 
 static csi_status_t
-_context_get (csi_t *ctx,
-	      comac_t *cr,
-	      csi_name_t key)
+_context_get (csi_t *ctx, comac_t *cr, csi_name_t key)
 {
     csi_status_t status;
     csi_object_t obj;
@@ -2423,13 +2410,16 @@ _context_get (csi_t *ctx,
 	obj.datum.surface = comac_surface_reference (comac_get_target (cr));
     } else if (strcmp ((char *) key, "group-target") == 0) {
 	obj.type = CSI_OBJECT_TYPE_SURFACE;
-	obj.datum.surface = comac_surface_reference (comac_get_group_target (cr));
+	obj.datum.surface =
+	    comac_surface_reference (comac_get_group_target (cr));
     } else if (strcmp ((char *) key, "scaled-font") == 0) {
 	obj.type = CSI_OBJECT_TYPE_SCALED_FONT;
-	obj.datum.scaled_font = comac_scaled_font_reference (comac_get_scaled_font (cr));
+	obj.datum.scaled_font =
+	    comac_scaled_font_reference (comac_get_scaled_font (cr));
     } else if (strcmp ((char *) key, "font-face") == 0) {
 	obj.type = CSI_OBJECT_TYPE_FONT;
-	obj.datum.font_face = comac_font_face_reference (comac_get_font_face (cr));
+	obj.datum.font_face =
+	    comac_font_face_reference (comac_get_font_face (cr));
     } else
 	return _proxy_get (comac_get_user_data (cr, &_csi_proxy_key), key);
 
@@ -2437,19 +2427,15 @@ _context_get (csi_t *ctx,
 }
 
 static csi_status_t
-_font_get (csi_t *ctx,
-	   comac_font_face_t *font_face,
-	   csi_name_t key)
+_font_get (csi_t *ctx, comac_font_face_t *font_face, csi_name_t key)
 {
-    return _proxy_get (comac_font_face_get_user_data (font_face,
-						      &_csi_proxy_key),
-		       key);
+    return _proxy_get (
+	comac_font_face_get_user_data (font_face, &_csi_proxy_key),
+	key);
 }
 
 static csi_status_t
-_pattern_get (csi_t *ctx,
-	      comac_pattern_t *pattern,
-	      csi_name_t key)
+_pattern_get (csi_t *ctx, comac_pattern_t *pattern, csi_name_t key)
 {
     csi_status_t status;
 
@@ -2457,10 +2443,12 @@ _pattern_get (csi_t *ctx,
 	return _csi_push_ostack_integer (ctx, comac_pattern_get_type (pattern));
 
     if (strcmp ((char *) key, "filter") == 0)
-	return _csi_push_ostack_integer (ctx, comac_pattern_get_filter (pattern));
+	return _csi_push_ostack_integer (ctx,
+					 comac_pattern_get_filter (pattern));
 
     if (strcmp ((char *) key, "extend") == 0)
-	return _csi_push_ostack_integer (ctx, comac_pattern_get_extend (pattern));
+	return _csi_push_ostack_integer (ctx,
+					 comac_pattern_get_extend (pattern));
 
     if (strcmp ((char *) key, "matrix") == 0) {
 	csi_object_t obj;
@@ -2479,18 +2467,14 @@ _pattern_get (csi_t *ctx,
 }
 
 static csi_status_t
-_scaled_font_get (csi_t *ctx,
-		  comac_scaled_font_t *font,
-		  csi_name_t key)
+_scaled_font_get (csi_t *ctx, comac_scaled_font_t *font, csi_name_t key)
 {
     return _proxy_get (comac_scaled_font_get_user_data (font, &_csi_proxy_key),
 		       key);
 }
 
 static csi_status_t
-_surface_get (csi_t *ctx,
-	      comac_surface_t *surface,
-	      csi_name_t key)
+_surface_get (csi_t *ctx, comac_surface_t *surface, csi_name_t key)
 {
     if (strcmp ((char *) key, "type") == 0) {
 	return _csi_push_ostack_integer (ctx, comac_surface_get_type (surface));
@@ -2529,13 +2513,12 @@ _get (csi_t *ctx)
 				     &obj);
 	break;
     case CSI_OBJECT_TYPE_ARRAY:
-	if (_csi_unlikely (csi_object_get_type (key) != CSI_OBJECT_TYPE_INTEGER))
+	if (_csi_unlikely (csi_object_get_type (key) !=
+			   CSI_OBJECT_TYPE_INTEGER))
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
-	status = csi_array_get (ctx,
-				src->datum.array,
-				key->datum.integer,
-				&obj);
+	status =
+	    csi_array_get (ctx, src->datum.array, key->datum.integer, &obj);
 	break;
 #if 0
     case CSI_OBJECT_TYPE_STRING:
@@ -2612,13 +2595,15 @@ _glyph_string (csi_t *ctx,
 	cache = _csi_alloc (ctx, sizeof (*cache));
 	if (_csi_likely (cache != NULL)) {
 	    cache->ctx = ctx;
-	    memset (cache->have_glyph_advance, 0xff,
+	    memset (cache->have_glyph_advance,
+		    0xff,
 		    sizeof (cache->have_glyph_advance));
 
-	    status = comac_scaled_font_set_user_data (scaled_font,
-						      (comac_user_data_key_t *) ctx,
-						      cache,
-						      glyph_advance_cache_destroy);
+	    status =
+		comac_scaled_font_set_user_data (scaled_font,
+						 (comac_user_data_key_t *) ctx,
+						 cache,
+						 glyph_advance_cache_destroy);
 	    if (_csi_unlikely (status)) {
 		_csi_free (ctx, cache);
 		cache = NULL;
@@ -2630,7 +2615,8 @@ _glyph_string (csi_t *ctx,
 	cache = &uncached;
 
 	cache->ctx = ctx;
-	memset (cache->have_glyph_advance, 0xff,
+	memset (cache->have_glyph_advance,
+		0xff,
 		sizeof (cache->have_glyph_advance));
     }
 
@@ -2661,7 +2647,8 @@ _glyph_string (csi_t *ctx,
 		    comac_text_extents_t extents;
 
 		    comac_scaled_font_glyph_extents (scaled_font,
-						     &glyphs[nglyphs], 1,
+						     &glyphs[nglyphs],
+						     1,
 						     &extents);
 
 		    cache->glyph_advance[gi][0] = extents.x_advance;
@@ -2690,7 +2677,8 @@ _glyph_string (csi_t *ctx,
 		    comac_text_extents_t extents;
 
 		    comac_scaled_font_glyph_extents (scaled_font,
-						     &glyphs[nglyphs], 1,
+						     &glyphs[nglyphs],
+						     1,
 						     &extents);
 
 		    cache->glyph_advance[g][0] = extents.x_advance;
@@ -2708,14 +2696,14 @@ _glyph_string (csi_t *ctx,
 	case CSI_OBJECT_TYPE_INTEGER:
 	case CSI_OBJECT_TYPE_REAL: /* dx or x*/
 	    dx = csi_number_get_value (obj);
-	    if (i+1 == array->stack.len)
+	    if (i + 1 == array->stack.len)
 		break;
 
-	    type = csi_object_get_type (&array->stack.objects[i+1]);
+	    type = csi_object_get_type (&array->stack.objects[i + 1]);
 	    switch (type) {
 	    case CSI_OBJECT_TYPE_INTEGER:
 	    case CSI_OBJECT_TYPE_REAL: /* y */
-		y = csi_number_get_value (&array->stack.objects[i+1]);
+		y = csi_number_get_value (&array->stack.objects[i + 1]);
 		x = dx;
 		i++;
 		break;
@@ -2767,7 +2755,8 @@ _glyph_path (csi_t *ctx)
     }
 
     if (nglyphs > ARRAY_LENGTH (stack_glyphs)) {
-	if (_csi_unlikely ((unsigned) nglyphs >= INT_MAX / sizeof (comac_glyph_t)))
+	if (_csi_unlikely ((unsigned) nglyphs >=
+			   INT_MAX / sizeof (comac_glyph_t)))
 	    return _csi_error (CSI_STATUS_NO_MEMORY);
 
 	glyphs = _csi_alloc (ctx, sizeof (comac_glyph_t) * nglyphs);
@@ -2910,7 +2899,8 @@ static csi_status_t
 _image_read_raw (csi_t *ctx,
 		 csi_object_t *src,
 		 comac_format_t format,
-		 int width, int height,
+		 int width,
+		 int height,
 		 comac_surface_t **image_out)
 {
     comac_surface_t *image;
@@ -2925,7 +2915,9 @@ _image_read_raw (csi_t *ctx,
 
     if (ctx->hooks.create_source_image != NULL) {
 	image = ctx->hooks.create_source_image (ctx->hooks.closure,
-						format, width, height,
+						format,
+						width,
+						height,
 						0);
 
 	stride = comac_image_surface_get_stride (image);
@@ -2936,11 +2928,16 @@ _image_read_raw (csi_t *ctx,
 	if (data == NULL)
 	    return COMAC_STATUS_NO_MEMORY;
 
-	image = comac_image_surface_create_for_data (data, format,
-						     width, height, stride);
-	status = comac_surface_set_user_data (image,
-					      (const comac_user_data_key_t *) image,
-					      data, free);
+	image = comac_image_surface_create_for_data (data,
+						     format,
+						     width,
+						     height,
+						     stride);
+	status =
+	    comac_surface_set_user_data (image,
+					 (const comac_user_data_key_t *) image,
+					 data,
+					 free);
 	if (status) {
 	    comac_surface_destroy (image);
 	    free (image);
@@ -2950,7 +2947,7 @@ _image_read_raw (csi_t *ctx,
 
     switch (format) {
     case COMAC_FORMAT_A1:
-	instride = rowlen = (width+7)/8;
+	instride = rowlen = (width + 7) / 8;
 	break;
     case COMAC_FORMAT_A8:
 	instride = rowlen = width;
@@ -2960,7 +2957,7 @@ _image_read_raw (csi_t *ctx,
 	break;
     case COMAC_FORMAT_RGB24:
 	rowlen = 3 * width;
-	instride = 4 *width;
+	instride = 4 * width;
 	break;
     default:
     case COMAC_FORMAT_RGB30:
@@ -2977,40 +2974,40 @@ _image_read_raw (csi_t *ctx,
     }
     len = rowlen * height;
 
-    if (rowlen == instride &&
-	src->type == CSI_OBJECT_TYPE_STRING &&
-	len == src->datum.string->deflate)
-    {
+    if (rowlen == instride && src->type == CSI_OBJECT_TYPE_STRING &&
+	len == src->datum.string->deflate) {
 	csi_string_t *s = src->datum.string;
 	unsigned long out = s->deflate;
 
 	switch (s->method) {
 	default:
 	case NONE:
-err_decompress:
+	err_decompress:
 	    comac_surface_destroy (image);
 	    return _csi_error (CSI_STATUS_READ_ERROR);
 
 	case ZLIB:
 #if HAVE_ZLIB
-	    if (uncompress ((Bytef *) data, &out,
-			    (Bytef *) s->string, s->len) != Z_OK)
+	    if (uncompress ((Bytef *) data,
+			    &out,
+			    (Bytef *) s->string,
+			    s->len) != Z_OK)
 #endif
 		goto err_decompress;
 	    break;
 
 	case LZO:
 #if HAVE_LZO
-	    if (lzo2a_decompress ((Bytef *) s->string, s->len,
-				  (Bytef *) data, &out,
+	    if (lzo2a_decompress ((Bytef *) s->string,
+				  s->len,
+				  (Bytef *) data,
+				  &out,
 				  NULL))
 #endif
 		goto err_decompress;
 	    break;
 	}
-    }
-    else
-    {
+    } else {
 	csi_object_t file;
 
 	status = csi_object_as_file (ctx, src, &file);
@@ -3038,38 +3035,38 @@ err_decompress:
 		/* XXX pixel conversion */
 		switch (format) {
 		case COMAC_FORMAT_A1:
-		    for (x = rowlen; x--; ) {
+		    for (x = rowlen; x--;) {
 			uint8_t byte = *--bp;
 			row[x] = CSI_BITSWAP8_IF_LITTLE_ENDIAN (byte);
 		    }
 		    break;
 		case COMAC_FORMAT_A8:
-		    for (x = width; x--; )
+		    for (x = width; x--;)
 			row[x] = *--bp;
 		    break;
 		case COMAC_FORMAT_RGB16_565:
-		    for (x = width; x--; ) {
+		    for (x = width; x--;) {
 #ifdef WORDS_BIGENDIAN
-			row[2*x + 1] = *--bp;
-			row[2*x + 0] = *--bp;
+			row[2 * x + 1] = *--bp;
+			row[2 * x + 0] = *--bp;
 #else
-			row[2*x + 0] = *--bp;
-			row[2*x + 1] = *--bp;
+			row[2 * x + 0] = *--bp;
+			row[2 * x + 1] = *--bp;
 #endif
 		    }
 		    break;
 		case COMAC_FORMAT_RGB24:
-		    for (x = width; x--; ) {
+		    for (x = width; x--;) {
 #ifdef WORDS_BIGENDIAN
-			row[4*x + 3] = *--bp;
-			row[4*x + 2] = *--bp;
-			row[4*x + 1] = *--bp;
-			row[4*x + 0] = 0xff;
+			row[4 * x + 3] = *--bp;
+			row[4 * x + 2] = *--bp;
+			row[4 * x + 1] = *--bp;
+			row[4 * x + 0] = 0xff;
 #else
-			row[4*x + 0] = *--bp;
-			row[4*x + 1] = *--bp;
-			row[4*x + 2] = *--bp;
-			row[4*x + 3] = 0xff;
+			row[4 * x + 0] = *--bp;
+			row[4 * x + 1] = *--bp;
+			row[4 * x + 2] = *--bp;
+			row[4 * x + 3] = 0xff;
 #endif
 		    }
 		    break;
@@ -3088,38 +3085,38 @@ err_decompress:
 	    /* need to treat last row carefully */
 	    switch (format) {
 	    case COMAC_FORMAT_A1:
-		for (x = rowlen; x--; ) {
+		for (x = rowlen; x--;) {
 		    uint8_t byte = *--bp;
 		    data[x] = CSI_BITSWAP8_IF_LITTLE_ENDIAN (byte);
 		}
 		break;
 	    case COMAC_FORMAT_A8:
-		for (x = width; x--; )
+		for (x = width; x--;)
 		    data[x] = *--bp;
 		break;
 	    case COMAC_FORMAT_RGB16_565:
-		for (x = width; x--; ) {
+		for (x = width; x--;) {
 #ifdef WORDS_BIGENDIAN
-		    data[2*x + 1] = *--bp;
-		    data[2*x + 0] = *--bp;
+		    data[2 * x + 1] = *--bp;
+		    data[2 * x + 0] = *--bp;
 #else
-		    data[2*x + 0] = *--bp;
-		    data[2*x + 1] = *--bp;
+		    data[2 * x + 0] = *--bp;
+		    data[2 * x + 1] = *--bp;
 #endif
 		}
 		break;
 	    case COMAC_FORMAT_RGB24:
-		for (x = width; --x>1; ) {
+		for (x = width; --x > 1;) {
 #ifdef WORDS_BIGENDIAN
-		    data[4*x + 3] = *--bp;
-		    data[4*x + 2] = *--bp;
-		    data[4*x + 1] = *--bp;
-		    data[4*x + 0] = 0xff;
+		    data[4 * x + 3] = *--bp;
+		    data[4 * x + 2] = *--bp;
+		    data[4 * x + 1] = *--bp;
+		    data[4 * x + 0] = 0xff;
 #else
-		    data[4*x + 0] = *--bp;
-		    data[4*x + 1] = *--bp;
-		    data[4*x + 2] = *--bp;
-		    data[4*x + 3] = 0xff;
+		    data[4 * x + 0] = *--bp;
+		    data[4 * x + 1] = *--bp;
+		    data[4 * x + 2] = *--bp;
+		    data[4 * x + 3] = 0xff;
 #endif
 		}
 		if (width > 1) {
@@ -3182,22 +3179,18 @@ err_decompress:
 		    data[x] = CSI_BITSWAP8_IF_LITTLE_ENDIAN (byte);
 		}
 		break;
-	    case COMAC_FORMAT_RGB16_565:
-		{
-		    uint32_t *rgba = (uint32_t *) data;
-		    for (x = len/2; x--; rgba++) {
-			*rgba = bswap_16 (*rgba);
-		    }
+	    case COMAC_FORMAT_RGB16_565: {
+		uint32_t *rgba = (uint32_t *) data;
+		for (x = len / 2; x--; rgba++) {
+		    *rgba = bswap_16 (*rgba);
 		}
-		break;
-	    case COMAC_FORMAT_ARGB32:
-		{
-		    uint32_t *rgba = (uint32_t *) data;
-		    for (x = len/4; x--; rgba++) {
-			*rgba = bswap_32 (*rgba);
-		    }
+	    } break;
+	    case COMAC_FORMAT_ARGB32: {
+		uint32_t *rgba = (uint32_t *) data;
+		for (x = len / 4; x--; rgba++) {
+		    *rgba = bswap_32 (*rgba);
 		}
-		break;
+	    } break;
 
 	    case COMAC_FORMAT_A8:
 		break;
@@ -3261,10 +3254,9 @@ _image_tag_done (void *closure)
 }
 
 static void
-_image_hash (csi_blob_t *blob,
-	     comac_surface_t *surface)
+_image_hash (csi_blob_t *blob, comac_surface_t *surface)
 {
-    uint32_t  value;
+    uint32_t value;
 
     value = comac_image_surface_get_width (surface);
     _csi_blob_hash (blob, &value, 1);
@@ -3312,9 +3304,10 @@ _image_cached (csi_t *ctx, comac_surface_t *surface)
     tag->blob.len = tmpl.len;
     tag->surface = surface;
 
-    if (comac_surface_set_user_data (surface, &_csi_blob_key,
-				     tag, _image_tag_done))
-    {
+    if (comac_surface_set_user_data (surface,
+				     &_csi_blob_key,
+				     tag,
+				     _image_tag_done)) {
 	_image_tag_done (tag);
     }
 
@@ -3389,7 +3382,6 @@ _image_load_from_dictionary (csi_t *ctx,
 		mime_type = MIME_TYPE_PNG;
 	}
 
-
 	/* XXX hook for general mime-type decoder */
 
 	switch (mime_type) {
@@ -3448,7 +3440,7 @@ _index (csi_t *ctx)
 
     check (1);
 
-    status = _csi_ostack_get_integer (ctx, 0,  &n);
+    status = _csi_ostack_get_integer (ctx, 0, &n);
     if (_csi_unlikely (status))
 	return status;
 
@@ -3741,8 +3733,8 @@ _matrix (csi_t *ctx)
     if (csi_object_is_number (obj)) {
 	check (6);
 
-	for (n = 6; n--; ) {
-	    status = _csi_ostack_get_number (ctx, 5-n, &v[n]);
+	for (n = 6; n--;) {
+	    status = _csi_ostack_get_number (ctx, 5 - n, &v[n]);
 	    if (_csi_unlikely (status))
 		return status;
 	}
@@ -3803,7 +3795,8 @@ _map_to_image (csi_t *ctx)
     }
 
     obj.type = CSI_OBJECT_TYPE_SURFACE;
-    obj.datum.surface = comac_surface_reference (comac_surface_map_to_image (surface, r));
+    obj.datum.surface =
+	comac_surface_reference (comac_surface_map_to_image (surface, r));
     pop (1);
     return push (&obj);
 }
@@ -4002,33 +3995,25 @@ _mul (csi_t *ctx)
 
     type_a = csi_object_get_type (A);
     if (_csi_unlikely (! (type_a == CSI_OBJECT_TYPE_INTEGER ||
-			    type_a == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_a == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
     type_b = csi_object_get_type (B);
     if (_csi_unlikely (! (type_b == CSI_OBJECT_TYPE_INTEGER ||
-			    type_b == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_b == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
     pop (2);
 
-    if (type_a == CSI_OBJECT_TYPE_REAL &&
-	type_b == CSI_OBJECT_TYPE_REAL)
-    {
+    if (type_a == CSI_OBJECT_TYPE_REAL && type_b == CSI_OBJECT_TYPE_REAL) {
 	return _csi_push_ostack_real (ctx, A->datum.real * B->datum.real);
 
-    }
-    else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
-	     type_b == CSI_OBJECT_TYPE_INTEGER)
-    {
+    } else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
+	       type_b == CSI_OBJECT_TYPE_INTEGER) {
 	return _csi_push_ostack_integer (ctx,
 					 A->datum.integer * B->datum.integer);
-    }
-    else
-    {
+    } else {
 	double v;
 
 	if (type_a == CSI_OBJECT_TYPE_REAL)
@@ -4233,7 +4218,7 @@ _rectangle (csi_t *ctx)
     /* XXX path object */
 
     comac_rectangle (cr, x, y, w, h);
-    pop(4);
+    pop (4);
     return CSI_STATUS_SUCCESS;
 }
 
@@ -4380,7 +4365,7 @@ _rgb (csi_t *ctx)
 {
     csi_object_t obj;
     csi_status_t status;
-    double r,g,b;
+    double r, g, b;
 
     check (3);
 
@@ -4405,7 +4390,7 @@ _rgba (csi_t *ctx)
 {
     csi_object_t obj;
     csi_status_t status;
-    double r,g,b,a;
+    double r, g, b, a;
 
     check (4);
 
@@ -4469,15 +4454,12 @@ _rotate (csi_t *ctx)
 	comac_rotate (obj->datum.cr, theta);
 	break;
 
-    case CSI_OBJECT_TYPE_PATTERN:
-	{
-	    comac_matrix_t ctm;
-	    comac_pattern_get_matrix (obj->datum.pattern, &ctm);
-	    comac_matrix_rotate (&ctm, theta);
-	    comac_pattern_set_matrix (obj->datum.pattern, &ctm);
-	}
-	break;
-
+    case CSI_OBJECT_TYPE_PATTERN: {
+	comac_matrix_t ctm;
+	comac_pattern_get_matrix (obj->datum.pattern, &ctm);
+	comac_matrix_rotate (&ctm, theta);
+	comac_pattern_set_matrix (obj->datum.pattern, &ctm);
+    } break;
 
     case CSI_OBJECT_TYPE_MATRIX:
 	comac_matrix_rotate (&obj->datum.matrix->matrix, theta);
@@ -4521,15 +4503,12 @@ _scale (csi_t *ctx)
 	comac_scale (obj->datum.cr, x, y);
 	break;
 
-    case CSI_OBJECT_TYPE_PATTERN:
-	{
-	    comac_matrix_t ctm;
-	    comac_pattern_get_matrix (obj->datum.pattern, &ctm);
-	    comac_matrix_scale (&ctm, x, y);
-	    comac_pattern_set_matrix (obj->datum.pattern, &ctm);
-	}
-	break;
-
+    case CSI_OBJECT_TYPE_PATTERN: {
+	comac_matrix_t ctm;
+	comac_pattern_get_matrix (obj->datum.pattern, &ctm);
+	comac_matrix_scale (&ctm, x, y);
+	comac_pattern_set_matrix (obj->datum.pattern, &ctm);
+    } break;
 
     case CSI_OBJECT_TYPE_MATRIX:
 	comac_matrix_scale (&obj->datum.matrix->matrix, x, y);
@@ -4551,21 +4530,23 @@ _font_options_load_from_dictionary (csi_t *ctx,
     const struct {
 	const char *key;
 	void (*setter) (comac_font_options_t *, int val);
-    } properties[] = {
-	{ "antialias",
-	    (void (*)(comac_font_options_t *, int val))
-		comac_font_options_set_antialias },
-	{ "subpixel-order",
-	    (void (*)(comac_font_options_t *, int val))
-		comac_font_options_set_subpixel_order },
-	{ "hint-style",
-	    (void (*)(comac_font_options_t *, int val))
-		comac_font_options_set_hint_style },
-	{ "hint-metrics",
-	    (void (*)(comac_font_options_t *, int val))
-		comac_font_options_set_hint_metrics },
-	{ NULL, NULL },
-    }, *prop = properties;
+    } properties[] =
+	{
+	    {"antialias",
+	     (void (*) (comac_font_options_t *,
+			int val)) comac_font_options_set_antialias},
+	    {"subpixel-order",
+	     (void (*) (comac_font_options_t *,
+			int val)) comac_font_options_set_subpixel_order},
+	    {"hint-style",
+	     (void (*) (comac_font_options_t *,
+			int val)) comac_font_options_set_hint_style},
+	    {"hint-metrics",
+	     (void (*) (comac_font_options_t *,
+			int val)) comac_font_options_set_hint_metrics},
+	    {NULL, NULL},
+	},
+      *prop = properties;
 
     while (prop->key != NULL) {
 	csi_object_t key, value;
@@ -4581,8 +4562,7 @@ _font_options_load_from_dictionary (csi_t *ctx,
 		return status;
 
 	    if (_csi_unlikely (csi_object_get_type (&value) !=
-				 CSI_OBJECT_TYPE_INTEGER))
-	    {
+			       CSI_OBJECT_TYPE_INTEGER)) {
 		csi_object_free (ctx, &value);
 		return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 	    }
@@ -4637,10 +4617,8 @@ _scaled_font (csi_t *ctx)
     }
 
     obj.type = CSI_OBJECT_TYPE_SCALED_FONT;
-    obj.datum.scaled_font = comac_scaled_font_create (font_face,
-						      &font_matrix,
-						      &ctm,
-						      options);
+    obj.datum.scaled_font =
+	comac_scaled_font_create (font_face, &font_matrix, &ctm, options);
     comac_font_options_destroy (options);
     pop (4);
     return push (&obj);
@@ -4657,7 +4635,7 @@ _select_font_face (csi_t *ctx)
 
     check (4);
 
-    status = _csi_ostack_get_integer (ctx, 0,  &weight);
+    status = _csi_ostack_get_integer (ctx, 0, &weight);
     if (_csi_unlikely (status))
 	return status;
     status = _csi_ostack_get_integer (ctx, 1, &slant);
@@ -4676,14 +4654,11 @@ _select_font_face (csi_t *ctx)
 }
 
 static csi_status_t
-_context_set (csi_t *ctx,
-	      comac_t *cr,
-	      csi_name_t key,
-	      csi_object_t *obj)
+_context_set (csi_t *ctx, comac_t *cr, csi_name_t key, csi_object_t *obj)
 {
     if (strcmp ((char *) key, "source") == 0) {
 	if (_csi_unlikely (csi_object_get_type (obj) !=
-			     CSI_OBJECT_TYPE_PATTERN))
+			   CSI_OBJECT_TYPE_PATTERN))
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
 	comac_set_source (cr, obj->datum.pattern);
@@ -4692,7 +4667,7 @@ _context_set (csi_t *ctx,
 
     if (strcmp ((char *) key, "scaled-font") == 0) {
 	if (_csi_unlikely (csi_object_get_type (obj) !=
-			     CSI_OBJECT_TYPE_SCALED_FONT))
+			   CSI_OBJECT_TYPE_SCALED_FONT))
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
 	comac_set_scaled_font (cr, obj->datum.scaled_font);
@@ -4700,8 +4675,7 @@ _context_set (csi_t *ctx,
     }
 
     if (strcmp ((char *) key, "font-face") == 0) {
-	if (_csi_unlikely (csi_object_get_type (obj) !=
-			     CSI_OBJECT_TYPE_FONT))
+	if (_csi_unlikely (csi_object_get_type (obj) != CSI_OBJECT_TYPE_FONT))
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
 	comac_set_font_face (cr, obj->datum.font_face);
@@ -4728,8 +4702,7 @@ _set (csi_t *ctx)
     type = csi_object_get_type (dst);
     switch (type) {
     case CSI_OBJECT_TYPE_DICTIONARY:
-	if (_csi_unlikely (csi_object_get_type (key) !=
-			     CSI_OBJECT_TYPE_NAME))
+	if (_csi_unlikely (csi_object_get_type (key) != CSI_OBJECT_TYPE_NAME))
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
 	status = csi_dictionary_put (ctx,
@@ -4739,24 +4712,18 @@ _set (csi_t *ctx)
 	break;
     case CSI_OBJECT_TYPE_ARRAY:
 	if (_csi_unlikely (csi_object_get_type (key) !=
-			     CSI_OBJECT_TYPE_INTEGER))
+			   CSI_OBJECT_TYPE_INTEGER))
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
-	status = csi_array_put (ctx,
-				dst->datum.array,
-				key->datum.integer,
-				value);
+	status =
+	    csi_array_put (ctx, dst->datum.array, key->datum.integer, value);
 	break;
 
     case CSI_OBJECT_TYPE_CONTEXT:
-	if (_csi_unlikely (csi_object_get_type (key) !=
-			     CSI_OBJECT_TYPE_NAME))
+	if (_csi_unlikely (csi_object_get_type (key) != CSI_OBJECT_TYPE_NAME))
 	    return _csi_error (CSI_STATUS_INVALID_SCRIPT);
 
-	status = _context_set (ctx,
-			       dst->datum.cr,
-			       key->datum.name,
-			       value);
+	status = _context_set (ctx, dst->datum.cr, key->datum.name, value);
 	break;
 
     case CSI_OBJECT_TYPE_STRING:
@@ -4823,7 +4790,8 @@ _set_dash (csi_t *ctx)
 	if (_csi_likely (array->stack.len < ARRAY_LENGTH (stack_dashes))) {
 	    dashes = stack_dashes;
 	} else {
-	    if (_csi_unlikely ((unsigned) array->stack.len >= INT_MAX / sizeof (double)))
+	    if (_csi_unlikely ((unsigned) array->stack.len >=
+			       INT_MAX / sizeof (double)))
 		return _csi_error (CSI_STATUS_NO_MEMORY);
 	    dashes = _csi_alloc (ctx, sizeof (double) * array->stack.len);
 	    if (_csi_unlikely (dashes == NULL))
@@ -4831,9 +4799,8 @@ _set_dash (csi_t *ctx)
 	}
 
 	for (n = 0; n < array->stack.len; n++) {
-	    if (_csi_unlikely (! csi_object_is_number
-				 (&array->stack.objects[n])))
-	    {
+	    if (_csi_unlikely (
+		    ! csi_object_is_number (&array->stack.objects[n]))) {
 		if (dashes != stack_dashes)
 		    _csi_free (ctx, dashes);
 		return _csi_error (CSI_STATUS_INVALID_SCRIPT);
@@ -4861,7 +4828,7 @@ _set_device_offset (csi_t *ctx)
 
     check (3);
 
-    status = _csi_ostack_get_number (ctx, 0,  &y);
+    status = _csi_ostack_get_number (ctx, 0, &y);
     if (_csi_unlikely (status))
 	return status;
     status = _csi_ostack_get_number (ctx, 1, &x);
@@ -4885,7 +4852,7 @@ _set_device_scale (csi_t *ctx)
 
     check (3);
 
-    status = _csi_ostack_get_number (ctx, 0,  &y);
+    status = _csi_ostack_get_number (ctx, 0, &y);
     if (_csi_unlikely (status))
 	return status;
     status = _csi_ostack_get_number (ctx, 1, &x);
@@ -4918,8 +4885,7 @@ _set_extend (csi_t *ctx)
     type = csi_object_get_type (obj);
     switch (type) {
     case CSI_OBJECT_TYPE_CONTEXT:
-	comac_pattern_set_extend (comac_get_source (obj->datum.cr),
-				  extend);
+	comac_pattern_set_extend (comac_get_source (obj->datum.cr), extend);
 	break;
     case CSI_OBJECT_TYPE_PATTERN:
 	comac_pattern_set_extend (obj->datum.pattern, extend);
@@ -4995,8 +4961,7 @@ _set_filter (csi_t *ctx)
     type = csi_object_get_type (obj);
     switch (type) {
     case CSI_OBJECT_TYPE_CONTEXT:
-	comac_pattern_set_filter (comac_get_source (obj->datum.cr),
-				  filter);
+	comac_pattern_set_filter (comac_get_source (obj->datum.cr), filter);
 	break;
     case CSI_OBJECT_TYPE_PATTERN:
 	comac_pattern_set_filter (obj->datum.pattern, filter);
@@ -5075,7 +5040,7 @@ _set_font_matrix (csi_t *ctx)
 	return status;
 
     comac_set_font_matrix (cr, &m);
-    pop(1);
+    pop (1);
     return CSI_STATUS_SUCCESS;
 }
 
@@ -5174,12 +5139,12 @@ _set_hairline (csi_t *ctx)
     if (_csi_unlikely (status))
 	return status;
     status = _csi_ostack_get_context (ctx, 1, &cr);
-	if (_csi_unlikely (status))
+    if (_csi_unlikely (status))
 	return status;
 
     comac_set_hairline (cr, set_hairline);
-	pop (1);
-	return CSI_STATUS_SUCCESS;
+    pop (1);
+    return CSI_STATUS_SUCCESS;
 }
 
 static csi_status_t
@@ -5270,7 +5235,6 @@ _set_mime_data (csi_t *ctx)
     if (_csi_unlikely (status))
 	return status;
 
-
     /* XXX free source */
     tag = _csi_slab_alloc (ctx, sizeof (struct _mime_tag));
     if (_csi_unlikely (tag == NULL))
@@ -5279,12 +5243,13 @@ _set_mime_data (csi_t *ctx)
     tag->source = source.datum.string;
     tag->source->base.ref++;
 
-    status = comac_surface_set_mime_data (surface,
-					  mime,
-					  (uint8_t *)
-					  source.datum.string->string,
-					  source.datum.string->len,
-					  _mime_tag_destroy, tag);
+    status =
+	comac_surface_set_mime_data (surface,
+				     mime,
+				     (uint8_t *) source.datum.string->string,
+				     source.datum.string->len,
+				     _mime_tag_destroy,
+				     tag);
     if (_csi_unlikely (status)) {
 	_mime_tag_destroy (tag);
 	return status;
@@ -5388,7 +5353,8 @@ _matching_images (comac_surface_t *a, comac_surface_t *b)
     if (comac_surface_get_type (b) != COMAC_SURFACE_TYPE_IMAGE)
 	return FALSE;
 
-    if (comac_image_surface_get_height (a) != comac_image_surface_get_height (b))
+    if (comac_image_surface_get_height (a) !=
+	comac_image_surface_get_height (b))
 	return FALSE;
 
     if (comac_image_surface_get_width (a) != comac_image_surface_get_width (b))
@@ -5429,17 +5395,15 @@ _set_source_image (csi_t *ctx)
      */
     if (_csi_likely (_matching_images (surface, source))) {
 	if (comac_surface_get_reference_count (surface) == 1 &&
-	    comac_surface_get_reference_count (source) == 1)
-	{
+	    comac_surface_get_reference_count (source) == 1) {
 	    _csi_peek_ostack (ctx, 0)->datum.surface = surface;
 	    _csi_peek_ostack (ctx, 1)->datum.surface = source;
-	}
-	else
-	{
+	} else {
 	    comac_surface_flush (surface);
 	    memcpy (comac_image_surface_get_data (surface),
 		    comac_image_surface_get_data (source),
-		    comac_image_surface_get_height (source) * comac_image_surface_get_stride (source));
+		    comac_image_surface_get_height (source) *
+			comac_image_surface_get_stride (source));
 	    comac_surface_mark_dirty (surface);
 	}
     } else {
@@ -5459,7 +5423,7 @@ static csi_status_t
 _set_source_rgb (csi_t *ctx)
 {
     csi_status_t status;
-    double r,g,b;
+    double r, g, b;
     comac_t *cr;
 
     check (4);
@@ -5486,7 +5450,7 @@ static csi_status_t
 _set_source_rgba (csi_t *ctx)
 {
     csi_status_t status;
-    double r,g,b,a;
+    double r, g, b, a;
     comac_t *cr;
 
     check (5);
@@ -5553,18 +5517,16 @@ _transform (csi_t *ctx)
     case CSI_OBJECT_TYPE_CONTEXT:
 	comac_transform (obj->datum.cr, &m);
 	break;
-    case CSI_OBJECT_TYPE_PATTERN:
-	{
-	    comac_matrix_t ctm;
-	    comac_pattern_get_matrix (obj->datum.pattern, &ctm);
-	    comac_matrix_multiply (&ctm, &m, &ctm);
-	    comac_pattern_set_matrix (obj->datum.pattern, &ctm);
-	}
-	break;
+    case CSI_OBJECT_TYPE_PATTERN: {
+	comac_matrix_t ctm;
+	comac_pattern_get_matrix (obj->datum.pattern, &ctm);
+	comac_matrix_multiply (&ctm, &m, &ctm);
+	comac_pattern_set_matrix (obj->datum.pattern, &ctm);
+    } break;
     case CSI_OBJECT_TYPE_MATRIX:
-	    comac_matrix_multiply (&obj->datum.matrix->matrix,
-				   &m,
-				   &obj->datum.matrix->matrix);
+	comac_matrix_multiply (&obj->datum.matrix->matrix,
+			       &m,
+			       &obj->datum.matrix->matrix);
 	break;
     default:
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
@@ -5598,15 +5560,12 @@ _translate (csi_t *ctx)
 	comac_translate (obj->datum.cr, x, y);
 	break;
 
-    case CSI_OBJECT_TYPE_PATTERN:
-	{
-	    comac_matrix_t ctm;
-	    comac_pattern_get_matrix (obj->datum.pattern, &ctm);
-	    comac_matrix_translate (&ctm, x, y);
-	    comac_pattern_set_matrix (obj->datum.pattern, &ctm);
-	}
-	break;
-
+    case CSI_OBJECT_TYPE_PATTERN: {
+	comac_matrix_t ctm;
+	comac_pattern_get_matrix (obj->datum.pattern, &ctm);
+	comac_matrix_translate (&ctm, x, y);
+	comac_pattern_set_matrix (obj->datum.pattern, &ctm);
+    } break;
 
     case CSI_OBJECT_TYPE_MATRIX:
 	comac_matrix_translate (&obj->datum.matrix->matrix, x, y);
@@ -5699,8 +5658,8 @@ _similar (csi_t *ctx)
     }
 
     obj.type = CSI_OBJECT_TYPE_SURFACE;
-    obj.datum.surface = comac_surface_create_similar (other,
-						      content, width, height);
+    obj.datum.surface =
+	comac_surface_create_similar (other, content, width, height);
     pop (4);
     return push (&obj);
 }
@@ -5730,9 +5689,8 @@ _similar_image (csi_t *ctx)
 	return status;
 
     obj.type = CSI_OBJECT_TYPE_SURFACE;
-    obj.datum.surface = comac_surface_create_similar_image (other,
-							    format,
-							    width, height);
+    obj.datum.surface =
+	comac_surface_create_similar_image (other, format, width, height);
     pop (4);
     return push (&obj);
 }
@@ -5764,7 +5722,8 @@ _subsurface (csi_t *ctx)
 	return status;
 
     obj.type = CSI_OBJECT_TYPE_SURFACE;
-    obj.datum.surface = comac_surface_create_for_rectangle (target, x, y, width, height);
+    obj.datum.surface =
+	comac_surface_create_for_rectangle (target, x, y, width, height);
     pop (5);
     return push (&obj);
 }
@@ -5828,7 +5787,8 @@ _show_glyphs (csi_t *ctx)
     }
 
     if (nglyphs > ARRAY_LENGTH (stack_glyphs)) {
-	if (_csi_unlikely ((unsigned) nglyphs >= INT_MAX / sizeof (comac_glyph_t)))
+	if (_csi_unlikely ((unsigned) nglyphs >=
+			   INT_MAX / sizeof (comac_glyph_t)))
 	    return _csi_error (CSI_STATUS_NO_MEMORY);
 
 	glyphs = _csi_alloc (ctx, sizeof (comac_glyph_t) * nglyphs);
@@ -5875,17 +5835,21 @@ _show_text_glyphs (csi_t *ctx)
 	array = obj->datum.array;
 	nclusters = array->stack.len / 2;
 	if (nclusters > ARRAY_LENGTH (stack_clusters)) {
-	    if (_csi_unlikely ((unsigned) nclusters >= INT_MAX / sizeof (comac_text_cluster_t)))
+	    if (_csi_unlikely ((unsigned) nclusters >=
+			       INT_MAX / sizeof (comac_text_cluster_t)))
 		return _csi_error (CSI_STATUS_NO_MEMORY);
-	    clusters = _csi_alloc (ctx, sizeof (comac_text_cluster_t) * nclusters);
+	    clusters =
+		_csi_alloc (ctx, sizeof (comac_text_cluster_t) * nclusters);
 	    if (_csi_unlikely (clusters == NULL))
 		return _csi_error (CSI_STATUS_NO_MEMORY);
 	} else
 	    clusters = stack_clusters;
 
 	for (i = 0; i < nclusters; i++) {
-	    clusters[i].num_bytes = csi_number_get_value (&array->stack.objects[2*i+0]);
-	    clusters[i].num_glyphs = csi_number_get_value (&array->stack.objects[2*i+1]);
+	    clusters[i].num_bytes =
+		csi_number_get_value (&array->stack.objects[2 * i + 0]);
+	    clusters[i].num_glyphs =
+		csi_number_get_value (&array->stack.objects[2 * i + 1]);
 	}
 	break;
 
@@ -5893,17 +5857,19 @@ _show_text_glyphs (csi_t *ctx)
 	string = obj->datum.string;
 	nclusters = string->len / 2;
 	if (nclusters > ARRAY_LENGTH (stack_clusters)) {
-	    if (_csi_unlikely ((unsigned) nclusters >= INT_MAX / sizeof (comac_text_cluster_t)))
+	    if (_csi_unlikely ((unsigned) nclusters >=
+			       INT_MAX / sizeof (comac_text_cluster_t)))
 		return _csi_error (CSI_STATUS_NO_MEMORY);
-	    clusters = _csi_alloc (ctx, sizeof (comac_text_cluster_t) * nclusters);
+	    clusters =
+		_csi_alloc (ctx, sizeof (comac_text_cluster_t) * nclusters);
 	    if (_csi_unlikely (clusters == NULL))
 		return _csi_error (CSI_STATUS_NO_MEMORY);
 	} else
 	    clusters = stack_clusters;
 
 	for (i = 0; i < nclusters; i++) {
-	    clusters[i].num_bytes = string->string[2*i+0];
-	    clusters[i].num_glyphs = string->string[2*i+1];
+	    clusters[i].num_bytes = string->string[2 * i + 0];
+	    clusters[i].num_glyphs = string->string[2 * i + 1];
 	}
 	break;
 
@@ -5941,7 +5907,8 @@ _show_text_glyphs (csi_t *ctx)
     }
 
     if (nglyphs > ARRAY_LENGTH (stack_glyphs)) {
-	if (_csi_unlikely ((unsigned) nglyphs >= INT_MAX / sizeof (comac_glyph_t)))
+	if (_csi_unlikely ((unsigned) nglyphs >=
+			   INT_MAX / sizeof (comac_glyph_t)))
 	    return _csi_error (CSI_STATUS_NO_MEMORY);
 
 	glyphs = _csi_alloc (ctx, sizeof (comac_glyph_t) * nglyphs);
@@ -5952,9 +5919,12 @@ _show_text_glyphs (csi_t *ctx)
 
     nglyphs = _glyph_string (ctx, array, comac_get_scaled_font (cr), glyphs);
     comac_show_text_glyphs (cr,
-			    utf8_string->string, utf8_string->len,
-			    glyphs, nglyphs,
-			    clusters, nclusters,
+			    utf8_string->string,
+			    utf8_string->len,
+			    glyphs,
+			    nglyphs,
+			    clusters,
+			    nclusters,
 			    direction);
 
     if (clusters != stack_clusters)
@@ -5992,34 +5962,26 @@ _sub (csi_t *ctx)
 
     type_a = csi_object_get_type (A);
     if (_csi_unlikely (! (type_a == CSI_OBJECT_TYPE_INTEGER ||
-			    type_a == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_a == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
     type_b = csi_object_get_type (B);
     if (_csi_unlikely (! (type_b == CSI_OBJECT_TYPE_INTEGER ||
-			    type_b == CSI_OBJECT_TYPE_REAL)))
-    {
+			  type_b == CSI_OBJECT_TYPE_REAL))) {
 	return _csi_error (CSI_STATUS_INVALID_SCRIPT);
     }
 
     pop (2);
 
-    if (type_a == CSI_OBJECT_TYPE_REAL &&
-	type_b == CSI_OBJECT_TYPE_REAL)
-    {
+    if (type_a == CSI_OBJECT_TYPE_REAL && type_b == CSI_OBJECT_TYPE_REAL) {
 	return _csi_push_ostack_real (ctx, A->datum.real - B->datum.real);
 
-    }
-    else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
-	     type_b == CSI_OBJECT_TYPE_INTEGER)
-    {
+    } else if (type_a == CSI_OBJECT_TYPE_INTEGER &&
+	       type_b == CSI_OBJECT_TYPE_INTEGER) {
 	return _csi_push_ostack_integer (ctx,
 					 A->datum.integer - B->datum.integer);
-    }
-    else
-    {
+    } else {
 	double v;
 
 	if (type_a == CSI_OBJECT_TYPE_REAL)
@@ -6073,7 +6035,8 @@ _surface (csi_t *ctx)
     if (_csi_unlikely (status))
 	return status;
     if (uid == 0) {
-	status = _csi_dictionary_get_integer (ctx, dict, "drawable", TRUE, &uid);
+	status =
+	    _csi_dictionary_get_integer (ctx, dict, "drawable", TRUE, &uid);
 	if (_csi_unlikely (status))
 	    return status;
     }
@@ -6086,7 +6049,9 @@ _surface (csi_t *ctx)
 	return _csi_error (CSI_STATUS_NULL_POINTER);
     }
 
-    proxy = _csi_proxy_create (ctx, surface, dict,
+    proxy = _csi_proxy_create (ctx,
+			       surface,
+			       dict,
 			       ctx->hooks.surface_destroy,
 			       ctx->hooks.closure);
     if (_csi_unlikely (proxy == NULL)) {
@@ -6096,7 +6061,8 @@ _surface (csi_t *ctx)
 
     status = comac_surface_set_user_data (surface,
 					  &_csi_proxy_key,
-					  proxy, _csi_proxy_destroy);
+					  proxy,
+					  _csi_proxy_destroy);
     if (_csi_unlikely (status)) {
 	_csi_proxy_destroy (proxy);
 	comac_surface_destroy (surface);
@@ -6117,11 +6083,10 @@ _surface (csi_t *ctx)
 	if (csi_object_get_type (&obj) == CSI_OBJECT_TYPE_ARRAY) {
 	    csi_array_t *array = obj.datum.array;
 	    if (array->stack.len == 2) {
-		comac_surface_set_fallback_resolution (surface,
-						       csi_number_get_value
-						       (&array->stack.objects[0]),
-						       csi_number_get_value
-						       (&array->stack.objects[1]));
+		comac_surface_set_fallback_resolution (
+		    surface,
+		    csi_number_get_value (&array->stack.objects[0]),
+		    csi_number_get_value (&array->stack.objects[1]));
 	    }
 	}
     }
@@ -6166,11 +6131,10 @@ _surface (csi_t *ctx)
 	    csi_array_t *array = obj.datum.array;
 
 	    if (array->stack.len == 2) {
-		comac_surface_set_device_offset (surface,
-						 csi_number_get_value
-						 (&array->stack.objects[0]),
-						 csi_number_get_value
-						 (&array->stack.objects[1]));
+		comac_surface_set_device_offset (
+		    surface,
+		    csi_number_get_value (&array->stack.objects[0]),
+		    csi_number_get_value (&array->stack.objects[1]));
 	    }
 	}
     }
@@ -6189,11 +6153,10 @@ _surface (csi_t *ctx)
 	    csi_array_t *array = obj.datum.array;
 
 	    if (array->stack.len == 2) {
-		comac_surface_set_device_scale (surface,
-						csi_number_get_value
-						(&array->stack.objects[0]),
-						csi_number_get_value
-						(&array->stack.objects[1]));
+		comac_surface_set_device_scale (
+		    surface,
+		    csi_number_get_value (&array->stack.objects[0]),
+		    csi_number_get_value (&array->stack.objects[1]));
 	    }
 	}
     }
@@ -6428,7 +6391,8 @@ _debug_print (csi_t *ctx)
 
 	/* atomics */
     case CSI_OBJECT_TYPE_BOOLEAN:
-	fprintf (stderr, "boolean: %s\n",
+	fprintf (stderr,
+		 "boolean: %s\n",
 		 obj->datum.boolean ? "true" : "false");
 	break;
     case CSI_OBJECT_TYPE_INTEGER:
@@ -6458,7 +6422,8 @@ _debug_print (csi_t *ctx)
 	fprintf (stderr, "file\n");
 	break;
     case CSI_OBJECT_TYPE_MATRIX:
-	fprintf (stderr, "matrix: [%g %g %g %g %g %g]\n",
+	fprintf (stderr,
+		 "matrix: [%g %g %g %g %g %g]\n",
 		 obj->datum.matrix->matrix.xx,
 		 obj->datum.matrix->matrix.yx,
 		 obj->datum.matrix->matrix.xy,
@@ -6491,208 +6456,207 @@ _debug_print (csi_t *ctx)
     return CSI_STATUS_SUCCESS;
 }
 
-static const csi_operator_def_t
-_defs[] = {
-    { "<<", _mark },
-    { ">>", end_dict_construction },
-    { "[", _mark },
-    { "]", end_array_construction },
-    { "a", _alpha },
-    { "abs", NULL },
-    { "add", _add },
-    { "add-color-stop", _add_color_stop },
-    { "and", _and },
-    { "arc", _arc },
-    { "arc-negative", _arc_negative },
-    { "arc-", _arc_negative },
-    { "arc-to", NULL },
-    { "array", _array },
-    { "astore", NULL },
-    { "atan", NULL },
-    { "bind", _bind },
-    { "bitshift", _bitshift },
-    { "c", _curve_to },
-    { "C", _rel_curve_to },
-    { "ceiling", NULL },
-    { "clear", NULL },
-    { "clear-to-mark", NULL },
-    { "clip", _clip },
-    { "clip-extents", NULL },
-    { "clip-preserve", _clip_preserve },
-    { "clip+", _clip_preserve },
-    { "close-path", _close_path },
-    { "context", _context },
-    { "copy", _copy },
-    { "copy-page", _copy_page },
-    { "cos", NULL },
-    { "count", NULL },
-    { "count-to-mark", NULL },
-    { "curve-to", _curve_to },
-    { "cvi", _cvi },
-    { "cvr", _cvr },
-    { "def", _def },
-    { "device-to-user", NULL },
-    { "device-to-user-distance", NULL },
-    { "dict", _dict },
-    { "div", _div },
-    { "dup", _duplicate },
-    { "eq", _eq },
-    { "exch", _exch },
-    { "exec", NULL },
-    { "exp", NULL },
-    { "false", _false },
-    { "fill", _fill },
-    { "fill-extents", NULL },
-    { "fill-preserve", _fill_preserve },
-    { "fill+", _fill_preserve },
-    { "filter", _filter },
-    { "floor", NULL },
-    { "font", _font },
-    { "for", _for },
-    { "forall", NULL },
-    { "g", _gray },
-    { "ge", _ge },
-    { "get", _get },
-    { "glyph-path", _glyph_path },
-    { "gt", _gt },
-    { "h", _close_path },
-    { "identity", _identity },
-    { "if", _if },
-    { "ifelse", _ifelse },
-    { "image", _image },
-    { "index", _index },
-    { "integer", _integer },
-    { "invert", _invert },
-    { "in-stroke", NULL },
-    { "in-fill", NULL },
-    { "known", NULL },
-    { "l", _line_to },
-    { "L", _rel_line_to },
-    { "languagelevel", NULL },
-    { "le", _le },
-    { "length", NULL },
-    { "linear", _linear },
-    { "line-to", _line_to },
-    { "ln", NULL },
-    { "load", NULL },
-    { "log", NULL },
-    { "loop", NULL },
-    { "lt", _lt },
-    { "m", _move_to },
-    { "M", _rel_move_to },
-    { "map-to-image", _map_to_image },
-    { "mark", _mark },
-    { "mask", _mask },
-    { "matrix", _matrix },
+static const csi_operator_def_t _defs[] = {
+    {"<<", _mark},
+    {">>", end_dict_construction},
+    {"[", _mark},
+    {"]", end_array_construction},
+    {"a", _alpha},
+    {"abs", NULL},
+    {"add", _add},
+    {"add-color-stop", _add_color_stop},
+    {"and", _and},
+    {"arc", _arc},
+    {"arc-negative", _arc_negative},
+    {"arc-", _arc_negative},
+    {"arc-to", NULL},
+    {"array", _array},
+    {"astore", NULL},
+    {"atan", NULL},
+    {"bind", _bind},
+    {"bitshift", _bitshift},
+    {"c", _curve_to},
+    {"C", _rel_curve_to},
+    {"ceiling", NULL},
+    {"clear", NULL},
+    {"clear-to-mark", NULL},
+    {"clip", _clip},
+    {"clip-extents", NULL},
+    {"clip-preserve", _clip_preserve},
+    {"clip+", _clip_preserve},
+    {"close-path", _close_path},
+    {"context", _context},
+    {"copy", _copy},
+    {"copy-page", _copy_page},
+    {"cos", NULL},
+    {"count", NULL},
+    {"count-to-mark", NULL},
+    {"curve-to", _curve_to},
+    {"cvi", _cvi},
+    {"cvr", _cvr},
+    {"def", _def},
+    {"device-to-user", NULL},
+    {"device-to-user-distance", NULL},
+    {"dict", _dict},
+    {"div", _div},
+    {"dup", _duplicate},
+    {"eq", _eq},
+    {"exch", _exch},
+    {"exec", NULL},
+    {"exp", NULL},
+    {"false", _false},
+    {"fill", _fill},
+    {"fill-extents", NULL},
+    {"fill-preserve", _fill_preserve},
+    {"fill+", _fill_preserve},
+    {"filter", _filter},
+    {"floor", NULL},
+    {"font", _font},
+    {"for", _for},
+    {"forall", NULL},
+    {"g", _gray},
+    {"ge", _ge},
+    {"get", _get},
+    {"glyph-path", _glyph_path},
+    {"gt", _gt},
+    {"h", _close_path},
+    {"identity", _identity},
+    {"if", _if},
+    {"ifelse", _ifelse},
+    {"image", _image},
+    {"index", _index},
+    {"integer", _integer},
+    {"invert", _invert},
+    {"in-stroke", NULL},
+    {"in-fill", NULL},
+    {"known", NULL},
+    {"l", _line_to},
+    {"L", _rel_line_to},
+    {"languagelevel", NULL},
+    {"le", _le},
+    {"length", NULL},
+    {"linear", _linear},
+    {"line-to", _line_to},
+    {"ln", NULL},
+    {"load", NULL},
+    {"log", NULL},
+    {"loop", NULL},
+    {"lt", _lt},
+    {"m", _move_to},
+    {"M", _rel_move_to},
+    {"map-to-image", _map_to_image},
+    {"mark", _mark},
+    {"mask", _mask},
+    {"matrix", _matrix},
 
-    { "mesh", _mesh },
-    { "begin-patch", _mesh_begin_patch },
-    { "end-patch", _mesh_end_patch },
-    { "set-control-point", _mesh_set_control_point },
-    { "set-corner-color", _mesh_set_corner_color },
+    {"mesh", _mesh},
+    {"begin-patch", _mesh_begin_patch},
+    {"end-patch", _mesh_end_patch},
+    {"set-control-point", _mesh_set_control_point},
+    {"set-corner-color", _mesh_set_corner_color},
 
-    { "mod", _mod },
-    { "move-to", _move_to },
-    { "mul", _mul },
-    { "multiply", NULL },
-    { "n", _new_path },
-    { "N", _new_sub_path },
-    { "ne", _ne },
-    { "neg", _neg },
-    { "new-path", _new_path },
-    { "new-sub-path", _new_sub_path },
-    { "not", _not },
-    { "null", _null },
-    { "or", _or },
-    { "paint", _paint },
-    { "paint-with-alpha", _paint_with_alpha },
-    { "pattern", _pattern },
-    { "pop", _pop },
-    { "pop-group", _pop_group },
-    { "push-group", _push_group },
-    { "radial", _radial },
-    { "rand", NULL },
-    { "record", _record },
-    { "rectangle", _rectangle },
-    { "repeat", _repeat },
-    { "restore", _restore },
-    { "rel-curve-to", _rel_curve_to },
-    { "rel-line-to", _rel_line_to },
-    { "rel-move-to", _rel_move_to },
-    { "reset-clip", _reset_clip },
-    { "rgb", _rgb },
-    { "rgba", _rgba },
-    { "roll", _roll },
-    { "rotate", _rotate },
-    { "round", NULL },
-    { "run", NULL },
-    { "save", _save },
-    { "scale", _scale },
-    { "scaled-font", _scaled_font },
-    { "select-font-face", _select_font_face },
-    { "set", _set },
-    { "set-antialias", _set_antialias },
-    { "set-dash", _set_dash },
-    { "set-device-offset", _set_device_offset },
-    { "set-device-scale", _set_device_scale },
-    { "set-extend", _set_extend },
-    { "set-fallback-resolution", _set_fallback_resolution },
-    { "set-fill-rule", _set_fill_rule },
-    { "set-filter", _set_filter },
-    { "set-font-face", _set_font_face },
-    { "set-font-options", _set_font_options },
-    { "set-font-matrix", _set_font_matrix },
-    { "set-font-size", _set_font_size },
-    { "set-line-cap", _set_line_cap },
-    { "set-line-join", _set_line_join },
-    { "set-line-width", _set_line_width },
-    { "set-hairline", _set_hairline },
-    { "set-matrix", _set_matrix },
-    { "set-miter-limit", _set_miter_limit },
-    { "set-mime-data", _set_mime_data },
-    { "set-operator", _set_operator },
-    { "set-scaled-font", _set_scaled_font },
-    { "set-source", _set_source },
-    { "set-source-image", _set_source_image },
-    { "set-source-rgb", _set_source_rgb },
-    { "set-source-rgba", _set_source_rgba },
-    { "set-tolerance", _set_tolerance },
-    { "show-glyphs", _show_glyphs },
-    { "show-text", _show_text },
-    { "show-text-glyphs", _show_text_glyphs },
-    { "show-page", _show_page },
-    { "similar", _similar },
-    { "similar-image", _similar_image },
-    { "sin", NULL },
-    { "sqrt", NULL },
-    { "sub", _sub },
-    { "subsurface", _subsurface },
-    { "surface", _surface },
-    { "string", NULL },
-    { "stroke", _stroke },
-    { "stroke-extents", NULL },
-    { "stroke-preserve", _stroke_preserve },
-    { "stroke+", _stroke_preserve },
-    { "text-path", _text_path },
-    { "transform", _transform },
-    { "transform-distance", NULL },
-    { "transform-point", NULL },
-    { "translate", _translate },
-    { "true", _true },
-    { "type", NULL },
-    { "undef", _undef },
-    { "unmap-image", _unmap_image },
-    { "unset", _unset },
-    { "user-to-device", NULL },
-    { "user-to-device-distance", NULL },
-    { "where", NULL },
-    { "write-to-png", _write_to_png },
-    { "write-to-script", _write_to_script },
-    { "xor", _xor },
+    {"mod", _mod},
+    {"move-to", _move_to},
+    {"mul", _mul},
+    {"multiply", NULL},
+    {"n", _new_path},
+    {"N", _new_sub_path},
+    {"ne", _ne},
+    {"neg", _neg},
+    {"new-path", _new_path},
+    {"new-sub-path", _new_sub_path},
+    {"not", _not},
+    {"null", _null},
+    {"or", _or},
+    {"paint", _paint},
+    {"paint-with-alpha", _paint_with_alpha},
+    {"pattern", _pattern},
+    {"pop", _pop},
+    {"pop-group", _pop_group},
+    {"push-group", _push_group},
+    {"radial", _radial},
+    {"rand", NULL},
+    {"record", _record},
+    {"rectangle", _rectangle},
+    {"repeat", _repeat},
+    {"restore", _restore},
+    {"rel-curve-to", _rel_curve_to},
+    {"rel-line-to", _rel_line_to},
+    {"rel-move-to", _rel_move_to},
+    {"reset-clip", _reset_clip},
+    {"rgb", _rgb},
+    {"rgba", _rgba},
+    {"roll", _roll},
+    {"rotate", _rotate},
+    {"round", NULL},
+    {"run", NULL},
+    {"save", _save},
+    {"scale", _scale},
+    {"scaled-font", _scaled_font},
+    {"select-font-face", _select_font_face},
+    {"set", _set},
+    {"set-antialias", _set_antialias},
+    {"set-dash", _set_dash},
+    {"set-device-offset", _set_device_offset},
+    {"set-device-scale", _set_device_scale},
+    {"set-extend", _set_extend},
+    {"set-fallback-resolution", _set_fallback_resolution},
+    {"set-fill-rule", _set_fill_rule},
+    {"set-filter", _set_filter},
+    {"set-font-face", _set_font_face},
+    {"set-font-options", _set_font_options},
+    {"set-font-matrix", _set_font_matrix},
+    {"set-font-size", _set_font_size},
+    {"set-line-cap", _set_line_cap},
+    {"set-line-join", _set_line_join},
+    {"set-line-width", _set_line_width},
+    {"set-hairline", _set_hairline},
+    {"set-matrix", _set_matrix},
+    {"set-miter-limit", _set_miter_limit},
+    {"set-mime-data", _set_mime_data},
+    {"set-operator", _set_operator},
+    {"set-scaled-font", _set_scaled_font},
+    {"set-source", _set_source},
+    {"set-source-image", _set_source_image},
+    {"set-source-rgb", _set_source_rgb},
+    {"set-source-rgba", _set_source_rgba},
+    {"set-tolerance", _set_tolerance},
+    {"show-glyphs", _show_glyphs},
+    {"show-text", _show_text},
+    {"show-text-glyphs", _show_text_glyphs},
+    {"show-page", _show_page},
+    {"similar", _similar},
+    {"similar-image", _similar_image},
+    {"sin", NULL},
+    {"sqrt", NULL},
+    {"sub", _sub},
+    {"subsurface", _subsurface},
+    {"surface", _surface},
+    {"string", NULL},
+    {"stroke", _stroke},
+    {"stroke-extents", NULL},
+    {"stroke-preserve", _stroke_preserve},
+    {"stroke+", _stroke_preserve},
+    {"text-path", _text_path},
+    {"transform", _transform},
+    {"transform-distance", NULL},
+    {"transform-point", NULL},
+    {"translate", _translate},
+    {"true", _true},
+    {"type", NULL},
+    {"undef", _undef},
+    {"unmap-image", _unmap_image},
+    {"unset", _unset},
+    {"user-to-device", NULL},
+    {"user-to-device-distance", NULL},
+    {"where", NULL},
+    {"write-to-png", _write_to_png},
+    {"write-to-script", _write_to_script},
+    {"xor", _xor},
 
-    { "=", _debug_print },
+    {"=", _debug_print},
 
-    { NULL, NULL },
+    {NULL, NULL},
 };
 
 const csi_operator_def_t *
@@ -6701,109 +6665,106 @@ _csi_operators (void)
     return _defs;
 }
 
-static const csi_integer_constant_def_t
-_integer_constants[] = {
-    { "CLEAR",		COMAC_OPERATOR_CLEAR },
-    { "SOURCE",		COMAC_OPERATOR_SOURCE },
-    { "OVER",		COMAC_OPERATOR_OVER },
-    { "IN",		COMAC_OPERATOR_IN },
-    { "OUT",		COMAC_OPERATOR_OUT },
-    { "ATOP",		COMAC_OPERATOR_ATOP },
-    { "DEST",		COMAC_OPERATOR_DEST },
-    { "DEST_OVER",	COMAC_OPERATOR_DEST_OVER },
-    { "DEST_IN",	COMAC_OPERATOR_DEST_IN },
-    { "DEST_OUT",	COMAC_OPERATOR_DEST_OUT },
-    { "DEST_ATOP",	COMAC_OPERATOR_DEST_ATOP },
-    { "XOR",		COMAC_OPERATOR_XOR },
-    { "ADD",		COMAC_OPERATOR_ADD },
-    { "SATURATE",	COMAC_OPERATOR_SATURATE },
-    { "MULTIPLY",	COMAC_OPERATOR_MULTIPLY },
-    { "SCREEN",		COMAC_OPERATOR_SCREEN },
-    { "OVERLAY",	COMAC_OPERATOR_OVERLAY },
-    { "DARKEN",		COMAC_OPERATOR_DARKEN },
-    { "LIGHTEN",	COMAC_OPERATOR_LIGHTEN },
-    { "DODGE",		COMAC_OPERATOR_COLOR_DODGE },
-    { "BURN",		COMAC_OPERATOR_COLOR_BURN },
-    { "HARD_LIGHT",	COMAC_OPERATOR_HARD_LIGHT },
-    { "SOFT_LIGHT",	COMAC_OPERATOR_SOFT_LIGHT },
-    { "DIFFERENCE",	COMAC_OPERATOR_DIFFERENCE },
-    { "EXCLUSION",	COMAC_OPERATOR_EXCLUSION },
-    { "HSL_HUE",	COMAC_OPERATOR_HSL_HUE },
-    { "HSL_SATURATION", COMAC_OPERATOR_HSL_SATURATION },
-    { "HSL_COLOR",	COMAC_OPERATOR_HSL_COLOR },
-    { "HSL_LUMINOSITY", COMAC_OPERATOR_HSL_LUMINOSITY },
+static const csi_integer_constant_def_t _integer_constants[] = {
+    {"CLEAR", COMAC_OPERATOR_CLEAR},
+    {"SOURCE", COMAC_OPERATOR_SOURCE},
+    {"OVER", COMAC_OPERATOR_OVER},
+    {"IN", COMAC_OPERATOR_IN},
+    {"OUT", COMAC_OPERATOR_OUT},
+    {"ATOP", COMAC_OPERATOR_ATOP},
+    {"DEST", COMAC_OPERATOR_DEST},
+    {"DEST_OVER", COMAC_OPERATOR_DEST_OVER},
+    {"DEST_IN", COMAC_OPERATOR_DEST_IN},
+    {"DEST_OUT", COMAC_OPERATOR_DEST_OUT},
+    {"DEST_ATOP", COMAC_OPERATOR_DEST_ATOP},
+    {"XOR", COMAC_OPERATOR_XOR},
+    {"ADD", COMAC_OPERATOR_ADD},
+    {"SATURATE", COMAC_OPERATOR_SATURATE},
+    {"MULTIPLY", COMAC_OPERATOR_MULTIPLY},
+    {"SCREEN", COMAC_OPERATOR_SCREEN},
+    {"OVERLAY", COMAC_OPERATOR_OVERLAY},
+    {"DARKEN", COMAC_OPERATOR_DARKEN},
+    {"LIGHTEN", COMAC_OPERATOR_LIGHTEN},
+    {"DODGE", COMAC_OPERATOR_COLOR_DODGE},
+    {"BURN", COMAC_OPERATOR_COLOR_BURN},
+    {"HARD_LIGHT", COMAC_OPERATOR_HARD_LIGHT},
+    {"SOFT_LIGHT", COMAC_OPERATOR_SOFT_LIGHT},
+    {"DIFFERENCE", COMAC_OPERATOR_DIFFERENCE},
+    {"EXCLUSION", COMAC_OPERATOR_EXCLUSION},
+    {"HSL_HUE", COMAC_OPERATOR_HSL_HUE},
+    {"HSL_SATURATION", COMAC_OPERATOR_HSL_SATURATION},
+    {"HSL_COLOR", COMAC_OPERATOR_HSL_COLOR},
+    {"HSL_LUMINOSITY", COMAC_OPERATOR_HSL_LUMINOSITY},
 
-    { "WINDING",	COMAC_FILL_RULE_WINDING },
-    { "EVEN_ODD",	COMAC_FILL_RULE_EVEN_ODD },
+    {"WINDING", COMAC_FILL_RULE_WINDING},
+    {"EVEN_ODD", COMAC_FILL_RULE_EVEN_ODD},
 
-    { "ANTIALIAS_DEFAULT",	COMAC_ANTIALIAS_DEFAULT },
-    { "ANTIALIAS_NONE",		COMAC_ANTIALIAS_NONE },
-    { "ANTIALIAS_GRAY",		COMAC_ANTIALIAS_GRAY },
-    { "ANTIALIAS_SUBPIXEL",	COMAC_ANTIALIAS_SUBPIXEL },
-    { "ANTIALIAS_FAST",		COMAC_ANTIALIAS_FAST },
-    { "ANTIALIAS_GOOD",		COMAC_ANTIALIAS_GOOD },
-    { "ANTIALIAS_BEST",		COMAC_ANTIALIAS_BEST },
+    {"ANTIALIAS_DEFAULT", COMAC_ANTIALIAS_DEFAULT},
+    {"ANTIALIAS_NONE", COMAC_ANTIALIAS_NONE},
+    {"ANTIALIAS_GRAY", COMAC_ANTIALIAS_GRAY},
+    {"ANTIALIAS_SUBPIXEL", COMAC_ANTIALIAS_SUBPIXEL},
+    {"ANTIALIAS_FAST", COMAC_ANTIALIAS_FAST},
+    {"ANTIALIAS_GOOD", COMAC_ANTIALIAS_GOOD},
+    {"ANTIALIAS_BEST", COMAC_ANTIALIAS_BEST},
 
-    { "LINE_CAP_BUTT",		COMAC_LINE_CAP_BUTT },
-    { "LINE_CAP_ROUND",		COMAC_LINE_CAP_ROUND },
-    { "LINE_CAP_SQUARE",	COMAC_LINE_CAP_SQUARE },
+    {"LINE_CAP_BUTT", COMAC_LINE_CAP_BUTT},
+    {"LINE_CAP_ROUND", COMAC_LINE_CAP_ROUND},
+    {"LINE_CAP_SQUARE", COMAC_LINE_CAP_SQUARE},
 
-    { "LINE_JOIN_MITER",	COMAC_LINE_JOIN_MITER },
-    { "LINE_JOIN_ROUND",	COMAC_LINE_JOIN_ROUND },
-    { "LINE_JOIN_BEVEL",	COMAC_LINE_JOIN_BEVEL },
+    {"LINE_JOIN_MITER", COMAC_LINE_JOIN_MITER},
+    {"LINE_JOIN_ROUND", COMAC_LINE_JOIN_ROUND},
+    {"LINE_JOIN_BEVEL", COMAC_LINE_JOIN_BEVEL},
 
-    { "EXTEND_NONE",		COMAC_EXTEND_NONE },
-    { "EXTEND_REPEAT",		COMAC_EXTEND_REPEAT },
-    { "EXTEND_REFLECT",		COMAC_EXTEND_REFLECT },
-    { "EXTEND_PAD",		COMAC_EXTEND_PAD },
+    {"EXTEND_NONE", COMAC_EXTEND_NONE},
+    {"EXTEND_REPEAT", COMAC_EXTEND_REPEAT},
+    {"EXTEND_REFLECT", COMAC_EXTEND_REFLECT},
+    {"EXTEND_PAD", COMAC_EXTEND_PAD},
 
-    { "FILTER_FAST",		COMAC_FILTER_FAST },
-    { "FILTER_GOOD",		COMAC_FILTER_GOOD },
-    { "FILTER_BEST",		COMAC_FILTER_BEST },
-    { "FILTER_BILINEAR",	COMAC_FILTER_BILINEAR },
-    { "FILTER_NEAREST",		COMAC_FILTER_NEAREST },
-    { "FILTER_GAUSSIAN",	COMAC_FILTER_GAUSSIAN },
+    {"FILTER_FAST", COMAC_FILTER_FAST},
+    {"FILTER_GOOD", COMAC_FILTER_GOOD},
+    {"FILTER_BEST", COMAC_FILTER_BEST},
+    {"FILTER_BILINEAR", COMAC_FILTER_BILINEAR},
+    {"FILTER_NEAREST", COMAC_FILTER_NEAREST},
+    {"FILTER_GAUSSIAN", COMAC_FILTER_GAUSSIAN},
 
-    { "SLANT_NORMAL",		COMAC_FONT_SLANT_NORMAL },
-    { "SLANT_ITALIC",		COMAC_FONT_SLANT_ITALIC },
-    { "SLANT_OBLIQUE",		COMAC_FONT_SLANT_OBLIQUE },
+    {"SLANT_NORMAL", COMAC_FONT_SLANT_NORMAL},
+    {"SLANT_ITALIC", COMAC_FONT_SLANT_ITALIC},
+    {"SLANT_OBLIQUE", COMAC_FONT_SLANT_OBLIQUE},
 
-    { "WEIGHT_NORMAL",		COMAC_FONT_WEIGHT_NORMAL },
-    { "WEIGHT_BOLD",		COMAC_FONT_WEIGHT_BOLD },
+    {"WEIGHT_NORMAL", COMAC_FONT_WEIGHT_NORMAL},
+    {"WEIGHT_BOLD", COMAC_FONT_WEIGHT_BOLD},
 
-    { "SUBPIXEL_ORDER_DEFAULT",	COMAC_SUBPIXEL_ORDER_DEFAULT },
-    { "SUBPIXEL_ORDER_RGB",	COMAC_SUBPIXEL_ORDER_RGB },
-    { "SUBPIXEL_ORDER_BGR",	COMAC_SUBPIXEL_ORDER_BGR },
-    { "SUBPIXEL_ORDER_VRGB",	COMAC_SUBPIXEL_ORDER_VRGB },
-    { "SUBPIXEL_ORDER_VBGR",	COMAC_SUBPIXEL_ORDER_VBGR },
+    {"SUBPIXEL_ORDER_DEFAULT", COMAC_SUBPIXEL_ORDER_DEFAULT},
+    {"SUBPIXEL_ORDER_RGB", COMAC_SUBPIXEL_ORDER_RGB},
+    {"SUBPIXEL_ORDER_BGR", COMAC_SUBPIXEL_ORDER_BGR},
+    {"SUBPIXEL_ORDER_VRGB", COMAC_SUBPIXEL_ORDER_VRGB},
+    {"SUBPIXEL_ORDER_VBGR", COMAC_SUBPIXEL_ORDER_VBGR},
 
-    { "HINT_STYLE_DEFAULT",	COMAC_HINT_STYLE_DEFAULT },
-    { "HINT_STYLE_NONE",	COMAC_HINT_STYLE_NONE },
-    { "HINT_STYLE_SLIGHT",	COMAC_HINT_STYLE_SLIGHT },
-    { "HINT_STYLE_MEDIUM",	COMAC_HINT_STYLE_MEDIUM },
-    { "HINT_STYLE_FULL",	COMAC_HINT_STYLE_FULL },
+    {"HINT_STYLE_DEFAULT", COMAC_HINT_STYLE_DEFAULT},
+    {"HINT_STYLE_NONE", COMAC_HINT_STYLE_NONE},
+    {"HINT_STYLE_SLIGHT", COMAC_HINT_STYLE_SLIGHT},
+    {"HINT_STYLE_MEDIUM", COMAC_HINT_STYLE_MEDIUM},
+    {"HINT_STYLE_FULL", COMAC_HINT_STYLE_FULL},
 
-    { "HINT_METRICS_DEFAULT",	COMAC_HINT_METRICS_DEFAULT },
-    { "HINT_METRICS_OFF",	COMAC_HINT_METRICS_OFF },
-    { "HINT_METRICS_ON",	COMAC_HINT_METRICS_ON },
+    {"HINT_METRICS_DEFAULT", COMAC_HINT_METRICS_DEFAULT},
+    {"HINT_METRICS_OFF", COMAC_HINT_METRICS_OFF},
+    {"HINT_METRICS_ON", COMAC_HINT_METRICS_ON},
 
-    { "FORWARD",		0 },
-    { "BACKWARD",		1 },
+    {"FORWARD", 0},
+    {"BACKWARD", 1},
 
-    { "COLOR",			COMAC_CONTENT_COLOR },
-    { "ALPHA",			COMAC_CONTENT_ALPHA },
-    { "COLOR_ALPHA",		COMAC_CONTENT_COLOR_ALPHA },
+    {"COLOR", COMAC_CONTENT_COLOR},
+    {"ALPHA", COMAC_CONTENT_ALPHA},
+    {"COLOR_ALPHA", COMAC_CONTENT_COLOR_ALPHA},
 
-    { "A1",			COMAC_FORMAT_A1 },
-    { "A8",			COMAC_FORMAT_A8 },
-    { "RGB16_565",		COMAC_FORMAT_RGB16_565 },
-    { "RGB24",			COMAC_FORMAT_RGB24 },
-    { "ARGB32",			COMAC_FORMAT_ARGB32 },
-    { "INVALID",		COMAC_FORMAT_INVALID },
+    {"A1", COMAC_FORMAT_A1},
+    {"A8", COMAC_FORMAT_A8},
+    {"RGB16_565", COMAC_FORMAT_RGB16_565},
+    {"RGB24", COMAC_FORMAT_RGB24},
+    {"ARGB32", COMAC_FORMAT_ARGB32},
+    {"INVALID", COMAC_FORMAT_INVALID},
 
-    { NULL, 0 }
-};
-
+    {NULL, 0}};
 
 const csi_integer_constant_def_t *
 _csi_integer_constants (void)
@@ -6811,15 +6772,13 @@ _csi_integer_constants (void)
     return _integer_constants;
 }
 
-static const csi_real_constant_def_t
-_real_constants[] = {
-    { "math.pi",		M_PI },
-    { "math.2pi",		2 * M_PI },
-    { "math.sqrt2",		M_SQRT2 },
-    { "math.ln2",		M_LN2 },
+static const csi_real_constant_def_t _real_constants[] = {
+    {"math.pi", M_PI},
+    {"math.2pi", 2 * M_PI},
+    {"math.sqrt2", M_SQRT2},
+    {"math.ln2", M_LN2},
 
-    { NULL, 0 }
-};
+    {NULL, 0}};
 
 const csi_real_constant_def_t *
 _csi_real_constants (void)

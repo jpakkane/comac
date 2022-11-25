@@ -33,8 +33,7 @@
 
 #define RADIALS_COUNT (10000)
 
-static struct
-{
+static struct {
     double cx0;
     double cy0;
     double radius0;
@@ -65,11 +64,12 @@ do_pattern_create_radial (comac_t *cr, int width, int height, int loops)
 	int i;
 
 	for (i = 0; i < RADIALS_COUNT; i++) {
-	    pattern =
-		comac_pattern_create_radial (radials[i].cx0, radials[i].cy0,
-					     radials[i].radius0,
-					     radials[i].cx1, radials[i].cy1,
-					     radials[i].radius1);
+	    pattern = comac_pattern_create_radial (radials[i].cx0,
+						   radials[i].cy0,
+						   radials[i].radius0,
+						   radials[i].cx1,
+						   radials[i].cy1,
+						   radials[i].radius1);
 	    comac_pattern_destroy (pattern);
 	}
     }
@@ -91,16 +91,17 @@ pattern_create_radial (comac_perf_t *perf, comac_t *cr, int width, int height)
     int i;
 
     srand (time (0));
-    for (i = 0; i < RADIALS_COUNT; i++)
-    {
-        radials[i].cx0 = generate_double_in_range (-50000.0, 50000.0);
-        radials[i].cy0 = generate_double_in_range (-50000.0, 50000.0);
-        radials[i].radius0 = generate_double_in_range (0.0, 1000.0);
-        radials[i].cx1 = generate_double_in_range (-50000.0, 50000.0);
-        radials[i].cy1 = generate_double_in_range (-50000.0, 50000.0);
-        radials[i].radius1 = generate_double_in_range (0.0, 1000.0);
+    for (i = 0; i < RADIALS_COUNT; i++) {
+	radials[i].cx0 = generate_double_in_range (-50000.0, 50000.0);
+	radials[i].cy0 = generate_double_in_range (-50000.0, 50000.0);
+	radials[i].radius0 = generate_double_in_range (0.0, 1000.0);
+	radials[i].cx1 = generate_double_in_range (-50000.0, 50000.0);
+	radials[i].cy1 = generate_double_in_range (-50000.0, 50000.0);
+	radials[i].radius1 = generate_double_in_range (0.0, 1000.0);
     }
 
-    comac_perf_run (perf, "pattern-create-radial",
-                          do_pattern_create_radial, NULL);
+    comac_perf_run (perf,
+		    "pattern-create-radial",
+		    do_pattern_create_radial,
+		    NULL);
 }

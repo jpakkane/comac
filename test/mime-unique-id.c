@@ -24,7 +24,6 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-
 /* Check that source surfaces with same COMAC_MIME_TYPE_UNIQUE_ID are
  * embedded only once in PDF/PS.
  *
@@ -62,11 +61,10 @@
 
 #define NUM_PAGES 4
 
-#define WIDTH  275
+#define WIDTH 275
 #define HEIGHT 275
 
 #define BASENAME "mime-unique-id"
-
 
 /* Expected file size to check that surfaces are embedded only once.
  * SIZE_TOLERANCE should be large enough to allow some variation in
@@ -83,7 +81,7 @@
 #define PS2_EXPECTED_SIZE 417510
 #define PS3_EXPECTED_SIZE 381554
 #define PDF_EXPECTED_SIZE 162923
-#define SIZE_TOLERANCE      5000
+#define SIZE_TOLERANCE 5000
 
 static const char *png_filename = "romedalen.png";
 static const char *jpeg_filename = "romedalen.jpg";
@@ -108,10 +106,12 @@ create_image_surface (comac_test_context_t *ctx, comac_surface_t **surface)
     const char *unique_id = "image";
 
     *surface = comac_test_create_surface_from_png (ctx, png_filename);
-    status = comac_surface_set_mime_data (*surface, COMAC_MIME_TYPE_UNIQUE_ID,
-					  (unsigned char *)unique_id,
+    status = comac_surface_set_mime_data (*surface,
+					  COMAC_MIME_TYPE_UNIQUE_ID,
+					  (unsigned char *) unique_id,
 					  strlen (unique_id),
-					  NULL, NULL);
+					  NULL,
+					  NULL);
     if (status) {
 	comac_surface_destroy (*surface);
 	return comac_test_status_from_status (ctx, status);
@@ -121,16 +121,18 @@ create_image_surface (comac_test_context_t *ctx, comac_surface_t **surface)
 }
 
 static comac_test_status_t
-create_recording_surface_with_mime_jpg (comac_test_context_t *ctx, comac_surface_t **surface)
+create_recording_surface_with_mime_jpg (comac_test_context_t *ctx,
+					comac_surface_t **surface)
 {
     comac_status_t status;
     FILE *f;
     unsigned char *data;
     long len;
     const char *unique_id = "jpeg";
-    comac_rectangle_t extents = { 0, 0, 1, 1 };
+    comac_rectangle_t extents = {0, 0, 1, 1};
 
-    *surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+    *surface =
+	comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
     f = my_fopen (ctx, jpeg_filename, "rb");
     if (f == NULL) {
 	comac_test_log (ctx, "Unable to open file %s\n", jpeg_filename);
@@ -138,28 +140,32 @@ create_recording_surface_with_mime_jpg (comac_test_context_t *ctx, comac_surface
     }
 
     fseek (f, 0, SEEK_END);
-    len = ftell(f);
+    len = ftell (f);
     fseek (f, 0, SEEK_SET);
     data = malloc (len);
-    if (fread(data, len, 1, f) != 1) {
+    if (fread (data, len, 1, f) != 1) {
 	comac_test_log (ctx, "Unable to read file %s\n", jpeg_filename);
 	return COMAC_TEST_FAILURE;
     }
 
-    fclose(f);
+    fclose (f);
     status = comac_surface_set_mime_data (*surface,
 					  COMAC_MIME_TYPE_JPEG,
-					  data, len,
-					  free, data);
+					  data,
+					  len,
+					  free,
+					  data);
     if (status) {
 	comac_surface_destroy (*surface);
 	return comac_test_status_from_status (ctx, status);
     }
 
-    status = comac_surface_set_mime_data (*surface, COMAC_MIME_TYPE_UNIQUE_ID,
-					  (unsigned char *)unique_id,
+    status = comac_surface_set_mime_data (*surface,
+					  COMAC_MIME_TYPE_UNIQUE_ID,
+					  (unsigned char *) unique_id,
 					  strlen (unique_id),
-					  NULL, NULL);
+					  NULL,
+					  NULL);
     if (status) {
 	comac_surface_destroy (*surface);
 	return comac_test_status_from_status (ctx, status);
@@ -172,14 +178,14 @@ static void
 draw_tile (comac_t *cr)
 {
     comac_move_to (cr, 10 + 5, 10);
-    comac_arc (cr, 10, 10, 5, 0, 2*M_PI);
+    comac_arc (cr, 10, 10, 5, 0, 2 * M_PI);
     comac_close_path (cr);
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_fill (cr);
 
-    comac_move_to (cr, 30, 10-10*0.43);
-    comac_line_to (cr, 25, 10+10*0.43);
-    comac_line_to (cr, 35, 10+10*0.43);
+    comac_move_to (cr, 30, 10 - 10 * 0.43);
+    comac_line_to (cr, 25, 10 + 10 * 0.43);
+    comac_line_to (cr, 35, 10 + 10 * 0.43);
     comac_close_path (cr);
     comac_set_source_rgb (cr, 0, 1, 0);
     comac_fill (cr);
@@ -190,7 +196,7 @@ draw_tile (comac_t *cr)
 
     comac_save (cr);
     comac_translate (cr, 30, 30);
-    comac_rotate (cr, M_PI/4.0);
+    comac_rotate (cr, M_PI / 4.0);
     comac_rectangle (cr, -5, -5, 10, 10);
     comac_set_source_rgb (cr, 1, 0, 1);
     comac_fill (cr);
@@ -201,7 +207,9 @@ draw_tile (comac_t *cr)
 #define TILE_SIZE 40
 
 static comac_test_status_t
-create_recording_surface (comac_test_context_t *ctx, comac_surface_t **surface, comac_bool_t bounded)
+create_recording_surface (comac_test_context_t *ctx,
+			  comac_surface_t **surface,
+			  comac_bool_t bounded)
 {
     comac_status_t status;
     int x, y;
@@ -210,14 +218,16 @@ create_recording_surface (comac_test_context_t *ctx, comac_surface_t **surface, 
     int start, size;
     const char *bounded_id = "recording bounded";
     const char *unbounded_id = "recording unbounded";
-    comac_rectangle_t extents = { 0, 0, RECORDING_SIZE, RECORDING_SIZE };
+    comac_rectangle_t extents = {0, 0, RECORDING_SIZE, RECORDING_SIZE};
 
     if (bounded) {
-	*surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+	*surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA,
+						   &extents);
 	start = 0;
 	size = RECORDING_SIZE;
     } else {
-	*surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
+	*surface =
+	    comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
 	start = RECORDING_SIZE / 2;
 	size = RECORDING_SIZE * 2;
     }
@@ -239,10 +249,13 @@ create_recording_surface (comac_test_context_t *ctx, comac_surface_t **surface, 
     }
     comac_destroy (cr);
 
-    status = comac_surface_set_mime_data (*surface, COMAC_MIME_TYPE_UNIQUE_ID,
-					  (unsigned char *)(bounded ? bounded_id : unbounded_id),
-					  strlen (bounded ? bounded_id : unbounded_id),
-					  NULL, NULL);
+    status = comac_surface_set_mime_data (
+	*surface,
+	COMAC_MIME_TYPE_UNIQUE_ID,
+	(unsigned char *) (bounded ? bounded_id : unbounded_id),
+	strlen (bounded ? bounded_id : unbounded_id),
+	NULL,
+	NULL);
     if (status) {
 	comac_surface_destroy (*surface);
 	return comac_test_status_from_status (ctx, status);
@@ -256,12 +269,15 @@ create_recording_surface (comac_test_context_t *ctx, comac_surface_t **surface, 
  * with a solid line and the clip rect stroked with a dashed line.
  */
 static void
-draw_surface (comac_t *cr, comac_surface_t *source, comac_rectangle_int_t *rect, int clip_margin)
+draw_surface (comac_t *cr,
+	      comac_surface_t *source,
+	      comac_rectangle_int_t *rect,
+	      int clip_margin)
 {
     comac_surface_type_t type;
     int width, height;
     comac_rectangle_t extents;
-    const double dashes[2] = { 2, 2 };
+    const double dashes[2] = {2, 2};
 
     type = comac_surface_get_type (source);
     if (type == COMAC_SURFACE_TYPE_IMAGE) {
@@ -283,14 +299,16 @@ draw_surface (comac_t *cr, comac_surface_t *source, comac_rectangle_int_t *rect,
     comac_rectangle (cr,
 		     rect->x + clip_margin,
 		     rect->y + clip_margin,
-		     rect->width - clip_margin*2,
-		     rect->height - clip_margin*2);
+		     rect->width - clip_margin * 2,
+		     rect->height - clip_margin * 2);
     comac_set_dash (cr, dashes, 2, 0);
     comac_stroke_preserve (cr);
     comac_clip (cr);
 
     comac_translate (cr, rect->x, rect->y);
-    comac_scale (cr, (double)rect->width/width, (double)rect->height/height);
+    comac_scale (cr,
+		 (double) rect->width / width,
+		 (double) rect->height / height);
     comac_set_source_surface (cr, source, 0, 0);
     comac_paint (cr);
 
@@ -381,7 +399,9 @@ draw_pages (comac_test_context_t *ctx, comac_surface_t *surface)
 }
 
 static comac_test_status_t
-check_file_size (comac_test_context_t *ctx, const char *filename, long expected_size)
+check_file_size (comac_test_context_t *ctx,
+		 const char *filename,
+		 long expected_size)
 {
     FILE *f;
     long size;
@@ -394,13 +414,17 @@ check_file_size (comac_test_context_t *ctx, const char *filename, long expected_
 
     fseek (f, 0, SEEK_END);
     size = ftell (f);
-    fclose(f);
+    fclose (f);
 
-    if (labs(size - expected_size) > SIZE_TOLERANCE) {
-	comac_test_log (ctx,
-			"mime-unique-id: File %s has size %ld. Expected size %ld +/- %ld."
-			" Check if surfaces are embedded once.\n",
-			filename, size, expected_size, (long)SIZE_TOLERANCE);
+    if (labs (size - expected_size) > SIZE_TOLERANCE) {
+	comac_test_log (
+	    ctx,
+	    "mime-unique-id: File %s has size %ld. Expected size %ld +/- %ld."
+	    " Check if surfaces are embedded once.\n",
+	    filename,
+	    size,
+	    expected_size,
+	    (long) SIZE_TOLERANCE);
 	return COMAC_TEST_FAILURE;
     }
 
@@ -415,17 +439,19 @@ preamble (comac_test_context_t *ctx)
     char *filename;
     comac_test_status_t result = COMAC_TEST_UNTESTED;
     comac_test_status_t test_status;
-    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
+    const char *path =
+	comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
 #if COMAC_HAS_PS_SURFACE
-    if (comac_test_is_target_enabled (ctx, "ps2"))
-    {
+    if (comac_test_is_target_enabled (ctx, "ps2")) {
 	xasprintf (&filename, "%s/%s.ps2.out.ps", path, BASENAME);
 	surface = comac_ps_surface_create (filename, WIDTH, HEIGHT);
 	status = comac_surface_status (surface);
 	if (status) {
-	    comac_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
-			    filename, comac_status_to_string (status));
+	    comac_test_log (ctx,
+			    "Failed to create ps surface for file %s: %s\n",
+			    filename,
+			    comac_status_to_string (status));
 	    test_status = COMAC_TEST_FAILURE;
 	    goto ps2_finish;
 	}
@@ -438,8 +464,9 @@ preamble (comac_test_context_t *ctx)
 	if (test_status == COMAC_TEST_SUCCESS)
 	    test_status = check_file_size (ctx, filename, PS2_EXPECTED_SIZE);
 
-      ps2_finish:
-	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+    ps2_finish:
+	comac_test_log (ctx,
+			"TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name,
 			"ps2",
 			test_status ? "FAIL" : "PASS");
@@ -450,14 +477,15 @@ preamble (comac_test_context_t *ctx)
 	free (filename);
     }
 
-    if (comac_test_is_target_enabled (ctx, "ps3"))
-    {
+    if (comac_test_is_target_enabled (ctx, "ps3")) {
 	xasprintf (&filename, "%s/%s.ps3.out.ps", path, BASENAME);
 	surface = comac_ps_surface_create (filename, WIDTH, HEIGHT);
 	status = comac_surface_status (surface);
 	if (status) {
-	    comac_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
-			    filename, comac_status_to_string (status));
+	    comac_test_log (ctx,
+			    "Failed to create ps surface for file %s: %s\n",
+			    filename,
+			    comac_status_to_string (status));
 	    test_status = COMAC_TEST_FAILURE;
 	    goto ps3_finish;
 	}
@@ -468,8 +496,9 @@ preamble (comac_test_context_t *ctx)
 	if (test_status == COMAC_TEST_SUCCESS)
 	    test_status = check_file_size (ctx, filename, PS3_EXPECTED_SIZE);
 
-      ps3_finish:
-	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+    ps3_finish:
+	comac_test_log (ctx,
+			"TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name,
 			"ps3",
 			test_status ? "FAIL" : "PASS");
@@ -482,14 +511,15 @@ preamble (comac_test_context_t *ctx)
 #endif
 
 #if COMAC_HAS_PDF_SURFACE
-    if (comac_test_is_target_enabled (ctx, "pdf"))
-    {
+    if (comac_test_is_target_enabled (ctx, "pdf")) {
 	xasprintf (&filename, "%s/%s.pdf.out.pdf", path, BASENAME);
 	surface = comac_pdf_surface_create (filename, WIDTH, HEIGHT);
 	status = comac_surface_status (surface);
 	if (status) {
-	    comac_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
-			    filename, comac_status_to_string (status));
+	    comac_test_log (ctx,
+			    "Failed to create pdf surface for file %s: %s\n",
+			    filename,
+			    comac_status_to_string (status));
 	    test_status = COMAC_TEST_FAILURE;
 	    goto pdf_finish;
 	}
@@ -500,9 +530,9 @@ preamble (comac_test_context_t *ctx)
 	if (test_status == COMAC_TEST_SUCCESS)
 	    test_status = check_file_size (ctx, filename, PDF_EXPECTED_SIZE);
 
-
-      pdf_finish:
-	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+    pdf_finish:
+	comac_test_log (ctx,
+			"TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name,
 			"pdf",
 			test_status ? "FAIL" : "PASS");
@@ -518,8 +548,11 @@ preamble (comac_test_context_t *ctx)
 }
 
 COMAC_TEST (mime_unique_id,
-	    "Check that paginated surfaces embed only one copy of surfaces with the same COMAC_MIME_TYPE_UNIQUE_ID.",
-	    "paginated", /* keywords */
+	    "Check that paginated surfaces embed only one copy of surfaces "
+	    "with the same COMAC_MIME_TYPE_UNIQUE_ID.",
+	    "paginated",     /* keywords */
 	    "target=vector", /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    0,
+	    0,
+	    preamble,
+	    NULL)

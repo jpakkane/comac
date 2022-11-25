@@ -47,7 +47,7 @@
 static void
 _copy_transformed_pattern (comac_pattern_t *pattern,
 			   const comac_pattern_t *original,
-			   const comac_matrix_t  *ctm_inverse)
+			   const comac_matrix_t *ctm_inverse)
 {
     _comac_pattern_init_static_copy (pattern, original);
 
@@ -56,11 +56,12 @@ _copy_transformed_pattern (comac_pattern_t *pattern,
 }
 
 comac_status_t
-_comac_surface_offset_paint (comac_surface_t		*target,
-			     int x, int y,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     const comac_clip_t		*clip)
+_comac_surface_offset_paint (comac_surface_t *target,
+			     int x,
+			     int y,
+			     comac_operator_t op,
+			     const comac_pattern_t *source,
+			     const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_clip_t *dev_clip = (comac_clip_t *) clip;
@@ -91,12 +92,13 @@ _comac_surface_offset_paint (comac_surface_t		*target,
 }
 
 comac_status_t
-_comac_surface_offset_mask (comac_surface_t		*target,
-			    int x, int y,
-			    comac_operator_t		 op,
-			    const comac_pattern_t	*source,
-			    const comac_pattern_t	*mask,
-			    const comac_clip_t		*clip)
+_comac_surface_offset_mask (comac_surface_t *target,
+			    int x,
+			    int y,
+			    comac_operator_t op,
+			    const comac_pattern_t *source,
+			    const comac_pattern_t *mask,
+			    const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_clip_t *dev_clip = (comac_clip_t *) clip;
@@ -121,9 +123,7 @@ _comac_surface_offset_mask (comac_surface_t		*target,
 	mask = &mask_copy.base;
     }
 
-    status = _comac_surface_mask (target, op,
-				  source, mask,
-				  dev_clip);
+    status = _comac_surface_mask (target, op, source, mask, dev_clip);
 
     if (dev_clip != clip)
 	_comac_clip_destroy (dev_clip);
@@ -132,17 +132,18 @@ _comac_surface_offset_mask (comac_surface_t		*target,
 }
 
 comac_status_t
-_comac_surface_offset_stroke (comac_surface_t		*surface,
-			      int x, int y,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_path_fixed_t	*path,
-			      const comac_stroke_style_t*stroke_style,
-			      const comac_matrix_t	*ctm,
-			      const comac_matrix_t	*ctm_inverse,
-			      double			 tolerance,
-			      comac_antialias_t		 antialias,
-			      const comac_clip_t		*clip)
+_comac_surface_offset_stroke (comac_surface_t *surface,
+			      int x,
+			      int y,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      const comac_stroke_style_t *stroke_style,
+			      const comac_matrix_t *ctm,
+			      const comac_matrix_t *ctm_inverse,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip)
 {
     comac_path_fixed_t path_copy, *dev_path = (comac_path_fixed_t *) path;
     comac_clip_t *dev_clip = (comac_clip_t *) clip;
@@ -180,10 +181,15 @@ _comac_surface_offset_stroke (comac_surface_t		*surface,
 	comac_matrix_multiply (&dev_ctm_inverse, &m, &dev_ctm_inverse);
     }
 
-    status = _comac_surface_stroke (surface, op, source,
-				    dev_path, stroke_style,
-				    &dev_ctm, &dev_ctm_inverse,
-				    tolerance, antialias,
+    status = _comac_surface_stroke (surface,
+				    op,
+				    source,
+				    dev_path,
+				    stroke_style,
+				    &dev_ctm,
+				    &dev_ctm_inverse,
+				    tolerance,
+				    antialias,
 				    dev_clip);
 
 FINISH:
@@ -196,15 +202,16 @@ FINISH:
 }
 
 comac_status_t
-_comac_surface_offset_fill (comac_surface_t	*surface,
-			    int x, int y,
-			    comac_operator_t	 op,
-			    const comac_pattern_t*source,
-			    const comac_path_fixed_t	*path,
-			    comac_fill_rule_t	 fill_rule,
-			    double		 tolerance,
-			    comac_antialias_t	 antialias,
-			    const comac_clip_t	*clip)
+_comac_surface_offset_fill (comac_surface_t *surface,
+			    int x,
+			    int y,
+			    comac_operator_t op,
+			    const comac_pattern_t *source,
+			    const comac_path_fixed_t *path,
+			    comac_fill_rule_t fill_rule,
+			    double tolerance,
+			    comac_antialias_t antialias,
+			    const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_path_fixed_t path_copy, *dev_path = (comac_path_fixed_t *) path;
@@ -236,9 +243,13 @@ _comac_surface_offset_fill (comac_surface_t	*surface,
 	source = &source_copy.base;
     }
 
-    status = _comac_surface_fill (surface, op, source,
-				  dev_path, fill_rule,
-				  tolerance, antialias,
+    status = _comac_surface_fill (surface,
+				  op,
+				  source,
+				  dev_path,
+				  fill_rule,
+				  tolerance,
+				  antialias,
 				  dev_clip);
 
 FINISH:
@@ -251,14 +262,15 @@ FINISH:
 }
 
 comac_status_t
-_comac_surface_offset_glyphs (comac_surface_t		*surface,
-			      int x, int y,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      comac_scaled_font_t	*scaled_font,
-			      comac_glyph_t		*glyphs,
-			      int			 num_glyphs,
-			      const comac_clip_t	*clip)
+_comac_surface_offset_glyphs (comac_surface_t *surface,
+			      int x,
+			      int y,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      comac_scaled_font_t *scaled_font,
+			      comac_glyph_t *glyphs,
+			      int num_glyphs,
+			      const comac_clip_t *clip)
 {
     comac_status_t status;
     comac_clip_t *dev_clip = (comac_clip_t *) clip;
@@ -293,10 +305,16 @@ _comac_surface_offset_glyphs (comac_surface_t		*surface,
 	}
     }
 
-    status = _comac_surface_show_text_glyphs (surface, op, source,
-					      NULL, 0,
-					      dev_glyphs, num_glyphs,
-					      NULL, 0, 0,
+    status = _comac_surface_show_text_glyphs (surface,
+					      op,
+					      source,
+					      NULL,
+					      0,
+					      dev_glyphs,
+					      num_glyphs,
+					      NULL,
+					      0,
+					      0,
 					      scaled_font,
 					      dev_clip);
 

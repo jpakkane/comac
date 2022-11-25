@@ -50,8 +50,7 @@ typedef struct _comac_perf_diff_files_args {
 } comac_perf_diff_files_args_t;
 
 static int
-test_diff_cmp (const void *a,
-	       const void *b)
+test_diff_cmp (const void *a, const void *b)
 {
     const test_diff_t *a_diff = a;
     const test_diff_t *b_diff = b;
@@ -69,19 +68,12 @@ test_diff_cmp (const void *a,
 
 #define CHANGE_BAR_WIDTH 70
 static void
-print_change_bar (double change,
-		  double max_change,
-		  int	 use_utf)
+print_change_bar (double change, double max_change, int use_utf)
 {
     int units_per_cell = ceil (max_change / CHANGE_BAR_WIDTH);
-    static char const *ascii_boxes[8] = {
-	"****","***" ,"***", "**",
-	"**",  "*",   "*",   ""
-    };
-    static char const *utf_boxes[8] = {
-	"█", "▉", "▊", "▋",
-	"▌", "▍", "▎", "▏"
-    };
+    static char const *ascii_boxes[8] =
+	{"****", "***", "***", "**", "**", "*", "*", ""};
+    static char const *utf_boxes[8] = {"█", "▉", "▊", "▋", "▌", "▍", "▎", "▏"};
     char const **boxes = use_utf ? utf_boxes : ascii_boxes;
 
     /* For a 1.0x speedup we want a zero-size bar to show "no
@@ -95,27 +87,27 @@ print_change_bar (double change,
 
     change /= units_per_cell;
 
-    if (change > 7.5/8.0)
+    if (change > 7.5 / 8.0)
 	printf ("%s", boxes[0]);
-    else if (change > 6.5/8.0)
+    else if (change > 6.5 / 8.0)
 	printf ("%s", boxes[1]);
-    else if (change > 5.5/8.0)
+    else if (change > 5.5 / 8.0)
 	printf ("%s", boxes[2]);
-    else if (change > 4.5/8.0)
+    else if (change > 4.5 / 8.0)
 	printf ("%s", boxes[3]);
-    else if (change > 3.5/8.0)
+    else if (change > 3.5 / 8.0)
 	printf ("%s", boxes[4]);
-    else if (change > 2.5/8.0)
+    else if (change > 2.5 / 8.0)
 	printf ("%s", boxes[5]);
-    else if (change > 1.5/8.0)
+    else if (change > 1.5 / 8.0)
 	printf ("%s", boxes[6]);
-    else if (change > 0.5/8.0)
+    else if (change > 0.5 / 8.0)
 	printf ("%s", boxes[7]);
 }
 
 static void
-test_diff_print (test_diff_t		     *diff,
-		 double 		      max_change,
+test_diff_print (test_diff_t *diff,
+		 double max_change,
 		 comac_perf_report_options_t *options)
 {
     int i;
@@ -123,9 +115,7 @@ test_diff_print (test_diff_t		     *diff,
     double change;
 
     if (diff->tests[0]->size != 0) {
-	printf ("(%s, size: %d)\n",
-		diff->tests[0]->name,
-		diff->tests[0]->size);
+	printf ("(%s, size: %d)\n", diff->tests[0]->name, diff->tests[0]->size);
     } else {
 	printf ("(%s)\n", diff->tests[0]->name);
     }
@@ -138,7 +128,8 @@ test_diff_print (test_diff_t		     *diff,
 		diff->tests[i]->backend,
 		diff->tests[i]->content,
 		diff->tests[i]->configuration,
-		diff->tests[i]->stats.min_ticks / diff->tests[i]->stats.ticks_per_ms,
+		diff->tests[i]->stats.min_ticks /
+		    diff->tests[i]->stats.ticks_per_ms,
 		change);
 
 	if (options->print_change_bars)
@@ -146,12 +137,12 @@ test_diff_print (test_diff_t		     *diff,
 	printf ("\n");
     }
 
-    printf("\n");
+    printf ("\n");
 }
 
 static void
-comac_perf_reports_compare (comac_perf_report_t 	*reports,
-			    int 			 num_reports,
+comac_perf_reports_compare (comac_perf_report_t *reports,
+			    int num_reports,
 			    comac_perf_report_options_t *options)
 {
     int i;
@@ -211,8 +202,7 @@ comac_perf_reports_compare (comac_perf_report_t 	*reports,
 
 	    test = tests[i];
 	    while (test[n].name &&
-		    test_report_cmp_name (&test[n], min_test) == 0)
-	    {
+		   test_report_cmp_name (&test[n], min_test) == 0) {
 		n++;
 	    }
 
@@ -225,8 +215,7 @@ comac_perf_reports_compare (comac_perf_report_t 	*reports,
 	diff->tests = xmalloc (num_tests * sizeof (test_diff_t));
 	for (i = 0; i < num_reports; i++) {
 	    while (tests[i]->name &&
-		    test_report_cmp_name (tests[i], min_test) == 0)
-	    {
+		   test_report_cmp_name (tests[i], min_test) == 0) {
 		test_time = tests[i]->stats.min_ticks;
 		if (test_time > 0) {
 		    test_time /= tests[i]->stats.ticks_per_ms;
@@ -274,7 +263,7 @@ comac_perf_reports_compare (comac_perf_report_t 	*reports,
 
     for (i = 0; i < num_diffs; i++)
 	free (diffs[i].tests);
- DONE:
+DONE:
     free (diffs);
     free (tests);
 }
@@ -282,14 +271,14 @@ comac_perf_reports_compare (comac_perf_report_t 	*reports,
 static void
 usage (const char *argv0)
 {
-    char const *basename = strrchr(argv0, '/');
-    basename = basename ? basename+1 : argv0;
+    char const *basename = strrchr (argv0, '/');
+    basename = basename ? basename + 1 : argv0;
+    fprintf (stderr, "Usage: %s [options] file [...]\n\n", basename);
     fprintf (stderr,
-	     "Usage: %s [options] file [...]\n\n",
-	     basename);
-    fprintf (stderr,
-	     "Computes significant performance differences for comac performance reports.\n"
-	     "Each file should be the output of the comac-perf program (or \"make perf\").\n"
+	     "Computes significant performance differences for comac "
+	     "performance reports.\n"
+	     "Each file should be the output of the comac-perf program (or "
+	     "\"make perf\").\n"
 	     "The following options are available:\n"
 	     "\n"
 	     "--no-utf    Use ascii stars instead of utf-8 change bars.\n"
@@ -304,26 +293,21 @@ usage (const char *argv0)
 	     "            Suppress all changes below the given threshold.\n"
 	     "            The default threshold of 0.05 or 5%% ignores any\n"
 	     "            speedup or slowdown of 1.05 or less. A threshold\n"
-	     "            of 0 will cause all output to be reported.\n"
-	);
-    exit(1);
+	     "            of 0 will cause all output to be reported.\n");
+    exit (1);
 }
 
 static void
-parse_args (int 			   argc,
-	    char const			 **argv,
-	    comac_perf_diff_files_args_t  *args)
+parse_args (int argc, char const **argv, comac_perf_diff_files_args_t *args)
 {
     int i;
 
     for (i = 1; i < argc; i++) {
 	if (strcmp (argv[i], "--no-utf") == 0) {
 	    args->options.use_utf = 0;
-	}
-	else if (strcmp (argv[i], "--no-bars") == 0) {
+	} else if (strcmp (argv[i], "--no-bars") == 0) {
 	    args->options.print_change_bars = 0;
-	}
-	else if (strcmp (argv[i], "--min-change") == 0) {
+	} else if (strcmp (argv[i], "--min-change") == 0) {
 	    char *end = NULL;
 	    i++;
 	    if (i >= argc)
@@ -336,8 +320,7 @@ parse_args (int 			   argc,
 		    usage (argv[0]);
 		}
 	    }
-	}
-	else {
+	} else {
 	    args->num_filenames++;
 	    args->filenames = xrealloc (args->filenames,
 					args->num_filenames * sizeof (char *));
@@ -347,18 +330,15 @@ parse_args (int 			   argc,
 }
 
 int
-main (int	  argc,
-      const char *argv[])
+main (int argc, const char *argv[])
 {
-    comac_perf_diff_files_args_t args = {
-	NULL,			/* filenames */
-	0,			/* num_filenames */
-	{
-	    0.05,		/* min change */
-	    1,			/* use UTF-8? */
-	    1,			/* display change bars? */
-	}
-    };
+    comac_perf_diff_files_args_t args = {NULL, /* filenames */
+					 0,    /* num_filenames */
+					 {
+					     0.05, /* min change */
+					     1,	   /* use UTF-8? */
+					     1,	   /* display change bars? */
+					 }};
     comac_perf_report_t *reports;
     test_report_t *t;
     int i;
@@ -368,10 +348,13 @@ main (int	  argc,
     if (args.num_filenames) {
 	reports = xcalloc (args.num_filenames, sizeof (comac_perf_report_t));
 	for (i = 0; i < args.num_filenames; i++) {
-	    comac_perf_report_load (&reports[i], args.filenames[i], i,
+	    comac_perf_report_load (&reports[i],
+				    args.filenames[i],
+				    i,
 				    test_report_cmp_name);
 	    printf ("loaded: %s, %d tests\n",
-		    args.filenames[i], reports[i].tests_count);
+		    args.filenames[i],
+		    reports[i].tests_count);
 	}
     } else {
 	args.num_filenames = 1;

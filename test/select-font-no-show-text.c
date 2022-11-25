@@ -44,7 +44,8 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_BOLD);
 
@@ -54,6 +55,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (select_font_no_show_text,
 	    "Test calling comac_select_font_face but never drawing text.",
 	    "font", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

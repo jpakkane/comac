@@ -61,23 +61,20 @@
 /* #comac_font_face_t */
 
 const comac_font_face_t _comac_font_face_nil = {
-    { 0 },				/* hash_entry */
-    COMAC_STATUS_NO_MEMORY,		/* status */
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    { 0, 0, 0, NULL },			/* user_data */
-    NULL
-};
+    {0},			   /* hash_entry */
+    COMAC_STATUS_NO_MEMORY,	   /* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    {0, 0, 0, NULL},		   /* user_data */
+    NULL};
 const comac_font_face_t _comac_font_face_nil_file_not_found = {
-    { 0 },				/* hash_entry */
-    COMAC_STATUS_FILE_NOT_FOUND,	/* status */
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    { 0, 0, 0, NULL },			/* user_data */
-    NULL
-};
+    {0},			   /* hash_entry */
+    COMAC_STATUS_FILE_NOT_FOUND,   /* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    {0, 0, 0, NULL},		   /* user_data */
+    NULL};
 
 comac_status_t
-_comac_font_face_set_error (comac_font_face_t *font_face,
-	                    comac_status_t     status)
+_comac_font_face_set_error (comac_font_face_t *font_face, comac_status_t status)
 {
     if (status == COMAC_STATUS_SUCCESS)
 	return status;
@@ -90,7 +87,7 @@ _comac_font_face_set_error (comac_font_face_t *font_face,
 }
 
 void
-_comac_font_face_init (comac_font_face_t               *font_face,
+_comac_font_face_init (comac_font_face_t *font_face,
 		       const comac_font_face_backend_t *backend)
 {
     COMAC_MUTEX_INITIALIZE ();
@@ -135,12 +132,14 @@ comac_font_face_reference (comac_font_face_t *font_face)
 }
 
 static inline comac_bool_t
-__put(comac_reference_count_t *v)
+__put (comac_reference_count_t *v)
 {
     int c, old;
 
-    c = COMAC_REFERENCE_COUNT_GET_VALUE(v);
-    while (c != 1 && (old = _comac_atomic_int_cmpxchg_return_old(&v->ref_count, c, c - 1)) != c)
+    c = COMAC_REFERENCE_COUNT_GET_VALUE (v);
+    while (c != 1 && (old = _comac_atomic_int_cmpxchg_return_old (&v->ref_count,
+								  c,
+								  c - 1)) != c)
 	c = old;
 
     return c != 1;
@@ -264,11 +263,10 @@ comac_font_face_status (comac_font_face_t *font_face)
  * Since: 1.0
  **/
 void *
-comac_font_face_get_user_data (comac_font_face_t	   *font_face,
+comac_font_face_get_user_data (comac_font_face_t *font_face,
 			       const comac_user_data_key_t *key)
 {
-    return _comac_user_data_array_get_data (&font_face->user_data,
-					    key);
+    return _comac_user_data_array_get_data (&font_face->user_data, key);
 }
 
 /**
@@ -290,20 +288,22 @@ comac_font_face_get_user_data (comac_font_face_t	   *font_face,
  * Since: 1.0
  **/
 comac_status_t
-comac_font_face_set_user_data (comac_font_face_t	   *font_face,
+comac_font_face_set_user_data (comac_font_face_t *font_face,
 			       const comac_user_data_key_t *key,
-			       void			   *user_data,
-			       comac_destroy_func_t	    destroy)
+			       void *user_data,
+			       comac_destroy_func_t destroy)
 {
     if (COMAC_REFERENCE_COUNT_IS_INVALID (&font_face->ref_count))
 	return font_face->status;
 
     return _comac_user_data_array_set_data (&font_face->user_data,
-					    key, user_data, destroy);
+					    key,
+					    user_data,
+					    destroy);
 }
 
 void
-_comac_unscaled_font_init (comac_unscaled_font_t               *unscaled_font,
+_comac_unscaled_font_init (comac_unscaled_font_t *unscaled_font,
 			   const comac_unscaled_font_backend_t *backend)
 {
     COMAC_REFERENCE_COUNT_INIT (&unscaled_font->ref_count, 1);

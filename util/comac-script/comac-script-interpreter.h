@@ -44,32 +44,21 @@ COMAC_BEGIN_DECLS
 typedef struct _comac_script_interpreter comac_script_interpreter_t;
 
 /* XXX expose csi_dictionary_t and pass to hooks */
-typedef void
-(*csi_destroy_func_t) (void *closure,
-		       void *ptr);
+typedef void (*csi_destroy_func_t) (void *closure, void *ptr);
 
-typedef comac_surface_t *
-(*csi_surface_create_func_t) (void *closure,
-			      comac_content_t content,
-			      double width,
-			      double height,
-			      long uid);
-typedef comac_t *
-(*csi_context_create_func_t) (void *closure,
-			      comac_surface_t *surface);
-typedef void
-(*csi_show_page_func_t) (void *closure,
-			 comac_t *cr);
+typedef comac_surface_t *(*csi_surface_create_func_t) (void *closure,
+						       comac_content_t content,
+						       double width,
+						       double height,
+						       long uid);
+typedef comac_t *(*csi_context_create_func_t) (void *closure,
+					       comac_surface_t *surface);
+typedef void (*csi_show_page_func_t) (void *closure, comac_t *cr);
 
-typedef void
-(*csi_copy_page_func_t) (void *closure,
-			 comac_t *cr);
+typedef void (*csi_copy_page_func_t) (void *closure, comac_t *cr);
 
-typedef comac_surface_t *
-(*csi_create_source_image_t) (void *closure,
-			      comac_format_t format,
-			      int width, int height,
-			      long uid);
+typedef comac_surface_t *(*csi_create_source_image_t) (
+    void *closure, comac_format_t format, int width, int height, long uid);
 
 typedef struct _comac_script_interpreter_hooks {
     void *closure;
@@ -86,8 +75,9 @@ comac_public comac_script_interpreter_t *
 comac_script_interpreter_create (void);
 
 comac_public void
-comac_script_interpreter_install_hooks (comac_script_interpreter_t *ctx,
-					const comac_script_interpreter_hooks_t *hooks);
+comac_script_interpreter_install_hooks (
+    comac_script_interpreter_t *ctx,
+    const comac_script_interpreter_hooks_t *hooks);
 
 comac_public comac_status_t
 comac_script_interpreter_run (comac_script_interpreter_t *ctx,
@@ -116,7 +106,7 @@ comac_script_interpreter_destroy (comac_script_interpreter_t *ctx);
 
 comac_public comac_status_t
 comac_script_interpreter_translate_stream (FILE *stream,
-	                                   comac_write_func_t write_func,
+					   comac_write_func_t write_func,
 					   void *closure);
 
 COMAC_END_DECLS

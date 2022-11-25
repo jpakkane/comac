@@ -30,21 +30,19 @@
 
 void
 _comac_stats_compute (comac_stats_t *stats,
-		      comac_time_t  *values,
-		      int	     num_values);
+		      comac_time_t *values,
+		      int num_values);
 
 comac_bool_t
-_comac_histogram_init (comac_histogram_t *h,
-		       int width, int height);
+_comac_histogram_init (comac_histogram_t *h, int width, int height);
 
 comac_bool_t
 _comac_histogram_compute (comac_histogram_t *h,
-			  const comac_time_t  *values,
+			  const comac_time_t *values,
 			  int num_values);
 
 void
-_comac_histogram_printf (comac_histogram_t *h,
-			 FILE *file);
+_comac_histogram_printf (comac_histogram_t *h, FILE *file);
 
 void
 _comac_histogram_fini (comac_histogram_t *h);

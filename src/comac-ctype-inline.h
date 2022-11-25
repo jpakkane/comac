@@ -60,7 +60,8 @@ _comac_isdigit (int c)
 static inline int comac_const
 _comac_isxdigit (int c)
 {
-    return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
+    return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
+	    (c >= 'A' && c <= 'F'));
 }
 
 static inline int comac_const
@@ -78,7 +79,8 @@ _comac_isprint (int c)
 static inline int comac_const
 _comac_isalnum (int c)
 {
-    return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+    return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
+	    (c >= 'A' && c <= 'Z'));
 }
 
 COMAC_END_DECLS

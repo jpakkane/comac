@@ -48,9 +48,9 @@ void
 buffer_diff_noalpha (const unsigned char *buf_a,
 		     const unsigned char *buf_b,
 		     unsigned char *buf_diff,
-		     int	    width,
-		     int	    height,
-		     int	    stride,
+		     int width,
+		     int height,
+		     int stride,
 		     buffer_diff_result_t *result);
 
 /* The central algorithm to compare two images, and return the differences
@@ -68,6 +68,6 @@ image_diff (const comac_test_context_t *ctx,
 
 comac_bool_t
 image_diff_is_failure (const buffer_diff_result_t *result,
-                       unsigned int                tolerance);
+		       unsigned int tolerance);
 
 #endif

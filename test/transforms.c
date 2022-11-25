@@ -77,11 +77,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_save (cr);
     {
-	comac_matrix_t skew_y = {
-	    1, -1,
-	    0,  1,
-	    0,  0
-	};
+	comac_matrix_t skew_y = {1, -1, 0, 1, 0, 0};
 	comac_transform (cr, &skew_y);
 	draw_L_shape (cr);
     }
@@ -91,11 +87,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_save (cr);
     {
-	comac_matrix_t skew_x = {
-	     1.0, 0.0,
-	    -0.5, 1.0,
-	     0.0, 0.0
-	};
+	comac_matrix_t skew_x = {1.0, 0.0, -0.5, 1.0, 0.0, 0.0};
 	comac_transform (cr, &skew_x);
 	draw_L_shape (cr);
     }
@@ -107,6 +99,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (transforms,
 	    "Test various transformations.",
 	    "transforms, api", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	       /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

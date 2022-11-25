@@ -26,33 +26,38 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(8 * LINE_WIDTH)
-#define PAD		(1 * LINE_WIDTH)
-
+#define LINE_WIDTH 10.
+#define SIZE (8 * LINE_WIDTH)
+#define PAD (1 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
 {
-    comac_move_to (cr, 0, SIZE/2 + LINE_WIDTH);
+    comac_move_to (cr, 0, SIZE / 2 + LINE_WIDTH);
     comac_rel_line_to (cr, SIZE, 0);
     comac_rel_line_to (cr, -SIZE, 0);
     comac_close_path (cr);
 
-    comac_move_to (cr, 3*SIZE/4, 0);
-    comac_rel_line_to (cr, -SIZE/2, SIZE);
-    comac_rel_line_to (cr, SIZE/2, -SIZE);
+    comac_move_to (cr, 3 * SIZE / 4, 0);
+    comac_rel_line_to (cr, -SIZE / 2, SIZE);
+    comac_rel_line_to (cr, SIZE / 2, -SIZE);
     comac_close_path (cr);
 
-    comac_move_to (cr, 0, SIZE/2-LINE_WIDTH);
+    comac_move_to (cr, 0, SIZE / 2 - LINE_WIDTH);
     comac_rel_curve_to (cr,
-			SIZE/2, -2*LINE_WIDTH,
-			SIZE/2, 2*LINE_WIDTH,
-			SIZE, 0);
+			SIZE / 2,
+			-2 * LINE_WIDTH,
+			SIZE / 2,
+			2 * LINE_WIDTH,
+			SIZE,
+			0);
     comac_rel_curve_to (cr,
-			-SIZE/2, 2*LINE_WIDTH,
-			-SIZE/2, -2*LINE_WIDTH,
-			-SIZE, 0);
+			-SIZE / 2,
+			2 * LINE_WIDTH,
+			-SIZE / 2,
+			-2 * LINE_WIDTH,
+			-SIZE,
+			0);
     comac_close_path (cr);
 }
 
@@ -103,7 +108,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (joins_retrace,
 	    "A shape that repeats upon itself",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    3*(SIZE+PAD)+PAD, 2*(SIZE+PAD)+2*PAD,
-	    NULL, draw)
-
+	    NULL,     /* requirements */
+	    3 * (SIZE + PAD) + PAD,
+	    2 * (SIZE + PAD) + 2 * PAD,
+	    NULL,
+	    draw)

@@ -28,8 +28,8 @@
 
 #include "comac-test.h"
 
-#define WIDTH		(1024)
-#define HEIGHT		(600)
+#define WIDTH (1024)
+#define HEIGHT (600)
 
 static const double m_1_sqrt_3 = 0.577359269;
 
@@ -38,19 +38,23 @@ T (comac_t *cr, int size)
 {
     comac_move_to (cr, 0, 0);
     comac_line_to (cr, size, 0);
-    comac_line_to (cr, size/2, size*m_1_sqrt_3);
+    comac_line_to (cr, size / 2, size * m_1_sqrt_3);
 
     size /= 2;
     if (size >= 4) {
 	T (cr, size);
-	comac_save (cr); {
+	comac_save (cr);
+	{
 	    comac_translate (cr, size, 0);
 	    T (cr, size);
-	} comac_restore (cr);
-	comac_save (cr); {
-	    comac_translate (cr, size/2, size*m_1_sqrt_3);
+	}
+	comac_restore (cr);
+	comac_save (cr);
+	{
+	    comac_translate (cr, size / 2, size * m_1_sqrt_3);
 	    T (cr, size);
-	} comac_restore (cr);
+	}
+	comac_restore (cr);
     }
 }
 
@@ -67,7 +71,7 @@ draw (comac_t *cr, int width, int height)
 
     T (cr, WIDTH);
 
-    comac_translate (cr, 0, 2*HEIGHT-16);
+    comac_translate (cr, 0, 2 * HEIGHT - 16);
     comac_scale (cr, 1, -1);
 
     T (cr, WIDTH);
@@ -80,6 +84,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (shape_sierpinski,
 	    "A fractal triangle",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, 2*HEIGHT,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    WIDTH,
+	    2 * HEIGHT,
+	    NULL,
+	    draw)

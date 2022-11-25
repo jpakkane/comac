@@ -37,15 +37,18 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     mask = comac_surface_create_similar (comac_get_group_target (cr),
-				         COMAC_CONTENT_ALPHA,
-					 width, height);
+					 COMAC_CONTENT_ALPHA,
+					 width,
+					 height);
     cr2 = comac_create (mask);
     comac_surface_destroy (mask);
 
-    comac_save (cr2); {
+    comac_save (cr2);
+    {
 	comac_set_operator (cr2, COMAC_OPERATOR_CLEAR);
 	comac_paint (cr2);
-    } comac_restore (cr2);
+    }
+    comac_restore (cr2);
 
     pattern = comac_pattern_create_linear (0, 0, width, height);
     comac_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.);
@@ -63,9 +66,10 @@ draw (comac_t *cr, int width, int height)
     comac_set_font_size (cr2, 0.5 * height);
 
     comac_text_extents (cr2, "comac", &extents);
-    comac_move_to (cr2,
-		   floor ((width - extents.width) / 2 + 0.5) - extents.x_bearing,
-		   floor ((height - extents.height) / 2 - 0.5) - extents.y_bearing);
+    comac_move_to (
+	cr2,
+	floor ((width - extents.width) / 2 + 0.5) - extents.x_bearing,
+	floor ((height - extents.height) / 2 - 0.5) - extents.y_bearing);
     comac_show_text (cr2, "comac");
 
     comac_set_source_rgb (cr, 1.0, 0, 0);
@@ -78,6 +82,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (smask_text,
 	    "Test the support of \"soft\" masks with text",
 	    "smask, text", /* keywords */
-	    NULL, /* keywords */
-	    120, 60,
-	    NULL, draw)
+	    NULL,	   /* keywords */
+	    120,
+	    60,
+	    NULL,
+	    draw)

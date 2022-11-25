@@ -46,11 +46,11 @@
 #include <sched.h>
 #endif
 
-#define COMAC_PERF_ITERATIONS_DEFAULT		100
-#define COMAC_PERF_LOW_STD_DEV			0.03
-#define COMAC_PERF_STABLE_STD_DEV_COUNT		5
-#define COMAC_PERF_ITERATION_MS_DEFAULT		2000
-#define COMAC_PERF_ITERATION_MS_FAST		5
+#define COMAC_PERF_ITERATIONS_DEFAULT 100
+#define COMAC_PERF_LOW_STD_DEV 0.03
+#define COMAC_PERF_STABLE_STD_DEV_COUNT 5
+#define COMAC_PERF_ITERATION_MS_DEFAULT 2000
+#define COMAC_PERF_ITERATION_MS_FAST 5
 
 typedef struct _comac_perf_case {
     COMAC_PERF_RUN_DECL (*run);
@@ -62,21 +62,20 @@ typedef struct _comac_perf_case {
 const comac_perf_case_t perf_cases[];
 
 static const char *
-_content_to_string (comac_content_t content,
-		    comac_bool_t    similar)
+_content_to_string (comac_content_t content, comac_bool_t similar)
 {
-    switch (content|similar) {
+    switch (content | similar) {
     case COMAC_CONTENT_COLOR:
 	return "rgb";
-    case COMAC_CONTENT_COLOR|1:
+    case COMAC_CONTENT_COLOR | 1:
 	return "rgb&";
     case COMAC_CONTENT_ALPHA:
 	return "a";
-    case COMAC_CONTENT_ALPHA|1:
+    case COMAC_CONTENT_ALPHA | 1:
 	return "a&";
     case COMAC_CONTENT_COLOR_ALPHA:
 	return "rgba";
-    case COMAC_CONTENT_COLOR_ALPHA|1:
+    case COMAC_CONTENT_COLOR_ALPHA | 1:
 	return "rgba&";
     default:
 	return "<unknown_content>";
@@ -101,7 +100,7 @@ comac_perf_has_similar (comac_perf_t *perf)
 
 comac_bool_t
 comac_perf_can_run (comac_perf_t *perf,
-		    const char	 *name,
+		    const char *name,
 		    comac_bool_t *is_explicit)
 {
     unsigned int i;
@@ -124,8 +123,7 @@ comac_perf_can_run (comac_perf_t *perf,
 }
 
 static unsigned
-comac_perf_calibrate (comac_perf_t	*perf,
-		      comac_perf_func_t  perf_func)
+comac_perf_calibrate (comac_perf_t *perf, comac_perf_func_t perf_func)
 {
     comac_time_t calibration, calibration_max;
     unsigned loops, min_loops;
@@ -133,11 +131,13 @@ comac_perf_calibrate (comac_perf_t	*perf,
     min_loops = 1;
     calibration = perf_func (perf->cr, perf->size, perf->size, min_loops);
 
-    if (!perf->fast_and_sloppy) {
-	calibration_max = _comac_time_from_s (perf->ms_per_iteration * 0.0001 / 4);
+    if (! perf->fast_and_sloppy) {
+	calibration_max =
+	    _comac_time_from_s (perf->ms_per_iteration * 0.0001 / 4);
 	while (calibration < calibration_max) {
 	    min_loops *= 2;
-	    calibration = perf_func (perf->cr, perf->size, perf->size, min_loops);
+	    calibration =
+		perf_func (perf->cr, perf->size, perf->size, min_loops);
 	}
     }
 
@@ -152,7 +152,8 @@ comac_perf_calibrate (comac_perf_t	*perf,
      * a more rigorous analysis of the synchronisation overhead,
      * that is to estimate the time for loop=0.
      */
-    loops = _comac_time_from_s (perf->ms_per_iteration * 0.001 * min_loops / calibration);
+    loops = _comac_time_from_s (perf->ms_per_iteration * 0.001 * min_loops /
+				calibration);
     min_loops = perf->fast_and_sloppy ? 1 : 10;
     if (loops < min_loops)
 	loops = min_loops;
@@ -161,10 +162,10 @@ comac_perf_calibrate (comac_perf_t	*perf,
 }
 
 void
-comac_perf_run (comac_perf_t	   *perf,
-		const char	   *name,
-		comac_perf_func_t   perf_func,
-		comac_count_func_t  count_func)
+comac_perf_run (comac_perf_t *perf,
+		const char *name,
+		comac_perf_func_t perf_func,
+		comac_count_func_t count_func)
 {
     static comac_bool_t first_run = TRUE;
     unsigned int i, similar, similar_iters;
@@ -180,14 +181,25 @@ comac_perf_run (comac_perf_t	   *perf,
     if (first_run) {
 	if (perf->raw) {
 	    printf ("[ # ] %s.%-s %s %s %s ...\n",
-		    "backend", "content", "test-size", "ticks-per-ms", "time(ticks)");
+		    "backend",
+		    "content",
+		    "test-size",
+		    "ticks-per-ms",
+		    "time(ticks)");
 	}
 
 	if (perf->summary) {
 	    fprintf (perf->summary,
 		     "[ # ] %8s.%-4s %28s %8s %8s %5s %5s %s %s\n",
-		     "backend", "content", "test-size", "min(ticks)", "min(ms)", "median(ms)",
-		     "stddev.", "iterations", "overhead");
+		     "backend",
+		     "content",
+		     "test-size",
+		     "min(ticks)",
+		     "min(ms)",
+		     "median(ms)",
+		     "stddev.",
+		     "iterations",
+		     "overhead");
 	}
 	first_run = FALSE;
     }
@@ -198,17 +210,22 @@ comac_perf_run (comac_perf_t	   *perf,
 	char *filename;
 	comac_status_t status;
 
-	xasprintf (&filename, "%s.%s.%s.%d.out.png",
-		   name, perf->target->name,
+	xasprintf (&filename,
+		   "%s.%s.%s.%d.out.png",
+		   name,
+		   perf->target->name,
 		   _content_to_string (perf->target->content, 0),
 		   perf->size);
 	comac_save (perf->cr);
 	perf_func (perf->cr, perf->size, perf->size, 1);
 	comac_restore (perf->cr);
-	status = comac_surface_write_to_png (comac_get_target (perf->cr), filename);
+	status =
+	    comac_surface_write_to_png (comac_get_target (perf->cr), filename);
 	if (status) {
-	    fprintf (stderr, "Failed to generate output check '%s': %s\n",
-		     filename, comac_status_to_string (status));
+	    fprintf (stderr,
+		     "Failed to generate output check '%s': %s\n",
+		     filename,
+		     comac_status_to_string (status));
 	    return;
 	}
 
@@ -226,17 +243,20 @@ comac_perf_run (comac_perf_t	   *perf,
 	if (perf->summary) {
 	    fprintf (perf->summary,
 		     "[%3d] %8s.%-5s %26s.%-3d ",
-		     perf->test_number, perf->target->name,
+		     perf->test_number,
+		     perf->target->name,
 		     _content_to_string (perf->target->content, similar),
-		     name, perf->size);
+		     name,
+		     perf->size);
 	    fflush (perf->summary);
 	}
 
 	/* We run one iteration in advance to warm caches and calibrate. */
 	comac_perf_yield ();
 	if (similar)
-	    comac_push_group_with_content (perf->cr,
-					   comac_boilerplate_content (perf->target->content));
+	    comac_push_group_with_content (
+		perf->cr,
+		comac_boilerplate_content (perf->target->content));
 	else
 	    comac_save (perf->cr);
 	perf_func (perf->cr, perf->size, perf->size, 1);
@@ -247,14 +267,15 @@ comac_perf_run (comac_perf_t	   *perf,
 	    comac_restore (perf->cr);
 
 	low_std_dev_count = 0;
-	for (i =0; i < perf->iterations; i++) {
+	for (i = 0; i < perf->iterations; i++) {
 	    comac_perf_yield ();
 	    if (similar)
-		comac_push_group_with_content (perf->cr,
-					       comac_boilerplate_content (perf->target->content));
+		comac_push_group_with_content (
+		    perf->cr,
+		    comac_boilerplate_content (perf->target->content));
 	    else
 		comac_save (perf->cr);
-	    times[i] = perf_func (perf->cr, perf->size, perf->size, loops) ;
+	    times[i] = perf_func (perf->cr, perf->size, perf->size, loops);
 	    if (similar)
 		comac_pattern_destroy (comac_pop_group (perf->cr));
 	    else
@@ -264,16 +285,19 @@ comac_perf_run (comac_perf_t	   *perf,
 		    printf ("[*] %s.%s %s.%d %g",
 			    perf->target->name,
 			    _content_to_string (perf->target->content, similar),
-			    name, perf->size,
-			    _comac_time_to_double (_comac_time_from_s (1.)) / 1000.);
+			    name,
+			    perf->size,
+			    _comac_time_to_double (_comac_time_from_s (1.)) /
+				1000.);
 		printf (" %lld", (long long) (times[i] / (double) loops));
 	    } else if (! perf->exact_iterations) {
 		if (i > 0) {
-		    _comac_stats_compute (&stats, times, i+1);
+		    _comac_stats_compute (&stats, times, i + 1);
 
 		    if (stats.std_dev <= COMAC_PERF_LOW_STD_DEV) {
 			low_std_dev_count++;
-			if (low_std_dev_count >= COMAC_PERF_STABLE_STD_DEV_COUNT)
+			if (low_std_dev_count >=
+			    COMAC_PERF_STABLE_STD_DEV_COUNT)
 			    break;
 		    } else {
 			low_std_dev_count = 0;
@@ -291,20 +315,24 @@ comac_perf_run (comac_perf_t	   *perf,
 		double count = count_func (perf->cr, perf->size, perf->size);
 		fprintf (perf->summary,
 			 "%.3f [%10lld/%d] %#8.3f %#8.3f %#5.2f%% %3d: %.2f\n",
-			 stats.min_ticks /(double) loops,
-			 (long long) stats.min_ticks, loops,
+			 stats.min_ticks / (double) loops,
+			 (long long) stats.min_ticks,
+			 loops,
 			 _comac_time_to_s (stats.min_ticks) * 1000.0 / loops,
 			 _comac_time_to_s (stats.median_ticks) * 1000.0 / loops,
-			 stats.std_dev * 100.0, stats.iterations,
+			 stats.std_dev * 100.0,
+			 stats.iterations,
 			 count / _comac_time_to_s (stats.min_ticks));
 	    } else {
 		fprintf (perf->summary,
 			 "%.3f [%10lld/%d] %#8.3f %#8.3f %#5.2f%% %3d\n",
-			 stats.min_ticks /(double) loops,
-			 (long long) stats.min_ticks, loops,
+			 stats.min_ticks / (double) loops,
+			 (long long) stats.min_ticks,
+			 loops,
 			 _comac_time_to_s (stats.min_ticks) * 1000.0 / loops,
 			 _comac_time_to_s (stats.median_ticks) * 1000.0 / loops,
-			 stats.std_dev * 100.0, stats.iterations);
+			 stats.std_dev * 100.0,
+			 stats.iterations);
 	    }
 	    fflush (perf->summary);
 	}
@@ -316,27 +344,31 @@ comac_perf_run (comac_perf_t	   *perf,
 static void
 usage (const char *argv0)
 {
-    fprintf (stderr,
-"Usage: %s [-flrv] [-i iterations] [test-names ...]\n"
-"\n"
-"Run the comac performance test suite over the given tests (all by default)\n"
-"The command-line arguments are interpreted as follows:\n"
-"\n"
-"  -f	fast; faster, less accurate\n"
-"  -i	iterations; specify the number of iterations per test case\n"
-"  -l	list only; just list selected test case names without executing\n"
-"  -r	raw; display each time measurement instead of summary statistics\n"
-"  -v	verbose; in raw mode also show the summaries\n"
-"\n"
-"If test names are given they are used as sub-string matches so a command\n"
-"such as \"%s text\" can be used to run all text test cases.\n",
-	     argv0, argv0);
+    fprintf (
+	stderr,
+	"Usage: %s [-flrv] [-i iterations] [test-names ...]\n"
+	"\n"
+	"Run the comac performance test suite over the given tests (all by "
+	"default)\n"
+	"The command-line arguments are interpreted as follows:\n"
+	"\n"
+	"  -f	fast; faster, less accurate\n"
+	"  -i	iterations; specify the number of iterations per test case\n"
+	"  -l	list only; just list selected test case names without "
+	"executing\n"
+	"  -r	raw; display each time measurement instead of summary "
+	"statistics\n"
+	"  -v	verbose; in raw mode also show the summaries\n"
+	"\n"
+	"If test names are given they are used as sub-string matches so a "
+	"command\n"
+	"such as \"%s text\" can be used to run all text test cases.\n",
+	argv0,
+	argv0);
 }
 
 static void
-parse_options (comac_perf_t *perf,
-	       int	     argc,
-	       char	    *argv[])
+parse_options (comac_perf_t *perf, int argc, char *argv[])
 {
     int c;
     const char *iters;
@@ -344,16 +376,16 @@ parse_options (comac_perf_t *perf,
     char *end;
     int verbose = 0;
 
-    if ((iters = getenv("COMAC_PERF_ITERATIONS")) && *iters)
-	perf->iterations = strtol(iters, NULL, 0);
+    if ((iters = getenv ("COMAC_PERF_ITERATIONS")) && *iters)
+	perf->iterations = strtol (iters, NULL, 0);
     else
 	perf->iterations = COMAC_PERF_ITERATIONS_DEFAULT;
     perf->exact_iterations = 0;
 
     perf->fast_and_sloppy = FALSE;
     perf->ms_per_iteration = COMAC_PERF_ITERATION_MS_DEFAULT;
-    if ((ms = getenv("COMAC_PERF_ITERATION_MS")) && *ms) {
-	perf->ms_per_iteration = atof(ms);
+    if ((ms = getenv ("COMAC_PERF_ITERATION_MS")) && *ms) {
+	perf->ms_per_iteration = atof (ms);
     }
 
     perf->raw = FALSE;
@@ -377,7 +409,8 @@ parse_options (comac_perf_t *perf,
 	    perf->exact_iterations = TRUE;
 	    perf->iterations = strtoul (optarg, &end, 10);
 	    if (*end != '\0') {
-		fprintf (stderr, "Invalid argument for -i (not an integer): %s\n",
+		fprintf (stderr,
+			 "Invalid argument for -i (not an integer): %s\n",
 			 optarg);
 		exit (1);
 	    }
@@ -410,7 +443,7 @@ parse_options (comac_perf_t *perf,
     }
 }
 
-static int 
+static int
 check_cpu_affinity (void)
 {
 #ifdef HAVE_SCHED_GETAFFINITY
@@ -418,28 +451,25 @@ check_cpu_affinity (void)
     cpu_set_t affinity;
     int i, cpu_count;
 
-    if (sched_getaffinity(0, sizeof(affinity), &affinity)) {
-	perror("sched_getaffinity");
+    if (sched_getaffinity (0, sizeof (affinity), &affinity)) {
+	perror ("sched_getaffinity");
 	return -1;
     }
 
-    for(i = 0, cpu_count = 0; i < CPU_SETSIZE; ++i) {
-	if (CPU_ISSET(i, &affinity))
+    for (i = 0, cpu_count = 0; i < CPU_SETSIZE; ++i) {
+	if (CPU_ISSET (i, &affinity))
 	    ++cpu_count;
     }
 
     if (cpu_count > 1) {
-	fputs(
-	    "WARNING: comac-perf has not been bound to a single CPU.\n",
-	    stderr);
+	fputs ("WARNING: comac-perf has not been bound to a single CPU.\n",
+	       stderr);
 	return -1;
     }
 
     return 0;
 #else
-    fputs(
-	"WARNING: Cannot check CPU affinity for this platform.\n",
-	stderr);
+    fputs ("WARNING: Cannot check CPU affinity for this platform.\n", stderr);
     return -1;
 #endif
 }
@@ -457,10 +487,8 @@ comac_perf_fini (comac_perf_t *perf)
 #endif
 }
 
-
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
     int i, j;
     comac_perf_t perf;
@@ -468,17 +496,19 @@ main (int   argc,
 
     parse_options (&perf, argc, argv);
 
-    if (check_cpu_affinity()) {
-	fputs(
-	    "NOTICE: comac-perf and the X server should be bound to CPUs (either the same\n"
-	    "or separate) on SMP systems. Not doing so causes random results when the X\n"
-	    "server is moved to or from comac-perf's CPU during the benchmarks:\n"
-	    "\n"
-	    "    $ sudo taskset -cp 0 $(pidof X)\n"
-	    "    $ taskset -cp 1 $$\n"
-	    "\n"
-	    "See taskset(1) for information about changing CPU affinity.\n",
-	    stderr);
+    if (check_cpu_affinity ()) {
+	fputs ("NOTICE: comac-perf and the X server should be bound to CPUs "
+	       "(either the same\n"
+	       "or separate) on SMP systems. Not doing so causes random "
+	       "results when the X\n"
+	       "server is moved to or from comac-perf's CPU during the "
+	       "benchmarks:\n"
+	       "\n"
+	       "    $ sudo taskset -cp 0 $(pidof X)\n"
+	       "    $ taskset -cp 1 $$\n"
+	       "\n"
+	       "See taskset(1) for information about changing CPU affinity.\n",
+	       stderr);
     }
 
     perf.targets = comac_boilerplate_get_targets (&perf.num_targets, NULL);
@@ -501,14 +531,15 @@ main (int   argc,
 
 	    for (perf.size = perf_case->min_size;
 		 perf.size <= perf_case->max_size;
-		 perf.size *= 2)
-	    {
+		 perf.size *= 2) {
 		void *closure;
 
 		surface = (target->create_surface) (NULL,
 						    target->content,
-						    perf.size, perf.size,
-						    perf.size, perf.size,
+						    perf.size,
+						    perf.size,
+						    perf.size,
+						    perf.size,
 						    COMAC_BOILERPLATE_MODE_PERF,
 						    &closure);
 		if (surface == NULL) {
@@ -525,7 +556,8 @@ main (int   argc,
 		perf_case->run (&perf, perf.cr, perf.size, perf.size);
 
 		if (comac_status (perf.cr)) {
-		    fprintf (stderr, "Error: Test left comac in an error state: %s\n",
+		    fprintf (stderr,
+			     "Error: Test left comac in an error state: %s\n",
 			     comac_status_to_string (comac_status (perf.cr)));
 		}
 
@@ -544,49 +576,47 @@ main (int   argc,
 }
 
 #define FUNC(f) f, f##_enabled
-const comac_perf_case_t perf_cases[] = {
-    { FUNC(pixel),  1, 1 },
-    { FUNC(a1_pixel),  1, 1 },
-    { FUNC(paint),  64, 512},
-    { FUNC(paint_with_alpha),  64, 512},
-    { FUNC(fill),   64, 512},
-    { FUNC(stroke), 64, 512},
-    { FUNC(text),   64, 512},
-    { FUNC(glyphs), 64, 512},
-    { FUNC(mask),   64, 512},
-    { FUNC(line),  32, 512},
-    { FUNC(a1_line),  32, 512},
-    { FUNC(curve),  32, 512},
-    { FUNC(a1_curve),  32, 512},
-    { FUNC(disjoint),   64, 512},
-    { FUNC(hatching),   64, 512},
-    { FUNC(tessellate), 100, 100},
-    { FUNC(subimage_copy), 16, 512},
-    { FUNC(hash_table), 16, 16},
-    { FUNC(pattern_create_radial), 16, 16},
-    { FUNC(zrusin), 415, 415},
-    { FUNC(world_map), 800, 800},
-    { FUNC(box_outline), 100, 100},
-    { FUNC(mosaic), 800, 800 },
-    { FUNC(long_lines), 100, 100},
-    { FUNC(unaligned_clip), 100, 100},
-    { FUNC(rectangles), 512, 512},
-    { FUNC(rounded_rectangles), 512, 512},
-    { FUNC(long_dashed_lines), 512, 512},
-    { FUNC(composite_checker), 16, 512},
-    { FUNC(twin), 800, 800},
-    { FUNC(dragon), 1024, 1024 },
-    { FUNC(sierpinski), 32, 1024 },
-    { FUNC(pythagoras_tree), 768, 768 },
-    { FUNC(intersections), 512, 512 },
-    { FUNC(many_strokes), 32, 512 },
-    { FUNC(wide_strokes), 32, 512 },
-    { FUNC(many_fills), 32, 512 },
-    { FUNC(wide_fills), 32, 512 },
-    { FUNC(many_curves), 32, 512 },
-    { FUNC(spiral), 512, 512 },
-    { FUNC(wave), 500, 500 },
-    { FUNC(fill_clip), 16, 512 },
-    { FUNC(tiger), 16, 1024 },
-    { NULL }
-};
+const comac_perf_case_t perf_cases[] = {{FUNC (pixel), 1, 1},
+					{FUNC (a1_pixel), 1, 1},
+					{FUNC (paint), 64, 512},
+					{FUNC (paint_with_alpha), 64, 512},
+					{FUNC (fill), 64, 512},
+					{FUNC (stroke), 64, 512},
+					{FUNC (text), 64, 512},
+					{FUNC (glyphs), 64, 512},
+					{FUNC (mask), 64, 512},
+					{FUNC (line), 32, 512},
+					{FUNC (a1_line), 32, 512},
+					{FUNC (curve), 32, 512},
+					{FUNC (a1_curve), 32, 512},
+					{FUNC (disjoint), 64, 512},
+					{FUNC (hatching), 64, 512},
+					{FUNC (tessellate), 100, 100},
+					{FUNC (subimage_copy), 16, 512},
+					{FUNC (hash_table), 16, 16},
+					{FUNC (pattern_create_radial), 16, 16},
+					{FUNC (zrusin), 415, 415},
+					{FUNC (world_map), 800, 800},
+					{FUNC (box_outline), 100, 100},
+					{FUNC (mosaic), 800, 800},
+					{FUNC (long_lines), 100, 100},
+					{FUNC (unaligned_clip), 100, 100},
+					{FUNC (rectangles), 512, 512},
+					{FUNC (rounded_rectangles), 512, 512},
+					{FUNC (long_dashed_lines), 512, 512},
+					{FUNC (composite_checker), 16, 512},
+					{FUNC (twin), 800, 800},
+					{FUNC (dragon), 1024, 1024},
+					{FUNC (sierpinski), 32, 1024},
+					{FUNC (pythagoras_tree), 768, 768},
+					{FUNC (intersections), 512, 512},
+					{FUNC (many_strokes), 32, 512},
+					{FUNC (wide_strokes), 32, 512},
+					{FUNC (many_fills), 32, 512},
+					{FUNC (wide_fills), 32, 512},
+					{FUNC (many_curves), 32, 512},
+					{FUNC (spiral), 512, 512},
+					{FUNC (wave), 500, 500},
+					{FUNC (fill_clip), 16, 512},
+					{FUNC (tiger), 16, 1024},
+					{NULL}};

@@ -32,8 +32,11 @@
 #define WIDTH 16
 #define PAD 3
 
-static comac_pattern_t*
-_create_pattern (comac_surface_t *target, comac_content_t content, int width, int height)
+static comac_pattern_t *
+_create_pattern (comac_surface_t *target,
+		 comac_content_t content,
+		 int width,
+		 int height)
 {
     comac_pattern_t *pattern;
     comac_surface_t *surface;
@@ -44,7 +47,12 @@ _create_pattern (comac_surface_t *target, comac_content_t content, int width, in
     comac_surface_destroy (surface);
 
     comac_set_source_rgb (cr, 1, 0, 0);
-    comac_arc (cr, 0.5 * width, 0.5 * height, 0.45 * height, -M_PI / 4, 3 * M_PI / 4);
+    comac_arc (cr,
+	       0.5 * width,
+	       0.5 * height,
+	       0.45 * height,
+	       -M_PI / 4,
+	       3 * M_PI / 4);
     comac_fill (cr);
 
     pattern = comac_pattern_create_for_surface (comac_get_target (cr));
@@ -61,10 +69,12 @@ draw (comac_t *cr, int width, int height)
 
     alpha_pattern = _create_pattern (comac_get_target (cr),
 				     COMAC_CONTENT_ALPHA,
-				     0.9 * WIDTH, 0.9 * HEIGHT);
+				     0.9 * WIDTH,
+				     0.9 * HEIGHT);
     color_alpha_pattern = _create_pattern (comac_get_target (cr),
 					   COMAC_CONTENT_COLOR_ALPHA,
-					   0.9 * WIDTH, 0.9 * HEIGHT);
+					   0.9 * WIDTH,
+					   0.9 * HEIGHT);
 
     pattern = comac_pattern_create_linear (WIDTH, 0, 0, HEIGHT);
     comac_pattern_add_color_stop_rgba (pattern, 0.2, 0, 0, 1, 1);
@@ -82,26 +92,26 @@ draw (comac_t *cr, int width, int height)
 	    comac_set_source (cr, pattern);
 	    comac_set_operator (cr, COMAC_OPERATOR_OVER);
 	    if (i & 2) {
-	        comac_paint (cr);
+		comac_paint (cr);
 	    } else {
-	        comac_rectangle (cr, WIDTH/2, HEIGHT/2, WIDTH, HEIGHT);
+		comac_rectangle (cr, WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT);
 		comac_fill (cr);
 	    }
 
 	    comac_set_source (cr, i & 1 ? alpha_pattern : color_alpha_pattern);
 	    comac_set_operator (cr, n);
 	    if (i & 2) {
-	        comac_paint (cr);
+		comac_paint (cr);
 	    } else {
-	        comac_rectangle (cr, WIDTH/2, HEIGHT/2, WIDTH, HEIGHT);
+		comac_rectangle (cr, WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT);
 		comac_fill (cr);
 	    }
 
-	    comac_translate (cr, 0, HEIGHT+PAD);
+	    comac_translate (cr, 0, HEIGHT + PAD);
 	}
 	comac_restore (cr);
 
-	comac_translate (cr, WIDTH+PAD, 0);
+	comac_translate (cr, WIDTH + PAD, 0);
     }
 
     comac_pattern_destroy (pattern);
@@ -114,6 +124,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (surface_pattern_operator,
 	    "Tests alpha-only and alpha-color sources with all operators",
 	    "surface, pattern, operator", /* keywords */
-	    NULL, /* requirements */
-	    (WIDTH+PAD) * N_OPERATORS + PAD, 4*HEIGHT + 5*PAD,
-	    NULL, draw)
+	    NULL,			  /* requirements */
+	    (WIDTH + PAD) * N_OPERATORS + PAD,
+	    4 * HEIGHT + 5 * PAD,
+	    NULL,
+	    draw)

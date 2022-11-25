@@ -40,7 +40,7 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_add_color_stop_rgba (pattern, 1, 1, 1, 1, .5);
     comac_set_source (cr, pattern);
     comac_pattern_destroy (pattern);
-    comac_rectangle (cr, 0, 0, width/2, height);
+    comac_rectangle (cr, 0, 0, width / 2, height);
     comac_fill (cr);
 
     /* without alpha */
@@ -49,7 +49,7 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_add_color_stop_rgb (pattern, 1, 1, 1, 1);
     comac_set_source (cr, pattern);
     comac_pattern_destroy (pattern);
-    comac_rectangle (cr, width/2, 0, width/2, height);
+    comac_rectangle (cr, width / 2, 0, width / 2, height);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -58,6 +58,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (linear_uniform,
 	    "Tests handling of \"solid\" linear gradients",
 	    "gradient, linear", /* keywords */
-	    NULL, /* requirements */
-	    40, 40,
-	    NULL, draw)
+	    NULL,		/* requirements */
+	    40,
+	    40,
+	    NULL,
+	    draw)

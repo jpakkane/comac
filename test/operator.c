@@ -43,15 +43,15 @@ draw (comac_t *cr, int width, int height)
 
 	comac_set_source_rgb (cr, 1, 0, 0);
 	comac_set_operator (cr, COMAC_OPERATOR_OVER);
-	comac_rectangle (cr, 0, 0, SIZE-PAD, SIZE-PAD);
+	comac_rectangle (cr, 0, 0, SIZE - PAD, SIZE - PAD);
 	comac_fill (cr);
 
 	comac_set_source_rgb (cr, 0, 0, 1);
 	comac_set_operator (cr, n);
-	comac_rectangle (cr, PAD, PAD, SIZE-PAD, SIZE-PAD);
+	comac_rectangle (cr, PAD, PAD, SIZE - PAD, SIZE - PAD);
 	comac_fill (cr);
 
-	comac_translate (cr, SIZE+PAD, 0);
+	comac_translate (cr, SIZE + PAD, 0);
     }
 
     return COMAC_TEST_SUCCESS;
@@ -60,6 +60,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (operator,
 	    "Tests using set_operator()",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    (SIZE+PAD) * N_OPERATORS + PAD, SIZE + 2*PAD,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    (SIZE + PAD) * N_OPERATORS + PAD,
+	    SIZE + 2 * PAD,
+	    NULL,
+	    draw)

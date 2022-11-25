@@ -92,7 +92,7 @@ struct _comac_scaled_font {
     /* hash key members */
     comac_font_face_t *font_face; /* may be NULL */
     comac_matrix_t font_matrix;	  /* font space => user space */
-    comac_matrix_t ctm;	          /* user space => device space */
+    comac_matrix_t ctm;		  /* user space => device space */
     comac_font_options_t options;
 
     unsigned int placeholder : 1; /*  protected by fontmap mutex */
@@ -125,37 +125,36 @@ struct _comac_scaled_font {
 struct _comac_scaled_font_private {
     comac_list_t link;
     const void *key;
-    void (*destroy) (comac_scaled_font_private_t *,
-		     comac_scaled_font_t *);
+    void (*destroy) (comac_scaled_font_private_t *, comac_scaled_font_t *);
 };
 
 struct _comac_scaled_glyph {
     comac_hash_entry_t hash_entry;
 
-    comac_text_extents_t    metrics;		/* user-space metrics */
-    comac_text_extents_t    fs_metrics;		/* font-space metrics */
-    comac_box_t		    bbox;		/* device-space bounds */
-    int16_t                 x_advance;		/* device-space rounded X advance */
-    int16_t                 y_advance;		/* device-space rounded Y advance */
+    comac_text_extents_t metrics;    /* user-space metrics */
+    comac_text_extents_t fs_metrics; /* font-space metrics */
+    comac_box_t bbox;		     /* device-space bounds */
+    int16_t x_advance;		     /* device-space rounded X advance */
+    int16_t y_advance;		     /* device-space rounded Y advance */
 
-    unsigned int	    has_info;
-    comac_image_surface_t   *surface;		/* device-space image */
-    comac_path_fixed_t	    *path;		/* device-space outline */
-    comac_surface_t         *recording_surface;	/* device-space recording-surface */
-    comac_image_surface_t   *color_surface;	/* device-space color image */
+    unsigned int has_info;
+    comac_image_surface_t *surface;	  /* device-space image */
+    comac_path_fixed_t *path;		  /* device-space outline */
+    comac_surface_t *recording_surface;	  /* device-space recording-surface */
+    comac_image_surface_t *color_surface; /* device-space color image */
 
-    const void		   *dev_private_key;
-    void		   *dev_private;
-    comac_list_t            dev_privates;
+    const void *dev_private_key;
+    void *dev_private;
+    comac_list_t dev_privates;
 
-    comac_color_t           foreground_color;   /* only used for color glyphs */
+    comac_color_t foreground_color; /* only used for color glyphs */
     /* TRUE if the color_surface required the foreground_color to render. */
-    unsigned                uses_foreground_color : 1;
+    unsigned uses_foreground_color : 1;
 
     /* TRUE if color_glyph specifies if glyph is color or non color, FALSE if glyph color type unknown. */
-    unsigned                color_glyph_set : 1;
+    unsigned color_glyph_set : 1;
 
-    unsigned                color_glyph : 1;
+    unsigned color_glyph : 1;
 };
 
 struct _comac_scaled_glyph_private {
@@ -171,23 +170,24 @@ _comac_scaled_font_find_private (comac_scaled_font_t *scaled_font,
 				 const void *key);
 
 comac_private void
-_comac_scaled_font_attach_private (comac_scaled_font_t *scaled_font,
-				   comac_scaled_font_private_t *priv,
-				   const void *key,
-				   void (*destroy) (comac_scaled_font_private_t *,
-						    comac_scaled_font_t *));
+_comac_scaled_font_attach_private (
+    comac_scaled_font_t *scaled_font,
+    comac_scaled_font_private_t *priv,
+    const void *key,
+    void (*destroy) (comac_scaled_font_private_t *, comac_scaled_font_t *));
 
 comac_private comac_scaled_glyph_private_t *
 _comac_scaled_glyph_find_private (comac_scaled_glyph_t *scaled_glyph,
-				 const void *key);
+				  const void *key);
 
 comac_private void
-_comac_scaled_glyph_attach_private (comac_scaled_glyph_t *scaled_glyph,
-				   comac_scaled_glyph_private_t *priv,
-				   const void *key,
-				   void (*destroy) (comac_scaled_glyph_private_t *,
-						    comac_scaled_glyph_t *,
-						    comac_scaled_font_t *));
+_comac_scaled_glyph_attach_private (
+    comac_scaled_glyph_t *scaled_glyph,
+    comac_scaled_glyph_private_t *priv,
+    const void *key,
+    void (*destroy) (comac_scaled_glyph_private_t *,
+		     comac_scaled_glyph_t *,
+		     comac_scaled_font_t *));
 comac_private comac_bool_t
 _comac_scaled_font_has_color_glyphs (comac_scaled_font_t *scaled_font);
 

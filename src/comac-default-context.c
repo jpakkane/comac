@@ -50,9 +50,9 @@
 #include "comac-path-private.h"
 #include "comac-pattern-private.h"
 
-#define COMAC_TOLERANCE_MINIMUM	_comac_fixed_to_double(1)
+#define COMAC_TOLERANCE_MINIMUM _comac_fixed_to_double (1)
 
-#if !defined(INFINITY)
+#if ! defined(INFINITY)
 #define INFINITY HUGE_VAL
 #endif
 
@@ -162,19 +162,21 @@ _comac_default_context_push_group (void *abstract_cr, comac_content_t content)
 	bounded = _comac_surface_get_extents (parent_surface, &extents);
 	if (clip)
 	    /* XXX: This assignment just fixes a compiler warning? */
-	    is_empty = _comac_rectangle_intersect (&extents,
-						   _comac_clip_get_extents (clip));
+	    is_empty =
+		_comac_rectangle_intersect (&extents,
+					    _comac_clip_get_extents (clip));
 
-	if (!bounded) {
+	if (! bounded) {
 	    /* XXX: Generic solution? */
 	    group_surface = comac_recording_surface_create (content, NULL);
 	    extents.x = extents.y = 0;
 	} else {
-	    group_surface = _comac_surface_create_scratch (parent_surface,
-							   content,
-							   extents.width,
-							   extents.height,
-							   COMAC_COLOR_TRANSPARENT);
+	    group_surface =
+		_comac_surface_create_scratch (parent_surface,
+					       content,
+					       extents.width,
+					       extents.height,
+					       COMAC_COLOR_TRANSPARENT);
 	}
 	status = group_surface->status;
 	if (unlikely (status))
@@ -185,9 +187,10 @@ _comac_default_context_push_group (void *abstract_cr, comac_content_t content)
 	 * the source pattern will get fixed up for the appropriate target surface
 	 * device offsets, so we want to set our own surface offsets from /that/,
 	 * and not from the device origin. */
-	comac_surface_set_device_offset (group_surface,
-					 parent_surface->device_transform.x0 - extents.x,
-					 parent_surface->device_transform.y0 - extents.y);
+	comac_surface_set_device_offset (
+	    group_surface,
+	    parent_surface->device_transform.x0 - extents.x,
+	    parent_surface->device_transform.y0 - extents.y);
 
 	comac_surface_set_device_scale (group_surface,
 					parent_surface->device_transform.xx,
@@ -238,16 +241,19 @@ _comac_default_context_pop_group (void *abstract_cr)
     group_pattern = comac_pattern_create_for_surface (group_surface);
     status = group_pattern->status;
     if (unlikely (status))
-        goto done;
+	goto done;
 
     _comac_gstate_get_matrix (cr->gstate, &group_matrix);
     comac_pattern_set_matrix (group_pattern, &group_matrix);
 
     /* If we have a current path, we need to adjust it to compensate for
      * the device offset just removed. */
-    _comac_path_fixed_translate (cr->path,
-				 _comac_fixed_from_int (parent_surface->device_transform.x0 - group_surface->device_transform.x0),
-				 _comac_fixed_from_int (parent_surface->device_transform.y0 - group_surface->device_transform.y0));
+    _comac_path_fixed_translate (
+	cr->path,
+	_comac_fixed_from_int (parent_surface->device_transform.x0 -
+			       group_surface->device_transform.x0),
+	_comac_fixed_from_int (parent_surface->device_transform.y0 -
+			       group_surface->device_transform.y0));
 
 done:
     comac_surface_destroy (group_surface);
@@ -256,8 +262,7 @@ done:
 }
 
 static comac_status_t
-_comac_default_context_set_source (void *abstract_cr,
-				   comac_pattern_t *source)
+_comac_default_context_set_source (void *abstract_cr, comac_pattern_t *source)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -276,9 +281,9 @@ _current_source_matches_solid (const comac_pattern_t *pattern,
     if (pattern->type != COMAC_PATTERN_TYPE_SOLID)
 	return FALSE;
 
-    red   = _comac_restrict_value (red,   0.0, 1.0);
+    red = _comac_restrict_value (red, 0.0, 1.0);
     green = _comac_restrict_value (green, 0.0, 1.0);
-    blue  = _comac_restrict_value (blue,  0.0, 1.0);
+    blue = _comac_restrict_value (blue, 0.0, 1.0);
     alpha = _comac_restrict_value (alpha, 0.0, 1.0);
 
     _comac_color_init_rgba (&color, red, green, blue, alpha);
@@ -287,18 +292,24 @@ _current_source_matches_solid (const comac_pattern_t *pattern,
 }
 
 static comac_status_t
-_comac_default_context_set_source_rgba (void *abstract_cr, double red, double green, double blue, double alpha)
+_comac_default_context_set_source_rgba (
+    void *abstract_cr, double red, double green, double blue, double alpha)
 {
     comac_default_context_t *cr = abstract_cr;
     comac_pattern_t *pattern;
     comac_status_t status;
 
     if (_current_source_matches_solid (cr->gstate->source,
-				       red, green, blue, alpha))
+				       red,
+				       green,
+				       blue,
+				       alpha))
 	return COMAC_STATUS_SUCCESS;
 
     /* push the current pattern to the freed lists */
-    _comac_default_context_set_source (cr, (comac_pattern_t *) &_comac_pattern_black);
+    _comac_default_context_set_source (
+	cr,
+	(comac_pattern_t *) &_comac_pattern_black);
 
     pattern = comac_pattern_create_rgba (red, green, blue, alpha);
     if (unlikely (pattern->status))
@@ -313,8 +324,8 @@ _comac_default_context_set_source_rgba (void *abstract_cr, double red, double gr
 static comac_status_t
 _comac_default_context_set_source_surface (void *abstract_cr,
 					   comac_surface_t *surface,
-					   double	   x,
-					   double	   y)
+					   double x,
+					   double y)
 {
     comac_default_context_t *cr = abstract_cr;
     comac_pattern_t *pattern;
@@ -322,13 +333,15 @@ _comac_default_context_set_source_surface (void *abstract_cr,
     comac_status_t status;
 
     /* push the current pattern to the freed lists */
-    _comac_default_context_set_source (cr, (comac_pattern_t *) &_comac_pattern_black);
+    _comac_default_context_set_source (
+	cr,
+	(comac_pattern_t *) &_comac_pattern_black);
 
     pattern = comac_pattern_create_for_surface (surface);
     if (unlikely (pattern->status)) {
-        status = pattern->status;
-        comac_pattern_destroy (pattern);
-        return status;
+	status = pattern->status;
+	comac_pattern_destroy (pattern);
+	return status;
     }
 
     comac_matrix_init_translate (&matrix, -x, -y);
@@ -349,8 +362,7 @@ _comac_default_context_get_source (void *abstract_cr)
 }
 
 static comac_status_t
-_comac_default_context_set_tolerance (void *abstract_cr,
-				      double tolerance)
+_comac_default_context_set_tolerance (void *abstract_cr, double tolerance)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -395,8 +407,7 @@ _comac_default_context_set_fill_rule (void *abstract_cr,
 }
 
 static comac_status_t
-_comac_default_context_set_line_width (void *abstract_cr,
-				       double line_width)
+_comac_default_context_set_line_width (void *abstract_cr, double line_width)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -404,7 +415,8 @@ _comac_default_context_set_line_width (void *abstract_cr,
 }
 
 static comac_status_t
-_comac_default_context_set_hairline (void *abstract_cr, comac_bool_t set_hairline)
+_comac_default_context_set_hairline (void *abstract_cr,
+				     comac_bool_t set_hairline)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -432,18 +444,16 @@ _comac_default_context_set_line_join (void *abstract_cr,
 static comac_status_t
 _comac_default_context_set_dash (void *abstract_cr,
 				 const double *dashes,
-				 int	      num_dashes,
-				 double	      offset)
+				 int num_dashes,
+				 double offset)
 {
     comac_default_context_t *cr = abstract_cr;
 
-    return _comac_gstate_set_dash (cr->gstate,
-				   dashes, num_dashes, offset);
+    return _comac_gstate_set_dash (cr->gstate, dashes, num_dashes, offset);
 }
 
 static comac_status_t
-_comac_default_context_set_miter_limit (void *abstract_cr,
-					double limit)
+_comac_default_context_set_miter_limit (void *abstract_cr, double limit)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -541,13 +551,10 @@ _comac_default_context_get_tolerance (void *abstract_cr)
     return _comac_gstate_get_tolerance (cr->gstate);
 }
 
-
 /* Current transformation matrix */
 
 static comac_status_t
-_comac_default_context_translate (void *abstract_cr,
-				  double tx,
-				  double ty)
+_comac_default_context_translate (void *abstract_cr, double tx, double ty)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -555,9 +562,7 @@ _comac_default_context_translate (void *abstract_cr,
 }
 
 static comac_status_t
-_comac_default_context_scale (void *abstract_cr,
-			      double sx,
-			      double sy)
+_comac_default_context_scale (void *abstract_cr, double sx, double sy)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -565,8 +570,7 @@ _comac_default_context_scale (void *abstract_cr,
 }
 
 static comac_status_t
-_comac_default_context_rotate (void *abstract_cr,
-			       double theta)
+_comac_default_context_rotate (void *abstract_cr, double theta)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -601,8 +605,7 @@ _comac_default_context_set_identity_matrix (void *abstract_cr)
 }
 
 static void
-_comac_default_context_get_matrix (void *abstract_cr,
-				   comac_matrix_t *matrix)
+_comac_default_context_get_matrix (void *abstract_cr, comac_matrix_t *matrix)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -610,9 +613,7 @@ _comac_default_context_get_matrix (void *abstract_cr,
 }
 
 static void
-_comac_default_context_user_to_device (void *abstract_cr,
-				       double *x,
-				       double *y)
+_comac_default_context_user_to_device (void *abstract_cr, double *x, double *y)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -620,7 +621,9 @@ _comac_default_context_user_to_device (void *abstract_cr,
 }
 
 static void
-_comac_default_context_user_to_device_distance (void *abstract_cr, double *dx, double *dy)
+_comac_default_context_user_to_device_distance (void *abstract_cr,
+						double *dx,
+						double *dy)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -628,9 +631,7 @@ _comac_default_context_user_to_device_distance (void *abstract_cr, double *dx, d
 }
 
 static void
-_comac_default_context_device_to_user (void *abstract_cr,
-				       double *x,
-				       double *y)
+_comac_default_context_device_to_user (void *abstract_cr, double *x, double *y)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -648,9 +649,7 @@ _comac_default_context_device_to_user_distance (void *abstract_cr,
 }
 
 static void
-_comac_default_context_backend_to_user (void *abstract_cr,
-					double *x,
-					double *y)
+_comac_default_context_backend_to_user (void *abstract_cr, double *x, double *y)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -658,7 +657,9 @@ _comac_default_context_backend_to_user (void *abstract_cr,
 }
 
 static void
-_comac_default_context_backend_to_user_distance (void *abstract_cr, double *dx, double *dy)
+_comac_default_context_backend_to_user_distance (void *abstract_cr,
+						 double *dx,
+						 double *dy)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -666,9 +667,7 @@ _comac_default_context_backend_to_user_distance (void *abstract_cr, double *dx, 
 }
 
 static void
-_comac_default_context_user_to_backend (void *abstract_cr,
-					double *x,
-					double *y)
+_comac_default_context_user_to_backend (void *abstract_cr, double *x, double *y)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -740,9 +739,12 @@ _comac_default_context_line_to (void *abstract_cr, double x, double y)
 
 static comac_status_t
 _comac_default_context_curve_to (void *abstract_cr,
-				 double x1, double y1,
-				 double x2, double y2,
-				 double x3, double y3)
+				 double x1,
+				 double y1,
+				 double x2,
+				 double y2,
+				 double x3,
+				 double y3)
 {
     comac_default_context_t *cr = abstract_cr;
     comac_fixed_t x1_fixed, y1_fixed;
@@ -765,15 +767,21 @@ _comac_default_context_curve_to (void *abstract_cr,
     y3_fixed = _comac_fixed_from_double_clamped (y3, width);
 
     return _comac_path_fixed_curve_to (cr->path,
-				       x1_fixed, y1_fixed,
-				       x2_fixed, y2_fixed,
-				       x3_fixed, y3_fixed);
+				       x1_fixed,
+				       y1_fixed,
+				       x2_fixed,
+				       y2_fixed,
+				       x3_fixed,
+				       y3_fixed);
 }
 
 static comac_status_t
 _comac_default_context_arc (void *abstract_cr,
-			    double xc, double yc, double radius,
-			    double angle1, double angle2,
+			    double xc,
+			    double yc,
+			    double radius,
+			    double angle1,
+			    double angle2,
 			    comac_bool_t forward)
 {
     comac_default_context_t *cr = abstract_cr;
@@ -840,12 +848,14 @@ _comac_default_context_rel_line_to (void *abstract_cr, double dx, double dy)
     return _comac_path_fixed_rel_line_to (cr->path, dx_fixed, dy_fixed);
 }
 
-
 static comac_status_t
 _comac_default_context_rel_curve_to (void *abstract_cr,
-				     double dx1, double dy1,
-				     double dx2, double dy2,
-				     double dx3, double dy3)
+				     double dx1,
+				     double dy1,
+				     double dx2,
+				     double dy2,
+				     double dx3,
+				     double dy3)
 {
     comac_default_context_t *cr = abstract_cr;
     comac_fixed_t dx1_fixed, dy1_fixed;
@@ -866,9 +876,12 @@ _comac_default_context_rel_curve_to (void *abstract_cr,
     dy3_fixed = _comac_fixed_from_double (dy3);
 
     return _comac_path_fixed_rel_curve_to (cr->path,
-					   dx1_fixed, dy1_fixed,
-					   dx2_fixed, dy2_fixed,
-					   dx3_fixed, dy3_fixed);
+					   dx1_fixed,
+					   dy1_fixed,
+					   dx2_fixed,
+					   dy2_fixed,
+					   dx3_fixed,
+					   dy3_fixed);
 }
 
 static comac_status_t
@@ -880,9 +893,8 @@ _comac_default_context_close_path (void *abstract_cr)
 }
 
 static comac_status_t
-_comac_default_context_rectangle (void *abstract_cr,
-				  double x, double y,
-				  double width, double height)
+_comac_default_context_rectangle (
+    void *abstract_cr, double x, double y, double width, double height)
 {
     comac_default_context_t *cr = abstract_cr;
     comac_status_t status;
@@ -907,17 +919,12 @@ _comac_default_context_rectangle (void *abstract_cr,
 }
 
 static void
-_comac_default_context_path_extents (void *abstract_cr,
-				     double *x1,
-				     double *y1,
-				     double *x2,
-				     double *y2)
+_comac_default_context_path_extents (
+    void *abstract_cr, double *x1, double *y1, double *x2, double *y2)
 {
     comac_default_context_t *cr = abstract_cr;
 
-    _comac_gstate_path_extents (cr->gstate,
-				cr->path,
-				x1, y1, x2, y2);
+    _comac_gstate_path_extents (cr->gstate, cr->path, x1, y1, x2, y2);
 }
 
 static comac_bool_t
@@ -936,16 +943,13 @@ _comac_default_context_get_current_point (void *abstract_cr,
     comac_default_context_t *cr = abstract_cr;
     comac_fixed_t x_fixed, y_fixed;
 
-    if (_comac_path_fixed_get_current_point (cr->path, &x_fixed, &y_fixed))
-    {
+    if (_comac_path_fixed_get_current_point (cr->path, &x_fixed, &y_fixed)) {
 	*x = _comac_fixed_to_double (x_fixed);
 	*y = _comac_fixed_to_double (y_fixed);
 	_comac_gstate_backend_to_user (cr->gstate, x, y);
 
 	return TRUE;
-    }
-    else
-    {
+    } else {
 	return FALSE;
     }
 }
@@ -967,8 +971,7 @@ _comac_default_context_copy_path_flat (void *abstract_cr)
 }
 
 static comac_status_t
-_comac_default_context_append_path (void *abstract_cr,
-				    const comac_path_t *path)
+_comac_default_context_append_path (void *abstract_cr, const comac_path_t *path)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -984,8 +987,7 @@ _comac_default_context_paint (void *abstract_cr)
 }
 
 static comac_status_t
-_comac_default_context_paint_with_alpha (void *abstract_cr,
-					 double alpha)
+_comac_default_context_paint_with_alpha (void *abstract_cr, double alpha)
 {
     comac_default_context_t *cr = abstract_cr;
     comac_solid_pattern_t pattern;
@@ -996,7 +998,7 @@ _comac_default_context_paint_with_alpha (void *abstract_cr,
 	return _comac_gstate_paint (cr->gstate);
 
     if (COMAC_ALPHA_IS_ZERO (alpha) &&
-        _comac_operator_bounded_by_mask (cr->gstate->op)) {
+	_comac_operator_bounded_by_mask (cr->gstate->op)) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -1010,8 +1012,7 @@ _comac_default_context_paint_with_alpha (void *abstract_cr,
 }
 
 static comac_status_t
-_comac_default_context_mask (void *abstract_cr,
-			     comac_pattern_t *mask)
+_comac_default_context_mask (void *abstract_cr, comac_pattern_t *mask)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -1041,26 +1042,22 @@ _comac_default_context_stroke (void *abstract_cr)
 
 static comac_status_t
 _comac_default_context_in_stroke (void *abstract_cr,
-				  double x, double y,
+				  double x,
+				  double y,
 				  comac_bool_t *inside)
 {
     comac_default_context_t *cr = abstract_cr;
 
-    return _comac_gstate_in_stroke (cr->gstate,
-				    cr->path,
-				    x, y,
-				    inside);
+    return _comac_gstate_in_stroke (cr->gstate, cr->path, x, y, inside);
 }
 
 static comac_status_t
-_comac_default_context_stroke_extents (void *abstract_cr,
-				       double *x1, double *y1, double *x2, double *y2)
+_comac_default_context_stroke_extents (
+    void *abstract_cr, double *x1, double *y1, double *x2, double *y2)
 {
     comac_default_context_t *cr = abstract_cr;
 
-    return _comac_gstate_stroke_extents (cr->gstate,
-					 cr->path,
-					 x1, y1, x2, y2);
+    return _comac_gstate_stroke_extents (cr->gstate, cr->path, x1, y1, x2, y2);
 }
 
 static comac_status_t
@@ -1086,26 +1083,23 @@ _comac_default_context_fill (void *abstract_cr)
 
 static comac_status_t
 _comac_default_context_in_fill (void *abstract_cr,
-				double x, double y,
+				double x,
+				double y,
 				comac_bool_t *inside)
 {
     comac_default_context_t *cr = abstract_cr;
 
-    *inside = _comac_gstate_in_fill (cr->gstate,
-				     cr->path,
-				     x, y);
+    *inside = _comac_gstate_in_fill (cr->gstate, cr->path, x, y);
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
-_comac_default_context_fill_extents (void *abstract_cr,
-				     double *x1, double *y1, double *x2, double *y2)
+_comac_default_context_fill_extents (
+    void *abstract_cr, double *x1, double *y1, double *x2, double *y2)
 {
     comac_default_context_t *cr = abstract_cr;
 
-    return _comac_gstate_fill_extents (cr->gstate,
-				       cr->path,
-				       x1, y1, x2, y2);
+    return _comac_gstate_fill_extents (cr->gstate, cr->path, x1, y1, x2, y2);
 }
 
 static comac_status_t
@@ -1131,7 +1125,8 @@ _comac_default_context_clip (void *abstract_cr)
 
 static comac_status_t
 _comac_default_context_in_clip (void *abstract_cr,
-				double x, double y,
+				double x,
+				double y,
 				comac_bool_t *inside)
 {
     comac_default_context_t *cr = abstract_cr;
@@ -1149,8 +1144,8 @@ _comac_default_context_reset_clip (void *abstract_cr)
 }
 
 static comac_status_t
-_comac_default_context_clip_extents (void *abstract_cr,
-				     double *x1, double *y1, double *x2, double *y2)
+_comac_default_context_clip_extents (
+    void *abstract_cr, double *x1, double *y1, double *x2, double *y2)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -1182,7 +1177,8 @@ _comac_default_context_copy_page (void *abstract_cr)
 
 static comac_status_t
 _comac_default_context_tag_begin (void *abstract_cr,
-				  const char *tag_name, const char *attributes)
+				  const char *tag_name,
+				  const char *attributes)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -1190,8 +1186,7 @@ _comac_default_context_tag_begin (void *abstract_cr,
 }
 
 static comac_status_t
-_comac_default_context_tag_end (void *abstract_cr,
-				const char *tag_name)
+_comac_default_context_tag_end (void *abstract_cr, const char *tag_name)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -1241,8 +1236,7 @@ _comac_default_context_font_extents (void *abstract_cr,
 }
 
 static comac_status_t
-_comac_default_context_set_font_size (void *abstract_cr,
-				      double size)
+_comac_default_context_set_font_size (void *abstract_cr, double size)
 {
     comac_default_context_t *cr = abstract_cr;
 
@@ -1303,7 +1297,8 @@ _comac_default_context_set_scaled_font (void *abstract_cr,
     if (unlikely (status))
 	return status;
 
-    status = _comac_gstate_set_font_matrix (cr->gstate, &scaled_font->font_matrix);
+    status =
+	_comac_gstate_set_font_matrix (cr->gstate, &scaled_font->font_matrix);
     if (unlikely (status))
 	return status;
 
@@ -1337,7 +1332,10 @@ _comac_default_context_glyphs (void *abstract_cr,
 {
     comac_default_context_t *cr = abstract_cr;
 
-    return _comac_gstate_show_text_glyphs (cr->gstate, glyphs, num_glyphs, info);
+    return _comac_gstate_show_text_glyphs (cr->gstate,
+					   glyphs,
+					   num_glyphs,
+					   info);
 }
 
 static comac_status_t
@@ -1347,20 +1345,21 @@ _comac_default_context_glyph_path (void *abstract_cr,
 {
     comac_default_context_t *cr = abstract_cr;
 
-    return _comac_gstate_glyph_path (cr->gstate,
-				     glyphs, num_glyphs,
-				     cr->path);
+    return _comac_gstate_glyph_path (cr->gstate, glyphs, num_glyphs, cr->path);
 }
 
 static comac_status_t
-_comac_default_context_glyph_extents (void                *abstract_cr,
-				      const comac_glyph_t    *glyphs,
-				      int                    num_glyphs,
-				      comac_text_extents_t   *extents)
+_comac_default_context_glyph_extents (void *abstract_cr,
+				      const comac_glyph_t *glyphs,
+				      int num_glyphs,
+				      comac_text_extents_t *extents)
 {
     comac_default_context_t *cr = abstract_cr;
 
-    return _comac_gstate_glyph_extents (cr->gstate, glyphs, num_glyphs, extents);
+    return _comac_gstate_glyph_extents (cr->gstate,
+					glyphs,
+					num_glyphs,
+					extents);
 }
 
 static const comac_backend_t _comac_default_context_backend = {
@@ -1510,7 +1509,8 @@ _comac_default_context_create (void *target)
     if (unlikely (cr == NULL)) {
 	cr = _comac_malloc (sizeof (comac_default_context_t));
 	if (unlikely (cr == NULL))
-	    return _comac_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	    return _comac_create_in_error (
+		_comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     status = _comac_default_context_init (cr, target);

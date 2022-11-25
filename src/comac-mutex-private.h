@@ -46,14 +46,17 @@
 COMAC_BEGIN_DECLS
 
 #if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER
-comac_private void _comac_mutex_initialize (void);
+comac_private void
+_comac_mutex_initialize (void);
 #endif
 #if _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
-comac_private void _comac_mutex_finalize (void);
+comac_private void
+_comac_mutex_finalize (void);
 #endif
 /* only if using static initializer and/or finalizer define the boolean */
-#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER || _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
-  comac_private extern comac_bool_t _comac_mutex_initialized;
+#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER ||                                \
+    _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
+comac_private extern comac_bool_t _comac_mutex_initialized;
 #endif
 
 /* Finally, extern the static mutexes and undef */

@@ -43,8 +43,8 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, PAD, PAD);
 
     /* A green triangle with OVER */
-    comac_move_to     (cr,  SIZE / 5, SIZE / 5);
-    comac_rel_line_to (cr,  SIZE / 2, 0);
+    comac_move_to (cr, SIZE / 5, SIZE / 5);
+    comac_rel_line_to (cr, SIZE / 2, 0);
     comac_rel_line_to (cr, -SIZE / 2, SIZE / 2);
     comac_close_path (cr);
 
@@ -62,8 +62,8 @@ draw (comac_t *cr, int width, int height)
     comac_fill (cr);
 
     /* Another green triangle with OVER */
-    comac_move_to     (cr,  SIZE / 2, SIZE / 2);
-    comac_rel_line_to (cr,  SIZE / 2, 0);
+    comac_move_to (cr, SIZE / 2, SIZE / 2);
+    comac_rel_line_to (cr, SIZE / 2, 0);
     comac_rel_line_to (cr, -SIZE / 2, SIZE / 2);
     comac_close_path (cr);
 
@@ -76,8 +76,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (over_around_source,
-	    "A simple test drawing a triangle with SOURCE between two circles drawn with OVER",
+	    "A simple test drawing a triangle with SOURCE between two circles "
+	    "drawn with OVER",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

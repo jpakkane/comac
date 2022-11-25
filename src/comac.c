@@ -321,12 +321,12 @@
  *
  **/
 
-#define DEFINE_NIL_CONTEXT(status)					\
-    {									\
-	COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */			\
-	status,				/* status */			\
-	{ 0, 0, 0, NULL },		/* user_data */			\
-	NULL								\
+#define DEFINE_NIL_CONTEXT(status)                                             \
+    {                                                                          \
+	COMAC_REFERENCE_COUNT_INVALID, /* ref_count */                         \
+	    status,		       /* status */                            \
+	    {0, 0, 0, NULL},	       /* user_data */                         \
+	    NULL                                                               \
     }
 
 static const comac_t _comac_nil[] = {
@@ -372,8 +372,7 @@ static const comac_t _comac_nil[] = {
     DEFINE_NIL_CONTEXT (COMAC_STATUS_FREETYPE_ERROR),
     DEFINE_NIL_CONTEXT (COMAC_STATUS_WIN32_GDI_ERROR),
     DEFINE_NIL_CONTEXT (COMAC_STATUS_TAG_ERROR),
-    DEFINE_NIL_CONTEXT (COMAC_STATUS_DWRITE_ERROR)
-};
+    DEFINE_NIL_CONTEXT (COMAC_STATUS_DWRITE_ERROR)};
 COMPILE_TIME_ASSERT (ARRAY_LENGTH (_comac_nil) == COMAC_STATUS_LAST_STATUS - 1);
 
 /**
@@ -445,22 +444,22 @@ comac_t *
 comac_create (comac_surface_t *target)
 {
     if (unlikely (target == NULL))
-	return _comac_create_in_error (_comac_error (COMAC_STATUS_NULL_POINTER));
+	return _comac_create_in_error (
+	    _comac_error (COMAC_STATUS_NULL_POINTER));
     if (unlikely (target->status))
 	return _comac_create_in_error (target->status);
     if (unlikely (target->finished))
-	return _comac_create_in_error (_comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_create_in_error (
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (target->backend->create_context == NULL)
 	return _comac_create_in_error (_comac_error (COMAC_STATUS_WRITE_ERROR));
 
     return target->backend->create_context (target);
-
 }
 
 void
-_comac_init (comac_t *cr,
-	     const comac_backend_t *backend)
+_comac_init (comac_t *cr, const comac_backend_t *backend)
 {
     COMAC_REFERENCE_COUNT_INIT (&cr->ref_count, 1);
     cr->status = COMAC_STATUS_SUCCESS;
@@ -542,8 +541,7 @@ comac_destroy (comac_t *cr)
  * Since: 1.4
  **/
 void *
-comac_get_user_data (comac_t			 *cr,
-		     const comac_user_data_key_t *key)
+comac_get_user_data (comac_t *cr, const comac_user_data_key_t *key)
 {
     return _comac_user_data_array_get_data (&cr->user_data, key);
 }
@@ -567,16 +565,18 @@ comac_get_user_data (comac_t			 *cr,
  * Since: 1.4
  **/
 comac_status_t
-comac_set_user_data (comac_t			 *cr,
+comac_set_user_data (comac_t *cr,
 		     const comac_user_data_key_t *key,
-		     void			 *user_data,
-		     comac_destroy_func_t	 destroy)
+		     void *user_data,
+		     comac_destroy_func_t destroy)
 {
     if (COMAC_REFERENCE_COUNT_IS_INVALID (&cr->ref_count))
 	return cr->status;
 
     return _comac_user_data_array_set_data (&cr->user_data,
-					    key, user_data, destroy);
+					    key,
+					    user_data,
+					    destroy);
 }
 
 /**
@@ -834,7 +834,6 @@ comac_set_operator (comac_t *cr, comac_operator_t op)
 	_comac_set_error (cr, status);
 }
 
-
 #if 0
 /*
  * comac_set_opacity:
@@ -916,9 +915,8 @@ comac_set_source_rgb (comac_t *cr, double red, double green, double blue)
  * Since: 1.0
  **/
 void
-comac_set_source_rgba (comac_t *cr,
-		       double red, double green, double blue,
-		       double alpha)
+comac_set_source_rgba (
+    comac_t *cr, double red, double green, double blue, double alpha)
 {
     comac_status_t status;
 
@@ -956,10 +954,10 @@ comac_set_source_rgba (comac_t *cr,
  * Since: 1.0
  **/
 void
-comac_set_source_surface (comac_t	  *cr,
+comac_set_source_surface (comac_t *cr,
 			  comac_surface_t *surface,
-			  double	   x,
-			  double	   y)
+			  double x,
+			  double y)
 {
     comac_status_t status;
 
@@ -1309,10 +1307,10 @@ comac_set_line_join (comac_t *cr, comac_line_join_t line_join)
  * Since: 1.0
  **/
 void
-comac_set_dash (comac_t	     *cr,
+comac_set_dash (comac_t *cr,
 		const double *dashes,
-		int	      num_dashes,
-		double	      offset)
+		int num_dashes,
+		double offset)
 {
     comac_status_t status;
 
@@ -1363,9 +1361,7 @@ comac_get_dash_count (comac_t *cr)
  * Since: 1.4
  **/
 void
-comac_get_dash (comac_t *cr,
-		double  *dashes,
-		double  *offset)
+comac_get_dash (comac_t *cr, double *dashes, double *offset)
 {
     if (unlikely (cr->status))
 	return;
@@ -1508,8 +1504,7 @@ comac_rotate (comac_t *cr, double angle)
  * Since: 1.0
  **/
 void
-comac_transform (comac_t	      *cr,
-		 const comac_matrix_t *matrix)
+comac_transform (comac_t *cr, const comac_matrix_t *matrix)
 {
     comac_status_t status;
 
@@ -1532,8 +1527,7 @@ comac_transform (comac_t	      *cr,
  * Since: 1.0
  **/
 void
-comac_set_matrix (comac_t	       *cr,
-		  const comac_matrix_t *matrix)
+comac_set_matrix (comac_t *cr, const comac_matrix_t *matrix)
 {
     comac_status_t status;
 
@@ -1732,7 +1726,6 @@ comac_move_to (comac_t *cr, double x, double y)
 	_comac_set_error (cr, status);
 }
 
-
 /**
  * comac_line_to:
  * @cr: a comac context
@@ -1784,19 +1777,19 @@ comac_line_to (comac_t *cr, double x, double y)
  **/
 void
 comac_curve_to (comac_t *cr,
-		double x1, double y1,
-		double x2, double y2,
-		double x3, double y3)
+		double x1,
+		double y1,
+		double x2,
+		double y2,
+		double x3,
+		double y3)
 {
     comac_status_t status;
 
     if (unlikely (cr->status))
 	return;
 
-    status = cr->backend->curve_to (cr,
-				    x1, y1,
-				    x2, y2,
-				    x3, y3);
+    status = cr->backend->curve_to (cr, x1, y1, x2, y2, x3, y3);
     if (unlikely (status))
 	_comac_set_error (cr, status);
 }
@@ -1853,9 +1846,11 @@ comac_curve_to (comac_t *cr,
  **/
 void
 comac_arc (comac_t *cr,
-	   double xc, double yc,
+	   double xc,
+	   double yc,
 	   double radius,
-	   double angle1, double angle2)
+	   double angle1,
+	   double angle2)
 {
     comac_status_t status;
 
@@ -1898,9 +1893,11 @@ comac_arc (comac_t *cr,
  **/
 void
 comac_arc_negative (comac_t *cr,
-		    double xc, double yc,
+		    double xc,
+		    double yc,
 		    double radius,
-		    double angle1, double angle2)
+		    double angle1,
+		    double angle2)
 {
     comac_status_t status;
 
@@ -2048,19 +2045,19 @@ comac_rel_line_to (comac_t *cr, double dx, double dy)
  **/
 void
 comac_rel_curve_to (comac_t *cr,
-		    double dx1, double dy1,
-		    double dx2, double dy2,
-		    double dx3, double dy3)
+		    double dx1,
+		    double dy1,
+		    double dx2,
+		    double dy2,
+		    double dx3,
+		    double dy3)
 {
     comac_status_t status;
 
     if (unlikely (cr->status))
 	return;
 
-    status = cr->backend->rel_curve_to (cr,
-					dx1, dy1,
-					dx2, dy2,
-					dx3, dy3);
+    status = cr->backend->rel_curve_to (cr, dx1, dy1, dx2, dy2, dx3, dy3);
     if (unlikely (status))
 	_comac_set_error (cr, status);
 }
@@ -2088,9 +2085,7 @@ comac_rel_curve_to (comac_t *cr,
  * Since: 1.0
  **/
 void
-comac_rectangle (comac_t *cr,
-		 double x, double y,
-		 double width, double height)
+comac_rectangle (comac_t *cr, double x, double y, double width, double height)
 {
     comac_status_t status;
 
@@ -2193,8 +2188,7 @@ comac_close_path (comac_t *cr)
  * Since: 1.6
  **/
 void
-comac_path_extents (comac_t *cr,
-		    double *x1, double *y1, double *x2, double *y2)
+comac_path_extents (comac_t *cr, double *x1, double *y1, double *x2, double *y2)
 {
     if (unlikely (cr->status)) {
 	if (x1)
@@ -2247,8 +2241,7 @@ comac_paint (comac_t *cr)
  * Since: 1.0
  **/
 void
-comac_paint_with_alpha (comac_t *cr,
-			double   alpha)
+comac_paint_with_alpha (comac_t *cr, double alpha)
 {
     comac_status_t status;
 
@@ -2273,8 +2266,7 @@ comac_paint_with_alpha (comac_t *cr,
  * Since: 1.0
  **/
 void
-comac_mask (comac_t         *cr,
-	    comac_pattern_t *pattern)
+comac_mask (comac_t *cr, comac_pattern_t *pattern)
 {
     comac_status_t status;
 
@@ -2311,10 +2303,10 @@ comac_mask (comac_t         *cr,
  * Since: 1.0
  **/
 void
-comac_mask_surface (comac_t         *cr,
+comac_mask_surface (comac_t *cr,
 		    comac_surface_t *surface,
-		    double           surface_x,
-		    double           surface_y)
+		    double surface_x,
+		    double surface_y)
 {
     comac_pattern_t *pattern;
     comac_matrix_t matrix;
@@ -2324,7 +2316,7 @@ comac_mask_surface (comac_t         *cr,
 
     pattern = comac_pattern_create_for_surface (surface);
 
-    comac_matrix_init_translate (&matrix, - surface_x, - surface_y);
+    comac_matrix_init_translate (&matrix, -surface_x, -surface_y);
     comac_pattern_set_matrix (pattern, &matrix);
 
     comac_mask (cr, pattern);
@@ -2611,8 +2603,8 @@ comac_in_fill (comac_t *cr, double x, double y)
  * Since: 1.0
  **/
 void
-comac_stroke_extents (comac_t *cr,
-                      double *x1, double *y1, double *x2, double *y2)
+comac_stroke_extents (
+    comac_t *cr, double *x1, double *y1, double *x2, double *y2)
 {
     comac_status_t status;
 
@@ -2662,8 +2654,7 @@ comac_stroke_extents (comac_t *cr,
  * Since: 1.0
  **/
 void
-comac_fill_extents (comac_t *cr,
-                    double *x1, double *y1, double *x2, double *y2)
+comac_fill_extents (comac_t *cr, double *x1, double *y1, double *x2, double *y2)
 {
     comac_status_t status;
 
@@ -2804,9 +2795,7 @@ comac_reset_clip (comac_t *cr)
  * Since: 1.4
  **/
 void
-comac_clip_extents (comac_t *cr,
-		    double *x1, double *y1,
-		    double *x2, double *y2)
+comac_clip_extents (comac_t *cr, double *x1, double *y1, double *x2, double *y2)
 {
     comac_status_t status;
 
@@ -2881,7 +2870,7 @@ comac_rectangle_list_t *
 comac_copy_clip_rectangle_list (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return _comac_rectangle_list_create_in_error (cr->status);
+	return _comac_rectangle_list_create_in_error (cr->status);
 
     return cr->backend->clip_copy_rectangle_list (cr);
 }
@@ -3034,10 +3023,10 @@ comac_tag_end (comac_t *cr, const char *tag_name)
  * Since: 1.0
  **/
 void
-comac_select_font_face (comac_t              *cr,
-			const char           *family,
-			comac_font_slant_t    slant,
-			comac_font_weight_t   weight)
+comac_select_font_face (comac_t *cr,
+			const char *family,
+			comac_font_slant_t slant,
+			comac_font_weight_t weight)
 {
     comac_font_face_t *font_face;
     comac_status_t status;
@@ -3069,8 +3058,7 @@ comac_select_font_face (comac_t              *cr,
  * Since: 1.0
  **/
 void
-comac_font_extents (comac_t              *cr,
-		    comac_font_extents_t *extents)
+comac_font_extents (comac_t *cr, comac_font_extents_t *extents)
 {
     comac_status_t status;
 
@@ -3100,8 +3088,7 @@ comac_font_extents (comac_t              *cr,
  * Since: 1.0
  **/
 void
-comac_set_font_face (comac_t           *cr,
-		     comac_font_face_t *font_face)
+comac_set_font_face (comac_t *cr, comac_font_face_t *font_face)
 {
     comac_status_t status;
 
@@ -3137,7 +3124,7 @@ comac_font_face_t *
 comac_get_font_face (comac_t *cr)
 {
     if (unlikely (cr->status))
-	return (comac_font_face_t*) &_comac_font_face_nil;
+	return (comac_font_face_t *) &_comac_font_face_nil;
 
     return cr->backend->get_font_face (cr);
 }
@@ -3188,8 +3175,7 @@ comac_set_font_size (comac_t *cr, double size)
  * Since: 1.0
  **/
 void
-comac_set_font_matrix (comac_t		    *cr,
-		       const comac_matrix_t *matrix)
+comac_set_font_matrix (comac_t *cr, const comac_matrix_t *matrix)
 {
     comac_status_t status;
 
@@ -3236,8 +3222,7 @@ comac_get_font_matrix (comac_t *cr, comac_matrix_t *matrix)
  * Since: 1.0
  **/
 void
-comac_set_font_options (comac_t                    *cr,
-			const comac_font_options_t *options)
+comac_set_font_options (comac_t *cr, const comac_font_options_t *options)
 {
     comac_status_t status;
 
@@ -3269,8 +3254,7 @@ comac_set_font_options (comac_t                    *cr,
  * Since: 1.0
  **/
 void
-comac_get_font_options (comac_t              *cr,
-			comac_font_options_t *options)
+comac_get_font_options (comac_t *cr, comac_font_options_t *options)
 {
     /* check that we aren't trying to overwrite the nil object */
     if (comac_font_options_status (options))
@@ -3298,8 +3282,7 @@ comac_get_font_options (comac_t              *cr,
  * Since: 1.2
  **/
 void
-comac_set_scaled_font (comac_t                   *cr,
-		       const comac_scaled_font_t *scaled_font)
+comac_set_scaled_font (comac_t *cr, const comac_scaled_font_t *scaled_font)
 {
     comac_status_t status;
 
@@ -3317,7 +3300,8 @@ comac_set_scaled_font (comac_t                   *cr,
 	return;
     }
 
-    status = cr->backend->set_scaled_font (cr, (comac_scaled_font_t *) scaled_font);
+    status =
+	cr->backend->set_scaled_font (cr, (comac_scaled_font_t *) scaled_font);
     if (unlikely (status))
 	_comac_set_error (cr, status);
 }
@@ -3374,8 +3358,8 @@ comac_get_scaled_font (comac_t *cr)
  * Since: 1.0
  **/
 void
-comac_text_extents (comac_t              *cr,
-		    const char		 *utf8,
+comac_text_extents (comac_t *cr,
+		    const char *utf8,
 		    comac_text_extents_t *extents)
 {
     comac_status_t status;
@@ -3386,7 +3370,7 @@ comac_text_extents (comac_t              *cr,
 
     extents->x_bearing = 0.0;
     extents->y_bearing = 0.0;
-    extents->width  = 0.0;
+    extents->width = 0.0;
     extents->height = 0.0;
     extents->x_advance = 0.0;
     extents->y_advance = 0.0;
@@ -3405,15 +3389,18 @@ comac_text_extents (comac_t              *cr,
 
     comac_get_current_point (cr, &x, &y);
     status = comac_scaled_font_text_to_glyphs (scaled_font,
-					       x, y,
-					       utf8, -1,
-					       &glyphs, &num_glyphs,
-					       NULL, NULL, NULL);
+					       x,
+					       y,
+					       utf8,
+					       -1,
+					       &glyphs,
+					       &num_glyphs,
+					       NULL,
+					       NULL,
+					       NULL);
 
     if (likely (status == COMAC_STATUS_SUCCESS)) {
-	status = cr->backend->glyph_extents (cr,
-					     glyphs, num_glyphs,
-					     extents);
+	status = cr->backend->glyph_extents (cr, glyphs, num_glyphs, extents);
     }
     comac_glyph_free (glyphs);
 
@@ -3442,16 +3429,16 @@ comac_text_extents (comac_t              *cr,
  * Since: 1.0
  **/
 void
-comac_glyph_extents (comac_t                *cr,
-		     const comac_glyph_t    *glyphs,
-		     int                    num_glyphs,
-		     comac_text_extents_t   *extents)
+comac_glyph_extents (comac_t *cr,
+		     const comac_glyph_t *glyphs,
+		     int num_glyphs,
+		     comac_text_extents_t *extents)
 {
     comac_status_t status;
 
     extents->x_bearing = 0.0;
     extents->y_bearing = 0.0;
-    extents->width  = 0.0;
+    extents->width = 0.0;
     extents->height = 0.0;
     extents->x_advance = 0.0;
     extents->y_advance = 0.0;
@@ -3518,7 +3505,8 @@ comac_show_text (comac_t *cr, const char *utf8)
     double x, y;
     comac_bool_t has_show_text_glyphs;
     comac_glyph_t stack_glyphs[COMAC_STACK_ARRAY_LENGTH (comac_glyph_t)];
-    comac_text_cluster_t stack_clusters[COMAC_STACK_ARRAY_LENGTH (comac_text_cluster_t)];
+    comac_text_cluster_t
+	stack_clusters[COMAC_STACK_ARRAY_LENGTH (comac_text_cluster_t)];
     comac_scaled_font_t *scaled_font;
     comac_glyph_text_info_t info, *i;
 
@@ -3552,10 +3540,15 @@ comac_show_text (comac_t *cr, const char *utf8)
 
     comac_get_current_point (cr, &x, &y);
     status = comac_scaled_font_text_to_glyphs (scaled_font,
-					       x, y,
-					       utf8, utf8_len,
-					       &glyphs, &num_glyphs,
-					       has_show_text_glyphs ? &clusters : NULL, &num_clusters,
+					       x,
+					       y,
+					       utf8,
+					       utf8_len,
+					       &glyphs,
+					       &num_glyphs,
+					       has_show_text_glyphs ? &clusters
+								    : NULL,
+					       &num_clusters,
 					       &cluster_flags);
     if (unlikely (status))
 	goto BAIL;
@@ -3586,7 +3579,7 @@ comac_show_text (comac_t *cr, const char *utf8)
     y = last_glyph->y + extents.y_advance;
     cr->backend->move_to (cr, x, y);
 
- BAIL:
+BAIL:
     if (glyphs != stack_glyphs)
 	comac_glyph_free (glyphs);
     if (clusters != stack_clusters)
@@ -3669,14 +3662,14 @@ comac_show_glyphs (comac_t *cr, const comac_glyph_t *glyphs, int num_glyphs)
  * Since: 1.8
  **/
 void
-comac_show_text_glyphs (comac_t			   *cr,
-			const char		   *utf8,
-			int			    utf8_len,
-			const comac_glyph_t	   *glyphs,
-			int			    num_glyphs,
+comac_show_text_glyphs (comac_t *cr,
+			const char *utf8,
+			int utf8_len,
+			const comac_glyph_t *glyphs,
+			int num_glyphs,
 			const comac_text_cluster_t *clusters,
-			int			    num_clusters,
-			comac_text_cluster_flags_t  cluster_flags)
+			int num_clusters,
+			comac_text_cluster_flags_t cluster_flags)
 {
     comac_status_t status;
 
@@ -3690,8 +3683,7 @@ comac_show_text_glyphs (comac_t			   *cr,
 	utf8_len = 0;
 
     /* No NULLs for non-zeros */
-    if ((num_glyphs   && glyphs   == NULL) ||
-	(utf8_len     && utf8     == NULL) ||
+    if ((num_glyphs && glyphs == NULL) || (utf8_len && utf8 == NULL) ||
 	(num_clusters && clusters == NULL)) {
 	_comac_set_error (cr, COMAC_STATUS_NULL_POINTER);
 	return;
@@ -3713,9 +3705,13 @@ comac_show_text_glyphs (comac_t			   *cr,
     if (utf8) {
 	/* Make sure clusters cover the entire glyphs and utf8 arrays,
 	 * and that cluster boundaries are UTF-8 boundaries. */
-	status = _comac_validate_text_clusters (utf8, utf8_len,
-						glyphs, num_glyphs,
-						clusters, num_clusters, cluster_flags);
+	status = _comac_validate_text_clusters (utf8,
+						utf8_len,
+						glyphs,
+						num_glyphs,
+						clusters,
+						num_clusters,
+						cluster_flags);
 	if (status == COMAC_STATUS_INVALID_CLUSTERS) {
 	    /* Either got invalid UTF-8 text, or cluster mapping is bad.
 	     * Differentiate those. */
@@ -3786,7 +3782,6 @@ comac_text_path (comac_t *cr, const char *utf8)
     if (utf8 == NULL)
 	return;
 
-
     glyphs = stack_glyphs;
     num_glyphs = ARRAY_LENGTH (stack_glyphs);
 
@@ -3798,10 +3793,15 @@ comac_text_path (comac_t *cr, const char *utf8)
 
     comac_get_current_point (cr, &x, &y);
     status = comac_scaled_font_text_to_glyphs (scaled_font,
-					       x, y,
-					       utf8, -1,
-					       &glyphs, &num_glyphs,
-					       NULL, NULL, NULL);
+					       x,
+					       y,
+					       utf8,
+					       -1,
+					       &glyphs,
+					       &num_glyphs,
+					       NULL,
+					       NULL,
+					       NULL);
 
     if (num_glyphs == 0)
 	return;
@@ -3821,7 +3821,7 @@ comac_text_path (comac_t *cr, const char *utf8)
     y = last_glyph->y + extents.y_advance;
     cr->backend->move_to (cr, x, y);
 
- BAIL:
+BAIL:
     if (glyphs != stack_glyphs)
 	comac_glyph_free (glyphs);
 
@@ -3881,7 +3881,7 @@ comac_operator_t
 comac_get_operator (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_GSTATE_OPERATOR_DEFAULT;
+	return COMAC_GSTATE_OPERATOR_DEFAULT;
 
     return cr->backend->get_operator (cr);
 }
@@ -3921,7 +3921,7 @@ double
 comac_get_tolerance (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_GSTATE_TOLERANCE_DEFAULT;
+	return COMAC_GSTATE_TOLERANCE_DEFAULT;
 
     return cr->backend->get_tolerance (cr);
 }
@@ -3941,7 +3941,7 @@ comac_antialias_t
 comac_get_antialias (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_ANTIALIAS_DEFAULT;
+	return COMAC_ANTIALIAS_DEFAULT;
 
     return cr->backend->get_antialias (cr);
 }
@@ -4005,8 +4005,7 @@ comac_get_current_point (comac_t *cr, double *x_ret, double *y_ret)
 
     x = y = 0;
     if (cr->status == COMAC_STATUS_SUCCESS &&
-	cr->backend->has_current_point (cr))
-    {
+	cr->backend->has_current_point (cr)) {
 	cr->backend->get_current_point (cr, &x, &y);
     }
 
@@ -4030,7 +4029,7 @@ comac_fill_rule_t
 comac_get_fill_rule (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_GSTATE_FILL_RULE_DEFAULT;
+	return COMAC_GSTATE_FILL_RULE_DEFAULT;
 
     return cr->backend->get_fill_rule (cr);
 }
@@ -4052,7 +4051,7 @@ double
 comac_get_line_width (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_GSTATE_LINE_WIDTH_DEFAULT;
+	return COMAC_GSTATE_LINE_WIDTH_DEFAULT;
 
     return cr->backend->get_line_width (cr);
 }
@@ -4071,7 +4070,7 @@ comac_bool_t
 comac_get_hairline (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return FALSE;
+	return FALSE;
 
     return cr->backend->get_hairline (cr);
 }
@@ -4090,7 +4089,7 @@ comac_line_cap_t
 comac_get_line_cap (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_GSTATE_LINE_CAP_DEFAULT;
+	return COMAC_GSTATE_LINE_CAP_DEFAULT;
 
     return cr->backend->get_line_cap (cr);
 }
@@ -4109,7 +4108,7 @@ comac_line_join_t
 comac_get_line_join (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_GSTATE_LINE_JOIN_DEFAULT;
+	return COMAC_GSTATE_LINE_JOIN_DEFAULT;
 
     return cr->backend->get_line_join (cr);
 }
@@ -4128,7 +4127,7 @@ double
 comac_get_miter_limit (comac_t *cr)
 {
     if (unlikely (cr->status))
-        return COMAC_GSTATE_MITER_LIMIT_DEFAULT;
+	return COMAC_GSTATE_MITER_LIMIT_DEFAULT;
 
     return cr->backend->get_miter_limit (cr);
 }
@@ -4305,8 +4304,7 @@ comac_copy_path_flat (comac_t *cr)
  * Since: 1.0
  **/
 void
-comac_append_path (comac_t		*cr,
-		   const comac_path_t	*path)
+comac_append_path (comac_t *cr, const comac_path_t *path)
 {
     comac_status_t status;
 

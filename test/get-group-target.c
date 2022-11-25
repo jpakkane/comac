@@ -64,10 +64,7 @@ draw (comac_t *cr, int width, int height)
      * The calculation below might also be less confusing if the sign
      * convention on the device offset were reversed, but it is what
      * it is. Oh well. */
-    comac_rectangle (cr,
-		     -x, -y,
-		     width + 2 * x,
-		     height + 2 * y);
+    comac_rectangle (cr, -x, -y, width + 2 * x, height + 2 * y);
     comac_fill (cr);
 
     /* Finish up the group painting. */
@@ -77,9 +74,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (get_group_target,
-	    "Test of both comac_get_group_target and comac_surface_get_device_offset",
-	    "api", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    get_group_target,
+    "Test of both comac_get_group_target and comac_surface_get_device_offset",
+    "api", /* keywords */
+    NULL,  /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

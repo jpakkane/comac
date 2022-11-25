@@ -46,12 +46,18 @@ draw (comac_t *cr, int width, int height)
     comac_stroke_preserve (cr);
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans", COMAC_FONT_SLANT_NORMAL, COMAC_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
     comac_show_text (cr, "ABC");
 
     comac_mask (cr, comac_get_source (cr));
 
-    surf = comac_surface_create_similar (comac_get_group_target (cr), COMAC_CONTENT_COLOR_ALPHA, 0, 0);
+    surf = comac_surface_create_similar (comac_get_group_target (cr),
+					 COMAC_CONTENT_COLOR_ALPHA,
+					 0,
+					 0);
     pat = comac_pattern_create_for_surface (surf);
     comac_surface_destroy (surf);
 
@@ -67,6 +73,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_zero,
 	    "Verifies that 0x0 surfaces or clips don't cause problems.",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

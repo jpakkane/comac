@@ -26,7 +26,6 @@
  */
 #include "comac-test.h"
 
-
 /* This test reproduces an overflow of a mask-buffer in comac-image-compositor.c */
 
 static comac_test_status_t
@@ -42,10 +41,10 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_add_color_stop_rgb (p, 0, 0.99, 1, 1);
     comac_pattern_add_color_stop_rgb (p, 1, 1, 1, 1);
     comac_set_source (cr, p);
-    comac_pattern_destroy(p);
+    comac_pattern_destroy (p);
 
     comac_move_to (cr, 0.5, -1);
-    for (int i = 0; i < width; i+=3) {
+    for (int i = 0; i < width; i += 3) {
 	comac_rel_line_to (cr, 2, 2);
 	comac_rel_line_to (cr, 1, -2);
     }
@@ -56,11 +55,11 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-
 COMAC_TEST (bug_image_compositor,
 	    "Crash in image-compositor",
 	    "stroke, stress", /* keywords */
-	    NULL, /* requirements */
-	    10000, 1,
-	    NULL, draw)
-	    
+	    NULL,	      /* requirements */
+	    10000,
+	    1,
+	    NULL,
+	    draw)

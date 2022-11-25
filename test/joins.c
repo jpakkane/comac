@@ -25,9 +25,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	12.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 12.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
@@ -35,10 +35,10 @@ make_path (comac_t *cr)
     const struct {
 	double x, y;
     } scales[] = {
-	{  1,  1 },
-	{ -1,  1 },
-	{  1, -1 },
-	{ -1, -1 },
+	{1, 1},
+	{-1, 1},
+	{1, -1},
+	{-1, -1},
     };
     unsigned int i, j;
 
@@ -48,9 +48,9 @@ make_path (comac_t *cr)
 	comac_scale (cr, scales[j].x, scales[j].y);
 	for (i = 0; i < 3; i++) {
 	    comac_new_sub_path (cr);
-	    comac_move_to (cr, 0, -9*LINE_WIDTH/4 - 2);
-	    comac_line_to (cr,  0, -2*LINE_WIDTH - 2);
-	    comac_line_to (cr,  LINE_WIDTH/4, -2*LINE_WIDTH - 2);
+	    comac_move_to (cr, 0, -9 * LINE_WIDTH / 4 - 2);
+	    comac_line_to (cr, 0, -2 * LINE_WIDTH - 2);
+	    comac_line_to (cr, LINE_WIDTH / 4, -2 * LINE_WIDTH - 2);
 	    comac_rotate (cr, M_PI / 4.);
 	}
 	comac_restore (cr);
@@ -102,8 +102,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (joins,
 	    "Test joins",
 	    "stroke, joins", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	     /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    3 * (PAD + SIZE) + PAD,
-	    NULL, draw)
-
+	    NULL,
+	    draw)

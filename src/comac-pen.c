@@ -45,10 +45,10 @@ static void
 _comac_pen_compute_slopes (comac_pen_t *pen);
 
 comac_status_t
-_comac_pen_init (comac_pen_t	*pen,
-		 double		 radius,
-		 double		 tolerance,
-		 const comac_matrix_t	*ctm)
+_comac_pen_init (comac_pen_t *pen,
+		 double radius,
+		 double tolerance,
+		 const comac_matrix_t *ctm)
 {
     int i;
     int reflect;
@@ -63,13 +63,11 @@ _comac_pen_init (comac_pen_t	*pen,
 
     reflect = _comac_matrix_compute_determinant (ctm) < 0.;
 
-    pen->num_vertices = _comac_pen_vertices_needed (tolerance,
-						    radius,
-						    ctm);
+    pen->num_vertices = _comac_pen_vertices_needed (tolerance, radius, ctm);
 
     if (pen->num_vertices > ARRAY_LENGTH (pen->vertices_embedded)) {
-	pen->vertices = _comac_malloc_ab (pen->num_vertices,
-					  sizeof (comac_pen_vertex_t));
+	pen->vertices =
+	    _comac_malloc_ab (pen->num_vertices, sizeof (comac_pen_vertex_t));
 	if (unlikely (pen->vertices == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     } else {
@@ -82,7 +80,7 @@ _comac_pen_init (comac_pen_t	*pen,
      * orientation in device space, flip the pen if the transformation matrix
      * is reflecting
      */
-    for (i=0; i < pen->num_vertices; i++) {
+    for (i = 0; i < pen->num_vertices; i++) {
 	comac_pen_vertex_t *v = &pen->vertices[i];
 	double theta = 2 * M_PI * i / (double) pen->num_vertices, dx, dy;
 	if (reflect)
@@ -104,7 +102,6 @@ _comac_pen_fini (comac_pen_t *pen)
 {
     if (pen->vertices != pen->vertices_embedded)
 	free (pen->vertices);
-
 
     VG (VALGRIND_MAKE_MEM_UNDEFINED (pen, sizeof (comac_pen_t)));
 }
@@ -128,7 +125,8 @@ _comac_pen_init_copy (comac_pen_t *pen, const comac_pen_t *other)
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
 
-	memcpy (pen->vertices, other->vertices,
+	memcpy (pen->vertices,
+		other->vertices,
 		pen->num_vertices * sizeof (comac_pen_vertex_t));
     }
 
@@ -147,17 +145,17 @@ _comac_pen_add_points (comac_pen_t *pen, comac_point_t *point, int num_points)
 
     num_vertices = pen->num_vertices + num_points;
     if (num_vertices > ARRAY_LENGTH (pen->vertices_embedded) ||
-	pen->vertices != pen->vertices_embedded)
-    {
+	pen->vertices != pen->vertices_embedded) {
 	comac_pen_vertex_t *vertices;
 
 	if (pen->vertices == pen->vertices_embedded) {
-	    vertices = _comac_malloc_ab (num_vertices,
-		                         sizeof (comac_pen_vertex_t));
+	    vertices =
+		_comac_malloc_ab (num_vertices, sizeof (comac_pen_vertex_t));
 	    if (unlikely (vertices == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	    memcpy (vertices, pen->vertices,
+	    memcpy (vertices,
+		    pen->vertices,
 		    pen->num_vertices * sizeof (comac_pen_vertex_t));
 	} else {
 	    vertices = _comac_realloc_ab (pen->vertices,
@@ -173,8 +171,8 @@ _comac_pen_add_points (comac_pen_t *pen, comac_point_t *point, int num_points)
     pen->num_vertices = num_vertices;
 
     /* initialize new vertices */
-    for (i=0; i < num_points; i++)
-	pen->vertices[pen->num_vertices-num_points+i].point = point[i];
+    for (i = 0; i < num_points; i++)
+	pen->vertices[pen->num_vertices - num_points + i].point = point[i];
 
     status = _comac_hull_compute (pen->vertices, &pen->num_vertices);
     if (unlikely (status))
@@ -271,25 +269,26 @@ doesn't matter where on the circle the error is computed.
 */
 
 int
-_comac_pen_vertices_needed (double	    tolerance,
-			    double	    radius,
-			    const comac_matrix_t  *matrix)
+_comac_pen_vertices_needed (double tolerance,
+			    double radius,
+			    const comac_matrix_t *matrix)
 {
     /*
      * the pen is a circle that gets transformed to an ellipse by matrix.
      * compute major axis length for a pen with the specified radius.
      * we don't need the minor axis length.
      */
-    double major_axis = _comac_matrix_transformed_circle_major_axis (matrix,
-								     radius);
+    double major_axis =
+	_comac_matrix_transformed_circle_major_axis (matrix, radius);
     int num_vertices;
 
-    if (tolerance >= 4*major_axis) { /* XXX relaxed from 2*major for inkscape */
+    if (tolerance >=
+	4 * major_axis) { /* XXX relaxed from 2*major for inkscape */
 	num_vertices = 1;
     } else if (tolerance >= major_axis) {
 	num_vertices = 4;
     } else {
-	num_vertices = ceil (2*M_PI / acos (1 - tolerance / major_axis));
+	num_vertices = ceil (2 * M_PI / acos (1 - tolerance / major_axis));
 
 	/* number of vertices must be even */
 	if (num_vertices % 2)
@@ -309,8 +308,7 @@ _comac_pen_compute_slopes (comac_pen_t *pen)
     int i, i_prev;
     comac_pen_vertex_t *prev, *v, *next;
 
-    for (i=0, i_prev = pen->num_vertices - 1;
-	 i < pen->num_vertices;
+    for (i = 0, i_prev = pen->num_vertices - 1; i < pen->num_vertices;
 	 i_prev = i++) {
 	prev = &pen->vertices[i_prev];
 	v = &pen->vertices[i];
@@ -339,7 +337,7 @@ _comac_pen_find_active_cw_vertex_index (const comac_pen_t *pen,
 {
     int i;
 
-    for (i=0; i < pen->num_vertices; i++) {
+    for (i = 0; i < pen->num_vertices; i++) {
 	if ((_comac_slope_compare (slope, &pen->vertices[i].slope_ccw) < 0) &&
 	    (_comac_slope_compare (slope, &pen->vertices[i].slope_cw) >= 0))
 	    break;
@@ -372,9 +370,11 @@ _comac_pen_find_active_ccw_vertex_index (const comac_pen_t *pen,
     slope_reverse.dx = -slope_reverse.dx;
     slope_reverse.dy = -slope_reverse.dy;
 
-    for (i=pen->num_vertices-1; i >= 0; i--) {
-	if ((_comac_slope_compare (&pen->vertices[i].slope_ccw, &slope_reverse) >= 0) &&
-	    (_comac_slope_compare (&pen->vertices[i].slope_cw, &slope_reverse) < 0))
+    for (i = pen->num_vertices - 1; i >= 0; i--) {
+	if ((_comac_slope_compare (&pen->vertices[i].slope_ccw,
+				   &slope_reverse) >= 0) &&
+	    (_comac_slope_compare (&pen->vertices[i].slope_cw, &slope_reverse) <
+	     0))
 	    break;
     }
 
@@ -393,7 +393,8 @@ void
 _comac_pen_find_active_cw_vertices (const comac_pen_t *pen,
 				    const comac_slope_t *in,
 				    const comac_slope_t *out,
-				    int *start, int *stop)
+				    int *start,
+				    int *stop)
 {
 
     int lo = 0, hi = pen->num_vertices;
@@ -436,7 +437,8 @@ void
 _comac_pen_find_active_ccw_vertices (const comac_pen_t *pen,
 				     const comac_slope_t *in,
 				     const comac_slope_t *out,
-				     int *start, int *stop)
+				     int *start,
+				     int *stop)
 {
     int lo = 0, hi = pen->num_vertices;
     int i;

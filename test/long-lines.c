@@ -26,24 +26,21 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	1.
-#define SIZE		10
-#define LINE_NBR	6
+#define LINE_WIDTH 1.
+#define SIZE 10
+#define LINE_NBR 6
 #define WIDTH (SIZE * (LINE_NBR + 1))
 #define HEIGHT (SIZE * (LINE_NBR + 1))
-
 
 struct {
     double length;
     double red, green, blue;
-} lines[LINE_NBR] = {
-    {       100.0, 1.0, 0.0, 0.0 },
-    {     10000.0, 0.0, 1.0, 0.0 },
-    {    100000.0, 0.0, 0.0, 1.0 },
-    {   1000000.0, 1.0, 1.0, 0.0 },
-    {  10000000.0, 0.0, 1.0, 1.0 },
-    { 100000000.0, 1.0, 0.0, 1.0 }
-};
+} lines[LINE_NBR] = {{100.0, 1.0, 0.0, 0.0},
+		     {10000.0, 0.0, 1.0, 0.0},
+		     {100000.0, 0.0, 0.0, 1.0},
+		     {1000000.0, 1.0, 1.0, 0.0},
+		     {10000000.0, 0.0, 1.0, 1.0},
+		     {100000000.0, 1.0, 0.0, 1.0}};
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -69,8 +66,8 @@ draw (comac_t *cr, int width, int height)
     }
 
     /* This should display a perfect vertically centered black line */
-    comac_move_to (cr, -1e100, HEIGHT/2);
-    comac_line_to (cr, 1e100, HEIGHT/2);
+    comac_move_to (cr, -1e100, HEIGHT / 2);
+    comac_line_to (cr, 1e100, HEIGHT / 2);
     comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
     comac_stroke (cr);
 
@@ -80,9 +77,11 @@ draw (comac_t *cr, int width, int height)
 /* XFAIL: range overflow of fixed-point */
 COMAC_TEST (long_lines,
 	    "Test long lines"
-	    "\nLong lines are not drawn due to the limitations of the internal 16.16 fixed-point coordinates",
+	    "\nLong lines are not drawn due to the limitations of the internal "
+	    "16.16 fixed-point coordinates",
 	    "stroke, stress", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
-
+	    NULL,	      /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

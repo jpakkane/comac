@@ -41,7 +41,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_dash (cr, dashes1, 2, 0);
     comac_new_sub_path (cr);
-    comac_arc (cr, SIZE/2, SIZE/2, SIZE/2-10, 0, 2*M_PI);
+    comac_arc (cr, SIZE / 2, SIZE / 2, SIZE / 2 - 10, 0, 2 * M_PI);
 
     comac_set_source_rgba (cr, 1, 0, 0, 0.5);
     comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
@@ -49,12 +49,11 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_dash (cr, dashes2, 2, 0);
     comac_new_sub_path (cr);
-    comac_arc (cr, SIZE/2, SIZE/2, SIZE/4-5, 0, 2*M_PI);
+    comac_arc (cr, SIZE / 2, SIZE / 2, SIZE / 4 - 5, 0, 2 * M_PI);
 
     comac_set_line_cap (cr, COMAC_LINE_CAP_SQUARE);
     comac_set_source_rgba (cr, 0, 1, 0, 0.5);
     comac_stroke (cr);
-
 
     return COMAC_TEST_SUCCESS;
 }
@@ -62,6 +61,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (overlapping_dash_caps,
 	    "Test intersections between neighbouring dash segments",
 	    "overlap, dash", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

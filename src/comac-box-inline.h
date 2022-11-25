@@ -69,8 +69,7 @@ _comac_box_from_rectangle_int (comac_box_t *box,
 
 /* assumes box->p1 is top-left, p2 bottom-right */
 static inline void
-_comac_box_add_point (comac_box_t *box,
-		      const comac_point_t *point)
+_comac_box_add_point (comac_box_t *box, const comac_point_t *point)
 {
     if (point->x < box->p1.x)
 	box->p1.x = point->x;
@@ -84,8 +83,7 @@ _comac_box_add_point (comac_box_t *box,
 }
 
 static inline void
-_comac_box_add_box (comac_box_t *box,
-		    const comac_box_t *add)
+_comac_box_add_box (comac_box_t *box, const comac_box_t *add)
 {
     if (add->p1.x < box->p1.x)
 	box->p1.x = add->p1.x;
@@ -100,18 +98,17 @@ _comac_box_add_box (comac_box_t *box,
 
 /* assumes box->p1 is top-left, p2 bottom-right */
 static inline comac_bool_t
-_comac_box_contains_point (const comac_box_t *box,
-			   const comac_point_t *point)
+_comac_box_contains_point (const comac_box_t *box, const comac_point_t *point)
 {
-    return box->p1.x <= point->x  && point->x <= box->p2.x &&
-	box->p1.y <= point->y  && point->y <= box->p2.y;
+    return box->p1.x <= point->x && point->x <= box->p2.x &&
+	   box->p1.y <= point->y && point->y <= box->p2.y;
 }
 
 static inline comac_bool_t
 _comac_box_is_pixel_aligned (const comac_box_t *box)
 {
 #if COMAC_FIXED_FRAC_BITS <= 8 && 0
-    return ((comac_fixed_unsigned_t)(box->p1.x & COMAC_FIXED_FRAC_MASK) << 24 |
+    return ((comac_fixed_unsigned_t) (box->p1.x & COMAC_FIXED_FRAC_MASK) << 24 |
 	    (box->p1.y & COMAC_FIXED_FRAC_MASK) << 16 |
 	    (box->p2.x & COMAC_FIXED_FRAC_MASK) << 8 |
 	    (box->p2.y & COMAC_FIXED_FRAC_MASK) << 0) == 0;

@@ -63,9 +63,10 @@ draw (comac_t *cr, int width, int height)
     comac_fill (cr_surface);
 
     /* Now use extend pad to cover the entire surface with those 4 colors */
-    comac_set_source_surface (cr, comac_get_target (cr_surface),
-			      width/2  - 1,
-			      height/2 - 1);
+    comac_set_source_surface (cr,
+			      comac_get_target (cr_surface),
+			      width / 2 - 1,
+			      height / 2 - 1);
     comac_destroy (cr_surface);
     comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_PAD);
     comac_paint (cr);
@@ -76,6 +77,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (extend_pad,
 	    "Test COMAC_EXTEND_PAD for surface patterns",
 	    "extend", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

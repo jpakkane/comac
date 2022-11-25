@@ -26,24 +26,17 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(8 * LINE_WIDTH)
-#define PAD		(1 * LINE_WIDTH)
-
+#define LINE_WIDTH 10.
+#define SIZE (8 * LINE_WIDTH)
+#define PAD (1 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
 {
     comac_move_to (cr, 0, 0);
-    comac_rel_curve_to (cr,
-			SIZE, 0,
-			0, SIZE,
-			SIZE, SIZE);
+    comac_rel_curve_to (cr, SIZE, 0, 0, SIZE, SIZE, SIZE);
     comac_rel_line_to (cr, -SIZE, 0);
-    comac_rel_curve_to (cr,
-			SIZE, 0,
-			0, -SIZE,
-			SIZE, -SIZE);
+    comac_rel_curve_to (cr, SIZE, 0, 0, -SIZE, SIZE, -SIZE);
     comac_close_path (cr);
 }
 
@@ -94,7 +87,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (joins_loop,
 	    "A loopy concave shape",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    3*(SIZE+PAD)+PAD, 2*(SIZE+PAD)+2*PAD,
-	    NULL, draw)
-
+	    NULL,     /* requirements */
+	    3 * (SIZE + PAD) + PAD,
+	    2 * (SIZE + PAD) + 2 * PAD,
+	    NULL,
+	    draw)

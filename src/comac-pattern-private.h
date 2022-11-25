@@ -62,20 +62,20 @@ struct _comac_pattern_observer {
 };
 
 struct _comac_pattern {
-    comac_reference_count_t	ref_count;
-    comac_status_t		status;
-    comac_user_data_array_t	user_data;
-    comac_list_t		observers;
+    comac_reference_count_t ref_count;
+    comac_status_t status;
+    comac_user_data_array_t user_data;
+    comac_list_t observers;
 
-    comac_pattern_type_t	type;
+    comac_pattern_type_t type;
 
-    comac_filter_t		filter;
-    comac_extend_t		extend;
-    comac_bool_t		has_component_alpha;
-    comac_bool_t		is_userfont_foreground;
+    comac_filter_t filter;
+    comac_extend_t extend;
+    comac_bool_t has_component_alpha;
+    comac_bool_t is_userfont_foreground;
 
-    comac_matrix_t		matrix;
-    double			opacity;
+    comac_matrix_t matrix;
+    double opacity;
 };
 
 struct _comac_solid_pattern {
@@ -97,10 +97,10 @@ typedef struct _comac_gradient_stop {
 typedef struct _comac_gradient_pattern {
     comac_pattern_t base;
 
-    unsigned int	    n_stops;
-    unsigned int	    stops_size;
-    comac_gradient_stop_t  *stops;
-    comac_gradient_stop_t   stops_embedded[2];
+    unsigned int n_stops;
+    unsigned int stops_size;
+    comac_gradient_stop_t *stops;
+    comac_gradient_stop_t stops_embedded[2];
 } comac_gradient_pattern_t;
 
 typedef struct _comac_linear_pattern {
@@ -186,13 +186,13 @@ typedef struct _comac_raster_source_pattern {
 } comac_raster_source_pattern_t;
 
 typedef union {
-    comac_pattern_t		    base;
+    comac_pattern_t base;
 
-    comac_solid_pattern_t	    solid;
-    comac_surface_pattern_t	    surface;
-    comac_gradient_pattern_union_t  gradient;
-    comac_mesh_pattern_t	    mesh;
-    comac_raster_source_pattern_t   raster_source;
+    comac_solid_pattern_t solid;
+    comac_surface_pattern_t surface;
+    comac_gradient_pattern_union_t gradient;
+    comac_mesh_pattern_t mesh;
+    comac_raster_source_pattern_t raster_source;
 } comac_pattern_union_t;
 
 /* comac-pattern.c */
@@ -201,28 +201,27 @@ comac_private comac_pattern_t *
 _comac_pattern_create_in_error (comac_status_t status);
 
 comac_private comac_status_t
-_comac_pattern_create_copy (comac_pattern_t	  **pattern,
-			    const comac_pattern_t  *other);
+_comac_pattern_create_copy (comac_pattern_t **pattern,
+			    const comac_pattern_t *other);
 
 comac_private void
-_comac_pattern_init (comac_pattern_t *pattern,
-		     comac_pattern_type_t type);
+_comac_pattern_init (comac_pattern_t *pattern, comac_pattern_type_t type);
 
 comac_private comac_status_t
-_comac_pattern_init_copy (comac_pattern_t	*pattern,
+_comac_pattern_init_copy (comac_pattern_t *pattern,
 			  const comac_pattern_t *other);
 
 comac_private void
-_comac_pattern_init_static_copy (comac_pattern_t	*pattern,
+_comac_pattern_init_static_copy (comac_pattern_t *pattern,
 				 const comac_pattern_t *other);
 
 comac_private comac_status_t
-_comac_pattern_init_snapshot (comac_pattern_t       *pattern,
+_comac_pattern_init_snapshot (comac_pattern_t *pattern,
 			      const comac_pattern_t *other);
 
 comac_private void
-_comac_pattern_init_solid (comac_solid_pattern_t	*pattern,
-			   const comac_color_t		*color);
+_comac_pattern_init_solid (comac_solid_pattern_t *pattern,
+			   const comac_color_t *color);
 
 comac_private void
 _comac_pattern_init_for_surface (comac_surface_pattern_t *pattern,
@@ -232,15 +231,15 @@ comac_private void
 _comac_pattern_fini (comac_pattern_t *pattern);
 
 comac_private comac_pattern_t *
-_comac_pattern_create_solid (const comac_color_t	*color);
+_comac_pattern_create_solid (const comac_color_t *color);
 
 comac_private void
-_comac_pattern_transform (comac_pattern_t      *pattern,
+_comac_pattern_transform (comac_pattern_t *pattern,
 			  const comac_matrix_t *ctm_inverse);
 
 comac_private void
-_comac_pattern_pretransform (comac_pattern_t      *pattern,
-                             const comac_matrix_t *ctm);
+_comac_pattern_pretransform (comac_pattern_t *pattern,
+			     const comac_matrix_t *ctm);
 
 comac_private comac_bool_t
 _comac_pattern_is_opaque_solid (const comac_pattern_t *pattern);
@@ -258,42 +257,45 @@ _comac_gradient_pattern_is_solid (const comac_gradient_pattern_t *gradient,
 				  comac_color_t *color);
 
 comac_private comac_bool_t
-_comac_pattern_is_constant_alpha (const comac_pattern_t          *abstract_pattern,
-				  const comac_rectangle_int_t    *extents,
-				  double                         *alpha);
+_comac_pattern_is_constant_alpha (const comac_pattern_t *abstract_pattern,
+				  const comac_rectangle_int_t *extents,
+				  double *alpha);
 
 comac_private void
 _comac_gradient_pattern_fit_to_range (const comac_gradient_pattern_t *gradient,
-				      double			      max_value,
-				      comac_matrix_t                 *out_matrix,
-				      comac_circle_double_t	      out_circle[2]);
+				      double max_value,
+				      comac_matrix_t *out_matrix,
+				      comac_circle_double_t out_circle[2]);
 
 comac_private comac_bool_t
 _comac_radial_pattern_focus_is_inside (const comac_radial_pattern_t *radial);
 
 comac_private void
-_comac_gradient_pattern_box_to_parameter (const comac_gradient_pattern_t *gradient,
-					  double x0, double y0,
-					  double x1, double y1,
-					  double tolerance,
-					  double out_range[2]);
+_comac_gradient_pattern_box_to_parameter (
+    const comac_gradient_pattern_t *gradient,
+    double x0,
+    double y0,
+    double x1,
+    double y1,
+    double tolerance,
+    double out_range[2]);
 
 comac_private void
 _comac_gradient_pattern_interpolate (const comac_gradient_pattern_t *gradient,
-				     double			     t,
-				     comac_circle_double_t	    *out_circle);
+				     double t,
+				     comac_circle_double_t *out_circle);
 
 comac_private void
 _comac_pattern_alpha_range (const comac_pattern_t *pattern,
-			    double                *out_min,
-			    double                *out_max);
+			    double *out_min,
+			    double *out_max);
 
 comac_private comac_bool_t
 _comac_mesh_pattern_coord_box (const comac_mesh_pattern_t *mesh,
-			       double                     *out_xmin,
-			       double                     *out_ymin,
-			       double                     *out_xmax,
-			       double                     *out_ymax);
+			       double *out_xmin,
+			       double *out_ymin,
+			       double *out_xmax,
+			       double *out_ymax);
 
 comac_private void
 _comac_pattern_sampled_area (const comac_pattern_t *pattern,
@@ -301,13 +303,13 @@ _comac_pattern_sampled_area (const comac_pattern_t *pattern,
 			     comac_rectangle_int_t *sample);
 
 comac_private void
-_comac_pattern_get_extents (const comac_pattern_t	    *pattern,
-			    comac_rectangle_int_t           *extents,
-			    comac_bool_t                   is_vector);
+_comac_pattern_get_extents (const comac_pattern_t *pattern,
+			    comac_rectangle_int_t *extents,
+			    comac_bool_t is_vector);
 
 comac_private comac_int_status_t
-_comac_pattern_get_ink_extents (const comac_pattern_t	    *pattern,
-				comac_rectangle_int_t       *extents);
+_comac_pattern_get_ink_extents (const comac_pattern_t *pattern,
+				comac_rectangle_int_t *extents);
 
 comac_private uintptr_t
 _comac_pattern_hash (const comac_pattern_t *pattern);
@@ -332,8 +334,7 @@ _comac_radial_pattern_equal (const comac_radial_pattern_t *a,
 			     const comac_radial_pattern_t *b);
 
 comac_private comac_bool_t
-_comac_pattern_equal (const comac_pattern_t *a,
-		      const comac_pattern_t *b);
+_comac_pattern_equal (const comac_pattern_t *a, const comac_pattern_t *b);
 
 comac_private comac_filter_t
 _comac_pattern_analyze_filter (const comac_pattern_t *pattern);
@@ -342,12 +343,12 @@ _comac_pattern_analyze_filter (const comac_pattern_t *pattern);
 
 comac_private void
 _comac_mesh_pattern_rasterize (const comac_mesh_pattern_t *mesh,
-			       void                       *data,
-			       int                         width,
-			       int                         height,
-			       int                         stride,
-			       double                      x_offset,
-			       double                      y_offset);
+			       void *data,
+			       int width,
+			       int height,
+			       int stride,
+			       double x_offset,
+			       double y_offset);
 
 comac_private comac_surface_t *
 _comac_raster_source_pattern_acquire (const comac_pattern_t *abstract_pattern,

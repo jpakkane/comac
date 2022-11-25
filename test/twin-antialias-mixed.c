@@ -43,7 +43,6 @@ create_twin (comac_t *cr, comac_antialias_t antialias)
     return comac_scaled_font_reference (comac_get_scaled_font (cr));
 }
 
-
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
@@ -91,7 +90,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (twin_antialias_mixed,
 	    "Tests the internal font (with intermixed antialiasing)",
-	    "twin, font", /* keywords */
+	    "twin, font",    /* keywords */
 	    "target=raster", /* requirements */
-	    140, 60,
-	    NULL, draw)
+	    140,
+	    60,
+	    NULL,
+	    draw)

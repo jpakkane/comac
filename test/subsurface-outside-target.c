@@ -34,25 +34,23 @@
 #define PAINT_OFFSET SUB_SIZE
 #define PAINT_SIZE (3 * SUB_SIZE)
 
-static comac_content_t contents[] = { COMAC_CONTENT_ALPHA,
-                                      COMAC_CONTENT_COLOR,
-                                      COMAC_CONTENT_COLOR_ALPHA };
+static comac_content_t contents[] = {
+    COMAC_CONTENT_ALPHA, COMAC_CONTENT_COLOR, COMAC_CONTENT_COLOR_ALPHA};
 
 #define N_CONTENTS ARRAY_LENGTH (contents)
 #define N_PADS (COMAC_EXTEND_PAD + 1)
 
-
 static comac_surface_t *
-create_target (comac_surface_t *similar_to,
-               comac_content_t content)
+create_target (comac_surface_t *similar_to, comac_content_t content)
 {
     comac_surface_t *surface;
     comac_t *cr;
 
     surface = comac_surface_create_similar (similar_to,
-                                            content,
-                                            TARGET_SIZE, TARGET_SIZE);
-    
+					    content,
+					    TARGET_SIZE,
+					    TARGET_SIZE);
+
     cr = comac_create (surface);
     comac_test_paint_checkered (cr);
     comac_destroy (cr);
@@ -62,11 +60,11 @@ create_target (comac_surface_t *similar_to,
 
 static comac_test_status_t
 check_surface_extents (const comac_test_context_t *ctx,
-                       comac_surface_t *           surface,
-                       double                      x,
-                       double                      y,
-                       double                      width,
-                       double                      height)
+		       comac_surface_t *surface,
+		       double x,
+		       double y,
+		       double width,
+		       double height)
 {
     double x1, y1, x2, y2;
     comac_t *cr;
@@ -75,24 +73,26 @@ check_surface_extents (const comac_test_context_t *ctx,
     comac_clip_extents (cr, &x1, &y1, &x2, &y2);
     comac_destroy (cr);
 
-    if (x != x1 ||
-        y != y1 ||
-        width != x2 - x1 ||
-        height != y2 - y1) {
-        comac_test_log (ctx,
-                        "surface extents should be (%g, %g, %g, %g), but are (%g, %g, %g, %g)\n",
-                        x, y, width, height,
-                        x1, y1, x2 - x1, y2 - y1);
-        return COMAC_TEST_FAILURE;
+    if (x != x1 || y != y1 || width != x2 - x1 || height != y2 - y1) {
+	comac_test_log (ctx,
+			"surface extents should be (%g, %g, %g, %g), but are "
+			"(%g, %g, %g, %g)\n",
+			x,
+			y,
+			width,
+			height,
+			x1,
+			y1,
+			x2 - x1,
+			y2 - y1);
+	return COMAC_TEST_FAILURE;
     }
 
     return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
-draw_for_size (comac_t *cr,
-               double   x,
-               double   y)
+draw_for_size (comac_t *cr, double x, double y)
 {
     comac_surface_t *target, *subsurface;
     comac_extend_t extend;
@@ -100,47 +100,53 @@ draw_for_size (comac_t *cr,
     unsigned int content;
 
     for (content = 0; content < N_CONTENTS; content++) {
-        comac_save (cr);
+	comac_save (cr);
 
-        /* create a target surface for our subsurface */
-        target = create_target (comac_get_target (cr),
-                                contents[content]);
+	/* create a target surface for our subsurface */
+	target = create_target (comac_get_target (cr), contents[content]);
 
-        /* create a subsurface that extends the target surface */
-        subsurface = comac_surface_create_for_rectangle (target, 
-                                                         x, y,
-                                                         SUB_SIZE, SUB_SIZE);
+	/* create a subsurface that extends the target surface */
+	subsurface = comac_surface_create_for_rectangle (target,
+							 x,
+							 y,
+							 SUB_SIZE,
+							 SUB_SIZE);
 
-        /* ensure the extents are ok */
-        check = check_surface_extents (comac_test_get_context (cr),
-                                       subsurface,
-                                       0, 0,
-                                       SUB_SIZE, SUB_SIZE);
-        if (result == COMAC_TEST_SUCCESS)
-          result = check;
+	/* ensure the extents are ok */
+	check = check_surface_extents (comac_test_get_context (cr),
+				       subsurface,
+				       0,
+				       0,
+				       SUB_SIZE,
+				       SUB_SIZE);
+	if (result == COMAC_TEST_SUCCESS)
+	    result = check;
 
-        /* paint this surface with all extend modes. */
-        for (extend = 0; extend < N_PADS; extend++) {
-            comac_save (cr);
+	/* paint this surface with all extend modes. */
+	for (extend = 0; extend < N_PADS; extend++) {
+	    comac_save (cr);
 
-            comac_rectangle (cr, 0, 0, PAINT_SIZE, PAINT_SIZE);
-            comac_clip (cr);
+	    comac_rectangle (cr, 0, 0, PAINT_SIZE, PAINT_SIZE);
+	    comac_clip (cr);
 
-            comac_set_source_surface (cr, subsurface, PAINT_OFFSET, PAINT_OFFSET);
-            comac_pattern_set_extend (comac_get_source (cr), extend);
-            comac_paint (cr);
+	    comac_set_source_surface (cr,
+				      subsurface,
+				      PAINT_OFFSET,
+				      PAINT_OFFSET);
+	    comac_pattern_set_extend (comac_get_source (cr), extend);
+	    comac_paint (cr);
 
-            comac_restore (cr);
+	    comac_restore (cr);
 
-            comac_translate (cr, PAINT_SIZE + TARGET_SIZE, 0);
-        }
+	    comac_translate (cr, PAINT_SIZE + TARGET_SIZE, 0);
+	}
 
-        comac_surface_destroy (subsurface);
-        comac_surface_destroy (target);
+	comac_surface_destroy (subsurface);
+	comac_surface_destroy (target);
 
-        comac_restore (cr);
+	comac_restore (cr);
 
-        comac_translate (cr, 0, PAINT_SIZE + TARGET_SIZE);
+	comac_translate (cr, 0, PAINT_SIZE + TARGET_SIZE);
     }
 
     return result;
@@ -163,15 +169,19 @@ draw (comac_t *cr, int width, int height)
 
     check = draw_for_size (cr, 0, 0);
     if (result == COMAC_TEST_SUCCESS)
-      result = check;
+	result = check;
 
     return result;
 }
 
-COMAC_TEST (subsurface_outside_target,
-	    "Tests contents of subsurfaces outside target area",
-	    "subsurface, pad", /* keywords */
-	    "target=raster", /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
-	    (PAINT_SIZE + TARGET_SIZE) * N_PADS         - TARGET_SIZE,
-            (PAINT_SIZE + TARGET_SIZE) * N_CONTENTS * 2 - TARGET_SIZE,
-	    NULL, draw)
+COMAC_TEST (
+    subsurface_outside_target,
+    "Tests contents of subsurfaces outside target area",
+    "subsurface, pad", /* keywords */
+    "target=raster",
+    /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */
+	    (PAINT_SIZE + TARGET_SIZE) * N_PADS -
+	TARGET_SIZE,
+    (PAINT_SIZE + TARGET_SIZE) * N_CONTENTS * 2 - TARGET_SIZE,
+    NULL,
+    draw)

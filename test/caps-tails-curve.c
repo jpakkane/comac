@@ -26,9 +26,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	30.
-#define SIZE		(2 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 30.
+#define SIZE (2 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr, double theta)
@@ -36,14 +36,9 @@ make_path (comac_t *cr, double theta)
     double line_width = comac_get_line_width (cr) / 4;
 
     comac_move_to (cr, 0, 0);
-    comac_rel_curve_to (cr,
-			SIZE/3, -SIZE/4,
-			SIZE/3, -SIZE/4,
-			SIZE, 0);
+    comac_rel_curve_to (cr, SIZE / 3, -SIZE / 4, SIZE / 3, -SIZE / 4, SIZE, 0);
 
-    comac_rel_line_to (cr,
-		       cos (theta) * line_width,
-		       sin (theta) * line_width);
+    comac_rel_line_to (cr, cos (theta) * line_width, sin (theta) * line_width);
 }
 
 static void
@@ -87,9 +82,7 @@ draw_caps_joins (comac_t *cr, double theta)
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    const double theta[] = {
-	-M_PI/2, -M_PI/4, 0, M_PI/8, M_PI/3, M_PI
-    };
+    const double theta[] = {-M_PI / 2, -M_PI / 4, 0, M_PI / 8, M_PI / 3, M_PI};
     unsigned int t;
 
     /* We draw in the default black, so paint white first. */
@@ -100,7 +93,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_line_width (cr, LINE_WIDTH);
 
-    for (t = 0; t < ARRAY_LENGTH(theta); t++) {
+    for (t = 0; t < ARRAY_LENGTH (theta); t++) {
 	comac_save (cr);
 	comac_translate (cr, 0, t * (SIZE + PAD) + PAD);
 	draw_caps_joins (cr, theta[t]);
@@ -120,8 +113,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (caps_tails_curve,
 	    "Test caps and joins on short tail segments",
 	    "stroke, cap, join", /* keywords */
-	    NULL, /* requirements */
-	    9 * (PAD + SIZE) + 4*PAD,
+	    NULL,		 /* requirements */
+	    9 * (PAD + SIZE) + 4 * PAD,
 	    12 * (PAD + SIZE) + PAD,
-	    NULL, draw)
-
+	    NULL,
+	    draw)

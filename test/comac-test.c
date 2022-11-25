@@ -76,11 +76,11 @@
 #define FALSE 0
 #endif
 #ifndef TRUE
-#define TRUE !FALSE
+#define TRUE ! FALSE
 #endif
 
 #if ! HAVE_ALARM || ! defined(SIGALRM)
-#define alarm(X);
+#define alarm(X) ;
 #endif
 
 static const comac_user_data_key_t _comac_test_context_key;
@@ -88,7 +88,7 @@ static const comac_user_data_key_t _comac_test_context_key;
 static void
 _xunlink (const comac_test_context_t *ctx, const char *pathname);
 
-static const char *fail_face = "", *xfail_face="", *normal_face = "";
+static const char *fail_face = "", *xfail_face = "", *normal_face = "";
 static comac_bool_t print_fail_on_stdout;
 static int comac_test_timeout = 60;
 
@@ -164,7 +164,11 @@ _comac_test_init (comac_test_context_t *ctx,
     if (getenv ("COMAC_TEST_TIMEOUT"))
 	ctx->timeout = atoi (getenv ("COMAC_TEST_TIMEOUT"));
 
-    xasprintf (&log_name, "%s/%s%s", ctx->output, ctx->test_name, COMAC_TEST_LOG_SUFFIX);
+    xasprintf (&log_name,
+	       "%s/%s%s",
+	       ctx->output,
+	       ctx->test_name,
+	       COMAC_TEST_LOG_SUFFIX);
     _xunlink (NULL, log_name);
 
     ctx->log_file = fopen (log_name, "a");
@@ -190,20 +194,22 @@ _comac_test_init (comac_test_context_t *ctx,
 	int tmp_num_targets;
 	comac_bool_t tmp_limited_targets;
 
-	ctx->targets_to_test = comac_boilerplate_get_targets (&tmp_num_targets, &tmp_limited_targets);
+	ctx->targets_to_test =
+	    comac_boilerplate_get_targets (&tmp_num_targets,
+					   &tmp_limited_targets);
 	ctx->num_targets = tmp_num_targets;
 	ctx->limited_targets = tmp_limited_targets;
 	ctx->own_targets = TRUE;
 
 	ctx->srcdir = getenv ("srcdir");
 	if (ctx->srcdir == NULL) {
-            ctx->srcdir = ".";
+	    ctx->srcdir = ".";
 #if HAVE_SYS_STAT_H
-            struct stat st;
-            if (stat ("srcdir", &st) == 0 && (st.st_mode & S_IFDIR))
-                ctx->srcdir = "srcdir";
+	    struct stat st;
+	    if (stat ("srcdir", &st) == 0 && (st.st_mode & S_IFDIR))
+		ctx->srcdir = "srcdir";
 #endif
-        }
+	}
 	ctx->refdir = getenv ("COMAC_REF_DIR");
     }
 
@@ -265,8 +271,7 @@ comac_test_fini (comac_test_context_t *ctx)
 }
 
 void
-comac_test_logv (const comac_test_context_t *ctx,
-	        const char *fmt, va_list va)
+comac_test_logv (const comac_test_context_t *ctx, const char *fmt, va_list va)
 {
     FILE *file = ctx && ctx->log_file ? ctx->log_file : stderr;
     vfprintf (file, fmt, va);
@@ -286,8 +291,10 @@ static void
 _xunlink (const comac_test_context_t *ctx, const char *pathname)
 {
     if (unlink (pathname) < 0 && errno != ENOENT) {
-	comac_test_log (ctx, "Error: Cannot remove %s: %s\n",
-			pathname, strerror (errno));
+	comac_test_log (ctx,
+			"Error: Cannot remove %s: %s\n",
+			pathname,
+			strerror (errno));
 	exit (1);
     }
 }
@@ -305,8 +312,9 @@ comac_test_reference_filename (const comac_test_context_t *ctx,
     char *ref_name = NULL;
 
     /* First look for a previous build for comparison. */
-    if (ctx->refdir != NULL && strcmp(suffix, COMAC_TEST_REF_SUFFIX) == 0) {
-	xasprintf (&ref_name, "%s/%s" COMAC_TEST_OUT_SUFFIX "%s",
+    if (ctx->refdir != NULL && strcmp (suffix, COMAC_TEST_REF_SUFFIX) == 0) {
+	xasprintf (&ref_name,
+		   "%s/%s" COMAC_TEST_OUT_SUFFIX "%s",
 		   ctx->refdir,
 		   base_name,
 		   extension);
@@ -318,7 +326,8 @@ comac_test_reference_filename (const comac_test_context_t *ctx,
 
     if (target_name != NULL) {
 	/* Next look for a target/format-specific reference image. */
-	xasprintf (&ref_name, "%s/reference/%s.%s.%s%s%s",
+	xasprintf (&ref_name,
+		   "%s/reference/%s.%s.%s%s%s",
 		   ctx->srcdir,
 		   test_name,
 		   target_name,
@@ -331,7 +340,8 @@ comac_test_reference_filename (const comac_test_context_t *ctx,
 	    goto done;
 
 	/* Next, look for target-specific reference image. */
-	xasprintf (&ref_name, "%s/reference/%s.%s%s%s",
+	xasprintf (&ref_name,
+		   "%s/reference/%s.%s%s%s",
 		   ctx->srcdir,
 		   test_name,
 		   target_name,
@@ -345,7 +355,8 @@ comac_test_reference_filename (const comac_test_context_t *ctx,
 
     if (base_target_name != NULL) {
 	/* Next look for a base/format-specific reference image. */
-	xasprintf (&ref_name, "%s/reference/%s.%s.%s%s%s",
+	xasprintf (&ref_name,
+		   "%s/reference/%s.%s.%s%s%s",
 		   ctx->srcdir,
 		   test_name,
 		   base_target_name,
@@ -358,7 +369,8 @@ comac_test_reference_filename (const comac_test_context_t *ctx,
 	    goto done;
 
 	/* Next, look for base-specific reference image. */
-	xasprintf (&ref_name, "%s/reference/%s.%s%s%s",
+	xasprintf (&ref_name,
+		   "%s/reference/%s.%s%s%s",
 		   ctx->srcdir,
 		   test_name,
 		   base_target_name,
@@ -371,7 +383,8 @@ comac_test_reference_filename (const comac_test_context_t *ctx,
     }
 
     /* Next, look for format-specific reference image. */
-    xasprintf (&ref_name, "%s/reference/%s.%s%s%s",
+    xasprintf (&ref_name,
+	       "%s/reference/%s.%s%s%s",
 	       ctx->srcdir,
 	       test_name,
 	       format,
@@ -383,7 +396,9 @@ comac_test_reference_filename (const comac_test_context_t *ctx,
 	goto done;
 
     /* Finally, look for the standard reference image. */
-    xasprintf (&ref_name, "%s/reference/%s%s%s", ctx->srcdir,
+    xasprintf (&ref_name,
+	       "%s/reference/%s%s%s",
+	       ctx->srcdir,
 	       test_name,
 	       suffix,
 	       extension);
@@ -404,7 +419,7 @@ comac_test_target_has_similar (const comac_test_context_t *ctx,
 {
     comac_surface_t *surface;
     comac_test_similar_t has_similar;
-    comac_t * cr;
+    comac_t *cr;
     comac_surface_t *similar;
     comac_status_t status;
     void *closure;
@@ -417,35 +432,40 @@ comac_test_target_has_similar (const comac_test_context_t *ctx,
     if (getenv ("COMAC_TEST_IGNORE_SIMILAR"))
 	return DIRECT;
 
-    xasprintf (&path, "%s/%s",
+    xasprintf (&path,
+	       "%s/%s",
 	       comac_test_mkdir (ctx->output) ? ctx->output : ".",
 	       ctx->test_name);
 
     has_similar = DIRECT;
     do {
 	do {
-	    surface = (target->create_surface) (path,
-						target->content,
-						ctx->test->width,
-						ctx->test->height,
-						ctx->test->width* NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
-						ctx->test->height* NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
-						COMAC_BOILERPLATE_MODE_TEST,
-						&closure);
+	    surface = (target->create_surface) (
+		path,
+		target->content,
+		ctx->test->width,
+		ctx->test->height,
+		ctx->test->width * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
+		ctx->test->height * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
+		COMAC_BOILERPLATE_MODE_TEST,
+		&closure);
 	    if (surface == NULL)
 		goto out;
-	} while (comac_test_malloc_failure (ctx, comac_surface_status (surface)));
+	} while (
+	    comac_test_malloc_failure (ctx, comac_surface_status (surface)));
 
 	if (comac_surface_status (surface))
 	    goto out;
 
 	cr = comac_create (surface);
-	comac_push_group_with_content (cr,
-				       comac_boilerplate_content (target->content));
+	comac_push_group_with_content (
+	    cr,
+	    comac_boilerplate_content (target->content));
 	similar = comac_get_group_target (cr);
 	status = comac_surface_status (similar);
 
-	if (comac_surface_get_type (similar) == comac_surface_get_type (surface))
+	if (comac_surface_get_type (similar) ==
+	    comac_surface_get_type (surface))
 	    has_similar = SIMILAR;
 	else
 	    has_similar = DIRECT;
@@ -475,9 +495,10 @@ _comac_test_flatten_reference_image (comac_test_context_t *ctx,
     if (ctx->ref_image_flattened != NULL)
 	return ctx->ref_image_flattened;
 
-    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-					  comac_image_surface_get_width (ctx->ref_image),
-					  comac_image_surface_get_height (ctx->ref_image));
+    surface = comac_image_surface_create (
+	COMAC_FORMAT_ARGB32,
+	comac_image_surface_get_width (ctx->ref_image),
+	comac_image_surface_get_height (ctx->ref_image));
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
@@ -527,7 +548,7 @@ comac_test_get_reference_image (comac_test_context_t *ctx,
 
 static comac_bool_t
 comac_test_file_is_older (const char *filename,
-	                  char **ref_filenames,
+			  char **ref_filenames,
 			  int num_ref_filenames)
 {
 #if HAVE_SYS_STAT_H
@@ -555,8 +576,7 @@ comac_test_file_is_older (const char *filename,
 }
 
 static comac_bool_t
-comac_test_files_equal (const char *test_filename,
-			const char *pass_filename)
+comac_test_files_equal (const char *test_filename, const char *pass_filename)
 {
     FILE *test, *pass;
     int t, p;
@@ -589,8 +609,7 @@ comac_test_files_equal (const char *test_filename,
 }
 
 static comac_bool_t
-comac_test_copy_file (const char *src_filename,
-		      const char *dst_filename)
+comac_test_copy_file (const char *src_filename, const char *dst_filename)
 {
     FILE *src, *dst;
     int c;
@@ -623,11 +642,11 @@ comac_test_copy_file (const char *src_filename,
 }
 
 static comac_test_status_t
-comac_test_for_target (comac_test_context_t		 *ctx,
-		       const comac_boilerplate_target_t	 *target,
-		       int				  dev_offset,
-		       int				  dev_scale,
-		       comac_bool_t                       similar)
+comac_test_for_target (comac_test_context_t *ctx,
+		       const comac_boilerplate_target_t *target,
+		       int dev_offset,
+		       int dev_scale,
+		       comac_bool_t similar)
 {
     comac_status_t finish_status;
     comac_surface_t *surface = NULL;
@@ -671,18 +690,19 @@ comac_test_for_target (comac_test_context_t		 *ctx,
     else
 	scale_str = (char *) empty_str;
 
-    xasprintf (&base_name, "%s.%s.%s%s%s%s",
+    xasprintf (&base_name,
+	       "%s.%s.%s%s%s%s",
 	       ctx->test_name,
 	       target->name,
 	       format,
 	       similar ? ".similar" : "",
 	       offset_str,
-               scale_str);
+	       scale_str);
 
     if (offset_str != empty_str)
-      free (offset_str);
+	free (offset_str);
     if (scale_str != empty_str)
-      free (scale_str);
+	free (scale_str);
 
     ref_png_path = comac_test_reference_filename (ctx,
 						  base_name,
@@ -709,27 +729,33 @@ comac_test_for_target (comac_test_context_t		 *ctx,
 						    COMAC_TEST_XFAIL_SUFFIX,
 						    COMAC_TEST_PNG_EXTENSION);
 
-    base_ref_png_path = comac_test_reference_filename (ctx,
-						  base_name,
-						  ctx->test_name,
-						  NULL, NULL,
-						  format,
-						  COMAC_TEST_REF_SUFFIX,
-						  COMAC_TEST_PNG_EXTENSION);
-    base_new_png_path = comac_test_reference_filename (ctx,
-						  base_name,
-						  ctx->test_name,
-						  NULL, NULL,
-						  format,
-						  COMAC_TEST_NEW_SUFFIX,
-						  COMAC_TEST_PNG_EXTENSION);
-    base_xfail_png_path = comac_test_reference_filename (ctx,
-						    base_name,
-						    ctx->test_name,
-						    NULL, NULL,
-						    format,
-						    COMAC_TEST_XFAIL_SUFFIX,
-						    COMAC_TEST_PNG_EXTENSION);
+    base_ref_png_path =
+	comac_test_reference_filename (ctx,
+				       base_name,
+				       ctx->test_name,
+				       NULL,
+				       NULL,
+				       format,
+				       COMAC_TEST_REF_SUFFIX,
+				       COMAC_TEST_PNG_EXTENSION);
+    base_new_png_path =
+	comac_test_reference_filename (ctx,
+				       base_name,
+				       ctx->test_name,
+				       NULL,
+				       NULL,
+				       format,
+				       COMAC_TEST_NEW_SUFFIX,
+				       COMAC_TEST_PNG_EXTENSION);
+    base_xfail_png_path =
+	comac_test_reference_filename (ctx,
+				       base_name,
+				       ctx->test_name,
+				       NULL,
+				       NULL,
+				       format,
+				       COMAC_TEST_XFAIL_SUFFIX,
+				       COMAC_TEST_PNG_EXTENSION);
 
     if (target->file_extension != NULL) {
 	ref_path = comac_test_reference_filename (ctx,
@@ -759,7 +785,8 @@ comac_test_for_target (comac_test_context_t		 *ctx,
     }
 
     have_output_dir = comac_test_mkdir (ctx->output);
-    xasprintf (&base_path, "%s/%s",
+    xasprintf (&base_path,
+	       "%s/%s",
 	       have_output_dir ? ctx->output : ".",
 	       base_name);
     xasprintf (&out_png_path, "%s" COMAC_TEST_OUT_PNG, base_path);
@@ -770,17 +797,21 @@ comac_test_for_target (comac_test_context_t		 *ctx,
 
 	required = target->is_vector ? "target=raster" : "target=vector";
 	if (strstr (ctx->test->requirements, required) != NULL) {
-	    comac_test_log (ctx, "Error: Skipping for %s target %s\n",
+	    comac_test_log (ctx,
+			    "Error: Skipping for %s target %s\n",
 			    target->is_vector ? "vector" : "raster",
 			    target->name);
 	    ret = COMAC_TEST_UNTESTED;
 	    goto UNWIND_STRINGS;
 	}
 
-	required = target->is_recording ? "target=!recording" : "target=recording";
+	required =
+	    target->is_recording ? "target=!recording" : "target=recording";
 	if (strstr (ctx->test->requirements, required) != NULL) {
-	    comac_test_log (ctx, "Error: Skipping for %s target %s\n",
-			    target->is_recording ? "recording" : "non-recording",
+	    comac_test_log (ctx,
+			    "Error: Skipping for %s target %s\n",
+			    target->is_recording ? "recording"
+						 : "non-recording",
 			    target->name);
 	    ret = COMAC_TEST_UNTESTED;
 	    goto UNWIND_STRINGS;
@@ -817,13 +848,15 @@ REPEAT:
 
     /* Run the actual drawing code. */
     ret = COMAC_TEST_SUCCESS;
-    surface = (target->create_surface) (base_path,
-					target->content,
-					width, height,
-					ctx->test->width * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
-					ctx->test->height * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
-					COMAC_BOILERPLATE_MODE_TEST,
-					&closure);
+    surface = (target->create_surface) (
+	base_path,
+	target->content,
+	width,
+	height,
+	ctx->test->width * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
+	ctx->test->height * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
+	COMAC_BOILERPLATE_MODE_TEST,
+	&closure);
     if (surface == NULL) {
 	comac_test_log (ctx, "Error: Failed to set %s target\n", target->name);
 	ret = COMAC_TEST_UNTESTED;
@@ -833,16 +866,17 @@ REPEAT:
 #if HAVE_MEMFAULT
     if (ctx->malloc_failure &&
 	MEMFAULT_COUNT_FAULTS () - last_fault_count > 0 &&
-	comac_surface_status (surface) == COMAC_STATUS_NO_MEMORY)
-    {
+	comac_surface_status (surface) == COMAC_STATUS_NO_MEMORY) {
 	goto REPEAT;
     }
 #endif
 
     if (comac_surface_status (surface)) {
 	MF (MEMFAULT_PRINT_FAULTS ());
-	comac_test_log (ctx, "Error: Created an error surface: %s\n",
-			comac_status_to_string (comac_surface_status (surface)));
+	comac_test_log (
+	    ctx,
+	    "Error: Created an error surface: %s\n",
+	    comac_status_to_string (comac_surface_status (surface)));
 	ret = COMAC_TEST_FAILURE;
 	goto UNWIND_STRINGS;
     }
@@ -850,8 +884,10 @@ REPEAT:
     /* Check that we created a surface of the expected type. */
     if (comac_surface_get_type (surface) != target->expected_type) {
 	MF (MEMFAULT_PRINT_FAULTS ());
-	comac_test_log (ctx, "Error: Created surface is of type %d (expected %d)\n",
-			comac_surface_get_type (surface), target->expected_type);
+	comac_test_log (ctx,
+			"Error: Created surface is of type %d (expected %d)\n",
+			comac_surface_get_type (surface),
+			target->expected_type);
 	ret = COMAC_TEST_UNTESTED;
 	goto UNWIND_SURFACE;
     }
@@ -863,8 +899,10 @@ REPEAT:
 
     if (comac_surface_get_content (surface) != expected_content) {
 	MF (MEMFAULT_PRINT_FAULTS ());
-	comac_test_log (ctx, "Error: Created surface has content %d (expected %d)\n",
-			comac_surface_get_content (surface), expected_content);
+	comac_test_log (ctx,
+			"Error: Created surface has content %d (expected %d)\n",
+			comac_surface_get_content (surface),
+			expected_content);
 	ret = COMAC_TEST_FAILURE;
 	goto UNWIND_SURFACE;
     }
@@ -872,8 +910,7 @@ REPEAT:
     if (comac_surface_set_user_data (surface,
 				     &comac_boilerplate_output_basename_key,
 				     base_path,
-				     NULL))
-    {
+				     NULL)) {
 #if HAVE_MEMFAULT
 	comac_surface_destroy (surface);
 
@@ -891,7 +928,10 @@ REPEAT:
     comac_surface_set_device_scale (surface, dev_scale, dev_scale);
 
     cr = comac_create (surface);
-    if (comac_set_user_data (cr, &_comac_test_context_key, (void*) ctx, NULL)) {
+    if (comac_set_user_data (cr,
+			     &_comac_test_context_key,
+			     (void *) ctx,
+			     NULL)) {
 #if HAVE_MEMFAULT
 	comac_destroy (cr);
 	comac_surface_destroy (surface);
@@ -916,10 +956,11 @@ REPEAT:
     comac_paint (cr);
     comac_restore (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
-    
+
     /* Set all components of font_options to avoid backend differences
      * and reduce number of needed reference images. */
     font_options = comac_font_options_create ();
@@ -949,8 +990,7 @@ REPEAT:
 	MEMFAULT_COUNT_FAULTS () - last_fault_count > 0 &&
 	(test_status == COMAC_TEST_NO_MEMORY ||
 	 comac_status (cr) == COMAC_STATUS_NO_MEMORY ||
-	 comac_surface_status (surface) == COMAC_STATUS_NO_MEMORY))
-    {
+	 comac_surface_status (surface) == COMAC_STATUS_NO_MEMORY)) {
 	comac_destroy (cr);
 	comac_surface_destroy (surface);
 	if (target->cleanup)
@@ -977,8 +1017,7 @@ REPEAT:
 
 #if HAVE_MEMFAULT
     if (MEMFAULT_COUNT_FAULTS () - last_fault_count > 0 &&
-	MEMFAULT_HAS_FAULTS ())
-    {
+	MEMFAULT_HAS_FAULTS ()) {
 	VALGRIND_PRINTF ("Unreported memfaults...");
 	MEMFAULT_PRINT_FAULTS ();
     }
@@ -1004,8 +1043,7 @@ REPEAT:
 
 	if (ctx->malloc_failure &&
 	    MEMFAULT_COUNT_FAULTS () - last_fault_count > 0 &&
-	    finish_status == COMAC_STATUS_NO_MEMORY)
-	{
+	    finish_status == COMAC_STATUS_NO_MEMORY) {
 	    comac_destroy (cr);
 	    comac_surface_destroy (surface);
 	    if (target->cleanup)
@@ -1023,7 +1061,8 @@ REPEAT:
 	}
 #endif
 	if (finish_status) {
-	    comac_test_log (ctx, "Error: Failed to finish surface: %s\n",
+	    comac_test_log (ctx,
+			    "Error: Failed to finish surface: %s\n",
 			    comac_status_to_string (finish_status));
 	    ret = COMAC_TEST_FAILURE;
 	    goto UNWIND_COMAC;
@@ -1039,27 +1078,30 @@ REPEAT:
 	comac_status_t diff_status;
 
 	if (ref_png_path == NULL) {
-	    comac_test_log (ctx, "Error: Cannot find reference image for %s\n",
+	    comac_test_log (ctx,
+			    "Error: Cannot find reference image for %s\n",
 			    base_name);
 
 	    /* we may be running this test to generate reference images */
 	    _xunlink (ctx, out_png_path);
 	    /* be more generous as we may need to use external renderers */
 	    alarm (4 * ctx->timeout);
-	    test_image = target->get_image_surface (surface, 0,
-		                                    ctx->test->width,
+	    test_image = target->get_image_surface (surface,
+						    0,
+						    ctx->test->width,
 						    ctx->test->height);
 	    alarm (0);
 	    diff_status = comac_surface_write_to_png (test_image, out_png_path);
 	    comac_surface_destroy (test_image);
 	    if (diff_status) {
-		if (comac_surface_status (test_image) == COMAC_STATUS_INVALID_STATUS)
+		if (comac_surface_status (test_image) ==
+		    COMAC_STATUS_INVALID_STATUS)
 		    ret = COMAC_TEST_CRASHED;
 		else
 		    ret = COMAC_TEST_FAILURE;
 		comac_test_log (ctx,
-			        "Error: Failed to write output image: %s\n",
-			        comac_status_to_string (diff_status));
+				"Error: Failed to write output image: %s\n",
+				comac_status_to_string (diff_status));
 	    }
 	    have_output = TRUE;
 
@@ -1080,23 +1122,27 @@ REPEAT:
 		base_xfail_png_path,
 	    };
 
-	    xasprintf (&test_filename, "%s.out%s",
-		       base_path, target->file_extension);
-	    xasprintf (&pass_filename, "%s.pass%s",
-		       base_path, target->file_extension);
-	    xasprintf (&fail_filename, "%s.fail%s",
-		       base_path, target->file_extension);
+	    xasprintf (&test_filename,
+		       "%s.out%s",
+		       base_path,
+		       target->file_extension);
+	    xasprintf (&pass_filename,
+		       "%s.pass%s",
+		       base_path,
+		       target->file_extension);
+	    xasprintf (&fail_filename,
+		       "%s.fail%s",
+		       base_path,
+		       target->file_extension);
 
 	    if (comac_test_file_is_older (pass_filename,
 					  filenames,
-					  ARRAY_LENGTH (filenames)))
-	    {
+					  ARRAY_LENGTH (filenames))) {
 		_xunlink (ctx, pass_filename);
 	    }
 	    if (comac_test_file_is_older (fail_filename,
 					  filenames,
-					  ARRAY_LENGTH (filenames)))
-	    {
+					  ARRAY_LENGTH (filenames))) {
 		_xunlink (ctx, fail_filename);
 	    }
 
@@ -1107,7 +1153,8 @@ REPEAT:
 		goto UNWIND_COMAC;
 	    }
 	    if (comac_test_files_equal (out_png_path, new_path)) {
-		comac_test_log (ctx, "Vector surface matches current failure.\n");
+		comac_test_log (ctx,
+				"Vector surface matches current failure.\n");
 		have_output = FALSE;
 		ret = COMAC_TEST_NEW;
 		goto UNWIND_COMAC;
@@ -1138,14 +1185,18 @@ REPEAT:
 
 	/* be more generous as we may need to use external renderers */
 	alarm (4 * ctx->timeout);
-	test_image = target->get_image_surface (surface, 0,
-					        ctx->test->width,
+	test_image = target->get_image_surface (surface,
+						0,
+						ctx->test->width,
 						ctx->test->height);
 	alarm (0);
 	if (comac_surface_status (test_image)) {
-	    comac_test_log (ctx, "Error: Failed to extract image: %s\n",
-			    comac_status_to_string (comac_surface_status (test_image)));
-	    if (comac_surface_status (test_image) == COMAC_STATUS_INVALID_STATUS)
+	    comac_test_log (
+		ctx,
+		"Error: Failed to extract image: %s\n",
+		comac_status_to_string (comac_surface_status (test_image)));
+	    if (comac_surface_status (test_image) ==
+		COMAC_STATUS_INVALID_STATUS)
 		ret = COMAC_TEST_CRASHED;
 	    else
 		ret = COMAC_TEST_FAILURE;
@@ -1156,7 +1207,8 @@ REPEAT:
 	_xunlink (ctx, out_png_path);
 	diff_status = comac_surface_write_to_png (test_image, out_png_path);
 	if (diff_status) {
-	    comac_test_log (ctx, "Error: Failed to write output image: %s\n",
+	    comac_test_log (ctx,
+			    "Error: Failed to write output image: %s\n",
 			    comac_status_to_string (diff_status));
 	    comac_surface_destroy (test_image);
 	    ret = COMAC_TEST_FAILURE;
@@ -1181,41 +1233,44 @@ REPEAT:
 
 	    if (comac_test_file_is_older (pass_filename,
 					  filenames,
-					  ARRAY_LENGTH (filenames)))
-	    {
+					  ARRAY_LENGTH (filenames))) {
 		_xunlink (ctx, pass_filename);
 	    }
 	    if (comac_test_file_is_older (fail_filename,
 					  filenames,
-					  ARRAY_LENGTH (filenames)))
-	    {
+					  ARRAY_LENGTH (filenames))) {
 		_xunlink (ctx, fail_filename);
 	    }
 
 	    if (comac_test_files_equal (test_filename, pass_filename)) {
 		comac_test_log (ctx, "PNG file exactly matches last pass.\n");
-                have_result = TRUE;
+		have_result = TRUE;
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_SUCCESS;
 		goto UNWIND_COMAC;
 	    }
 	    if (comac_test_files_equal (out_png_path, ref_png_path)) {
-		comac_test_log (ctx, "PNG file exactly matches reference image.\n");
-                have_result = TRUE;
+		comac_test_log (ctx,
+				"PNG file exactly matches reference image.\n");
+		have_result = TRUE;
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_SUCCESS;
 		goto UNWIND_COMAC;
 	    }
 	    if (comac_test_files_equal (out_png_path, new_png_path)) {
-		comac_test_log (ctx, "PNG file exactly matches current failure image.\n");
-                have_result = TRUE;
+		comac_test_log (
+		    ctx,
+		    "PNG file exactly matches current failure image.\n");
+		have_result = TRUE;
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_NEW;
 		goto UNWIND_COMAC;
 	    }
 	    if (comac_test_files_equal (out_png_path, xfail_png_path)) {
-		comac_test_log (ctx, "PNG file exactly matches known failure image.\n");
-                have_result = TRUE;
+		comac_test_log (
+		    ctx,
+		    "PNG file exactly matches known failure image.\n");
+		have_result = TRUE;
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_XFAILURE;
 		goto UNWIND_COMAC;
@@ -1229,21 +1284,26 @@ REPEAT:
 	    }
 	} else {
 	    if (comac_test_files_equal (out_png_path, ref_png_path)) {
-		comac_test_log (ctx, "PNG file exactly matches reference image.\n");
+		comac_test_log (ctx,
+				"PNG file exactly matches reference image.\n");
 		have_result = TRUE;
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_SUCCESS;
 		goto UNWIND_COMAC;
 	    }
 	    if (comac_test_files_equal (out_png_path, new_png_path)) {
-		comac_test_log (ctx, "PNG file exactly matches current failure image.\n");
+		comac_test_log (
+		    ctx,
+		    "PNG file exactly matches current failure image.\n");
 		have_result = TRUE;
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_NEW;
 		goto UNWIND_COMAC;
 	    }
 	    if (comac_test_files_equal (out_png_path, xfail_png_path)) {
-		comac_test_log (ctx, "PNG file exactly matches known failure image.\n");
+		comac_test_log (
+		    ctx,
+		    "PNG file exactly matches known failure image.\n");
 		have_result = TRUE;
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_XFAILURE;
@@ -1274,12 +1334,16 @@ REPEAT:
 	}
 
 	/* first compare against the ideal reference */
-	ref_image = comac_test_get_reference_image (ctx, base_ref_png_path,
-						    target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
+	ref_image = comac_test_get_reference_image (
+	    ctx,
+	    base_ref_png_path,
+	    target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
 	if (comac_surface_status (ref_image)) {
-	    comac_test_log (ctx, "Error: Cannot open reference image for %s: %s\n",
-			    base_ref_png_path,
-			    comac_status_to_string (comac_surface_status (ref_image)));
+	    comac_test_log (
+		ctx,
+		"Error: Cannot open reference image for %s: %s\n",
+		base_ref_png_path,
+		comac_status_to_string (comac_surface_status (ref_image)));
 	    comac_surface_destroy (test_image);
 	    ret = COMAC_TEST_FAILURE;
 	    goto UNWIND_COMAC;
@@ -1290,58 +1354,55 @@ REPEAT:
 						 ctx->test->height);
 
 	cmp_png_path = base_ref_png_path;
-	diff_status = image_diff (ctx,
-				  test_image, ref_image, diff_image,
-				  &result);
+	diff_status =
+	    image_diff (ctx, test_image, ref_image, diff_image, &result);
 	_xunlink (ctx, diff_png_path);
 	if (diff_status ||
-            image_diff_is_failure (&result, target->error_tolerance))
-	{
+	    image_diff_is_failure (&result, target->error_tolerance)) {
 	    /* that failed, so check against the specific backend */
-	    ref_image = comac_test_get_reference_image (ctx, ref_png_path,
-							target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
+	    ref_image = comac_test_get_reference_image (
+		ctx,
+		ref_png_path,
+		target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
 	    if (comac_surface_status (ref_image)) {
-		comac_test_log (ctx, "Error: Cannot open reference image for %s: %s\n",
-				ref_png_path,
-				comac_status_to_string (comac_surface_status (ref_image)));
+		comac_test_log (
+		    ctx,
+		    "Error: Cannot open reference image for %s: %s\n",
+		    ref_png_path,
+		    comac_status_to_string (comac_surface_status (ref_image)));
 		comac_surface_destroy (test_image);
 		ret = COMAC_TEST_FAILURE;
 		goto UNWIND_COMAC;
 	    }
 
 	    cmp_png_path = ref_png_path;
-	    diff_status = image_diff (ctx,
-				      test_image, ref_image,
-				      diff_image,
-				      &result);
-	    if (diff_status)
-	    {
-		comac_test_log (ctx, "Error: Failed to compare images: %s\n",
+	    diff_status =
+		image_diff (ctx, test_image, ref_image, diff_image, &result);
+	    if (diff_status) {
+		comac_test_log (ctx,
+				"Error: Failed to compare images: %s\n",
 				comac_status_to_string (diff_status));
 		ret = COMAC_TEST_FAILURE;
-	    }
-	    else if (image_diff_is_failure (&result, target->error_tolerance))
-	    {
+	    } else if (image_diff_is_failure (&result,
+					      target->error_tolerance)) {
 		ret = COMAC_TEST_FAILURE;
 
-		diff_status = comac_surface_write_to_png (diff_image,
-							  diff_png_path);
+		diff_status =
+		    comac_surface_write_to_png (diff_image, diff_png_path);
 		if (diff_status) {
-		    comac_test_log (ctx, "Error: Failed to write differences image: %s\n",
-				    comac_status_to_string (diff_status));
+		    comac_test_log (
+			ctx,
+			"Error: Failed to write differences image: %s\n",
+			comac_status_to_string (diff_status));
 		} else {
 		    have_result = TRUE;
 		}
 
 		comac_test_copy_file (test_filename, fail_filename);
-	    }
-	    else
-	    { /* success */
+	    } else { /* success */
 		comac_test_copy_file (test_filename, pass_filename);
 	    }
-	}
-	else
-	{ /* success */
+	} else { /* success */
 	    comac_test_copy_file (test_filename, pass_filename);
 	}
 
@@ -1361,24 +1422,21 @@ REPEAT:
 					       COMAC_TEST_OUT_SUFFIX,
 					       COMAC_TEST_PNG_EXTENSION);
 	    if (image_out_path != NULL) {
-		if (comac_test_files_equal (out_png_path,
-					    image_out_path))
-		{
+		if (comac_test_files_equal (out_png_path, image_out_path)) {
 		    ret = COMAC_TEST_XFAILURE;
-		}
-		else
-		{
+		} else {
 		    ref_image =
 			comac_image_surface_create_from_png (image_out_path);
-		    if (comac_surface_status (ref_image) == COMAC_STATUS_SUCCESS)
-		    {
+		    if (comac_surface_status (ref_image) ==
+			COMAC_STATUS_SUCCESS) {
 			diff_status = image_diff (ctx,
-						  test_image, ref_image,
+						  test_image,
+						  ref_image,
 						  diff_image,
 						  &result);
 			if (diff_status == COMAC_STATUS_SUCCESS &&
-			    !image_diff_is_failure (&result, target->error_tolerance))
-			{
+			    ! image_diff_is_failure (&result,
+						     target->error_tolerance)) {
 			    ret = COMAC_TEST_XFAILURE;
 			}
 
@@ -1395,7 +1453,9 @@ REPEAT:
     }
 
     if (comac_status (cr) != COMAC_STATUS_SUCCESS) {
-	comac_test_log (ctx, "Error: Function under test left comac status in an error state: %s\n",
+	comac_test_log (ctx,
+			"Error: Function under test left comac status in an "
+			"error state: %s\n",
 			comac_status_to_string (comac_status (cr)));
 	ret = COMAC_TEST_ERROR;
 	goto UNWIND_COMAC;
@@ -1446,7 +1506,8 @@ UNWIND_SURFACE:
 	}
 	comac_test_log (ctx,
 			"REFERENCE: %s\nDIFFERENCE: %s\n",
-			cmp_png_path, diff_png_path);
+			cmp_png_path,
+			diff_png_path);
     }
 
 UNWIND_STRINGS:
@@ -1486,7 +1547,8 @@ comac_test_status_t
 _comac_test_context_run_for_target (comac_test_context_t *ctx,
 				    const comac_boilerplate_target_t *target,
 				    comac_bool_t similar,
-				    int dev_offset, int dev_scale)
+				    int dev_offset,
+				    int dev_scale)
 {
     comac_test_status_t status;
 
@@ -1501,24 +1563,28 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 		    ctx->test_name,
 		    similar ? " (similar) " : "",
 		    target->name,
-		    dev_offset, dev_scale);
+		    dev_offset,
+		    dev_scale);
 
-    printf ("%s.%s.%s [%dx%d]%s:\t", ctx->test_name, target->name,
+    printf ("%s.%s.%s [%dx%d]%s:\t",
+	    ctx->test_name,
+	    target->name,
 	    comac_boilerplate_content_name (target->content),
-	    dev_offset, dev_scale,
-	    similar ? " (similar)": "");
+	    dev_offset,
+	    dev_scale,
+	    similar ? " (similar)" : "");
     fflush (stdout);
 
 #if defined(HAVE_SIGNAL_H) && defined(HAVE_SETJMP_H)
     if (! RUNNING_ON_VALGRIND) {
-	void (* volatile old_segfault_handler)(int);
-	void (* volatile old_segfpe_handler)(int);
+	void (*volatile old_segfault_handler) (int);
+	void (*volatile old_segfpe_handler) (int);
 #ifdef SIGPIPE
-	void (* volatile old_sigpipe_handler)(int);
+	void (*volatile old_sigpipe_handler) (int);
 #endif
-	void (* volatile old_sigabrt_handler)(int);
+	void (*volatile old_sigabrt_handler) (int);
 #ifdef SIGALRM
-	void (* volatile old_sigalrm_handler)(int);
+	void (*volatile old_sigalrm_handler) (int);
 #endif
 
 	/* Set up a checkpoint to get back to in case of segfaults. */
@@ -1538,7 +1604,11 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 	old_sigalrm_handler = signal (SIGALRM, segfault_handler);
 #endif
 	if (0 == setjmp (jmpbuf))
-	    status = comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
+	    status = comac_test_for_target (ctx,
+					    target,
+					    dev_offset,
+					    dev_scale,
+					    similar);
 	else
 	    status = COMAC_TEST_CRASHED;
 #ifdef SIGSEGV
@@ -1557,17 +1627,23 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 	signal (SIGALRM, old_sigalrm_handler);
 #endif
     } else {
-	status = comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
+	status =
+	    comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
     }
 #else
-    status = comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
+    status =
+	comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
 #endif
 
     comac_test_log (ctx,
-		    "TEST: %s TARGET: %s FORMAT: %s OFFSET: %d SCALE: %d SIMILAR: %d RESULT: ",
-		    ctx->test_name, target->name,
+		    "TEST: %s TARGET: %s FORMAT: %s OFFSET: %d SCALE: %d "
+		    "SIMILAR: %d RESULT: ",
+		    ctx->test_name,
+		    target->name,
 		    comac_boilerplate_content_name (target->content),
-		    dev_offset, dev_scale, similar);
+		    dev_offset,
+		    dev_scale,
+		    similar);
     switch (status) {
     case COMAC_TEST_SUCCESS:
 	printf ("PASS\n");
@@ -1589,10 +1665,16 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 	    fflush (stdout);
 	}
 	comac_test_log (ctx, "CRASHED\n");
-	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%s!!!CRASHED!!!%s\n",
-		 ctx->test_name, target->name,
-		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
-		 fail_face, normal_face);
+	fprintf (stderr,
+		 "%s.%s.%s [%dx%d]%s:\t%s!!!CRASHED!!!%s\n",
+		 ctx->test_name,
+		 target->name,
+		 comac_boilerplate_content_name (target->content),
+		 dev_offset,
+		 dev_scale,
+		 similar ? " (similar)" : "",
+		 fail_face,
+		 normal_face);
 	break;
 
     case COMAC_TEST_ERROR:
@@ -1604,10 +1686,16 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 	    fflush (stdout);
 	}
 	comac_test_log (ctx, "ERROR\n");
-	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%s!!!ERROR!!!%s\n",
-		 ctx->test_name, target->name,
-		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
-		 fail_face, normal_face);
+	fprintf (stderr,
+		 "%s.%s.%s [%dx%d]%s:\t%s!!!ERROR!!!%s\n",
+		 ctx->test_name,
+		 target->name,
+		 comac_boilerplate_content_name (target->content),
+		 dev_offset,
+		 dev_scale,
+		 similar ? " (similar)" : "",
+		 fail_face,
+		 normal_face);
 	break;
 
     case COMAC_TEST_XFAILURE:
@@ -1618,10 +1706,16 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 	    printf ("\r");
 	    fflush (stdout);
 	}
-	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%sXFAIL%s\n",
-		 ctx->test_name, target->name,
-		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
-		 xfail_face, normal_face);
+	fprintf (stderr,
+		 "%s.%s.%s [%dx%d]%s:\t%sXFAIL%s\n",
+		 ctx->test_name,
+		 target->name,
+		 comac_boilerplate_content_name (target->content),
+		 dev_offset,
+		 dev_scale,
+		 similar ? " (similar)" : "",
+		 xfail_face,
+		 normal_face);
 	comac_test_log (ctx, "XFAIL\n");
 	break;
 
@@ -1633,10 +1727,16 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 	    printf ("\r");
 	    fflush (stdout);
 	}
-	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%sNEW%s\n",
-		 ctx->test_name, target->name,
-		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
-		 fail_face, normal_face);
+	fprintf (stderr,
+		 "%s.%s.%s [%dx%d]%s:\t%sNEW%s\n",
+		 ctx->test_name,
+		 target->name,
+		 comac_boilerplate_content_name (target->content),
+		 dev_offset,
+		 dev_scale,
+		 similar ? " (similar)" : "",
+		 fail_face,
+		 normal_face);
 	comac_test_log (ctx, "NEW\n");
 	break;
 
@@ -1649,10 +1749,16 @@ _comac_test_context_run_for_target (comac_test_context_t *ctx,
 	    printf ("\r");
 	    fflush (stdout);
 	}
-	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%sFAIL%s\n",
-		 ctx->test_name, target->name,
-		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
-		 fail_face, normal_face);
+	fprintf (stderr,
+		 "%s.%s.%s [%dx%d]%s:\t%sFAIL%s\n",
+		 ctx->test_name,
+		 target->name,
+		 comac_boilerplate_content_name (target->content),
+		 dev_offset,
+		 dev_scale,
+		 similar ? " (similar)" : "",
+		 fail_face,
+		 normal_face);
 	comac_test_log (ctx, "FAIL\n");
 	break;
     }
@@ -1668,18 +1774,16 @@ comac_test_get_context (comac_t *cr)
 }
 
 comac_t *
-comac_test_create (comac_surface_t *surface,
-		   const comac_test_context_t *ctx)
+comac_test_create (comac_surface_t *surface, const comac_test_context_t *ctx)
 {
     comac_t *cr = comac_create (surface);
-    comac_set_user_data (cr, &_comac_test_context_key,
-			 (void*) ctx, NULL);
+    comac_set_user_data (cr, &_comac_test_context_key, (void *) ctx, NULL);
     return cr;
 }
 
 comac_surface_t *
 comac_test_create_surface_from_png (const comac_test_context_t *ctx,
-	                            const char *filename)
+				    const char *filename)
 {
     comac_surface_t *image;
     comac_status_t status;
@@ -1688,7 +1792,7 @@ comac_test_create_surface_from_png (const comac_test_context_t *ctx,
     image = comac_image_surface_create_from_png (filename);
     status = comac_surface_status (image);
     if (status == COMAC_STATUS_FILE_NOT_FOUND) {
-        /* expect not found when running with srcdir != builddir
+	/* expect not found when running with srcdir != builddir
          * such as when 'make distcheck' is run
          */
 	if (ctx->srcdir) {
@@ -1699,17 +1803,20 @@ comac_test_create_surface_from_png (const comac_test_context_t *ctx,
 	    free (srcdir_filename);
 	}
     }
-    unique_id = strdup(filename);
-    comac_surface_set_mime_data (image, COMAC_MIME_TYPE_UNIQUE_ID,
-				 (unsigned char *)unique_id, strlen(unique_id),
-				 free, unique_id);
+    unique_id = strdup (filename);
+    comac_surface_set_mime_data (image,
+				 COMAC_MIME_TYPE_UNIQUE_ID,
+				 (unsigned char *) unique_id,
+				 strlen (unique_id),
+				 free,
+				 unique_id);
 
     return image;
 }
 
 comac_pattern_t *
 comac_test_create_pattern_from_png (const comac_test_context_t *ctx,
-	                            const char *filename)
+				    const char *filename)
 {
     comac_surface_t *image;
     comac_pattern_t *pattern;
@@ -1739,7 +1846,7 @@ _draw_check (int width, int height)
     comac_paint (cr);
 
     comac_set_source_rgb (cr, 0.25, 0.25, 0.25); /* dark gray */
-    comac_rectangle (cr, width / 2,  0, width / 2, height / 2);
+    comac_rectangle (cr, width / 2, 0, width / 2, height / 2);
     comac_rectangle (cr, 0, height / 2, width / 2, height / 2);
     comac_fill (cr);
 

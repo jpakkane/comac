@@ -37,7 +37,7 @@
 #include "comac-damage-private.h"
 #include "comac-region-private.h"
 
-static const comac_damage_t __comac_damage__nil = { COMAC_STATUS_NO_MEMORY };
+static const comac_damage_t __comac_damage__nil = {COMAC_STATUS_NO_MEMORY};
 
 comac_damage_t *
 _comac_damage_create_in_error (comac_status_t status)
@@ -53,7 +53,7 @@ _comac_damage_create (void)
 
     damage = _comac_malloc (sizeof (*damage));
     if (unlikely (damage == NULL)) {
-	_comac_error_throw(COMAC_STATUS_NO_MEMORY);
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	return (comac_damage_t *) &__comac_damage__nil;
     }
 
@@ -62,7 +62,7 @@ _comac_damage_create (void)
     damage->dirty = 0;
     damage->tail = &damage->chunks;
     damage->chunks.base = damage->boxes;
-    damage->chunks.size = ARRAY_LENGTH(damage->boxes);
+    damage->chunks.size = ARRAY_LENGTH (damage->boxes);
     damage->chunks.count = 0;
     damage->chunks.next = NULL;
 
@@ -88,9 +88,9 @@ _comac_damage_destroy (comac_damage_t *damage)
 }
 
 static comac_damage_t *
-_comac_damage_add_boxes(comac_damage_t *damage,
-			const comac_box_t *boxes,
-			int count)
+_comac_damage_add_boxes (comac_damage_t *damage,
+			 const comac_box_t *boxes,
+			 int count)
 {
     struct _comac_damage_chunk *chunk;
     int n, size;
@@ -108,7 +108,8 @@ _comac_damage_add_boxes(comac_damage_t *damage,
     if (n > damage->remain)
 	n = damage->remain;
 
-    memcpy (damage->tail->base + damage->tail->count, boxes,
+    memcpy (damage->tail->base + damage->tail->count,
+	    boxes,
 	    n * sizeof (comac_box_t));
 
     count -= n;
@@ -136,43 +137,50 @@ _comac_damage_add_boxes(comac_damage_t *damage,
     damage->tail->next = chunk;
     damage->tail = chunk;
 
-    memcpy (damage->tail->base, boxes + n,
-	    count * sizeof (comac_box_t));
+    memcpy (damage->tail->base, boxes + n, count * sizeof (comac_box_t));
     damage->remain = size - count;
 
     return damage;
 }
 
 comac_damage_t *
-_comac_damage_add_box(comac_damage_t *damage,
-		      const comac_box_t *box)
+_comac_damage_add_box (comac_damage_t *damage, const comac_box_t *box)
 {
-    TRACE ((stderr, "%s: (%d, %d),(%d, %d)\n", __FUNCTION__,
-	    box->p1.x, box->p1.y, box->p2.x, box->p2.y));
+    TRACE ((stderr,
+	    "%s: (%d, %d),(%d, %d)\n",
+	    __FUNCTION__,
+	    box->p1.x,
+	    box->p1.y,
+	    box->p2.x,
+	    box->p2.y));
 
-    return _comac_damage_add_boxes(damage, box, 1);
+    return _comac_damage_add_boxes (damage, box, 1);
 }
 
 comac_damage_t *
-_comac_damage_add_rectangle(comac_damage_t *damage,
-			    const comac_rectangle_int_t *r)
+_comac_damage_add_rectangle (comac_damage_t *damage,
+			     const comac_rectangle_int_t *r)
 {
     comac_box_t box;
 
-    TRACE ((stderr, "%s: (%d, %d)x(%d, %d)\n", __FUNCTION__,
-	    r->x, r->y, r->width, r->height));
+    TRACE ((stderr,
+	    "%s: (%d, %d)x(%d, %d)\n",
+	    __FUNCTION__,
+	    r->x,
+	    r->y,
+	    r->width,
+	    r->height));
 
     box.p1.x = r->x;
     box.p1.y = r->y;
     box.p2.x = r->x + r->width;
     box.p2.y = r->y + r->height;
 
-    return _comac_damage_add_boxes(damage, &box, 1);
+    return _comac_damage_add_boxes (damage, &box, 1);
 }
 
 comac_damage_t *
-_comac_damage_add_region (comac_damage_t *damage,
-			  const comac_region_t *region)
+_comac_damage_add_region (comac_damage_t *damage, const comac_region_t *region)
 {
     comac_box_t *boxes;
     int nbox;
@@ -180,7 +188,7 @@ _comac_damage_add_region (comac_damage_t *damage,
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     boxes = _comac_region_get_boxes (region, &nbox);
-    return _comac_damage_add_boxes(damage, boxes, nbox);
+    return _comac_damage_add_boxes (damage, boxes, nbox);
 }
 
 comac_damage_t *
@@ -190,9 +198,9 @@ _comac_damage_reduce (comac_damage_t *damage)
     comac_box_t *boxes, *b;
     struct _comac_damage_chunk *chunk, *last;
 
-    TRACE ((stderr, "%s: dirty=%d\n", __FUNCTION__,
-	    damage ? damage->dirty : -1));
-    if (damage == NULL || damage->status || !damage->dirty)
+    TRACE (
+	(stderr, "%s: dirty=%d\n", __FUNCTION__, damage ? damage->dirty : -1));
+    if (damage == NULL || damage->status || ! damage->dirty)
 	return damage;
 
     if (damage->region) {
@@ -210,7 +218,8 @@ _comac_damage_reduce (comac_damage_t *damage)
 
     boxes = damage->tail->base;
     if (damage->dirty > damage->tail->size) {
-	boxes = free_boxes = _comac_malloc (damage->dirty * sizeof (comac_box_t));
+	boxes = free_boxes =
+	    _comac_malloc (damage->dirty * sizeof (comac_box_t));
 	if (unlikely (boxes == NULL)) {
 	    _comac_damage_destroy (damage);
 	    return (comac_damage_t *) &__comac_damage__nil;

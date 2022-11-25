@@ -49,14 +49,14 @@ typedef struct _comac_base64_stream {
 } comac_base64_stream_t;
 
 static char const base64_table[64] =
-"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 static comac_status_t
 _comac_base64_stream_write (comac_output_stream_t *base,
-			    const unsigned char	  *data,
-			    unsigned int	   length)
+			    const unsigned char *data,
+			    unsigned int length)
 {
-    comac_base64_stream_t * stream = (comac_base64_stream_t *) base;
+    comac_base64_stream_t *stream = (comac_base64_stream_t *) base;
     unsigned char *src = stream->src;
     unsigned int i;
 
@@ -83,13 +83,13 @@ _comac_base64_stream_write (comac_output_stream_t *base,
 	dst[3] = base64_table[src[2] & 0xfc >> 2];
 	/* Special case for the last missing bits */
 	switch (stream->trailing) {
-	    case 2:
-		dst[2] = '=';
-		/* fall through */
-	    case 1:
-		dst[3] = '=';
-	    default:
-		break;
+	case 2:
+	    dst[2] = '=';
+	    /* fall through */
+	case 1:
+	    dst[3] = '=';
+	default:
+	    break;
 	}
 	_comac_output_stream_write (stream->output, dst, 4);
     } while (length >= 3);

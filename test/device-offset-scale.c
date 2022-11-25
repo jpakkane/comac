@@ -72,6 +72,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (device_offset_scale,
 	    "Test that the device-offset transform is transformed by the ctm.",
 	    "device-offset", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

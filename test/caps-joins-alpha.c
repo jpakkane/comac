@@ -26,9 +26,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 10.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
@@ -83,7 +83,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (caps_joins_alpha,
 	    "Test caps and joins with some source alpha",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
+	    NULL,     /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    PAD + SIZE + PAD,
-	    NULL, draw)
+	    NULL,
+	    draw)

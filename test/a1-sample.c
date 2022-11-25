@@ -26,8 +26,8 @@
 
 #include "comac-test.h"
 
-#define WIDTH	(256) //COMAC_FIXED_ONE
-#define HEIGHT	(WIDTH)
+#define WIDTH (256) //COMAC_FIXED_ONE
+#define HEIGHT (WIDTH)
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -44,7 +44,11 @@ draw (comac_t *cr, int width, int height)
     /* Only the single rectangle that covers the centre pixel should be filled*/
     for (i = 0; i < 256; i++)
 	for (j = 0; j < 256; j++) {
-	    comac_rectangle (cr, i + i/256., j + j/256., 1/256., 1/256.);
+	    comac_rectangle (cr,
+			     i + i / 256.,
+			     j + j / 256.,
+			     1 / 256.,
+			     1 / 256.);
 	    comac_fill (cr);
 	}
 
@@ -53,7 +57,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (a1_sample,
 	    "Tests unantialiased rendering of a quantum box",
-	    " alpha", /* keywords */
+	    " alpha",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

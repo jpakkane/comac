@@ -35,8 +35,8 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
     comac_set_source_rgb (cr, 0, 0, 0);
 
-    comac_rectangle (cr, 10, 55,165, 1);
-    comac_rectangle (cr, 174, 55,1, 413);
+    comac_rectangle (cr, 10, 55, 165, 1);
+    comac_rectangle (cr, 174, 55, 1, 413);
     comac_rectangle (cr, 10, 56, 1, 413);
     comac_rectangle (cr, 10, 469, 165, 1);
     comac_clip (cr);
@@ -69,6 +69,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_bo_ricotz,
 	    "Exercises a bug discovered by Rico Tzschichholz",
 	    "clip, fill", /* keywords */
-	    NULL, /* requirements */
-	    649, 480,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    649,
+	    480,
+	    NULL,
+	    draw)

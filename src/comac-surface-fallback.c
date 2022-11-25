@@ -45,71 +45,94 @@
 #include "comac-surface-fallback-private.h"
 
 comac_int_status_t
-_comac_surface_fallback_paint (void			*surface,
-			       comac_operator_t		 op,
-			       const comac_pattern_t	*source,
-			       const comac_clip_t	*clip)
+_comac_surface_fallback_paint (void *surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_clip_t *clip)
 {
     return _comac_compositor_paint (&_comac_fallback_compositor,
-				    surface, op, source, clip);
+				    surface,
+				    op,
+				    source,
+				    clip);
 }
 
 comac_int_status_t
-_comac_surface_fallback_mask (void			*surface,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_pattern_t	*mask,
-			      const comac_clip_t	*clip)
+_comac_surface_fallback_mask (void *surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_pattern_t *mask,
+			      const comac_clip_t *clip)
 {
     return _comac_compositor_mask (&_comac_fallback_compositor,
-				   surface, op, source, mask, clip);
-}
-
-comac_int_status_t
-_comac_surface_fallback_stroke (void			*surface,
-				comac_operator_t	 op,
-				const comac_pattern_t	*source,
-				const comac_path_fixed_t*path,
-				const comac_stroke_style_t*style,
-				const comac_matrix_t	*ctm,
-				const comac_matrix_t	*ctm_inverse,
-				double			 tolerance,
-				comac_antialias_t	 antialias,
-				const comac_clip_t	*clip)
-{
-    return _comac_compositor_stroke (&_comac_fallback_compositor,
-				     surface, op, source, path,
-				     style, ctm,ctm_inverse,
-				     tolerance, antialias, clip);
-}
-
-comac_int_status_t
-_comac_surface_fallback_fill (void			*surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     const comac_path_fixed_t	*path,
-			     comac_fill_rule_t		 fill_rule,
-			     double			 tolerance,
-			     comac_antialias_t		 antialias,
-			     const comac_clip_t		*clip)
-{
-    return _comac_compositor_fill (&_comac_fallback_compositor,
-				   surface, op, source, path,
-				   fill_rule, tolerance, antialias,
+				   surface,
+				   op,
+				   source,
+				   mask,
 				   clip);
 }
 
 comac_int_status_t
-_comac_surface_fallback_glyphs (void			*surface,
-				comac_operator_t	 op,
-				const comac_pattern_t	*source,
-				comac_glyph_t		*glyphs,
-				int			 num_glyphs,
-				comac_scaled_font_t	*scaled_font,
-				const comac_clip_t	*clip)
+_comac_surface_fallback_stroke (void *surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_path_fixed_t *path,
+				const comac_stroke_style_t *style,
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias,
+				const comac_clip_t *clip)
+{
+    return _comac_compositor_stroke (&_comac_fallback_compositor,
+				     surface,
+				     op,
+				     source,
+				     path,
+				     style,
+				     ctm,
+				     ctm_inverse,
+				     tolerance,
+				     antialias,
+				     clip);
+}
+
+comac_int_status_t
+_comac_surface_fallback_fill (void *surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip)
+{
+    return _comac_compositor_fill (&_comac_fallback_compositor,
+				   surface,
+				   op,
+				   source,
+				   path,
+				   fill_rule,
+				   tolerance,
+				   antialias,
+				   clip);
+}
+
+comac_int_status_t
+_comac_surface_fallback_glyphs (void *surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				comac_glyph_t *glyphs,
+				int num_glyphs,
+				comac_scaled_font_t *scaled_font,
+				const comac_clip_t *clip)
 {
     return _comac_compositor_glyphs (&_comac_fallback_compositor,
-				     surface, op, source,
-				     glyphs, num_glyphs, scaled_font,
+				     surface,
+				     op,
+				     source,
+				     glyphs,
+				     num_glyphs,
+				     scaled_font,
 				     clip);
 }

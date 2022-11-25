@@ -41,7 +41,7 @@ mask_with_solid (comac_t *cr)
     comac_pattern_t *pattern = comac_pattern_create_rgba (1, 0, 0, 0);
 
     comac_mask (cr, pattern);
-    
+
     comac_pattern_destroy (pattern);
 }
 
@@ -51,7 +51,7 @@ mask_with_empty_gradient (comac_t *cr)
     comac_pattern_t *pattern = comac_pattern_create_linear (1, 2, 3, 4);
 
     comac_mask (cr, pattern);
-    
+
     comac_pattern_destroy (pattern);
 }
 
@@ -64,30 +64,32 @@ mask_with_gradient (comac_t *cr)
     comac_pattern_add_color_stop_rgba (pattern, 0, 0, 0, 1, 0);
 
     comac_mask (cr, pattern);
-    
+
     comac_pattern_destroy (pattern);
 }
 
 static void
 mask_with_surface (comac_t *cr)
 {
-    comac_surface_t *surface = comac_surface_create_similar (comac_get_target (cr),
-                                                             COMAC_CONTENT_COLOR_ALPHA,
-                                                             RECT,
-                                                             RECT);
+    comac_surface_t *surface =
+	comac_surface_create_similar (comac_get_target (cr),
+				      COMAC_CONTENT_COLOR_ALPHA,
+				      RECT,
+				      RECT);
 
     comac_mask_surface (cr, surface, 0, 0);
-    
+
     comac_surface_destroy (surface);
 }
 
 static void
 mask_with_alpha_surface (comac_t *cr)
 {
-    comac_surface_t *surface = comac_surface_create_similar (comac_get_target (cr),
-                                                             COMAC_CONTENT_ALPHA,
-                                                             RECT / 2,
-                                                             RECT / 2);
+    comac_surface_t *surface =
+	comac_surface_create_similar (comac_get_target (cr),
+				      COMAC_CONTENT_ALPHA,
+				      RECT / 2,
+				      RECT / 2);
     comac_pattern_t *pattern = comac_pattern_create_for_surface (surface);
     comac_pattern_set_extend (pattern, COMAC_EXTEND_REFLECT);
 
@@ -100,10 +102,11 @@ mask_with_alpha_surface (comac_t *cr)
 static void
 mask_with_nonclear_surface (comac_t *cr)
 {
-    static unsigned char data[8 * 4] = { 0, };
-    comac_surface_t *surface = comac_image_surface_create_for_data (data,
-                                                                    COMAC_FORMAT_A1,
-                                                                    16, 8, 4);
+    static unsigned char data[8 * 4] = {
+	0,
+    };
+    comac_surface_t *surface =
+	comac_image_surface_create_for_data (data, COMAC_FORMAT_A1, 16, 8, 4);
 
     comac_mask_surface (cr, surface, 0, 0);
 
@@ -113,51 +116,50 @@ mask_with_nonclear_surface (comac_t *cr)
 static void
 mask_with_0x0_surface (comac_t *cr)
 {
-    comac_surface_t *surface = comac_surface_create_similar (comac_get_target (cr),
-                                                             COMAC_CONTENT_COLOR_ALPHA,
-                                                             0, 0);
+    comac_surface_t *surface =
+	comac_surface_create_similar (comac_get_target (cr),
+				      COMAC_CONTENT_COLOR_ALPHA,
+				      0,
+				      0);
 
     comac_mask_surface (cr, surface, 0, 0);
-    
+
     comac_surface_destroy (surface);
 }
 
 static void
 mask_with_extend_none (comac_t *cr)
 {
-    comac_surface_t *surface = comac_surface_create_similar (comac_get_target (cr),
-                                                             COMAC_CONTENT_COLOR_ALPHA,
-                                                             RECT,
-                                                             RECT);
+    comac_surface_t *surface =
+	comac_surface_create_similar (comac_get_target (cr),
+				      COMAC_CONTENT_COLOR_ALPHA,
+				      RECT,
+				      RECT);
 
     comac_mask_surface (cr, surface, 2 * RECT, 2 * RECT);
-    
+
     comac_surface_destroy (surface);
 }
 
-typedef void (* mask_func_t) (comac_t *);
+typedef void (*mask_func_t) (comac_t *);
 
-static mask_func_t mask_funcs[] = {
-  paint_with_alpha,
-  mask_with_solid,
-  mask_with_empty_gradient,
-  mask_with_gradient,
-  mask_with_surface,
-  mask_with_alpha_surface,
-  mask_with_nonclear_surface,
-  mask_with_0x0_surface,
-  mask_with_extend_none
-};
+static mask_func_t mask_funcs[] = {paint_with_alpha,
+				   mask_with_solid,
+				   mask_with_empty_gradient,
+				   mask_with_gradient,
+				   mask_with_surface,
+				   mask_with_alpha_surface,
+				   mask_with_nonclear_surface,
+				   mask_with_0x0_surface,
+				   mask_with_extend_none};
 
-static comac_operator_t operators[] = {
-  COMAC_OPERATOR_CLEAR,
-  COMAC_OPERATOR_SOURCE,
-  COMAC_OPERATOR_OVER,
-  COMAC_OPERATOR_IN,
-  COMAC_OPERATOR_DEST_ATOP,
-  COMAC_OPERATOR_SATURATE,
-  COMAC_OPERATOR_MULTIPLY
-};
+static comac_operator_t operators[] = {COMAC_OPERATOR_CLEAR,
+				       COMAC_OPERATOR_SOURCE,
+				       COMAC_OPERATOR_OVER,
+				       COMAC_OPERATOR_IN,
+				       COMAC_OPERATOR_DEST_ATOP,
+				       COMAC_OPERATOR_SATURATE,
+				       COMAC_OPERATOR_MULTIPLY};
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -174,16 +176,16 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, SPACE, SPACE);
 
     for (op = 0; op < ARRAY_LENGTH (operators); op++) {
-        comac_set_operator (cr, operators[op]);
+	comac_set_operator (cr, operators[op]);
 
-        for (i = 0; i < ARRAY_LENGTH (mask_funcs); i++) {
-            comac_save (cr);
-            comac_translate (cr, i * (RECT + SPACE), op * (RECT + SPACE));
-            comac_rectangle (cr, 0, 0, RECT, RECT);
-            comac_clip (cr);
-            mask_funcs[i] (cr);
-            comac_restore (cr);
-        }
+	for (i = 0; i < ARRAY_LENGTH (mask_funcs); i++) {
+	    comac_save (cr);
+	    comac_translate (cr, i * (RECT + SPACE), op * (RECT + SPACE));
+	    comac_rectangle (cr, 0, 0, RECT, RECT);
+	    comac_clip (cr);
+	    mask_funcs[i](cr);
+	    comac_restore (cr);
+	}
     }
 
     return COMAC_TEST_SUCCESS;
@@ -192,7 +194,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (zero_mask,
 	    "Testing that masking with zero alpha works",
 	    "alpha, mask", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	   /* requirements */
 	    SPACE + (RECT + SPACE) * ARRAY_LENGTH (mask_funcs),
 	    SPACE + (RECT + SPACE) * ARRAY_LENGTH (operators),
-	    NULL, draw)
+	    NULL,
+	    draw)

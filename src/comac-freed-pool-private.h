@@ -60,7 +60,7 @@ _atomic_fetch (void **slot)
     void *ptr;
 
     do {
-        ptr = _comac_atomic_ptr_get (slot);
+	ptr = _comac_atomic_ptr_get (slot);
     } while (! _comac_atomic_ptr_cmpxchg (slot, ptr, NULL));
 
     return ptr;
@@ -105,8 +105,7 @@ _freed_pool_put (freed_pool_t *pool, void *ptr)
 
     i = _comac_atomic_int_get_relaxed (&pool->top);
     if (likely (i < ARRAY_LENGTH (pool->pool) &&
-		_atomic_store (&pool->pool[i], ptr)))
-    {
+		_atomic_store (&pool->pool[i], ptr))) {
 	_comac_atomic_int_set_relaxed (&pool->top, i + 1);
 	return;
     }
@@ -129,7 +128,7 @@ _freed_pool_reset (freed_pool_t *pool);
 typedef int freed_pool_t;
 
 #define _freed_pool_get(pool) NULL
-#define _freed_pool_put(pool, ptr) free(ptr)
+#define _freed_pool_put(pool, ptr) free (ptr)
 #define _freed_pool_reset(ptr)
 
 #endif

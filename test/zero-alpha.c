@@ -58,27 +58,30 @@ draw (comac_t *cr, int width, int height)
     /* 1. fill a rectangle with a zero-alpha solid source. */
     comac_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0); /* transparent */
     comac_rectangle (cr, 1.0, 1.0, 1.0, 1.0);
-    for (i=0; i < REPS; i++)
+    for (i = 0; i < REPS; i++)
 	comac_fill_preserve (cr);
     comac_new_path (cr);
 
     /* 2. paint with a zero-alpha image surface source. */
     surface = comac_image_surface_create_for_data ((unsigned char *) &zero,
-						   COMAC_FORMAT_ARGB32, 1, 1, 4);
+						   COMAC_FORMAT_ARGB32,
+						   1,
+						   1,
+						   4);
     comac_set_source_surface (cr, surface, 1, 1);
-    for (i=0; i < REPS; i++)
+    for (i = 0; i < REPS; i++)
 	comac_paint (cr);
 
     /* 3. clip to rectangle then paint with zero-alpha solid source. */
     comac_rectangle (cr, 1.0, 1.0, 1.0, 1.0);
     comac_clip (cr);
     comac_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0); /* transparent */
-    for (i=0; i < REPS; i++)
+    for (i = 0; i < REPS; i++)
 	comac_paint (cr);
 
     /* 4. With the clip still there, paint our image surface. */
     comac_set_source_surface (cr, surface, 1, 1);
-    for (i=0; i < REPS; i++)
+    for (i = 0; i < REPS; i++)
 	comac_paint (cr);
 
     comac_surface_finish (surface); /* zero will go out of scope */
@@ -90,6 +93,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (zero_alpha,
 	    "Testing that drawing with zero alpha has no effect",
 	    "alpha", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

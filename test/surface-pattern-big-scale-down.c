@@ -34,24 +34,25 @@ create_source_surface (int w, int h)
     comac_surface_t *surface;
     comac_t *cr;
 
-    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, SRC_WIDTH, SRC_HEIGHT);
+    surface =
+	comac_image_surface_create (COMAC_FORMAT_RGB24, SRC_WIDTH, SRC_HEIGHT);
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
     comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
-    comac_rectangle (cr, 0, 0, w/2, h/2);
+    comac_rectangle (cr, 0, 0, w / 2, h / 2);
     comac_fill (cr);
 
     comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
-    comac_rectangle (cr, w/2, 0, w/2, h/2);
+    comac_rectangle (cr, w / 2, 0, w / 2, h / 2);
     comac_fill (cr);
 
     comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
-    comac_rectangle (cr, 0, h/2, w/2, h/2);
+    comac_rectangle (cr, 0, h / 2, w / 2, h / 2);
     comac_fill (cr);
 
     comac_set_source_rgb (cr, 1.0, 1.0, 0.0);
-    comac_rectangle (cr, w/2, h/2, w/2, h/2);
+    comac_rectangle (cr, w / 2, h / 2, w / 2, h / 2);
     comac_fill (cr);
 
     surface = comac_surface_reference (comac_get_target (cr));
@@ -63,16 +64,18 @@ create_source_surface (int w, int h)
 static void
 draw_n (comac_t *cr, comac_pattern_t *pat, double dest_size, int n)
 {
-  comac_matrix_t mat;
+    comac_matrix_t mat;
 
-  comac_matrix_init_scale (&mat, SRC_WIDTH / dest_size, SRC_HEIGHT / dest_size);
-  comac_matrix_translate (&mat, n * -dest_size, 0.0);
-  comac_pattern_set_matrix (pat, &mat);
+    comac_matrix_init_scale (&mat,
+			     SRC_WIDTH / dest_size,
+			     SRC_HEIGHT / dest_size);
+    comac_matrix_translate (&mat, n * -dest_size, 0.0);
+    comac_pattern_set_matrix (pat, &mat);
 
-  comac_set_source (cr, pat);
-  comac_new_path (cr);
-  comac_rectangle (cr, n * dest_size, 0.0, dest_size, dest_size);
-  comac_fill (cr);
+    comac_set_source (cr, pat);
+    comac_new_path (cr);
+    comac_rectangle (cr, n * dest_size, 0.0, dest_size, dest_size);
+    comac_fill (cr);
 }
 
 static comac_test_status_t
@@ -118,8 +121,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (surface_pattern_big_scale_down,
-	    "Test scaled-down transformed not-repeated surface patterns with large images and offsets",
+	    "Test scaled-down transformed not-repeated surface patterns with "
+	    "large images and offsets",
 	    "transform", /* keywords */
-	    NULL, /* requirements */
-	    512, 16,
-	    NULL, draw)
+	    NULL,	 /* requirements */
+	    512,
+	    16,
+	    NULL,
+	    draw)

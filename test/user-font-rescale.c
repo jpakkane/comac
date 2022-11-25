@@ -32,9 +32,9 @@
 
 #define BORDER 10
 #define TEXT_SIZE 32
-#define WIDTH  (TEXT_SIZE * 13.75 + 2*BORDER)
-#define HEIGHT ((TEXT_SIZE + 2*BORDER)*3 + BORDER)
-#define TEXT   "test of rescaled glyphs"
+#define WIDTH (TEXT_SIZE * 13.75 + 2 * BORDER)
+#define HEIGHT ((TEXT_SIZE + 2 * BORDER) * 3 + BORDER)
+#define TEXT "test of rescaled glyphs"
 
 static const comac_user_data_key_t rescale_font_closure_key;
 
@@ -48,9 +48,9 @@ struct rescaled_font {
 };
 
 static comac_status_t
-test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
-			       unsigned long         glyph,
-			       comac_t              *cr,
+test_scaled_font_render_glyph (comac_scaled_font_t *scaled_font,
+			       unsigned long glyph,
+			       comac_t *cr,
 			       comac_text_extents_t *metrics)
 {
     comac_font_face_t *user_font;
@@ -75,7 +75,8 @@ test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 
 	    /* measure the glyph and compute the necessary rescaling factor */
 	    comac_scaled_font_glyph_extents (r->measuring_font,
-					     &comac_glyph, 1,
+					     &comac_glyph,
+					     1,
 					     &extents);
 
 	    desired_width = r->desired_width[glyph - r->start];
@@ -131,8 +132,8 @@ unichar_to_utf8 (uint32_t ucs4, char utf8[7])
 
 static comac_status_t
 test_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
-				   unsigned long        unicode,
-				   unsigned long       *glyph_index)
+				   unsigned long unicode,
+				   unsigned long *glyph_index)
 {
     comac_font_face_t *user_font;
     struct rescaled_font *r;
@@ -145,10 +146,16 @@ test_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
 
     unichar_to_utf8 (unicode, utf8);
     r = comac_font_face_get_user_data (user_font, &rescale_font_closure_key);
-    status  = comac_scaled_font_text_to_glyphs (r->measuring_font, 0, 0,
-						utf8, -1,
-						&glyphs, &num_glyphs,
-						NULL, NULL, NULL);
+    status = comac_scaled_font_text_to_glyphs (r->measuring_font,
+					       0,
+					       0,
+					       utf8,
+					       -1,
+					       &glyphs,
+					       &num_glyphs,
+					       NULL,
+					       NULL,
+					       NULL);
     if (status)
 	return status;
 
@@ -158,7 +165,8 @@ test_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
     return COMAC_STATUS_SUCCESS;
 }
 
-static void rescale_font_closure_destroy (void *data)
+static void
+rescale_font_closure_destroy (void *data)
 {
     struct rescaled_font *r = data;
 
@@ -184,8 +192,11 @@ create_rescaled_font (comac_font_face_t *substitute_font,
     unsigned long i;
 
     user_font_face = comac_user_font_face_create ();
-    comac_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
-    comac_user_font_face_set_unicode_to_glyph_func (user_font_face, test_scaled_font_unicode_to_glyph);
+    comac_user_font_face_set_render_glyph_func (user_font_face,
+						test_scaled_font_render_glyph);
+    comac_user_font_face_set_unicode_to_glyph_func (
+	user_font_face,
+	test_scaled_font_unicode_to_glyph);
 
     r = xmalloc (sizeof (struct rescaled_font));
     r->substitute_font = comac_font_face_reference (substitute_font);
@@ -197,11 +208,9 @@ create_rescaled_font (comac_font_face_t *substitute_font,
 
     comac_matrix_init_identity (&m);
 
-    r->measuring_font = comac_scaled_font_create (r->substitute_font,
-						  &m, &m,
-						  options);
+    r->measuring_font =
+	comac_scaled_font_create (r->substitute_font, &m, &m, options);
     comac_font_options_destroy (options);
-
 
     r->start = glyph_start;
     r->glyph_count = glyph_count;
@@ -216,7 +225,8 @@ create_rescaled_font (comac_font_face_t *substitute_font,
 
     status = comac_font_face_set_user_data (user_font_face,
 					    &rescale_font_closure_key,
-					    r, rescale_font_closure_destroy);
+					    r,
+					    rescale_font_closure_destroy);
     if (status) {
 	rescale_font_closure_destroy (r);
 	comac_font_face_destroy (user_font_face);
@@ -253,10 +263,16 @@ get_user_font_face (comac_font_face_t *substitute_font,
     comac_matrix_init_identity (&m);
     measure = comac_scaled_font_create (old, &m, &m, options);
 
-    status = comac_scaled_font_text_to_glyphs (measure, 0, 0,
-					       text, -1,
-					       &glyphs, &num_glyphs,
-					       NULL, NULL, NULL);
+    status = comac_scaled_font_text_to_glyphs (measure,
+					       0,
+					       0,
+					       text,
+					       -1,
+					       &glyphs,
+					       &num_glyphs,
+					       NULL,
+					       NULL,
+					       NULL);
     comac_font_options_destroy (options);
 
     if (status) {
@@ -267,7 +283,7 @@ get_user_font_face (comac_font_face_t *substitute_font,
     /* find the glyph range the text covers */
     max_index = glyphs[0].index;
     min_index = glyphs[0].index;
-    for (i=0; i<num_glyphs; i++) {
+    for (i = 0; i < num_glyphs; i++) {
 	if (glyphs[i].index < min_index)
 	    min_index = glyphs[i].index;
 	if (glyphs[i].index > max_index)
@@ -277,7 +293,7 @@ get_user_font_face (comac_font_face_t *substitute_font,
     count = max_index - min_index + 1;
     widths = xcalloc (sizeof (double), count);
     /* measure all of the necessary glyphs individually */
-    for (i=0; i<num_glyphs; i++) {
+    for (i = 0; i < num_glyphs; i++) {
 	comac_text_extents_t extents;
 	comac_scaled_font_glyph_extents (measure, &glyphs[i], 1, &extents);
 	widths[glyphs[i].index - min_index] = extents.x_advance;
@@ -289,7 +305,9 @@ get_user_font_face (comac_font_face_t *substitute_font,
 
     if (status == COMAC_STATUS_SUCCESS) {
 	status = create_rescaled_font (substitute_font,
-				       min_index, count, widths,
+				       min_index,
+				       count,
+				       widths,
 				       out);
     }
 
@@ -344,7 +362,10 @@ draw (comac_t *cr, int width, int height)
     comac_font_face_destroy (rescaled);
 
     comac_set_source_rgb (cr, 0, 0, 1);
-    comac_move_to (cr, BORDER, BORDER + font_extents.height + 2*BORDER + font_extents.ascent);
+    comac_move_to (cr,
+		   BORDER,
+		   BORDER + font_extents.height + 2 * BORDER +
+		       font_extents.ascent);
     comac_show_text (cr, text);
 
     /* mono text */
@@ -354,7 +375,10 @@ draw (comac_t *cr, int width, int height)
 			    COMAC_FONT_WEIGHT_NORMAL);
 
     comac_set_source_rgb (cr, 0, 0, 1);
-    comac_move_to (cr, BORDER, BORDER + 2*font_extents.height + 4*BORDER + font_extents.ascent);
+    comac_move_to (cr,
+		   BORDER,
+		   BORDER + 2 * font_extents.height + 4 * BORDER +
+		       font_extents.ascent);
     comac_show_text (cr, text);
 
     return COMAC_TEST_SUCCESS;
@@ -363,6 +387,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (user_font_rescale,
 	    "Tests drawing text with user defined widths",
 	    "user-font, font", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	       /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

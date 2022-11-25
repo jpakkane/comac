@@ -60,8 +60,7 @@
 
 #define ENTRY_IS_FREE(entry) ((entry) == NULL)
 #define ENTRY_IS_DEAD(entry) ((entry) == DEAD_ENTRY)
-#define ENTRY_IS_LIVE(entry) ((entry) >  DEAD_ENTRY)
-
+#define ENTRY_IS_LIVE(entry) ((entry) > DEAD_ENTRY)
 
 /* This table is open-addressed with double hashing. Each table size is a
  * prime chosen to be a little more than double the high water mark for a
@@ -76,33 +75,32 @@
  * Packard.
  */
 
-static const csi_hash_table_arrangement_t hash_table_arrangements [] = {
-    { 16,		43,		41		},
-    { 32,		73,		71		},
-    { 64,		151,		149		},
-    { 128,		283,		281		},
-    { 256,		571,		569		},
-    { 512,		1153,		1151		},
-    { 1024,		2269,		2267		},
-    { 2048,		4519,		4517		},
-    { 4096,		9013,		9011		},
-    { 8192,		18043,		18041		},
-    { 16384,		36109,		36107		},
-    { 32768,		72091,		72089		},
-    { 65536,		144409,		144407		},
-    { 131072,		288361,		288359		},
-    { 262144,		576883,		576881		},
-    { 524288,		1153459,	1153457		},
-    { 1048576,		2307163,	2307161		},
-    { 2097152,		4613893,	4613891		},
-    { 4194304,		9227641,	9227639		},
-    { 8388608,		18455029,	18455027	},
-    { 16777216,		36911011,	36911009	},
-    { 33554432,		73819861,	73819859	},
-    { 67108864,		147639589,	147639587	},
-    { 134217728,	295279081,	295279079	},
-    { 268435456,	590559793,	590559791	}
-};
+static const csi_hash_table_arrangement_t hash_table_arrangements[] = {
+    {16, 43, 41},
+    {32, 73, 71},
+    {64, 151, 149},
+    {128, 283, 281},
+    {256, 571, 569},
+    {512, 1153, 1151},
+    {1024, 2269, 2267},
+    {2048, 4519, 4517},
+    {4096, 9013, 9011},
+    {8192, 18043, 18041},
+    {16384, 36109, 36107},
+    {32768, 72091, 72089},
+    {65536, 144409, 144407},
+    {131072, 288361, 288359},
+    {262144, 576883, 576881},
+    {524288, 1153459, 1153457},
+    {1048576, 2307163, 2307161},
+    {2097152, 4613893, 4613891},
+    {4194304, 9227641, 9227639},
+    {8388608, 18455029, 18455027},
+    {16777216, 36911011, 36911009},
+    {33554432, 73819861, 73819859},
+    {67108864, 147639589, 147639587},
+    {134217728, 295279081, 295279079},
+    {268435456, 590559793, 590559791}};
 
 #define NUM_HASH_TABLE_ARRANGEMENTS ARRAY_LENGTH (hash_table_arrangements)
 
@@ -130,8 +128,8 @@ _csi_hash_table_init (csi_hash_table_t *hash_table,
 
     hash_table->arrangement = &hash_table_arrangements[0];
 
-    hash_table->entries = calloc (hash_table->arrangement->size,
-				  sizeof(csi_hash_entry_t *));
+    hash_table->entries =
+	calloc (hash_table->arrangement->size, sizeof (csi_hash_entry_t *));
     if (hash_table->entries == NULL)
 	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
@@ -167,7 +165,7 @@ _csi_hash_table_fini (csi_hash_table_t *hash_table)
 
 static csi_hash_entry_t **
 _csi_hash_table_lookup_unique_key (csi_hash_table_t *hash_table,
-				     csi_hash_entry_t *key)
+				   csi_hash_entry_t *key)
 {
     unsigned long table_size, i, idx, step;
     csi_hash_entry_t **entry;
@@ -221,7 +219,7 @@ _csi_hash_table_manage (csi_hash_table_t *hash_table)
      */
     unsigned long high = hash_table->arrangement->high_water_mark;
     unsigned long low = high >> 2;
-    unsigned long max_used = high  + high / 2;
+    unsigned long max_used = high + high / 2;
 
     tmp = *hash_table;
 
@@ -230,12 +228,9 @@ _csi_hash_table_manage (csi_hash_table_t *hash_table)
 	/* This code is being abused if we can't make a table big enough. */
     } else if (hash_table->live_entries < low &&
 	       /* Can't shrink if we're at the smallest size */
-	       hash_table->arrangement != &hash_table_arrangements[0])
-    {
+	       hash_table->arrangement != &hash_table_arrangements[0]) {
 	tmp.arrangement = hash_table->arrangement - 1;
-    }
-    else if (hash_table->used_entries > max_used)
-    {
+    } else if (hash_table->used_entries > max_used) {
 	/* Clean out dead entries to prevent lookups from becoming too slow. */
 	for (i = 0; i < hash_table->arrangement->size; ++i) {
 	    if (ENTRY_IS_DEAD (hash_table->entries[i]))
@@ -249,15 +244,13 @@ _csi_hash_table_manage (csi_hash_table_t *hash_table)
 	 * entries, they will be cleaned out next time this code is
 	 * executed. */
 	realloc = FALSE;
-    }
-    else
-    {
+    } else {
 	return COMAC_STATUS_SUCCESS;
     }
 
     if (realloc) {
-	tmp.entries = calloc (tmp.arrangement->size,
-		              sizeof (csi_hash_entry_t*));
+	tmp.entries =
+	    calloc (tmp.arrangement->size, sizeof (csi_hash_entry_t *));
 	if (tmp.entries == NULL)
 	    return _csi_error (COMAC_STATUS_NO_MEMORY);
 
@@ -300,8 +293,7 @@ _csi_hash_table_manage (csi_hash_table_t *hash_table)
  * Return value: the matching entry, of %NULL if no match was found.
  **/
 void *
-_csi_hash_table_lookup (csi_hash_table_t *hash_table,
-			csi_hash_entry_t *key)
+_csi_hash_table_lookup (csi_hash_table_t *hash_table, csi_hash_entry_t *key)
 {
     csi_hash_entry_t **entry;
     unsigned long table_size, i, idx, step;
@@ -328,8 +320,7 @@ _csi_hash_table_lookup (csi_hash_table_t *hash_table,
 	entry = &hash_table->entries[idx];
 	if (ENTRY_IS_LIVE (*entry)) {
 	    if ((*entry)->hash == key->hash &&
-		hash_table->keys_equal (key, *entry))
-	    {
+		hash_table->keys_equal (key, *entry)) {
 		return *entry;
 	    }
 	} else if (ENTRY_IS_FREE (*entry))
@@ -361,7 +352,7 @@ _csi_hash_table_lookup (csi_hash_table_t *hash_table,
  **/
 csi_status_t
 _csi_hash_table_insert (csi_hash_table_t *hash_table,
-			  csi_hash_entry_t *key_and_value)
+			csi_hash_entry_t *key_and_value)
 {
     csi_status_t status;
     csi_hash_entry_t **entry;
@@ -374,8 +365,7 @@ _csi_hash_table_insert (csi_hash_table_t *hash_table,
 	return status;
     }
 
-    entry = _csi_hash_table_lookup_unique_key (hash_table,
-					       key_and_value);
+    entry = _csi_hash_table_lookup_unique_key (hash_table, key_and_value);
     if (ENTRY_IS_FREE (*entry))
 	hash_table->used_entries++;
 
@@ -385,7 +375,7 @@ _csi_hash_table_insert (csi_hash_table_t *hash_table,
 
 static csi_hash_entry_t **
 _csi_hash_table_lookup_exact_key (csi_hash_table_t *hash_table,
-				    csi_hash_entry_t *key)
+				  csi_hash_entry_t *key)
 {
     unsigned long table_size, i, idx, step;
     csi_hash_entry_t **entry;
@@ -424,8 +414,7 @@ _csi_hash_table_lookup_exact_key (csi_hash_table_t *hash_table,
  * %COMAC_STATUS_NO_MEMORY if out of memory.
  **/
 void
-_csi_hash_table_remove (csi_hash_table_t *hash_table,
-			  csi_hash_entry_t *key)
+_csi_hash_table_remove (csi_hash_table_t *hash_table, csi_hash_entry_t *key)
 {
     *_csi_hash_table_lookup_exact_key (hash_table, key) = DEAD_ENTRY;
     hash_table->live_entries--;
@@ -458,9 +447,9 @@ _csi_hash_table_remove (csi_hash_table_t *hash_table,
  * functions will halt in these cases.
  **/
 void
-_csi_hash_table_foreach (csi_hash_table_t	      *hash_table,
-			 csi_hash_callback_func_t  hash_callback,
-			 void			      *closure)
+_csi_hash_table_foreach (csi_hash_table_t *hash_table,
+			 csi_hash_callback_func_t hash_callback,
+			 void *closure)
 {
     unsigned long i;
     csi_hash_entry_t *entry;
@@ -469,7 +458,7 @@ _csi_hash_table_foreach (csi_hash_table_t	      *hash_table,
     ++hash_table->iterating;
     for (i = 0; i < hash_table->arrangement->size; i++) {
 	entry = hash_table->entries[i];
-	if (ENTRY_IS_LIVE(entry))
+	if (ENTRY_IS_LIVE (entry))
 	    hash_callback (entry, closure);
     }
     /* If some elements were deleted during the iteration,

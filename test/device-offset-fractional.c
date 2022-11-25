@@ -36,7 +36,7 @@ draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
     comac_t *cr2;
-    int i,j;
+    int i, j;
 
     /* Fill the background */
     comac_set_source_rgb (cr, 1, 1, 1); /* white */
@@ -55,8 +55,8 @@ draw (comac_t *cr, int width, int height)
     for (i = 0; i < COUNT; i++) {
 	for (j = 0; j < COUNT; j++) {
 	    comac_surface_set_device_offset (surface,
-					     -i*(SIZE+PAD+.5)-PAD,
-					     -j*(SIZE+PAD+.5)-PAD);
+					     -i * (SIZE + PAD + .5) - PAD,
+					     -j * (SIZE + PAD + .5) - PAD);
 	    comac_paint (cr);
 	}
     }
@@ -64,9 +64,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (device_offset_fractional,
-	    "Test using image surfaces with fractional device-offsets as sources.",
-	    "device-offset", /* keywords */
-	    NULL, /* requirements */
-	    COUNT*(SIZE+PAD+.5)+PAD, COUNT*(SIZE+PAD+.5)+PAD,
-	    NULL, draw)
+COMAC_TEST (
+    device_offset_fractional,
+    "Test using image surfaces with fractional device-offsets as sources.",
+    "device-offset", /* keywords */
+    NULL,	     /* requirements */
+    COUNT *(SIZE + PAD + .5) + PAD,
+    COUNT *(SIZE + PAD + .5) + PAD,
+    NULL,
+    draw)

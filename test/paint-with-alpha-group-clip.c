@@ -29,7 +29,6 @@
  * https://bugs.launchpad.net/inkscape/+bug/1258265
  */
 
-
 #include "comac-test.h"
 
 static comac_test_status_t
@@ -55,6 +54,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (paint_with_alpha_group_clip,
 	    "Test paint with alpha and clipping",
 	    "paint alpha clip group record", /* keywords */
-	    NULL, /* requirements */
-	    30, 30,
-	    NULL, draw)
+	    NULL,			     /* requirements */
+	    30,
+	    30,
+	    NULL,
+	    draw)

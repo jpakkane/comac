@@ -49,16 +49,16 @@ draw (comac_t *cr, int width, int height)
     /* ... comac_curve_to */
     comac_new_sub_path (cr);
     comac_curve_to (cr,
-		    4.0 * SIZE, 1.5 * SIZE,
-		    4.5 * SIZE, 1.0 * SIZE,
-		    5.0 * SIZE, 1.5 * SIZE);
+		    4.0 * SIZE,
+		    1.5 * SIZE,
+		    4.5 * SIZE,
+		    1.0 * SIZE,
+		    5.0 * SIZE,
+		    1.5 * SIZE);
 
     /* ... comac_arc */
     comac_new_sub_path (cr);
-    comac_arc (cr,
-	       6.5 * SIZE, 1.5 * SIZE,
-	       0.5 * SIZE,
-	       0.0, 2.0 * M_PI);
+    comac_arc (cr, 6.5 * SIZE, 1.5 * SIZE, 0.5 * SIZE, 0.0, 2.0 * M_PI);
 
     comac_stroke (cr);
 
@@ -68,7 +68,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (new_sub_path,
 	    "Test the comac_new_sub_path call",
 	    "path", /* keywords */
-	    NULL, /* requirements */
+	    NULL,   /* requirements */
 	    8 * SIZE,
 	    3 * SIZE,
-	    NULL, draw)
+	    NULL,
+	    draw)

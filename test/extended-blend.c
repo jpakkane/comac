@@ -32,19 +32,17 @@
 #include <stdio.h>
 
 #define STEPS 16
-#define START_OPERATOR	COMAC_OPERATOR_MULTIPLY
-#define STOP_OPERATOR	COMAC_OPERATOR_HSL_LUMINOSITY
+#define START_OPERATOR COMAC_OPERATOR_MULTIPLY
+#define STOP_OPERATOR COMAC_OPERATOR_HSL_LUMINOSITY
 
 #define SIZE 5
 #define COUNT 4
-#define FULL_WIDTH  ((STEPS + 1) * COUNT - 1)
-#define FULL_HEIGHT ((COUNT + STOP_OPERATOR - START_OPERATOR) / COUNT) * (STEPS + 1)
+#define FULL_WIDTH ((STEPS + 1) * COUNT - 1)
+#define FULL_HEIGHT                                                            \
+    ((COUNT + STOP_OPERATOR - START_OPERATOR) / COUNT) * (STEPS + 1)
 
 static void
-set_solid_pattern (comac_t *cr,
-		   int step,
-		   comac_bool_t bg,
-		   comac_bool_t alpha)
+set_solid_pattern (comac_t *cr, int step, comac_bool_t bg, comac_bool_t alpha)
 {
     double c, a;
 
@@ -157,8 +155,9 @@ do_blend_mask (comac_t *cr, comac_operator_t op, comac_bool_t alpha)
 }
 
 static comac_test_status_t
-draw (comac_t *cr, comac_bool_t alpha,
-      void (*blend)(comac_t *, comac_operator_t, comac_bool_t))
+draw (comac_t *cr,
+      comac_bool_t alpha,
+      void (*blend) (comac_t *, comac_operator_t, comac_bool_t))
 {
     size_t i = 0;
     comac_operator_t op;
@@ -166,8 +165,8 @@ draw (comac_t *cr, comac_bool_t alpha,
     for (op = START_OPERATOR; op <= STOP_OPERATOR; op++, i++) {
 	comac_save (cr);
 	comac_translate (cr,
-		SIZE * (STEPS + 1) * (i % COUNT),
-		SIZE * (STEPS + 1) * (i / COUNT));
+			 SIZE * (STEPS + 1) * (i % COUNT),
+			 SIZE * (STEPS + 1) * (i / COUNT));
 	blend (cr, op, alpha);
 	comac_restore (cr);
     }
@@ -213,41 +212,52 @@ draw_extended_blend_alpha_mask (comac_t *cr, int width, int height)
 COMAC_TEST (extended_blend,
 	    "Tests extended blend modes without alpha",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    FULL_WIDTH * SIZE, FULL_HEIGHT * SIZE,
-	    NULL, draw_extended_blend)
+	    NULL,	/* requirements */
+	    FULL_WIDTH *SIZE,
+	    FULL_HEIGHT *SIZE,
+	    NULL,
+	    draw_extended_blend)
 
 COMAC_TEST (extended_blend_alpha,
 	    "Tests extended blend modes with alpha",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    FULL_WIDTH * SIZE, FULL_HEIGHT * SIZE,
-	    NULL, draw_extended_blend_alpha)
+	    NULL,	/* requirements */
+	    FULL_WIDTH *SIZE,
+	    FULL_HEIGHT *SIZE,
+	    NULL,
+	    draw_extended_blend_alpha)
 
 COMAC_TEST (extended_blend_mask,
 	    "Tests extended blend modes with an alpha mask",
 	    "operator,mask", /* keywords */
-	    NULL, /* requirements */
-	    FULL_WIDTH * SIZE, FULL_HEIGHT * SIZE,
-	    NULL, draw_extended_blend_mask)
+	    NULL,	     /* requirements */
+	    FULL_WIDTH *SIZE,
+	    FULL_HEIGHT *SIZE,
+	    NULL,
+	    draw_extended_blend_mask)
 COMAC_TEST (extended_blend_alpha_mask,
 	    "Tests extended blend modes with an alpha mask",
 	    "operator,mask", /* keywords */
-	    NULL, /* requirements */
-	    FULL_WIDTH * SIZE, FULL_HEIGHT * SIZE,
-	    NULL, draw_extended_blend_alpha_mask)
-
+	    NULL,	     /* requirements */
+	    FULL_WIDTH *SIZE,
+	    FULL_HEIGHT *SIZE,
+	    NULL,
+	    draw_extended_blend_alpha_mask)
 
 COMAC_TEST (extended_blend_solid,
 	    "Tests extended blend modes on solid patterns without alpha",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    FULL_WIDTH * SIZE, FULL_HEIGHT * SIZE,
-	    NULL, draw_extended_blend_solid)
+	    NULL,	/* requirements */
+	    FULL_WIDTH *SIZE,
+	    FULL_HEIGHT *SIZE,
+	    NULL,
+	    draw_extended_blend_solid)
 
 COMAC_TEST (extended_blend_solid_alpha,
 	    "Tests extended blend modes on solid patterns with alpha",
 	    "operator", /* keywords */
-	    NULL, /* requirements */
-	    FULL_WIDTH * SIZE, FULL_HEIGHT * SIZE,
-	    NULL, draw_extended_blend_solid_alpha)
+	    NULL,	/* requirements */
+	    FULL_WIDTH *SIZE,
+	    FULL_HEIGHT *SIZE,
+	    NULL,
+	    draw_extended_blend_solid_alpha)

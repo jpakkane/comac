@@ -28,9 +28,8 @@
 
 #define SIZE 100
 #define PAD 15
-#define WIDTH (5*SIZE)
-#define HEIGHT (5*SIZE)
-
+#define WIDTH (5 * SIZE)
+#define HEIGHT (5 * SIZE)
 
 /* This test is designed to paint a mesh pattern which folds along
  * both parameters. */
@@ -77,6 +76,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mesh_pattern_fold,
 	    "Paint a mesh pattern with complex folds",
 	    "mesh, pattern", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

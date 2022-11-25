@@ -52,7 +52,8 @@
 static void
 _comac_clip_extract_region (comac_clip_t *clip)
 {
-    comac_rectangle_int_t stack_rects[COMAC_STACK_ARRAY_LENGTH (comac_rectangle_int_t)];
+    comac_rectangle_int_t
+	stack_rects[COMAC_STACK_ARRAY_LENGTH (comac_rectangle_int_t)];
     comac_rectangle_int_t *r = stack_rects;
     comac_bool_t is_region;
     int i;
@@ -62,7 +63,7 @@ _comac_clip_extract_region (comac_clip_t *clip)
 
     if (clip->num_boxes > ARRAY_LENGTH (stack_rects)) {
 	r = _comac_malloc_ab (clip->num_boxes, sizeof (comac_rectangle_int_t));
-	if (r == NULL){
+	if (r == NULL) {
 	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	    return;
 	}
@@ -73,10 +74,10 @@ _comac_clip_extract_region (comac_clip_t *clip)
 	comac_box_t *b = &clip->boxes[i];
 	if (is_region)
 	    is_region =
-		_comac_fixed_is_integer (b->p1.x | b->p1.y |  b->p2.x | b->p2.y);
+		_comac_fixed_is_integer (b->p1.x | b->p1.y | b->p2.x | b->p2.y);
 	r[i].x = _comac_fixed_integer_floor (b->p1.x);
 	r[i].y = _comac_fixed_integer_floor (b->p1.y);
-	r[i].width  = _comac_fixed_integer_ceil (b->p2.x) - r[i].x;
+	r[i].width = _comac_fixed_integer_ceil (b->p2.x) - r[i].x;
 	r[i].height = _comac_fixed_integer_ceil (b->p2.y) - r[i].y;
     }
     clip->is_region = is_region;

@@ -50,34 +50,34 @@ draw_dashes (comac_t *cr)
 
     /* Draw horizontal and vertical segments, each in both
      * directions. */
-    comac_move_to     (cr,  4.5,  0.5);
-    comac_rel_line_to (cr,  2.0,  0.0);
+    comac_move_to (cr, 4.5, 0.5);
+    comac_rel_line_to (cr, 2.0, 0.0);
 
-    comac_move_to     (cr, 10.5,  4.5);
-    comac_rel_line_to (cr,  0.0,  2.0);
+    comac_move_to (cr, 10.5, 4.5);
+    comac_rel_line_to (cr, 0.0, 2.0);
 
-    comac_move_to     (cr,  6.5, 10.5);
-    comac_rel_line_to (cr, -2.0,  0.0);
+    comac_move_to (cr, 6.5, 10.5);
+    comac_rel_line_to (cr, -2.0, 0.0);
 
-    comac_move_to     (cr,  0.5,  6.5);
-    comac_rel_line_to (cr,  0.0, -2.0);
+    comac_move_to (cr, 0.5, 6.5);
+    comac_rel_line_to (cr, 0.0, -2.0);
 
     /* Draw right angle turns in four directions. */
-    comac_move_to     (cr,  0.5,  2.5);
-    comac_rel_line_to (cr,  0.0, -2.0);
-    comac_rel_line_to (cr,  2.0,  0.0);
+    comac_move_to (cr, 0.5, 2.5);
+    comac_rel_line_to (cr, 0.0, -2.0);
+    comac_rel_line_to (cr, 2.0, 0.0);
 
-    comac_move_to     (cr,  8.5,  0.5);
-    comac_rel_line_to (cr,  2.0,  0.0);
-    comac_rel_line_to (cr,  0.0,  2.0);
+    comac_move_to (cr, 8.5, 0.5);
+    comac_rel_line_to (cr, 2.0, 0.0);
+    comac_rel_line_to (cr, 0.0, 2.0);
 
-    comac_move_to     (cr, 10.5,  8.5);
-    comac_rel_line_to (cr,  0.0,  2.0);
-    comac_rel_line_to (cr, -2.0,  0.0);
+    comac_move_to (cr, 10.5, 8.5);
+    comac_rel_line_to (cr, 0.0, 2.0);
+    comac_rel_line_to (cr, -2.0, 0.0);
 
-    comac_move_to     (cr,  2.5, 10.5);
-    comac_rel_line_to (cr, -2.0,  0.0);
-    comac_rel_line_to (cr,  0.0, -2.0);
+    comac_move_to (cr, 2.5, 10.5);
+    comac_rel_line_to (cr, -2.0, 0.0);
+    comac_rel_line_to (cr, 0.0, -2.0);
 
     comac_stroke (cr);
 
@@ -94,34 +94,34 @@ draw_dashes (comac_t *cr)
 
     /* Draw horizontal and vertical segments, each in both
      * directions. */
-    comac_move_to     (cr,  4.0,  0.5);
-    comac_rel_line_to (cr,  3.0,  0.0);
+    comac_move_to (cr, 4.0, 0.5);
+    comac_rel_line_to (cr, 3.0, 0.0);
 
-    comac_move_to     (cr, 10.5,  4.0);
-    comac_rel_line_to (cr,  0.0,  3.0);
+    comac_move_to (cr, 10.5, 4.0);
+    comac_rel_line_to (cr, 0.0, 3.0);
 
-    comac_move_to     (cr,  7.0, 10.5);
-    comac_rel_line_to (cr, -3.0,  0.0);
+    comac_move_to (cr, 7.0, 10.5);
+    comac_rel_line_to (cr, -3.0, 0.0);
 
-    comac_move_to     (cr,  0.5,  7.0);
-    comac_rel_line_to (cr,  0.0, -3.0);
+    comac_move_to (cr, 0.5, 7.0);
+    comac_rel_line_to (cr, 0.0, -3.0);
 
     /* Draw right angle turns in four directions. */
-    comac_move_to     (cr,  0.5,  3.0);
-    comac_rel_line_to (cr,  0.0, -2.5);
-    comac_rel_line_to (cr,  2.5,  0.0);
+    comac_move_to (cr, 0.5, 3.0);
+    comac_rel_line_to (cr, 0.0, -2.5);
+    comac_rel_line_to (cr, 2.5, 0.0);
 
-    comac_move_to     (cr,  8.0,  0.5);
-    comac_rel_line_to (cr,  2.5,  0.0);
-    comac_rel_line_to (cr,  0.0,  2.5);
+    comac_move_to (cr, 8.0, 0.5);
+    comac_rel_line_to (cr, 2.5, 0.0);
+    comac_rel_line_to (cr, 0.0, 2.5);
 
-    comac_move_to     (cr, 10.5,  8.0);
-    comac_rel_line_to (cr,  0.0,  2.5);
-    comac_rel_line_to (cr, -2.5,  0.0);
+    comac_move_to (cr, 10.5, 8.0);
+    comac_rel_line_to (cr, 0.0, 2.5);
+    comac_rel_line_to (cr, -2.5, 0.0);
 
-    comac_move_to     (cr,  3.0, 10.5);
-    comac_rel_line_to (cr, -2.5,  0.0);
-    comac_rel_line_to (cr,  0.0, -2.5);
+    comac_move_to (cr, 3.0, 10.5);
+    comac_rel_line_to (cr, -2.5, 0.0);
+    comac_rel_line_to (cr, 0.0, -2.5);
 
     comac_stroke (cr);
 
@@ -167,10 +167,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (rectilinear_dash,
-	    "Test dashed rectilinear stroke operations (covering only whole pixels)",
-	    "stroke, dash", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
-
+COMAC_TEST (
+    rectilinear_dash,
+    "Test dashed rectilinear stroke operations (covering only whole pixels)",
+    "stroke, dash", /* keywords */
+    NULL,	    /* requirements */
+    SIZE,
+    SIZE,
+    NULL,
+    draw)

@@ -85,15 +85,19 @@ typedef struct _comac_eps_params {
 } comac_eps_params_t;
 
 comac_private comac_int_status_t
-_comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *link_attrs);
+_comac_tag_parse_link_attributes (const char *attributes,
+				  comac_link_attrs_t *link_attrs);
 
 comac_private comac_int_status_t
-_comac_tag_parse_dest_attributes (const char *attributes, comac_dest_attrs_t *dest_attrs);
+_comac_tag_parse_dest_attributes (const char *attributes,
+				  comac_dest_attrs_t *dest_attrs);
 
 comac_private comac_int_status_t
-_comac_tag_parse_ccitt_params (const char *attributes, comac_ccitt_params_t *dest_attrs);
+_comac_tag_parse_ccitt_params (const char *attributes,
+			       comac_ccitt_params_t *dest_attrs);
 
 comac_private comac_int_status_t
-_comac_tag_parse_eps_params (const char *attributes, comac_eps_params_t *dest_attrs);
+_comac_tag_parse_eps_params (const char *attributes,
+			     comac_eps_params_t *dest_attrs);
 
 #endif /* COMAC_TAG_ATTRIBUTES_PRIVATE_H */

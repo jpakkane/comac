@@ -47,8 +47,7 @@ typedef struct _comac_path_bounder {
 } comac_path_bounder_t;
 
 static comac_status_t
-_comac_path_bounder_move_to (void *closure,
-			     const comac_point_t *point)
+_comac_path_bounder_move_to (void *closure, const comac_point_t *point)
 {
     comac_path_bounder_t *bounder = closure;
 
@@ -65,8 +64,7 @@ _comac_path_bounder_move_to (void *closure,
 }
 
 static comac_status_t
-_comac_path_bounder_line_to (void *closure,
-			     const comac_point_t *point)
+_comac_path_bounder_line_to (void *closure, const comac_point_t *point)
 {
     comac_path_bounder_t *bounder = closure;
 
@@ -86,7 +84,9 @@ _comac_path_bounder_curve_to (void *closure,
 
     _comac_box_add_curve_to (&bounder->extents,
 			     &bounder->current_point,
-			     b, c, d);
+			     b,
+			     c,
+			     d);
     bounder->current_point = *d;
 
     return COMAC_STATUS_SUCCESS;
@@ -112,7 +112,7 @@ _comac_path_bounder_extents (const comac_path_fixed_t *path,
 					  _comac_path_bounder_curve_to,
 					  _comac_path_bounder_close_path,
 					  &bounder);
-    assert (!status);
+    assert (! status);
 
     if (bounder.has_extents)
 	*extents = bounder.extents;
@@ -135,10 +135,10 @@ _comac_path_fixed_approximate_fill_extents (const comac_path_fixed_t *path,
 }
 
 void
-_comac_path_fixed_fill_extents (const comac_path_fixed_t	*path,
-				comac_fill_rule_t	 fill_rule,
-				double			 tolerance,
-				comac_rectangle_int_t	*extents)
+_comac_path_fixed_fill_extents (const comac_path_fixed_t *path,
+				comac_fill_rule_t fill_rule,
+				double tolerance,
+				comac_rectangle_int_t *extents)
 {
     if (path->extents.p1.x < path->extents.p2.x &&
 	path->extents.p1.y < path->extents.p2.y) {
@@ -162,11 +162,10 @@ _comac_path_fixed_approximate_stroke_extents (const comac_path_fixed_t *path,
 	double dx, dy;
 
 	_comac_stroke_style_max_distance_from_path (style, path, ctm, &dx, &dy);
-	if (is_vector)
-	{
+	if (is_vector) {
 	    /* When calculating extents for vector surfaces, ensure lines thinner
 	     * than the fixed point resolution are not optimized away. */
-	    double min = _comac_fixed_to_double (COMAC_FIXED_EPSILON*2);
+	    double min = _comac_fixed_to_double (COMAC_FIXED_EPSILON * 2);
 	    if (dx < min)
 		dx = min;
 
@@ -188,12 +187,12 @@ _comac_path_fixed_approximate_stroke_extents (const comac_path_fixed_t *path,
 }
 
 comac_status_t
-_comac_path_fixed_stroke_extents (const comac_path_fixed_t	*path,
-				  const comac_stroke_style_t	*stroke_style,
-				  const comac_matrix_t		*ctm,
-				  const comac_matrix_t		*ctm_inverse,
-				  double			 tolerance,
-				  comac_rectangle_int_t		*extents)
+_comac_path_fixed_stroke_extents (const comac_path_fixed_t *path,
+				  const comac_stroke_style_t *stroke_style,
+				  const comac_matrix_t *ctm,
+				  const comac_matrix_t *ctm_inverse,
+				  double tolerance,
+				  comac_rectangle_int_t *extents)
 {
     comac_polygon_t polygon;
     comac_status_t status;
@@ -201,9 +200,9 @@ _comac_path_fixed_stroke_extents (const comac_path_fixed_t	*path,
 
     /* When calculating extents for vector surfaces, ensure lines thinner
      * than one point are not optimized away. */
-    double min_line_width = _comac_matrix_transformed_circle_major_axis (ctm_inverse, 1.0);
-    if (stroke_style->line_width < min_line_width)
-    {
+    double min_line_width =
+	_comac_matrix_transformed_circle_major_axis (ctm_inverse, 1.0);
+    if (stroke_style->line_width < min_line_width) {
 	style = *stroke_style;
 	style.line_width = min_line_width;
 	stroke_style = &style;
@@ -212,7 +211,8 @@ _comac_path_fixed_stroke_extents (const comac_path_fixed_t	*path,
     _comac_polygon_init (&polygon, NULL, 0);
     status = _comac_path_fixed_stroke_to_polygon (path,
 						  stroke_style,
-						  ctm, ctm_inverse,
+						  ctm,
+						  ctm_inverse,
 						  tolerance,
 						  &polygon);
     _comac_box_round_to_rectangle (&polygon.extents, extents);
@@ -222,8 +222,7 @@ _comac_path_fixed_stroke_extents (const comac_path_fixed_t	*path,
 }
 
 comac_bool_t
-_comac_path_fixed_extents (const comac_path_fixed_t *path,
-			   comac_box_t *box)
+_comac_path_fixed_extents (const comac_path_fixed_t *path, comac_box_t *box)
 {
     *box = path->extents;
     return path->has_extents;

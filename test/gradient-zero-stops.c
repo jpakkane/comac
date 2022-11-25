@@ -53,6 +53,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (gradient_zero_stops,
 	    "Verifies that gradients with no stops don't cause problems.",
 	    "gradient", /* keywords */
-	    NULL, /* requirements */
-	    2, 2,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    2,
+	    2,
+	    NULL,
+	    draw)

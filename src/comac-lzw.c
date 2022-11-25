@@ -154,7 +154,7 @@ _lzw_buf_store_bits (lzw_buf_t *buf, uint16_t value, int num_bits)
  * Sets buf->status to either %COMAC_STATUS_SUCCESS or %COMAC_STATUS_NO_MEMORY.
  */
 static void
-_lzw_buf_store_pending  (lzw_buf_t *buf)
+_lzw_buf_store_pending (lzw_buf_t *buf)
 {
     comac_status_t status;
 
@@ -177,9 +177,9 @@ _lzw_buf_store_pending  (lzw_buf_t *buf)
 }
 
 /* LZW defines a few magic code values */
-#define LZW_CODE_CLEAR_TABLE	256
-#define LZW_CODE_EOD		257
-#define LZW_CODE_FIRST		258
+#define LZW_CODE_CLEAR_TABLE 256
+#define LZW_CODE_EOD 257
+#define LZW_CODE_FIRST 258
 
 /* We pack three separate values into a symbol as follows:
  *
@@ -189,20 +189,21 @@ _lzw_buf_store_pending  (lzw_buf_t *buf)
  */
 typedef uint32_t lzw_symbol_t;
 
-#define LZW_SYMBOL_SET(sym, prev, next)			((sym) = ((prev) << 8)|(next))
-#define LZW_SYMBOL_SET_CODE(sym, code, prev, next)	((sym) = ((code << 20)|(prev) << 8)|(next))
-#define LZW_SYMBOL_GET_CODE(sym)			(((sym) >> 20))
-#define LZW_SYMBOL_GET_PREV(sym)			(((sym) >>  8) & 0x7ff)
-#define LZW_SYMBOL_GET_BYTE(sym)			(((sym) >>  0) & 0x0ff)
+#define LZW_SYMBOL_SET(sym, prev, next) ((sym) = ((prev) << 8) | (next))
+#define LZW_SYMBOL_SET_CODE(sym, code, prev, next)                             \
+    ((sym) = ((code << 20) | (prev) << 8) | (next))
+#define LZW_SYMBOL_GET_CODE(sym) (((sym) >> 20))
+#define LZW_SYMBOL_GET_PREV(sym) (((sym) >> 8) & 0x7ff)
+#define LZW_SYMBOL_GET_BYTE(sym) (((sym) >> 0) & 0x0ff)
 
 /* The PREV+NEXT fields can be seen as the key used to fetch values
  * from the hash table, while the code is the value fetched.
  */
-#define LZW_SYMBOL_KEY_MASK	0x000fffff
+#define LZW_SYMBOL_KEY_MASK 0x000fffff
 
 /* Since code values are only stored starting with 258 we can safely
  * use a zero value to represent free slots in the hash table. */
-#define LZW_SYMBOL_FREE		0x00000000
+#define LZW_SYMBOL_FREE 0x00000000
 
 /* These really aren't very free for modifying. First, the PostScript
  * specification sets the 9-12 bit range. Second, the encoding of
@@ -212,14 +213,14 @@ typedef uint32_t lzw_symbol_t;
  * But other than that, the LZW compression scheme could function with
  * more bits per code.
  */
-#define LZW_BITS_MIN		9
-#define LZW_BITS_MAX		12
-#define LZW_BITS_BOUNDARY(bits)	((1<<(bits))-1)
-#define LZW_MAX_SYMBOLS		(1<<LZW_BITS_MAX)
+#define LZW_BITS_MIN 9
+#define LZW_BITS_MAX 12
+#define LZW_BITS_BOUNDARY(bits) ((1 << (bits)) - 1)
+#define LZW_MAX_SYMBOLS (1 << LZW_BITS_MAX)
 
-#define LZW_SYMBOL_TABLE_SIZE	9013
-#define LZW_SYMBOL_MOD1		LZW_SYMBOL_TABLE_SIZE
-#define LZW_SYMBOL_MOD2		9011
+#define LZW_SYMBOL_TABLE_SIZE 9013
+#define LZW_SYMBOL_MOD1 LZW_SYMBOL_TABLE_SIZE
+#define LZW_SYMBOL_MOD2 9011
 
 typedef struct _lzw_symbol_table {
     lzw_symbol_t table[LZW_SYMBOL_TABLE_SIZE];
@@ -244,9 +245,9 @@ _lzw_symbol_table_init (lzw_symbol_table_t *table)
  * value should be stored along with PREV and NEXT.
  */
 static comac_bool_t
-_lzw_symbol_table_lookup (lzw_symbol_table_t	 *table,
-			  lzw_symbol_t		  symbol,
-			  lzw_symbol_t		**slot_ret)
+_lzw_symbol_table_lookup (lzw_symbol_table_t *table,
+			  lzw_symbol_t symbol,
+			  lzw_symbol_t **slot_ret)
 {
     /* The algorithm here is identical to that in comac-hash.c. We
      * copy it here to allow for a rather more efficient
@@ -272,19 +273,15 @@ _lzw_symbol_table_lookup (lzw_symbol_table_t	 *table,
     step = 0;
 
     *slot_ret = NULL;
-    for (i = 0; i < LZW_SYMBOL_TABLE_SIZE; i++)
-    {
+    for (i = 0; i < LZW_SYMBOL_TABLE_SIZE; i++) {
 	candidate = table->table[idx];
-	if (candidate == LZW_SYMBOL_FREE)
-	{
+	if (candidate == LZW_SYMBOL_FREE) {
 	    *slot_ret = &table->table[idx];
 	    return FALSE;
-	}
-	else /* candidate is LIVE */
+	} else /* candidate is LIVE */
 	{
 	    if ((candidate & LZW_SYMBOL_KEY_MASK) ==
-		(symbol & LZW_SYMBOL_KEY_MASK))
-	    {
+		(symbol & LZW_SYMBOL_KEY_MASK)) {
 		*slot_ret = &table->table[idx];
 		return TRUE;
 	    }
@@ -350,8 +347,7 @@ _comac_lzw_compress (unsigned char *data, unsigned long *size_in_out)
 	prev = *data++;
 	bytes_remaining--;
 	if (bytes_remaining) {
-	    do
-	    {
+	    do {
 		next = *data++;
 		bytes_remaining--;
 		LZW_SYMBOL_SET (symbol, prev, next);
@@ -374,8 +370,7 @@ _comac_lzw_compress (unsigned char *data, unsigned long *size_in_out)
 
 	LZW_SYMBOL_SET_CODE (*slot, code_next++, prev, next);
 
-	if (code_next > LZW_BITS_BOUNDARY(code_bits))
-	{
+	if (code_next > LZW_BITS_BOUNDARY (code_bits)) {
 	    code_bits++;
 	    if (code_bits > LZW_BITS_MAX) {
 		_lzw_symbol_table_init (&table);

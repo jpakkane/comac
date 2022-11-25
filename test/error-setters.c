@@ -51,7 +51,8 @@ preamble (comac_test_context_t *ctx)
     comac_surface_t *surface;
 
     /* get the error surface */
-    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, INT_MAX, INT_MAX);
+    surface =
+	comac_image_surface_create (COMAC_FORMAT_ARGB32, INT_MAX, INT_MAX);
 
 #if COMAC_HAS_GL_SURFACE
     comac_gl_surface_set_size (surface, 0, 0);
@@ -94,5 +95,7 @@ COMAC_TEST (error_setters,
 	    "Check setters properly error out on read-only error surfaces",
 	    NULL, /* keywords */
 	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    0,
+	    0,
+	    preamble,
+	    NULL)

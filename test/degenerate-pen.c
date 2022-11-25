@@ -26,9 +26,9 @@
 
 #include "comac-test.h"
 
-#define SIZE   20
-#define PAD    5
-#define WIDTH  (PAD + 3 * (PAD + SIZE) + PAD)
+#define SIZE 20
+#define PAD 5
+#define WIDTH (PAD + 3 * (PAD + SIZE) + PAD)
 #define HEIGHT (PAD + SIZE + PAD)
 
 /* We're demonstrating here a bug originally reported by Benjamin Otte
@@ -100,6 +100,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (degenerate_pen,
 	    "Test round joins with a pen that's transformed to a line",
 	    "degenerate", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

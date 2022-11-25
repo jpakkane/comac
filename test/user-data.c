@@ -51,11 +51,13 @@ preamble (comac_test_context_t *ctx)
     data2 = 0;
 
     surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
-    status = comac_surface_set_user_data (surface, &key1, &data1, destroy_data1);
+    status =
+	comac_surface_set_user_data (surface, &key1, &data1, destroy_data1);
     if (status)
 	goto error;
 
-    status = comac_surface_set_user_data (surface, &key2, &data2, destroy_data2);
+    status =
+	comac_surface_set_user_data (surface, &key2, &data2, destroy_data2);
     if (status)
 	goto error;
 
@@ -86,7 +88,8 @@ preamble (comac_test_context_t *ctx)
     assert (data1 == 0);
     assert (comac_surface_get_user_data (surface, &key1) == NULL);
 
-    status = comac_surface_set_user_data (surface, &key1, &data1, destroy_data1);
+    status =
+	comac_surface_set_user_data (surface, &key1, &data1, destroy_data1);
     if (status)
 	goto error;
 
@@ -105,6 +108,8 @@ error:
 COMAC_TEST (user_data,
 	    "Test setting and getting random bits of user data.",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,  /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

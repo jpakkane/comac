@@ -41,8 +41,8 @@
 static inline int
 comac_lines_equal (const comac_line_t *a, const comac_line_t *b)
 {
-    return (a->p1.x == b->p1.x && a->p1.y == b->p1.y &&
-	    a->p2.x == b->p2.x && a->p2.y == b->p2.y);
+    return (a->p1.x == b->p1.x && a->p1.y == b->p1.y && a->p2.x == b->p2.x &&
+	    a->p2.y == b->p2.y);
 }
 
 #endif /* COMAC_LINE_INLINE_H */

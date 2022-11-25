@@ -29,9 +29,9 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    const double dashes_1[] = { 10, 0 };
-    const double dashes_2[] = { 10, 0, 10, 10};
-    const double dashes_3[] = { 10, 0, 10, 0};
+    const double dashes_1[] = {10, 0};
+    const double dashes_2[] = {10, 0, 10, 10};
+    const double dashes_3[] = {10, 0, 10, 0};
 
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
@@ -64,6 +64,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (degenerate_solid_dash,
 	    "Exercises degenerate dash ellison",
 	    "stroke, dash", /* keywords */
-	    NULL, /* requirements */
-	    100, 100,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw)

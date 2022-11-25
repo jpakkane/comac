@@ -53,7 +53,7 @@ draw (comac_t *cr, int width, int height)
     data = comac_image_surface_get_data (surface);
     if (data != NULL) {
 	int stride = comac_image_surface_get_stride (surface);
-	int width  = comac_image_surface_get_width  (surface);
+	int width = comac_image_surface_get_width (surface);
 	int height = comac_image_surface_get_height (surface);
 	int x, y;
 
@@ -62,7 +62,7 @@ draw (comac_t *cr, int width, int height)
 		data[x] = RED_MASK;
 	    data += stride;
 	}
-        comac_surface_mark_dirty (surface);
+	comac_surface_mark_dirty (surface);
     }
 
     comac_set_source_rgb (cr, 1, 0, 0); /* red */
@@ -73,7 +73,7 @@ draw (comac_t *cr, int width, int height)
     data = comac_image_surface_get_data (surface);
     if (data != NULL) {
 	int stride = comac_image_surface_get_stride (surface);
-	int width  = comac_image_surface_get_width  (surface);
+	int width = comac_image_surface_get_width (surface);
 	int height = comac_image_surface_get_height (surface);
 	int x, y;
 
@@ -82,7 +82,7 @@ draw (comac_t *cr, int width, int height)
 		data[x] = GREEN_MASK;
 	    data += stride;
 	}
-        comac_surface_mark_dirty (surface);
+	comac_surface_mark_dirty (surface);
     }
 
     comac_set_source_rgb (cr, 0, 1, 0); /* green */
@@ -95,6 +95,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (large_source,
 	    "Exercises mozilla bug 424333 - handling of massive images",
 	    "stress, source", /* keywords */
-	    NULL, /* requirements */
-	    20, 20,
-	    NULL, draw)
+	    NULL,	      /* requirements */
+	    20,
+	    20,
+	    NULL,
+	    draw)

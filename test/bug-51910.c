@@ -27,7 +27,7 @@
 /* An error in xlib pattern transformation discovered by Albertas Vyšniauskas */
 
 static comac_pattern_t *
-source(void)
+source (void)
 {
     comac_surface_t *surface;
     comac_pattern_t *pattern;
@@ -46,7 +46,7 @@ source(void)
     comac_set_line_width (cr, 2);
 
     for (i = -1; i <= 8; i++) {
-	comac_move_to (cr, -34 + 8*i, 34);
+	comac_move_to (cr, -34 + 8 * i, 34);
 	comac_rel_line_to (cr, 36, -36);
 	comac_stroke (cr);
     }
@@ -56,12 +56,11 @@ source(void)
 
     comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
 
-    comac_matrix_init_translate(&matrix, 14.1, 0);
-    comac_pattern_set_matrix(pattern, &matrix);
+    comac_matrix_init_translate (&matrix, 14.1, 0);
+    comac_pattern_set_matrix (pattern, &matrix);
 
     return pattern;
 }
-
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -76,7 +75,7 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_destroy (pattern);
 
     for (i = 0; i < 8; i++) {
-	comac_rectangle (cr, 3.5*i, 32*i, 256, 32);
+	comac_rectangle (cr, 3.5 * i, 32 * i, 256, 32);
 	comac_fill (cr);
     }
 
@@ -86,6 +85,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_51910,
 	    "A bug in the xlib pattern transformation",
 	    " paint", /* keywords */
-	    NULL, /* requirements */
-	    256, 256,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    256,
+	    256,
+	    NULL,
+	    draw)

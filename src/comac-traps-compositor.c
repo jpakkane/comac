@@ -60,73 +60,99 @@
 #include "comac-traps-private.h"
 #include "comac-tristrip-private.h"
 
-typedef comac_int_status_t
-(*draw_func_t) (const comac_traps_compositor_t *compositor,
-		comac_surface_t			*dst,
-		void				*closure,
-		comac_operator_t		 op,
-		comac_surface_t		*src,
-		int				 src_x,
-		int				 src_y,
-		int				 dst_x,
-		int				 dst_y,
-		const comac_rectangle_int_t	*extents,
-		comac_clip_t			*clip);
+typedef comac_int_status_t (*draw_func_t) (
+    const comac_traps_compositor_t *compositor,
+    comac_surface_t *dst,
+    void *closure,
+    comac_operator_t op,
+    comac_surface_t *src,
+    int src_x,
+    int src_y,
+    int dst_x,
+    int dst_y,
+    const comac_rectangle_int_t *extents,
+    comac_clip_t *clip);
 
-static void do_unaligned_row(void (*blt)(void *closure,
-					 int16_t x, int16_t y,
-					 int16_t w, int16_t h,
-					 uint16_t coverage),
-			     void *closure,
-			     const comac_box_t *b,
-			     int tx, int y, int h,
-			     uint16_t coverage)
+static void
+do_unaligned_row (void (*blt) (void *closure,
+			       int16_t x,
+			       int16_t y,
+			       int16_t w,
+			       int16_t h,
+			       uint16_t coverage),
+		  void *closure,
+		  const comac_box_t *b,
+		  int tx,
+		  int y,
+		  int h,
+		  uint16_t coverage)
 {
     int x1 = _comac_fixed_integer_part (b->p1.x) - tx;
     int x2 = _comac_fixed_integer_part (b->p2.x) - tx;
     if (x2 > x1) {
 	if (! _comac_fixed_is_integer (b->p1.x)) {
-	    blt(closure, x1, y, 1, h,
-		coverage * (256 - _comac_fixed_fractional_part (b->p1.x)));
+	    blt (closure,
+		 x1,
+		 y,
+		 1,
+		 h,
+		 coverage * (256 - _comac_fixed_fractional_part (b->p1.x)));
 	    x1++;
 	}
 
 	if (x2 > x1)
-	    blt(closure, x1, y, x2-x1, h, (coverage << 8) - (coverage >> 8));
+	    blt (closure, x1, y, x2 - x1, h, (coverage << 8) - (coverage >> 8));
 
 	if (! _comac_fixed_is_integer (b->p2.x))
-	    blt(closure, x2, y, 1, h,
-		coverage * _comac_fixed_fractional_part (b->p2.x));
+	    blt (closure,
+		 x2,
+		 y,
+		 1,
+		 h,
+		 coverage * _comac_fixed_fractional_part (b->p2.x));
     } else
-	blt(closure, x1, y, 1, h,
-	    coverage * (b->p2.x - b->p1.x));
+	blt (closure, x1, y, 1, h, coverage * (b->p2.x - b->p1.x));
 }
 
-static void do_unaligned_box(void (*blt)(void *closure,
-					 int16_t x, int16_t y,
-					 int16_t w, int16_t h,
-					 uint16_t coverage),
-			     void *closure,
-			     const comac_box_t *b, int tx, int ty)
+static void
+do_unaligned_box (void (*blt) (void *closure,
+			       int16_t x,
+			       int16_t y,
+			       int16_t w,
+			       int16_t h,
+			       uint16_t coverage),
+		  void *closure,
+		  const comac_box_t *b,
+		  int tx,
+		  int ty)
 {
     int y1 = _comac_fixed_integer_part (b->p1.y) - ty;
     int y2 = _comac_fixed_integer_part (b->p2.y) - ty;
     if (y2 > y1) {
 	if (! _comac_fixed_is_integer (b->p1.y)) {
-	    do_unaligned_row(blt, closure, b, tx, y1, 1,
-			     256 - _comac_fixed_fractional_part (b->p1.y));
+	    do_unaligned_row (blt,
+			      closure,
+			      b,
+			      tx,
+			      y1,
+			      1,
+			      256 - _comac_fixed_fractional_part (b->p1.y));
 	    y1++;
 	}
 
 	if (y2 > y1)
-	    do_unaligned_row(blt, closure, b, tx, y1, y2-y1, 256);
+	    do_unaligned_row (blt, closure, b, tx, y1, y2 - y1, 256);
 
 	if (! _comac_fixed_is_integer (b->p2.y))
-	    do_unaligned_row(blt, closure, b, tx, y2, 1,
-			     _comac_fixed_fractional_part (b->p2.y));
+	    do_unaligned_row (blt,
+			      closure,
+			      b,
+			      tx,
+			      y2,
+			      1,
+			      _comac_fixed_fractional_part (b->p2.y));
     } else
-	do_unaligned_row(blt, closure, b, tx, y1, 1,
-			 b->p2.y - b->p1.y);
+	do_unaligned_row (blt, closure, b, tx, y1, 1, b->p2.y - b->p1.y);
 }
 
 struct blt_in {
@@ -135,10 +161,13 @@ struct blt_in {
     comac_boxes_t boxes;
 };
 
-static void blt_in(void *closure,
-		   int16_t x, int16_t y,
-		   int16_t w, int16_t h,
-		   uint16_t coverage)
+static void
+blt_in (void *closure,
+	int16_t x,
+	int16_t y,
+	int16_t w,
+	int16_t h,
+	uint16_t coverage)
 {
     struct blt_in *info = closure;
     comac_color_t color;
@@ -150,12 +179,14 @@ static void blt_in(void *closure,
 
     _comac_color_init_rgba (&color, 0, 0, 0, coverage / (double) 0xffff);
     info->compositor->fill_boxes (info->dst,
-				  COMAC_OPERATOR_IN, &color,
+				  COMAC_OPERATOR_IN,
+				  &color,
 				  &info->boxes);
 }
 
 static void
-add_rect_with_offset (comac_boxes_t *boxes, int x1, int y1, int x2, int y2, int dx, int dy)
+add_rect_with_offset (
+    comac_boxes_t *boxes, int x1, int y1, int x2, int y2, int dx, int dy)
 {
     comac_box_t box;
     comac_int_status_t status;
@@ -187,32 +218,39 @@ combine_clip_as_traps (const comac_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    status = _comac_clip_get_polygon (clip, &polygon,
-				      &fill_rule, &antialias);
+    status = _comac_clip_get_polygon (clip, &polygon, &fill_rule, &antialias);
     if (status)
 	return status;
 
     _comac_traps_init (&traps);
-    status = _comac_bentley_ottmann_tessellate_polygon (&traps,
-							&polygon,
-							fill_rule);
+    status =
+	_comac_bentley_ottmann_tessellate_polygon (&traps, &polygon, fill_rule);
     _comac_polygon_fini (&polygon);
     if (unlikely (status))
 	return status;
 
-    src = compositor->pattern_to_surface (mask, NULL, FALSE,
-					  extents, NULL,
-					  &src_x, &src_y);
+    src = compositor->pattern_to_surface (mask,
+					  NULL,
+					  FALSE,
+					  extents,
+					  NULL,
+					  &src_x,
+					  &src_y);
     if (unlikely (src->status)) {
 	_comac_traps_fini (&traps);
 	return src->status;
     }
 
-    status = compositor->composite_traps (mask, COMAC_OPERATOR_IN, src,
-					  src_x, src_y,
-					  extents->x, extents->y,
+    status = compositor->composite_traps (mask,
+					  COMAC_OPERATOR_IN,
+					  src,
+					  src_x,
+					  src_y,
+					  extents->x,
+					  extents->y,
 					  extents,
-					  antialias, &traps);
+					  antialias,
+					  &traps);
 
     _comac_traps_extents (&traps, &box);
     _comac_box_round_to_rectangle (&box, &fixup);
@@ -233,18 +271,22 @@ combine_clip_as_traps (const comac_traps_compositor_t *compositor,
 	/* top */
 	if (fixup.y != extents->y) {
 	    add_rect_with_offset (&clear,
-				  extents->x, extents->y,
+				  extents->x,
+				  extents->y,
 				  extents->x + extents->width,
 				  fixup.y,
-				  extents->x, extents->y);
+				  extents->x,
+				  extents->y);
 	}
 	/* left */
 	if (fixup.x != extents->x) {
 	    add_rect_with_offset (&clear,
-				  extents->x, fixup.y,
+				  extents->x,
+				  fixup.y,
 				  fixup.x,
 				  fixup.y + fixup.height,
-				  extents->x, extents->y);
+				  extents->x,
+				  extents->y);
 	}
 	/* right */
 	if (fixup.x + fixup.width != extents->x + extents->width) {
@@ -253,7 +295,8 @@ combine_clip_as_traps (const comac_traps_compositor_t *compositor,
 				  fixup.y,
 				  extents->x + extents->width,
 				  fixup.y + fixup.height,
-				  extents->x, extents->y);
+				  extents->x,
+				  extents->y);
 	}
 	/* bottom */
 	if (fixup.y + fixup.height != extents->y + extents->height) {
@@ -262,7 +305,8 @@ combine_clip_as_traps (const comac_traps_compositor_t *compositor,
 				  fixup.y + fixup.height,
 				  extents->x + extents->width,
 				  extents->y + extents->height,
-				  extents->x, extents->y);
+				  extents->x,
+				  extents->y);
 	}
 
 	status = compositor->fill_boxes (mask,
@@ -294,15 +338,16 @@ __clip_to_surface (const comac_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    status = _comac_clip_get_polygon (composite->clip, &polygon,
-				      &fill_rule, &antialias);
+    status = _comac_clip_get_polygon (composite->clip,
+				      &polygon,
+				      &fill_rule,
+				      &antialias);
     if (status)
 	return status;
 
     _comac_traps_init (&traps);
-    status = _comac_bentley_ottmann_tessellate_polygon (&traps,
-							&polygon,
-							fill_rule);
+    status =
+	_comac_bentley_ottmann_tessellate_polygon (&traps, &polygon, fill_rule);
     _comac_polygon_fini (&polygon);
     if (unlikely (status))
 	return status;
@@ -317,9 +362,13 @@ __clip_to_surface (const comac_traps_compositor_t *compositor,
 	return status;
     }
 
-    src = compositor->pattern_to_surface (mask, NULL, FALSE,
-					  extents, NULL,
-					  &src_x, &src_y);
+    src = compositor->pattern_to_surface (mask,
+					  NULL,
+					  FALSE,
+					  extents,
+					  NULL,
+					  &src_x,
+					  &src_y);
     if (unlikely (status = src->status))
 	goto error;
 
@@ -328,7 +377,8 @@ __clip_to_surface (const comac_traps_compositor_t *compositor,
 	goto error;
 
     _comac_boxes_init_from_rectangle (&clear,
-				      0, 0,
+				      0,
+				      0,
 				      extents->width,
 				      extents->height);
     status = compositor->fill_boxes (mask,
@@ -338,11 +388,16 @@ __clip_to_surface (const comac_traps_compositor_t *compositor,
     if (unlikely (status))
 	goto error_release;
 
-    status = compositor->composite_traps (mask, COMAC_OPERATOR_ADD, src,
-					  src_x, src_y,
-					  extents->x, extents->y,
+    status = compositor->composite_traps (mask,
+					  COMAC_OPERATOR_ADD,
+					  src,
+					  src_x,
+					  src_y,
+					  extents->x,
+					  extents->y,
 					  extents,
-					  antialias, &traps);
+					  antialias,
+					  &traps);
     if (unlikely (status))
 	goto error_release;
 
@@ -380,8 +435,10 @@ traps_get_clip_surface (const comac_traps_compositor_t *compositor,
 	if (unlikely (surface->status))
 	    return surface;
 
-	status = _comac_clip_combine_with_surface (composite->clip, surface,
-						   extents->x, extents->y);
+	status = _comac_clip_combine_with_surface (composite->clip,
+						   surface,
+						   extents->x,
+						   extents->y);
     }
     if (unlikely (status)) {
 	comac_surface_destroy (surface);
@@ -391,11 +448,13 @@ traps_get_clip_surface (const comac_traps_compositor_t *compositor,
     return surface;
 }
 
-static void blt_unaligned_boxes(const comac_traps_compositor_t *compositor,
-				comac_surface_t *surface,
-				int dx, int dy,
-				comac_box_t *boxes,
-				int num_boxes)
+static void
+blt_unaligned_boxes (const comac_traps_compositor_t *compositor,
+		     comac_surface_t *surface,
+		     int dx,
+		     int dy,
+		     comac_box_t *boxes,
+		     int num_boxes)
 {
     struct blt_in info;
     int i;
@@ -410,19 +469,18 @@ static void blt_unaligned_boxes(const comac_traps_compositor_t *compositor,
 	if (! _comac_fixed_is_integer (b->p1.x) ||
 	    ! _comac_fixed_is_integer (b->p1.y) ||
 	    ! _comac_fixed_is_integer (b->p2.x) ||
-	    ! _comac_fixed_is_integer (b->p2.y))
-	{
-	    do_unaligned_box(blt_in, &info, b, dx, dy);
+	    ! _comac_fixed_is_integer (b->p2.y)) {
+	    do_unaligned_box (blt_in, &info, b, dx, dy);
 	}
     }
 }
 
 static comac_surface_t *
 create_composite_mask (const comac_traps_compositor_t *compositor,
-		       comac_surface_t		*dst,
-		       void			*draw_closure,
-		       draw_func_t		 draw_func,
-		       draw_func_t		 mask_func,
+		       comac_surface_t *dst,
+		       void *draw_closure,
+		       draw_func_t draw_func,
+		       draw_func_t mask_func,
 		       const comac_composite_rectangles_t *extents)
 {
     comac_surface_t *surface, *src;
@@ -431,7 +489,8 @@ create_composite_mask (const comac_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    surface = _comac_surface_create_scratch (dst, COMAC_CONTENT_ALPHA,
+    surface = _comac_surface_create_scratch (dst,
+					     COMAC_CONTENT_ALPHA,
 					     extents->bounded.width,
 					     extents->bounded.height,
 					     NULL);
@@ -443,7 +502,8 @@ create_composite_mask (const comac_traps_compositor_t *compositor,
 					  FALSE,
 					  &extents->bounded,
 					  &extents->bounded,
-					  &src_x, &src_y);
+					  &src_x,
+					  &src_y);
     if (unlikely (src->status)) {
 	comac_surface_destroy (surface);
 	return src;
@@ -456,11 +516,12 @@ create_composite_mask (const comac_traps_compositor_t *compositor,
 	return _comac_surface_create_in_error (status);
     }
 
-    if (!surface->is_clear) {
+    if (! surface->is_clear) {
 	comac_boxes_t clear;
 
 	_comac_boxes_init_from_rectangle (&clear,
-					  0, 0,
+					  0,
+					  0,
 					  extents->bounded.width,
 					  extents->bounded.height);
 	status = compositor->fill_boxes (surface,
@@ -474,10 +535,17 @@ create_composite_mask (const comac_traps_compositor_t *compositor,
     }
 
     if (mask_func) {
-	status = mask_func (compositor, surface, draw_closure,
-			    COMAC_OPERATOR_SOURCE, src, src_x, src_y,
-			    extents->bounded.x, extents->bounded.y,
-			    &extents->bounded, extents->clip);
+	status = mask_func (compositor,
+			    surface,
+			    draw_closure,
+			    COMAC_OPERATOR_SOURCE,
+			    src,
+			    src_x,
+			    src_y,
+			    extents->bounded.x,
+			    extents->bounded.y,
+			    &extents->bounded,
+			    extents->clip);
 	if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	    surface->is_clear = FALSE;
 	    goto out;
@@ -487,29 +555,41 @@ create_composite_mask (const comac_traps_compositor_t *compositor,
     }
 
     /* Is it worth setting the clip region here? */
-    status = draw_func (compositor, surface, draw_closure,
-			COMAC_OPERATOR_ADD, src, src_x, src_y,
-			extents->bounded.x, extents->bounded.y,
-			&extents->bounded, NULL);
+    status = draw_func (compositor,
+			surface,
+			draw_closure,
+			COMAC_OPERATOR_ADD,
+			src,
+			src_x,
+			src_y,
+			extents->bounded.x,
+			extents->bounded.y,
+			&extents->bounded,
+			NULL);
     if (unlikely (status))
 	goto error;
 
     surface->is_clear = FALSE;
     if (extents->clip->path != NULL) {
-	status = combine_clip_as_traps (compositor, surface,
-					extents->clip, &extents->bounded);
+	status = combine_clip_as_traps (compositor,
+					surface,
+					extents->clip,
+					&extents->bounded);
 	if (status == COMAC_INT_STATUS_UNSUPPORTED) {
-	    status = _comac_clip_combine_with_surface (extents->clip, surface,
+	    status = _comac_clip_combine_with_surface (extents->clip,
+						       surface,
 						       extents->bounded.x,
 						       extents->bounded.y);
 	}
 	if (unlikely (status))
 	    goto error;
     } else if (extents->clip->boxes) {
-	blt_unaligned_boxes(compositor, surface,
-			    extents->bounded.x, extents->bounded.y,
-			    extents->clip->boxes, extents->clip->num_boxes);
-
+	blt_unaligned_boxes (compositor,
+			     surface,
+			     extents->bounded.x,
+			     extents->bounded.y,
+			     extents->clip->boxes,
+			     extents->clip->num_boxes);
     }
 
 out:
@@ -532,21 +612,25 @@ error:
  */
 static comac_status_t
 clip_and_composite_with_mask (const comac_traps_compositor_t *compositor,
-			      const comac_composite_rectangles_t*extents,
-			      draw_func_t		 draw_func,
-			      draw_func_t		 mask_func,
-			      void			*draw_closure,
-			      comac_operator_t		 op,
-			      comac_surface_t	*src,
-			      int src_x, int src_y)
+			      const comac_composite_rectangles_t *extents,
+			      draw_func_t draw_func,
+			      draw_func_t mask_func,
+			      void *draw_closure,
+			      comac_operator_t op,
+			      comac_surface_t *src,
+			      int src_x,
+			      int src_y)
 {
     comac_surface_t *dst = extents->surface;
     comac_surface_t *mask;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    mask = create_composite_mask (compositor, dst, draw_closure,
-				  draw_func, mask_func,
+    mask = create_composite_mask (compositor,
+				  dst,
+				  draw_closure,
+				  draw_func,
+				  mask_func,
 				  extents);
     if (unlikely (mask->status))
 	return mask->status;
@@ -555,18 +639,31 @@ clip_and_composite_with_mask (const comac_traps_compositor_t *compositor,
 	goto skip;
 
     if (src != NULL || dst->content != COMAC_CONTENT_ALPHA) {
-	compositor->composite (dst, op, src, mask,
+	compositor->composite (dst,
+			       op,
+			       src,
+			       mask,
 			       extents->bounded.x + src_x,
 			       extents->bounded.y + src_y,
-			       0, 0,
-			       extents->bounded.x,      extents->bounded.y,
-			       extents->bounded.width,  extents->bounded.height);
+			       0,
+			       0,
+			       extents->bounded.x,
+			       extents->bounded.y,
+			       extents->bounded.width,
+			       extents->bounded.height);
     } else {
-	compositor->composite (dst, op, mask, NULL,
-			       0, 0,
-			       0, 0,
-			       extents->bounded.x,      extents->bounded.y,
-			       extents->bounded.width,  extents->bounded.height);
+	compositor->composite (dst,
+			       op,
+			       mask,
+			       NULL,
+			       0,
+			       0,
+			       0,
+			       0,
+			       extents->bounded.x,
+			       extents->bounded.y,
+			       extents->bounded.width,
+			       extents->bounded.height);
     }
 
 skip:
@@ -579,12 +676,13 @@ skip:
  */
 static comac_status_t
 clip_and_composite_combine (const comac_traps_compositor_t *compositor,
-			    const comac_composite_rectangles_t*extents,
-			    draw_func_t		 draw_func,
-			    void			*draw_closure,
-			    comac_operator_t		 op,
-			    comac_surface_t	*src,
-			    int src_x, int src_y)
+			    const comac_composite_rectangles_t *extents,
+			    draw_func_t draw_func,
+			    void *draw_closure,
+			    comac_operator_t op,
+			    comac_surface_t *src,
+			    int src_x,
+			    int src_y)
 {
     comac_surface_t *dst = extents->surface;
     comac_surface_t *tmp, *clip;
@@ -592,7 +690,8 @@ clip_and_composite_combine (const comac_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    tmp = _comac_surface_create_scratch (dst, dst->content,
+    tmp = _comac_surface_create_scratch (dst,
+					 dst->content,
 					 extents->bounded.width,
 					 extents->bounded.height,
 					 NULL);
@@ -606,17 +705,30 @@ clip_and_composite_combine (const comac_traps_compositor_t *compositor,
     }
 
     compositor->composite (tmp,
-			   dst->is_clear ? COMAC_OPERATOR_CLEAR : COMAC_OPERATOR_SOURCE,
-			   dst, NULL,
-			   extents->bounded.x,      extents->bounded.y,
-			   0, 0,
-			   0, 0,
-			   extents->bounded.width,  extents->bounded.height);
+			   dst->is_clear ? COMAC_OPERATOR_CLEAR
+					 : COMAC_OPERATOR_SOURCE,
+			   dst,
+			   NULL,
+			   extents->bounded.x,
+			   extents->bounded.y,
+			   0,
+			   0,
+			   0,
+			   0,
+			   extents->bounded.width,
+			   extents->bounded.height);
 
-    status = draw_func (compositor, tmp, draw_closure, op,
-			src, src_x, src_y,
-			extents->bounded.x, extents->bounded.y,
-			&extents->bounded, NULL);
+    status = draw_func (compositor,
+			tmp,
+			draw_closure,
+			op,
+			src,
+			src_x,
+			src_y,
+			extents->bounded.x,
+			extents->bounded.y,
+			&extents->bounded,
+			NULL);
 
     if (unlikely (status))
 	goto cleanup;
@@ -626,17 +738,30 @@ clip_and_composite_combine (const comac_traps_compositor_t *compositor,
 	goto cleanup;
 
     if (dst->is_clear) {
-	compositor->composite (dst, COMAC_OPERATOR_SOURCE, tmp, clip,
-			       0, 0,
-			       0, 0,
-			       extents->bounded.x,      extents->bounded.y,
-			       extents->bounded.width,  extents->bounded.height);
+	compositor->composite (dst,
+			       COMAC_OPERATOR_SOURCE,
+			       tmp,
+			       clip,
+			       0,
+			       0,
+			       0,
+			       0,
+			       extents->bounded.x,
+			       extents->bounded.y,
+			       extents->bounded.width,
+			       extents->bounded.height);
     } else {
-	compositor->lerp (dst, tmp, clip,
-			  0, 0,
-			  0,0,
-			  extents->bounded.x,     extents->bounded.y,
-			  extents->bounded.width, extents->bounded.height);
+	compositor->lerp (dst,
+			  tmp,
+			  clip,
+			  0,
+			  0,
+			  0,
+			  0,
+			  extents->bounded.x,
+			  extents->bounded.y,
+			  extents->bounded.width,
+			  extents->bounded.height);
     }
     comac_surface_destroy (clip);
 
@@ -651,23 +776,26 @@ cleanup:
  * defined as (src IN mask IN clip) ADD (dst OUT (mask IN clip))
  */
 static comac_status_t
-clip_and_composite_source (const comac_traps_compositor_t	*compositor,
-			   comac_surface_t			*dst,
-			   draw_func_t				 draw_func,
-			   draw_func_t				 mask_func,
-			   void					*draw_closure,
-			   comac_surface_t		*src,
+clip_and_composite_source (const comac_traps_compositor_t *compositor,
+			   comac_surface_t *dst,
+			   draw_func_t draw_func,
+			   draw_func_t mask_func,
+			   void *draw_closure,
+			   comac_surface_t *src,
 			   int src_x,
 			   int src_y,
-			   const comac_composite_rectangles_t	*extents)
+			   const comac_composite_rectangles_t *extents)
 {
     comac_surface_t *mask;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     /* Create a surface that is mask IN clip */
-    mask = create_composite_mask (compositor, dst, draw_closure,
-				  draw_func, mask_func,
+    mask = create_composite_mask (compositor,
+				  dst,
+				  draw_closure,
+				  draw_func,
+				  mask_func,
 				  extents);
     if (unlikely (mask->status))
 	return mask->status;
@@ -676,17 +804,30 @@ clip_and_composite_source (const comac_traps_compositor_t	*compositor,
 	goto skip;
 
     if (dst->is_clear) {
-	compositor->composite (dst, COMAC_OPERATOR_SOURCE, src, mask,
-			       extents->bounded.x + src_x, extents->bounded.y + src_y,
-			       0, 0,
-			       extents->bounded.x,      extents->bounded.y,
-			       extents->bounded.width,  extents->bounded.height);
+	compositor->composite (dst,
+			       COMAC_OPERATOR_SOURCE,
+			       src,
+			       mask,
+			       extents->bounded.x + src_x,
+			       extents->bounded.y + src_y,
+			       0,
+			       0,
+			       extents->bounded.x,
+			       extents->bounded.y,
+			       extents->bounded.width,
+			       extents->bounded.height);
     } else {
-	compositor->lerp (dst, src, mask,
-			  extents->bounded.x + src_x, extents->bounded.y + src_y,
-			  0, 0,
-			  extents->bounded.x,     extents->bounded.y,
-			  extents->bounded.width, extents->bounded.height);
+	compositor->lerp (dst,
+			  src,
+			  mask,
+			  extents->bounded.x + src_x,
+			  extents->bounded.y + src_y,
+			  0,
+			  0,
+			  extents->bounded.x,
+			  extents->bounded.y,
+			  extents->bounded.width,
+			  extents->bounded.height);
     }
 
 skip:
@@ -715,10 +856,8 @@ reduce_alpha_op (comac_composite_rectangles_t *extents)
     comac_surface_t *dst = extents->surface;
     comac_operator_t op = extents->op;
     const comac_pattern_t *pattern = &extents->source_pattern.base;
-    return dst->is_clear &&
-	   dst->content == COMAC_CONTENT_ALPHA &&
-	   _comac_pattern_is_opaque_solid (pattern) &&
-	   can_reduce_alpha_op (op);
+    return dst->is_clear && dst->content == COMAC_CONTENT_ALPHA &&
+	   _comac_pattern_is_opaque_solid (pattern) && can_reduce_alpha_op (op);
 }
 
 static comac_status_t
@@ -742,11 +881,18 @@ fixup_unbounded_with_mask (const comac_traps_compositor_t *compositor,
 	int width = extents->unbounded.width;
 	int height = extents->bounded.y - y;
 
-	compositor->composite (dst, COMAC_OPERATOR_DEST_OUT, mask, NULL,
-			       0, 0,
-			       0, 0,
-			       x, y,
-			       width, height);
+	compositor->composite (dst,
+			       COMAC_OPERATOR_DEST_OUT,
+			       mask,
+			       NULL,
+			       0,
+			       0,
+			       0,
+			       0,
+			       x,
+			       y,
+			       width,
+			       height);
     }
 
     /* left */
@@ -756,39 +902,62 @@ fixup_unbounded_with_mask (const comac_traps_compositor_t *compositor,
 	int width = extents->bounded.x - x;
 	int height = extents->bounded.height;
 
-	compositor->composite (dst, COMAC_OPERATOR_DEST_OUT, mask, NULL,
-			       0, y - extents->unbounded.y,
-			       0, 0,
-			       x, y,
-			       width, height);
+	compositor->composite (dst,
+			       COMAC_OPERATOR_DEST_OUT,
+			       mask,
+			       NULL,
+			       0,
+			       y - extents->unbounded.y,
+			       0,
+			       0,
+			       x,
+			       y,
+			       width,
+			       height);
     }
 
     /* right */
-    if (extents->bounded.x + extents->bounded.width != extents->unbounded.x + extents->unbounded.width) {
+    if (extents->bounded.x + extents->bounded.width !=
+	extents->unbounded.x + extents->unbounded.width) {
 	int x = extents->bounded.x + extents->bounded.width;
 	int y = extents->bounded.y;
 	int width = extents->unbounded.x + extents->unbounded.width - x;
 	int height = extents->bounded.height;
 
-	compositor->composite (dst, COMAC_OPERATOR_DEST_OUT, mask, NULL,
-			       x - extents->unbounded.x, y - extents->unbounded.y,
-			       0, 0,
-			       x, y,
-			       width, height);
+	compositor->composite (dst,
+			       COMAC_OPERATOR_DEST_OUT,
+			       mask,
+			       NULL,
+			       x - extents->unbounded.x,
+			       y - extents->unbounded.y,
+			       0,
+			       0,
+			       x,
+			       y,
+			       width,
+			       height);
     }
 
     /* bottom */
-    if (extents->bounded.y + extents->bounded.height != extents->unbounded.y + extents->unbounded.height) {
+    if (extents->bounded.y + extents->bounded.height !=
+	extents->unbounded.y + extents->unbounded.height) {
 	int x = extents->unbounded.x;
 	int y = extents->bounded.y + extents->bounded.height;
 	int width = extents->unbounded.width;
 	int height = extents->unbounded.y + extents->unbounded.height - y;
 
-	compositor->composite (dst, COMAC_OPERATOR_DEST_OUT, mask, NULL,
-			       0, y - extents->unbounded.y,
-			       0, 0,
-			       x, y,
-			       width, height);
+	compositor->composite (dst,
+			       COMAC_OPERATOR_DEST_OUT,
+			       mask,
+			       NULL,
+			       0,
+			       y - extents->unbounded.y,
+			       0,
+			       0,
+			       x,
+			       y,
+			       width,
+			       height);
     }
 
     comac_surface_destroy (mask);
@@ -823,9 +992,8 @@ fixup_unbounded (const comac_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    if (extents->bounded.width  == extents->unbounded.width &&
-	extents->bounded.height == extents->unbounded.height)
-    {
+    if (extents->bounded.width == extents->unbounded.width &&
+	extents->bounded.height == extents->unbounded.height) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -834,10 +1002,12 @@ fixup_unbounded (const comac_traps_compositor_t *compositor,
     /* subtract the drawn boxes from the unbounded area */
     _comac_boxes_init (&clear);
 
-    box.p1.x = _comac_fixed_from_int (extents->unbounded.x + extents->unbounded.width);
+    box.p1.x =
+	_comac_fixed_from_int (extents->unbounded.x + extents->unbounded.width);
     box.p1.y = _comac_fixed_from_int (extents->unbounded.y);
     box.p2.x = _comac_fixed_from_int (extents->unbounded.x);
-    box.p2.y = _comac_fixed_from_int (extents->unbounded.y + extents->unbounded.height);
+    box.p2.y = _comac_fixed_from_int (extents->unbounded.y +
+				      extents->unbounded.height);
 
     if (boxes == NULL) {
 	if (extents->bounded.width == 0 || extents->bounded.height == 0) {
@@ -846,19 +1016,22 @@ fixup_unbounded (const comac_traps_compositor_t *compositor,
 	    /* top */
 	    if (extents->bounded.y != extents->unbounded.y) {
 		add_rect (&clear,
-			  extents->unbounded.x, extents->unbounded.y,
+			  extents->unbounded.x,
+			  extents->unbounded.y,
 			  extents->unbounded.x + extents->unbounded.width,
 			  extents->bounded.y);
 	    }
 	    /* left */
 	    if (extents->bounded.x != extents->unbounded.x) {
 		add_rect (&clear,
-			  extents->unbounded.x, extents->bounded.y,
+			  extents->unbounded.x,
+			  extents->bounded.y,
 			  extents->bounded.x,
 			  extents->bounded.y + extents->bounded.height);
 	    }
 	    /* right */
-	    if (extents->bounded.x + extents->bounded.width != extents->unbounded.x + extents->unbounded.width) {
+	    if (extents->bounded.x + extents->bounded.width !=
+		extents->unbounded.x + extents->unbounded.width) {
 		add_rect (&clear,
 			  extents->bounded.x + extents->bounded.width,
 			  extents->bounded.y,
@@ -866,7 +1039,8 @@ fixup_unbounded (const comac_traps_compositor_t *compositor,
 			  extents->bounded.y + extents->bounded.height);
 	    }
 	    /* bottom */
-	    if (extents->bounded.y + extents->bounded.height != extents->unbounded.y + extents->unbounded.height) {
+	    if (extents->bounded.y + extents->bounded.height !=
+		extents->unbounded.y + extents->unbounded.height) {
 		add_rect (&clear,
 			  extents->unbounded.x,
 			  extents->bounded.y + extents->bounded.height,
@@ -885,16 +1059,18 @@ fixup_unbounded (const comac_traps_compositor_t *compositor,
 	tmp.chunks.next = &boxes->chunks;
 	tmp.num_boxes += boxes->num_boxes;
 
-	status = _comac_bentley_ottmann_tessellate_boxes (&tmp,
-							  COMAC_FILL_RULE_WINDING,
-							  &clear);
+	status =
+	    _comac_bentley_ottmann_tessellate_boxes (&tmp,
+						     COMAC_FILL_RULE_WINDING,
+						     &clear);
 	tmp.chunks.next = NULL;
 	if (unlikely (status))
 	    goto error;
     } else {
-empty:
+    empty:
 	box.p1.x = _comac_fixed_from_int (extents->unbounded.x);
-	box.p2.x = _comac_fixed_from_int (extents->unbounded.x + extents->unbounded.width);
+	box.p2.x = _comac_fixed_from_int (extents->unbounded.x +
+					  extents->unbounded.width);
 
 	status = _comac_boxes_add (&clear, COMAC_ANTIALIAS_DEFAULT, &box);
 	assert (status == COMAC_INT_STATUS_SUCCESS);
@@ -933,15 +1109,13 @@ need_bounded_clip (comac_composite_rectangles_t *extents)
 
     if (extents->clip->num_boxes > 1 ||
 	extents->mask.width > extents->unbounded.width ||
-	extents->mask.height > extents->unbounded.height)
-    {
+	extents->mask.height > extents->unbounded.height) {
 	flags |= NEED_CLIP_REGION;
     }
 
     if (extents->clip->num_boxes > 1 ||
 	extents->mask.width > extents->bounded.width ||
-	extents->mask.height > extents->bounded.height)
-    {
+	extents->mask.height > extents->bounded.height) {
 	flags |= FORCE_CLIP_REGION;
     }
 
@@ -968,9 +1142,9 @@ need_unbounded_clip (comac_composite_rectangles_t *extents)
 static comac_status_t
 clip_and_composite (const comac_traps_compositor_t *compositor,
 		    comac_composite_rectangles_t *extents,
-		    draw_func_t		 draw_func,
-		    draw_func_t		 mask_func,
-		    void		*draw_closure,
+		    draw_func_t draw_func,
+		    draw_func_t mask_func,
+		    void *draw_closure,
 		    unsigned int need_clip)
 {
     comac_surface_t *dst = extents->surface;
@@ -1005,8 +1179,8 @@ clip_and_composite (const comac_traps_compositor_t *compositor,
 
 	clip_region = _comac_clip_get_region (extents->clip);
 	if (clip_region != NULL &&
-	    comac_region_contains_rectangle (clip_region,
-					     limit) == COMAC_REGION_OVERLAP_IN)
+	    comac_region_contains_rectangle (clip_region, limit) ==
+		COMAC_REGION_OVERLAP_IN)
 	    clip_region = NULL;
 
 	if (clip_region != NULL) {
@@ -1021,35 +1195,58 @@ clip_and_composite (const comac_traps_compositor_t *compositor,
     if (extents->bounded.width == 0 || extents->bounded.height == 0)
 	goto skip;
 
-    src = compositor->pattern_to_surface (dst, source, FALSE,
+    src = compositor->pattern_to_surface (dst,
+					  source,
+					  FALSE,
 					  &extents->bounded,
 					  &extents->source_sample_area,
-					  &src_x, &src_y);
+					  &src_x,
+					  &src_y);
     if (unlikely (status = src->status))
 	goto error;
 
     if (op == COMAC_OPERATOR_SOURCE) {
-	status = clip_and_composite_source (compositor, dst,
-					    draw_func, mask_func, draw_closure,
-					    src, src_x, src_y,
+	status = clip_and_composite_source (compositor,
+					    dst,
+					    draw_func,
+					    mask_func,
+					    draw_closure,
+					    src,
+					    src_x,
+					    src_y,
 					    extents);
     } else {
 	if (need_clip & NEED_CLIP_SURFACE) {
 	    if (extents->is_bounded) {
-		status = clip_and_composite_with_mask (compositor, extents,
-						       draw_func, mask_func,
+		status = clip_and_composite_with_mask (compositor,
+						       extents,
+						       draw_func,
+						       mask_func,
 						       draw_closure,
-						       op, src, src_x, src_y);
+						       op,
+						       src,
+						       src_x,
+						       src_y);
 	    } else {
-		status = clip_and_composite_combine (compositor, extents,
-						     draw_func, draw_closure,
-						     op, src, src_x, src_y);
+		status = clip_and_composite_combine (compositor,
+						     extents,
+						     draw_func,
+						     draw_closure,
+						     op,
+						     src,
+						     src_x,
+						     src_y);
 	    }
 	} else {
 	    status = draw_func (compositor,
-				dst, draw_closure,
-				op, src, src_x, src_y,
-				0, 0,
+				dst,
+				draw_closure,
+				op,
+				src,
+				src_x,
+				src_y,
+				0,
+				0,
 				&extents->bounded,
 				extents->clip);
 	}
@@ -1082,24 +1279,31 @@ typedef struct {
 
 static comac_int_status_t
 composite_traps (const comac_traps_compositor_t *compositor,
-		 comac_surface_t		*dst,
-		 void				 *closure,
-		 comac_operator_t		 op,
-		 comac_surface_t		*src,
-		 int src_x, int src_y,
-		 int dst_x, int dst_y,
+		 comac_surface_t *dst,
+		 void *closure,
+		 comac_operator_t op,
+		 comac_surface_t *src,
+		 int src_x,
+		 int src_y,
+		 int dst_x,
+		 int dst_y,
 		 const comac_rectangle_int_t *extents,
-		 comac_clip_t			*clip)
+		 comac_clip_t *clip)
 {
     composite_traps_info_t *info = closure;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    return compositor->composite_traps (dst, op, src,
-					src_x - dst_x, src_y - dst_y,
-					dst_x, dst_y,
+    return compositor->composite_traps (dst,
+					op,
+					src,
+					src_x - dst_x,
+					src_y - dst_y,
+					dst_x,
+					dst_y,
 					extents,
-					info->antialias, &info->traps);
+					info->antialias,
+					&info->traps);
 }
 
 typedef struct {
@@ -1109,24 +1313,31 @@ typedef struct {
 
 static comac_int_status_t
 composite_tristrip (const comac_traps_compositor_t *compositor,
-		    comac_surface_t		*dst,
-		    void				 *closure,
-		    comac_operator_t		 op,
-		    comac_surface_t		*src,
-		    int src_x, int src_y,
-		    int dst_x, int dst_y,
+		    comac_surface_t *dst,
+		    void *closure,
+		    comac_operator_t op,
+		    comac_surface_t *src,
+		    int src_x,
+		    int src_y,
+		    int dst_x,
+		    int dst_y,
 		    const comac_rectangle_int_t *extents,
-		    comac_clip_t			*clip)
+		    comac_clip_t *clip)
 {
     composite_tristrip_info_t *info = closure;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    return compositor->composite_tristrip (dst, op, src,
-					   src_x - dst_x, src_y - dst_y,
-					   dst_x, dst_y,
+    return compositor->composite_tristrip (dst,
+					   op,
+					   src,
+					   src_x - dst_x,
+					   src_y - dst_y,
+					   dst_x,
+					   dst_y,
 					   extents,
-					   info->antialias, &info->strip);
+					   info->antialias,
+					   &info->strip);
 }
 
 static comac_bool_t
@@ -1163,7 +1374,8 @@ recording_pattern_contains_sample (const comac_pattern_t *pattern,
     if (pattern->extend == COMAC_EXTEND_NONE)
 	return TRUE;
 
-    surface = (comac_recording_surface_t *) recording_pattern_get_surface (pattern);
+    surface =
+	(comac_recording_surface_t *) recording_pattern_get_surface (pattern);
     if (surface->unbounded)
 	return TRUE;
 
@@ -1177,7 +1389,8 @@ op_reduces_to_source (comac_composite_rectangles_t *extents)
 	return TRUE;
 
     if (extents->surface->is_clear)
-	return extents->op == COMAC_OPERATOR_OVER || extents->op == COMAC_OPERATOR_ADD;
+	return extents->op == COMAC_OPERATOR_OVER ||
+	       extents->op == COMAC_OPERATOR_ADD;
 
     return FALSE;
 }
@@ -1196,8 +1409,7 @@ composite_aligned_boxes (const comac_traps_compositor_t *compositor,
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     if (need_clip_mask &&
-	(! extents->is_bounded || extents->op == COMAC_OPERATOR_SOURCE))
-    {
+	(! extents->is_bounded || extents->op == COMAC_OPERATOR_SOURCE)) {
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
@@ -1206,8 +1418,7 @@ composite_aligned_boxes (const comac_traps_compositor_t *compositor,
     /* Are we just copying a recording surface? */
     if (! need_clip_mask && op_is_source &&
 	recording_pattern_contains_sample (&extents->source_pattern.base,
-					   &extents->source_sample_area))
-    {
+					   &extents->source_sample_area)) {
 	comac_clip_t *recording_clip;
 	const comac_pattern_t *source = &extents->source_pattern.base;
 	const comac_matrix_t *m;
@@ -1239,8 +1450,11 @@ composite_aligned_boxes (const comac_traps_compositor_t *compositor,
 	}
 
 	recording_clip = _comac_clip_from_boxes (boxes);
-	status = _comac_recording_surface_replay_with_clip (recording_pattern_get_surface (source),
-							    m, dst, recording_clip);
+	status = _comac_recording_surface_replay_with_clip (
+	    recording_pattern_get_surface (source),
+	    m,
+	    dst,
+	    recording_clip);
 	_comac_clip_destroy (recording_clip);
 
 	return status;
@@ -1252,30 +1466,28 @@ composite_aligned_boxes (const comac_traps_compositor_t *compositor,
 
     if (! need_clip_mask &&
 	(op == COMAC_OPERATOR_CLEAR ||
-	 extents->source_pattern.base.type == COMAC_PATTERN_TYPE_SOLID))
-    {
+	 extents->source_pattern.base.type == COMAC_PATTERN_TYPE_SOLID)) {
 	const comac_color_t *color;
 
 	if (op == COMAC_OPERATOR_CLEAR) {
 	    color = COMAC_COLOR_TRANSPARENT;
 	} else {
-	    color = &((comac_solid_pattern_t *) &extents->source_pattern)->color;
+	    color =
+		&((comac_solid_pattern_t *) &extents->source_pattern)->color;
 	    if (op_is_source)
 		op = COMAC_OPERATOR_SOURCE;
 	}
 
 	status = compositor->fill_boxes (dst, op, color, boxes);
-    }
-    else
-    {
+    } else {
 	comac_surface_t *src, *mask = NULL;
 	comac_pattern_t *source = &extents->source_pattern.base;
 	int src_x, src_y;
 	int mask_x = 0, mask_y = 0;
 
 	if (need_clip_mask) {
-	    mask = traps_get_clip_surface (compositor,
-					   extents, &extents->bounded);
+	    mask =
+		traps_get_clip_surface (compositor, extents, &extents->bounded);
 	    if (unlikely (mask->status))
 		return mask->status;
 
@@ -1289,16 +1501,26 @@ composite_aligned_boxes (const comac_traps_compositor_t *compositor,
 	} else if (op_is_source)
 	    op = COMAC_OPERATOR_SOURCE;
 
-	src = compositor->pattern_to_surface (dst, source, FALSE,
+	src = compositor->pattern_to_surface (dst,
+					      source,
+					      FALSE,
 					      &extents->bounded,
 					      &extents->source_sample_area,
-					      &src_x, &src_y);
+					      &src_x,
+					      &src_y);
 	if (likely (src->status == COMAC_STATUS_SUCCESS)) {
-	    status = compositor->composite_boxes (dst, op, src, mask,
-						  src_x, src_y,
-						  mask_x, mask_y,
-						  0, 0,
-						  boxes, &extents->bounded);
+	    status = compositor->composite_boxes (dst,
+						  op,
+						  src,
+						  mask,
+						  src_x,
+						  src_y,
+						  mask_x,
+						  mask_y,
+						  0,
+						  0,
+						  boxes,
+						  &extents->bounded);
 	    comac_surface_destroy (src);
 	} else
 	    status = src->status;
@@ -1328,9 +1550,9 @@ upload_boxes (const comac_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    src = _comac_pattern_get_source((comac_surface_pattern_t *)source,
-				    &limit);
-    if (!(src->type == COMAC_SURFACE_TYPE_IMAGE || src->type == dst->type))
+    src =
+	_comac_pattern_get_source ((comac_surface_pattern_t *) source, &limit);
+    if (! (src->type == COMAC_SURFACE_TYPE_IMAGE || src->type == dst->type))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if (! _comac_matrix_is_integer_translation (&source->matrix, &tx, &ty))
@@ -1340,8 +1562,10 @@ upload_boxes (const comac_traps_compositor_t *compositor,
     if (extents->bounded.x + tx < limit.x || extents->bounded.y + ty < limit.y)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    if (extents->bounded.x + extents->bounded.width  + tx > limit.x + limit.width ||
-	extents->bounded.y + extents->bounded.height + ty > limit.y + limit.height)
+    if (extents->bounded.x + extents->bounded.width + tx >
+	    limit.x + limit.width ||
+	extents->bounded.y + extents->bounded.height + ty >
+	    limit.y + limit.height)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     tx += limit.x;
@@ -1349,11 +1573,13 @@ upload_boxes (const comac_traps_compositor_t *compositor,
 
     if (src->type == COMAC_SURFACE_TYPE_IMAGE)
 	status = compositor->draw_image_boxes (dst,
-					       (comac_image_surface_t *)src,
-					       boxes, tx, ty);
+					       (comac_image_surface_t *) src,
+					       boxes,
+					       tx,
+					       ty);
     else
-	status = compositor->copy_boxes (dst, src, boxes, &extents->bounded,
-					 tx, ty);
+	status =
+	    compositor->copy_boxes (dst, src, boxes, &extents->bounded, tx, ty);
 
     return status;
 }
@@ -1400,10 +1626,9 @@ boxes_for_traps (comac_boxes_t *boxes,
 	for (i = 0; i < traps->num_traps; i++) {
 	    const comac_trapezoid_t *t = &traps->traps[i];
 	    if (_comac_fixed_integer_round_down (t->left.p1.x) !=
-		_comac_fixed_integer_round_down (t->left.p2.x) ||
+		    _comac_fixed_integer_round_down (t->left.p2.x) ||
 		_comac_fixed_integer_round_down (t->right.p1.x) !=
-		_comac_fixed_integer_round_down (t->right.p2.x))
-	    {
+		    _comac_fixed_integer_round_down (t->right.p2.x)) {
 		return COMAC_INT_STATUS_UNSUPPORTED;
 	    }
 	}
@@ -1417,8 +1642,8 @@ boxes_for_traps (comac_boxes_t *boxes,
 
     _comac_boxes_init (boxes);
 
-    boxes->chunks.base  = (comac_box_t *) traps->traps;
-    boxes->chunks.size  = traps->num_traps;
+    boxes->chunks.base = (comac_box_t *) traps->traps;
+    boxes->chunks.size = traps->num_traps;
 
     if (antialias != COMAC_ANTIALIAS_NONE) {
 	for (i = j = 0; i < traps->num_traps; i++) {
@@ -1429,7 +1654,7 @@ boxes_for_traps (comac_boxes_t *boxes,
 	    comac_fixed_t y2 = traps->traps[i].bottom;
 
 	    if (x1 == x2 || y1 == y2)
-		    continue;
+		continue;
 
 	    boxes->chunks.base[j].p1.x = x1;
 	    boxes->chunks.base[j].p1.y = y1;
@@ -1438,9 +1663,10 @@ boxes_for_traps (comac_boxes_t *boxes,
 	    j++;
 
 	    if (boxes->is_pixel_aligned) {
-		boxes->is_pixel_aligned =
-		    _comac_fixed_is_integer (x1) && _comac_fixed_is_integer (y1) &&
-		    _comac_fixed_is_integer (x2) && _comac_fixed_is_integer (y2);
+		boxes->is_pixel_aligned = _comac_fixed_is_integer (x1) &&
+					  _comac_fixed_is_integer (y1) &&
+					  _comac_fixed_is_integer (x2) &&
+					  _comac_fixed_is_integer (y2);
 	    }
 	}
     } else {
@@ -1463,7 +1689,7 @@ boxes_for_traps (comac_boxes_t *boxes,
 	}
     }
     boxes->chunks.count = j;
-    boxes->num_boxes    = j;
+    boxes->num_boxes = j;
 
     return COMAC_INT_STATUS_SUCCESS;
 }
@@ -1492,11 +1718,13 @@ clip_and_composite_polygon (const comac_traps_compositor_t *compositor,
 	status = COMAC_INT_STATUS_SUCCESS;
 
 	if (! extents->is_bounded) {
-	    comac_region_t *clip_region = _comac_clip_get_region (extents->clip);
+	    comac_region_t *clip_region =
+		_comac_clip_get_region (extents->clip);
 
 	    if (clip_region &&
 		comac_region_contains_rectangle (clip_region,
-						 &extents->unbounded) == COMAC_REGION_OVERLAP_IN)
+						 &extents->unbounded) ==
+		    COMAC_REGION_OVERLAP_IN)
 		clip_region = NULL;
 
 	    if (clip_region != NULL) {
@@ -1528,10 +1756,13 @@ clip_and_composite_polygon (const comac_traps_compositor_t *compositor,
 					  &clipper_antialias);
 	if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	    if (clipper_antialias == antialias) {
-		status = _comac_polygon_intersect (polygon, fill_rule,
-						   &clipper, clipper_fill_rule);
+		status = _comac_polygon_intersect (polygon,
+						   fill_rule,
+						   &clipper,
+						   clipper_fill_rule);
 		if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
-		    comac_clip_t * clip = _comac_clip_copy_region (extents->clip);
+		    comac_clip_t *clip =
+			_comac_clip_copy_region (extents->clip);
 		    _comac_clip_destroy (extents->clip);
 		    extents->clip = clip;
 
@@ -1559,9 +1790,14 @@ clip_and_composite_polygon (const comac_traps_compositor_t *compositor,
     _comac_traps_init (&traps.traps);
 
     if (antialias == COMAC_ANTIALIAS_NONE && curvy) {
-	status = _comac_rasterise_polygon_to_traps (polygon, fill_rule, antialias, &traps.traps);
+	status = _comac_rasterise_polygon_to_traps (polygon,
+						    fill_rule,
+						    antialias,
+						    &traps.traps);
     } else {
-	status = _comac_bentley_ottmann_tessellate_polygon (&traps.traps, polygon, fill_rule);
+	status = _comac_bentley_ottmann_tessellate_polygon (&traps.traps,
+							    polygon,
+							    fill_rule);
     }
     if (unlikely (status))
 	goto CLEANUP_TRAPS;
@@ -1599,8 +1835,11 @@ clip_and_composite_polygon (const comac_traps_compositor_t *compositor,
 	    flags |= FORCE_CLIP_REGION;
 
 	traps.antialias = antialias;
-	status = clip_and_composite (compositor, extents,
-				     composite_traps, NULL, &traps,
+	status = clip_and_composite (compositor,
+				     extents,
+				     composite_traps,
+				     NULL,
+				     &traps,
 				     need_unbounded_clip (extents) | flags);
     }
 
@@ -1619,10 +1858,13 @@ struct composite_opacity_info {
     double opacity;
 };
 
-static void composite_opacity(void *closure,
-			      int16_t x, int16_t y,
-			      int16_t w, int16_t h,
-			      uint16_t coverage)
+static void
+composite_opacity (void *closure,
+		   int16_t x,
+		   int16_t y,
+		   int16_t w,
+		   int16_t h,
+		   uint16_t coverage)
 {
     struct composite_opacity_info *info = closure;
     const comac_traps_compositor_t *compositor = info->compositor;
@@ -1633,42 +1875,58 @@ static void composite_opacity(void *closure,
 
     _comac_color_init_rgba (&color, 0, 0, 0, info->opacity * coverage);
     _comac_pattern_init_solid (&solid, &color);
-    mask = compositor->pattern_to_surface (info->dst, &solid.base, TRUE,
+    mask = compositor->pattern_to_surface (info->dst,
+					   &solid.base,
+					   TRUE,
 					   &_comac_unbounded_rectangle,
 					   &_comac_unbounded_rectangle,
-					   &mask_x, &mask_y);
+					   &mask_x,
+					   &mask_y);
     if (likely (mask->status == COMAC_STATUS_SUCCESS)) {
 	if (info->src) {
-	    compositor->composite (info->dst, info->op, info->src, mask,
-				   x + info->src_x,  y + info->src_y,
-				   mask_x,           mask_y,
-				   x,                y,
-				   w,                h);
+	    compositor->composite (info->dst,
+				   info->op,
+				   info->src,
+				   mask,
+				   x + info->src_x,
+				   y + info->src_y,
+				   mask_x,
+				   mask_y,
+				   x,
+				   y,
+				   w,
+				   h);
 	} else {
-	    compositor->composite (info->dst, info->op, mask, NULL,
-				   mask_x,            mask_y,
-				   0,                 0,
-				   x,                 y,
-				   w,                 h);
+	    compositor->composite (info->dst,
+				   info->op,
+				   mask,
+				   NULL,
+				   mask_x,
+				   mask_y,
+				   0,
+				   0,
+				   x,
+				   y,
+				   w,
+				   h);
 	}
     }
 
     comac_surface_destroy (mask);
 }
 
-
 static comac_int_status_t
 composite_opacity_boxes (const comac_traps_compositor_t *compositor,
-			 comac_surface_t		*dst,
-			 void				*closure,
-			 comac_operator_t		 op,
-			 comac_surface_t		*src,
-			 int				 src_x,
-			 int				 src_y,
-			 int				 dst_x,
-			 int				 dst_y,
-			 const comac_rectangle_int_t	*extents,
-			 comac_clip_t			*clip)
+			 comac_surface_t *dst,
+			 void *closure,
+			 comac_operator_t op,
+			 comac_surface_t *src,
+			 int src_x,
+			 int src_y,
+			 int dst_x,
+			 int dst_y,
+			 const comac_rectangle_int_t *extents,
+			 comac_clip_t *clip)
 {
     const comac_solid_pattern_t *mask = closure;
     struct composite_opacity_info info;
@@ -1688,24 +1946,27 @@ composite_opacity_boxes (const comac_traps_compositor_t *compositor,
 
     /* XXX for lots of boxes create a clip region for the fully opaque areas */
     for (i = 0; i < clip->num_boxes; i++)
-	do_unaligned_box(composite_opacity, &info,
-			 &clip->boxes[i], dst_x, dst_y);
+	do_unaligned_box (composite_opacity,
+			  &info,
+			  &clip->boxes[i],
+			  dst_x,
+			  dst_y);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
 composite_boxes (const comac_traps_compositor_t *compositor,
-		 comac_surface_t		*dst,
-		 void				*closure,
-		 comac_operator_t		 op,
-		 comac_surface_t		*src,
-		 int				 src_x,
-		 int				 src_y,
-		 int				 dst_x,
-		 int				 dst_y,
-		 const comac_rectangle_int_t	*extents,
-		 comac_clip_t			*clip)
+		 comac_surface_t *dst,
+		 void *closure,
+		 comac_operator_t op,
+		 comac_surface_t *src,
+		 int src_x,
+		 int src_y,
+		 int dst_x,
+		 int dst_y,
+		 const comac_rectangle_int_t *extents,
+		 comac_clip_t *clip)
 {
     comac_traps_t traps;
     comac_status_t status;
@@ -1716,11 +1977,16 @@ composite_boxes (const comac_traps_compositor_t *compositor,
     if (unlikely (status))
 	return status;
 
-    status = compositor->composite_traps (dst, op, src,
-					  src_x - dst_x, src_y - dst_y,
-					  dst_x, dst_y,
+    status = compositor->composite_traps (dst,
+					  op,
+					  src,
+					  src_x - dst_x,
+					  src_y - dst_y,
+					  dst_x,
+					  dst_y,
 					  extents,
-					  COMAC_ANTIALIAS_DEFAULT, &traps);
+					  COMAC_ANTIALIAS_DEFAULT,
+					  &traps);
     _comac_traps_fini (&traps);
 
     return status;
@@ -1746,8 +2012,8 @@ clip_and_composite_boxes (const comac_traps_compositor_t *compositor,
 	extents->source_pattern.base.type == COMAC_PATTERN_TYPE_SURFACE &&
 	(op_reduces_to_source (extents) ||
 	 (extents->op == COMAC_OPERATOR_OVER &&
-	  (extents->source_pattern.surface.surface->content & COMAC_CONTENT_ALPHA) == 0)))
-    {
+	  (extents->source_pattern.surface.surface->content &
+	   COMAC_CONTENT_ALPHA) == 0))) {
 	status = upload_boxes (compositor, extents, boxes);
 	if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	    return status;
@@ -1765,16 +2031,20 @@ clip_and_composite_boxes (const comac_traps_compositor_t *compositor,
 	if (_comac_clip_is_all_clipped (clip))
 	    return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-	status = _comac_clip_get_polygon (clip, &polygon,
-					  &fill_rule, &antialias);
+	status =
+	    _comac_clip_get_polygon (clip, &polygon, &fill_rule, &antialias);
 	_comac_clip_path_destroy (clip->path);
 	clip->path = NULL;
 	if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	    comac_clip_t *saved_clip = extents->clip;
 	    extents->clip = clip;
 
-	    status = clip_and_composite_polygon (compositor, extents, &polygon,
-						 antialias, fill_rule, FALSE);
+	    status = clip_and_composite_polygon (compositor,
+						 extents,
+						 &polygon,
+						 antialias,
+						 fill_rule,
+						 FALSE);
 
 	    clip = extents->clip;
 	    extents->clip = saved_clip;
@@ -1794,8 +2064,11 @@ clip_and_composite_boxes (const comac_traps_compositor_t *compositor,
 	    return status;
     }
 
-    return clip_and_composite (compositor, extents,
-			       composite_boxes, NULL, boxes,
+    return clip_and_composite (compositor,
+			       extents,
+			       composite_boxes,
+			       NULL,
+			       boxes,
 			       need_unbounded_clip (extents));
 }
 
@@ -1842,8 +2115,11 @@ clip_and_composite_traps (const comac_traps_compositor_t *compositor,
 	if (! extents->is_bounded)
 	    flags |= FORCE_CLIP_REGION;
 
-	status = clip_and_composite (compositor, extents,
-				     composite_traps, NULL, info,
+	status = clip_and_composite (compositor,
+				     extents,
+				     composite_traps,
+				     NULL,
+				     info,
 				     need_unbounded_clip (extents) | flags);
     }
 
@@ -1867,8 +2143,11 @@ clip_and_composite_tristrip (const comac_traps_compositor_t *compositor,
     if (! extents->is_bounded)
 	flags |= FORCE_CLIP_REGION;
 
-    status = clip_and_composite (compositor, extents,
-				 composite_tristrip, NULL, info,
+    status = clip_and_composite (compositor,
+				 extents,
+				 composite_tristrip,
+				 NULL,
+				 info,
 				 need_unbounded_clip (extents) | flags);
 
     return status;
@@ -1881,33 +2160,47 @@ struct composite_mask {
 
 static comac_int_status_t
 composite_mask (const comac_traps_compositor_t *compositor,
-		comac_surface_t			*dst,
-		void				*closure,
-		comac_operator_t		 op,
-		comac_surface_t			*src,
-		int				 src_x,
-		int				 src_y,
-		int				 dst_x,
-		int				 dst_y,
-		const comac_rectangle_int_t	*extents,
-		comac_clip_t			*clip)
+		comac_surface_t *dst,
+		void *closure,
+		comac_operator_t op,
+		comac_surface_t *src,
+		int src_x,
+		int src_y,
+		int dst_x,
+		int dst_y,
+		const comac_rectangle_int_t *extents,
+		comac_clip_t *clip)
 {
     struct composite_mask *data = closure;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     if (src != NULL) {
-	compositor->composite (dst, op, src, data->mask,
-			       extents->x + src_x, extents->y + src_y,
-			       extents->x + data->mask_x, extents->y + data->mask_y,
-			       extents->x - dst_x,  extents->y - dst_y,
-			       extents->width,      extents->height);
+	compositor->composite (dst,
+			       op,
+			       src,
+			       data->mask,
+			       extents->x + src_x,
+			       extents->y + src_y,
+			       extents->x + data->mask_x,
+			       extents->y + data->mask_y,
+			       extents->x - dst_x,
+			       extents->y - dst_y,
+			       extents->width,
+			       extents->height);
     } else {
-	compositor->composite (dst, op, data->mask, NULL,
-			       extents->x + data->mask_x, extents->y + data->mask_y,
-			       0, 0,
-			       extents->x - dst_x,  extents->y - dst_y,
-			       extents->width,      extents->height);
+	compositor->composite (dst,
+			       op,
+			       data->mask,
+			       NULL,
+			       extents->x + data->mask_x,
+			       extents->y + data->mask_y,
+			       0,
+			       0,
+			       extents->x - dst_x,
+			       extents->y - dst_y,
+			       extents->width,
+			       extents->height);
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -1921,10 +2214,13 @@ struct composite_box_info {
     uint8_t op;
 };
 
-static void composite_box(void *closure,
-			  int16_t x, int16_t y,
-			  int16_t w, int16_t h,
-			  uint16_t coverage)
+static void
+composite_box (void *closure,
+	       int16_t x,
+	       int16_t y,
+	       int16_t w,
+	       int16_t h,
+	       uint16_t coverage)
 {
     struct composite_box_info *info = closure;
     const comac_traps_compositor_t *compositor = info->compositor;
@@ -1937,44 +2233,61 @@ static void composite_box(void *closure,
 	comac_solid_pattern_t solid;
 	int mask_x, mask_y;
 
-	_comac_color_init_rgba (&color, 0, 0, 0, coverage / (double)0xffff);
+	_comac_color_init_rgba (&color, 0, 0, 0, coverage / (double) 0xffff);
 	_comac_pattern_init_solid (&solid, &color);
 
-	mask = compositor->pattern_to_surface (info->dst, &solid.base, FALSE,
+	mask = compositor->pattern_to_surface (info->dst,
+					       &solid.base,
+					       FALSE,
 					       &_comac_unbounded_rectangle,
 					       &_comac_unbounded_rectangle,
-					       &mask_x, &mask_y);
+					       &mask_x,
+					       &mask_y);
 
 	if (likely (mask->status == COMAC_STATUS_SUCCESS)) {
-	    compositor->composite (info->dst, info->op, info->src, mask,
-				   x + info->src_x,  y + info->src_y,
-				   mask_x,           mask_y,
-				   x,                y,
-				   w,                h);
+	    compositor->composite (info->dst,
+				   info->op,
+				   info->src,
+				   mask,
+				   x + info->src_x,
+				   y + info->src_y,
+				   mask_x,
+				   mask_y,
+				   x,
+				   y,
+				   w,
+				   h);
 	}
 
 	comac_surface_destroy (mask);
     } else {
-	compositor->composite (info->dst, info->op, info->src, NULL,
-			       x + info->src_x,  y + info->src_y,
-			       0,                0,
-			       x,                y,
-			       w,                h);
+	compositor->composite (info->dst,
+			       info->op,
+			       info->src,
+			       NULL,
+			       x + info->src_x,
+			       y + info->src_y,
+			       0,
+			       0,
+			       x,
+			       y,
+			       w,
+			       h);
     }
 }
 
 static comac_int_status_t
 composite_mask_clip_boxes (const comac_traps_compositor_t *compositor,
-			   comac_surface_t		*dst,
-			   void				*closure,
-			   comac_operator_t		 op,
-			   comac_surface_t		*src,
-			   int				 src_x,
-			   int				 src_y,
-			   int				 dst_x,
-			   int				 dst_y,
-			   const comac_rectangle_int_t	*extents,
-			   comac_clip_t			*clip)
+			   comac_surface_t *dst,
+			   void *closure,
+			   comac_operator_t op,
+			   comac_surface_t *src,
+			   int src_x,
+			   int src_y,
+			   int dst_x,
+			   int dst_y,
+			   const comac_rectangle_int_t *extents,
+			   comac_clip_t *clip)
 {
     struct composite_mask *data = closure;
     struct composite_box_info info;
@@ -1993,23 +2306,23 @@ composite_mask_clip_boxes (const comac_traps_compositor_t *compositor,
     info.src_y += dst_y;
 
     for (i = 0; i < clip->num_boxes; i++)
-	do_unaligned_box(composite_box, &info, &clip->boxes[i], dst_x, dst_y);
+	do_unaligned_box (composite_box, &info, &clip->boxes[i], dst_x, dst_y);
 
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
 composite_mask_clip (const comac_traps_compositor_t *compositor,
-		     comac_surface_t			*dst,
-		     void				*closure,
-		     comac_operator_t			 op,
-		     comac_surface_t			*src,
-		     int				 src_x,
-		     int				 src_y,
-		     int				 dst_x,
-		     int				 dst_y,
-		     const comac_rectangle_int_t	*extents,
-		     comac_clip_t			*clip)
+		     comac_surface_t *dst,
+		     void *closure,
+		     comac_operator_t op,
+		     comac_surface_t *src,
+		     int src_x,
+		     int src_y,
+		     int dst_x,
+		     int dst_y,
+		     const comac_rectangle_int_t *extents,
+		     comac_clip_t *clip)
 {
     struct composite_mask *data = closure;
     comac_polygon_t polygon;
@@ -2019,8 +2332,8 @@ composite_mask_clip (const comac_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    status = _comac_clip_get_polygon (clip, &polygon,
-				      &fill_rule, &info.antialias);
+    status =
+	_comac_clip_get_polygon (clip, &polygon, &fill_rule, &info.antialias);
     if (unlikely (status))
 	return status;
 
@@ -2032,12 +2345,17 @@ composite_mask_clip (const comac_traps_compositor_t *compositor,
     if (unlikely (status))
 	return status;
 
-    status = composite_traps (compositor, dst, &info,
+    status = composite_traps (compositor,
+			      dst,
+			      &info,
 			      COMAC_OPERATOR_SOURCE,
 			      data->mask,
-			      data->mask_x + dst_x, data->mask_y + dst_y,
-			      dst_x, dst_y,
-			      extents, NULL);
+			      data->mask_x + dst_x,
+			      data->mask_y + dst_y,
+			      dst_x,
+			      dst_y,
+			      extents,
+			      NULL);
     _comac_traps_fini (&info.traps);
 
     return status;
@@ -2049,7 +2367,8 @@ static comac_int_status_t
 _comac_traps_compositor_paint (const comac_compositor_t *_compositor,
 			       comac_composite_rectangles_t *extents)
 {
-    comac_traps_compositor_t *compositor = (comac_traps_compositor_t*)_compositor;
+    comac_traps_compositor_t *compositor =
+	(comac_traps_compositor_t *) _compositor;
     comac_boxes_t boxes;
     comac_int_status_t status;
 
@@ -2059,9 +2378,9 @@ _comac_traps_compositor_paint (const comac_compositor_t *_compositor,
     if (unlikely (status))
 	return status;
 
-     _comac_clip_steal_boxes (extents->clip, &boxes);
-     status = clip_and_composite_boxes (compositor, extents, &boxes);
-     _comac_clip_unsteal_boxes (extents->clip, &boxes);
+    _comac_clip_steal_boxes (extents->clip, &boxes);
+    status = clip_and_composite_boxes (compositor, extents, &boxes);
+    _comac_clip_unsteal_boxes (extents->clip, &boxes);
 
     return status;
 }
@@ -2070,7 +2389,8 @@ static comac_int_status_t
 _comac_traps_compositor_mask (const comac_compositor_t *_compositor,
 			      comac_composite_rectangles_t *extents)
 {
-    const comac_traps_compositor_t *compositor = (comac_traps_compositor_t*)_compositor;
+    const comac_traps_compositor_t *compositor =
+	(comac_traps_compositor_t *) _compositor;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
@@ -2081,7 +2401,8 @@ _comac_traps_compositor_mask (const comac_compositor_t *_compositor,
 
     if (extents->mask_pattern.base.type == COMAC_PATTERN_TYPE_SOLID &&
 	extents->clip->path == NULL) {
-	status = clip_and_composite (compositor, extents,
+	status = clip_and_composite (compositor,
+				     extents,
 				     composite_opacity_boxes,
 				     composite_opacity_boxes,
 				     &extents->mask_pattern,
@@ -2099,10 +2420,14 @@ _comac_traps_compositor_mask (const comac_compositor_t *_compositor,
 	if (unlikely (data.mask->status))
 	    return data.mask->status;
 
-	status = clip_and_composite (compositor, extents,
-				     composite_mask,
-				     extents->clip->path ? composite_mask_clip : composite_mask_clip_boxes,
-				     &data, need_bounded_clip (extents));
+	status =
+	    clip_and_composite (compositor,
+				extents,
+				composite_mask,
+				extents->clip->path ? composite_mask_clip
+						    : composite_mask_clip_boxes,
+				&data,
+				need_bounded_clip (extents));
 
 	comac_surface_destroy (data.mask);
     }
@@ -2115,12 +2440,13 @@ _comac_traps_compositor_stroke (const comac_compositor_t *_compositor,
 				comac_composite_rectangles_t *extents,
 				const comac_path_fixed_t *path,
 				const comac_stroke_style_t *style,
-				const comac_matrix_t	*ctm,
-				const comac_matrix_t	*ctm_inverse,
-				double			 tolerance,
-				comac_antialias_t	 antialias)
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias)
 {
-    const comac_traps_compositor_t *compositor = (comac_traps_compositor_t *)_compositor;
+    const comac_traps_compositor_t *compositor =
+	(comac_traps_compositor_t *) _compositor;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
@@ -2151,8 +2477,10 @@ _comac_traps_compositor_stroke (const comac_compositor_t *_compositor,
 
 	info.antialias = antialias;
 	_comac_tristrip_init_with_clip (&info.strip, extents->clip);
-	status = _comac_path_fixed_stroke_to_tristrip (path, style,
-						       ctm, ctm_inverse,
+	status = _comac_path_fixed_stroke_to_tristrip (path,
+						       style,
+						       ctm,
+						       ctm_inverse,
 						       tolerance,
 						       &info.strip);
 	if (likely (status == COMAC_INT_STATUS_SUCCESS))
@@ -2160,18 +2488,21 @@ _comac_traps_compositor_stroke (const comac_compositor_t *_compositor,
 	_comac_tristrip_fini (&info.strip);
     }
 
-    if (status == COMAC_INT_STATUS_UNSUPPORTED &&
-	path->has_curve_to && antialias == COMAC_ANTIALIAS_NONE) {
+    if (status == COMAC_INT_STATUS_UNSUPPORTED && path->has_curve_to &&
+	antialias == COMAC_ANTIALIAS_NONE) {
 	comac_polygon_t polygon;
 
 	_comac_polygon_init_with_clip (&polygon, extents->clip);
-	status = _comac_path_fixed_stroke_to_polygon (path, style,
-						      ctm, ctm_inverse,
+	status = _comac_path_fixed_stroke_to_polygon (path,
+						      style,
+						      ctm,
+						      ctm_inverse,
 						      tolerance,
 						      &polygon);
 	if (likely (status == COMAC_INT_STATUS_SUCCESS))
 	    status = clip_and_composite_polygon (compositor,
-						 extents, &polygon,
+						 extents,
+						 &polygon,
 						 COMAC_ANTIALIAS_NONE,
 						 COMAC_FILL_RULE_WINDING,
 						 TRUE);
@@ -2179,16 +2510,17 @@ _comac_traps_compositor_stroke (const comac_compositor_t *_compositor,
     }
 
     if (status == COMAC_INT_STATUS_UNSUPPORTED) {
-	comac_int_status_t (*func) (const comac_path_fixed_t	*path,
-				    const comac_stroke_style_t	*stroke_style,
-				    const comac_matrix_t	*ctm,
-				    const comac_matrix_t	*ctm_inverse,
-				    double			 tolerance,
-				    comac_traps_t		*traps);
+	comac_int_status_t (*func) (const comac_path_fixed_t *path,
+				    const comac_stroke_style_t *stroke_style,
+				    const comac_matrix_t *ctm,
+				    const comac_matrix_t *ctm_inverse,
+				    double tolerance,
+				    comac_traps_t *traps);
 	composite_traps_info_t info;
 	unsigned flags;
 
-	if (antialias == COMAC_ANTIALIAS_BEST || antialias == COMAC_ANTIALIAS_GOOD) {
+	if (antialias == COMAC_ANTIALIAS_BEST ||
+	    antialias == COMAC_ANTIALIAS_GOOD) {
 	    func = _comac_path_fixed_stroke_polygon_to_traps;
 	    flags = 0;
 	} else {
@@ -2200,7 +2532,8 @@ _comac_traps_compositor_stroke (const comac_compositor_t *_compositor,
 	_comac_traps_init_with_clip (&info.traps, extents->clip);
 	status = func (path, style, ctm, ctm_inverse, tolerance, &info.traps);
 	if (likely (status == COMAC_INT_STATUS_SUCCESS))
-	    status = clip_and_composite_traps (compositor, extents, &info, flags);
+	    status =
+		clip_and_composite_traps (compositor, extents, &info, flags);
 	_comac_traps_fini (&info.traps);
     }
 
@@ -2210,12 +2543,13 @@ _comac_traps_compositor_stroke (const comac_compositor_t *_compositor,
 static comac_int_status_t
 _comac_traps_compositor_fill (const comac_compositor_t *_compositor,
 			      comac_composite_rectangles_t *extents,
-			      const comac_path_fixed_t	*path,
-			      comac_fill_rule_t		 fill_rule,
-			      double			 tolerance,
-			      comac_antialias_t		 antialias)
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias)
 {
-    const comac_traps_compositor_t *compositor = (comac_traps_compositor_t *)_compositor;
+    const comac_traps_compositor_t *compositor =
+	(comac_traps_compositor_t *) _compositor;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
@@ -2265,8 +2599,12 @@ _comac_traps_compositor_fill (const comac_compositor_t *_compositor,
 	status = _comac_path_fixed_fill_to_polygon (path, tolerance, &polygon);
 #endif
 	if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
-	    status = clip_and_composite_polygon (compositor, extents, &polygon,
-						 antialias, fill_rule, path->has_curve_to);
+	    status = clip_and_composite_polygon (compositor,
+						 extents,
+						 &polygon,
+						 antialias,
+						 fill_rule,
+						 path->has_curve_to);
 	}
 	_comac_polygon_fini (&polygon);
     }
@@ -2276,14 +2614,16 @@ _comac_traps_compositor_fill (const comac_compositor_t *_compositor,
 
 static comac_int_status_t
 composite_glyphs (const comac_traps_compositor_t *compositor,
-		  comac_surface_t	*dst,
+		  comac_surface_t *dst,
 		  void *closure,
-		  comac_operator_t	 op,
-		  comac_surface_t	*src,
-		  int src_x, int src_y,
-		  int dst_x, int dst_y,
+		  comac_operator_t op,
+		  comac_surface_t *src,
+		  int src_x,
+		  int src_y,
+		  int dst_x,
+		  int dst_y,
 		  const comac_rectangle_int_t *extents,
-		  comac_clip_t		*clip)
+		  comac_clip_t *clip)
 {
     comac_composite_glyphs_info_t *info = closure;
 
@@ -2292,21 +2632,20 @@ composite_glyphs (const comac_traps_compositor_t *compositor,
     if (op == COMAC_OPERATOR_ADD && (dst->content & COMAC_CONTENT_COLOR) == 0)
 	info->use_mask = 0;
 
-    return compositor->composite_glyphs (dst, op, src,
-					 src_x, src_y,
-					 dst_x, dst_y,
-					 info);
+    return compositor
+	->composite_glyphs (dst, op, src, src_x, src_y, dst_x, dst_y, info);
 }
 
 static comac_int_status_t
-_comac_traps_compositor_glyphs (const comac_compositor_t	*_compositor,
-				comac_composite_rectangles_t	*extents,
-				comac_scaled_font_t		*scaled_font,
-				comac_glyph_t			*glyphs,
-				int				 num_glyphs,
-				comac_bool_t			 overlap)
+_comac_traps_compositor_glyphs (const comac_compositor_t *_compositor,
+				comac_composite_rectangles_t *extents,
+				comac_scaled_font_t *scaled_font,
+				comac_glyph_t *glyphs,
+				int num_glyphs,
+				comac_bool_t overlap)
 {
-    const comac_traps_compositor_t *compositor = (comac_traps_compositor_t *)_compositor;
+    const comac_traps_compositor_t *compositor =
+	(comac_traps_compositor_t *) _compositor;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
@@ -2317,7 +2656,8 @@ _comac_traps_compositor_glyphs (const comac_compositor_t	*_compositor,
 
     _comac_scaled_font_freeze_cache (scaled_font);
     status = compositor->check_composite_glyphs (extents,
-						 scaled_font, glyphs,
+						 scaled_font,
+						 glyphs,
 						 &num_glyphs);
     if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	comac_composite_glyphs_info_t info;
@@ -2328,9 +2668,13 @@ _comac_traps_compositor_glyphs (const comac_compositor_t	*_compositor,
 	info.use_mask = overlap || ! extents->is_bounded;
 	info.extents = extents->bounded;
 
-	status = clip_and_composite (compositor, extents,
-				     composite_glyphs, NULL, &info,
-				     need_bounded_clip (extents) | FORCE_CLIP_REGION);
+	status = clip_and_composite (compositor,
+				     extents,
+				     composite_glyphs,
+				     NULL,
+				     &info,
+				     need_bounded_clip (extents) |
+					 FORCE_CLIP_REGION);
     }
     _comac_scaled_font_thaw_cache (scaled_font);
 
@@ -2339,7 +2683,7 @@ _comac_traps_compositor_glyphs (const comac_compositor_t	*_compositor,
 
 void
 _comac_traps_compositor_init (comac_traps_compositor_t *compositor,
-			      const comac_compositor_t  *delegate)
+			      const comac_compositor_t *delegate)
 {
     compositor->base.delegate = delegate;
 

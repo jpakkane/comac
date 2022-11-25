@@ -48,7 +48,7 @@ struct _comac_default_context {
     comac_t base;
 
     comac_gstate_t *gstate;
-    comac_gstate_t  gstate_tail[2];
+    comac_gstate_t gstate_tail[2];
     comac_gstate_t *gstate_freelist;
 
     comac_path_fixed_t path[1];

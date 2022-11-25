@@ -36,9 +36,7 @@ scale_by_two (double *x, double *y)
 typedef void (*munge_func_t) (double *x, double *y);
 
 static void
-munge_and_set_path (comac_t	 *cr,
-		    comac_path_t *path,
-		    munge_func_t  munge)
+munge_and_set_path (comac_t *cr, comac_path_t *path, munge_func_t munge)
 {
     int i;
     comac_path_data_t *p;
@@ -49,30 +47,32 @@ munge_and_set_path (comac_t	 *cr,
 	return;
     }
 
-    for (i=0; i < path->num_data; i += path->data[i].header.length) {
+    for (i = 0; i < path->num_data; i += path->data[i].header.length) {
 	p = &path->data[i];
 	switch (p->header.type) {
 	case COMAC_PATH_MOVE_TO:
-	    x1 = p[1].point.x; y1 = p[1].point.y;
+	    x1 = p[1].point.x;
+	    y1 = p[1].point.y;
 	    (munge) (&x1, &y1);
 	    comac_move_to (cr, x1, y1);
 	    break;
 	case COMAC_PATH_LINE_TO:
-	    x1 = p[1].point.x; y1 = p[1].point.y;
+	    x1 = p[1].point.x;
+	    y1 = p[1].point.y;
 	    (munge) (&x1, &y1);
 	    comac_line_to (cr, x1, y1);
 	    break;
 	case COMAC_PATH_CURVE_TO:
-	    x1 = p[1].point.x; y1 = p[1].point.y;
-	    x2 = p[2].point.x; y2 = p[2].point.y;
-	    x3 = p[3].point.x; y3 = p[3].point.y;
+	    x1 = p[1].point.x;
+	    y1 = p[1].point.y;
+	    x2 = p[2].point.x;
+	    y2 = p[2].point.y;
+	    x3 = p[3].point.x;
+	    y3 = p[3].point.y;
 	    (munge) (&x1, &y1);
 	    (munge) (&x2, &y2);
 	    (munge) (&x3, &y3);
-	    comac_curve_to (cr,
-			    x1, y1,
-			    x2, y2,
-			    x3, y3);
+	    comac_curve_to (cr, x1, y1, x2, y2, x3, y3);
 	    break;
 	case COMAC_PATH_CLOSE_PATH:
 	    comac_close_path (cr);
@@ -102,7 +102,8 @@ draw (comac_t *cr, int width, int height)
     path = comac_copy_path (cr_error);
     if (path->status != COMAC_STATUS_NULL_POINTER) {
 	comac_test_log (ctx,
-			"Error: comac_copy_path returned status of %s rather than propagating %s\n",
+			"Error: comac_copy_path returned status of %s rather "
+			"than propagating %s\n",
 			comac_status_to_string (path->status),
 			comac_status_to_string (COMAC_STATUS_NULL_POINTER));
 	comac_path_destroy (path);
@@ -114,7 +115,8 @@ draw (comac_t *cr, int width, int height)
     path = comac_copy_path_flat (cr_error);
     if (path->status != COMAC_STATUS_NULL_POINTER) {
 	comac_test_log (ctx,
-			"Error: comac_copy_path_flat returned status of %s rather than propagating %s\n",
+			"Error: comac_copy_path_flat returned status of %s "
+			"rather than propagating %s\n",
 			comac_status_to_string (path->status),
 			comac_status_to_string (COMAC_STATUS_NULL_POINTER));
 	comac_path_destroy (path);
@@ -138,8 +140,9 @@ draw (comac_t *cr, int width, int height)
     }
     if (path->num_data != 0) {
 	comac_test_log (ctx,
-			"Error: comac_copy_path did not copy an empty path, returned path contains %d elements\n",
-		        path->num_data);
+			"Error: comac_copy_path did not copy an empty path, "
+			"returned path contains %d elements\n",
+			path->num_data);
 	comac_path_destroy (path);
 	return COMAC_TEST_FAILURE;
     }
@@ -147,7 +150,8 @@ draw (comac_t *cr, int width, int height)
     comac_path_destroy (path);
     if (comac_status (cr) != COMAC_STATUS_SUCCESS) {
 	comac_test_log (ctx,
-			"Error: comac_append_path failed with a copy of an empty path, returned status of %s\n",
+			"Error: comac_append_path failed with a copy of an "
+			"empty path, returned status of %s\n",
 			comac_status_to_string (comac_status (cr)));
 	return comac_test_status_from_status (ctx, comac_status (cr));
     }
@@ -214,15 +218,16 @@ preamble (comac_test_context_t *ctx)
     }
 
     /* Test a few error cases for comac_append_path_data */
-#define COMAC_CREATE() do {\
-    cr = comac_create (surface); \
-    status = comac_status (cr); \
-    if (status) { \
-	comac_destroy (cr); \
-	comac_surface_destroy (surface); \
-	return comac_test_status_from_status (ctx, status); \
-    } \
-} while (0)
+#define COMAC_CREATE()                                                         \
+    do {                                                                       \
+	cr = comac_create (surface);                                           \
+	status = comac_status (cr);                                            \
+	if (status) {                                                          \
+	    comac_destroy (cr);                                                \
+	    comac_surface_destroy (surface);                                   \
+	    return comac_test_status_from_status (ctx, status);                \
+	}                                                                      \
+    } while (0)
     COMAC_CREATE ();
     comac_append_path (cr, NULL);
     status = comac_status (cr);
@@ -307,8 +312,11 @@ preamble (comac_test_context_t *ctx)
 }
 
 COMAC_TEST (copy_path,
-	    "Tests calls to path_data functions: comac_copy_path, comac_copy_path_flat, and comac_append_path",
+	    "Tests calls to path_data functions: comac_copy_path, "
+	    "comac_copy_path_flat, and comac_append_path",
 	    "path", /* keywords */
-	    NULL, /* requirements */
-	    45, 53,
-	    preamble, draw)
+	    NULL,   /* requirements */
+	    45,
+	    53,
+	    preamble,
+	    draw)

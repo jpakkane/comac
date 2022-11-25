@@ -29,16 +29,29 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
-    uint32_t data[16] = {
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
+    uint32_t data[16] = {0xffffffff,
+			 0xffffffff,
+			 0xffff0000,
+			 0xffff0000,
+			 0xffffffff,
+			 0xffffffff,
+			 0xffff0000,
+			 0xffff0000,
 
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff,
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
-    };
+			 0xff00ff00,
+			 0xff00ff00,
+			 0xff0000ff,
+			 0xff0000ff,
+			 0xff00ff00,
+			 0xff00ff00,
+			 0xff0000ff,
+			 0xff0000ff};
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     /* We use a non-zero offset larger than the source surface size to
      * stress comac out a bit more. */
@@ -56,6 +69,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (paint_repeat,
 	    "Test calls to comac_paint with a repeating source surface pattern",
 	    "paint", /* keywords */
-	    NULL, /* requirements */
-	    8, 8,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    8,
+	    8,
+	    NULL,
+	    draw)

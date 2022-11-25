@@ -92,10 +92,12 @@ translate_point (comac_point_t *point, const comac_point_t *offset)
 static int
 slope_compare_sgn (double dx1, double dy1, double dx2, double dy2)
 {
-    double  c = (dx1 * dy2 - dx2 * dy1);
+    double c = (dx1 * dy2 - dx2 * dy1);
 
-    if (c > 0) return 1;
-    if (c < 0) return -1;
+    if (c > 0)
+	return 1;
+    if (c < 0)
+	return -1;
     return 0;
 }
 
@@ -126,19 +128,18 @@ add_fan (struct stroker *stroker,
     int start, stop, step, i, npoints;
 
     if (clockwise) {
-	step  = 1;
+	step = 1;
 
-	start = _comac_pen_find_active_cw_vertex_index (&stroker->pen,
-							in_vector);
+	start =
+	    _comac_pen_find_active_cw_vertex_index (&stroker->pen, in_vector);
 	if (_comac_slope_compare (&stroker->pen.vertices[start].slope_cw,
 				  in_vector) < 0)
 	    start = range_step (start, 1, stroker->pen.num_vertices);
 
-	stop  = _comac_pen_find_active_cw_vertex_index (&stroker->pen,
-							out_vector);
+	stop =
+	    _comac_pen_find_active_cw_vertex_index (&stroker->pen, out_vector);
 	if (_comac_slope_compare (&stroker->pen.vertices[stop].slope_ccw,
-				  out_vector) > 0)
-	{
+				  out_vector) > 0) {
 	    stop = range_step (stop, -1, stroker->pen.num_vertices);
 	    if (_comac_slope_compare (&stroker->pen.vertices[stop].slope_cw,
 				      in_vector) < 0)
@@ -147,19 +148,18 @@ add_fan (struct stroker *stroker,
 
 	npoints = stop - start;
     } else {
-	step  = -1;
+	step = -1;
 
-	start = _comac_pen_find_active_ccw_vertex_index (&stroker->pen,
-							 in_vector);
+	start =
+	    _comac_pen_find_active_ccw_vertex_index (&stroker->pen, in_vector);
 	if (_comac_slope_compare (&stroker->pen.vertices[start].slope_ccw,
 				  in_vector) < 0)
 	    start = range_step (start, -1, stroker->pen.num_vertices);
 
-	stop  = _comac_pen_find_active_ccw_vertex_index (&stroker->pen,
-							 out_vector);
+	stop =
+	    _comac_pen_find_active_ccw_vertex_index (&stroker->pen, out_vector);
 	if (_comac_slope_compare (&stroker->pen.vertices[stop].slope_cw,
-				  out_vector) > 0)
-	{
+				  out_vector) > 0) {
 	    stop = range_step (stop, 1, stroker->pen.num_vertices);
 	    if (_comac_slope_compare (&stroker->pen.vertices[stop].slope_ccw,
 				      in_vector) < 0)
@@ -174,10 +174,8 @@ add_fan (struct stroker *stroker,
     if (npoints <= 1)
 	return;
 
-    for (i = start;
-	 i != stop;
-	i = range_step (i, step, stroker->pen.num_vertices))
-    {
+    for (i = start; i != stop;
+	 i = range_step (i, step, stroker->pen.num_vertices)) {
 	comac_point_t p = *midpt;
 	translate_point (&p, &stroker->pen.vertices[i].point);
 	//contour_add_point (stroker, c, &p);
@@ -224,7 +222,7 @@ inner_close (struct stroker *stroker,
     //contour_add_point (stroker, inner, &in->point);
     //contour_add_point (stroker, inner, inpt);
     //*_comac_contour_first_point (&inner->contour) =
-	//*_comac_contour_last_point (&inner->contour);
+    //*_comac_contour_last_point (&inner->contour);
 }
 
 static void
@@ -232,12 +230,11 @@ outer_close (struct stroker *stroker,
 	     const comac_stroke_face_t *in,
 	     const comac_stroke_face_t *out)
 {
-    const comac_point_t	*inpt, *outpt;
-    int	clockwise;
+    const comac_point_t *inpt, *outpt;
+    int clockwise;
 
     if (in->cw.x == out->cw.x && in->cw.y == out->cw.y &&
-	in->ccw.x == out->ccw.x && in->ccw.y == out->ccw.y)
-    {
+	in->ccw.x == out->ccw.x && in->ccw.y == out->ccw.y) {
 	return;
     }
     clockwise = join_is_clockwise (in, out);
@@ -255,16 +252,18 @@ outer_close (struct stroker *stroker,
 	add_fan (stroker,
 		 &in->dev_vector,
 		 &out->dev_vector,
-		 &in->point, inpt, outpt,
+		 &in->point,
+		 inpt,
+		 outpt,
 		 clockwise);
 	break;
 
     case COMAC_LINE_JOIN_MITER:
     default: {
 	/* dot product of incoming slope vector with outgoing slope vector */
-	double	in_dot_out = -in->usr_vector.x * out->usr_vector.x +
-			     -in->usr_vector.y * out->usr_vector.y;
-	double	ml = stroker->style.miter_limit;
+	double in_dot_out = -in->usr_vector.x * out->usr_vector.x +
+			    -in->usr_vector.y * out->usr_vector.y;
+	double ml = stroker->style.miter_limit;
 
 	/* Check the miter limit -- lines meeting at an acute angle
 	 * can generate long miters, the limit converts them to bevel
@@ -324,12 +323,12 @@ outer_close (struct stroker *stroker,
 	 *
 	 */
 	if (2 <= ml * ml * (1 - in_dot_out)) {
-	    double		x1, y1, x2, y2;
-	    double		mx, my;
-	    double		dx1, dx2, dy1, dy2;
-	    double		ix, iy;
-	    double		fdx1, fdy1, fdx2, fdy2;
-	    double		mdx, mdy;
+	    double x1, y1, x2, y2;
+	    double mx, my;
+	    double dx1, dx2, dy1, dy2;
+	    double ix, iy;
+	    double fdx1, fdy1, fdx2, fdy2;
+	    double mdx, mdy;
 
 	    /*
 	     * we've got the points already transformed to device
@@ -379,21 +378,23 @@ outer_close (struct stroker *stroker,
 	    iy = _comac_fixed_to_double (in->point.y);
 
 	    /* slope of one face */
-	    fdx1 = x1 - ix; fdy1 = y1 - iy;
+	    fdx1 = x1 - ix;
+	    fdy1 = y1 - iy;
 
 	    /* slope of the other face */
-	    fdx2 = x2 - ix; fdy2 = y2 - iy;
+	    fdx2 = x2 - ix;
+	    fdy2 = y2 - iy;
 
 	    /* slope from the intersection to the miter point */
-	    mdx = mx - ix; mdy = my - iy;
+	    mdx = mx - ix;
+	    mdy = my - iy;
 
 	    /*
 	     * Make sure the miter point line lies between the two
 	     * faces by comparing the slopes
 	     */
 	    if (slope_compare_sgn (fdx1, fdy1, mdx, mdy) !=
-		slope_compare_sgn (fdx2, fdy2, mdx, mdy))
-	    {
+		slope_compare_sgn (fdx2, fdy2, mdx, mdy)) {
 		comac_point_t p;
 
 		p.x = _comac_fixed_from_double (mx);
@@ -419,11 +420,10 @@ outer_join (struct stroker *stroker,
 	    const comac_stroke_face_t *out,
 	    int clockwise)
 {
-    const comac_point_t	*inpt, *outpt;
+    const comac_point_t *inpt, *outpt;
 
     if (in->cw.x == out->cw.x && in->cw.y == out->cw.y &&
-	in->ccw.x == out->ccw.x && in->ccw.y == out->ccw.y)
-    {
+	in->ccw.x == out->ccw.x && in->ccw.y == out->ccw.y) {
 	return;
     }
     if (clockwise) {
@@ -440,16 +440,18 @@ outer_join (struct stroker *stroker,
 	add_fan (stroker,
 		 &in->dev_vector,
 		 &out->dev_vector,
-		 &in->point, inpt, outpt,
+		 &in->point,
+		 inpt,
+		 outpt,
 		 clockwise);
 	break;
 
     case COMAC_LINE_JOIN_MITER:
     default: {
 	/* dot product of incoming slope vector with outgoing slope vector */
-	double	in_dot_out = -in->usr_vector.x * out->usr_vector.x +
-			     -in->usr_vector.y * out->usr_vector.y;
-	double	ml = stroker->style.miter_limit;
+	double in_dot_out = -in->usr_vector.x * out->usr_vector.x +
+			    -in->usr_vector.y * out->usr_vector.y;
+	double ml = stroker->style.miter_limit;
 
 	/* Check the miter limit -- lines meeting at an acute angle
 	 * can generate long miters, the limit converts them to bevel
@@ -509,12 +511,12 @@ outer_join (struct stroker *stroker,
 	 *
 	 */
 	if (2 <= ml * ml * (1 - in_dot_out)) {
-	    double		x1, y1, x2, y2;
-	    double		mx, my;
-	    double		dx1, dx2, dy1, dy2;
-	    double		ix, iy;
-	    double		fdx1, fdy1, fdx2, fdy2;
-	    double		mdx, mdy;
+	    double x1, y1, x2, y2;
+	    double mx, my;
+	    double dx1, dx2, dy1, dy2;
+	    double ix, iy;
+	    double fdx1, fdy1, fdx2, fdy2;
+	    double mdx, mdy;
 
 	    /*
 	     * we've got the points already transformed to device
@@ -564,21 +566,23 @@ outer_join (struct stroker *stroker,
 	    iy = _comac_fixed_to_double (in->point.y);
 
 	    /* slope of one face */
-	    fdx1 = x1 - ix; fdy1 = y1 - iy;
+	    fdx1 = x1 - ix;
+	    fdy1 = y1 - iy;
 
 	    /* slope of the other face */
-	    fdx2 = x2 - ix; fdy2 = y2 - iy;
+	    fdx2 = x2 - ix;
+	    fdy2 = y2 - iy;
 
 	    /* slope from the intersection to the miter point */
-	    mdx = mx - ix; mdy = my - iy;
+	    mdx = mx - ix;
+	    mdy = my - iy;
 
 	    /*
 	     * Make sure the miter point line lies between the two
 	     * faces by comparing the slopes
 	     */
 	    if (slope_compare_sgn (fdx1, fdy1, mdx, mdy) !=
-		slope_compare_sgn (fdx2, fdy2, mdx, mdy))
-	    {
+		slope_compare_sgn (fdx2, fdy2, mdx, mdy)) {
 		comac_point_t p;
 
 		p.x = _comac_fixed_from_double (mx);
@@ -598,8 +602,7 @@ outer_join (struct stroker *stroker,
 }
 
 static void
-add_cap (struct stroker *stroker,
-	 const comac_stroke_face_t *f)
+add_cap (struct stroker *stroker, const comac_stroke_face_t *f)
 {
     switch (stroker->style.line_cap) {
     case COMAC_LINE_CAP_ROUND: {
@@ -608,16 +611,20 @@ add_cap (struct stroker *stroker,
 	slope.dx = -f->dev_vector.dx;
 	slope.dy = -f->dev_vector.dy;
 
-	add_fan (stroker, &f->dev_vector, &slope,
-		 &f->point, &f->ccw, &f->cw,
+	add_fan (stroker,
+		 &f->dev_vector,
+		 &slope,
+		 &f->point,
+		 &f->ccw,
+		 &f->cw,
 		 FALSE);
 	break;
     }
 
     case COMAC_LINE_CAP_SQUARE: {
 	double dx, dy;
-	comac_slope_t	fvector;
-	comac_point_t	quad[4];
+	comac_slope_t fvector;
+	comac_point_t quad[4];
 
 	dx = f->usr_vector.x;
 	dy = f->usr_vector.y;
@@ -646,8 +653,7 @@ add_cap (struct stroker *stroker,
 }
 
 static void
-add_leading_cap (struct stroker *stroker,
-		 const comac_stroke_face_t *face)
+add_leading_cap (struct stroker *stroker, const comac_stroke_face_t *face)
 {
     comac_stroke_face_t reversed;
     comac_point_t t;
@@ -668,8 +674,7 @@ add_leading_cap (struct stroker *stroker,
 }
 
 static void
-add_trailing_cap (struct stroker *stroker,
-		  const comac_stroke_face_t *face)
+add_trailing_cap (struct stroker *stroker, const comac_stroke_face_t *face)
 {
     add_cap (stroker, face);
 }
@@ -735,21 +740,22 @@ compute_face (const comac_point_t *point,
     if (! _comac_matrix_is_identity (stroker->ctm_inverse)) {
 	/* Normalize the matrix! */
 	comac_matrix_transform_distance (stroker->ctm_inverse,
-					 &slope_dx, &slope_dy);
+					 &slope_dx,
+					 &slope_dy);
 	normalize_slope (&slope_dx, &slope_dy);
 
 	if (stroker->ctm_det_positive) {
-	    face_dx = - slope_dy * (stroker->style.line_width / 2.0);
+	    face_dx = -slope_dy * (stroker->style.line_width / 2.0);
 	    face_dy = slope_dx * (stroker->style.line_width / 2.0);
 	} else {
 	    face_dx = slope_dy * (stroker->style.line_width / 2.0);
-	    face_dy = - slope_dx * (stroker->style.line_width / 2.0);
+	    face_dy = -slope_dx * (stroker->style.line_width / 2.0);
 	}
 
 	/* back to device space */
 	comac_matrix_transform_distance (stroker->ctm, &face_dx, &face_dy);
     } else {
-	face_dx = - slope_dy * (stroker->style.line_width / 2.0);
+	face_dx = -slope_dy * (stroker->style.line_width / 2.0);
 	face_dy = slope_dx * (stroker->style.line_width / 2.0);
     }
 
@@ -776,13 +782,11 @@ static void
 add_caps (struct stroker *stroker)
 {
     /* check for a degenerative sub_path */
-    if (stroker->has_sub_path &&
-	! stroker->has_first_face &&
+    if (stroker->has_sub_path && ! stroker->has_first_face &&
 	! stroker->has_current_face &&
-	stroker->style.line_cap == COMAC_LINE_CAP_ROUND)
-    {
+	stroker->style.line_cap == COMAC_LINE_CAP_ROUND) {
 	/* pick an arbitrary slope to use */
-	comac_slope_t slope = { COMAC_FIXED_ONE, 0 };
+	comac_slope_t slope = {COMAC_FIXED_ONE, 0};
 	comac_stroke_face_t face;
 
 	/* arbitrarily choose first_point */
@@ -793,7 +797,7 @@ add_caps (struct stroker *stroker)
 
 	/* ensure the circle is complete */
 	//_comac_contour_add_point (&stroker->ccw.contour,
-				  //_comac_contour_first_point (&stroker->ccw.contour));
+	//_comac_contour_first_point (&stroker->ccw.contour));
     } else {
 	if (stroker->has_current_face)
 	    add_trailing_cap (stroker, &stroker->current_face);
@@ -803,18 +807,17 @@ add_caps (struct stroker *stroker)
 
 	if (stroker->has_first_face) {
 	    //_comac_contour_add_point (&stroker->ccw.contour,
-				      //&stroker->first_face.cw);
+	    //&stroker->first_face.cw);
 	    add_leading_cap (stroker, &stroker->first_face);
 	    //_comac_polygon_add_contour (stroker->polygon,
-					//&stroker->ccw.contour);
+	    //&stroker->ccw.contour);
 	    //_comac_contour_reset (&stroker->ccw.contour);
 	}
     }
 }
 
 static comac_status_t
-move_to (void *closure,
-	 const comac_point_t *point)
+move_to (void *closure, const comac_point_t *point)
 {
     struct stroker *stroker = closure;
 
@@ -833,8 +836,7 @@ move_to (void *closure,
 }
 
 static comac_status_t
-line_to (void *closure,
-	 const comac_point_t *point)
+line_to (void *closure, const comac_point_t *point)
 {
     struct stroker *stroker = closure;
     comac_stroke_face_t start;
@@ -916,23 +918,29 @@ spline_to (void *closure,
 	add_fan (stroker,
 		 &stroker->current_face.dev_vector,
 		 &face.dev_vector,
-		 &stroker->current_face.point, inpt, outpt,
+		 &stroker->current_face.point,
+		 inpt,
+		 outpt,
 		 clockwise);
     } else {
 	compute_face (point, tangent, stroker, &face);
 
 	if (face.dev_slope.x * stroker->current_face.dev_slope.x +
-	    face.dev_slope.y * stroker->current_face.dev_slope.y < 0)
-	{
+		face.dev_slope.y * stroker->current_face.dev_slope.y <
+	    0) {
 	    const comac_point_t *inpt, *outpt;
 	    int clockwise = join_is_clockwise (&stroker->current_face, &face);
 
-	    stroker->current_face.cw.x += face.point.x - stroker->current_face.point.x;
-	    stroker->current_face.cw.y += face.point.y - stroker->current_face.point.y;
+	    stroker->current_face.cw.x +=
+		face.point.x - stroker->current_face.point.x;
+	    stroker->current_face.cw.y +=
+		face.point.y - stroker->current_face.point.y;
 	    //contour_add_point (stroker, &stroker->cw, &stroker->current_face.cw);
 
-	    stroker->current_face.ccw.x += face.point.x - stroker->current_face.point.x;
-	    stroker->current_face.ccw.y += face.point.y - stroker->current_face.point.y;
+	    stroker->current_face.ccw.x +=
+		face.point.x - stroker->current_face.point.x;
+	    stroker->current_face.ccw.y +=
+		face.point.y - stroker->current_face.point.y;
 	    //contour_add_point (stroker, &stroker->ccw, &stroker->current_face.ccw);
 
 	    if (clockwise) {
@@ -945,7 +953,9 @@ spline_to (void *closure,
 	    add_fan (stroker,
 		     &stroker->current_face.dev_vector,
 		     &face.dev_vector,
-		     &stroker->current_face.point, inpt, outpt,
+		     &stroker->current_face.point,
+		     inpt,
+		     outpt,
 		     clockwise);
 	}
 
@@ -969,17 +979,27 @@ curve_to (void *closure,
     comac_stroke_face_t face;
 
     if (stroker->has_limits) {
-	if (! _comac_spline_intersects (&stroker->current_face.point, b, c, d,
+	if (! _comac_spline_intersects (&stroker->current_face.point,
+					b,
+					c,
+					d,
 					&stroker->limit))
 	    return line_to (closure, d);
     }
 
-    if (! _comac_spline_init (&spline, spline_to, stroker,
-			      &stroker->current_face.point, b, c, d))
+    if (! _comac_spline_init (&spline,
+			      spline_to,
+			      stroker,
+			      &stroker->current_face.point,
+			      b,
+			      c,
+			      d))
 	return line_to (closure, d);
 
-    compute_face (&stroker->current_face.point, &spline.initial_slope,
-		  stroker, &face);
+    compute_face (&stroker->current_face.point,
+		  &spline.initial_slope,
+		  stroker,
+		  &face);
 
     if (stroker->has_current_face) {
 	int clockwise = join_is_clockwise (&stroker->current_face, &face);
@@ -1030,12 +1050,12 @@ close_path (void *closure)
 }
 
 comac_int_status_t
-_comac_path_fixed_stroke_to_tristrip (const comac_path_fixed_t	*path,
-				      const comac_stroke_style_t*style,
-				      const comac_matrix_t	*ctm,
-				      const comac_matrix_t	*ctm_inverse,
-				      double			 tolerance,
-				      comac_tristrip_t		 *strip)
+_comac_path_fixed_stroke_to_tristrip (const comac_path_fixed_t *path,
+				      const comac_stroke_style_t *style,
+				      const comac_matrix_t *ctm,
+				      const comac_matrix_t *ctm_inverse,
+				      double tolerance,
+				      comac_tristrip_t *strip)
 {
     struct stroker stroker;
     comac_int_status_t status;
@@ -1049,12 +1069,10 @@ _comac_path_fixed_stroke_to_tristrip (const comac_path_fixed_t	*path,
     stroker.ctm_inverse = ctm_inverse;
     stroker.tolerance = tolerance;
 
-    stroker.ctm_det_positive =
-	_comac_matrix_compute_determinant (ctm) >= 0.0;
+    stroker.ctm_det_positive = _comac_matrix_compute_determinant (ctm) >= 0.0;
 
-    status = _comac_pen_init (&stroker.pen,
-		              style->line_width / 2.0,
-			      tolerance, ctm);
+    status =
+	_comac_pen_init (&stroker.pen, style->line_width / 2.0, tolerance, ctm);
     if (unlikely (status))
 	return status;
 

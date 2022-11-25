@@ -64,11 +64,23 @@ path (comac_t *cr, int step, int dir, int iterations)
     int i;
 
     switch (dir) {
-	default:
-	case 0: dx =  step; dy =  0; break;
-	case 1: dx = -step; dy =  0; break;
-	case 2: dx =  0; dy =  step; break;
-	case 3: dx =  0; dy = -step; break;
+    default:
+    case 0:
+	dx = step;
+	dy = 0;
+	break;
+    case 1:
+	dx = -step;
+	dy = 0;
+	break;
+    case 2:
+	dx = 0;
+	dy = step;
+	break;
+    case 3:
+	dx = 0;
+	dy = -step;
+	break;
     }
 
     for (i = 0; i < iterations; i++) {
@@ -118,7 +130,7 @@ do_dragon (comac_t *cr, int width, int height, int loops)
 	comac_pattern_add_color_stop_rgb (pattern, 1., 0., 0., 0.);
 	comac_set_source (cr, pattern);
 	comac_pattern_destroy (pattern);
-	comac_stroke(cr);
+	comac_stroke (cr);
 
 	comac_move_to (cr, cx, cy);
 	path (cr, 12, 1, 2048);
@@ -127,7 +139,7 @@ do_dragon (comac_t *cr, int width, int height, int loops)
 	comac_pattern_add_color_stop_rgb (pattern, 0., 1., 0., 0.);
 	comac_set_source (cr, pattern);
 	comac_pattern_destroy (pattern);
-	comac_stroke(cr);
+	comac_stroke (cr);
 
 	comac_move_to (cr, cx, cy);
 	path (cr, 12, 2, 2048);
@@ -136,7 +148,7 @@ do_dragon (comac_t *cr, int width, int height, int loops)
 	comac_pattern_add_color_stop_rgb (pattern, 0., 0., 1., 0.);
 	comac_set_source (cr, pattern);
 	comac_pattern_destroy (pattern);
-	comac_stroke(cr);
+	comac_stroke (cr);
 
 	comac_move_to (cr, cx, cy);
 	path (cr, 12, 3, 2048);
@@ -145,7 +157,7 @@ do_dragon (comac_t *cr, int width, int height, int loops)
 	comac_pattern_add_color_stop_rgb (pattern, 0., 0., 0., 1.);
 	comac_set_source (cr, pattern);
 	comac_pattern_destroy (pattern);
-	comac_stroke(cr);
+	comac_stroke (cr);
     }
 
     comac_perf_timer_stop ();
@@ -171,22 +183,22 @@ do_dragon_solid (comac_t *cr, int width, int height, int loops)
 	comac_move_to (cr, cx, cy);
 	path (cr, 12, 0, 2048);
 	comac_set_source_rgb (cr, 1, 0, 0);
-	comac_stroke(cr);
+	comac_stroke (cr);
 
 	comac_move_to (cr, cx, cy);
 	path (cr, 12, 1, 2048);
 	comac_set_source_rgb (cr, 0, 1, 0);
-	comac_stroke(cr);
+	comac_stroke (cr);
 
 	comac_move_to (cr, cx, cy);
 	path (cr, 12, 2, 2048);
 	comac_set_source_rgb (cr, 0, 0, 1);
-	comac_stroke(cr);
+	comac_stroke (cr);
 
 	comac_move_to (cr, cx, cy);
 	path (cr, 12, 3, 2048);
 	comac_set_source_rgb (cr, 1, 1, 1);
-	comac_stroke(cr);
+	comac_stroke (cr);
     }
 
     comac_perf_timer_stop ();
@@ -205,20 +217,31 @@ static comac_time_t
 do_dragon_solid_aligned_clip (comac_t *cr, int width, int height, int loops)
 {
     comac_reset_clip (cr);
-    comac_rectangle (cr, 10, 10, width/2 + 10, height/2 + 10);
-    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 10, height/2 + 10);
+    comac_rectangle (cr, 10, 10, width / 2 + 10, height / 2 + 10);
+    comac_rectangle (cr,
+		     width / 2 - 20,
+		     height / 2 - 20,
+		     width / 2 + 10,
+		     height / 2 + 10);
     comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
 }
 
 static comac_time_t
-do_dragon_unaligned_solid_aligned_clip (comac_t *cr, int width, int height, int loops)
+do_dragon_unaligned_solid_aligned_clip (comac_t *cr,
+					int width,
+					int height,
+					int loops)
 {
     comac_translate (cr, 0.01, 0.01);
     comac_reset_clip (cr);
-    comac_rectangle (cr, 10, 10, width/2 + 10, height/2 + 10);
-    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 10, height/2 + 10);
+    comac_rectangle (cr, 10, 10, width / 2 + 10, height / 2 + 10);
+    comac_rectangle (cr,
+		     width / 2 - 20,
+		     height / 2 - 20,
+		     width / 2 + 10,
+		     height / 2 + 10);
     comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
@@ -228,20 +251,31 @@ static comac_time_t
 do_dragon_solid_unaligned_clip (comac_t *cr, int width, int height, int loops)
 {
     comac_reset_clip (cr);
-    comac_rectangle (cr, 10.5, 10.5, width/2 + 10, height/2 + 10);
-    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 9.5, height/2 + 9.5);
+    comac_rectangle (cr, 10.5, 10.5, width / 2 + 10, height / 2 + 10);
+    comac_rectangle (cr,
+		     width / 2 - 20,
+		     height / 2 - 20,
+		     width / 2 + 9.5,
+		     height / 2 + 9.5);
     comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
 }
 
 static comac_time_t
-do_dragon_unaligned_solid_unaligned_clip (comac_t *cr, int width, int height, int loops)
+do_dragon_unaligned_solid_unaligned_clip (comac_t *cr,
+					  int width,
+					  int height,
+					  int loops)
 {
     comac_translate (cr, 0.01, 0.01);
     comac_reset_clip (cr);
-    comac_rectangle (cr, 10.5, 10.5, width/2 + 10, height/2 + 10);
-    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 9.5, height/2 + 9.5);
+    comac_rectangle (cr, 10.5, 10.5, width / 2 + 10, height / 2 + 10);
+    comac_rectangle (cr,
+		     width / 2 - 20,
+		     height / 2 - 20,
+		     width / 2 + 9.5,
+		     height / 2 + 9.5);
     comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
@@ -251,7 +285,12 @@ static comac_time_t
 do_dragon_solid_circle_clip (comac_t *cr, int width, int height, int loops)
 {
     comac_reset_clip (cr);
-    comac_arc (cr, width/2., height/2., MIN (width, height)/2. - 10, 0, 2 * M_PI);
+    comac_arc (cr,
+	       width / 2.,
+	       height / 2.,
+	       MIN (width, height) / 2. - 10,
+	       0,
+	       2 * M_PI);
     comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
@@ -267,11 +306,29 @@ void
 dragon (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     comac_perf_run (perf, "dragon-solid", do_dragon_solid, NULL);
-    comac_perf_run (perf, "dragon-unaligned-solid", do_dragon_solid_unaligned, NULL);
-    comac_perf_run (perf, "dragon-solid-aligned-clip", do_dragon_solid_aligned_clip, NULL);
-    comac_perf_run (perf, "dragon-unaligned-solid-aligned-clip", do_dragon_unaligned_solid_aligned_clip, NULL);
-    comac_perf_run (perf, "dragon-solid-unaligned-clip", do_dragon_solid_unaligned_clip, NULL);
-    comac_perf_run (perf, "dragon-unaligned-solid-unaligned-clip", do_dragon_unaligned_solid_unaligned_clip, NULL);
-    comac_perf_run (perf, "dragon-solid-circle-clip", do_dragon_solid_circle_clip, NULL);
+    comac_perf_run (perf,
+		    "dragon-unaligned-solid",
+		    do_dragon_solid_unaligned,
+		    NULL);
+    comac_perf_run (perf,
+		    "dragon-solid-aligned-clip",
+		    do_dragon_solid_aligned_clip,
+		    NULL);
+    comac_perf_run (perf,
+		    "dragon-unaligned-solid-aligned-clip",
+		    do_dragon_unaligned_solid_aligned_clip,
+		    NULL);
+    comac_perf_run (perf,
+		    "dragon-solid-unaligned-clip",
+		    do_dragon_solid_unaligned_clip,
+		    NULL);
+    comac_perf_run (perf,
+		    "dragon-unaligned-solid-unaligned-clip",
+		    do_dragon_unaligned_solid_unaligned_clip,
+		    NULL);
+    comac_perf_run (perf,
+		    "dragon-solid-circle-clip",
+		    do_dragon_solid_circle_clip,
+		    NULL);
     comac_perf_run (perf, "dragon", do_dragon, NULL);
 }

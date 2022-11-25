@@ -36,6 +36,8 @@ create_source_surface (int size)
 COMAC_TEST (image_surface_source,
 	    "Test using a image surface as the source",
 	    "source", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    preamble, draw)
+	    NULL,     /* requirements */
+	    SIZE,
+	    SIZE,
+	    preamble,
+	    draw)

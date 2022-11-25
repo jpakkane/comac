@@ -47,10 +47,11 @@ do_tiger (comac_t *cr, int width, int height, int loops)
 	comac_paint (cr);
 	comac_set_operator (cr, COMAC_OPERATOR_OVER);
 
-	comac_translate (cr, width/2, height/2);
-	comac_scale (cr, .85 * width/500, .85 * height/500);
+	comac_translate (cr, width / 2, height / 2);
+	comac_scale (cr, .85 * width / 500, .85 * height / 500);
 
-	for (i = 0; i < sizeof (tiger_commands)/sizeof(tiger_commands[0]);i++) {
+	for (i = 0; i < sizeof (tiger_commands) / sizeof (tiger_commands[0]);
+	     i++) {
 	    const struct command *cmd = &tiger_commands[i];
 	    switch (cmd->type) {
 	    case 'm':
@@ -61,13 +62,15 @@ do_tiger (comac_t *cr, int width, int height, int loops)
 		break;
 	    case 'c':
 		comac_curve_to (cr,
-				cmd->x0, cmd->y0,
-				cmd->x1, cmd->y1,
-				cmd->x2, cmd->y2);
+				cmd->x0,
+				cmd->y0,
+				cmd->x1,
+				cmd->y1,
+				cmd->x2,
+				cmd->y2);
 		break;
 	    case 'f':
-		comac_set_source_rgba (cr,
-				       cmd->x0, cmd->y0, cmd->x1, cmd->y1);
+		comac_set_source_rgba (cr, cmd->x0, cmd->y0, cmd->x1, cmd->y1);
 		comac_fill (cr);
 		break;
 	    }

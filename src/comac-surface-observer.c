@@ -58,37 +58,44 @@ static const comac_surface_backend_t _comac_surface_observer_backend;
 
 /* observation/stats */
 
-static void init_stats (struct stat *s)
+static void
+init_stats (struct stat *s)
 {
     s->min = HUGE_VAL;
     s->max = -HUGE_VAL;
 }
 
-static void init_extents (struct extents *e)
+static void
+init_extents (struct extents *e)
 {
     init_stats (&e->area);
 }
 
-static void init_pattern (struct pattern *p)
+static void
+init_pattern (struct pattern *p)
 {
 }
 
-static void init_path (struct path *p)
+static void
+init_path (struct path *p)
 {
 }
 
-static void init_clip (struct clip *c)
+static void
+init_clip (struct clip *c)
 {
 }
 
-static void init_paint (struct paint *p)
+static void
+init_paint (struct paint *p)
 {
     init_extents (&p->extents);
     init_pattern (&p->source);
     init_clip (&p->clip);
 }
 
-static void init_mask (struct mask *m)
+static void
+init_mask (struct mask *m)
 {
     init_extents (&m->extents);
     init_pattern (&m->source);
@@ -96,7 +103,8 @@ static void init_mask (struct mask *m)
     init_clip (&m->clip);
 }
 
-static void init_fill (struct fill *f)
+static void
+init_fill (struct fill *f)
 {
     init_extents (&f->extents);
     init_pattern (&f->source);
@@ -104,7 +112,8 @@ static void init_fill (struct fill *f)
     init_clip (&f->clip);
 }
 
-static void init_stroke (struct stroke *s)
+static void
+init_stroke (struct stroke *s)
 {
     init_extents (&s->extents);
     init_pattern (&s->source);
@@ -112,7 +121,8 @@ static void init_stroke (struct stroke *s)
     init_clip (&s->clip);
 }
 
-static void init_glyphs (struct glyphs *g)
+static void
+init_glyphs (struct glyphs *g)
 {
     init_extents (&g->extents);
     init_pattern (&g->source);
@@ -120,10 +130,9 @@ static void init_glyphs (struct glyphs *g)
 }
 
 static comac_status_t
-log_init (comac_observation_t *log,
-	  comac_bool_t record)
+log_init (comac_observation_t *log, comac_bool_t record)
 {
-    memset (log, 0, sizeof(*log));
+    memset (log, 0, sizeof (*log));
 
     init_paint (&log->paint);
     init_mask (&log->mask);
@@ -152,15 +161,14 @@ log_fini (comac_observation_t *log)
     comac_surface_destroy (&log->record->base);
 }
 
-static comac_surface_t*
+static comac_surface_t *
 get_pattern_surface (const comac_pattern_t *pattern)
 {
-    return ((comac_surface_pattern_t *)pattern)->surface;
+    return ((comac_surface_pattern_t *) pattern)->surface;
 }
 
 static int
-classify_pattern (const comac_pattern_t *pattern,
-		  const comac_surface_t *target)
+classify_pattern (const comac_pattern_t *pattern, const comac_surface_t *target)
 {
     int classify;
 
@@ -168,7 +176,8 @@ classify_pattern (const comac_pattern_t *pattern,
     case COMAC_PATTERN_TYPE_SURFACE:
 	if (get_pattern_surface (pattern)->type == target->type)
 	    classify = 0;
-	else if (get_pattern_surface (pattern)->type == COMAC_SURFACE_TYPE_RECORDING)
+	else if (get_pattern_surface (pattern)->type ==
+		 COMAC_SURFACE_TYPE_RECORDING)
 	    classify = 1;
 	else
 	    classify = 2;
@@ -198,12 +207,11 @@ add_pattern (struct pattern *stats,
 	     const comac_pattern_t *pattern,
 	     const comac_surface_t *target)
 {
-    stats->type[classify_pattern(pattern, target)]++;
+    stats->type[classify_pattern (pattern, target)]++;
 }
 
 static int
-classify_path (const comac_path_fixed_t *path,
-	       comac_bool_t is_fill)
+classify_path (const comac_path_fixed_t *path, comac_bool_t is_fill)
 {
     int classify;
 
@@ -229,7 +237,7 @@ add_path (struct path *stats,
 	  const comac_path_fixed_t *path,
 	  comac_bool_t is_fill)
 {
-    stats->type[classify_path(path, is_fill)]++;
+    stats->type[classify_path (path, is_fill)]++;
 }
 
 static int
@@ -254,8 +262,7 @@ classify_clip (const comac_clip_t *clip)
 }
 
 static void
-add_clip (struct clip *stats,
-	  const comac_clip_t *clip)
+add_clip (struct clip *stats, const comac_clip_t *clip)
 {
     stats->type[classify_clip (clip)]++;
 }
@@ -268,15 +275,15 @@ stats_add (struct stat *s, double v)
     if (v > s->max)
 	s->max = v;
     s->sum += v;
-    s->sum_sq += v*v;
+    s->sum_sq += v * v;
     s->count++;
 }
 
 static void
-add_extents (struct extents *stats,
-	     const comac_composite_rectangles_t *extents)
+add_extents (struct extents *stats, const comac_composite_rectangles_t *extents)
 {
-    const comac_rectangle_int_t *r = extents->is_bounded ? &extents->bounded :&extents->unbounded;
+    const comac_rectangle_int_t *r =
+	extents->is_bounded ? &extents->bounded : &extents->unbounded;
     stats_add (&stats->area, r->width * r->height);
     stats->bounded += extents->is_bounded != 0;
     stats->unbounded += extents->is_bounded == 0;
@@ -350,7 +357,8 @@ _comac_device_create_observer_internal (comac_device_t *target,
 
     device = _comac_malloc (sizeof (comac_device_observer_t));
     if (unlikely (device == NULL))
-	return _comac_device_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_device_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_device_init (&device->base, &_comac_device_observer_backend);
     status = log_init (&device->log, record);
@@ -369,7 +377,7 @@ _comac_device_create_observer_internal (comac_device_t *target,
 static comac_device_observer_t *
 to_device (comac_surface_observer_t *suface)
 {
-    return (comac_device_observer_t *)suface->base.device;
+    return (comac_device_observer_t *) suface->base.device;
 }
 
 static comac_surface_t *
@@ -381,15 +389,18 @@ _comac_surface_create_observer_internal (comac_device_t *device,
 
     surface = _comac_malloc (sizeof (comac_surface_observer_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
-			 &_comac_surface_observer_backend, device,
+			 &_comac_surface_observer_backend,
+			 device,
 			 target->content,
 			 target->is_vector);
 
-    status = log_init (&surface->log,
-		       ((comac_device_observer_t *)device)->log.record != NULL);
+    status =
+	log_init (&surface->log,
+		  ((comac_device_observer_t *) device)->log.record != NULL);
     if (unlikely (status)) {
 	free (surface);
 	return _comac_surface_create_in_error (status);
@@ -423,7 +434,6 @@ do_callbacks (comac_surface_observer_t *surface, comac_list_t *head)
 	cb->func (&surface->base, surface->target, cb->data);
 }
 
-
 static comac_status_t
 _comac_surface_observer_finish (void *abstract_surface)
 {
@@ -440,21 +450,24 @@ _comac_surface_observer_finish (void *abstract_surface)
 static comac_surface_t *
 _comac_surface_observer_create_similar (void *abstract_other,
 					comac_content_t content,
-					int width, int height)
+					int width,
+					int height)
 {
     comac_surface_observer_t *other = abstract_other;
     comac_surface_t *target, *surface;
 
     target = NULL;
     if (other->target->backend->create_similar)
-	target = other->target->backend->create_similar (other->target, content,
-							 width, height);
+	target = other->target->backend->create_similar (other->target,
+							 content,
+							 width,
+							 height);
     if (target == NULL)
-	target = _comac_image_surface_create_with_content (content,
-							   width, height);
+	target =
+	    _comac_image_surface_create_with_content (content, width, height);
 
-    surface = _comac_surface_create_observer_internal (other->base.device,
-						       target);
+    surface =
+	_comac_surface_create_observer_internal (other->base.device, target);
     comac_surface_destroy (target);
 
     return surface;
@@ -463,14 +476,16 @@ _comac_surface_observer_create_similar (void *abstract_other,
 static comac_surface_t *
 _comac_surface_observer_create_similar_image (void *other,
 					      comac_format_t format,
-					      int width, int height)
+					      int width,
+					      int height)
 {
     comac_surface_observer_t *surface = other;
 
     if (surface->target->backend->create_similar_image)
 	return surface->target->backend->create_similar_image (surface->target,
 							       format,
-							       width, height);
+							       width,
+							       height);
 
     return NULL;
 }
@@ -492,8 +507,7 @@ _comac_surface_observer_unmap_image (void *abstract_surface,
 }
 
 static void
-record_target (comac_observation_record_t *r,
-	       comac_surface_t *target)
+record_target (comac_observation_record_t *r, comac_surface_t *target)
 {
     comac_rectangle_int_t extents;
 
@@ -558,14 +572,14 @@ record_mask (comac_observation_record_t *r,
 
 static comac_observation_record_t *
 record_fill (comac_observation_record_t *r,
-	     comac_surface_t		*target,
-	     comac_operator_t		op,
-	     const comac_pattern_t	*source,
-	     const comac_path_fixed_t	*path,
-	     comac_fill_rule_t		 fill_rule,
-	     double			 tolerance,
-	     comac_antialias_t		 antialias,
-	     const comac_clip_t		*clip,
+	     comac_surface_t *target,
+	     comac_operator_t op,
+	     const comac_pattern_t *source,
+	     const comac_path_fixed_t *path,
+	     comac_fill_rule_t fill_rule,
+	     double tolerance,
+	     comac_antialias_t antialias,
+	     const comac_clip_t *clip,
 	     comac_time_t elapsed)
 {
     record_target (r, target);
@@ -586,17 +600,17 @@ record_fill (comac_observation_record_t *r,
 
 static comac_observation_record_t *
 record_stroke (comac_observation_record_t *r,
-	       comac_surface_t		*target,
-	       comac_operator_t		op,
-	       const comac_pattern_t	*source,
-	       const comac_path_fixed_t	*path,
-	       const comac_stroke_style_t	*style,
-	       const comac_matrix_t	*ctm,
-	       const comac_matrix_t	*ctm_inverse,
-	       double			 tolerance,
-	       comac_antialias_t	 antialias,
-	       const comac_clip_t	*clip,
-	       comac_time_t		 elapsed)
+	       comac_surface_t *target,
+	       comac_operator_t op,
+	       const comac_pattern_t *source,
+	       const comac_path_fixed_t *path,
+	       const comac_stroke_style_t *style,
+	       const comac_matrix_t *ctm,
+	       const comac_matrix_t *ctm_inverse,
+	       double tolerance,
+	       comac_antialias_t antialias,
+	       const comac_clip_t *clip,
+	       comac_time_t elapsed)
 {
     record_target (r, target);
 
@@ -616,14 +630,14 @@ record_stroke (comac_observation_record_t *r,
 
 static comac_observation_record_t *
 record_glyphs (comac_observation_record_t *r,
-	       comac_surface_t		*target,
-	       comac_operator_t		op,
-	       const comac_pattern_t	*source,
-	       comac_glyph_t		*glyphs,
-	       int			 num_glyphs,
-	       comac_scaled_font_t	*scaled_font,
-	       const comac_clip_t	*clip,
-	       comac_time_t		 elapsed)
+	       comac_surface_t *target,
+	       comac_operator_t op,
+	       const comac_pattern_t *source,
+	       comac_glyph_t *glyphs,
+	       int num_glyphs,
+	       comac_scaled_font_t *scaled_font,
+	       const comac_clip_t *clip,
+	       comac_time_t elapsed)
 {
     record_target (r, target);
 
@@ -642,8 +656,7 @@ record_glyphs (comac_observation_record_t *r,
 }
 
 static void
-add_record (comac_observation_t *log,
-	    comac_observation_record_t *r)
+add_record (comac_observation_t *log, comac_observation_record_t *r)
 {
     comac_int_status_t status;
 
@@ -660,12 +673,11 @@ _comac_surface_sync (comac_surface_t *target, int x, int y)
 
     extents.x = x;
     extents.y = y;
-    extents.width  = 1;
+    extents.width = 1;
     extents.height = 1;
 
     _comac_surface_unmap_image (target,
-				_comac_surface_map_to_image (target,
-							     &extents));
+				_comac_surface_map_to_image (target, &extents));
 }
 
 static void
@@ -677,17 +689,16 @@ midpt (const comac_composite_rectangles_t *extents, int *x, int *y)
 
 static void
 add_record_paint (comac_observation_t *log,
-		 comac_surface_t *target,
-		 comac_operator_t op,
-		 const comac_pattern_t *source,
-		 const comac_clip_t *clip,
-		 comac_time_t elapsed)
+		  comac_surface_t *target,
+		  comac_operator_t op,
+		  const comac_pattern_t *source,
+		  const comac_clip_t *clip,
+		  comac_time_t elapsed)
 {
     comac_observation_record_t record;
     comac_int_status_t status;
 
-    add_record (log,
-		record_paint (&record, target, op, source, clip, elapsed));
+    add_record (log, record_paint (&record, target, op, source, clip, elapsed));
 
     /* We have to bypass the high-level surface layer in case it tries to be
      * too smart and discard operations; we need to record exactly what just
@@ -695,7 +706,9 @@ add_record_paint (comac_observation_t *log,
      */
     if (log->record) {
 	status = log->record->base.backend->paint (&log->record->base,
-						   op, source, clip);
+						   op,
+						   source,
+						   clip);
 	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
@@ -731,7 +744,8 @@ _comac_surface_observer_paint (void *abstract_surface,
 
     status = _comac_composite_rectangles_init_for_paint (&composite,
 							 surface->target,
-							 op, source,
+							 op,
+							 source,
 							 clip);
     if (unlikely (status)) {
 	surface->log.paint.noop++;
@@ -746,9 +760,7 @@ _comac_surface_observer_paint (void *abstract_surface,
     _comac_composite_rectangles_fini (&composite);
 
     t = _comac_time_get ();
-    status = _comac_surface_paint (surface->target,
-				   op, source,
-				   clip);
+    status = _comac_surface_paint (surface->target, op, source, clip);
     if (unlikely (status))
 	return status;
 
@@ -780,7 +792,10 @@ add_record_mask (comac_observation_t *log,
 
     if (log->record) {
 	status = log->record->base.backend->mask (&log->record->base,
-						  op, source, mask, clip);
+						  op,
+						  source,
+						  mask,
+						  clip);
 	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
@@ -817,7 +832,9 @@ _comac_surface_observer_mask (void *abstract_surface,
 
     status = _comac_composite_rectangles_init_for_mask (&composite,
 							surface->target,
-							op, source, mask,
+							op,
+							source,
+							mask,
 							clip);
     if (unlikely (status)) {
 	surface->log.mask.noop++;
@@ -832,21 +849,15 @@ _comac_surface_observer_mask (void *abstract_surface,
     _comac_composite_rectangles_fini (&composite);
 
     t = _comac_time_get ();
-    status =  _comac_surface_mask (surface->target,
-				   op, source, mask,
-				   clip);
+    status = _comac_surface_mask (surface->target, op, source, mask, clip);
     if (unlikely (status))
 	return status;
 
     _comac_surface_sync (surface->target, x, y);
     t = _comac_time_get_delta (t);
 
-    add_record_mask (&surface->log,
-		     surface->target, op, source, mask, clip,
-		     t);
-    add_record_mask (&device->log,
-		     surface->target, op, source, mask, clip,
-		     t);
+    add_record_mask (&surface->log, surface->target, op, source, mask, clip, t);
+    add_record_mask (&device->log, surface->target, op, source, mask, clip, t);
 
     do_callbacks (surface, &surface->mask_callbacks);
 
@@ -856,13 +867,13 @@ _comac_surface_observer_mask (void *abstract_surface,
 static void
 add_record_fill (comac_observation_t *log,
 		 comac_surface_t *target,
-		 comac_operator_t		op,
-		 const comac_pattern_t		*source,
-		 const comac_path_fixed_t	*path,
-		 comac_fill_rule_t		 fill_rule,
-		 double				 tolerance,
-		 comac_antialias_t		 antialias,
-		 const comac_clip_t		 *clip,
+		 comac_operator_t op,
+		 const comac_pattern_t *source,
+		 const comac_path_fixed_t *path,
+		 comac_fill_rule_t fill_rule,
+		 double tolerance,
+		 comac_antialias_t antialias,
+		 const comac_clip_t *clip,
 		 comac_time_t elapsed)
 {
     comac_observation_record_t record;
@@ -870,15 +881,24 @@ add_record_fill (comac_observation_t *log,
 
     add_record (log,
 		record_fill (&record,
-			     target, op, source,
-			     path, fill_rule, tolerance, antialias,
-			     clip, elapsed));
+			     target,
+			     op,
+			     source,
+			     path,
+			     fill_rule,
+			     tolerance,
+			     antialias,
+			     clip,
+			     elapsed));
 
     if (log->record) {
 	status = log->record->base.backend->fill (&log->record->base,
-						  op, source,
-						  path, fill_rule,
-						  tolerance, antialias,
+						  op,
+						  source,
+						  path,
+						  fill_rule,
+						  tolerance,
+						  antialias,
 						  clip);
 	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
@@ -889,14 +909,14 @@ add_record_fill (comac_observation_t *log,
 }
 
 static comac_int_status_t
-_comac_surface_observer_fill (void			*abstract_surface,
-			      comac_operator_t		op,
-			      const comac_pattern_t	*source,
-			      const comac_path_fixed_t	*path,
-			      comac_fill_rule_t		fill_rule,
-			      double			 tolerance,
-			      comac_antialias_t		antialias,
-			      const comac_clip_t	*clip)
+_comac_surface_observer_fill (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip)
 {
     comac_surface_observer_t *surface = abstract_surface;
     comac_device_observer_t *device = to_device (surface);
@@ -923,7 +943,9 @@ _comac_surface_observer_fill (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_fill (&composite,
 							surface->target,
-							op, source, path,
+							op,
+							source,
+							path,
 							clip);
     if (unlikely (status)) {
 	surface->log.fill.noop++;
@@ -939,8 +961,12 @@ _comac_surface_observer_fill (void			*abstract_surface,
 
     t = _comac_time_get ();
     status = _comac_surface_fill (surface->target,
-				  op, source, path,
-				  fill_rule, tolerance, antialias,
+				  op,
+				  source,
+				  path,
+				  fill_rule,
+				  tolerance,
+				  antialias,
 				  clip);
     if (unlikely (status))
 	return status;
@@ -949,14 +975,26 @@ _comac_surface_observer_fill (void			*abstract_surface,
     t = _comac_time_get_delta (t);
 
     add_record_fill (&surface->log,
-		     surface->target, op, source, path,
-		     fill_rule, tolerance, antialias,
-		     clip, t);
+		     surface->target,
+		     op,
+		     source,
+		     path,
+		     fill_rule,
+		     tolerance,
+		     antialias,
+		     clip,
+		     t);
 
     add_record_fill (&device->log,
-		     surface->target, op, source, path,
-		     fill_rule, tolerance, antialias,
-		     clip, t);
+		     surface->target,
+		     op,
+		     source,
+		     path,
+		     fill_rule,
+		     tolerance,
+		     antialias,
+		     clip,
+		     t);
 
     do_callbacks (surface, &surface->fill_callbacks);
 
@@ -965,33 +1003,45 @@ _comac_surface_observer_fill (void			*abstract_surface,
 
 static void
 add_record_stroke (comac_observation_t *log,
-		 comac_surface_t *target,
-		 comac_operator_t		 op,
-		 const comac_pattern_t		*source,
-		 const comac_path_fixed_t	*path,
-		 const comac_stroke_style_t	*style,
-		 const comac_matrix_t		*ctm,
-		 const comac_matrix_t		*ctm_inverse,
-		 double				 tolerance,
-		 comac_antialias_t		 antialias,
-		 const comac_clip_t		*clip,
-		 comac_time_t elapsed)
+		   comac_surface_t *target,
+		   comac_operator_t op,
+		   const comac_pattern_t *source,
+		   const comac_path_fixed_t *path,
+		   const comac_stroke_style_t *style,
+		   const comac_matrix_t *ctm,
+		   const comac_matrix_t *ctm_inverse,
+		   double tolerance,
+		   comac_antialias_t antialias,
+		   const comac_clip_t *clip,
+		   comac_time_t elapsed)
 {
     comac_observation_record_t record;
     comac_int_status_t status;
 
     add_record (log,
 		record_stroke (&record,
-			       target, op, source,
-			       path, style, ctm,ctm_inverse,
-			       tolerance, antialias,
-			       clip, elapsed));
+			       target,
+			       op,
+			       source,
+			       path,
+			       style,
+			       ctm,
+			       ctm_inverse,
+			       tolerance,
+			       antialias,
+			       clip,
+			       elapsed));
 
     if (log->record) {
 	status = log->record->base.backend->stroke (&log->record->base,
-						    op, source,
-						    path, style, ctm,ctm_inverse,
-						    tolerance, antialias,
+						    op,
+						    source,
+						    path,
+						    style,
+						    ctm,
+						    ctm_inverse,
+						    tolerance,
+						    antialias,
 						    clip);
 	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
@@ -1002,16 +1052,16 @@ add_record_stroke (comac_observation_t *log,
 }
 
 static comac_int_status_t
-_comac_surface_observer_stroke (void				*abstract_surface,
-				comac_operator_t		 op,
-				const comac_pattern_t		*source,
-				const comac_path_fixed_t	*path,
-				const comac_stroke_style_t	*style,
-				const comac_matrix_t		*ctm,
-				const comac_matrix_t		*ctm_inverse,
-				double				 tolerance,
-				comac_antialias_t		 antialias,
-				const comac_clip_t		*clip)
+_comac_surface_observer_stroke (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_path_fixed_t *path,
+				const comac_stroke_style_t *style,
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias,
+				const comac_clip_t *clip)
 {
     comac_surface_observer_t *surface = abstract_surface;
     comac_device_observer_t *device = to_device (surface);
@@ -1040,8 +1090,11 @@ _comac_surface_observer_stroke (void				*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_stroke (&composite,
 							  surface->target,
-							  op, source,
-							  path, style, ctm,
+							  op,
+							  source,
+							  path,
+							  style,
+							  ctm,
 							  clip);
     if (unlikely (status)) {
 	surface->log.stroke.noop++;
@@ -1057,10 +1110,15 @@ _comac_surface_observer_stroke (void				*abstract_surface,
 
     t = _comac_time_get ();
     status = _comac_surface_stroke (surface->target,
-				  op, source, path,
-				  style, ctm, ctm_inverse,
-				  tolerance, antialias,
-				  clip);
+				    op,
+				    source,
+				    path,
+				    style,
+				    ctm,
+				    ctm_inverse,
+				    tolerance,
+				    antialias,
+				    clip);
     if (unlikely (status))
 	return status;
 
@@ -1068,16 +1126,30 @@ _comac_surface_observer_stroke (void				*abstract_surface,
     t = _comac_time_get_delta (t);
 
     add_record_stroke (&surface->log,
-		       surface->target, op, source, path,
-		       style, ctm,ctm_inverse,
-		       tolerance, antialias,
-		       clip, t);
+		       surface->target,
+		       op,
+		       source,
+		       path,
+		       style,
+		       ctm,
+		       ctm_inverse,
+		       tolerance,
+		       antialias,
+		       clip,
+		       t);
 
     add_record_stroke (&device->log,
-		       surface->target, op, source, path,
-		       style, ctm,ctm_inverse,
-		       tolerance, antialias,
-		       clip, t);
+		       surface->target,
+		       op,
+		       source,
+		       path,
+		       style,
+		       ctm,
+		       ctm_inverse,
+		       tolerance,
+		       antialias,
+		       clip,
+		       t);
 
     do_callbacks (surface, &surface->stroke_callbacks);
 
@@ -1085,14 +1157,14 @@ _comac_surface_observer_stroke (void				*abstract_surface,
 }
 
 static void
-add_record_glyphs (comac_observation_t	*log,
-		   comac_surface_t	*target,
-		   comac_operator_t	 op,
-		   const comac_pattern_t*source,
-		   comac_glyph_t	*glyphs,
-		   int			 num_glyphs,
-		   comac_scaled_font_t	*scaled_font,
-		   const comac_clip_t	*clip,
+add_record_glyphs (comac_observation_t *log,
+		   comac_surface_t *target,
+		   comac_operator_t op,
+		   const comac_pattern_t *source,
+		   comac_glyph_t *glyphs,
+		   int num_glyphs,
+		   comac_scaled_font_t *scaled_font,
+		   const comac_clip_t *clip,
 		   comac_time_t elapsed)
 {
     comac_observation_record_t record;
@@ -1100,18 +1172,29 @@ add_record_glyphs (comac_observation_t	*log,
 
     add_record (log,
 		record_glyphs (&record,
-			       target, op, source,
-			       glyphs, num_glyphs, scaled_font,
-			       clip, elapsed));
+			       target,
+			       op,
+			       source,
+			       glyphs,
+			       num_glyphs,
+			       scaled_font,
+			       clip,
+			       elapsed));
 
     if (log->record) {
-	status = log->record->base.backend->show_text_glyphs (&log->record->base,
-							      op, source,
-							      NULL, 0,
-							      glyphs, num_glyphs,
-							      NULL, 0, 0,
-							      scaled_font,
-							      clip);
+	status =
+	    log->record->base.backend->show_text_glyphs (&log->record->base,
+							 op,
+							 source,
+							 NULL,
+							 0,
+							 glyphs,
+							 num_glyphs,
+							 NULL,
+							 0,
+							 0,
+							 scaled_font,
+							 clip);
 	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
@@ -1121,13 +1204,13 @@ add_record_glyphs (comac_observation_t	*log,
 }
 
 static comac_int_status_t
-_comac_surface_observer_glyphs (void			*abstract_surface,
-				comac_operator_t	 op,
-				const comac_pattern_t	*source,
-				comac_glyph_t		*glyphs,
-				int			 num_glyphs,
-				comac_scaled_font_t	*scaled_font,
-				const comac_clip_t		*clip)
+_comac_surface_observer_glyphs (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				comac_glyph_t *glyphs,
+				int num_glyphs,
+				comac_scaled_font_t *scaled_font,
+				const comac_clip_t *clip)
 {
     comac_surface_observer_t *surface = abstract_surface;
     comac_device_observer_t *device = to_device (surface);
@@ -1149,9 +1232,11 @@ _comac_surface_observer_glyphs (void			*abstract_surface,
 
     status = _comac_composite_rectangles_init_for_glyphs (&composite,
 							  surface->target,
-							  op, source,
+							  op,
+							  source,
 							  scaled_font,
-							  glyphs, num_glyphs,
+							  glyphs,
+							  num_glyphs,
 							  clip,
 							  NULL);
     if (unlikely (status)) {
@@ -1174,10 +1259,16 @@ _comac_surface_observer_glyphs (void			*abstract_surface,
     memcpy (dev_glyphs, glyphs, num_glyphs * sizeof (comac_glyph_t));
 
     t = _comac_time_get ();
-    status = _comac_surface_show_text_glyphs (surface->target, op, source,
-					      NULL, 0,
-					      dev_glyphs, num_glyphs,
-					      NULL, 0, 0,
+    status = _comac_surface_show_text_glyphs (surface->target,
+					      op,
+					      source,
+					      NULL,
+					      0,
+					      dev_glyphs,
+					      num_glyphs,
+					      NULL,
+					      0,
+					      0,
 					      scaled_font,
 					      clip);
     free (dev_glyphs);
@@ -1188,14 +1279,24 @@ _comac_surface_observer_glyphs (void			*abstract_surface,
     t = _comac_time_get_delta (t);
 
     add_record_glyphs (&surface->log,
-		       surface->target, op, source,
-		       glyphs, num_glyphs, scaled_font,
-		       clip, t);
+		       surface->target,
+		       op,
+		       source,
+		       glyphs,
+		       num_glyphs,
+		       scaled_font,
+		       clip,
+		       t);
 
     add_record_glyphs (&device->log,
-		       surface->target, op, source,
-		       glyphs, num_glyphs, scaled_font,
-		       clip, t);
+		       surface->target,
+		       op,
+		       source,
+		       glyphs,
+		       num_glyphs,
+		       scaled_font,
+		       clip,
+		       t);
 
     do_callbacks (surface, &surface->glyphs_callbacks);
 
@@ -1212,17 +1313,20 @@ _comac_surface_observer_flush (void *abstract_surface, unsigned flags)
 }
 
 static comac_status_t
-_comac_surface_observer_mark_dirty (void *abstract_surface,
-				      int x, int y,
-				      int width, int height)
+_comac_surface_observer_mark_dirty (
+    void *abstract_surface, int x, int y, int width, int height)
 {
     comac_surface_observer_t *surface = abstract_surface;
     comac_status_t status;
 
     status = COMAC_STATUS_SUCCESS;
     if (surface->target->backend->mark_dirty_rectangle)
-	status = surface->target->backend->mark_dirty_rectangle (surface->target,
-						       x,y, width,height);
+	status =
+	    surface->target->backend->mark_dirty_rectangle (surface->target,
+							    x,
+							    y,
+							    width,
+							    height);
 
     return status;
 }
@@ -1272,17 +1376,17 @@ _comac_surface_observer_get_font_options (void *abstract_surface,
 }
 
 static comac_surface_t *
-_comac_surface_observer_source (void                    *abstract_surface,
-				comac_rectangle_int_t	*extents)
+_comac_surface_observer_source (void *abstract_surface,
+				comac_rectangle_int_t *extents)
 {
     comac_surface_observer_t *surface = abstract_surface;
     return _comac_surface_get_source (surface->target, extents);
 }
 
 static comac_status_t
-_comac_surface_observer_acquire_source_image (void                    *abstract_surface,
-						comac_image_surface_t  **image_out,
-						void                   **image_extra)
+_comac_surface_observer_acquire_source_image (void *abstract_surface,
+					      comac_image_surface_t **image_out,
+					      void **image_extra)
 {
     comac_surface_observer_t *surface = abstract_surface;
 
@@ -1290,13 +1394,14 @@ _comac_surface_observer_acquire_source_image (void                    *abstract_
     to_device (surface)->log.num_sources_acquired++;
 
     return _comac_surface_acquire_source_image (surface->target,
-						image_out, image_extra);
+						image_out,
+						image_extra);
 }
 
 static void
-_comac_surface_observer_release_source_image (void                   *abstract_surface,
-						comac_image_surface_t  *image,
-						void                   *image_extra)
+_comac_surface_observer_release_source_image (void *abstract_surface,
+					      comac_image_surface_t *image,
+					      void *image_extra)
 {
     comac_surface_observer_t *surface = abstract_surface;
 
@@ -1317,13 +1422,14 @@ _comac_surface_observer_snapshot (void *abstract_surface)
 }
 
 static comac_t *
-_comac_surface_observer_create_context(void *target)
+_comac_surface_observer_create_context (void *target)
 {
     comac_surface_observer_t *surface = target;
 
     if (_comac_surface_is_subsurface (&surface->base))
-	surface = (comac_surface_observer_t *)
-	    _comac_surface_subsurface_get_target (&surface->base);
+	surface =
+	    (comac_surface_observer_t *) _comac_surface_subsurface_get_target (
+		&surface->base);
 
     surface->log.num_contexts++;
     to_device (surface)->log.num_contexts++;
@@ -1398,7 +1504,8 @@ comac_surface_create_observer (comac_surface_t *target,
     if (unlikely (target->status))
 	return _comac_surface_create_in_error (target->status);
     if (unlikely (target->finished))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     record = mode & COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS;
     device = _comac_device_create_observer_internal (target->device, record);
@@ -1430,129 +1537,150 @@ _comac_surface_observer_add_callback (comac_list_t *head,
 }
 
 comac_status_t
-comac_surface_observer_add_paint_callback (comac_surface_t *abstract_surface,
-					    comac_surface_observer_callback_t func,
-					    void *data)
+comac_surface_observer_add_paint_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
     if (! _comac_surface_is_observer (abstract_surface))
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (comac_surface_observer_t *)abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
     return _comac_surface_observer_add_callback (&surface->paint_callbacks,
-						 func, data);
+						 func,
+						 data);
 }
 
 comac_status_t
-comac_surface_observer_add_mask_callback (comac_surface_t *abstract_surface,
-					  comac_surface_observer_callback_t func,
-					  void *data)
+comac_surface_observer_add_mask_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
     if (! _comac_surface_is_observer (abstract_surface))
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (comac_surface_observer_t *)abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
     return _comac_surface_observer_add_callback (&surface->mask_callbacks,
-						 func, data);
+						 func,
+						 data);
 }
 
 comac_status_t
-comac_surface_observer_add_fill_callback (comac_surface_t *abstract_surface,
-					  comac_surface_observer_callback_t func,
-					  void *data)
+comac_surface_observer_add_fill_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
     if (! _comac_surface_is_observer (abstract_surface))
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (comac_surface_observer_t *)abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
     return _comac_surface_observer_add_callback (&surface->fill_callbacks,
-						 func, data);
+						 func,
+						 data);
 }
 
 comac_status_t
-comac_surface_observer_add_stroke_callback (comac_surface_t *abstract_surface,
-					    comac_surface_observer_callback_t func,
-					    void *data)
+comac_surface_observer_add_stroke_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
     if (! _comac_surface_is_observer (abstract_surface))
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (comac_surface_observer_t *)abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
     return _comac_surface_observer_add_callback (&surface->stroke_callbacks,
-						 func, data);
+						 func,
+						 data);
 }
 
 comac_status_t
-comac_surface_observer_add_glyphs_callback (comac_surface_t *abstract_surface,
-					    comac_surface_observer_callback_t func,
-					    void *data)
+comac_surface_observer_add_glyphs_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
     if (! _comac_surface_is_observer (abstract_surface))
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (comac_surface_observer_t *)abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
     return _comac_surface_observer_add_callback (&surface->glyphs_callbacks,
-						 func, data);
+						 func,
+						 data);
 }
 
 comac_status_t
-comac_surface_observer_add_flush_callback (comac_surface_t *abstract_surface,
-					   comac_surface_observer_callback_t func,
-					   void *data)
+comac_surface_observer_add_flush_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
     if (! _comac_surface_is_observer (abstract_surface))
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (comac_surface_observer_t *)abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
     return _comac_surface_observer_add_callback (&surface->flush_callbacks,
-						 func, data);
+						 func,
+						 data);
 }
 
 comac_status_t
-comac_surface_observer_add_finish_callback (comac_surface_t *abstract_surface,
-					    comac_surface_observer_callback_t func,
-					    void *data)
+comac_surface_observer_add_finish_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
     if (! _comac_surface_is_observer (abstract_surface))
 	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (comac_surface_observer_t *)abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
     return _comac_surface_observer_add_callback (&surface->finish_callbacks,
-						 func, data);
+						 func,
+						 data);
 }
 
 static void
@@ -1565,7 +1693,8 @@ print_extents (comac_output_stream_t *stream, const struct extents *e)
 				 e->unbounded);
 }
 
-static inline int ordercmp (int a, int b, const unsigned int *array)
+static inline int
+ordercmp (int a, int b, const unsigned int *array)
 {
     /* high to low */
     return array[b] - array[a];
@@ -1587,47 +1716,49 @@ print_array (comac_output_stream_t *stream,
 	    order[j++] = i;
     }
 
-    sort_order (order, j, (void *)array);
+    sort_order (order, j, (void *) array);
     for (i = 0; i < j; i++)
-	_comac_output_stream_printf (stream, " %d %s%s",
-				     array[order[i]], names[order[i]],
-				     i < j -1 ? "," : "");
+	_comac_output_stream_printf (stream,
+				     " %d %s%s",
+				     array[order[i]],
+				     names[order[i]],
+				     i < j - 1 ? "," : "");
 }
 
 static const char *operator_names[] = {
-    "CLEAR",	/* COMAC_OPERATOR_CLEAR */
+    "CLEAR", /* COMAC_OPERATOR_CLEAR */
 
-    "SOURCE",	/* COMAC_OPERATOR_SOURCE */
-    "OVER",		/* COMAC_OPERATOR_OVER */
-    "IN",		/* COMAC_OPERATOR_IN */
-    "OUT",		/* COMAC_OPERATOR_OUT */
-    "ATOP",		/* COMAC_OPERATOR_ATOP */
+    "SOURCE", /* COMAC_OPERATOR_SOURCE */
+    "OVER",   /* COMAC_OPERATOR_OVER */
+    "IN",     /* COMAC_OPERATOR_IN */
+    "OUT",    /* COMAC_OPERATOR_OUT */
+    "ATOP",   /* COMAC_OPERATOR_ATOP */
 
-    "DEST",		/* COMAC_OPERATOR_DEST */
-    "DEST_OVER",	/* COMAC_OPERATOR_DEST_OVER */
-    "DEST_IN",	/* COMAC_OPERATOR_DEST_IN */
-    "DEST_OUT",	/* COMAC_OPERATOR_DEST_OUT */
-    "DEST_ATOP",	/* COMAC_OPERATOR_DEST_ATOP */
+    "DEST",	 /* COMAC_OPERATOR_DEST */
+    "DEST_OVER", /* COMAC_OPERATOR_DEST_OVER */
+    "DEST_IN",	 /* COMAC_OPERATOR_DEST_IN */
+    "DEST_OUT",	 /* COMAC_OPERATOR_DEST_OUT */
+    "DEST_ATOP", /* COMAC_OPERATOR_DEST_ATOP */
 
-    "XOR",		/* COMAC_OPERATOR_XOR */
-    "ADD",		/* COMAC_OPERATOR_ADD */
-    "SATURATE",	/* COMAC_OPERATOR_SATURATE */
+    "XOR",	/* COMAC_OPERATOR_XOR */
+    "ADD",	/* COMAC_OPERATOR_ADD */
+    "SATURATE", /* COMAC_OPERATOR_SATURATE */
 
-    "MULTIPLY",	/* COMAC_OPERATOR_MULTIPLY */
-    "SCREEN",	/* COMAC_OPERATOR_SCREEN */
-    "OVERLAY",	/* COMAC_OPERATOR_OVERLAY */
-    "DARKEN",	/* COMAC_OPERATOR_DARKEN */
-    "LIGHTEN",	/* COMAC_OPERATOR_LIGHTEN */
-    "DODGE",	/* COMAC_OPERATOR_COLOR_DODGE */
-    "BURN",		/* COMAC_OPERATOR_COLOR_BURN */
-    "HARD_LIGHT",	/* COMAC_OPERATOR_HARD_LIGHT */
-    "SOFT_LIGHT",	/* COMAC_OPERATOR_SOFT_LIGHT */
-    "DIFFERENCE",	/* COMAC_OPERATOR_DIFFERENCE */
-    "EXCLUSION",	/* COMAC_OPERATOR_EXCLUSION */
-    "HSL_HUE",	/* COMAC_OPERATOR_HSL_HUE */
+    "MULTIPLY",	      /* COMAC_OPERATOR_MULTIPLY */
+    "SCREEN",	      /* COMAC_OPERATOR_SCREEN */
+    "OVERLAY",	      /* COMAC_OPERATOR_OVERLAY */
+    "DARKEN",	      /* COMAC_OPERATOR_DARKEN */
+    "LIGHTEN",	      /* COMAC_OPERATOR_LIGHTEN */
+    "DODGE",	      /* COMAC_OPERATOR_COLOR_DODGE */
+    "BURN",	      /* COMAC_OPERATOR_COLOR_BURN */
+    "HARD_LIGHT",     /* COMAC_OPERATOR_HARD_LIGHT */
+    "SOFT_LIGHT",     /* COMAC_OPERATOR_SOFT_LIGHT */
+    "DIFFERENCE",     /* COMAC_OPERATOR_DIFFERENCE */
+    "EXCLUSION",      /* COMAC_OPERATOR_EXCLUSION */
+    "HSL_HUE",	      /* COMAC_OPERATOR_HSL_HUE */
     "HSL_SATURATION", /* COMAC_OPERATOR_HSL_SATURATION */
-    "HSL_COLOR",	/* COMAC_OPERATOR_HSL_COLOR */
-    "HSL_LUMINOSITY" /* COMAC_OPERATOR_HSL_LUMINOSITY */
+    "HSL_COLOR",      /* COMAC_OPERATOR_HSL_COLOR */
+    "HSL_LUMINOSITY"  /* COMAC_OPERATOR_HSL_LUMINOSITY */
 };
 static void
 print_operators (comac_output_stream_t *stream, unsigned int *array)
@@ -1645,14 +1776,17 @@ static void
 print_fill_rule (comac_output_stream_t *stream, unsigned int *array)
 {
     _comac_output_stream_printf (stream, "  fill rule:");
-    print_array (stream, array, fill_rule_names, ARRAY_LENGTH(fill_rule_names));
+    print_array (stream,
+		 array,
+		 fill_rule_names,
+		 ARRAY_LENGTH (fill_rule_names));
     _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *cap_names[] = {
-    "butt",		/* COMAC_LINE_CAP_BUTT */
-    "round",	/* COMAC_LINE_CAP_ROUND */
-    "square"	/* COMAC_LINE_CAP_SQUARE */
+    "butt",  /* COMAC_LINE_CAP_BUTT */
+    "round", /* COMAC_LINE_CAP_ROUND */
+    "square" /* COMAC_LINE_CAP_SQUARE */
 };
 static void
 print_line_caps (comac_output_stream_t *stream, unsigned int *array)
@@ -1663,9 +1797,9 @@ print_line_caps (comac_output_stream_t *stream, unsigned int *array)
 }
 
 static const char *join_names[] = {
-    "miter",	/* COMAC_LINE_JOIN_MITER */
-    "round",	/* COMAC_LINE_JOIN_ROUND */
-    "bevel",	/* COMAC_LINE_JOIN_BEVEL */
+    "miter", /* COMAC_LINE_JOIN_MITER */
+    "round", /* COMAC_LINE_JOIN_ROUND */
+    "bevel", /* COMAC_LINE_JOIN_BEVEL */
 };
 static void
 print_line_joins (comac_output_stream_t *stream, unsigned int *array)
@@ -1676,14 +1810,7 @@ print_line_joins (comac_output_stream_t *stream, unsigned int *array)
 }
 
 static const char *antialias_names[] = {
-    "default",
-    "none",
-    "gray",
-    "subpixel",
-    "fast",
-    "good",
-    "best"
-};
+    "default", "none", "gray", "subpixel", "fast", "good", "best"};
 static void
 print_antialias (comac_output_stream_t *stream, unsigned int *array)
 {
@@ -1692,16 +1819,14 @@ print_antialias (comac_output_stream_t *stream, unsigned int *array)
     _comac_output_stream_printf (stream, "\n");
 }
 
-static const char *pattern_names[] = {
-    "native",
-    "record",
-    "other surface",
-    "solid",
-    "linear",
-    "radial",
-    "mesh",
-    "raster"
-};
+static const char *pattern_names[] = {"native",
+				      "record",
+				      "other surface",
+				      "solid",
+				      "linear",
+				      "radial",
+				      "mesh",
+				      "raster"};
 static void
 print_pattern (comac_output_stream_t *stream,
 	       const char *name,
@@ -1720,8 +1845,7 @@ static const char *path_names[] = {
     "curved",
 };
 static void
-print_path (comac_output_stream_t *stream,
-	    const struct path *p)
+print_path (comac_output_stream_t *stream, const struct path *p)
 {
     _comac_output_stream_printf (stream, "  path:");
     print_array (stream, p->type, path_names, ARRAY_LENGTH (path_names));
@@ -1745,37 +1869,44 @@ print_clip (comac_output_stream_t *stream, const struct clip *c)
 }
 
 static void
-print_record (comac_output_stream_t *stream,
-	      comac_observation_record_t *r)
+print_record (comac_output_stream_t *stream, comac_observation_record_t *r)
 {
     _comac_output_stream_printf (stream, "  op: %s\n", operator_names[r->op]);
-    _comac_output_stream_printf (stream, "  source: %s\n",
+    _comac_output_stream_printf (stream,
+				 "  source: %s\n",
 				 pattern_names[r->source]);
     if (r->mask != -1)
-	_comac_output_stream_printf (stream, "  mask: %s\n",
+	_comac_output_stream_printf (stream,
+				     "  mask: %s\n",
 				     pattern_names[r->mask]);
     if (r->num_glyphs != -1)
-	_comac_output_stream_printf (stream, "  num_glyphs: %d\n",
+	_comac_output_stream_printf (stream,
+				     "  num_glyphs: %d\n",
 				     r->num_glyphs);
     if (r->path != -1)
-	_comac_output_stream_printf (stream, "  path: %s\n",
-				    path_names[r->path]);
+	_comac_output_stream_printf (stream,
+				     "  path: %s\n",
+				     path_names[r->path]);
     if (r->fill_rule != -1)
-	_comac_output_stream_printf (stream, "  fill rule: %s\n",
+	_comac_output_stream_printf (stream,
+				     "  fill rule: %s\n",
 				     fill_rule_names[r->fill_rule]);
     if (r->antialias != -1)
-	_comac_output_stream_printf (stream, "  antialias: %s\n",
+	_comac_output_stream_printf (stream,
+				     "  antialias: %s\n",
 				     antialias_names[r->antialias]);
     _comac_output_stream_printf (stream, "  clip: %s\n", clip_names[r->clip]);
-    _comac_output_stream_printf (stream, "  elapsed: %f ns\n",
+    _comac_output_stream_printf (stream,
+				 "  elapsed: %f ns\n",
 				 _comac_time_to_ns (r->elapsed));
 }
 
-static double percent (comac_time_t a, comac_time_t b)
+static double
+percent (comac_time_t a, comac_time_t b)
 {
     /* Fake %.1f */
-    return _comac_round (_comac_time_to_s (a) * 1000 /
-			 _comac_time_to_s (b)) / 10;
+    return _comac_round (_comac_time_to_s (a) * 1000 / _comac_time_to_s (b)) /
+	   10;
 }
 
 static comac_bool_t
@@ -1836,29 +1967,32 @@ _comac_observation_print (comac_output_stream_t *stream,
 
     total = _comac_observation_total_elapsed (log);
 
-    _comac_output_stream_printf (stream, "elapsed: %f\n",
+    _comac_output_stream_printf (stream,
+				 "elapsed: %f\n",
 				 _comac_time_to_ns (total));
-    _comac_output_stream_printf (stream, "surfaces: %d\n",
-				 log->num_surfaces);
-    _comac_output_stream_printf (stream, "contexts: %d\n",
-				 log->num_contexts);
-    _comac_output_stream_printf (stream, "sources acquired: %d\n",
+    _comac_output_stream_printf (stream, "surfaces: %d\n", log->num_surfaces);
+    _comac_output_stream_printf (stream, "contexts: %d\n", log->num_contexts);
+    _comac_output_stream_printf (stream,
+				 "sources acquired: %d\n",
 				 log->num_sources_acquired);
 
-
-    _comac_output_stream_printf (stream, "paint: count %d [no-op %d], elapsed %f [%f%%]\n",
-				 log->paint.count, log->paint.noop,
-				 _comac_time_to_ns (log->paint.elapsed),
-				 percent (log->paint.elapsed, total));
+    _comac_output_stream_printf (
+	stream,
+	"paint: count %d [no-op %d], elapsed %f [%f%%]\n",
+	log->paint.count,
+	log->paint.noop,
+	_comac_time_to_ns (log->paint.elapsed),
+	percent (log->paint.elapsed, total));
     if (log->paint.count) {
 	print_extents (stream, &log->paint.extents);
 	print_operators (stream, log->paint.operators);
 	print_pattern (stream, "source", &log->paint.source);
 	print_clip (stream, &log->paint.clip);
 
-	_comac_output_stream_printf (stream, "slowest paint: %f%%\n",
-				     percent (log->paint.slowest.elapsed,
-					      log->paint.elapsed));
+	_comac_output_stream_printf (
+	    stream,
+	    "slowest paint: %f%%\n",
+	    percent (log->paint.slowest.elapsed, log->paint.elapsed));
 	print_record (stream, &log->paint.slowest);
 
 	_comac_output_stream_printf (stream, "\n");
@@ -1866,10 +2000,13 @@ _comac_observation_print (comac_output_stream_t *stream,
 	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _comac_output_stream_printf (stream, "mask: count %d [no-op %d], elapsed %f [%f%%]\n",
-				 log->mask.count, log->mask.noop,
-				 _comac_time_to_ns (log->mask.elapsed),
-				 percent (log->mask.elapsed, total));
+    _comac_output_stream_printf (
+	stream,
+	"mask: count %d [no-op %d], elapsed %f [%f%%]\n",
+	log->mask.count,
+	log->mask.noop,
+	_comac_time_to_ns (log->mask.elapsed),
+	percent (log->mask.elapsed, total));
     if (log->mask.count) {
 	print_extents (stream, &log->mask.extents);
 	print_operators (stream, log->mask.operators);
@@ -1877,9 +2014,10 @@ _comac_observation_print (comac_output_stream_t *stream,
 	print_pattern (stream, "mask", &log->mask.mask);
 	print_clip (stream, &log->mask.clip);
 
-	_comac_output_stream_printf (stream, "slowest mask: %f%%\n",
-				     percent (log->mask.slowest.elapsed,
-					      log->mask.elapsed));
+	_comac_output_stream_printf (
+	    stream,
+	    "slowest mask: %f%%\n",
+	    percent (log->mask.slowest.elapsed, log->mask.elapsed));
 	print_record (stream, &log->mask.slowest);
 
 	_comac_output_stream_printf (stream, "\n");
@@ -1887,10 +2025,13 @@ _comac_observation_print (comac_output_stream_t *stream,
 	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _comac_output_stream_printf (stream, "fill: count %d [no-op %d], elaspsed %f [%f%%]\n",
-				 log->fill.count, log->fill.noop,
-				 _comac_time_to_ns (log->fill.elapsed),
-				 percent (log->fill.elapsed, total));
+    _comac_output_stream_printf (
+	stream,
+	"fill: count %d [no-op %d], elaspsed %f [%f%%]\n",
+	log->fill.count,
+	log->fill.noop,
+	_comac_time_to_ns (log->fill.elapsed),
+	percent (log->fill.elapsed, total));
     if (log->fill.count) {
 	print_extents (stream, &log->fill.extents);
 	print_operators (stream, log->fill.operators);
@@ -1900,9 +2041,10 @@ _comac_observation_print (comac_output_stream_t *stream,
 	print_antialias (stream, log->fill.antialias);
 	print_clip (stream, &log->fill.clip);
 
-	_comac_output_stream_printf (stream, "slowest fill: %f%%\n",
-				     percent (log->fill.slowest.elapsed,
-					      log->fill.elapsed));
+	_comac_output_stream_printf (
+	    stream,
+	    "slowest fill: %f%%\n",
+	    percent (log->fill.slowest.elapsed, log->fill.elapsed));
 	print_record (stream, &log->fill.slowest);
 
 	_comac_output_stream_printf (stream, "\n");
@@ -1910,10 +2052,13 @@ _comac_observation_print (comac_output_stream_t *stream,
 	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _comac_output_stream_printf (stream, "stroke: count %d [no-op %d], elapsed %f [%f%%]\n",
-				 log->stroke.count, log->stroke.noop,
-				 _comac_time_to_ns (log->stroke.elapsed),
-				 percent (log->stroke.elapsed, total));
+    _comac_output_stream_printf (
+	stream,
+	"stroke: count %d [no-op %d], elapsed %f [%f%%]\n",
+	log->stroke.count,
+	log->stroke.noop,
+	_comac_time_to_ns (log->stroke.elapsed),
+	percent (log->stroke.elapsed, total));
     if (log->stroke.count) {
 	print_extents (stream, &log->stroke.extents);
 	print_operators (stream, log->stroke.operators);
@@ -1924,9 +2069,10 @@ _comac_observation_print (comac_output_stream_t *stream,
 	print_line_joins (stream, log->stroke.joins);
 	print_clip (stream, &log->stroke.clip);
 
-	_comac_output_stream_printf (stream, "slowest stroke: %f%%\n",
-				     percent (log->stroke.slowest.elapsed,
-					      log->stroke.elapsed));
+	_comac_output_stream_printf (
+	    stream,
+	    "slowest stroke: %f%%\n",
+	    percent (log->stroke.slowest.elapsed, log->stroke.elapsed));
 	print_record (stream, &log->stroke.slowest);
 
 	_comac_output_stream_printf (stream, "\n");
@@ -1934,19 +2080,23 @@ _comac_observation_print (comac_output_stream_t *stream,
 	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _comac_output_stream_printf (stream, "glyphs: count %d [no-op %d], elasped %f [%f%%]\n",
-				 log->glyphs.count, log->glyphs.noop,
-				 _comac_time_to_ns (log->glyphs.elapsed),
-				 percent (log->glyphs.elapsed, total));
+    _comac_output_stream_printf (
+	stream,
+	"glyphs: count %d [no-op %d], elasped %f [%f%%]\n",
+	log->glyphs.count,
+	log->glyphs.noop,
+	_comac_time_to_ns (log->glyphs.elapsed),
+	percent (log->glyphs.elapsed, total));
     if (log->glyphs.count) {
 	print_extents (stream, &log->glyphs.extents);
 	print_operators (stream, log->glyphs.operators);
 	print_pattern (stream, "source", &log->glyphs.source);
 	print_clip (stream, &log->glyphs.clip);
 
-	_comac_output_stream_printf (stream, "slowest glyphs: %f%%\n",
-				     percent (log->glyphs.slowest.elapsed,
-					      log->glyphs.elapsed));
+	_comac_output_stream_printf (
+	    stream,
+	    "slowest glyphs: %f%%\n",
+	    percent (log->glyphs.slowest.elapsed, log->glyphs.elapsed));
 	print_record (stream, &log->glyphs.slowest);
 
 	_comac_output_stream_printf (stream, "\n");
@@ -1983,7 +2133,8 @@ comac_surface_observer_elapsed (comac_surface_t *abstract_surface)
 {
     comac_surface_observer_t *surface;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return -1;
 
     if (! _comac_surface_is_observer (abstract_surface))
@@ -2019,7 +2170,8 @@ comac_device_observer_elapsed (comac_device_t *abstract_device)
 {
     comac_device_observer_t *device;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
     if (! _comac_device_is_observer (abstract_device))
@@ -2034,7 +2186,8 @@ comac_device_observer_paint_elapsed (comac_device_t *abstract_device)
 {
     comac_device_observer_t *device;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
     if (! _comac_device_is_observer (abstract_device))
@@ -2049,7 +2202,8 @@ comac_device_observer_mask_elapsed (comac_device_t *abstract_device)
 {
     comac_device_observer_t *device;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
     if (! _comac_device_is_observer (abstract_device))
@@ -2064,7 +2218,8 @@ comac_device_observer_fill_elapsed (comac_device_t *abstract_device)
 {
     comac_device_observer_t *device;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
     if (! _comac_device_is_observer (abstract_device))
@@ -2079,7 +2234,8 @@ comac_device_observer_stroke_elapsed (comac_device_t *abstract_device)
 {
     comac_device_observer_t *device;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
     if (! _comac_device_is_observer (abstract_device))
@@ -2094,7 +2250,8 @@ comac_device_observer_glyphs_elapsed (comac_device_t *abstract_device)
 {
     comac_device_observer_t *device;
 
-    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
     if (! _comac_device_is_observer (abstract_device))

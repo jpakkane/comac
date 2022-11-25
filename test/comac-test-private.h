@@ -36,10 +36,7 @@
 
 COMAC_BEGIN_DECLS
 
-typedef enum {
-    DIRECT,
-    SIMILAR
-} comac_test_similar_t;
+typedef enum { DIRECT, SIMILAR } comac_test_similar_t;
 
 comac_test_similar_t
 comac_test_target_has_similar (const comac_test_context_t *ctx,
@@ -49,7 +46,8 @@ comac_test_status_t
 _comac_test_context_run_for_target (comac_test_context_t *ctx,
 				    const comac_boilerplate_target_t *target,
 				    comac_bool_t similar,
-				    int dev_offset, int dev_scale);
+				    int dev_offset,
+				    int dev_scale);
 
 void
 _comac_test_context_init_for_test (comac_test_context_t *ctx,

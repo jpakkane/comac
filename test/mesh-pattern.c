@@ -26,13 +26,12 @@
 
 #include "comac-test.h"
 
-#define PAT_WIDTH  170
+#define PAT_WIDTH 170
 #define PAT_HEIGHT 170
 #define SIZE PAT_WIDTH
 #define PAD 2
 #define WIDTH (PAD + SIZE + PAD)
 #define HEIGHT WIDTH
-
 
 /* This test is designed to paint a mesh pattern. The mesh contains
  * two overlapping patches */
@@ -52,10 +51,10 @@ draw (comac_t *cr, int width, int height)
     comac_mesh_pattern_begin_patch (pattern);
 
     comac_mesh_pattern_move_to (pattern, 0, 0);
-    comac_mesh_pattern_curve_to (pattern, 30, -30,  60,  30, 100, 0);
-    comac_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
-    comac_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
-    comac_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
+    comac_mesh_pattern_curve_to (pattern, 30, -30, 60, 30, 100, 0);
+    comac_mesh_pattern_curve_to (pattern, 60, 30, 130, 60, 100, 100);
+    comac_mesh_pattern_curve_to (pattern, 60, 70, 30, 130, 0, 100);
+    comac_mesh_pattern_curve_to (pattern, 30, 70, -30, 30, 0, 0);
 
     comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
     comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
@@ -67,15 +66,15 @@ draw (comac_t *cr, int width, int height)
     comac_mesh_pattern_begin_patch (pattern);
 
     comac_mesh_pattern_move_to (pattern, 50, 50);
-    comac_mesh_pattern_curve_to (pattern,  80,  20, 110,  80, 150, 50);
-    comac_mesh_pattern_curve_to (pattern, 110,  80, 180, 110, 150, 150);
-    comac_mesh_pattern_curve_to (pattern, 110, 120,  80, 180,  50, 150);
-    comac_mesh_pattern_curve_to (pattern,  80, 120,  20,  80,  50, 50);
+    comac_mesh_pattern_curve_to (pattern, 80, 20, 110, 80, 150, 50);
+    comac_mesh_pattern_curve_to (pattern, 110, 80, 180, 110, 150, 150);
+    comac_mesh_pattern_curve_to (pattern, 110, 120, 80, 180, 50, 150);
+    comac_mesh_pattern_curve_to (pattern, 80, 120, 20, 80, 50, 50);
 
     comac_mesh_pattern_set_corner_color_rgba (pattern, 0, 1, 0, 0, 0.3);
-    comac_mesh_pattern_set_corner_color_rgb  (pattern, 1, 0, 1, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
     comac_mesh_pattern_set_corner_color_rgba (pattern, 2, 0, 0, 1, 0.3);
-    comac_mesh_pattern_set_corner_color_rgb  (pattern, 3, 1, 1, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 0);
 
     comac_mesh_pattern_end_patch (pattern);
 
@@ -89,6 +88,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mesh_pattern,
 	    "Paint mesh pattern",
 	    "mesh, pattern", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

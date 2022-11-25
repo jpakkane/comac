@@ -51,94 +51,93 @@
 #endif
 
 #ifndef TRUE
-#define TRUE (!FALSE)
+#define TRUE (! FALSE)
 #endif
 
 #ifndef NULL
 #define NULL (void *) 0
 #endif
 
-#if   HAVE_STDINT_H
-# include <stdint.h>
+#if HAVE_STDINT_H
+#include <stdint.h>
 #elif HAVE_INTTYPES_H
-# include <inttypes.h>
+#include <inttypes.h>
 #elif HAVE_SYS_INT_TYPES_H
-# include <sys/int_types.h>
+#include <sys/int_types.h>
 #elif defined(_MSC_VER)
-  typedef __int8 int8_t;
-  typedef unsigned __int8 uint8_t;
-  typedef __int16 int16_t;
-  typedef unsigned __int16 uint16_t;
-  typedef __int32 int32_t;
-  typedef unsigned __int32 uint32_t;
-  typedef __int64 int64_t;
-  typedef unsigned __int64 uint64_t;
-# ifndef HAVE_UINT64_T
-#  define HAVE_UINT64_T 1
-# endif
+typedef __int8 int8_t;
+typedef unsigned __int8 uint8_t;
+typedef __int16 int16_t;
+typedef unsigned __int16 uint16_t;
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#ifndef HAVE_UINT64_T
+#define HAVE_UINT64_T 1
+#endif
 #else
 #error Cannot find definitions for fixed-width integral types (uint8_t, uint32_t, etc.)
 #endif
 
 #if HAVE_BYTESWAP_H
-# include <byteswap.h>
+#include <byteswap.h>
 #endif
 #ifndef bswap_16
-# define bswap_16(p) \
-	(((((uint16_t)(p)) & 0x00ff) << 8) | \
-	  (((uint16_t)(p))           >> 8))
+#define bswap_16(p)                                                            \
+    (((((uint16_t) (p)) & 0x00ff) << 8) | (((uint16_t) (p)) >> 8))
 #endif
 #ifndef bswap_32
-# define bswap_32(p) \
-         (((((uint32_t)(p)) & 0x000000ff) << 24) | \
-	  ((((uint32_t)(p)) & 0x0000ff00) << 8)  | \
-	  ((((uint32_t)(p)) & 0x00ff0000) >> 8)  | \
-	  ((((uint32_t)(p)))              >> 24))
+#define bswap_32(p)                                                            \
+    (((((uint32_t) (p)) & 0x000000ff) << 24) |                                 \
+     ((((uint32_t) (p)) & 0x0000ff00) << 8) |                                  \
+     ((((uint32_t) (p)) & 0x00ff0000) >> 8) | ((((uint32_t) (p))) >> 24))
 #endif
 
-
-#if __GNUC__ >= 3 && defined(__ELF__) && !defined(__sun)
-# define slim_hidden_proto(name)		slim_hidden_proto1(name, slim_hidden_int_name(name)) csi_private
-# define slim_hidden_proto_no_warn(name)	slim_hidden_proto1(name, slim_hidden_int_name(name)) csi_private_no_warn
-# define slim_hidden_def(name)			slim_hidden_def1(name, slim_hidden_int_name(name))
-# define slim_hidden_int_name(name) INT_##name
-# define slim_hidden_proto1(name, internal)				\
-  extern __typeof (name) name						\
-	__asm__ (slim_hidden_asmname (internal))
-# define slim_hidden_def1(name, internal)				\
-  extern __typeof (name) EXT_##name __asm__(slim_hidden_asmname(name))	\
-	__attribute__((__alias__(slim_hidden_asmname(internal))))
-# define slim_hidden_ulp		slim_hidden_ulp1(__USER_LABEL_PREFIX__)
-# define slim_hidden_ulp1(x)		slim_hidden_ulp2(x)
-# define slim_hidden_ulp2(x)		#x
-# define slim_hidden_asmname(name)	slim_hidden_asmname1(name)
-# define slim_hidden_asmname1(name)	slim_hidden_ulp #name
+#if __GNUC__ >= 3 && defined(__ELF__) && ! defined(__sun)
+#define slim_hidden_proto(name)                                                \
+    slim_hidden_proto1 (name, slim_hidden_int_name (name)) csi_private
+#define slim_hidden_proto_no_warn(name)                                        \
+    slim_hidden_proto1 (name, slim_hidden_int_name (name)) csi_private_no_warn
+#define slim_hidden_def(name)                                                  \
+    slim_hidden_def1 (name, slim_hidden_int_name (name))
+#define slim_hidden_int_name(name) INT_##name
+#define slim_hidden_proto1(name, internal)                                     \
+    extern __typeof (name) name __asm__ (slim_hidden_asmname (internal))
+#define slim_hidden_def1(name, internal)                                       \
+    extern __typeof (name) EXT_##name __asm__ (slim_hidden_asmname (name))     \
+	__attribute__ ((__alias__ (slim_hidden_asmname (internal))))
+#define slim_hidden_ulp slim_hidden_ulp1 (__USER_LABEL_PREFIX__)
+#define slim_hidden_ulp1(x) slim_hidden_ulp2 (x)
+#define slim_hidden_ulp2(x) #x
+#define slim_hidden_asmname(name) slim_hidden_asmname1 (name)
+#define slim_hidden_asmname1(name) slim_hidden_ulp #name
 #else
-# define slim_hidden_proto(name)		int _csi_dummy_prototype(void)
-# define slim_hidden_proto_no_warn(name)	int _csi_dummy_prototype(void)
-# define slim_hidden_def(name)			int _csi_dummy_prototype(void)
+#define slim_hidden_proto(name) int _csi_dummy_prototype (void)
+#define slim_hidden_proto_no_warn(name) int _csi_dummy_prototype (void)
+#define slim_hidden_def(name) int _csi_dummy_prototype (void)
 #endif
 
 #if __GNUC__ >= 3
-#define csi_pure __attribute__((pure))
-#define csi_const __attribute__((const))
+#define csi_pure __attribute__ ((pure))
+#define csi_const __attribute__ ((const))
 #else
 #define csi_pure
 #define csi_const
 #endif
 
 #if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
-#define _CSI_BOOLEAN_EXPR(expr)                   \
- __extension__ ({                               \
-   int _csi_boolean_var_;                         \
-   if (expr)                                    \
-      _csi_boolean_var_ = 1;                      \
-   else                                         \
-      _csi_boolean_var_ = 0;                      \
-   _csi_boolean_var_;                             \
-})
-#define _csi_likely(expr) (__builtin_expect (_CSI_BOOLEAN_EXPR(expr), 1))
-#define _csi_unlikely(expr) (__builtin_expect (_CSI_BOOLEAN_EXPR(expr), 0))
+#define _CSI_BOOLEAN_EXPR(expr)                                                \
+    __extension__ ({                                                           \
+	int _csi_boolean_var_;                                                 \
+	if (expr)                                                              \
+	    _csi_boolean_var_ = 1;                                             \
+	else                                                                   \
+	    _csi_boolean_var_ = 0;                                             \
+	_csi_boolean_var_;                                                     \
+    })
+#define _csi_likely(expr) (__builtin_expect (_CSI_BOOLEAN_EXPR (expr), 1))
+#define _csi_unlikely(expr) (__builtin_expect (_CSI_BOOLEAN_EXPR (expr), 0))
 #else
 #define _csi_likely(expr) (expr)
 #define _csi_unlikely(expr) (expr)
@@ -146,42 +145,46 @@
 
 #ifdef __GNUC__
 #ifndef offsetof
-#define offsetof(type, member) \
-    ((char *) &((type *) 0)->member - (char *) 0)
+#define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
 #endif
-#define csi_container_of(ptr, type, member) ({ \
-    const typeof(((type *) 0)->member) *mptr__ = (ptr); \
-    (type *) ((char *) mptr__ - offsetof (type, member)); \
-})
+#define csi_container_of(ptr, type, member)                                    \
+    ({                                                                         \
+	const typeof (((type *) 0)->member) *mptr__ = (ptr);                   \
+	(type *) ((char *) mptr__ - offsetof (type, member));                  \
+    })
 #else
-#define csi_container_of(ptr, type, member) \
-    (type *)((char *) (ptr) - (char *) &((type *)0)->member)
+#define csi_container_of(ptr, type, member)                                    \
+    (type *) ((char *) (ptr) - (char *) &((type *) 0)->member)
 #endif
 
 /* slim_internal.h */
-#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) && defined(__ELF__) && !defined(__sun)
-#define csi_private_no_warn	__attribute__((__visibility__("hidden")))
+#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) &&                \
+    defined(__ELF__) && ! defined(__sun)
+#define csi_private_no_warn __attribute__ ((__visibility__ ("hidden")))
 #elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
-#define csi_private_no_warn	__hidden
+#define csi_private_no_warn __hidden
 #else /* not gcc >= 3.3 and not Sun Studio >= 8 */
 #define csi_private_no_warn
 #endif
 
-#undef  ARRAY_LENGTH
+#undef ARRAY_LENGTH
 #define ARRAY_LENGTH(__array) ((int) (sizeof (__array) / sizeof (__array[0])))
 
 #ifndef WARN_UNUSED_RESULT
 #define WARN_UNUSED_RESULT
 #endif
 /* Add attribute(warn_unused_result) if supported */
-#define csi_warn	    WARN_UNUSED_RESULT
-#define csi_private	    csi_private_no_warn csi_warn
+#define csi_warn WARN_UNUSED_RESULT
+#define csi_private csi_private_no_warn csi_warn
 
-#define CSI_BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+#define CSI_BITSWAP8(c)                                                        \
+    ((((c) *0x0802LU & 0x22110LU) | ((c) *0x8020LU & 0x88440LU)) *             \
+	 0x10101LU >>                                                          \
+     16)
 #ifdef WORDS_BIGENDIAN
 #define CSI_BITSWAP8_IF_LITTLE_ENDIAN(c) (c)
 #else
-#define CSI_BITSWAP8_IF_LITTLE_ENDIAN(c) CSI_BITSWAP8(c)
+#define CSI_BITSWAP8_IF_LITTLE_ENDIAN(c) CSI_BITSWAP8 (c)
 #endif
 
 typedef enum _csi_status {
@@ -218,10 +221,12 @@ typedef enum _csi_status {
     CSI_STATUS_INVALID_SLANT = COMAC_STATUS_INVALID_SLANT,
     CSI_STATUS_INVALID_WEIGHT = COMAC_STATUS_INVALID_WEIGHT,
     CSI_STATUS_INVALID_SIZE = COMAC_STATUS_INVALID_SIZE,
-    CSI_STATUS_USER_FONT_NOT_IMPLEMENTED = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED,
+    CSI_STATUS_USER_FONT_NOT_IMPLEMENTED =
+	COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED,
     CSI_STATUS_DEVICE_TYPE_MISMATCH = COMAC_STATUS_DEVICE_TYPE_MISMATCH,
     CSI_STATUS_DEVICE_ERROR = COMAC_STATUS_DEVICE_ERROR,
-    CSI_STATUS_INVALID_MESH_CONSTRUCTION = COMAC_STATUS_INVALID_MESH_CONSTRUCTION,
+    CSI_STATUS_INVALID_MESH_CONSTRUCTION =
+	COMAC_STATUS_INVALID_MESH_CONSTRUCTION,
     CSI_STATUS_DEVICE_FINISHED = COMAC_STATUS_DEVICE_FINISHED,
     CSI_STATUS_JBIG2_GLOBAL_MISSING = COMAC_STATUS_JBIG2_GLOBAL_MISSING,
     CSI_STATUS_PNG_ERROR = COMAC_STATUS_PNG_ERROR,
@@ -271,11 +276,11 @@ typedef enum {
 #define CSI_OBJECT_IS_COMAC(OBJ) ((OBJ)->type & 0x10)
 
 enum { /* attributes */
-    CSI_OBJECT_ATTR_EXECUTABLE = 1 << 6,
-    CSI_OBJECT_ATTR_WRITABLE   = 1 << 7
+       CSI_OBJECT_ATTR_EXECUTABLE = 1 << 6,
+       CSI_OBJECT_ATTR_WRITABLE = 1 << 7
 };
-#define CSI_OBJECT_ATTR_MASK (CSI_OBJECT_ATTR_EXECUTABLE | \
-			      CSI_OBJECT_ATTR_WRITABLE)
+#define CSI_OBJECT_ATTR_MASK                                                   \
+    (CSI_OBJECT_ATTR_EXECUTABLE | CSI_OBJECT_ATTR_WRITABLE)
 #define CSI_OBJECT_TYPE_MASK (~CSI_OBJECT_ATTR_MASK)
 
 typedef struct _comac_script_interpreter csi_t;
@@ -300,15 +305,12 @@ typedef struct _csi_scanner csi_scanner_t;
 typedef struct _csi_stack csi_stack_t;
 typedef struct _csi_string csi_string_t;
 
-typedef comac_bool_t
-(*csi_hash_predicate_func_t) (void *entry);
+typedef comac_bool_t (*csi_hash_predicate_func_t) (void *entry);
 
-typedef void
-(*csi_hash_callback_func_t) (void *entry,
-			     void *closure);
+typedef void (*csi_hash_callback_func_t) (void *entry, void *closure);
 
-typedef comac_bool_t
-(*csi_hash_keys_equal_func_t) (const void *key_a, const void *key_b);
+typedef comac_bool_t (*csi_hash_keys_equal_func_t) (const void *key_a,
+						    const void *key_b);
 
 struct _csi_object {
     csi_object_type_t type;
@@ -356,9 +358,8 @@ struct _csi_hash_table {
 
     unsigned long live_entries;
     unsigned long used_entries;
-    unsigned long iterating;   /* Iterating, no insert, no resize */
+    unsigned long iterating; /* Iterating, no insert, no resize */
 };
-
 
 /* simple, embedded doubly-linked links */
 struct _csi_list {
@@ -417,12 +418,7 @@ typedef struct _csi_filter_funcs {
 
 struct _csi_file {
     csi_compound_object_t base;
-    enum {
-	STDIO,
-	BYTES,
-	PROCEDURE,
-	FILTER
-    } type;
+    enum { STDIO, BYTES, PROCEDURE, FILTER } type;
     unsigned int flags;
     void *src;
     void *data;
@@ -520,12 +516,11 @@ typedef struct _csi_real_constant_def {
 csi_private csi_status_t
 csi_file_new (csi_t *ctx,
 	      csi_object_t *obj,
-	      const char *path, const char *mode);
+	      const char *path,
+	      const char *mode);
 
 csi_private csi_status_t
-csi_file_new_for_stream (csi_t *ctx,
-	                 csi_object_t *obj,
-			 FILE *stream);
+csi_file_new_for_stream (csi_t *ctx, csi_object_t *obj, FILE *stream);
 
 csi_private csi_status_t
 csi_file_new_for_bytes (csi_t *ctx,
@@ -534,9 +529,7 @@ csi_file_new_for_bytes (csi_t *ctx,
 			unsigned int length);
 
 csi_private csi_status_t
-csi_file_new_from_string (csi_t *ctx,
-			  csi_object_t *obj,
-			  csi_string_t *src);
+csi_file_new_from_string (csi_t *ctx, csi_object_t *obj, csi_string_t *src);
 
 csi_private csi_status_t
 csi_file_new_ascii85_decode (csi_t *ctx,
@@ -572,9 +565,7 @@ csi_private void
 _csi_file_free (csi_t *ctx, csi_file_t *obj);
 
 csi_private csi_status_t
-_csi_file_as_string (csi_t *ctx,
-		     csi_file_t *file,
-		     csi_object_t *obj);
+_csi_file_as_string (csi_t *ctx, csi_file_t *file, csi_object_t *obj);
 
 /* comac-script-hash.c */
 
@@ -586,21 +577,18 @@ csi_private void
 _csi_hash_table_fini (csi_hash_table_t *hash_table);
 
 csi_private void *
-_csi_hash_table_lookup (csi_hash_table_t  *hash_table,
-			csi_hash_entry_t  *key);
+_csi_hash_table_lookup (csi_hash_table_t *hash_table, csi_hash_entry_t *key);
 
 csi_private csi_status_t
-_csi_hash_table_insert (csi_hash_table_t *hash_table,
-			csi_hash_entry_t *entry);
+_csi_hash_table_insert (csi_hash_table_t *hash_table, csi_hash_entry_t *entry);
 
 csi_private void
-_csi_hash_table_remove (csi_hash_table_t *hash_table,
-			csi_hash_entry_t *key);
+_csi_hash_table_remove (csi_hash_table_t *hash_table, csi_hash_entry_t *key);
 
 csi_private void
-_csi_hash_table_foreach (csi_hash_table_t	      *hash_table,
-			 csi_hash_callback_func_t  hash_callback,
-			 void			      *closure);
+_csi_hash_table_foreach (csi_hash_table_t *hash_table,
+			 csi_hash_callback_func_t hash_callback,
+			 void *closure);
 
 /* comac-script-interpreter.c */
 
@@ -646,18 +634,13 @@ _csi_error (csi_status_t status);
 /* comac-script-objects.c */
 
 csi_private csi_status_t
-csi_array_new (csi_t *ctx,
-	       csi_integer_t initial_size,
-	       csi_object_t *obj);
+csi_array_new (csi_t *ctx, csi_integer_t initial_size, csi_object_t *obj);
 
 csi_private csi_status_t
 _csi_array_execute (csi_t *ctx, csi_array_t *array);
 
 csi_private csi_status_t
-csi_array_get (csi_t *ctx,
-	       csi_array_t *array,
-	       long elem,
-	       csi_object_t *value);
+csi_array_get (csi_t *ctx, csi_array_t *array, long elem, csi_object_t *value);
 
 csi_private csi_status_t
 csi_array_put (csi_t *ctx,
@@ -666,24 +649,20 @@ csi_array_put (csi_t *ctx,
 	       csi_object_t *value);
 
 csi_private csi_status_t
-csi_array_append (csi_t *ctx,
-		  csi_array_t *array,
-		  csi_object_t *obj);
+csi_array_append (csi_t *ctx, csi_array_t *array, csi_object_t *obj);
 
 csi_private void
 csi_array_free (csi_t *ctx, csi_array_t *array);
 
 static inline void
-csi_boolean_new (csi_object_t *obj,
-		 csi_boolean_t v)
+csi_boolean_new (csi_object_t *obj, csi_boolean_t v)
 {
     obj->type = CSI_OBJECT_TYPE_BOOLEAN;
     obj->datum.boolean = v;
 }
 
 csi_private csi_status_t
-csi_dictionary_new (csi_t *ctx,
-		    csi_object_t *obj);
+csi_dictionary_new (csi_t *ctx, csi_object_t *obj);
 
 csi_private csi_status_t
 csi_dictionary_put (csi_t *ctx,
@@ -698,35 +677,26 @@ csi_dictionary_get (csi_t *ctx,
 		    csi_object_t *value);
 
 csi_private csi_boolean_t
-csi_dictionary_has (csi_dictionary_t *dict,
-		    csi_name_t name);
+csi_dictionary_has (csi_dictionary_t *dict, csi_name_t name);
 
 csi_private void
-csi_dictionary_remove (csi_t *ctx,
-		       csi_dictionary_t *dict,
-		       csi_name_t name);
+csi_dictionary_remove (csi_t *ctx, csi_dictionary_t *dict, csi_name_t name);
 
 csi_private void
-csi_dictionary_free (csi_t *ctx,
-		     csi_dictionary_t *dict);
+csi_dictionary_free (csi_t *ctx, csi_dictionary_t *dict);
 
 static inline void
-csi_integer_new (csi_object_t *obj,
-		 csi_integer_t v)
+csi_integer_new (csi_object_t *obj, csi_integer_t v)
 {
     obj->type = CSI_OBJECT_TYPE_INTEGER;
     obj->datum.integer = v;
 }
 
+csi_private csi_status_t
+csi_matrix_new (csi_t *ctx, csi_object_t *obj);
 
 csi_private csi_status_t
-csi_matrix_new (csi_t *ctx,
-		csi_object_t *obj);
-
-csi_private csi_status_t
-csi_matrix_new_from_array (csi_t *ctx,
-			   csi_object_t *obj,
-			   csi_array_t *array);
+csi_matrix_new_from_array (csi_t *ctx, csi_object_t *obj, csi_array_t *array);
 
 csi_private csi_status_t
 csi_matrix_new_from_matrix (csi_t *ctx,
@@ -734,57 +704,41 @@ csi_matrix_new_from_matrix (csi_t *ctx,
 			    const comac_matrix_t *m);
 
 csi_private csi_status_t
-csi_matrix_new_from_values (csi_t *ctx,
-			    csi_object_t *obj,
-			    double v[6]);
+csi_matrix_new_from_values (csi_t *ctx, csi_object_t *obj, double v[6]);
 
 csi_private void
-csi_matrix_free (csi_t *ctx,
-		 csi_matrix_t *obj);
+csi_matrix_free (csi_t *ctx, csi_matrix_t *obj);
 
 csi_private csi_status_t
-csi_name_new (csi_t *ctx,
-	      csi_object_t *obj,
-	      const char *str,
-	      int len);
+csi_name_new (csi_t *ctx, csi_object_t *obj, const char *str, int len);
 
 csi_private csi_status_t
-csi_name_new_static (csi_t *ctx,
-		     csi_object_t *obj,
-		     const char *str);
+csi_name_new_static (csi_t *ctx, csi_object_t *obj, const char *str);
 
 static inline void
-csi_operator_new (csi_object_t *obj,
-		  csi_operator_t op)
+csi_operator_new (csi_object_t *obj, csi_operator_t op)
 {
     obj->type = CSI_OBJECT_TYPE_OPERATOR | CSI_OBJECT_ATTR_EXECUTABLE;
     obj->datum.op = op;
 }
 
 static inline void
-csi_real_new (csi_object_t *obj,
-	      csi_real_t v)
+csi_real_new (csi_object_t *obj, csi_real_t v)
 {
     obj->type = CSI_OBJECT_TYPE_REAL;
     obj->datum.real = v;
 }
 
 csi_private csi_status_t
-csi_string_new (csi_t *ctx,
-		csi_object_t *obj,
-		const char *str,
-		int len);
+csi_string_new (csi_t *ctx, csi_object_t *obj, const char *str, int len);
 
 csi_private csi_status_t
-csi_string_deflate_new (csi_t *ctx,
-			csi_object_t *obj,
-			void *bytes,
-			int in_len,
-			int out_len);
+csi_string_deflate_new (
+    csi_t *ctx, csi_object_t *obj, void *bytes, int in_len, int out_len);
 
 csi_private csi_status_t
 csi_string_new_from_bytes (csi_t *ctx,
-	                   csi_object_t *obj,
+			   csi_object_t *obj,
 			   char *bytes,
 			   unsigned int len);
 
@@ -798,22 +752,16 @@ csi_private csi_object_t *
 csi_object_reference (csi_object_t *obj);
 
 csi_private void
-csi_object_free (csi_t *ctx,
-		 csi_object_t *obj);
+csi_object_free (csi_t *ctx, csi_object_t *obj);
 
 csi_private csi_status_t
-csi_object_as_file (csi_t *ctx,
-		    csi_object_t *src,
-		    csi_object_t *file);
+csi_object_as_file (csi_t *ctx, csi_object_t *src, csi_object_t *file);
 
 csi_private csi_boolean_t
-csi_object_eq (csi_object_t *a,
-	       csi_object_t *b);
+csi_object_eq (csi_object_t *a, csi_object_t *b);
 
 csi_private csi_status_t
-csi_object_compare (csi_object_t *a,
-		    csi_object_t *b,
-		    int          *out_cmp);
+csi_object_compare (csi_object_t *a, csi_object_t *b, int *out_cmp);
 
 /* comac-script-operators.c */
 
@@ -836,7 +784,7 @@ _csi_scan_file (csi_t *ctx, csi_file_t *src);
 
 csi_private csi_status_t
 _csi_translate_file (csi_t *ctx,
-	             csi_file_t *file,
+		     csi_file_t *file,
 		     comac_write_func_t write_func,
 		     void *closure);
 
@@ -864,7 +812,8 @@ csi_private csi_status_t
 _csi_stack_grow (csi_t *ctx, csi_stack_t *stack, csi_integer_t cnt);
 
 csi_private csi_status_t
-_csi_stack_push_internal (csi_t *ctx, csi_stack_t *stack,
+_csi_stack_push_internal (csi_t *ctx,
+			  csi_stack_t *stack,
 			  const csi_object_t *obj);
 
 csi_private csi_object_t *
@@ -907,16 +856,19 @@ csi_number_get_value (const csi_object_t *obj)
 {
     int type = csi_object_get_type (obj);
     switch (type) {
-    case CSI_OBJECT_TYPE_BOOLEAN: return obj->datum.boolean;
-    case CSI_OBJECT_TYPE_INTEGER: return obj->datum.integer;
-    case CSI_OBJECT_TYPE_REAL: return obj->datum.real;
-    default: return 0.;
+    case CSI_OBJECT_TYPE_BOOLEAN:
+	return obj->datum.boolean;
+    case CSI_OBJECT_TYPE_INTEGER:
+	return obj->datum.integer;
+    case CSI_OBJECT_TYPE_REAL:
+	return obj->datum.real;
+    default:
+	return 0.;
     }
 }
 
 csi_private csi_status_t
-_csi_stack_push (csi_t *ctx, csi_stack_t *stack,
-		 const csi_object_t *obj);
+_csi_stack_push (csi_t *ctx, csi_stack_t *stack, const csi_object_t *obj);
 
 static inline csi_boolean_t
 _csi_check_ostack (csi_t *ctx, csi_integer_t count)
@@ -927,7 +879,7 @@ _csi_check_ostack (csi_t *ctx, csi_integer_t count)
 static inline csi_object_t *
 _csi_peek_ostack (csi_t *ctx, csi_integer_t i)
 {
-    return &ctx->ostack.objects[ctx->ostack.len - i -1];
+    return &ctx->ostack.objects[ctx->ostack.len - i - 1];
 }
 
 static inline void
@@ -988,6 +940,5 @@ _csi_push_ostack_real (csi_t *ctx, csi_real_t v)
     obj.datum.real = v;
     return _csi_stack_push (ctx, &ctx->ostack, &obj);
 }
-
 
 #endif /* COMAC_SCRIPT_PRIVATE_H */

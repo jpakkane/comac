@@ -87,7 +87,8 @@
 #include <fcntl.h>
 #endif
 
-#if HAVE_UNISTD_H && HAVE_SIGNAL_H && HAVE_SYS_STAT_H && HAVE_SYS_SOCKET_H && (HAVE_POLL_H || HAVE_SYS_POLL_H) && HAVE_SYS_UN_H
+#if HAVE_UNISTD_H && HAVE_SIGNAL_H && HAVE_SYS_STAT_H && HAVE_SYS_SOCKET_H &&  \
+    (HAVE_POLL_H || HAVE_SYS_POLL_H) && HAVE_SYS_UN_H
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -135,8 +136,11 @@ _comac_writen (int fd, char *buf, int len)
 
 static int
 _comac_write (int fd,
-	char *buf, int maxlen, int buflen,
-	const unsigned char *src, int srclen)
+	      char *buf,
+	      int maxlen,
+	      int buflen,
+	      const unsigned char *src,
+	      int srclen)
 {
     if (buflen < 0)
 	return buflen;
@@ -186,12 +190,13 @@ write_ppm (comac_surface_t *surface, int fd)
 	const unsigned char *alpha = data;
 	for (j = height; j--; alpha += stride) {
 	    for (i = 0; i < width; i++) {
-		if ((*(unsigned int *) (alpha+4*i) & 0xff000000) != 0xff000000)
+		if ((*(unsigned int *) (alpha + 4 * i) & 0xff000000) !=
+		    0xff000000)
 		    goto done;
 	    }
 	}
 	format = COMAC_FORMAT_RGB24;
- done: ;
+    done:;
     }
 
     switch (format) {
@@ -222,8 +227,11 @@ write_ppm (comac_surface_t *surface, int fd)
 	switch ((int) format) {
 	case COMAC_FORMAT_ARGB32:
 	    len = _comac_write (fd,
-			  buf, sizeof (buf), len,
-			  (unsigned char *) row, 4 * width);
+				buf,
+				sizeof (buf),
+				len,
+				(unsigned char *) row,
+				4 * width);
 	    break;
 	case COMAC_FORMAT_RGB24:
 	    for (i = 0; i < width; i++) {
@@ -232,15 +240,16 @@ write_ppm (comac_surface_t *surface, int fd)
 		rgb[0] = (p & 0xff0000) >> 16;
 		rgb[1] = (p & 0x00ff00) >> 8;
 		rgb[2] = (p & 0x0000ff) >> 0;
-		len = _comac_write (fd,
-			      buf, sizeof (buf), len,
-			      rgb, 3);
+		len = _comac_write (fd, buf, sizeof (buf), len, rgb, 3);
 	    }
 	    break;
 	case COMAC_FORMAT_A8:
 	    len = _comac_write (fd,
-			  buf, sizeof (buf), len,
-			  (unsigned char *) row, width);
+				buf,
+				sizeof (buf),
+				len,
+				(unsigned char *) row,
+				width);
 	    break;
 	}
 	if (len < 0)
@@ -257,7 +266,8 @@ write_ppm (comac_surface_t *surface, int fd)
 static comac_surface_t *
 _create_image (void *closure,
 	       comac_content_t content,
-	       double width, double height,
+	       double width,
+	       double height,
 	       long uid)
 {
     comac_surface_t **out = closure;
@@ -279,8 +289,7 @@ _create_image (void *closure,
 }
 
 static const char *
-_comac_script_render_page (const char *filename,
-			   comac_surface_t **surface_out)
+_comac_script_render_page (const char *filename, comac_surface_t **surface_out)
 {
     comac_script_interpreter_t *csi;
     comac_surface_t *surface = NULL;
@@ -399,7 +408,7 @@ _poppler_render_page (const char *filename,
 
     if (status) {
 	comac_surface_destroy (surface);
-	return  comac_status_to_string (status);
+	return comac_status_to_string (status);
     }
 
     *surface_out = surface;
@@ -431,8 +440,7 @@ pdf_convert (char **argv, int fd)
 
 #if COMAC_CAN_TEST_SVG_SURFACE
 static const char *
-_rsvg_render_page (const char *filename,
-		   comac_surface_t **surface_out)
+_rsvg_render_page (const char *filename, comac_surface_t **surface_out)
 {
     RsvgHandle *handle;
     RsvgDimensionData dimensions;
@@ -460,7 +468,7 @@ _rsvg_render_page (const char *filename,
 
     if (status) {
 	comac_surface_destroy (surface);
-	return  comac_status_to_string (status);
+	return comac_status_to_string (status);
     }
 
     *surface_out = surface;
@@ -540,10 +548,13 @@ _spectre_render_page (const char *filename,
 
     surface = comac_image_surface_create_for_data (pixels,
 						   COMAC_FORMAT_RGB24,
-						   width, height,
+						   width,
+						   height,
 						   stride);
-    comac_surface_set_user_data (surface, &key,
-				 pixels, (comac_destroy_func_t) free);
+    comac_surface_set_user_data (surface,
+				 &key,
+				 pixels,
+				 (comac_destroy_func_t) free);
     *surface_out = surface;
     return NULL;
 }
@@ -577,13 +588,11 @@ convert (char **argv, int fd)
     static const struct converter {
 	const char *type;
 	const char *(*func) (char **, int);
-    } converters[] = {
-	{ "cs", cs_convert },
-	{ "pdf", pdf_convert },
-	{ "ps", ps_convert },
-	{ "svg", svg_convert },
-	{ NULL, NULL }
-    };
+    } converters[] = {{"cs", cs_convert},
+		      {"pdf", pdf_convert},
+		      {"ps", ps_convert},
+		      {"svg", svg_convert},
+		      {NULL, NULL}};
     const struct converter *converter = converters;
     char *type;
 
@@ -641,7 +650,7 @@ out:
     line[i] = '\0';
     *linep = line;
     *lenp = len;
-    return i-1;
+    return i - 1;
 }
 
 static int
@@ -658,7 +667,7 @@ split_line (char *line, char *argv[], int max_argc)
     }
 
     /* chomp the newline */
-    line = strchr (argv[i-1], '\n');
+    line = strchr (argv[i - 1], '\n');
     if (line != NULL)
 	*line = '\0';
 
@@ -720,9 +729,9 @@ open_devnull_to_fd (int want_fd, int flags)
 
     close (want_fd);
 
-    got_fd = open("/dev/null", flags | O_CREAT, 0700);
+    got_fd = open ("/dev/null", flags | O_CREAT, 0700);
     if (got_fd == -1)
-        return -1;
+	return -1;
 
     error = dup2 (got_fd, want_fd);
     close (got_fd);
@@ -737,9 +746,12 @@ daemonize (void)
 
     /* Let the parent go. */
     switch (fork ()) {
-    case -1: return -1;
-    case 0: break;
-    default: _exit (0);
+    case -1:
+	return -1;
+    case 0:
+	break;
+    default:
+	_exit (0);
     }
 
     /* Become session leader. */
@@ -749,10 +761,13 @@ daemonize (void)
     /* Refork to yield session leadership. */
     oldhup = signal (SIGHUP, SIG_IGN);
 
-    switch (fork ()) {		/* refork to yield session leadership. */
-    case -1: return -1;
-    case 0: break;
-    default: _exit (0);
+    switch (fork ()) { /* refork to yield session leadership. */
+    case -1:
+	return -1;
+    case 0:
+	break;
+    default:
+	_exit (0);
     }
 
     signal (SIGHUP, oldhup);
@@ -848,7 +863,8 @@ any2ppm_daemon (void)
 			if (file != NULL) {
 			    fprintf (file,
 				     "Failed to convert '%s': %s\n",
-				     argv[0], err);
+				     argv[0],
+				     err);
 			    fclose (file);
 			}
 		    }
@@ -883,7 +899,7 @@ main (int argc, char **argv)
 #endif
 #endif
 
-#if defined(_WIN32) && !defined (__CYGWIN__)
+#if defined(_WIN32) && ! defined(__CYGWIN__)
     _setmode (1, _O_BINARY);
 #endif
 

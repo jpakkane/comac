@@ -41,17 +41,17 @@
 
 #include "comac-box-inline.h"
 
-const comac_rectangle_int_t _comac_empty_rectangle = { 0, 0, 0, 0 };
+const comac_rectangle_int_t _comac_empty_rectangle = {0, 0, 0, 0};
 const comac_rectangle_int_t _comac_unbounded_rectangle = {
-     COMAC_RECT_INT_MIN, COMAC_RECT_INT_MIN,
-     COMAC_RECT_INT_MAX - COMAC_RECT_INT_MIN,
-     COMAC_RECT_INT_MAX - COMAC_RECT_INT_MIN,
+    COMAC_RECT_INT_MIN,
+    COMAC_RECT_INT_MIN,
+    COMAC_RECT_INT_MAX - COMAC_RECT_INT_MIN,
+    COMAC_RECT_INT_MAX - COMAC_RECT_INT_MIN,
 };
 
 comac_private void
-_comac_box_from_doubles (comac_box_t *box,
-			 double *x1, double *y1,
-			 double *x2, double *y2)
+_comac_box_from_doubles (
+    comac_box_t *box, double *x1, double *y1, double *x2, double *y2)
 {
     box->p1.x = _comac_fixed_from_double (*x1);
     box->p1.y = _comac_fixed_from_double (*y1);
@@ -60,9 +60,8 @@ _comac_box_from_doubles (comac_box_t *box,
 }
 
 comac_private void
-_comac_box_to_doubles (const comac_box_t *box,
-		       double *x1, double *y1,
-		       double *x2, double *y2)
+_comac_box_to_doubles (
+    const comac_box_t *box, double *x1, double *y1, double *x2, double *y2)
 {
     *x1 = _comac_fixed_to_double (box->p1.x);
     *y1 = _comac_fixed_to_double (box->p1.y);
@@ -71,8 +70,7 @@ _comac_box_to_doubles (const comac_box_t *box,
 }
 
 void
-_comac_box_from_rectangle (comac_box_t                 *box,
-			   const comac_rectangle_int_t *rect)
+_comac_box_from_rectangle (comac_box_t *box, const comac_rectangle_int_t *rect)
 {
     box->p1.x = _comac_fixed_from_int (rect->x);
     box->p1.y = _comac_fixed_from_int (rect->y);
@@ -106,7 +104,7 @@ _comac_boxes_get_extents (const comac_box_t *boxes,
  */
 
 void
-_comac_box_round_to_rectangle (const comac_box_t     *box,
+_comac_box_round_to_rectangle (const comac_box_t *box,
 			       comac_rectangle_int_t *rectangle)
 {
     rectangle->x = _comac_fixed_integer_floor (box->p1.x);
@@ -126,20 +124,20 @@ _comac_rectangle_intersect (comac_rectangle_int_t *dst,
     /* Beware the unsigned promotion, fortunately we have bits to spare
      * as (COMAC_RECT_INT_MAX - COMAC_RECT_INT_MIN) < UINT_MAX
      */
-    x2 = MIN (dst->x + (int) dst->width,  src->x + (int) src->width);
+    x2 = MIN (dst->x + (int) dst->width, src->x + (int) src->width);
     y2 = MIN (dst->y + (int) dst->height, src->y + (int) src->height);
 
     if (x1 >= x2 || y1 >= y2) {
 	dst->x = 0;
 	dst->y = 0;
-	dst->width  = 0;
+	dst->width = 0;
 	dst->height = 0;
 
 	return FALSE;
     } else {
 	dst->x = x1;
 	dst->y = y1;
-	dst->width  = x2 - x1;
+	dst->width = x2 - x1;
 	dst->height = y2 - y1;
 
 	return TRUE;
@@ -160,12 +158,12 @@ _comac_rectangle_union (comac_rectangle_int_t *dst,
     /* Beware the unsigned promotion, fortunately we have bits to spare
      * as (COMAC_RECT_INT_MAX - COMAC_RECT_INT_MIN) < UINT_MAX
      */
-    x2 = MAX (dst->x + (int) dst->width,  src->x + (int) src->width);
+    x2 = MAX (dst->x + (int) dst->width, src->x + (int) src->width);
     y2 = MAX (dst->y + (int) dst->height, src->y + (int) src->height);
 
     dst->x = x1;
     dst->y = y1;
-    dst->width  = x2 - x1;
+    dst->width = x2 - x1;
     dst->height = y2 - y1;
 }
 
@@ -191,7 +189,7 @@ _comac_rectangle_union (comac_rectangle_int_t *dst,
 comac_bool_t
 _comac_box_intersects_line_segment (const comac_box_t *box, comac_line_t *line)
 {
-    comac_fixed_t t1=0, t2=0, t3=0, t4=0;
+    comac_fixed_t t1 = 0, t2 = 0, t3 = 0, t4 = 0;
     comac_int64_t t1y, t2y, t3x, t4x;
 
     comac_fixed_t xlen, ylen;
@@ -210,11 +208,10 @@ _comac_box_intersects_line_segment (const comac_box_t *box, comac_line_t *line)
 	} else {
 	    t1 = P1x - B2x;
 	    t2 = P1x - B1x;
-	    xlen = - xlen;
+	    xlen = -xlen;
 	}
 
-	if ((t1 < 0 || t1 > xlen) &&
-	    (t2 < 0 || t2 > xlen))
+	if ((t1 < 0 || t1 > xlen) && (t2 < 0 || t2 > xlen))
 	    return FALSE;
     } else {
 	/* Fully vertical line -- check that X is in bounds */
@@ -229,11 +226,10 @@ _comac_box_intersects_line_segment (const comac_box_t *box, comac_line_t *line)
 	} else {
 	    t3 = P1y - B2y;
 	    t4 = P1y - B1y;
-	    ylen = - ylen;
+	    ylen = -ylen;
 	}
 
-	if ((t3 < 0 || t3 > ylen) &&
-	    (t4 < 0 || t4 > ylen))
+	if ((t3 < 0 || t3 > ylen) && (t4 < 0 || t4 > ylen))
 	    return FALSE;
     } else {
 	/* Fully horizontal line -- check Y */
@@ -251,8 +247,7 @@ _comac_box_intersects_line_segment (const comac_box_t *box, comac_line_t *line)
     t3x = _comac_int32x32_64_mul (t3, xlen);
     t4x = _comac_int32x32_64_mul (t4, xlen);
 
-    if (_comac_int64_lt(t1y, t4x) &&
-	_comac_int64_lt(t3x, t2y))
+    if (_comac_int64_lt (t1y, t4x) && _comac_int64_lt (t3x, t2y))
 	return TRUE;
 
     return FALSE;
@@ -277,13 +272,16 @@ _comac_box_add_curve_to (comac_box_t *extents,
 			 const comac_point_t *d)
 {
     _comac_box_add_point (extents, d);
-    if (!_comac_box_contains_point (extents, b) ||
-	!_comac_box_contains_point (extents, c))
-    {
+    if (! _comac_box_contains_point (extents, b) ||
+	! _comac_box_contains_point (extents, c)) {
 	comac_status_t status;
 
 	status = _comac_spline_bound (_comac_box_add_spline_point,
-				      extents, a, b, c, d);
+				      extents,
+				      a,
+				      b,
+				      c,
+				      d);
 	assert (status == COMAC_STATUS_SUCCESS);
     }
 }
@@ -292,8 +290,8 @@ void
 _comac_rectangle_int_from_double (comac_rectangle_int_t *recti,
 				  const comac_rectangle_t *rectf)
 {
-	recti->x = floor (rectf->x);
-	recti->y = floor (rectf->y);
-	recti->width  = ceil (rectf->x + rectf->width) - floor (rectf->x);
-	recti->height = ceil (rectf->y + rectf->height) - floor (rectf->y);
+    recti->x = floor (rectf->x);
+    recti->y = floor (rectf->y);
+    recti->width = ceil (rectf->x + rectf->width) - floor (rectf->x);
+    recti->height = ceil (rectf->y + rectf->height) - floor (rectf->y);
 }

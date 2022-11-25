@@ -37,14 +37,14 @@ draw (comac_t *cr, int width, int height)
 
     /* first drawn an ordinary empty path */
     comac_save (cr);
-    comac_rectangle (cr, 0, 0, SIZE, SIZE/2);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE / 2);
     comac_clip (cr);
     comac_fill (cr);
     comac_restore (cr);
 
     /* and then an unbounded empty path */
     comac_save (cr);
-    comac_rectangle (cr, 0, SIZE/2, SIZE, SIZE/2);
+    comac_rectangle (cr, 0, SIZE / 2, SIZE, SIZE / 2);
     comac_clip (cr);
     comac_set_operator (cr, COMAC_OPERATOR_DEST_IN);
     comac_fill (cr);
@@ -56,7 +56,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (fill_empty,
 	    "Test filling with an empty path",
 	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
-
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

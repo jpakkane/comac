@@ -37,7 +37,7 @@ draw (comac_t *cr, int width, int height)
 
     /* setting a scale will ensure that the device offset is transformed */
     comac_scale (cr, 2.1, 2.8);
-    comac_set_source_rgb (cr, 1, .5,.4);
+    comac_set_source_rgb (cr, 1, .5, .4);
 
     /* all rectangles should look the same */
 
@@ -83,6 +83,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clipped_group,
 	    "Test that a clipped group ends up in the right place",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

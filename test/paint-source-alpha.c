@@ -30,22 +30,35 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
-    uint32_t data[16] = {
-	0x80808080, 0x80808080,		0x80800000, 0x80800000,
-	0x80808080, 0x80808080,		0x80800000, 0x80800000,
+    uint32_t data[16] = {0x80808080,
+			 0x80808080,
+			 0x80800000,
+			 0x80800000,
+			 0x80808080,
+			 0x80808080,
+			 0x80800000,
+			 0x80800000,
 
-	0x80008000, 0x80008000,		0x80000080, 0x80000080,
-	0x80008000, 0x80008000,		0x80000080, 0x80000080
-    };
+			 0x80008000,
+			 0x80008000,
+			 0x80000080,
+			 0x80000080,
+			 0x80008000,
+			 0x80008000,
+			 0x80000080,
+			 0x80000080};
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_ARGB32, 4, 4, 16);
+						   COMAC_FORMAT_ARGB32,
+						   4,
+						   4,
+						   16);
 
     comac_test_paint_checkered (cr);
 
     comac_scale (cr, 4, 4);
 
-    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_set_source_surface (cr, surface, 2, 2);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
     comac_paint (cr);
 
@@ -55,9 +68,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (paint_source_alpha,
-	    "Simple test of comac_paint with a source surface with non-opaque alpha",
-	    "paint, alpha", /* keywords */
-	    NULL, /* requirements */
-	    32, 32,
-	    NULL, draw)
+COMAC_TEST (
+    paint_source_alpha,
+    "Simple test of comac_paint with a source surface with non-opaque alpha",
+    "paint, alpha", /* keywords */
+    NULL,	    /* requirements */
+    32,
+    32,
+    NULL,
+    draw)

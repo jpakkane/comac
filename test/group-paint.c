@@ -40,9 +40,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (group_paint,
-	    "test push_group(); pop_group_to_source(); set_operator(SOURCE); paint();",
-	    "group", /* keywords */
-	    NULL, /* requirements */
-	    10, 10,
-	    NULL, draw)
+COMAC_TEST (
+    group_paint,
+    "test push_group(); pop_group_to_source(); set_operator(SOURCE); paint();",
+    "group", /* keywords */
+    NULL,    /* requirements */
+    10,
+    10,
+    NULL,
+    draw)

@@ -26,11 +26,11 @@
 
 #include "comac-test.h"
 
-#define POINTS	10
-#define STEP	(1.0 / POINTS)
-#define PAD	1
-#define WIDTH	(PAD + POINTS * 2 + PAD)
-#define HEIGHT	(WIDTH)
+#define POINTS 10
+#define STEP (1.0 / POINTS)
+#define PAD 1
+#define WIDTH (PAD + POINTS * 2 + PAD)
+#define HEIGHT (WIDTH)
 
 static comac_test_status_t
 paint (comac_t *cr, int width, int height)
@@ -148,28 +148,36 @@ stroke (comac_t *cr, int width, int height)
 
 COMAC_TEST (a1_clip_paint,
 	    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
-	    "alpha, clip", /* keywords */
+	    "alpha, clip",   /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, paint)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    paint)
 
 COMAC_TEST (a1_clip_fill,
 	    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
-	    "alpha, clip", /* keywords */
+	    "alpha, clip",   /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, fill)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    fill)
 
 COMAC_TEST (a1_clip_fill_equal,
 	    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
-	    "alpha, clip", /* keywords */
+	    "alpha, clip",   /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, fill_equal)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    fill_equal)
 
 COMAC_TEST (a1_clip_stroke,
 	    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
-	    "alpha, clip", /* keywords */
+	    "alpha, clip",   /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, stroke)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    stroke)

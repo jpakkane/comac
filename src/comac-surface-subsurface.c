@@ -59,20 +59,25 @@ _comac_surface_subsurface_finish (void *abstract_surface)
 static comac_surface_t *
 _comac_surface_subsurface_create_similar (void *other,
 					  comac_content_t content,
-					  int width, int height)
+					  int width,
+					  int height)
 {
     comac_surface_subsurface_t *surface = other;
 
     if (surface->target->backend->create_similar == NULL)
 	return NULL;
 
-    return surface->target->backend->create_similar (surface->target, content, width, height);
+    return surface->target->backend->create_similar (surface->target,
+						     content,
+						     width,
+						     height);
 }
 
 static comac_surface_t *
 _comac_surface_subsurface_create_similar_image (void *other,
 						comac_format_t format,
-						int width, int height)
+						int width,
+						int height)
 {
     comac_surface_subsurface_t *surface = other;
 
@@ -81,7 +86,8 @@ _comac_surface_subsurface_create_similar_image (void *other,
 
     return surface->target->backend->create_similar_image (surface->target,
 							   format,
-							   width, height);
+							   width,
+							   height);
 }
 
 static comac_image_surface_t *
@@ -93,7 +99,7 @@ _comac_surface_subsurface_map_to_image (void *abstract_surface,
 
     target_extents.x = extents->x + surface->extents.x;
     target_extents.y = extents->y + surface->extents.y;
-    target_extents.width  = extents->width;
+    target_extents.width = extents->width;
     target_extents.height = extents->height;
 
     return _comac_surface_map_to_image (surface->target, &target_extents);
@@ -114,14 +120,20 @@ _comac_surface_subsurface_paint (void *abstract_surface,
 				 const comac_clip_t *clip)
 {
     comac_surface_subsurface_t *surface = abstract_surface;
-    comac_rectangle_int_t rect = { 0, 0, surface->extents.width, surface->extents.height };
+    comac_rectangle_int_t rect = {0,
+				  0,
+				  surface->extents.width,
+				  surface->extents.height};
     comac_status_t status;
     comac_clip_t *target_clip;
 
     target_clip = _comac_clip_copy_intersect_rectangle (clip, &rect);
     status = _comac_surface_offset_paint (surface->target,
-					 -surface->extents.x, -surface->extents.y,
-					  op, source, target_clip);
+					  -surface->extents.x,
+					  -surface->extents.y,
+					  op,
+					  source,
+					  target_clip);
     _comac_clip_destroy (target_clip);
     return status;
 }
@@ -134,88 +146,121 @@ _comac_surface_subsurface_mask (void *abstract_surface,
 				const comac_clip_t *clip)
 {
     comac_surface_subsurface_t *surface = abstract_surface;
-    comac_rectangle_int_t rect = { 0, 0, surface->extents.width, surface->extents.height };
+    comac_rectangle_int_t rect = {0,
+				  0,
+				  surface->extents.width,
+				  surface->extents.height};
     comac_status_t status;
     comac_clip_t *target_clip;
 
     target_clip = _comac_clip_copy_intersect_rectangle (clip, &rect);
     status = _comac_surface_offset_mask (surface->target,
-					 -surface->extents.x, -surface->extents.y,
-					 op, source, mask, target_clip);
-    _comac_clip_destroy (target_clip);
-    return status;
-}
-
-static comac_int_status_t
-_comac_surface_subsurface_fill (void			*abstract_surface,
-				comac_operator_t	 op,
-				const comac_pattern_t	*source,
-				const comac_path_fixed_t	*path,
-				comac_fill_rule_t	 fill_rule,
-				double			 tolerance,
-				comac_antialias_t	 antialias,
-				const comac_clip_t		*clip)
-{
-    comac_surface_subsurface_t *surface = abstract_surface;
-    comac_rectangle_int_t rect = { 0, 0, surface->extents.width, surface->extents.height };
-    comac_status_t status;
-    comac_clip_t *target_clip;
-
-    target_clip = _comac_clip_copy_intersect_rectangle (clip, &rect);
-    status = _comac_surface_offset_fill (surface->target,
-					 -surface->extents.x, -surface->extents.y,
-					 op, source, path, fill_rule, tolerance, antialias,
+					 -surface->extents.x,
+					 -surface->extents.y,
+					 op,
+					 source,
+					 mask,
 					 target_clip);
     _comac_clip_destroy (target_clip);
     return status;
 }
 
 static comac_int_status_t
-_comac_surface_subsurface_stroke (void				*abstract_surface,
-				  comac_operator_t		 op,
-				  const comac_pattern_t		*source,
-				  const comac_path_fixed_t		*path,
-				  const comac_stroke_style_t	*stroke_style,
-				  const comac_matrix_t		*ctm,
-				  const comac_matrix_t		*ctm_inverse,
-				  double			 tolerance,
-				  comac_antialias_t		 antialias,
-				  const comac_clip_t			*clip)
+_comac_surface_subsurface_fill (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_path_fixed_t *path,
+				comac_fill_rule_t fill_rule,
+				double tolerance,
+				comac_antialias_t antialias,
+				const comac_clip_t *clip)
 {
     comac_surface_subsurface_t *surface = abstract_surface;
-    comac_rectangle_int_t rect = { 0, 0, surface->extents.width, surface->extents.height };
+    comac_rectangle_int_t rect = {0,
+				  0,
+				  surface->extents.width,
+				  surface->extents.height};
+    comac_status_t status;
+    comac_clip_t *target_clip;
+
+    target_clip = _comac_clip_copy_intersect_rectangle (clip, &rect);
+    status = _comac_surface_offset_fill (surface->target,
+					 -surface->extents.x,
+					 -surface->extents.y,
+					 op,
+					 source,
+					 path,
+					 fill_rule,
+					 tolerance,
+					 antialias,
+					 target_clip);
+    _comac_clip_destroy (target_clip);
+    return status;
+}
+
+static comac_int_status_t
+_comac_surface_subsurface_stroke (void *abstract_surface,
+				  comac_operator_t op,
+				  const comac_pattern_t *source,
+				  const comac_path_fixed_t *path,
+				  const comac_stroke_style_t *stroke_style,
+				  const comac_matrix_t *ctm,
+				  const comac_matrix_t *ctm_inverse,
+				  double tolerance,
+				  comac_antialias_t antialias,
+				  const comac_clip_t *clip)
+{
+    comac_surface_subsurface_t *surface = abstract_surface;
+    comac_rectangle_int_t rect = {0,
+				  0,
+				  surface->extents.width,
+				  surface->extents.height};
     comac_status_t status;
     comac_clip_t *target_clip;
 
     target_clip = _comac_clip_copy_intersect_rectangle (clip, &rect);
     status = _comac_surface_offset_stroke (surface->target,
-					   -surface->extents.x, -surface->extents.y,
-					   op, source, path, stroke_style, ctm, ctm_inverse,
-					   tolerance, antialias,
+					   -surface->extents.x,
+					   -surface->extents.y,
+					   op,
+					   source,
+					   path,
+					   stroke_style,
+					   ctm,
+					   ctm_inverse,
+					   tolerance,
+					   antialias,
 					   target_clip);
     _comac_clip_destroy (target_clip);
     return status;
 }
 
 static comac_int_status_t
-_comac_surface_subsurface_glyphs (void			*abstract_surface,
-				  comac_operator_t	 op,
-				  const comac_pattern_t	*source,
-				  comac_glyph_t		*glyphs,
-				  int			 num_glyphs,
-				  comac_scaled_font_t	*scaled_font,
-				  const comac_clip_t	*clip)
+_comac_surface_subsurface_glyphs (void *abstract_surface,
+				  comac_operator_t op,
+				  const comac_pattern_t *source,
+				  comac_glyph_t *glyphs,
+				  int num_glyphs,
+				  comac_scaled_font_t *scaled_font,
+				  const comac_clip_t *clip)
 {
     comac_surface_subsurface_t *surface = abstract_surface;
-    comac_rectangle_int_t rect = { 0, 0, surface->extents.width, surface->extents.height };
+    comac_rectangle_int_t rect = {0,
+				  0,
+				  surface->extents.width,
+				  surface->extents.height};
     comac_status_t status;
     comac_clip_t *target_clip;
 
     target_clip = _comac_clip_copy_intersect_rectangle (clip, &rect);
     status = _comac_surface_offset_glyphs (surface->target,
-					   -surface->extents.x, -surface->extents.y,
-					   op, source,
-					   scaled_font, glyphs, num_glyphs,
+					   -surface->extents.x,
+					   -surface->extents.y,
+					   op,
+					   source,
+					   scaled_font,
+					   glyphs,
+					   num_glyphs,
 					   target_clip);
     _comac_clip_destroy (target_clip);
     return status;
@@ -229,9 +274,8 @@ _comac_surface_subsurface_flush (void *abstract_surface, unsigned flags)
 }
 
 static comac_status_t
-_comac_surface_subsurface_mark_dirty (void *abstract_surface,
-				      int x, int y,
-				      int width, int height)
+_comac_surface_subsurface_mark_dirty (
+    void *abstract_surface, int x, int y, int width, int height)
 {
     comac_surface_subsurface_t *surface = abstract_surface;
     comac_status_t status;
@@ -242,18 +286,20 @@ _comac_surface_subsurface_mark_dirty (void *abstract_surface,
 
 	rect.x = x;
 	rect.y = y;
-	rect.width  = width;
+	rect.width = width;
 	rect.height = height;
 
 	extents.x = extents.y = 0;
-	extents.width  = surface->extents.width;
+	extents.width = surface->extents.width;
 	extents.height = surface->extents.height;
 
 	if (_comac_rectangle_intersect (&rect, &extents)) {
-	    status = surface->target->backend->mark_dirty_rectangle (surface->target,
-								     rect.x + surface->extents.x,
-								     rect.y + surface->extents.y,
-								     rect.width, rect.height);
+	    status = surface->target->backend->mark_dirty_rectangle (
+		surface->target,
+		rect.x + surface->extents.x,
+		rect.y + surface->extents.y,
+		rect.width,
+		rect.height);
 	}
     }
 
@@ -268,7 +314,7 @@ _comac_surface_subsurface_get_extents (void *abstract_surface,
 
     extents->x = 0;
     extents->y = 0;
-    extents->width  = surface->extents.width;
+    extents->width = surface->extents.width;
     extents->height = surface->extents.height;
 
     return TRUE;
@@ -299,9 +345,8 @@ _comac_surface_subsurface_source (void *abstract_surface,
 }
 
 static comac_status_t
-_comac_surface_subsurface_acquire_source_image (void                    *abstract_surface,
-						comac_image_surface_t  **image_out,
-						void                   **extra_out)
+_comac_surface_subsurface_acquire_source_image (
+    void *abstract_surface, comac_image_surface_t **image_out, void **extra_out)
 {
     comac_surface_subsurface_t *surface = abstract_surface;
     comac_surface_pattern_t pattern;
@@ -321,22 +366,23 @@ _comac_surface_subsurface_acquire_source_image (void                    *abstrac
     pattern.base.filter = COMAC_FILTER_NEAREST;
     status = _comac_surface_paint (image,
 				   COMAC_OPERATOR_SOURCE,
-				   &pattern.base, NULL);
+				   &pattern.base,
+				   NULL);
     _comac_pattern_fini (&pattern.base);
     if (unlikely (status)) {
 	comac_surface_destroy (image);
 	return status;
     }
 
-    *image_out = (comac_image_surface_t *)image;
+    *image_out = (comac_image_surface_t *) image;
     *extra_out = NULL;
     return COMAC_STATUS_SUCCESS;
 }
 
 static void
-_comac_surface_subsurface_release_source_image (void                   *abstract_surface,
-						comac_image_surface_t  *image,
-						void                   *abstract_extra)
+_comac_surface_subsurface_release_source_image (void *abstract_surface,
+						comac_image_surface_t *image,
+						void *abstract_extra)
 {
     comac_surface_destroy (&image->base);
 }
@@ -349,7 +395,8 @@ _comac_surface_subsurface_snapshot (void *abstract_surface)
     comac_surface_t *clone;
     comac_status_t status;
 
-    TRACE ((stderr, "%s: target=%d\n", __FUNCTION__, surface->target->unique_id));
+    TRACE (
+	(stderr, "%s: target=%d\n", __FUNCTION__, surface->target->unique_id));
 
     clone = _comac_surface_create_scratch (surface->target,
 					   surface->target->content,
@@ -361,11 +408,13 @@ _comac_surface_subsurface_snapshot (void *abstract_surface)
 
     _comac_pattern_init_for_surface (&pattern, surface->target);
     comac_matrix_init_translate (&pattern.base.matrix,
-				 surface->extents.x, surface->extents.y);
+				 surface->extents.x,
+				 surface->extents.y);
     pattern.base.filter = COMAC_FILTER_NEAREST;
     status = _comac_surface_paint (clone,
 				   COMAC_OPERATOR_SOURCE,
-				   &pattern.base, NULL);
+				   &pattern.base,
+				   NULL);
     _comac_pattern_fini (&pattern.base);
 
     if (unlikely (status)) {
@@ -377,7 +426,7 @@ _comac_surface_subsurface_snapshot (void *abstract_surface)
 }
 
 static comac_t *
-_comac_surface_subsurface_create_context(void *target)
+_comac_surface_subsurface_create_context (void *target)
 {
     comac_surface_subsurface_t *surface = target;
     return surface->target->backend->create_context (&surface->base);
@@ -448,23 +497,25 @@ static const comac_surface_backend_t _comac_surface_subsurface_backend = {
  * Since: 1.10
  **/
 comac_surface_t *
-comac_surface_create_for_rectangle (comac_surface_t *target,
-				    double x, double y,
-				    double width, double height)
+comac_surface_create_for_rectangle (
+    comac_surface_t *target, double x, double y, double width, double height)
 {
     comac_surface_subsurface_t *surface;
 
     if (unlikely (width < 0 || height < 0))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_SIZE));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_INVALID_SIZE));
 
     if (unlikely (target->status))
 	return _comac_surface_create_in_error (target->status);
     if (unlikely (target->finished))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     surface = _comac_malloc (sizeof (comac_surface_subsurface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     x *= target->device_transform.xx;
     y *= target->device_transform.yy;
@@ -503,8 +554,8 @@ comac_surface_create_for_rectangle (comac_surface_t *target,
     surface->snapshot = NULL;
 
     comac_surface_set_device_scale (&surface->base,
-                                    target->device_transform.xx,
-                                    target->device_transform.yy);
+				    target->device_transform.xx,
+				    target->device_transform.yy);
 
     return &surface->base;
 }
@@ -518,13 +569,15 @@ _comac_surface_create_for_rectangle_int (comac_surface_t *target,
     if (unlikely (target->status))
 	return _comac_surface_create_in_error (target->status);
     if (unlikely (target->finished))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     assert (target->backend->type != COMAC_SURFACE_TYPE_SUBSURFACE);
 
     surface = _comac_malloc (sizeof (comac_surface_subsurface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
 			 &_comac_surface_subsurface_backend,
@@ -546,8 +599,8 @@ _comac_surface_create_for_rectangle_int (comac_surface_t *target,
     surface->snapshot = NULL;
 
     comac_surface_set_device_scale (&surface->base,
-                                    target->device_transform.xx,
-                                    target->device_transform.yy);
+				    target->device_transform.xx,
+				    target->device_transform.yy);
 
     return &surface->base;
 }
@@ -570,8 +623,11 @@ _comac_surface_subsurface_set_snapshot (comac_surface_t *surface,
 {
     comac_surface_subsurface_t *ss = (comac_surface_subsurface_t *) surface;
 
-    TRACE ((stderr, "%s: target=%d, snapshot=%d\n", __FUNCTION__,
-	    ss->target->unique_id, snapshot->unique_id));
+    TRACE ((stderr,
+	    "%s: target=%d, snapshot=%d\n",
+	    __FUNCTION__,
+	    ss->target->unique_id,
+	    snapshot->unique_id));
 
     /* FIXME: attaching the subsurface as a snapshot to its target creates
      * a reference cycle.  Let's make this call as a no-op until that bug
@@ -584,6 +640,7 @@ _comac_surface_subsurface_set_snapshot (comac_surface_t *surface,
 
     ss->snapshot = comac_surface_reference (snapshot);
 
-    _comac_surface_attach_snapshot (ss->target, &ss->base,
+    _comac_surface_attach_snapshot (ss->target,
+				    &ss->base,
 				    _comac_surface_subsurface_detach_snapshot);
 }

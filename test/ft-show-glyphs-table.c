@@ -29,14 +29,14 @@
 #include "comac-test.h"
 #include <comac-ft.h>
 
-#define TEXT_SIZE	20
-#define PAD		10
-#define GRID_SIZE	30
-#define GRID_ROWS	10
-#define GRID_COLS	4
-#define NUM_GLYPHS	(GRID_ROWS * GRID_COLS)
-#define WIDTH		(PAD + GRID_COLS * GRID_SIZE + PAD)
-#define HEIGHT		(PAD + GRID_ROWS * GRID_SIZE + PAD)
+#define TEXT_SIZE 20
+#define PAD 10
+#define GRID_SIZE 30
+#define GRID_ROWS 10
+#define GRID_COLS 4
+#define NUM_GLYPHS (GRID_ROWS * GRID_COLS)
+#define WIDTH (PAD + GRID_COLS * GRID_SIZE + PAD)
+#define HEIGHT (PAD + GRID_ROWS * GRID_SIZE + PAD)
 
 /* This test was originally inspired by this bug report:
  *
@@ -70,7 +70,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -86,24 +87,29 @@ draw (comac_t *cr, int width, int height)
     scaled_font = comac_get_scaled_font (cr);
     face = comac_ft_scaled_font_lock_face (scaled_font);
     {
-	charcode = FT_Get_First_Char(face, &idx);
+	charcode = FT_Get_First_Char (face, &idx);
 	while (idx && (i < NUM_GLYPHS)) {
-	    glyphs[i] = (comac_glyph_t) {idx, PAD + GRID_SIZE * (i/GRID_ROWS), PAD + TEXT_SIZE + GRID_SIZE * (i%GRID_ROWS)};
+	    glyphs[i] =
+		(comac_glyph_t){idx,
+				PAD + GRID_SIZE * (i / GRID_ROWS),
+				PAD + TEXT_SIZE + GRID_SIZE * (i % GRID_ROWS)};
 	    i++;
-	    charcode = FT_Get_Next_Char(face, charcode, &idx);
+	    charcode = FT_Get_Next_Char (face, charcode, &idx);
 	}
     }
     comac_ft_scaled_font_unlock_face (scaled_font);
 
-    comac_show_glyphs(cr, glyphs, i);
+    comac_show_glyphs (cr, glyphs, i);
 
     return COMAC_TEST_SUCCESS;
 }
 
 COMAC_TEST (ft_show_glyphs_table,
-	    "Test comac_show_glyphs with comac-ft backend and glyphs laid out in a table",
+	    "Test comac_show_glyphs with comac-ft backend and glyphs laid out "
+	    "in a table",
 	    "ft, text", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
-
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

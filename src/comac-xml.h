@@ -46,22 +46,21 @@ comac_public comac_device_t *
 comac_xml_create (const char *filename);
 
 comac_public comac_device_t *
-comac_xml_create_for_stream (comac_write_func_t	 write_func,
-			     void		*closure);
+comac_xml_create_for_stream (comac_write_func_t write_func, void *closure);
 
 comac_public comac_surface_t *
 comac_xml_surface_create (comac_device_t *xml,
 			  comac_content_t content,
-			  double width, double height);
+			  double width,
+			  double height);
 
 comac_public comac_status_t
-comac_xml_for_recording_surface (comac_device_t *xml,
-				 comac_surface_t *surface);
+comac_xml_for_recording_surface (comac_device_t *xml, comac_surface_t *surface);
 
 COMAC_END_DECLS
 
-#else  /*COMAC_HAS_XML_SURFACE*/
-# error Comac was not compiled with support for the XML backend
+#else /*COMAC_HAS_XML_SURFACE*/
+#error Comac was not compiled with support for the XML backend
 #endif /*COMAC_HAS_XML_SURFACE*/
 
 #endif /*COMAC_XML_H*/

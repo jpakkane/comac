@@ -61,11 +61,10 @@ _comac_tristrip_fini (comac_tristrip_t *strip)
     VG (VALGRIND_MAKE_MEM_UNDEFINED (strip, sizeof (comac_tristrip_t)));
 }
 
-
 void
-_comac_tristrip_limit (comac_tristrip_t	*strip,
-		       const comac_box_t	*limits,
-		       int			 num_limits)
+_comac_tristrip_limit (comac_tristrip_t *strip,
+		       const comac_box_t *limits,
+		       int num_limits)
 {
     strip->limits = limits;
     strip->num_limits = num_limits;
@@ -98,7 +97,8 @@ _comac_tristrip_grow (comac_tristrip_t *strip)
 	    memcpy (points, strip->points, sizeof (strip->points_embedded));
     } else {
 	points = _comac_realloc_ab (strip->points,
-	                               new_size, sizeof (comac_trapezoid_t));
+				    new_size,
+				    sizeof (comac_trapezoid_t));
     }
 
     if (unlikely (points == NULL)) {
@@ -112,8 +112,7 @@ _comac_tristrip_grow (comac_tristrip_t *strip)
 }
 
 void
-_comac_tristrip_add_point (comac_tristrip_t *strip,
-			   const comac_point_t *p)
+_comac_tristrip_add_point (comac_tristrip_t *strip, const comac_point_t *p)
 {
     if (unlikely (strip->num_points == strip->size_points)) {
 	if (unlikely (! _comac_tristrip_grow (strip)))
@@ -126,13 +125,12 @@ _comac_tristrip_add_point (comac_tristrip_t *strip,
 /* Insert degenerate triangles to advance to the given point. The
  * next point inserted must also be @p. */
 void
-_comac_tristrip_move_to (comac_tristrip_t *strip,
-			 const comac_point_t *p)
+_comac_tristrip_move_to (comac_tristrip_t *strip, const comac_point_t *p)
 {
     if (strip->num_points == 0)
 	return;
 
-    _comac_tristrip_add_point (strip, &strip->points[strip->num_points-1]);
+    _comac_tristrip_add_point (strip, &strip->points[strip->num_points - 1]);
     _comac_tristrip_add_point (strip, p);
 #if 0
     /* and one more for luck! (to preserve cw/ccw ordering) */
@@ -157,8 +155,7 @@ _comac_tristrip_translate (comac_tristrip_t *strip, int x, int y)
 }
 
 void
-_comac_tristrip_extents (const comac_tristrip_t *strip,
-			 comac_box_t *extents)
+_comac_tristrip_extents (const comac_tristrip_t *strip, comac_box_t *extents)
 {
     int i;
 
@@ -170,7 +167,7 @@ _comac_tristrip_extents (const comac_tristrip_t *strip,
 
     extents->p2 = extents->p1 = strip->points[0];
     for (i = 1; i < strip->num_points; i++) {
-	const comac_point_t *p =  &strip->points[i];
+	const comac_point_t *p = &strip->points[i];
 
 	if (p->x < extents->p1.x)
 	    extents->p1.x = p->x;

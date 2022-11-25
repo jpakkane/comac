@@ -20,8 +20,8 @@
 
 /* The autoconf on OpenBSD 4.5 produces the malformed constant name
  * SIZEOF_VOID__ rather than SIZEOF_VOID_P.  Work around that here. */
-#if !defined(SIZEOF_VOID_P) && defined(SIZEOF_VOID__)
-# define SIZEOF_VOID_P SIZEOF_VOID__
+#if ! defined(SIZEOF_VOID_P) && defined(SIZEOF_VOID__)
+#define SIZEOF_VOID_P SIZEOF_VOID__
 #endif
 
 #include <dlfcn.h>
@@ -44,7 +44,7 @@
 
 #include <comac.h>
 #if COMAC_HAS_FT_FONT
-# include <comac-ft.h>
+#include <comac-ft.h>
 #endif
 
 #include "comac-ctype-inline.h"
@@ -61,19 +61,17 @@
 #define DEBUG_STACK 0
 
 #if HAVE_BYTESWAP_H
-# include <byteswap.h>
+#include <byteswap.h>
 #endif
 #ifndef bswap_16
-# define bswap_16(p) \
-	(((((uint16_t)(p)) & 0x00ff) << 8) | \
-	  (((uint16_t)(p))           >> 8))
+#define bswap_16(p)                                                            \
+    (((((uint16_t) (p)) & 0x00ff) << 8) | (((uint16_t) (p)) >> 8))
 #endif
 #ifndef bswap_32
-# define bswap_32(p) \
-         (((((uint32_t)(p)) & 0x000000ff) << 24) | \
-	  ((((uint32_t)(p)) & 0x0000ff00) << 8)  | \
-	  ((((uint32_t)(p)) & 0x00ff0000) >> 8)  | \
-	  ((((uint32_t)(p)))              >> 24))
+#define bswap_32(p)                                                            \
+    (((((uint32_t) (p)) & 0x000000ff) << 24) |                                 \
+     ((((uint32_t) (p)) & 0x0000ff00) << 8) |                                  \
+     ((((uint32_t) (p)) & 0x00ff0000) >> 8) | ((((uint32_t) (p))) >> 24))
 #endif
 
 #if WORDS_BIGENDIAN
@@ -98,15 +96,18 @@
  * Devised by Sean Anderson, July 13, 2001.
  * Source: http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith32Bits
  */
-#define COMAC_BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+#define COMAC_BITSWAP8(c)                                                      \
+    ((((c) *0x0802LU & 0x22110LU) | ((c) *0x8020LU & 0x88440LU)) *             \
+	 0x10101LU >>                                                          \
+     16)
 
 #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
 #ifdef __MINGW32__
-#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                        \
-	__attribute__((__format__(__MINGW_PRINTF_FORMAT, fmt_index, va_index)))
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                               \
+    __attribute__ ((__format__ (__MINGW_PRINTF_FORMAT, fmt_index, va_index)))
 #else
-#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                        \
-	__attribute__((__format__(__printf__, fmt_index, va_index)))
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                               \
+    __attribute__ ((__format__ (__printf__, fmt_index, va_index)))
 #endif
 #else
 #define COMAC_PRINTF_FORMAT(fmt_index, va_index)
@@ -117,18 +118,19 @@
  */
 
 static void *_dlhandle = RTLD_NEXT;
-#define DLCALL(name, args...) ({ \
-    static typeof (&name) name##_real; \
-    if (name##_real == NULL) { \
-	name##_real = (typeof (&name))(dlsym (_dlhandle, #name));	\
-	if (name##_real == NULL && _dlhandle == RTLD_NEXT) { \
-	    _dlhandle = dlopen ("libcomac." SHARED_LIB_EXT, RTLD_LAZY); \
-	    name##_real = (typeof (&name))(dlsym (_dlhandle, #name));	\
-	    assert (name##_real != NULL); \
-	} \
-    } \
-    (*name##_real) (args);  \
-})
+#define DLCALL(name, args...)                                                  \
+    ({                                                                         \
+	static typeof (&name) name##_real;                                     \
+	if (name##_real == NULL) {                                             \
+	    name##_real = (typeof (&name)) (dlsym (_dlhandle, #name));         \
+	    if (name##_real == NULL && _dlhandle == RTLD_NEXT) {               \
+		_dlhandle = dlopen ("libcomac." SHARED_LIB_EXT, RTLD_LAZY);    \
+		name##_real = (typeof (&name)) (dlsym (_dlhandle, #name));     \
+		assert (name##_real != NULL);                                  \
+	    }                                                                  \
+	}                                                                      \
+	(*name##_real) (args);                                                 \
+    })
 
 #ifndef ARRAY_LENGTH
 #define ARRAY_LENGTH(__array) ((int) (sizeof (__array) / sizeof (__array[0])))
@@ -144,17 +146,17 @@ static void *_dlhandle = RTLD_NEXT;
 #define BUCKET(b, ptr) (((uintptr_t) (ptr) >> PTR_SHIFT) % ARRAY_LENGTH (b))
 
 #if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
-#define _BOOLEAN_EXPR(expr)                   \
- __extension__ ({                             \
-   int _boolean_var_;                         \
-   if (expr)                                  \
-      _boolean_var_ = 1;                      \
-   else                                       \
-      _boolean_var_ = 0;                      \
-   _boolean_var_;                             \
-})
-#define LIKELY(expr) (__builtin_expect (_BOOLEAN_EXPR(expr), 1))
-#define UNLIKELY(expr) (__builtin_expect (_BOOLEAN_EXPR(expr), 0))
+#define _BOOLEAN_EXPR(expr)                                                    \
+    __extension__ ({                                                           \
+	int _boolean_var_;                                                     \
+	if (expr)                                                              \
+	    _boolean_var_ = 1;                                                 \
+	else                                                                   \
+	    _boolean_var_ = 0;                                                 \
+	_boolean_var_;                                                         \
+    })
+#define LIKELY(expr) (__builtin_expect (_BOOLEAN_EXPR (expr), 1))
+#define UNLIKELY(expr) (__builtin_expect (_BOOLEAN_EXPR (expr), 0))
 #else
 #define LIKELY(expr) (expr)
 #define UNLIKELY(expr) (expr)
@@ -173,7 +175,7 @@ struct _object {
     comac_bool_t unknown;
     int operand;
     void *data;
-    void (*destroy)(void *);
+    void (*destroy) (void *);
     Object *next, *prev;
 };
 
@@ -216,32 +218,40 @@ static const comac_user_data_key_t destroy_key;
 static pthread_once_t once_control = PTHREAD_ONCE_INIT;
 static pthread_key_t counter_key;
 
-static void _init_trace (void);
+static void
+_init_trace (void);
 
 #define INIT_TRACE_ONCE() pthread_once (&once_control, _init_trace)
 
-#if __GNUC__ >= 3 && defined(__ELF__) && !defined(__sun)
-# define _enter_trace() INIT_TRACE_ONCE ()
-# define _exit_trace()  do { } while (0)
-# define _should_trace() 1
-# define USE_ENTER_EXIT 0
+#if __GNUC__ >= 3 && defined(__ELF__) && ! defined(__sun)
+#define _enter_trace() INIT_TRACE_ONCE ()
+#define _exit_trace()                                                          \
+    do {                                                                       \
+    } while (0)
+#define _should_trace() 1
+#define USE_ENTER_EXIT 0
 #else
-static void _enter_trace (void);
-static void _exit_trace (void);
-static comac_bool_t _should_trace (void);
-# define USE_ENTER_EXIT 1
+static void
+_enter_trace (void);
+static void
+_exit_trace (void);
+static comac_bool_t
+_should_trace (void);
+#define USE_ENTER_EXIT 1
 #endif
 
 #if HAVE_BUILTIN_RETURN_ADDRESS && COMAC_HAS_SYMBOL_LOOKUP
-#define _emit_line_info() do { \
-    if (_line_info && _write_lock ()) {	\
-	void *addr = __builtin_return_address(0); \
-	char caller[1024]; \
-	_trace_printf ("%% %s() called by %s\n", __FUNCTION__, \
-		       lookup_symbol (caller, sizeof (caller), addr)); \
-	_write_unlock (); \
-    } \
-} while (0)
+#define _emit_line_info()                                                      \
+    do {                                                                       \
+	if (_line_info && _write_lock ()) {                                    \
+	    void *addr = __builtin_return_address (0);                         \
+	    char caller[1024];                                                 \
+	    _trace_printf ("%% %s() called by %s\n",                           \
+			   __FUNCTION__,                                       \
+			   lookup_symbol (caller, sizeof (caller), addr));     \
+	    _write_unlock ();                                                  \
+	}                                                                      \
+    } while (0)
 #else
 #define _emit_line_info()
 #endif
@@ -258,7 +268,7 @@ _type_release_token (Type *t, unsigned long int token)
 
 	    token -= b->min;
 	    elem = token / (sizeof (b->map[0]) * CHAR_BIT);
-	    bit  = token % (sizeof (b->map[0]) * CHAR_BIT);
+	    bit = token % (sizeof (b->map[0]) * CHAR_BIT);
 	    b->map[elem] &= ~(1 << bit);
 	    if (! --b->count && prev) {
 		*prev = b->next;
@@ -288,11 +298,12 @@ _type_next_token (Type *t)
 		if (b->map[n] == (unsigned int) -1)
 		    continue;
 
-		for (m=0, bit=1; m<sizeof (b->map[0])*CHAR_BIT; m++, bit<<=1) {
+		for (m = 0, bit = 1; m < sizeof (b->map[0]) * CHAR_BIT;
+		     m++, bit <<= 1) {
 		    if ((b->map[n] & bit) == 0) {
 			b->map[n] |= bit;
 			b->count++;
-			return n * sizeof (b->map[0])*CHAR_BIT + m + b->min;
+			return n * sizeof (b->map[0]) * CHAR_BIT + m + b->min;
 		    }
 		}
 	    }
@@ -456,7 +467,7 @@ _get_counter (void)
 {
     int *counter = pthread_getspecific (counter_key);
     if (counter == NULL) {
-	counter = calloc(1, sizeof(int));
+	counter = calloc (1, sizeof (int));
 	pthread_setspecific (counter_key, counter);
     }
     return counter;
@@ -505,8 +516,7 @@ _close_trace (void)
     }
 }
 
-static void __attribute__ ((destructor))
-_fini_trace (void)
+static void __attribute__ ((destructor)) _fini_trace (void)
 {
     int n;
 
@@ -607,9 +617,7 @@ _trace_dtostr (char *buffer, size_t size, double d)
     }
 }
 
-enum {
-    LENGTH_MODIFIER_LONG = 0x100
-};
+enum { LENGTH_MODIFIER_LONG = 0x100 };
 
 /* Here's a limited reimplementation of printf.  The reason for doing
  * this is primarily to special case handling of doubles.  We want
@@ -619,8 +627,8 @@ enum {
  * formatting.  This functionality is only for internal use and we
  * only implement the formats we actually use.
  */
-static void COMAC_PRINTF_FORMAT(1, 0)
-_trace_vprintf (const char *fmt, va_list ap)
+static void COMAC_PRINTF_FORMAT (1, 0)
+    _trace_vprintf (const char *fmt, va_list ap)
 {
 #define SINGLE_FMT_BUFFER_SIZE 32
     char buffer[512], single_fmt[SINGLE_FMT_BUFFER_SIZE];
@@ -647,11 +655,11 @@ _trace_vprintf (const char *fmt, va_list ap)
 	if (*f == '0')
 	    f++;
 
-        var_width = 0;
-        if (*f == '*') {
-            var_width = 1;
+	var_width = 0;
+	if (*f == '*') {
+	    var_width = 1;
 	    f++;
-        }
+	}
 
 	while (_comac_isdigit (*f))
 	    f++;
@@ -672,7 +680,7 @@ _trace_vprintf (const char *fmt, va_list ap)
 	single_fmt[single_fmt_length] = '\0';
 
 	/* Flush contents of buffer before snprintf()'ing into it. */
-	ret_ignored = fwrite (buffer, 1, p-buffer, logfile);
+	ret_ignored = fwrite (buffer, 1, p - buffer, logfile);
 
 	/* We group signed and unsigned together in this switch, the
 	 * only thing that matters here is the size of the arguments,
@@ -687,31 +695,41 @@ _trace_vprintf (const char *fmt, va_list ap)
 	case 'o':
 	case 'x':
 	case 'X':
-            if (var_width) {
-                width = va_arg (ap, int);
-                snprintf (buffer, sizeof buffer,
-                          single_fmt, width, va_arg (ap, int));
-            } else {
-                snprintf (buffer, sizeof buffer, single_fmt, va_arg (ap, int));
-            }
+	    if (var_width) {
+		width = va_arg (ap, int);
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  width,
+			  va_arg (ap, int));
+	    } else {
+		snprintf (buffer, sizeof buffer, single_fmt, va_arg (ap, int));
+	    }
 	    break;
 	case 'd' | LENGTH_MODIFIER_LONG:
 	case 'u' | LENGTH_MODIFIER_LONG:
 	case 'o' | LENGTH_MODIFIER_LONG:
 	case 'x' | LENGTH_MODIFIER_LONG:
 	case 'X' | LENGTH_MODIFIER_LONG:
-            if (var_width) {
-                width = va_arg (ap, int);
-                snprintf (buffer, sizeof buffer,
-                          single_fmt, width, va_arg (ap, long int));
-            } else {
-                snprintf (buffer, sizeof buffer,
-                          single_fmt, va_arg (ap, long int));
-            }
+	    if (var_width) {
+		width = va_arg (ap, int);
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  width,
+			  va_arg (ap, long int));
+	    } else {
+		snprintf (buffer,
+			  sizeof buffer,
+			  single_fmt,
+			  va_arg (ap, long int));
+	    }
 	    break;
 	case 's':
-	    snprintf (buffer, sizeof buffer,
-		      single_fmt, va_arg (ap, const char *));
+	    snprintf (buffer,
+		      sizeof buffer,
+		      single_fmt,
+		      va_arg (ap, const char *));
 	    break;
 	case 'f':
 	case 'g':
@@ -728,12 +746,11 @@ _trace_vprintf (const char *fmt, va_list ap)
 	f++;
     }
 
-    ret_ignored = fwrite (buffer, 1, p-buffer, logfile);
-    (void)ret_ignored;
+    ret_ignored = fwrite (buffer, 1, p - buffer, logfile);
+    (void) ret_ignored;
 }
 
-static void COMAC_PRINTF_FORMAT(1, 2)
-_trace_printf (const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (1, 2) _trace_printf (const char *fmt, ...)
 {
     va_list ap;
 
@@ -762,14 +779,14 @@ get_prog_name (char *buf, int length)
     } else {
 	char const *name = getenv ("COMAC_TRACE_PROG_NAME");
 	if (name != NULL) {
-	    strncpy (buf, name, length-1);
+	    strncpy (buf, name, length - 1);
 	}
     }
 
     slash = strrchr (buf, '/');
     if (slash != NULL) {
-	size_t len = strlen (slash+1);
-	memmove (buf, slash+1, len+1);
+	size_t len = strlen (slash + 1);
+	memmove (buf, slash + 1, len + 1);
     }
 }
 
@@ -818,8 +835,10 @@ _init_logfile (void)
 
 	logfile = fdopen (fd, "w");
 	if (logfile == NULL) {
-	    fprintf (stderr, "Failed to open trace file descriptor '%s': %s\n",
-		       filename, strerror (errno));
+	    fprintf (stderr,
+		     "Failed to open trace file descriptor '%s': %s\n",
+		     filename,
+		     strerror (errno));
 	    return FALSE;
 	}
 
@@ -839,9 +858,12 @@ _init_logfile (void)
 	if (*name == '\0')
 	    strcpy (name, "comac-trace.dat");
 
-	if (snprintf (buf, sizeof (buf), "%s/%s.%d.trace",
-		      filename, name, getpid()) >= (int) sizeof (buf))
-	{
+	if (snprintf (buf,
+		      sizeof (buf),
+		      "%s/%s.%d.trace",
+		      filename,
+		      name,
+		      getpid ()) >= (int) sizeof (buf)) {
 	    fprintf (stderr, "comac-trace: Trace file name too long\n");
 	    return FALSE;
 	}
@@ -853,12 +875,15 @@ _init_logfile (void)
 
     logfile = fopen (filename, "wb");
     if (logfile == NULL) {
-	fprintf (stderr, "Failed to open trace file '%s': %s\n",
-		   filename, strerror (errno));
+	fprintf (stderr,
+		 "Failed to open trace file '%s': %s\n",
+		 filename,
+		 strerror (errno));
 	return FALSE;
     }
 
-    fprintf (stderr, "comac-trace: Recording comac trace data to %s\n",
+    fprintf (stderr,
+	     "comac-trace: Recording comac trace data to %s\n",
 	     filename);
 
 done:
@@ -899,7 +924,6 @@ _write_unlock (void)
 	fflush (logfile);
 }
 
-
 static Object *
 _type_object_create (enum operand_type op_type, const void *ptr)
 {
@@ -933,23 +957,24 @@ static Object *current_object[2048]; /* XXX limit operand stack */
 static int current_stack_depth;
 
 static void
-dump_stack(const char *func)
+dump_stack (const char *func)
 {
 #if DEBUG_STACK
-	int n;
+    int n;
 
-	_trace_printf ("%% %s: stack[%d] = [", func, current_stack_depth);
+    _trace_printf ("%% %s: stack[%d] = [", func, current_stack_depth);
+    fflush (logfile);
+    for (n = 0; n < current_stack_depth; n++) {
+	Object *obj = current_object[n];
+	assert (obj && obj->type);
+	_trace_printf (" %s%s%ld",
+		       obj->defined ? "" : "*",
+		       obj->type->op_code,
+		       obj->token);
 	fflush (logfile);
-	for (n = 0; n < current_stack_depth; n++) {
-		Object *obj = current_object[n];
-		assert(obj && obj->type);
-		_trace_printf (" %s%s%ld",
-			       obj->defined ? "" : "*",
-			       obj->type->op_code, obj->token);
-	fflush (logfile);
-	}
-	_trace_printf (" ]\n");
-	fflush (logfile);
+    }
+    _trace_printf (" ]\n");
+    fflush (logfile);
 #endif
 }
 
@@ -963,8 +988,11 @@ ensure_operands (int num_operands)
 	for (n = 0; n < current_stack_depth; n++) {
 	    Object *obj = current_object[n];
 
-	    fprintf (stderr, "  [%3d] = %s%ld\n",
-		     n, obj->type->op_code, obj->token);
+	    fprintf (stderr,
+		     "  [%3d] = %s%ld\n",
+		     n,
+		     obj->type->op_code,
+		     obj->token);
 	}
 
 	abort ();
@@ -978,10 +1006,8 @@ _consume_operand (bool discard)
 
     ensure_operands (1);
     obj = current_object[--current_stack_depth];
-    if (!discard && ! obj->defined) {
-	_trace_printf ("dup /%s%ld exch def\n",
-		       obj->type->op_code,
-		       obj->token);
+    if (! discard && ! obj->defined) {
+	_trace_printf ("dup /%s%ld exch def\n", obj->type->op_code, obj->token);
 	obj->defined = TRUE;
     }
     obj->operand = -1;
@@ -993,11 +1019,12 @@ _exch_operands (void)
     Object *tmp;
 
     ensure_operands (2);
-    tmp = current_object[current_stack_depth-1];
+    tmp = current_object[current_stack_depth - 1];
     tmp->operand--;
-    current_object[current_stack_depth-1] = current_object[current_stack_depth-2];
-    current_object[current_stack_depth-2] = tmp;
-    tmp = current_object[current_stack_depth-1];
+    current_object[current_stack_depth - 1] =
+	current_object[current_stack_depth - 2];
+    current_object[current_stack_depth - 2] = tmp;
+    tmp = current_object[current_stack_depth - 1];
     tmp->operand++;
 }
 
@@ -1007,7 +1034,7 @@ _pop_operands_to_depth (int depth)
     if (depth < 0)
 	return FALSE;
 
-    assert(current_stack_depth >= depth);
+    assert (current_stack_depth >= depth);
     if (current_stack_depth == depth)
 	return TRUE;
 
@@ -1017,30 +1044,29 @@ _pop_operands_to_depth (int depth)
 	ensure_operands (1);
 	c_obj = current_object[--current_stack_depth];
 
-	assert(c_obj);
-	assert(c_obj->type);
+	assert (c_obj);
+	assert (c_obj->type);
 
 	if (! c_obj->defined) {
 	    current_stack_depth++;
 	    return FALSE;
 	}
 
-	_trace_printf ("pop %% %s%ld\n",
-		       c_obj->type->op_code, c_obj->token);
+	_trace_printf ("pop %% %s%ld\n", c_obj->type->op_code, c_obj->token);
 	c_obj->operand = -1;
     }
 
     _exch_operands ();
     _trace_printf ("exch\n");
 
-    dump_stack(__func__);
+    dump_stack (__func__);
     return TRUE;
 }
 
 static comac_bool_t
 _pop_operands_to_object (Object *obj)
 {
-    if (!obj)
+    if (! obj)
 	return FALSE;
 
     if (obj->operand == -1)
@@ -1069,7 +1095,7 @@ _is_current_object (Object *obj, int depth)
 {
     if (current_stack_depth <= depth)
 	return FALSE;
-    return current_object[current_stack_depth-depth-1] == obj;
+    return current_object[current_stack_depth - depth - 1] == obj;
 }
 
 static comac_bool_t
@@ -1079,9 +1105,9 @@ _is_current (enum operand_type type, const void *ptr, int depth)
 }
 
 static void
-_push_object(Object *obj)
+_push_object (Object *obj)
 {
-    assert(obj->operand == -1);
+    assert (obj->operand == -1);
 
     if (current_stack_depth == ARRAY_LENGTH (current_object)) {
 	int n;
@@ -1090,8 +1116,11 @@ _push_object(Object *obj)
 	for (n = 0; n < current_stack_depth; n++) {
 	    obj = current_object[n];
 
-	    fprintf (stderr, "  [%3d] = %s%ld\n",
-		     n, obj->type->op_code, obj->token);
+	    fprintf (stderr,
+		     "  [%3d] = %s%ld\n",
+		     n,
+		     obj->type->op_code,
+		     obj->token);
 	}
 
 	abort ();
@@ -1104,7 +1133,7 @@ _push_object(Object *obj)
 static void
 _push_operand (enum operand_type t, const void *ptr)
 {
-    _push_object(_get_object(t, ptr));
+    _push_object (_get_object (t, ptr));
 }
 
 static void
@@ -1114,27 +1143,30 @@ _object_remove (Object *obj)
 	ensure_operands (1);
 	if (obj->operand == current_stack_depth - 1) {
 	    _trace_printf ("pop %% %s%ld destroyed\n",
-			   obj->type->op_code, obj->token);
+			   obj->type->op_code,
+			   obj->token);
 	} else if (obj->operand == current_stack_depth - 2) {
 	    _exch_operands ();
 	    _trace_printf ("exch pop %% %s%ld destroyed\n",
-			   obj->type->op_code, obj->token);
+			   obj->type->op_code,
+			   obj->token);
 	} else {
 	    int n;
 
 	    _trace_printf ("%d -1 roll pop %% %s%ld destroyed\n",
 			   current_stack_depth - obj->operand,
-			   obj->type->op_code, obj->token);
+			   obj->type->op_code,
+			   obj->token);
 
 	    for (n = obj->operand; n < current_stack_depth - 1; n++) {
-		current_object[n] = current_object[n+1];
+		current_object[n] = current_object[n + 1];
 		current_object[n]->operand = n;
 	    }
 	}
 	obj->operand = -1;
 
 	current_stack_depth--;
-	dump_stack(__func__);
+	dump_stack (__func__);
     }
 }
 
@@ -1147,8 +1179,7 @@ _object_undef (void *ptr)
 	_object_remove (obj);
 
 	if (obj->defined) {
-	    _trace_printf ("/%s%ld undef\n",
-			   obj->type->op_code, obj->token);
+	    _trace_printf ("/%s%ld undef\n", obj->type->op_code, obj->token);
 	}
 
 	_write_unlock ();
@@ -1165,8 +1196,7 @@ _create_context_id (comac_t *cr)
     obj = _get_object (CONTEXT, cr);
     if (obj == NULL) {
 	obj = _type_object_create (CONTEXT, cr);
-	DLCALL (comac_set_user_data,
-		cr, &destroy_key, obj, _object_undef);
+	DLCALL (comac_set_user_data, cr, &destroy_key, obj, _object_undef);
     }
 
     return obj->token;
@@ -1205,7 +1235,10 @@ _create_font_face_id (comac_font_face_t *font_face)
     if (obj == NULL) {
 	obj = _type_object_create (FONT_FACE, font_face);
 	DLCALL (comac_font_face_set_user_data,
-		font_face, &destroy_key, obj, _object_undef);
+		font_face,
+		&destroy_key,
+		obj,
+		_object_undef);
     }
 
     return obj->token;
@@ -1247,7 +1280,10 @@ _create_pattern_id (comac_pattern_t *pattern)
     if (obj == NULL) {
 	obj = _type_object_create (PATTERN, pattern);
 	DLCALL (comac_pattern_set_user_data,
-		pattern, &destroy_key, obj, _object_undef);
+		pattern,
+		&destroy_key,
+		obj,
+		_object_undef);
     }
 
     return obj->token;
@@ -1263,8 +1299,7 @@ _emit_pattern_id (comac_pattern_t *pattern)
 	if (obj->defined) {
 	    _trace_printf ("p%ld ", obj->token);
 	} else {
-	    _trace_printf ("%d index ",
-			   current_stack_depth - obj->operand - 1);
+	    _trace_printf ("%d index ", current_stack_depth - obj->operand - 1);
 	}
     }
 }
@@ -1279,8 +1314,7 @@ _emit_scaled_font_id (const comac_scaled_font_t *scaled_font)
 	if (obj->defined) {
 	    _trace_printf ("sf%ld ", obj->token);
 	} else {
-	    _trace_printf ("%d index ",
-		     current_stack_depth - obj->operand - 1);
+	    _trace_printf ("%d index ", current_stack_depth - obj->operand - 1);
 	}
     }
 }
@@ -1290,10 +1324,13 @@ _create_scaled_font_id (comac_scaled_font_t *font)
 {
     Object *obj;
 
-    assert(_get_object (SCALED_FONT, font) == NULL);
+    assert (_get_object (SCALED_FONT, font) == NULL);
     obj = _type_object_create (SCALED_FONT, font);
     DLCALL (comac_scaled_font_set_user_data,
-	    font, &destroy_key, obj, _object_undef);
+	    font,
+	    &destroy_key,
+	    obj,
+	    _object_undef);
 
     return obj->token;
 }
@@ -1313,7 +1350,10 @@ _create_surface (comac_surface_t *surface)
     if (obj == NULL) {
 	obj = _type_object_create (SURFACE, surface);
 	DLCALL (comac_surface_set_user_data,
-		surface, &destroy_key, obj, _object_undef);
+		surface,
+		&destroy_key,
+		obj,
+		_object_undef);
     }
 
     return obj;
@@ -1328,8 +1368,7 @@ _get_surface_id (comac_surface_t *surface)
 static comac_bool_t
 _matrix_is_identity (const comac_matrix_t *m)
 {
-    return m->xx == 1. && m->yx == 0. &&
-	   m->xy == 0. && m->yy == 1. &&
+    return m->xx == 1. && m->yx == 0. && m->xy == 0. && m->yy == 1. &&
 	   m->x0 == 0. && m->y0 == 0.;
 }
 
@@ -1346,8 +1385,8 @@ static void
 _write_zlib_data_start (struct _data_stream *stream)
 {
     stream->zlib_stream.zalloc = Z_NULL;
-    stream->zlib_stream.zfree  = Z_NULL;
-    stream->zlib_stream.opaque  = Z_NULL;
+    stream->zlib_stream.zfree = Z_NULL;
+    stream->zlib_stream.opaque = Z_NULL;
 
     deflateInit (&stream->zlib_stream, Z_DEFAULT_COMPRESSION);
 
@@ -1371,15 +1410,13 @@ _expand_four_tuple_to_five (unsigned char four_tuple[4],
     int digit, i;
     comac_bool_t all_zero = TRUE;
 
-    value = four_tuple[0] << 24 |
-	    four_tuple[1] << 16 |
-	    four_tuple[2] << 8  |
+    value = four_tuple[0] << 24 | four_tuple[1] << 16 | four_tuple[2] << 8 |
 	    four_tuple[3] << 0;
     for (i = 0; i < 5; i++) {
 	digit = value % 85;
 	if (digit != 0 && all_zero)
 	    all_zero = FALSE;
-	five_tuple[4-i] = digit + 33;
+	five_tuple[4 - i] = digit + 33;
 	value = value / 85;
     }
 
@@ -1388,8 +1425,8 @@ _expand_four_tuple_to_five (unsigned char four_tuple[4],
 
 static void
 _write_base85_data (struct _data_stream *stream,
-		    const unsigned char	  *data,
-		    unsigned long	   length)
+		    const unsigned char *data,
+		    unsigned long length)
 {
     unsigned char five_tuple[5];
     int ret;
@@ -1403,7 +1440,7 @@ _write_base85_data (struct _data_stream *stream,
 		ret = fwrite ("z", 1, 1, logfile);
 	    else
 		ret = fwrite (five_tuple, 5, 1, logfile);
-	    (void)ret;
+	    (void) ret;
 	    stream->base85_pending = 0;
 	}
     }
@@ -1446,9 +1483,7 @@ _write_data_start (struct _data_stream *stream, uint32_t len)
 }
 
 static void
-_write_data (struct _data_stream *stream,
-	     const void *data,
-	     unsigned int length)
+_write_data (struct _data_stream *stream, const void *data, unsigned int length)
 {
     unsigned int count;
     const unsigned char *p = data;
@@ -1472,7 +1507,6 @@ _write_zlib_data_end (struct _data_stream *stream)
 {
     _write_zlib_data (stream, TRUE);
     deflateEnd (&stream->zlib_stream);
-
 }
 
 static void
@@ -1485,9 +1519,10 @@ _write_base85_data_end (struct _data_stream *stream)
 
     if (stream->base85_pending) {
 	memset (stream->four_tuple + stream->base85_pending,
-		0, 4 - stream->base85_pending);
+		0,
+		4 - stream->base85_pending);
 	_expand_four_tuple_to_five (stream->four_tuple, five_tuple);
-	ret = fwrite (five_tuple, stream->base85_pending+1, 1, logfile);
+	ret = fwrite (five_tuple, stream->base85_pending + 1, 1, logfile);
 	(void) ret;
     }
 }
@@ -1514,17 +1549,19 @@ _emit_data (const void *data, unsigned int length)
 static const char *
 _format_to_string (comac_format_t format)
 {
-#define f(name) case COMAC_FORMAT_ ## name: return #name
+#define f(name)                                                                \
+    case COMAC_FORMAT_##name:                                                  \
+	return #name
     switch (format) {
-	f(INVALID);
-	f(RGBA128F);
-	f(RGB96F);
-	f(ARGB32);
-	f(RGB30);
-	f(RGB24);
-	f(RGB16_565);
-	f(A8);
-	f(A1);
+	f (INVALID);
+	f (RGBA128F);
+	f (RGB96F);
+	f (ARGB32);
+	f (RGB30);
+	f (RGB24);
+	f (RGB16_565);
+	f (A8);
+	f (A1);
     }
 #undef f
     return "UNKNOWN_FORMAT";
@@ -1554,52 +1591,54 @@ _format_to_content_string (comac_format_t format)
 static const char *
 _status_to_string (comac_status_t status)
 {
-#define f(name) case COMAC_STATUS_ ## name: return "STATUS_" #name
+#define f(name)                                                                \
+    case COMAC_STATUS_##name:                                                  \
+	return "STATUS_" #name
     switch (status) {
-	f(SUCCESS);
-	f(NO_MEMORY);
-	f(INVALID_RESTORE);
-	f(INVALID_POP_GROUP);
-	f(NO_CURRENT_POINT);
-	f(INVALID_MATRIX);
-	f(INVALID_STATUS);
-	f(NULL_POINTER);
-	f(INVALID_STRING);
-	f(INVALID_PATH_DATA);
-	f(READ_ERROR);
-	f(WRITE_ERROR);
-	f(SURFACE_FINISHED);
-	f(SURFACE_TYPE_MISMATCH);
-	f(PATTERN_TYPE_MISMATCH);
-	f(INVALID_CONTENT);
-	f(INVALID_FORMAT);
-	f(INVALID_VISUAL);
-	f(FILE_NOT_FOUND);
-	f(INVALID_DASH);
-	f(INVALID_DSC_COMMENT);
-	f(INVALID_INDEX);
-	f(CLIP_NOT_REPRESENTABLE);
-	f(TEMP_FILE_ERROR);
-	f(INVALID_STRIDE);
-	f(FONT_TYPE_MISMATCH);
-	f(USER_FONT_IMMUTABLE);
-	f(USER_FONT_ERROR);
-	f(NEGATIVE_COUNT);
-	f(INVALID_CLUSTERS);
-	f(INVALID_SLANT);
-	f(INVALID_WEIGHT);
-	f(INVALID_SIZE);
-	f(USER_FONT_NOT_IMPLEMENTED);
-	f(DEVICE_TYPE_MISMATCH);
-	f(DEVICE_ERROR);
-	f(INVALID_MESH_CONSTRUCTION);
-	f(DEVICE_FINISHED);
-	f(JBIG2_GLOBAL_MISSING);
-	f(PNG_ERROR);
-	f(FREETYPE_ERROR);
-	f(WIN32_GDI_ERROR);
-	f(TAG_ERROR);
-	f(DWRITE_ERROR);
+	f (SUCCESS);
+	f (NO_MEMORY);
+	f (INVALID_RESTORE);
+	f (INVALID_POP_GROUP);
+	f (NO_CURRENT_POINT);
+	f (INVALID_MATRIX);
+	f (INVALID_STATUS);
+	f (NULL_POINTER);
+	f (INVALID_STRING);
+	f (INVALID_PATH_DATA);
+	f (READ_ERROR);
+	f (WRITE_ERROR);
+	f (SURFACE_FINISHED);
+	f (SURFACE_TYPE_MISMATCH);
+	f (PATTERN_TYPE_MISMATCH);
+	f (INVALID_CONTENT);
+	f (INVALID_FORMAT);
+	f (INVALID_VISUAL);
+	f (FILE_NOT_FOUND);
+	f (INVALID_DASH);
+	f (INVALID_DSC_COMMENT);
+	f (INVALID_INDEX);
+	f (CLIP_NOT_REPRESENTABLE);
+	f (TEMP_FILE_ERROR);
+	f (INVALID_STRIDE);
+	f (FONT_TYPE_MISMATCH);
+	f (USER_FONT_IMMUTABLE);
+	f (USER_FONT_ERROR);
+	f (NEGATIVE_COUNT);
+	f (INVALID_CLUSTERS);
+	f (INVALID_SLANT);
+	f (INVALID_WEIGHT);
+	f (INVALID_SIZE);
+	f (USER_FONT_NOT_IMPLEMENTED);
+	f (DEVICE_TYPE_MISMATCH);
+	f (DEVICE_ERROR);
+	f (INVALID_MESH_CONSTRUCTION);
+	f (DEVICE_FINISHED);
+	f (JBIG2_GLOBAL_MISSING);
+	f (PNG_ERROR);
+	f (FREETYPE_ERROR);
+	f (WIN32_GDI_ERROR);
+	f (TAG_ERROR);
+	f (DWRITE_ERROR);
     case COMAC_STATUS_LAST_STATUS:
 	break;
     }
@@ -1607,10 +1646,8 @@ _status_to_string (comac_status_t status)
 #undef f
 }
 
-static void COMAC_PRINTF_FORMAT(2, 3)
-_emit_image (comac_surface_t *image,
-	     const char *info,
-	     ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+    _emit_image (comac_surface_t *image, const char *info, ...)
 {
     int stride, row, width, height;
     uint32_t len;
@@ -1623,8 +1660,7 @@ _emit_image (comac_surface_t *image,
 
     status = DLCALL (comac_surface_status, image);
     if (status) {
-	_trace_printf ("<< /status //%s >> image",
-		       _status_to_string (status));
+	_trace_printf ("<< /status //%s >> image", _status_to_string (status));
 	return;
     }
 
@@ -1638,7 +1674,8 @@ _emit_image (comac_surface_t *image,
 		   "  /width %d set\n"
 		   "  /height %d set\n"
 		   "  /format //%s set\n",
-		   width, height,
+		   width,
+		   height,
 		   _format_to_string (format));
     if (info != NULL) {
 	va_list ap;
@@ -1649,19 +1686,21 @@ _emit_image (comac_surface_t *image,
     }
 
     if (DLCALL (comac_version) >= COMAC_VERSION_ENCODE (1, 9, 0)) {
-	const char *mime_types[] = {
-	    COMAC_MIME_TYPE_JPEG,
-	    COMAC_MIME_TYPE_JP2,
-	    COMAC_MIME_TYPE_PNG,
-	    NULL
-	}, **mime_type;
+	const char *mime_types[] = {COMAC_MIME_TYPE_JPEG,
+				    COMAC_MIME_TYPE_JP2,
+				    COMAC_MIME_TYPE_PNG,
+				    NULL},
+		   **mime_type;
 
 	for (mime_type = mime_types; *mime_type; mime_type++) {
 	    const unsigned char *mime_data;
 	    unsigned long mime_length;
 
 	    DLCALL (comac_surface_get_mime_data,
-		    image, *mime_type, &mime_data, &mime_length);
+		    image,
+		    *mime_type,
+		    &mime_data,
+		    &mime_length);
 	    if (mime_data != NULL) {
 		_trace_printf ("  /mime-type (%s) set\n"
 			       "  /source <~",
@@ -1677,16 +1716,30 @@ _emit_image (comac_surface_t *image,
     }
 
     switch (format) {
-    case COMAC_FORMAT_A1:        len = (width + 7)/8; break;
-    case COMAC_FORMAT_A8:        len =  width; break;
-    case COMAC_FORMAT_RGB16_565: len = 2*width; break;
-    case COMAC_FORMAT_RGB24:     len = 3*width; break;
+    case COMAC_FORMAT_A1:
+	len = (width + 7) / 8;
+	break;
+    case COMAC_FORMAT_A8:
+	len = width;
+	break;
+    case COMAC_FORMAT_RGB16_565:
+	len = 2 * width;
+	break;
+    case COMAC_FORMAT_RGB24:
+	len = 3 * width;
+	break;
     default:
     case COMAC_FORMAT_RGB30:
     case COMAC_FORMAT_INVALID:
-    case COMAC_FORMAT_ARGB32: len = 4*width; break;
-    case COMAC_FORMAT_RGB96F: len = 12*width; break;
-    case COMAC_FORMAT_RGBA128F: len = 16*width; break;
+    case COMAC_FORMAT_ARGB32:
+	len = 4 * width;
+	break;
+    case COMAC_FORMAT_RGB96F:
+	len = 12 * width;
+	break;
+    case COMAC_FORMAT_RGBA128F:
+	len = 16 * width;
+	break;
     }
 
     _trace_printf ("  /source ");
@@ -1695,12 +1748,12 @@ _emit_image (comac_surface_t *image,
 #ifdef WORDS_BIGENDIAN
     switch (format) {
     case COMAC_FORMAT_RGB24:
-	for (row = height; row--; ) {
+	for (row = height; row--;) {
 	    int col;
 	    rowdata = data;
-	    for (col = width; col--; ) {
+	    for (col = width; col--;) {
 		_write_data (&stream, rowdata, 3);
-		rowdata+=4;
+		rowdata += 4;
 	    }
 	    data += stride;
 	}
@@ -1712,7 +1765,7 @@ _emit_image (comac_surface_t *image,
     case COMAC_FORMAT_ARGB32:
     case COMAC_FORMAT_RGB96F:
     case COMAC_FORMAT_RGBA128F:
-	for (row = height; row--; ) {
+	for (row = height; row--;) {
 	    _write_data (&stream, data, len);
 	    data += stride;
 	}
@@ -1731,42 +1784,42 @@ _emit_image (comac_surface_t *image,
 
     switch (format) {
     case COMAC_FORMAT_A1:
-	for (row = height; row--; ) {
+	for (row = height; row--;) {
 	    int col;
-	    for (col = 0; col < (width + 7)/8; col++)
+	    for (col = 0; col < (width + 7) / 8; col++)
 		rowdata[col] = COMAC_BITSWAP8 (data[col]);
-	    _write_data (&stream, rowdata, (width+7)/8);
+	    _write_data (&stream, rowdata, (width + 7) / 8);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_A8:
-	for (row = height; row--; ) {
+	for (row = height; row--;) {
 	    _write_data (&stream, rowdata, width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB16_565: /* XXX endianness */
-	for (row = height; row--; ) {
+	for (row = height; row--;) {
 	    uint16_t *src = (uint16_t *) data;
-	    uint16_t *dst = (uint16_t *)rowdata;
+	    uint16_t *dst = (uint16_t *) rowdata;
 	    int col;
 	    for (col = 0; col < width; col++)
 		dst[col] = bswap_16 (src[col]);
-	    _write_data (&stream, rowdata, 2*width);
+	    _write_data (&stream, rowdata, 2 * width);
 	    data += stride;
 	}
 	break;
     case COMAC_FORMAT_RGB24:
-	for (row = height; row--; ) {
+	for (row = height; row--;) {
 	    uint8_t *src = data;
 	    int col;
 	    for (col = 0; col < width; col++) {
-		rowdata[3*col+2] = *src++;
-		rowdata[3*col+1] = *src++;
-		rowdata[3*col+0] = *src++;
+		rowdata[3 * col + 2] = *src++;
+		rowdata[3 * col + 1] = *src++;
+		rowdata[3 * col + 0] = *src++;
 		src++;
 	    }
-	    _write_data (&stream, rowdata, 3*width);
+	    _write_data (&stream, rowdata, 3 * width);
 	    data += stride;
 	}
 	break;
@@ -1774,7 +1827,7 @@ _emit_image (comac_surface_t *image,
     case COMAC_FORMAT_RGBA128F:
     case COMAC_FORMAT_RGB30:
     case COMAC_FORMAT_ARGB32:
-	for (row = height; row--; ) {
+	for (row = height; row--;) {
 	    uint32_t *src = (uint32_t *) data;
 	    uint32_t *dst = (uint32_t *) rowdata;
 	    int col;
@@ -1784,7 +1837,7 @@ _emit_image (comac_surface_t *image,
 	    data += stride;
 	}
 	break;
-   case COMAC_FORMAT_INVALID:
+    case COMAC_FORMAT_INVALID:
     default:
 	break;
     }
@@ -1798,8 +1851,7 @@ BAIL:
 }
 
 static void
-_encode_string_literal (char *out, int max,
-			const char *utf8, int len)
+_encode_string_literal (char *out, int max, const char *utf8, int len)
 {
     char c;
     const char *end;
@@ -1858,7 +1910,7 @@ _encode_string_literal (char *out, int max,
 		int octal = 0;
 		while (c) {
 		    octal *= 10;
-		    octal += c&7;
+		    octal += c & 7;
 		    c /= 8;
 		}
 		octal = snprintf (out, max, "\\%03d", octal);
@@ -1918,19 +1970,19 @@ _emit_string_literal (const char *utf8, int len)
 	case '\\':
 	case '(':
 	case ')':
-ESCAPED_CHAR:
+	ESCAPED_CHAR:
 	    _trace_printf ("\\%c", c);
 	    break;
 	default:
 	    if (_comac_isprint (c)) {
 		_trace_printf ("%c", c);
 	    } else {
-		char buf[4] = { '\\' };
+		char buf[4] = {'\\'};
 		int ret_ignored;
 
-		to_octal (c, buf+1, 3);
+		to_octal (c, buf + 1, 3);
 		ret_ignored = fwrite (buf, 4, 1, logfile);
-		(void)ret_ignored;
+		(void) ret_ignored;
 	    }
 	    break;
 	}
@@ -1947,21 +1999,22 @@ _emit_current (Object *obj)
 
 	    _trace_printf ("%d -1 roll %% %s%ld\n",
 			   current_stack_depth - obj->operand,
-			   obj->type->op_code, obj->token);
+			   obj->type->op_code,
+			   obj->token);
 
 	    for (n = obj->operand; n < current_stack_depth - 1; n++) {
-		current_object[n] = current_object[n+1];
+		current_object[n] = current_object[n + 1];
 		current_object[n]->operand = n;
 	    }
 	    obj->operand = -1;
 	    current_stack_depth--;
 	} else {
-	    assert(obj->defined);
+	    assert (obj->defined);
 	    _trace_printf ("%s%ld\n", obj->type->op_code, obj->token);
 	}
 
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
     }
 }
 
@@ -1983,8 +2036,8 @@ _emit_surface (comac_surface_t *surface)
     _emit_current (_get_object (SURFACE, surface));
 }
 
-static void COMAC_PRINTF_FORMAT(2, 3)
-_emit_comac_op (comac_t *cr, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+    _emit_comac_op (comac_t *cr, const char *fmt, ...)
 {
     va_list ap;
 
@@ -1994,7 +2047,7 @@ _emit_comac_op (comac_t *cr, const char *fmt, ...)
     _emit_context (cr);
 
     va_start (ap, fmt);
-    _trace_vprintf ( fmt, ap);
+    _trace_vprintf (fmt, ap);
     va_end (ap);
 
     _write_unlock ();
@@ -2019,14 +2072,14 @@ comac_create (comac_surface_t *target)
 	    _get_object (SURFACE, target)->foreign = FALSE;
 
 	    /* we presume that we will continue to use the context */
-	    if (_pop_operands_to (SURFACE, target)){
+	    if (_pop_operands_to (SURFACE, target)) {
 		_consume_operand (false);
 	    } else {
 		_trace_printf ("s%ld ", surface_id);
 	    }
 	    _trace_printf ("context %% c%ld\n", context_id);
 	    _push_operand (CONTEXT, ret);
-	    dump_stack(__func__);
+	    dump_stack (__func__);
 	}
 	_write_unlock ();
     }
@@ -2069,10 +2122,13 @@ static const char *
 _content_to_string (comac_content_t content)
 {
     switch (content) {
-    case COMAC_CONTENT_ALPHA: return "ALPHA";
-    case COMAC_CONTENT_COLOR: return "COLOR";
+    case COMAC_CONTENT_ALPHA:
+	return "ALPHA";
+    case COMAC_CONTENT_COLOR:
+	return "COLOR";
     default:
-    case COMAC_CONTENT_COLOR_ALPHA: return "COLOR_ALPHA";
+    case COMAC_CONTENT_COLOR_ALPHA:
+	return "COLOR_ALPHA";
     }
 }
 
@@ -2098,7 +2154,7 @@ comac_pop_group (comac_t *cr)
     _emit_line_info ();
     _emit_comac_op (cr, "pop-group %% p%ld\n", _create_pattern_id (ret));
     _push_operand (PATTERN, ret);
-    dump_stack(__func__);
+    dump_stack (__func__);
 
     _exit_trace ();
     return ret;
@@ -2117,37 +2173,41 @@ comac_pop_group_to_source (comac_t *cr)
 static const char *
 _operator_to_string (comac_operator_t op)
 {
-#define f(name) case COMAC_OPERATOR_ ## name: return #name
+#define f(name)                                                                \
+    case COMAC_OPERATOR_##name:                                                \
+	return #name
     switch (op) {
-	f(OVER);
-	f(SOURCE);
-	f(CLEAR);
-	f(IN);
-	f(OUT);
-	f(ATOP);
-	f(DEST);
-	f(DEST_OVER);
-	f(DEST_IN);
-	f(DEST_OUT);
-	f(DEST_ATOP);
-	f(XOR);
-	f(ADD);
-	f(SATURATE);
-	f(MULTIPLY);
-	f(SCREEN);
-	f(OVERLAY);
-	f(DARKEN);
-	f(LIGHTEN);
-        case COMAC_OPERATOR_COLOR_DODGE: return "DODGE";
-        case COMAC_OPERATOR_COLOR_BURN: return "BURN";
-	f(HARD_LIGHT);
-	f(SOFT_LIGHT);
-	f(DIFFERENCE);
-	f(EXCLUSION);
-	f(HSL_HUE);
-	f(HSL_SATURATION);
-	f(HSL_COLOR);
-	f(HSL_LUMINOSITY);
+	f (OVER);
+	f (SOURCE);
+	f (CLEAR);
+	f (IN);
+	f (OUT);
+	f (ATOP);
+	f (DEST);
+	f (DEST_OVER);
+	f (DEST_IN);
+	f (DEST_OUT);
+	f (DEST_ATOP);
+	f (XOR);
+	f (ADD);
+	f (SATURATE);
+	f (MULTIPLY);
+	f (SCREEN);
+	f (OVERLAY);
+	f (DARKEN);
+	f (LIGHTEN);
+    case COMAC_OPERATOR_COLOR_DODGE:
+	return "DODGE";
+    case COMAC_OPERATOR_COLOR_BURN:
+	return "BURN";
+	f (HARD_LIGHT);
+	f (SOFT_LIGHT);
+	f (DIFFERENCE);
+	f (EXCLUSION);
+	f (HSL_HUE);
+	f (HSL_SATURATION);
+	f (HSL_COLOR);
+	f (HSL_LUMINOSITY);
     }
 #undef f
     return "UNKNOWN_OPERATOR";
@@ -2174,12 +2234,17 @@ comac_set_source_rgb (comac_t *cr, double red, double green, double blue)
 }
 
 void
-comac_set_source_rgba (comac_t *cr, double red, double green, double blue, double alpha)
+comac_set_source_rgba (
+    comac_t *cr, double red, double green, double blue, double alpha)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_comac_op (cr, "%g %g %g %g set-source-rgba\n",
-		    red, green, blue, alpha);
+    _emit_comac_op (cr,
+		    "%g %g %g %g set-source-rgba\n",
+		    red,
+		    green,
+		    blue,
+		    alpha);
     DLCALL (comac_set_source_rgba, cr, red, green, blue, alpha);
     _exit_trace ();
 }
@@ -2212,9 +2277,8 @@ _emit_source_image (comac_surface_t *surface)
 }
 
 static void
-_emit_source_image_rectangle (comac_surface_t *surface,
-			      int x, int y,
-			      int width, int height)
+_emit_source_image_rectangle (
+    comac_surface_t *surface, int x, int y, int width, int height)
 {
     Object *obj;
     comac_surface_t *image;
@@ -2229,38 +2293,33 @@ _emit_source_image_rectangle (comac_surface_t *surface,
 	return;
     }
 
-    image = DLCALL (comac_image_surface_create,
-		    COMAC_FORMAT_ARGB32,
-		    width,
-		    height);
+    image =
+	DLCALL (comac_image_surface_create, COMAC_FORMAT_ARGB32, width, height);
     cr = DLCALL (comac_create, image);
     DLCALL (comac_set_source_surface, cr, surface, x, y);
     DLCALL (comac_paint, cr);
     DLCALL (comac_destroy, cr);
 
     _emit_image (image, NULL);
-    _trace_printf (" %d %d set-device-offset set-source-image ",
-	     x, y);
+    _trace_printf (" %d %d set-device-offset set-source-image ", x, y);
     DLCALL (comac_surface_destroy, image);
 }
 
 void
-comac_set_source_surface (comac_t *cr, comac_surface_t *surface, double x, double y)
+comac_set_source_surface (comac_t *cr,
+			  comac_surface_t *surface,
+			  double x,
+			  double y)
 {
     _enter_trace ();
     _emit_line_info ();
     if (cr != NULL && surface != NULL && _write_lock ()) {
 	Object *obj = _get_object (SURFACE, surface);
 
-	if (_is_current (SURFACE, surface, 0) &&
-	    _is_current (CONTEXT, cr, 1))
-	{
+	if (_is_current (SURFACE, surface, 0) && _is_current (CONTEXT, cr, 1)) {
 	    _consume_operand (false);
-	}
-	else if (_is_current (SURFACE, surface, 1) &&
-		 _is_current (CONTEXT, cr, 0) &&
-		 obj->defined)
-	{
+	} else if (_is_current (SURFACE, surface, 1) &&
+		   _is_current (CONTEXT, cr, 0) && obj->defined) {
 	    _trace_printf ("exch ");
 	    _exch_operands ();
 	    _consume_operand (false);
@@ -2269,8 +2328,7 @@ comac_set_source_surface (comac_t *cr, comac_surface_t *surface, double x, doubl
 	    _trace_printf ("s%ld ", obj->token);
 	} else {
 	    _emit_context (cr);
-	    _trace_printf ("%d index ",
-			   current_stack_depth - obj->operand - 1);
+	    _trace_printf ("%d index ", current_stack_depth - obj->operand - 1);
 	}
 
 	if (obj->foreign)
@@ -2297,9 +2355,7 @@ comac_set_source (comac_t *cr, comac_pattern_t *source)
 	Object *obj = _get_object (PATTERN, source);
 	comac_bool_t need_context_and_pattern = TRUE;
 
-	if (_is_current (PATTERN, source, 0) &&
-	    _is_current (CONTEXT, cr, 1))
-	{
+	if (_is_current (PATTERN, source, 0) && _is_current (CONTEXT, cr, 1)) {
 	    if (obj->defined) {
 		_consume_operand (false);
 	    } else {
@@ -2307,10 +2363,8 @@ comac_set_source (comac_t *cr, comac_pattern_t *source)
 		_exch_operands ();
 	    }
 	    need_context_and_pattern = FALSE;
-	}
-	else if (_is_current (PATTERN, source, 1) &&
-		 _is_current (CONTEXT, cr, 0))
-	{
+	} else if (_is_current (PATTERN, source, 1) &&
+		   _is_current (CONTEXT, cr, 0)) {
 	    if (obj->defined) {
 		_trace_printf ("exch ");
 		_exch_operands ();
@@ -2342,7 +2396,8 @@ comac_get_source (comac_t *cr)
     ret = DLCALL (comac_get_source, cr);
 
     if (! _has_pattern_id (ret)) {
-	_emit_comac_op (cr, "/source get /p%ld exch def\n",
+	_emit_comac_op (cr,
+			"/source get /p%ld exch def\n",
 			_create_pattern_id (ret));
 	_get_object (PATTERN, ret)->defined = TRUE;
     }
@@ -2364,17 +2419,19 @@ comac_set_tolerance (comac_t *cr, double tolerance)
 static const char *
 _antialias_to_string (comac_antialias_t antialias)
 {
-#define f(name) case COMAC_ANTIALIAS_ ## name: return "ANTIALIAS_" #name
+#define f(name)                                                                \
+    case COMAC_ANTIALIAS_##name:                                               \
+	return "ANTIALIAS_" #name
     switch (antialias) {
-	f(DEFAULT);
+	f (DEFAULT);
 
-	f(NONE);
-	f(GRAY);
-	f(SUBPIXEL);
+	f (NONE);
+	f (GRAY);
+	f (SUBPIXEL);
 
-	f(FAST);
-	f(GOOD);
-	f(BEST);
+	f (FAST);
+	f (GOOD);
+	f (BEST);
     };
 #undef f
     return "UNKNOWN_ANTIALIAS";
@@ -2386,7 +2443,8 @@ comac_set_antialias (comac_t *cr, comac_antialias_t antialias)
     _enter_trace ();
     _emit_line_info ();
     _emit_comac_op (cr,
-		    "//%s set-antialias\n", _antialias_to_string (antialias));
+		    "//%s set-antialias\n",
+		    _antialias_to_string (antialias));
     DLCALL (comac_set_antialias, cr, antialias);
     _exit_trace ();
 }
@@ -2394,10 +2452,12 @@ comac_set_antialias (comac_t *cr, comac_antialias_t antialias)
 static const char *
 _fill_rule_to_string (comac_fill_rule_t rule)
 {
-#define f(name) case COMAC_FILL_RULE_ ## name: return #name
+#define f(name)                                                                \
+    case COMAC_FILL_RULE_##name:                                               \
+	return #name
     switch (rule) {
-	f(WINDING);
-	f(EVEN_ODD);
+	f (WINDING);
+	f (EVEN_ODD);
     };
 #undef f
     return "UNKNOWN_FILL_RULE";
@@ -2409,7 +2469,8 @@ comac_set_fill_rule (comac_t *cr, comac_fill_rule_t fill_rule)
     _enter_trace ();
     _emit_line_info ();
     _emit_comac_op (cr,
-		    "//%s set-fill-rule\n", _fill_rule_to_string (fill_rule));
+		    "//%s set-fill-rule\n",
+		    _fill_rule_to_string (fill_rule));
     DLCALL (comac_set_fill_rule, cr, fill_rule);
     _exit_trace ();
 }
@@ -2427,11 +2488,13 @@ comac_set_line_width (comac_t *cr, double width)
 static const char *
 _line_cap_to_string (comac_line_cap_t line_cap)
 {
-#define f(name) case COMAC_LINE_CAP_ ## name: return "LINE_CAP_" #name
+#define f(name)                                                                \
+    case COMAC_LINE_CAP_##name:                                                \
+	return "LINE_CAP_" #name
     switch (line_cap) {
-	f(BUTT);
-	f(ROUND);
-	f(SQUARE);
+	f (BUTT);
+	f (ROUND);
+	f (SQUARE);
     };
 #undef f
     return "UNKNOWN_LINE_CAP";
@@ -2450,11 +2513,13 @@ comac_set_line_cap (comac_t *cr, comac_line_cap_t line_cap)
 static const char *
 _line_join_to_string (comac_line_join_t line_join)
 {
-#define f(name) case COMAC_LINE_JOIN_ ## name: return "LINE_JOIN_" #name
+#define f(name)                                                                \
+    case COMAC_LINE_JOIN_##name:                                               \
+	return "LINE_JOIN_" #name
     switch (line_join) {
-	f(MITER);
-	f(ROUND);
-	f(BEVEL);
+	f (MITER);
+	f (ROUND);
+	f (BEVEL);
     };
 #undef f
     return "UNKNOWN_LINE_JOIN";
@@ -2466,13 +2531,17 @@ comac_set_line_join (comac_t *cr, comac_line_join_t line_join)
     _enter_trace ();
     _emit_line_info ();
     _emit_comac_op (cr,
-		    "//%s set-line-join\n", _line_join_to_string (line_join));
+		    "//%s set-line-join\n",
+		    _line_join_to_string (line_join));
     DLCALL (comac_set_line_join, cr, line_join);
     _exit_trace ();
 }
 
 void
-comac_set_dash (comac_t *cr, const double *dashes, int num_dashes, double offset)
+comac_set_dash (comac_t *cr,
+		const double *dashes,
+		int num_dashes,
+		double offset)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -2482,7 +2551,7 @@ comac_set_dash (comac_t *cr, const double *dashes, int num_dashes, double offset
 	_emit_context (cr);
 
 	_trace_printf ("[");
-	for (n = 0; n <  num_dashes; n++) {
+	for (n = 0; n < num_dashes; n++) {
 	    if (n != 0)
 		_trace_printf (" ");
 	    _trace_printf ("%g", dashes[n]);
@@ -2541,10 +2610,14 @@ comac_transform (comac_t *cr, const comac_matrix_t *matrix)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_comac_op (cr, "%g %g %g %g %g %g matrix transform\n",
-		    matrix->xx, matrix->yx,
-		    matrix->xy, matrix->yy,
-		    matrix->x0, matrix->y0);
+    _emit_comac_op (cr,
+		    "%g %g %g %g %g %g matrix transform\n",
+		    matrix->xx,
+		    matrix->yx,
+		    matrix->xy,
+		    matrix->yy,
+		    matrix->x0,
+		    matrix->y0);
     DLCALL (comac_transform, cr, matrix);
     _exit_trace ();
 }
@@ -2557,10 +2630,14 @@ comac_set_matrix (comac_t *cr, const comac_matrix_t *matrix)
     if (_matrix_is_identity (matrix)) {
 	_emit_comac_op (cr, "identity set-matrix\n");
     } else {
-	_emit_comac_op (cr, "%g %g %g %g %g %g matrix set-matrix\n",
-			matrix->xx, matrix->yx,
-			matrix->xy, matrix->yy,
-			matrix->x0, matrix->y0);
+	_emit_comac_op (cr,
+			"%g %g %g %g %g %g matrix set-matrix\n",
+			matrix->xx,
+			matrix->yx,
+			matrix->xy,
+			matrix->yy,
+			matrix->x0,
+			matrix->y0);
     }
     DLCALL (comac_set_matrix, cr, matrix);
     _exit_trace ();
@@ -2578,9 +2655,7 @@ comac_get_target (comac_t *cr)
 	Object *obj = _create_surface (ret);
 
 	if (! obj->defined) {
-	    _emit_comac_op (cr,
-			    "/target get /s%ld exch def\n",
-			    obj->token);
+	    _emit_comac_op (cr, "/target get /s%ld exch def\n", obj->token);
 	    obj->defined = TRUE;
 	}
     }
@@ -2660,7 +2735,13 @@ comac_line_to (comac_t *cr, double x, double y)
 }
 
 void
-comac_curve_to (comac_t *cr, double x1, double y1, double x2, double y2, double x3, double y3)
+comac_curve_to (comac_t *cr,
+		double x1,
+		double y1,
+		double x2,
+		double y2,
+		double x3,
+		double y3)
 {
     _enter_trace ();
     _emit_comac_op (cr, "%g %g %g %g %g %g c ", x1, y1, x2, y2, x3, y3);
@@ -2669,7 +2750,12 @@ comac_curve_to (comac_t *cr, double x1, double y1, double x2, double y2, double 
 }
 
 void
-comac_arc (comac_t *cr, double xc, double yc, double radius, double angle1, double angle2)
+comac_arc (comac_t *cr,
+	   double xc,
+	   double yc,
+	   double radius,
+	   double angle1,
+	   double angle2)
 {
     _enter_trace ();
     _emit_comac_op (cr, "%g %g %g %g %g arc\n", xc, yc, radius, angle1, angle2);
@@ -2678,11 +2764,21 @@ comac_arc (comac_t *cr, double xc, double yc, double radius, double angle1, doub
 }
 
 void
-comac_arc_negative (comac_t *cr, double xc, double yc, double radius, double angle1, double angle2)
+comac_arc_negative (comac_t *cr,
+		    double xc,
+		    double yc,
+		    double radius,
+		    double angle1,
+		    double angle2)
 {
     _enter_trace ();
-    _emit_comac_op (cr, "%g %g %g %g %g arc-\n",
-		    xc, yc, radius, angle1, angle2);
+    _emit_comac_op (cr,
+		    "%g %g %g %g %g arc-\n",
+		    xc,
+		    yc,
+		    radius,
+		    angle1,
+		    angle2);
     DLCALL (comac_arc_negative, cr, xc, yc, radius, angle1, angle2);
     _exit_trace ();
 }
@@ -2706,11 +2802,16 @@ comac_rel_line_to (comac_t *cr, double dx, double dy)
 }
 
 void
-comac_rel_curve_to (comac_t *cr, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3)
+comac_rel_curve_to (comac_t *cr,
+		    double dx1,
+		    double dy1,
+		    double dx2,
+		    double dy2,
+		    double dx3,
+		    double dy3)
 {
     _enter_trace ();
-    _emit_comac_op (cr, "%g %g %g %g %g %g C ",
-		    dx1, dy1, dx2, dy2, dx3, dy3);
+    _emit_comac_op (cr, "%g %g %g %g %g %g C ", dx1, dy1, dx2, dy2, dx3, dy3);
     DLCALL (comac_rel_curve_to, cr, dx1, dy1, dx2, dy2, dx3, dy3);
     _exit_trace ();
 }
@@ -2762,17 +2863,13 @@ comac_mask (comac_t *cr, comac_pattern_t *pattern)
 	Object *obj = _get_object (PATTERN, pattern);
 	comac_bool_t need_context_and_pattern = TRUE;
 
-	if (_is_current (PATTERN, pattern, 0) &&
-	    _is_current (CONTEXT, cr, 1))
-	{
+	if (_is_current (PATTERN, pattern, 0) && _is_current (CONTEXT, cr, 1)) {
 	    if (obj->defined) {
 		_consume_operand (false);
 		need_context_and_pattern = FALSE;
 	    }
-	}
-	else if (_is_current (PATTERN, pattern, 1) &&
-		 _is_current (CONTEXT, cr, 0))
-	{
+	} else if (_is_current (PATTERN, pattern, 1) &&
+		   _is_current (CONTEXT, cr, 0)) {
 	    if (obj->defined) {
 		_trace_printf ("exch ");
 		_exch_operands ();
@@ -2800,24 +2897,19 @@ comac_mask_surface (comac_t *cr, comac_surface_t *surface, double x, double y)
     _emit_line_info ();
     if (cr != NULL && surface != NULL && _write_lock ()) {
 	Object *obj = _get_object (SURFACE, surface);
-	if (_is_current (SURFACE, surface, 0) &&
-	    _is_current (CONTEXT, cr, 1))
-	{
+	if (_is_current (SURFACE, surface, 0) && _is_current (CONTEXT, cr, 1)) {
 	    _consume_operand (false);
-	}
-	else if (_is_current (SURFACE, surface, 1) &&
-		 _is_current (CONTEXT, cr, 0))
-	{
+	} else if (_is_current (SURFACE, surface, 1) &&
+		   _is_current (CONTEXT, cr, 0)) {
 	    _trace_printf ("exch ");
 	    _exch_operands ();
 	    _consume_operand (false);
-	} else if (obj->defined){
+	} else if (obj->defined) {
 	    _emit_context (cr);
 	    _trace_printf ("s%ld ", obj->token);
 	} else {
 	    _emit_context (cr);
-	    _trace_printf ("%d index ",
-			   current_stack_depth - obj->operand - 1);
+	    _trace_printf ("%d index ", current_stack_depth - obj->operand - 1);
 	}
 	_trace_printf ("pattern");
 
@@ -2922,15 +3014,16 @@ comac_reset_clip (comac_t *cr)
     _exit_trace ();
 }
 
-
 static const char *
 _slant_to_string (comac_font_slant_t font_slant)
 {
-#define f(name) case COMAC_FONT_SLANT_ ## name: return "SLANT_" #name
+#define f(name)                                                                \
+    case COMAC_FONT_SLANT_##name:                                              \
+	return "SLANT_" #name
     switch (font_slant) {
-	f(NORMAL);
-	f(ITALIC);
-	f(OBLIQUE);
+	f (NORMAL);
+	f (ITALIC);
+	f (OBLIQUE);
     };
 #undef f
     return "UNKNOWN_SLANT";
@@ -2939,17 +3032,22 @@ _slant_to_string (comac_font_slant_t font_slant)
 static const char *
 _weight_to_string (comac_font_weight_t font_weight)
 {
-#define f(name) case COMAC_FONT_WEIGHT_ ## name: return "WEIGHT_" #name
+#define f(name)                                                                \
+    case COMAC_FONT_WEIGHT_##name:                                             \
+	return "WEIGHT_" #name
     switch (font_weight) {
-	f(NORMAL);
-	f(BOLD);
+	f (NORMAL);
+	f (BOLD);
     };
 #undef f
     return "UNKNOWN_WEIGHT";
 }
 
 void
-comac_select_font_face (comac_t *cr, const char *family, comac_font_slant_t slant, comac_font_weight_t weight)
+comac_select_font_face (comac_t *cr,
+			const char *family,
+			comac_font_slant_t slant,
+			comac_font_weight_t weight)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -2978,7 +3076,7 @@ comac_get_font_face (comac_t *cr)
 
     _emit_comac_op (cr, "/font-face get %% f%ld\n", font_face_id);
     _push_operand (FONT_FACE, ret);
-    dump_stack(__func__);
+    dump_stack (__func__);
 
     _exit_trace ();
     return ret;
@@ -2991,19 +3089,14 @@ comac_set_font_face (comac_t *cr, comac_font_face_t *font_face)
     _emit_line_info ();
     if (cr != NULL && font_face != NULL && _write_lock ()) {
 	if (_is_current (FONT_FACE, font_face, 0) &&
-	    _is_current (CONTEXT, cr, 1))
-	{
+	    _is_current (CONTEXT, cr, 1)) {
 	    _consume_operand (false);
-	}
-	else if (_is_current (FONT_FACE, font_face, 1) &&
-		 _is_current (CONTEXT, cr, 0))
-	{
+	} else if (_is_current (FONT_FACE, font_face, 1) &&
+		   _is_current (CONTEXT, cr, 0)) {
 	    _trace_printf ("exch ");
 	    _exch_operands ();
 	    _consume_operand (false);
-	}
-	else
-	{
+	} else {
 	    _emit_context (cr);
 	    _emit_font_face_id (font_face);
 	}
@@ -3031,10 +3124,14 @@ comac_set_font_matrix (comac_t *cr, const comac_matrix_t *matrix)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_comac_op (cr, "%g %g %g %g %g %g matrix set-font-matrix\n",
-		    matrix->xx, matrix->yx,
-		    matrix->xy, matrix->yy,
-		    matrix->x0, matrix->y0);
+    _emit_comac_op (cr,
+		    "%g %g %g %g %g %g matrix set-font-matrix\n",
+		    matrix->xx,
+		    matrix->yx,
+		    matrix->xy,
+		    matrix->yy,
+		    matrix->x0,
+		    matrix->y0);
     DLCALL (comac_set_font_matrix, cr, matrix);
     _exit_trace ();
 }
@@ -3042,13 +3139,15 @@ comac_set_font_matrix (comac_t *cr, const comac_matrix_t *matrix)
 static const char *
 _subpixel_order_to_string (comac_subpixel_order_t subpixel_order)
 {
-#define f(name) case COMAC_SUBPIXEL_ORDER_ ## name: return "SUBPIXEL_ORDER_" #name
+#define f(name)                                                                \
+    case COMAC_SUBPIXEL_ORDER_##name:                                          \
+	return "SUBPIXEL_ORDER_" #name
     switch (subpixel_order) {
-	f(DEFAULT);
-	f(RGB);
-	f(BGR);
-	f(VRGB);
-	f(VBGR);
+	f (DEFAULT);
+	f (RGB);
+	f (BGR);
+	f (VRGB);
+	f (VBGR);
     };
 #undef f
     return "UNKNOWN_SUBPIXEL_ORDER";
@@ -3057,13 +3156,15 @@ _subpixel_order_to_string (comac_subpixel_order_t subpixel_order)
 static const char *
 _hint_style_to_string (comac_hint_style_t hint_style)
 {
-#define f(name) case COMAC_HINT_STYLE_ ## name: return "HINT_STYLE_" #name
+#define f(name)                                                                \
+    case COMAC_HINT_STYLE_##name:                                              \
+	return "HINT_STYLE_" #name
     switch (hint_style) {
-	f(DEFAULT);
-	f(NONE);
-	f(SLIGHT);
-	f(MEDIUM);
-	f(FULL);
+	f (DEFAULT);
+	f (NONE);
+	f (SLIGHT);
+	f (MEDIUM);
+	f (FULL);
     };
 #undef f
     return "UNKNOWN_HINT_STYLE";
@@ -3072,11 +3173,13 @@ _hint_style_to_string (comac_hint_style_t hint_style)
 static const char *
 _hint_metrics_to_string (comac_hint_metrics_t hint_metrics)
 {
-#define f(name) case COMAC_HINT_METRICS_ ## name: return "HINT_METRICS_" #name
+#define f(name)                                                                \
+    case COMAC_HINT_METRICS_##name:                                            \
+	return "HINT_METRICS_" #name
     switch (hint_metrics) {
-	f(DEFAULT);
-	f(OFF);
-	f(ON);
+	f (DEFAULT);
+	f (OFF);
+	f (ON);
     };
 #undef f
     return "UNKNOWN_HINT_METRICS";
@@ -3094,8 +3197,7 @@ _emit_font_options (const comac_font_options_t *options)
 
     antialias = DLCALL (comac_font_options_get_antialias, options);
     if (antialias != COMAC_ANTIALIAS_DEFAULT) {
-	_trace_printf (" /antialias //%s",
-		       _antialias_to_string (antialias));
+	_trace_printf (" /antialias //%s", _antialias_to_string (antialias));
     }
 
     subpixel_order = DLCALL (comac_font_options_get_subpixel_order, options);
@@ -3106,8 +3208,7 @@ _emit_font_options (const comac_font_options_t *options)
 
     hint_style = DLCALL (comac_font_options_get_hint_style, options);
     if (hint_style != COMAC_HINT_STYLE_DEFAULT) {
-	_trace_printf (" /hint-style //%s",
-		       _hint_style_to_string (hint_style));
+	_trace_printf (" /hint-style //%s", _hint_style_to_string (hint_style));
     }
 
     hint_metrics = DLCALL (comac_font_options_get_hint_metrics, options);
@@ -3145,7 +3246,8 @@ comac_get_scaled_font (comac_t *cr)
     ret = DLCALL (comac_get_scaled_font, cr);
 
     if (cr != NULL && ! _has_scaled_font_id (ret)) {
-	_emit_comac_op (cr, "/scaled-font get /sf%ld exch def\n",
+	_emit_comac_op (cr,
+			"/scaled-font get /sf%ld exch def\n",
 			_create_scaled_font_id (ret));
 	_get_object (SCALED_FONT, ret)->defined = TRUE;
     }
@@ -3164,8 +3266,7 @@ comac_set_scaled_font (comac_t *cr, const comac_scaled_font_t *scaled_font)
 	comac_bool_t need_context_and_font = TRUE;
 
 	if (_is_current (SCALED_FONT, scaled_font, 0) &&
-	    _is_current (CONTEXT, cr, 1))
-	{
+	    _is_current (CONTEXT, cr, 1)) {
 	    if (obj->defined) {
 		_consume_operand (false);
 	    } else {
@@ -3173,10 +3274,8 @@ comac_set_scaled_font (comac_t *cr, const comac_scaled_font_t *scaled_font)
 		_exch_operands ();
 	    }
 	    need_context_and_font = FALSE;
-	}
-	else if (_is_current (SCALED_FONT, scaled_font, 1) &&
-		 _is_current (CONTEXT, cr, 0))
-	{
+	} else if (_is_current (SCALED_FONT, scaled_font, 1) &&
+		   _is_current (CONTEXT, cr, 0)) {
 	    if (obj->defined) {
 		_trace_printf ("exch ");
 		_exch_operands ();
@@ -3201,16 +3300,16 @@ comac_set_scaled_font (comac_t *cr, const comac_scaled_font_t *scaled_font)
 static void
 _emit_matrix (const comac_matrix_t *m)
 {
-    if (_matrix_is_identity(m))
-    {
+    if (_matrix_is_identity (m)) {
 	_trace_printf ("identity");
-    }
-    else
-    {
+    } else {
 	_trace_printf ("%g %g %g %g %g %g matrix",
-		       m->xx, m->yx,
-		       m->xy, m->yy,
-		       m->x0, m->y0);
+		       m->xx,
+		       m->yx,
+		       m->xy,
+		       m->yy,
+		       m->x0,
+		       m->y0);
     }
 }
 
@@ -3224,22 +3323,22 @@ comac_scaled_font_create (comac_font_face_t *font_face,
 
     _enter_trace ();
 
-    ret = DLCALL (comac_scaled_font_create, font_face, font_matrix, ctm, options);
+    ret =
+	DLCALL (comac_scaled_font_create, font_face, font_matrix, ctm, options);
     if (_has_scaled_font_id (ret))
-	    goto out;
+	goto out;
 
     _emit_line_info ();
-    if (font_face != NULL &&
-	font_matrix != NULL &&
-	ctm != NULL &&
-	options != NULL
-	&& _write_lock ())
-    {
+    if (font_face != NULL && font_matrix != NULL && ctm != NULL &&
+	options != NULL && _write_lock ()) {
 	Object *obj;
 
 	obj = _type_object_create (SCALED_FONT, ret);
 	DLCALL (comac_scaled_font_set_user_data,
-		ret, &destroy_key, obj, _object_undef);
+		ret,
+		&destroy_key,
+		obj,
+		_object_undef);
 
 	if (_pop_operands_to (FONT_FACE, font_face))
 	    _consume_operand (false);
@@ -3254,8 +3353,7 @@ comac_scaled_font_create (comac_font_face_t *font_face,
 
 	_emit_font_options (options);
 
-	_trace_printf (" scaled-font /sf%ld exch def\n",
-		       obj->token);
+	_trace_printf (" scaled-font /sf%ld exch def\n", obj->token);
 	obj->defined = TRUE;
 
 	_write_unlock ();
@@ -3284,7 +3382,8 @@ comac_show_text (comac_t *cr, const char *utf8)
 static void
 _glyph_advance (comac_scaled_font_t *font,
 		const comac_glyph_t *glyph,
-		double *x, double *y)
+		double *x,
+		double *y)
 {
     comac_text_extents_t extents;
 
@@ -3299,7 +3398,7 @@ _emit_glyphs (comac_scaled_font_t *font,
 	      const comac_glyph_t *glyphs,
 	      int num_glyphs)
 {
-    double x,y;
+    double x, y;
     int n;
 
     if (num_glyphs == 0) {
@@ -3321,8 +3420,7 @@ _emit_glyphs (comac_scaled_font_t *font,
 	first = TRUE;
 	while (num_glyphs--) {
 	    if (fabs (glyphs->x - x) > TOLERANCE ||
-		fabs (glyphs->y - y) > TOLERANCE)
-	    {
+		fabs (glyphs->y - y) > TOLERANCE) {
 		x = glyphs->x;
 		y = glyphs->y;
 		_trace_printf ("] %g %g [", x, y);
@@ -3342,7 +3440,7 @@ _emit_glyphs (comac_scaled_font_t *font,
 	struct _data_stream stream;
 
 	if (num_glyphs == 1) {
-	    _trace_printf ("[%g %g <%02lx>]", x, y,  glyphs->index);
+	    _trace_printf ("[%g %g <%02lx>]", x, y, glyphs->index);
 	} else {
 	    _trace_printf ("[%g %g <~", x, y);
 	    _write_base85_data_start (&stream);
@@ -3350,8 +3448,7 @@ _emit_glyphs (comac_scaled_font_t *font,
 		unsigned char c;
 
 		if (fabs (glyphs->x - x) > TOLERANCE ||
-		    fabs (glyphs->y - y) > TOLERANCE)
-		{
+		    fabs (glyphs->y - y) > TOLERANCE) {
 		    x = glyphs->x;
 		    y = glyphs->y;
 		    _write_base85_data_end (&stream);
@@ -3394,22 +3491,19 @@ comac_show_glyphs (comac_t *cr, const comac_glyph_t *glyphs, int num_glyphs)
 static const char *
 _direction_to_string (comac_bool_t backward)
 {
-    const char *names[] = {
-	"FORWARD",
-	"BACKWARD"
-    };
-    return names[!!backward];
+    const char *names[] = {"FORWARD", "BACKWARD"};
+    return names[! ! backward];
 }
 
 void
-comac_show_text_glyphs (comac_t			   *cr,
-			const char		   *utf8,
-			int			    utf8_len,
-			const comac_glyph_t	   *glyphs,
-			int			    num_glyphs,
+comac_show_text_glyphs (comac_t *cr,
+			const char *utf8,
+			int utf8_len,
+			const comac_glyph_t *glyphs,
+			int num_glyphs,
 			const comac_text_cluster_t *clusters,
-			int			    num_clusters,
-			comac_text_cluster_flags_t  backward)
+			int num_clusters,
+			comac_text_cluster_flags_t backward)
 {
     comac_scaled_font_t *font;
 
@@ -3438,11 +3532,15 @@ comac_show_text_glyphs (comac_t			   *cr,
 	_write_unlock ();
     }
 
-    DLCALL (comac_show_text_glyphs, cr,
-	                            utf8, utf8_len,
-				    glyphs, num_glyphs,
-				    clusters, num_clusters,
-				    backward);
+    DLCALL (comac_show_text_glyphs,
+	    cr,
+	    utf8,
+	    utf8_len,
+	    glyphs,
+	    num_glyphs,
+	    clusters,
+	    num_clusters,
+	    backward);
     _exit_trace ();
 }
 
@@ -3499,7 +3597,7 @@ comac_append_path (comac_t *cr, const comac_path_t *path)
 	return;
     }
 
-    for (i=0; i < path->num_data; i += path->data[i].header.length) {
+    for (i = 0; i < path->num_data; i += path->data[i].header.length) {
 	p = &path->data[i];
 	switch (p->header.type) {
 	case COMAC_PATH_MOVE_TO:
@@ -3513,9 +3611,12 @@ comac_append_path (comac_t *cr, const comac_path_t *path)
 	case COMAC_PATH_CURVE_TO:
 	    if (p->header.length >= 4)
 		comac_curve_to (cr,
-				p[1].point.x, p[1].point.y,
-				p[2].point.x, p[2].point.y,
-				p[3].point.x, p[3].point.y);
+				p[1].point.x,
+				p[1].point.y,
+				p[2].point.x,
+				p[2].point.y,
+				p[3].point.x,
+				p[3].point.y);
 	    break;
 	case COMAC_PATH_CLOSE_PATH:
 	    if (p->header.length >= 1)
@@ -3549,12 +3650,16 @@ comac_image_surface_create (comac_format_t format, int width, int height)
 		       "  /format //%s set\n"
 		       "  /content //%s set\n"
 		       "  image dup /s%ld exch def\n",
-		       width, height, format_str, content_str, obj->token);
+		       width,
+		       height,
+		       format_str,
+		       content_str,
+		       obj->token);
 	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -3563,13 +3668,22 @@ comac_image_surface_create (comac_format_t format, int width, int height)
 }
 
 comac_surface_t *
-comac_image_surface_create_for_data (unsigned char *data, comac_format_t format, int width, int height, int stride)
+comac_image_surface_create_for_data (unsigned char *data,
+				     comac_format_t format,
+				     int width,
+				     int height,
+				     int stride)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_image_surface_create_for_data, data, format, width, height, stride);
+    ret = DLCALL (comac_image_surface_create_for_data,
+		  data,
+		  format,
+		  width,
+		  height,
+		  stride);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -3584,28 +3698,28 @@ comac_image_surface_create_for_data (unsigned char *data, comac_format_t format,
 	 * Choose 32x32 as that captures most icons which thanks to GdkPixbuf
 	 * are frequently reloaded.
 	 */
-	if (width * height < 32*32) {
+	if (width * height < 32 * 32) {
 	    _emit_image (ret, NULL);
-	    _trace_printf (" dup /s%ld exch def\n",
-			   obj->token);
+	    _trace_printf (" dup /s%ld exch def\n", obj->token);
 	} else {
 	    _trace_printf ("dict\n"
 			   "  /width %d set\n"
 			   "  /height %d set\n"
 			   "  /format //%s set\n"
 			   "  image dup /s%ld exch def\n",
-			   width, height,
+			   width,
+			   height,
 			   _format_to_string (format),
 			   obj->token);
 
 	    obj->foreign = TRUE;
 	}
 
-	obj->width  = width;
+	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -3632,13 +3746,20 @@ comac_image_surface_get_data (comac_surface_t *surface)
 }
 
 comac_pattern_t *
-comac_pattern_create_raster_source (void *data, comac_content_t content, int width, int height)
+comac_pattern_create_raster_source (void *data,
+				    comac_content_t content,
+				    int width,
+				    int height)
 {
     comac_pattern_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_pattern_create_raster_source, data, content, width, height);
+    ret = DLCALL (comac_pattern_create_raster_source,
+		  data,
+		  content,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -3650,10 +3771,16 @@ comac_pattern_create_raster_source (void *data, comac_content_t content, int wid
 	/* Impossible to accurately record the interaction with this custom
 	 * pattern so just suck all the data into an image upfront */
 	switch (content) {
-	case COMAC_CONTENT_ALPHA: format = COMAC_FORMAT_A8; break;
-	case COMAC_CONTENT_COLOR: format = COMAC_FORMAT_RGB24; break;
+	case COMAC_CONTENT_ALPHA:
+	    format = COMAC_FORMAT_A8;
+	    break;
+	case COMAC_CONTENT_COLOR:
+	    format = COMAC_FORMAT_RGB24;
+	    break;
 	default:
-	case COMAC_CONTENT_COLOR_ALPHA: format = COMAC_FORMAT_ARGB32; break;
+	case COMAC_CONTENT_COLOR_ALPHA:
+	    format = COMAC_FORMAT_ARGB32;
+	    break;
 	}
 
 	_trace_printf ("%% raster-source\n");
@@ -3666,12 +3793,11 @@ comac_pattern_create_raster_source (void *data, comac_content_t content, int wid
 
 	_emit_image (image, NULL);
 	DLCALL (comac_surface_destroy, image);
-	_trace_printf (" pattern dup /s%ld exch def\n",
-		       pattern_id);
+	_trace_printf (" pattern dup /s%ld exch def\n", pattern_id);
 
 	_push_operand (PATTERN, ret);
 	_get_object (PATTERN, ret)->defined = TRUE;
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -3682,7 +3808,8 @@ comac_pattern_create_raster_source (void *data, comac_content_t content, int wid
 comac_surface_t *
 comac_surface_create_similar (comac_surface_t *other,
 			      comac_content_t content,
-			      int width, int height)
+			      int width,
+			      int height)
 {
     comac_surface_t *ret;
 
@@ -3692,7 +3819,7 @@ comac_surface_create_similar (comac_surface_t *other,
 
     _emit_line_info ();
     if (other != NULL && _write_lock ()) {
-	Object *other_obj = _get_object(SURFACE, other);
+	Object *other_obj = _get_object (SURFACE, other);
 	Object *new_obj = _create_surface (ret);
 
 	if (other_obj->operand != -1) {
@@ -3702,12 +3829,13 @@ comac_surface_create_similar (comac_surface_t *other,
 		_trace_printf ("%d index ",
 			       current_stack_depth - other_obj->operand - 1);
 	} else {
-	    assert(other_obj->defined);
+	    assert (other_obj->defined);
 	    _trace_printf ("s%ld ", other_obj->token);
 	}
 
 	_trace_printf ("%d %d //%s similar dup /s%ld exch def\n",
-		       width, height,
+		       width,
+		       height,
 		       _content_to_string (content),
 		       new_obj->token);
 
@@ -3716,7 +3844,7 @@ comac_surface_create_similar (comac_surface_t *other,
 	new_obj->defined = TRUE;
 
 	_push_object (new_obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -3727,18 +3855,22 @@ comac_surface_create_similar (comac_surface_t *other,
 comac_surface_t *
 comac_surface_create_similar_image (comac_surface_t *other,
 				    comac_format_t format,
-				    int width, int height)
+				    int width,
+				    int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
     ret = DLCALL (comac_surface_create_similar_image,
-		  other, format, width, height);
+		  other,
+		  format,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (other != NULL && _write_lock ()) {
-	Object *other_obj = _get_object(SURFACE, other);
+	Object *other_obj = _get_object (SURFACE, other);
 	Object *new_obj = _create_surface (ret);
 
 	if (other_obj->defined)
@@ -3750,13 +3882,14 @@ comac_surface_create_similar_image (comac_surface_t *other,
 			   current_stack_depth - other_obj->operand - 1);
 	_trace_printf ("//%s %d %d similar-image %% s%ld\n",
 		       _format_to_string (format),
-		       width, height,
+		       width,
+		       height,
 		       new_obj->token);
 	new_obj->width = width;
 	new_obj->height = height;
 
 	_push_object (new_obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -3781,17 +3914,19 @@ comac_surface_map_to_image (comac_surface_t *surface,
 	_emit_surface (surface);
 	if (extents) {
 	    _trace_printf ("[%d %d %d %d] map-to-image %% s%ld\n",
-			   extents->x, extents->y,
-			   extents->width, extents->height,
+			   extents->x,
+			   extents->y,
+			   extents->width,
+			   extents->height,
 			   obj->token);
-	    obj->width  = extents->width;
+	    obj->width = extents->width;
 	    obj->height = extents->height;
 	} else {
 	    _trace_printf ("[ ] map-to-image %% s%ld\n", obj->token);
 	}
 
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -3800,8 +3935,7 @@ comac_surface_map_to_image (comac_surface_t *surface,
 }
 
 void
-comac_surface_unmap_image (comac_surface_t *surface,
-			   comac_surface_t *image)
+comac_surface_unmap_image (comac_surface_t *surface, comac_surface_t *image)
 {
     _enter_trace ();
 
@@ -3809,9 +3943,10 @@ comac_surface_unmap_image (comac_surface_t *surface,
     if (_write_lock ()) {
 	Object *s = _get_object (SURFACE, surface);
 	Object *i = _get_object (SURFACE, image);
-	if (!(s->operand == current_stack_depth - 2 &&
-	      i->operand == current_stack_depth - 1)) {
-	    if (i->operand != s->operand + 1 || ! _pop_operands_to_depth (i->operand + 1)) {
+	if (! (s->operand == current_stack_depth - 2 &&
+	       i->operand == current_stack_depth - 1)) {
+	    if (i->operand != s->operand + 1 ||
+		! _pop_operands_to_depth (i->operand + 1)) {
 		_emit_surface (surface);
 		_emit_surface (image);
 	    }
@@ -3827,15 +3962,19 @@ comac_surface_unmap_image (comac_surface_t *surface,
 }
 
 comac_surface_t *
-comac_surface_create_for_rectangle (comac_surface_t *target,
-                                    double x, double y,
-                                    double width, double height)
+comac_surface_create_for_rectangle (
+    comac_surface_t *target, double x, double y, double width, double height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_surface_create_for_rectangle, target, x, y, width, height);
+    ret = DLCALL (comac_surface_create_for_rectangle,
+		  target,
+		  x,
+		  y,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (target != NULL && _write_lock ()) {
@@ -3847,13 +3986,17 @@ comac_surface_create_for_rectangle (comac_surface_t *target,
 	else if (current_stack_depth == target_obj->operand + 1)
 	    _trace_printf ("dup ");
 	else
-	    _trace_printf ("%d index ", current_stack_depth - target_obj->operand - 1);
+	    _trace_printf ("%d index ",
+			   current_stack_depth - target_obj->operand - 1);
 	_trace_printf ("%f %f %f %f subsurface %% s%ld\n",
-		       x, y, width, height,
+		       x,
+		       y,
+		       width,
+		       height,
 		       child_obj->token);
 
 	_push_object (child_obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -3861,8 +4004,8 @@ comac_surface_create_for_rectangle (comac_surface_t *target,
     return ret;
 }
 
-static void COMAC_PRINTF_FORMAT(2, 3)
-_emit_surface_op (comac_surface_t *surface, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+    _emit_surface_op (comac_surface_t *surface, const char *fmt, ...)
 {
     va_list ap;
 
@@ -3872,7 +4015,7 @@ _emit_surface_op (comac_surface_t *surface, const char *fmt, ...)
     _emit_surface (surface);
 
     va_start (ap, fmt);
-    _trace_vprintf ( fmt, ap);
+    _trace_vprintf (fmt, ap);
     va_end (ap);
 
     _write_unlock ();
@@ -3924,8 +4067,8 @@ comac_surface_mark_dirty (comac_surface_t *surface)
 }
 
 void
-comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
-				    int x, int y, int width, int height)
+comac_surface_mark_dirty_rectangle (
+    comac_surface_t *surface, int x, int y, int width, int height)
 {
     _enter_trace ();
 
@@ -3939,47 +4082,62 @@ comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
 	if (_mark_dirty) {
 	    _emit_surface (surface);
 	    _trace_printf ("%% %d %d %d %d mark-dirty-rectangle\n",
-		            x, y, width, height);
-	    _emit_source_image_rectangle (surface, x,y, width, height);
+			   x,
+			   y,
+			   width,
+			   height);
+	    _emit_source_image_rectangle (surface, x, y, width, height);
 	} else
 	    _trace_printf ("%% s%ld %d %d %d %d mark-dirty-rectangle\n",
-		           _get_surface_id (surface), x, y, width, height);
+			   _get_surface_id (surface),
+			   x,
+			   y,
+			   width,
+			   height);
 	_write_unlock ();
     }
     _exit_trace ();
 }
 
 void
-comac_surface_set_device_offset (comac_surface_t *surface, double x_offset, double y_offset)
+comac_surface_set_device_offset (comac_surface_t *surface,
+				 double x_offset,
+				 double y_offset)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_surface_op (surface, "%g %g set-device-offset\n",
-		      x_offset, y_offset);
+    _emit_surface_op (surface, "%g %g set-device-offset\n", x_offset, y_offset);
     DLCALL (comac_surface_set_device_offset, surface, x_offset, y_offset);
     _exit_trace ();
 }
 
 void
-comac_surface_set_device_scale (comac_surface_t *surface, double x_offset, double y_offset)
+comac_surface_set_device_scale (comac_surface_t *surface,
+				double x_offset,
+				double y_offset)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_surface_op (surface, "%g %g set-device-scale\n",
-		      x_offset, y_offset);
+    _emit_surface_op (surface, "%g %g set-device-scale\n", x_offset, y_offset);
     DLCALL (comac_surface_set_device_scale, surface, x_offset, y_offset);
     _exit_trace ();
 }
 
-
 void
-comac_surface_set_fallback_resolution (comac_surface_t *surface, double x_pixels_per_inch, double y_pixels_per_inch)
+comac_surface_set_fallback_resolution (comac_surface_t *surface,
+				       double x_pixels_per_inch,
+				       double y_pixels_per_inch)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_surface_op (surface, "%g %g set-fallback-resolution\n",
-		      x_pixels_per_inch, y_pixels_per_inch);
-    DLCALL (comac_surface_set_fallback_resolution, surface, x_pixels_per_inch, y_pixels_per_inch);
+    _emit_surface_op (surface,
+		      "%g %g set-fallback-resolution\n",
+		      x_pixels_per_inch,
+		      y_pixels_per_inch);
+    DLCALL (comac_surface_set_fallback_resolution,
+	    surface,
+	    x_pixels_per_inch,
+	    y_pixels_per_inch);
     _exit_trace ();
 }
 
@@ -4004,12 +4162,12 @@ comac_surface_show_page (comac_surface_t *surface)
 }
 
 comac_status_t
-comac_surface_set_mime_data (comac_surface_t		*surface,
-                             const char			*mime_type,
-                             const unsigned char	*data,
-                             unsigned long		 length,
-			     comac_destroy_func_t	 destroy,
-			     void			*closure)
+comac_surface_set_mime_data (comac_surface_t *surface,
+			     const char *mime_type,
+			     const unsigned char *data,
+			     unsigned long length,
+			     comac_destroy_func_t destroy,
+			     void *closure)
 {
     comac_status_t ret;
     _enter_trace ();
@@ -4027,7 +4185,8 @@ comac_surface_set_mime_data (comac_surface_t		*surface,
     ret = DLCALL (comac_surface_set_mime_data,
 		  surface,
 		  mime_type,
-		  data, length,
+		  data,
+		  length,
 		  destroy,
 		  closure);
     _exit_trace ();
@@ -4073,15 +4232,14 @@ comac_surface_write_to_png_stream (comac_surface_t *surface,
 	_trace_printf (" write-to-png-stream pop\n");
 	_write_unlock ();
     }
-    ret = DLCALL (comac_surface_write_to_png_stream,
-		  surface, write_func, data);
+    ret = DLCALL (comac_surface_write_to_png_stream, surface, write_func, data);
     _exit_trace ();
     return ret;
 }
 #endif
 
-static void COMAC_PRINTF_FORMAT(2, 3)
-_emit_pattern_op (comac_pattern_t *pattern, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+    _emit_pattern_op (comac_pattern_t *pattern, const char *fmt, ...)
 {
     va_list ap;
 
@@ -4111,7 +4269,10 @@ comac_pattern_create_rgb (double red, double green, double blue)
     _emit_line_info ();
     if (_write_lock ()) {
 	_trace_printf ("/p%ld %g %g %g rgb def\n",
-		       pattern_id, red, green, blue);
+		       pattern_id,
+		       red,
+		       green,
+		       blue);
 	_get_object (PATTERN, ret)->defined = TRUE;
 	_write_unlock ();
     }
@@ -4134,7 +4295,11 @@ comac_pattern_create_rgba (double red, double green, double blue, double alpha)
     _emit_line_info ();
     if (_write_lock ()) {
 	_trace_printf ("/p%ld %g %g %g %g rgba def\n",
-		       pattern_id, red, green, blue, alpha);
+		       pattern_id,
+		       red,
+		       green,
+		       blue,
+		       alpha);
 	_get_object (PATTERN, ret)->defined = TRUE;
 	_write_unlock ();
     }
@@ -4170,7 +4335,7 @@ comac_pattern_create_for_surface (comac_surface_t *surface)
 
 	_trace_printf ("pattern %% p%ld\n", pattern_id);
 	_push_operand (PATTERN, ret);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4192,9 +4357,13 @@ comac_pattern_create_linear (double x0, double y0, double x1, double y1)
     _emit_line_info ();
     if (_write_lock ()) {
 	_trace_printf ("%g %g %g %g linear %% p%ld\n",
-		       x0, y0, x1, y1, pattern_id);
+		       x0,
+		       y0,
+		       x1,
+		       y1,
+		       pattern_id);
 	_push_operand (PATTERN, ret);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4203,7 +4372,12 @@ comac_pattern_create_linear (double x0, double y0, double x1, double y1)
 }
 
 comac_pattern_t *
-comac_pattern_create_radial (double cx0, double cy0, double radius0, double cx1, double cy1, double radius1)
+comac_pattern_create_radial (double cx0,
+			     double cy0,
+			     double radius0,
+			     double cx1,
+			     double cy1,
+			     double radius1)
 {
     comac_pattern_t *ret;
     long pattern_id;
@@ -4211,17 +4385,26 @@ comac_pattern_create_radial (double cx0, double cy0, double radius0, double cx1,
     _enter_trace ();
 
     ret = DLCALL (comac_pattern_create_radial,
-		  cx0, cy0, radius0,
-		  cx1, cy1, radius1);
+		  cx0,
+		  cy0,
+		  radius0,
+		  cx1,
+		  cy1,
+		  radius1);
     pattern_id = _create_pattern_id (ret);
 
     _emit_line_info ();
     if (_write_lock ()) {
 	_trace_printf ("%g %g %g %g %g %g radial %% p%ld\n",
-		       cx0, cy0, radius0, cx1, cy1, radius1,
+		       cx0,
+		       cy0,
+		       radius0,
+		       cx1,
+		       cy1,
+		       radius1,
 		       pattern_id);
 	_push_operand (PATTERN, ret);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4230,31 +4413,59 @@ comac_pattern_create_radial (double cx0, double cy0, double radius0, double cx1,
 }
 
 void
-comac_pattern_add_color_stop_rgb (comac_pattern_t *pattern, double offset, double red, double green, double blue)
+comac_pattern_add_color_stop_rgb (comac_pattern_t *pattern,
+				  double offset,
+				  double red,
+				  double green,
+				  double blue)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_pattern_op (pattern,
 		      "%g %g %g %g 1 add-color-stop\n",
-		      offset, red, green, blue);
-    DLCALL (comac_pattern_add_color_stop_rgb, pattern, offset, red, green, blue);
+		      offset,
+		      red,
+		      green,
+		      blue);
+    DLCALL (comac_pattern_add_color_stop_rgb,
+	    pattern,
+	    offset,
+	    red,
+	    green,
+	    blue);
     _exit_trace ();
 }
 
 void
-comac_pattern_add_color_stop_rgba (comac_pattern_t *pattern, double offset, double red, double green, double blue, double alpha)
+comac_pattern_add_color_stop_rgba (comac_pattern_t *pattern,
+				   double offset,
+				   double red,
+				   double green,
+				   double blue,
+				   double alpha)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_pattern_op (pattern,
 		      "%g %g %g %g %g add-color-stop\n",
-		      offset, red, green, blue, alpha);
-    DLCALL (comac_pattern_add_color_stop_rgba, pattern, offset, red, green, blue, alpha);
+		      offset,
+		      red,
+		      green,
+		      blue,
+		      alpha);
+    DLCALL (comac_pattern_add_color_stop_rgba,
+	    pattern,
+	    offset,
+	    red,
+	    green,
+	    blue,
+	    alpha);
     _exit_trace ();
 }
 
 void
-comac_pattern_set_matrix (comac_pattern_t *pattern, const comac_matrix_t *matrix)
+comac_pattern_set_matrix (comac_pattern_t *pattern,
+			  const comac_matrix_t *matrix)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -4263,9 +4474,12 @@ comac_pattern_set_matrix (comac_pattern_t *pattern, const comac_matrix_t *matrix
     } else {
 	_emit_pattern_op (pattern,
 			  "%g %g %g %g %g %g matrix set-matrix\n",
-			  matrix->xx, matrix->yx,
-			  matrix->xy, matrix->yy,
-			  matrix->x0, matrix->y0);
+			  matrix->xx,
+			  matrix->yx,
+			  matrix->xy,
+			  matrix->yy,
+			  matrix->x0,
+			  matrix->y0);
     }
     DLCALL (comac_pattern_set_matrix, pattern, matrix);
     _exit_trace ();
@@ -4274,14 +4488,16 @@ comac_pattern_set_matrix (comac_pattern_t *pattern, const comac_matrix_t *matrix
 static const char *
 _filter_to_string (comac_filter_t filter)
 {
-#define f(name) case COMAC_FILTER_ ## name: return "FILTER_" #name
+#define f(name)                                                                \
+    case COMAC_FILTER_##name:                                                  \
+	return "FILTER_" #name
     switch (filter) {
-	f(FAST);
-	f(GOOD);
-	f(BEST);
-	f(NEAREST);
-	f(BILINEAR);
-	f(GAUSSIAN);
+	f (FAST);
+	f (GOOD);
+	f (BEST);
+	f (NEAREST);
+	f (BILINEAR);
+	f (GAUSSIAN);
     };
 #undef f
     return "UNKNOWN_FILTER";
@@ -4300,12 +4516,14 @@ comac_pattern_set_filter (comac_pattern_t *pattern, comac_filter_t filter)
 static const char *
 _extend_to_string (comac_extend_t extend)
 {
-#define f(name) case COMAC_EXTEND_ ## name: return "EXTEND_" #name
+#define f(name)                                                                \
+    case COMAC_EXTEND_##name:                                                  \
+	return "EXTEND_" #name
     switch (extend) {
-	f(NONE);
-	f(REPEAT);
-	f(REFLECT);
-	f(PAD);
+	f (NONE);
+	f (REPEAT);
+	f (REFLECT);
+	f (PAD);
     };
 #undef f
     return "UNKNOWN_EXTEND";
@@ -4340,34 +4558,32 @@ comac_ft_font_face_create_for_pattern (FcPattern *pattern)
 
 	obj = _get_object (FONT_FACE, ret);
 	if (obj->unknown) {
-		FcPattern *copy;
-		FcChar8 *unparsed;
+	    FcPattern *copy;
+	    FcChar8 *unparsed;
 
-		copy = DLCALL (FcPatternDuplicate, pattern);
-		if (copy)
-		{
-			DLCALL (FcPatternDel, copy, FC_LANG);
-			DLCALL (FcPatternDel, copy, FC_CHARSET);
-			DLCALL (FcPatternDel, copy, FC_CAPABILITY);
-		}
-		else
-			copy = pattern;
+	    copy = DLCALL (FcPatternDuplicate, pattern);
+	    if (copy) {
+		DLCALL (FcPatternDel, copy, FC_LANG);
+		DLCALL (FcPatternDel, copy, FC_CHARSET);
+		DLCALL (FcPatternDel, copy, FC_CAPABILITY);
+	    } else
+		copy = pattern;
 
-		unparsed = DLCALL (FcNameUnparse, copy);
-		_trace_printf ("dict\n"
-			       "  /type 42 set\n"
-			       "  /pattern ");
-		_emit_string_literal ((char *) unparsed, -1);
-		_trace_printf (" set\n"
-			       "  font %% f%ld\n",
-			       font_face_id);
-		obj->unknown = FALSE;
-		_push_operand (FONT_FACE, ret);
-		dump_stack(__func__);
+	    unparsed = DLCALL (FcNameUnparse, copy);
+	    _trace_printf ("dict\n"
+			   "  /type 42 set\n"
+			   "  /pattern ");
+	    _emit_string_literal ((char *) unparsed, -1);
+	    _trace_printf (" set\n"
+			   "  font %% f%ld\n",
+			   font_face_id);
+	    obj->unknown = FALSE;
+	    _push_operand (FONT_FACE, ret);
+	    dump_stack (__func__);
 
-		if (copy != pattern)
-			DLCALL (FcPatternDestroy, copy);
-		free (unparsed);
+	    if (copy != pattern)
+		DLCALL (FcPatternDestroy, copy);
+	    free (unparsed);
 	}
 	_write_unlock ();
     }
@@ -4425,9 +4641,11 @@ comac_ft_font_face_create_for_ft_face (FT_Face face, int load_flags)
 	_trace_printf ("<< /type 42 /source ");
 	_emit_data (data->data, data->size);
 	_trace_printf (" /index %lu /flags %d >> font %% f%ld\n",
-		       data->index, load_flags, font_face_id);
+		       data->index,
+		       load_flags,
+		       font_face_id);
 	_push_operand (FONT_FACE, ret);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4467,7 +4685,10 @@ _ft_read_file (FtFaceData *data, const char *path)
 }
 
 FT_Error
-FT_New_Face (FT_Library library, const char *pathname, FT_Long index, FT_Face *face)
+FT_New_Face (FT_Library library,
+	     const char *pathname,
+	     FT_Long index,
+	     FT_Face *face)
 {
     FT_Error ret;
 
@@ -4490,7 +4711,11 @@ FT_New_Face (FT_Library library, const char *pathname, FT_Long index, FT_Face *f
 }
 
 FT_Error
-FT_New_Memory_Face (FT_Library library, const FT_Byte *mem, FT_Long size, FT_Long index, FT_Face *face)
+FT_New_Memory_Face (FT_Library library,
+		    const FT_Byte *mem,
+		    FT_Long size,
+		    FT_Long index,
+		    FT_Face *face)
 {
     FT_Error ret;
 
@@ -4520,7 +4745,10 @@ FT_New_Memory_Face (FT_Library library, const FT_Byte *mem, FT_Long size, FT_Lon
  * day...
  */
 FT_Error
-FT_Open_Face (FT_Library library, const FT_Open_Args *args, FT_Long index, FT_Face *face)
+FT_Open_Face (FT_Library library,
+	      const FT_Open_Args *args,
+	      FT_Long index,
+	      FT_Face *face)
 {
     FT_Error ret;
 
@@ -4539,8 +4767,10 @@ FT_Open_Face (FT_Library library, const FT_Open_Args *args, FT_Long index, FT_Fa
 		data->data = malloc (args->memory_size);
 		memcpy (data->data, args->memory_base, args->memory_size);
 	    } else if (args->flags & FT_OPEN_STREAM) {
-		fprintf (stderr, "FT_Open_Face (stream, %ld) = %p\n",
-			 index, *face);
+		fprintf (stderr,
+			 "FT_Open_Face (stream, %ld) = %p\n",
+			 index,
+			 *face);
 		abort ();
 	    } else if (args->flags & FT_OPEN_PATHNAME) {
 		data->size = 0;
@@ -4591,16 +4821,21 @@ _surface_object_set_size_from_surface (comac_surface_t *surface)
 }
 
 #if COMAC_HAS_PS_SURFACE
-#include<comac-ps.h>
+#include <comac-ps.h>
 
 comac_surface_t *
-comac_ps_surface_create (const char *filename, double width_in_points, double height_in_points)
+comac_ps_surface_create (const char *filename,
+			 double width_in_points,
+			 double height_in_points)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_ps_surface_create, filename, width_in_points, height_in_points);
+    ret = DLCALL (comac_ps_surface_create,
+		  filename,
+		  width_in_points,
+		  height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4620,7 +4855,7 @@ comac_ps_surface_create (const char *filename, double width_in_points, double he
 	obj->width = width_in_points;
 	obj->height = height_in_points;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4629,13 +4864,20 @@ comac_ps_surface_create (const char *filename, double width_in_points, double he
 }
 
 comac_surface_t *
-comac_ps_surface_create_for_stream (comac_write_func_t write_func, void *closure, double width_in_points, double height_in_points)
+comac_ps_surface_create_for_stream (comac_write_func_t write_func,
+				    void *closure,
+				    double width_in_points,
+				    double height_in_points)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_ps_surface_create_for_stream, write_func, closure, width_in_points, height_in_points);
+    ret = DLCALL (comac_ps_surface_create_for_stream,
+		  write_func,
+		  closure,
+		  width_in_points,
+		  height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4652,7 +4894,7 @@ comac_ps_surface_create_for_stream (comac_write_func_t write_func, void *closure
 	obj->width = width_in_points;
 	obj->height = height_in_points;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4661,11 +4903,16 @@ comac_ps_surface_create_for_stream (comac_write_func_t write_func, void *closure
 }
 
 void
-comac_ps_surface_set_size (comac_surface_t *surface, double width_in_points, double height_in_points)
+comac_ps_surface_set_size (comac_surface_t *surface,
+			   double width_in_points,
+			   double height_in_points)
 {
     _enter_trace ();
     _emit_line_info ();
-    DLCALL (comac_ps_surface_set_size, surface, width_in_points, height_in_points);
+    DLCALL (comac_ps_surface_set_size,
+	    surface,
+	    width_in_points,
+	    height_in_points);
     _exit_trace ();
 }
 
@@ -4675,13 +4922,18 @@ comac_ps_surface_set_size (comac_surface_t *surface, double width_in_points, dou
 #include <comac-pdf.h>
 
 comac_surface_t *
-comac_pdf_surface_create (const char *filename, double width_in_points, double height_in_points)
+comac_pdf_surface_create (const char *filename,
+			  double width_in_points,
+			  double height_in_points)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_pdf_surface_create, filename, width_in_points, height_in_points);
+    ret = DLCALL (comac_pdf_surface_create,
+		  filename,
+		  width_in_points,
+		  height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4701,7 +4953,7 @@ comac_pdf_surface_create (const char *filename, double width_in_points, double h
 	obj->width = width_in_points;
 	obj->height = height_in_points;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4710,13 +4962,20 @@ comac_pdf_surface_create (const char *filename, double width_in_points, double h
 }
 
 comac_surface_t *
-comac_pdf_surface_create_for_stream (comac_write_func_t write_func, void *closure, double width_in_points, double height_in_points)
+comac_pdf_surface_create_for_stream (comac_write_func_t write_func,
+				     void *closure,
+				     double width_in_points,
+				     double height_in_points)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_pdf_surface_create_for_stream, write_func, closure, width_in_points, height_in_points);
+    ret = DLCALL (comac_pdf_surface_create_for_stream,
+		  write_func,
+		  closure,
+		  width_in_points,
+		  height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4733,7 +4992,7 @@ comac_pdf_surface_create_for_stream (comac_write_func_t write_func, void *closur
 	obj->width = width_in_points;
 	obj->height = height_in_points;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
     _exit_trace ();
@@ -4741,11 +5000,16 @@ comac_pdf_surface_create_for_stream (comac_write_func_t write_func, void *closur
 }
 
 void
-comac_pdf_surface_set_size (comac_surface_t *surface, double width_in_points, double height_in_points)
+comac_pdf_surface_set_size (comac_surface_t *surface,
+			    double width_in_points,
+			    double height_in_points)
 {
     _enter_trace ();
     _emit_line_info ();
-    DLCALL (comac_pdf_surface_set_size, surface, width_in_points, height_in_points);
+    DLCALL (comac_pdf_surface_set_size,
+	    surface,
+	    width_in_points,
+	    height_in_points);
     _exit_trace ();
 }
 #endif
@@ -4780,7 +5044,7 @@ comac_svg_surface_create (const char *filename, double width, double height)
 	obj->width = width;
 	obj->height = height;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4789,13 +5053,20 @@ comac_svg_surface_create (const char *filename, double width, double height)
 }
 
 comac_surface_t *
-comac_svg_surface_create_for_stream (comac_write_func_t write_func, void *closure, double width, double height)
+comac_svg_surface_create_for_stream (comac_write_func_t write_func,
+				     void *closure,
+				     double width,
+				     double height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_svg_surface_create_for_stream, write_func, closure, width, height);
+    ret = DLCALL (comac_svg_surface_create_for_stream,
+		  write_func,
+		  closure,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4812,7 +5083,7 @@ comac_svg_surface_create_for_stream (comac_write_func_t write_func, void *closur
 	obj->width = width;
 	obj->height = height;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4837,14 +5108,16 @@ comac_image_surface_create_from_png (const char *filename)
 	Object *obj = _create_surface (ret);
 	char filename_string[4096];
 
-	_encode_string_literal (filename_string, sizeof (filename_string),
-				filename, -1);
+	_encode_string_literal (filename_string,
+				sizeof (filename_string),
+				filename,
+				-1);
 	_emit_image (ret, "  /filename %s set\n", filename_string);
 	_trace_printf (" dup /s%ld exch def\n", obj->token);
 	_surface_object_set_size_from_surface (ret);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4853,26 +5126,27 @@ comac_image_surface_create_from_png (const char *filename)
 }
 
 comac_surface_t *
-comac_image_surface_create_from_png_stream (comac_read_func_t read_func, void *closure)
+comac_image_surface_create_from_png_stream (comac_read_func_t read_func,
+					    void *closure)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_image_surface_create_from_png_stream, read_func, closure);
+    ret =
+	DLCALL (comac_image_surface_create_from_png_stream, read_func, closure);
 
     _emit_line_info ();
     if (_write_lock ()) {
 	Object *obj = _create_surface (ret);
 
 	_emit_image (ret, NULL);
-	_trace_printf (" dup /s%ld exch def\n",
-		       obj->token);
+	_trace_printf (" dup /s%ld exch def\n", obj->token);
 
 	_surface_object_set_size_from_surface (ret);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4911,7 +5185,7 @@ comac_tee_surface_create (comac_surface_t *master)
 		       obj->token);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4925,17 +5199,19 @@ comac_tee_surface_create (comac_surface_t *master)
 #include <comac-xlib.h>
 
 comac_surface_t *
-comac_xlib_surface_create (Display *dpy,
-			   Drawable drawable,
-			   Visual *visual,
-			   int width, int height)
+comac_xlib_surface_create (
+    Display *dpy, Drawable drawable, Visual *visual, int width, int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
     ret = DLCALL (comac_xlib_surface_create,
-	          dpy, drawable, visual, width, height);
+		  dpy,
+		  drawable,
+		  visual,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4950,14 +5226,15 @@ comac_xlib_surface_create (Display *dpy,
 		       "  surface dup /s%ld exch def\n",
 		       drawable,
 		       _content_from_surface (ret),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->defined = TRUE;
 	obj->width = width;
 	obj->height = height;
 	obj->foreign = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -4966,17 +5243,19 @@ comac_xlib_surface_create (Display *dpy,
 }
 
 comac_surface_t *
-comac_xlib_surface_create_for_bitmap (Display *dpy,
-				      Pixmap bitmap,
-				      Screen *screen,
-				      int width, int height)
+comac_xlib_surface_create_for_bitmap (
+    Display *dpy, Pixmap bitmap, Screen *screen, int width, int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
     ret = DLCALL (comac_xlib_surface_create_for_bitmap,
-	          dpy, bitmap, screen, width, height);
+		  dpy,
+		  bitmap,
+		  screen,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4992,14 +5271,15 @@ comac_xlib_surface_create_for_bitmap (Display *dpy,
 		       "  surface dup /s%ld exch def\n",
 		       bitmap,
 		       _content_from_surface (ret),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->defined = TRUE;
 	obj->width = width;
 	obj->height = height;
 	obj->foreign = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5014,14 +5294,20 @@ comac_xlib_surface_create_with_xrender_format (Display *dpy,
 					       Drawable drawable,
 					       Screen *screen,
 					       XRenderPictFormat *format,
-					       int width, int height)
+					       int width,
+					       int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
     ret = DLCALL (comac_xlib_surface_create_with_xrender_format,
-	          dpy, drawable, screen, format, width, height);
+		  dpy,
+		  drawable,
+		  screen,
+		  format,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5037,7 +5323,8 @@ comac_xlib_surface_create_with_xrender_format (Display *dpy,
 		       "  surface dup /s%ld exch def\n",
 		       drawable,
 		       _content_from_surface (ret),
-		       width, height,
+		       width,
+		       height,
 		       format->depth,
 		       obj->token);
 	obj->defined = TRUE;
@@ -5045,7 +5332,7 @@ comac_xlib_surface_create_with_xrender_format (Display *dpy,
 	obj->height = height;
 	obj->foreign = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5080,13 +5367,14 @@ comac_script_surface_create (comac_device_t *device,
 		       "  /height %g set\n"
 		       "  surface dup /s%ld exch def\n",
 		       _content_to_string (content),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5114,7 +5402,7 @@ comac_script_surface_create_for_target (comac_device_t *device,
 		       obj->token);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5146,7 +5434,7 @@ _comac_test_paginated_surface_create (comac_surface_t *surface)
 		       _get_surface_id (surface),
 		       obj->token);
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5157,13 +5445,18 @@ _comac_test_paginated_surface_create (comac_surface_t *surface)
 #include <test-compositor-surface.h>
 
 comac_surface_t *
-_comac_test_fallback_compositor_surface_create (comac_content_t content, int width, int height)
+_comac_test_fallback_compositor_surface_create (comac_content_t content,
+						int width,
+						int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_comac_test_fallback_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_fallback_compositor_surface_create,
+		  content,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5176,11 +5469,12 @@ _comac_test_fallback_compositor_surface_create (comac_content_t content, int wid
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
 		       _content_to_string (content),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5189,13 +5483,18 @@ _comac_test_fallback_compositor_surface_create (comac_content_t content, int wid
 }
 
 comac_surface_t *
-_comac_test_mask_compositor_surface_create (comac_content_t content, int width, int height)
+_comac_test_mask_compositor_surface_create (comac_content_t content,
+					    int width,
+					    int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_comac_test_mask_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_mask_compositor_surface_create,
+		  content,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5208,11 +5507,12 @@ _comac_test_mask_compositor_surface_create (comac_content_t content, int width, 
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
 		       _content_to_string (content),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5221,13 +5521,18 @@ _comac_test_mask_compositor_surface_create (comac_content_t content, int width, 
 }
 
 comac_surface_t *
-_comac_test_spans_compositor_surface_create (comac_content_t content, int width, int height)
+_comac_test_spans_compositor_surface_create (comac_content_t content,
+					     int width,
+					     int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_comac_test_spans_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_spans_compositor_surface_create,
+		  content,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5240,11 +5545,12 @@ _comac_test_spans_compositor_surface_create (comac_content_t content, int width,
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
 		       _content_to_string (content),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5253,13 +5559,18 @@ _comac_test_spans_compositor_surface_create (comac_content_t content, int width,
 }
 
 comac_surface_t *
-_comac_test_traps_compositor_surface_create (comac_content_t content, int width, int height)
+_comac_test_traps_compositor_surface_create (comac_content_t content,
+					     int width,
+					     int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_comac_test_traps_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_traps_compositor_surface_create,
+		  content,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5272,11 +5583,12 @@ _comac_test_traps_compositor_surface_create (comac_content_t content, int width,
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
 		       _content_to_string (content),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5303,8 +5615,10 @@ comac_recording_surface_create (comac_content_t content,
 	if (extents) {
 	    _trace_printf ("//%s [ %f %f %f %f ] record dup /s%ld exch def\n",
 			   _content_to_string (content),
-			   extents->x, extents->y,
-			   extents->width, extents->height,
+			   extents->x,
+			   extents->y,
+			   extents->width,
+			   extents->height,
 			   obj->token);
 	    obj->width = extents->width;
 	    obj->height = extents->height;
@@ -5315,7 +5629,7 @@ comac_recording_surface_create (comac_content_t content,
 	}
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5326,16 +5640,20 @@ comac_recording_surface_create (comac_content_t content,
 #if COMAC_HAS_GL_SURFACE || COMAC_HAS_GLESV2_SURFACE
 #include <comac-gl.h>
 comac_surface_t *
-comac_gl_surface_create (comac_device_t		*abstract_device,
-			 comac_content_t	 content,
-			 int			 width,
-			 int			 height)
+comac_gl_surface_create (comac_device_t *abstract_device,
+			 comac_content_t content,
+			 int width,
+			 int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_gl_surface_create, abstract_device, content, width, height);
+    ret = DLCALL (comac_gl_surface_create,
+		  abstract_device,
+		  content,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5348,13 +5666,14 @@ comac_gl_surface_create (comac_device_t		*abstract_device,
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
 		       _content_to_string (content),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5363,17 +5682,22 @@ comac_gl_surface_create (comac_device_t		*abstract_device,
 }
 
 comac_surface_t *
-comac_gl_surface_create_for_texture (comac_device_t	*abstract_device,
-				     comac_content_t	 content,
-				     unsigned int	 tex,
-				     int		 width,
-				     int		 height)
+comac_gl_surface_create_for_texture (comac_device_t *abstract_device,
+				     comac_content_t content,
+				     unsigned int tex,
+				     int width,
+				     int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_gl_surface_create_for_texture, abstract_device, content, tex, width, height);
+    ret = DLCALL (comac_gl_surface_create_for_texture,
+		  abstract_device,
+		  content,
+		  tex,
+		  width,
+		  height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5386,13 +5710,14 @@ comac_gl_surface_create_for_texture (comac_device_t	*abstract_device,
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
 		       _content_to_string (content),
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5404,13 +5729,15 @@ comac_gl_surface_create_for_texture (comac_device_t	*abstract_device,
 comac_surface_t *
 comac_gl_surface_create_for_window (comac_device_t *device,
 				    Window win,
-				    int width, int height)
+				    int width,
+				    int height)
 {
     comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (comac_gl_surface_create_for_window, device, win, width, height);
+    ret =
+	DLCALL (comac_gl_surface_create_for_window, device, win, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5421,13 +5748,14 @@ comac_gl_surface_create_for_window (comac_device_t *device,
 		       "  /width %d set\n"
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5438,10 +5766,10 @@ comac_gl_surface_create_for_window (comac_device_t *device,
 
 #if COMAC_HAS_WGL_FUNCTIONS
 comac_surface_t *
-comac_gl_surface_create_for_dc (comac_device_t		*device,
-				HDC			 dc,
-				int			 width,
-				int			 height)
+comac_gl_surface_create_for_dc (comac_device_t *device,
+				HDC dc,
+				int width,
+				int height)
 {
     comac_surface_t *ret;
 
@@ -5458,13 +5786,14 @@ comac_gl_surface_create_for_dc (comac_device_t		*device,
 		       "  /width %d set\n"
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 
@@ -5475,10 +5804,10 @@ comac_gl_surface_create_for_dc (comac_device_t		*device,
 
 #if COMAC_HAS_EGL_FUNCTIONS
 comac_surface_t *
-comac_gl_surface_create_for_egl (comac_device_t	*device,
-				 EGLSurface	 egl,
-				 int		 width,
-				 int		 height)
+comac_gl_surface_create_for_egl (comac_device_t *device,
+				 EGLSurface egl,
+				 int width,
+				 int height)
 {
     comac_surface_t *ret;
 
@@ -5495,13 +5824,14 @@ comac_gl_surface_create_for_egl (comac_device_t	*device,
 		       "  /width %d set\n"
 		       "  /height %d set\n"
 		       "  surface dup /s%ld exch def\n",
-		       width, height,
+		       width,
+		       height,
 		       obj->token);
 	obj->width = width;
 	obj->height = height;
 	obj->defined = TRUE;
 	_push_object (obj);
-	dump_stack(__func__);
+	dump_stack (__func__);
 	_write_unlock ();
     }
 

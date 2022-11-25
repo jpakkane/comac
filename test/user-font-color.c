@@ -35,57 +35,61 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 #define BORDER 10
 #define TEXT_SIZE 64
-#define WIDTH  (TEXT_SIZE * 6 + 2*BORDER)
-#define HEIGHT (TEXT_SIZE + 2*BORDER)
+#define WIDTH (TEXT_SIZE * 6 + 2 * BORDER)
+#define HEIGHT (TEXT_SIZE + 2 * BORDER)
 
-#define TEXT   "abcdef"
-
+#define TEXT "abcdef"
 
 static comac_status_t
-test_scaled_font_init (comac_scaled_font_t  *scaled_font,
-		       comac_t              *cr,
+test_scaled_font_init (comac_scaled_font_t *scaled_font,
+		       comac_t *cr,
 		       comac_font_extents_t *metrics)
 {
-    metrics->ascent  = .75;
+    metrics->ascent = .75;
     metrics->descent = .25;
     return COMAC_STATUS_SUCCESS;
 }
 
 static void
-render_glyph_solid (comac_t *cr, double width, double height, comac_bool_t color)
+render_glyph_solid (comac_t *cr,
+		    double width,
+		    double height,
+		    comac_bool_t color)
 {
-    comac_pattern_t *pattern = comac_pattern_reference(comac_get_source (cr));
+    comac_pattern_t *pattern = comac_pattern_reference (comac_get_source (cr));
 
     if (color)
-        comac_set_source_rgba (cr, 0, 1, 1, 0.5);
-    comac_rectangle (cr, 0, 0, width/2, height/2);
+	comac_set_source_rgba (cr, 0, 1, 1, 0.5);
+    comac_rectangle (cr, 0, 0, width / 2, height / 2);
     comac_fill (cr);
 
     if (color)
-        comac_set_source (cr, pattern);
-    comac_rectangle (cr, width/4, height/4, width/2, height/2);
+	comac_set_source (cr, pattern);
+    comac_rectangle (cr, width / 4, height / 4, width / 2, height / 2);
     comac_fill (cr);
 
     if (color)
-        comac_set_source_rgba (cr, 1, 1, 0, 0.5);
-    comac_rectangle (cr, width/2, height/2, width/2, height/2);
+	comac_set_source_rgba (cr, 1, 1, 0, 0.5);
+    comac_rectangle (cr, width / 2, height / 2, width / 2, height / 2);
     comac_fill (cr);
 
     comac_pattern_destroy (pattern);
 }
 
 static void
-render_glyph_linear (comac_t *cr, double width, double height, comac_bool_t color)
+render_glyph_linear (comac_t *cr,
+		     double width,
+		     double height,
+		     comac_bool_t color)
 {
     comac_pattern_t *pat;
 
     pat = comac_pattern_create_linear (0.0, 0.0, width, height);
-    comac_pattern_add_color_stop_rgba (pat, 0,   1, 0, 0, 1);
+    comac_pattern_add_color_stop_rgba (pat, 0, 1, 0, 0, 1);
     comac_pattern_add_color_stop_rgba (pat, 0.5, 0, 1, 0, color ? 0.5 : 1);
-    comac_pattern_add_color_stop_rgba (pat, 1,   0, 0, 1, 1);
+    comac_pattern_add_color_stop_rgba (pat, 1, 0, 0, 1, 1);
     comac_set_source (cr, pat);
 
     comac_rectangle (cr, 0, 0, width, height);
@@ -95,81 +99,82 @@ render_glyph_linear (comac_t *cr, double width, double height, comac_bool_t colo
 static void
 render_glyph_text (comac_t *cr, double width, double height, comac_bool_t color)
 {
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
-    comac_set_font_size(cr, 0.5);
+    comac_set_font_size (cr, 0.5);
 
     if (color)
-        comac_set_source_rgb (cr, 0.5, 0.5, 0);
-    comac_move_to (cr, width*0.1, height/2);
+	comac_set_source_rgb (cr, 0.5, 0.5, 0);
+    comac_move_to (cr, width * 0.1, height / 2);
     comac_show_text (cr, "a");
 
     if (color)
-        comac_set_source_rgb (cr, 0, 0.5, 0.5);
-    comac_move_to (cr, width*0.4, height*0.9);
+	comac_set_source_rgb (cr, 0, 0.5, 0.5);
+    comac_move_to (cr, width * 0.4, height * 0.9);
     comac_show_text (cr, "z");
 }
 
 static comac_status_t
-test_scaled_font_render_color_glyph (comac_scaled_font_t  *scaled_font,
-                                     unsigned long         glyph,
-                                     comac_t              *cr,
-                                     comac_text_extents_t *metrics)
+test_scaled_font_render_color_glyph (comac_scaled_font_t *scaled_font,
+				     unsigned long glyph,
+				     comac_t *cr,
+				     comac_text_extents_t *metrics)
 {
     comac_status_t status = COMAC_STATUS_SUCCESS;
     double width = 0.5;
     double height = 0.8;
 
     metrics->x_advance = 0.75;
-    comac_translate (cr,  0.125, -0.6);
+    comac_translate (cr, 0.125, -0.6);
     switch (glyph) {
-        case 'a':
-            render_glyph_solid (cr, width, height, TRUE);
-            break;
-        case 'b':
-            render_glyph_linear (cr, width, height, TRUE);
-            break;
-        case 'c':
-            render_glyph_text (cr, width, height, TRUE);
-            break;
-        case 'd':
-            render_glyph_solid (cr, width, height, TRUE);
-            status = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
-            break;
-        case 'e':
-            render_glyph_linear (cr, width, height, TRUE);
-            status = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
-            break;
-        case 'f':
-            render_glyph_solid (cr, width, height, TRUE);
-            status = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
-            break;
+    case 'a':
+	render_glyph_solid (cr, width, height, TRUE);
+	break;
+    case 'b':
+	render_glyph_linear (cr, width, height, TRUE);
+	break;
+    case 'c':
+	render_glyph_text (cr, width, height, TRUE);
+	break;
+    case 'd':
+	render_glyph_solid (cr, width, height, TRUE);
+	status = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
+	break;
+    case 'e':
+	render_glyph_linear (cr, width, height, TRUE);
+	status = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
+	break;
+    case 'f':
+	render_glyph_solid (cr, width, height, TRUE);
+	status = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
+	break;
     }
 
     return status;
 }
 
 static comac_status_t
-test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
-			       unsigned long         glyph,
-			       comac_t              *cr,
+test_scaled_font_render_glyph (comac_scaled_font_t *scaled_font,
+			       unsigned long glyph,
+			       comac_t *cr,
 			       comac_text_extents_t *metrics)
 {
     double width = 0.5;
     double height = 0.8;
     metrics->x_advance = 0.75;
-    comac_translate (cr,  0.125, -0.6);
+    comac_translate (cr, 0.125, -0.6);
     switch (glyph) {
-        case 'd':
-            render_glyph_solid (cr, width, height, FALSE);
-            break;
-        case 'e':
-            render_glyph_linear (cr, width, height, FALSE);
-            break;
-        case 'f':
-            render_glyph_text (cr, width, height, FALSE);
-            break;
+    case 'd':
+	render_glyph_solid (cr, width, height, FALSE);
+	break;
+    case 'e':
+	render_glyph_linear (cr, width, height, FALSE);
+	break;
+    case 'f':
+	render_glyph_text (cr, width, height, FALSE);
+	break;
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -183,8 +188,11 @@ _user_font_face_create (comac_font_face_t **out)
 
     user_font_face = comac_user_font_face_create ();
     comac_user_font_face_set_init_func (user_font_face, test_scaled_font_init);
-    comac_user_font_face_set_render_color_glyph_func (user_font_face, test_scaled_font_render_color_glyph);
-    comac_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
+    comac_user_font_face_set_render_color_glyph_func (
+	user_font_face,
+	test_scaled_font_render_color_glyph);
+    comac_user_font_face_set_render_glyph_func (user_font_face,
+						test_scaled_font_render_glyph);
 
     *out = user_font_face;
     return COMAC_STATUS_SUCCESS;
@@ -224,17 +232,19 @@ draw (comac_t *cr, int width, int height)
     comac_move_to (cr, 0, BORDER + font_extents.ascent + font_extents.descent);
     comac_rel_line_to (cr, WIDTH, 0);
     comac_move_to (cr, BORDER, 0);
-    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_rel_line_to (cr, 0, 2 * BORDER + TEXT_SIZE);
     comac_move_to (cr, BORDER + extents.x_advance, 0);
-    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_rel_line_to (cr, 0, 2 * BORDER + TEXT_SIZE);
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_set_line_width (cr, 2);
     comac_stroke (cr);
 
     /* ink boundaries in green */
     comac_rectangle (cr,
-		     BORDER + extents.x_bearing, BORDER + font_extents.ascent + extents.y_bearing,
-		     extents.width, extents.height);
+		     BORDER + extents.x_bearing,
+		     BORDER + font_extents.ascent + extents.y_bearing,
+		     extents.width,
+		     extents.height);
     comac_set_source_rgb (cr, 0, 1, 0);
     comac_set_line_width (cr, 2);
     comac_stroke (cr);
@@ -251,5 +261,7 @@ COMAC_TEST (user_font_color,
 	    "Tests user font color feature",
 	    "font, user-font", /* keywords */
 	    "comac >= 1.17.4", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

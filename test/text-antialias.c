@@ -25,7 +25,7 @@
 
 #include "comac-test.h"
 
-#define WIDTH  31
+#define WIDTH 31
 #define HEIGHT 22
 #define TEXT_SIZE 12
 
@@ -39,7 +39,8 @@ draw (comac_t *cr, comac_antialias_t antialias)
     comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -47,7 +48,8 @@ draw (comac_t *cr, comac_antialias_t antialias)
     font_options = comac_font_options_create ();
     comac_get_font_options (cr, font_options);
     comac_font_options_set_antialias (font_options, antialias);
-    comac_font_options_set_subpixel_order (font_options, COMAC_SUBPIXEL_ORDER_RGB);
+    comac_font_options_set_subpixel_order (font_options,
+					   COMAC_SUBPIXEL_ORDER_RGB);
     comac_set_font_options (cr, font_options);
 
     comac_font_options_destroy (font_options);
@@ -86,21 +88,27 @@ draw_subpixel (comac_t *cr, int width, int height)
 
 COMAC_TEST (text_antialias_gray,
 	    "Tests text rendering with grayscale antialiasing",
-	    "text", /* keywords */
+	    "text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_gray)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_gray)
 
 COMAC_TEST (text_antialias_none,
 	    "Tests text rendering with no antialiasing",
-	    "text", /* keywords */
+	    "text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_none)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_none)
 
 COMAC_TEST (text_antialias_subpixel,
 	    "Tests text rendering with subpixel antialiasing",
-	    "text", /* keywords */
+	    "text",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw_subpixel)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw_subpixel)

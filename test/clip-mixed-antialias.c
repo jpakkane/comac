@@ -26,8 +26,8 @@
 
 #include "comac-test.h"
 
-#define WIDTH	200
-#define HEIGHT	200
+#define WIDTH 200
+#define HEIGHT 200
 
 /* This is an example from the wild, as silly as it is
 n 52 0 429 709 rectangle
@@ -47,25 +47,28 @@ n 960 0 m 52.5 0 l 52.5 907.5 l 960 1815 l h
 clip+
 */
 
-static void background (comac_t *cr)
+static void
+background (comac_t *cr)
 {
     comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
 }
 
-static void clip_0 (comac_t *cr)
+static void
+clip_0 (comac_t *cr)
 {
     comac_rectangle (cr, 5, 5, 190, 190);
     comac_clip (cr);
 }
 
-static void clip_1 (comac_t *cr)
+static void
+clip_1 (comac_t *cr)
 {
     comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
-    comac_arc (cr, 100, 100, 125, 0, 2*M_PI);
+    comac_arc (cr, 100, 100, 125, 0, 2 * M_PI);
     comac_clip (cr);
 
     comac_set_antialias (cr, COMAC_ANTIALIAS_DEFAULT);
@@ -76,13 +79,14 @@ rounded_rectangle (comac_t *cr, int x, int y, int w, int h, int r)
 {
     comac_new_sub_path (cr);
     comac_arc (cr, x + r, y + r, r, M_PI, 3 * M_PI / 2);
-    comac_arc (cr, x + w - r, y + r, r, 3 *M_PI / 2, 2 * M_PI);
+    comac_arc (cr, x + w - r, y + r, r, 3 * M_PI / 2, 2 * M_PI);
     comac_arc (cr, x + w - r, y + h - r, r, 0, M_PI / 2);
     comac_arc (cr, x + r, y + h - r, r, M_PI / 2, M_PI);
     comac_close_path (cr);
 }
 
-static void clip_2 (comac_t *cr)
+static void
+clip_2 (comac_t *cr)
 {
     comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
@@ -93,7 +97,8 @@ static void clip_2 (comac_t *cr)
     comac_set_fill_rule (cr, COMAC_FILL_RULE_WINDING);
 }
 
-static void clip_3 (comac_t *cr)
+static void
+clip_3 (comac_t *cr)
 {
     comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
@@ -122,7 +127,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (clip_mixed_antialias,
 	    "Test drawing through through an mixture of clips",
-	    "clip", /* keywords */
+	    "clip",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

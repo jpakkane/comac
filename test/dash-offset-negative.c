@@ -37,7 +37,7 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    double dashes[] = { 1 };
+    double dashes[] = {1};
 
     /* We draw in the default black, so paint white first. */
     comac_save (cr);
@@ -50,7 +50,7 @@ draw (comac_t *cr, int width, int height)
     /* Basic 1-1 dash pattern */
     comac_set_dash (cr, dashes, 1, 0.);
 
-    comac_move_to (cr,  1, 2);
+    comac_move_to (cr, 1, 2);
     comac_line_to (cr, 18, 2);
     comac_stroke (cr);
 
@@ -64,7 +64,7 @@ draw (comac_t *cr, int width, int height)
     /* Offset dash by 0.5, rather than the path */
     comac_set_dash (cr, dashes, 1, 0.5);
 
-    comac_move_to (cr,  1, 8);
+    comac_move_to (cr, 1, 8);
     comac_line_to (cr, 18, 8);
     comac_stroke (cr);
 
@@ -73,7 +73,7 @@ draw (comac_t *cr, int width, int height)
     /* Basic 1-1 dash pattern dashing */
     comac_set_dash (cr, dashes, 1, -4);
 
-    comac_move_to (cr,  1, 11);
+    comac_move_to (cr, 1, 11);
     comac_line_to (cr, 18, 11);
     comac_stroke (cr);
 
@@ -85,7 +85,7 @@ draw (comac_t *cr, int width, int height)
     /* Offset dash by 0.5 */
     comac_set_dash (cr, dashes, 1, -3.5);
 
-    comac_move_to (cr,  1, 17);
+    comac_move_to (cr, 1, 17);
     comac_line_to (cr, 18, 17);
     comac_stroke (cr);
 
@@ -95,6 +95,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (dash_offset_negative,
 	    "Tests comac_set_dash with a negative offset",
 	    "dash, stroke", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

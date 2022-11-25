@@ -26,10 +26,10 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH  10
-#define PAD	    2
-#define WIDTH	    (PAD + LINE_WIDTH + PAD)
-#define HEIGHT	    (WIDTH)
+#define LINE_WIDTH 10
+#define PAD 2
+#define WIDTH (PAD + LINE_WIDTH + PAD)
+#define HEIGHT (WIDTH)
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -56,7 +56,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_miter_limit (cr, 1.0);
 
     comac_move_to (cr, LINE_WIDTH / 2.0, LINE_WIDTH);
-    comac_rel_line_to (cr, 0, - LINE_WIDTH / 2.0);
+    comac_rel_line_to (cr, 0, -LINE_WIDTH / 2.0);
     comac_rel_line_to (cr, LINE_WIDTH / 2.0, 0);
 
     comac_stroke (cr);
@@ -65,8 +65,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (rectilinear_miter_limit,
-	    "Test that the rectilinear stroke optimization doesn't break comac_set_miter_limit",
+	    "Test that the rectilinear stroke optimization doesn't break "
+	    "comac_set_miter_limit",
 	    "miter, stroke, stress", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,		     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

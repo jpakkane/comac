@@ -61,10 +61,10 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
-    comac_set_source_rgb (cr, 0,0,0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
     /* Note that without the clip, this doesn't crash... */
     comac_new_path (cr);
@@ -87,6 +87,8 @@ COMAC_TEST (big_trap,
 	    "Test oversize trapezoid with a clip region"
 	    "\nTest needs to be adjusted to trigger the original bug",
 	    "trap", /* keywords */
-	    NULL, /* requirements */
-	    100, 100,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    100,
+	    100,
+	    NULL,
+	    draw)

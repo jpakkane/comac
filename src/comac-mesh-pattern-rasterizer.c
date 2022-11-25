@@ -155,7 +155,6 @@
 #define STEPS_CLIP_V 64.0
 #define STEPS_CLIP_U 64.0
 
-
 /* Utils */
 static inline double
 sqlen (comac_point_double_t p0, comac_point_double_t p1)
@@ -284,7 +283,7 @@ fd_fwd (double f[4])
 static inline void
 fd_fixed (double d[4], int32_t i[4])
 {
-    i[0] = _comac_fixed_16_16_from_double (256 *  2 * d[0]);
+    i[0] = _comac_fixed_16_16_from_double (256 * 2 * d[0]);
     i[1] = _comac_fixed_16_16_from_double (256 * 16 * d[1]);
     i[2] = _comac_fixed_16_16_from_double (256 * 16 * d[2]);
     i[3] = _comac_fixed_16_16_from_double (256 * 16 * d[3]);
@@ -358,9 +357,18 @@ bezier_steps_sq (comac_point_double_t p[4])
  * The output control nodes have to be distinct.
  */
 static inline void
-split_bezier_1D (double  x,  double  y,  double  z,  double  w,
-		 double *x0, double *y0, double *z0, double *w0,
-		 double *x1, double *y1, double *z1, double *w1)
+split_bezier_1D (double x,
+		 double y,
+		 double z,
+		 double w,
+		 double *x0,
+		 double *y0,
+		 double *z0,
+		 double *w0,
+		 double *x1,
+		 double *y1,
+		 double *z1,
+		 double *w1)
 {
     double tmp;
 
@@ -393,20 +401,40 @@ split_bezier (comac_point_double_t p[4],
 	      comac_point_double_t fst_half[4],
 	      comac_point_double_t snd_half[4])
 {
-    split_bezier_1D (p[0].x, p[1].x, p[2].x, p[3].x,
-		     &fst_half[0].x, &fst_half[1].x, &fst_half[2].x, &fst_half[3].x,
-		     &snd_half[0].x, &snd_half[1].x, &snd_half[2].x, &snd_half[3].x);
+    split_bezier_1D (p[0].x,
+		     p[1].x,
+		     p[2].x,
+		     p[3].x,
+		     &fst_half[0].x,
+		     &fst_half[1].x,
+		     &fst_half[2].x,
+		     &fst_half[3].x,
+		     &snd_half[0].x,
+		     &snd_half[1].x,
+		     &snd_half[2].x,
+		     &snd_half[3].x);
 
-    split_bezier_1D (p[0].y, p[1].y, p[2].y, p[3].y,
-		     &fst_half[0].y, &fst_half[1].y, &fst_half[2].y, &fst_half[3].y,
-		     &snd_half[0].y, &snd_half[1].y, &snd_half[2].y, &snd_half[3].y);
+    split_bezier_1D (p[0].y,
+		     p[1].y,
+		     p[2].y,
+		     p[3].y,
+		     &fst_half[0].y,
+		     &fst_half[1].y,
+		     &fst_half[2].y,
+		     &fst_half[3].y,
+		     &snd_half[0].y,
+		     &snd_half[1].y,
+		     &snd_half[2].y,
+		     &snd_half[3].y);
 }
 
-
 typedef enum _intersection {
-    INSIDE = -1, /* the interval is entirely contained in the reference interval */
-    OUTSIDE = 0, /* the interval has no intersection with the reference interval */
-    PARTIAL = 1  /* the interval intersects the reference interval (but is not fully inside it) */
+    INSIDE =
+	-1, /* the interval is entirely contained in the reference interval */
+    OUTSIDE =
+	0, /* the interval has no intersection with the reference interval */
+    PARTIAL =
+	1 /* the interval intersects the reference interval (but is not fully inside it) */
 } intersection_t;
 
 /*
@@ -454,8 +482,16 @@ intersect_interval (double a, double b, double c, double d)
  * nothing.
  */
 static inline void
-draw_pixel (unsigned char *data, int width, int height, int stride,
-	    int x, int y, uint16_t r, uint16_t g, uint16_t b, uint16_t a)
+draw_pixel (unsigned char *data,
+	    int width,
+	    int height,
+	    int stride,
+	    int x,
+	    int y,
+	    uint16_t r,
+	    uint16_t g,
+	    uint16_t b,
+	    uint16_t a)
 {
     if (likely (0 <= x && 0 <= y && x < width && y < height)) {
 	uint32_t tr, tg, tb, ta;
@@ -470,8 +506,9 @@ draw_pixel (unsigned char *data, int width, int height, int stride,
 	tg += tg >> 16;
 	tb += tb >> 16;
 
-	*((uint32_t*) (data + y*(ptrdiff_t)stride + 4*x)) = ((ta << 16) & 0xff000000) |
-	    ((tr >> 8) & 0xff0000) | ((tg >> 16) & 0xff00) | (tb >> 24);
+	*((uint32_t *) (data + y * (ptrdiff_t) stride + 4 * x)) =
+	    ((ta << 16) & 0xff000000) | ((tr >> 8) & 0xff0000) |
+	    ((tg >> 16) & 0xff00) | (tb >> 24);
     }
 }
 
@@ -499,10 +536,21 @@ draw_pixel (unsigned char *data, int width, int height, int stride,
  * [0,1] (including both extremes).
  */
 static inline void
-rasterize_bezier_curve (unsigned char *data, int width, int height, int stride,
-			int ushift, double dxu[4], double dyu[4],
-			uint16_t r0, uint16_t g0, uint16_t b0, uint16_t a0,
-			uint16_t r3, uint16_t g3, uint16_t b3, uint16_t a3)
+rasterize_bezier_curve (unsigned char *data,
+			int width,
+			int height,
+			int stride,
+			int ushift,
+			double dxu[4],
+			double dyu[4],
+			uint16_t r0,
+			uint16_t g0,
+			uint16_t b0,
+			uint16_t a0,
+			uint16_t r3,
+			uint16_t g3,
+			uint16_t b3,
+			uint16_t a3)
 {
     int32_t xu[4], yu[4];
     int x0, y0, u, usteps = 1 << ushift;
@@ -534,8 +582,10 @@ rasterize_bezier_curve (unsigned char *data, int width, int height, int stride,
 	 * top-left coordinates (floor(x), floor(y))
 	 */
 
-	int x = _comac_fixed_integer_floor (x0 + (xu[0] >> 15) + ((xu[0] >> 14) & 1));
-	int y = _comac_fixed_integer_floor (y0 + (yu[0] >> 15) + ((yu[0] >> 14) & 1));
+	int x = _comac_fixed_integer_floor (x0 + (xu[0] >> 15) +
+					    ((xu[0] >> 14) & 1));
+	int y = _comac_fixed_integer_floor (y0 + (yu[0] >> 15) +
+					    ((yu[0] >> 14) & 1));
 
 	draw_pixel (data, width, height, stride, x, y, r, g, b, a);
 
@@ -573,15 +623,20 @@ rasterize_bezier_curve (unsigned char *data, int width, int height, int stride,
  * appear when using this function to rasterize a patch).
  */
 static void
-draw_bezier_curve (unsigned char *data, int width, int height, int stride,
-		   comac_point_double_t p[4], double c0[4], double c3[4])
+draw_bezier_curve (unsigned char *data,
+		   int width,
+		   int height,
+		   int stride,
+		   comac_point_double_t p[4],
+		   double c0[4],
+		   double c3[4])
 {
     double top, bottom, left, right, steps_sq;
     int i, v;
 
     top = bottom = p[0].y;
     for (i = 1; i < 4; ++i) {
-	top    = MIN (top,    p[i].y);
+	top = MIN (top, p[i].y);
 	bottom = MAX (bottom, p[i].y);
     }
 
@@ -592,7 +647,7 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
 
     left = right = p[0].x;
     for (i = 1; i < 4; ++i) {
-	left  = MIN (left,  p[i].x);
+	left = MIN (left, p[i].x);
 	right = MAX (right, p[i].x);
     }
 
@@ -601,7 +656,8 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
 	return;
 
     steps_sq = bezier_steps_sq (p);
-    if (steps_sq >= (v == INSIDE ? STEPS_MAX_U * STEPS_MAX_U : STEPS_CLIP_U * STEPS_CLIP_U)) {
+    if (steps_sq >= (v == INSIDE ? STEPS_MAX_U * STEPS_MAX_U
+				 : STEPS_CLIP_U * STEPS_CLIP_U)) {
 	/*
 	 * The number of steps is greater than the threshold. This
 	 * means that either the error would become too big if we
@@ -629,8 +685,13 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
 	    fd_down (yu);
 	}
 
-	rasterize_bezier_curve (data, width, height, stride, ushift,
-				xu, yu,
+	rasterize_bezier_curve (data,
+				width,
+				height,
+				stride,
+				ushift,
+				xu,
+				yu,
 				_comac_color_double_to_short (c0[0]),
 				_comac_color_double_to_short (c0[1]),
 				_comac_color_double_to_short (c0[2]),
@@ -642,13 +703,17 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
 
 	/* Draw the end point, to make sure that we didn't leave it
 	 * out because of rounding */
-	draw_pixel (data, width, height, stride,
-		    _comac_fixed_integer_floor (_comac_fixed_from_double (p[3].x)),
-		    _comac_fixed_integer_floor (_comac_fixed_from_double (p[3].y)),
-		    _comac_color_double_to_short (c3[0]),
-		    _comac_color_double_to_short (c3[1]),
-		    _comac_color_double_to_short (c3[2]),
-		    _comac_color_double_to_short (c3[3]));
+	draw_pixel (
+	    data,
+	    width,
+	    height,
+	    stride,
+	    _comac_fixed_integer_floor (_comac_fixed_from_double (p[3].x)),
+	    _comac_fixed_integer_floor (_comac_fixed_from_double (p[3].y)),
+	    _comac_color_double_to_short (c3[0]),
+	    _comac_color_double_to_short (c3[1]),
+	    _comac_color_double_to_short (c3[2]),
+	    _comac_color_double_to_short (c3[3]));
     }
 }
 
@@ -693,8 +758,13 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
  * [0,1] (including both extremes).
  */
 static inline void
-rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, int vshift,
-			comac_point_double_t p[4][4], double col[4][4])
+rasterize_bezier_patch (unsigned char *data,
+			int width,
+			int height,
+			int stride,
+			int vshift,
+			comac_point_double_t p[4][4],
+			double col[4][4])
 {
     double pv[4][2][4], cstart[4], cend[4], dcstart[4], dcend[4];
     int v, i, k;
@@ -722,10 +792,10 @@ rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, 
     }
 
     for (i = 0; i < 4; ++i) {
-	cstart[i]  = col[0][i];
-	cend[i]    = col[1][i];
+	cstart[i] = col[0][i];
+	cend[i] = col[1][i];
 	dcstart[i] = (col[2][i] - col[0][i]) / v;
-	dcend[i]   = (col[3][i] - col[1][i]) / v;
+	dcend[i] = (col[3][i] - col[1][i]) / v;
     }
 
     v++;
@@ -789,16 +859,20 @@ rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, 
  * shadings (see http://www.adobe.com/devnet/pdf/pdf_reference.html).
  */
 static void
-draw_bezier_patch (unsigned char *data, int width, int height, int stride,
-		     comac_point_double_t p[4][4], double c[4][4])
+draw_bezier_patch (unsigned char *data,
+		   int width,
+		   int height,
+		   int stride,
+		   comac_point_double_t p[4][4],
+		   double c[4][4])
 {
     double top, bottom, left, right, steps_sq;
     int i, j, v;
 
     top = bottom = p[0][0].y;
     for (i = 0; i < 4; ++i) {
-	for (j= 0; j < 4; ++j) {
-	    top    = MIN (top,    p[i][j].y);
+	for (j = 0; j < 4; ++j) {
+	    top = MIN (top, p[i][j].y);
 	    bottom = MAX (bottom, p[i][j].y);
 	}
     }
@@ -809,8 +883,8 @@ draw_bezier_patch (unsigned char *data, int width, int height, int stride,
 
     left = right = p[0][0].x;
     for (i = 0; i < 4; ++i) {
-	for (j= 0; j < 4; ++j) {
-	    left  = MIN (left,  p[i][j].x);
+	for (j = 0; j < 4; ++j) {
+	    left = MIN (left, p[i][j].x);
 	    right = MAX (right, p[i][j].x);
 	}
     }
@@ -823,7 +897,8 @@ draw_bezier_patch (unsigned char *data, int width, int height, int stride,
     for (i = 0; i < 4; ++i)
 	steps_sq = MAX (steps_sq, bezier_steps_sq (p[i]));
 
-    if (steps_sq >= (v == INSIDE ? STEPS_MAX_V * STEPS_MAX_V : STEPS_CLIP_V * STEPS_CLIP_V)) {
+    if (steps_sq >= (v == INSIDE ? STEPS_MAX_V * STEPS_MAX_V
+				 : STEPS_CLIP_V * STEPS_CLIP_V)) {
 	/* The number of steps is greater than the threshold. This
 	 * means that either the error would become too big if we
 	 * directly rasterized it or that we can probably save some
@@ -855,7 +930,13 @@ draw_bezier_patch (unsigned char *data, int width, int height, int stride,
 	}
 	draw_bezier_patch (data, width, height, stride, second, subc);
     } else {
-	rasterize_bezier_patch (data, width, height, stride, sqsteps2shift (steps_sq), p, c);
+	rasterize_bezier_patch (data,
+				width,
+				height,
+				stride,
+				sqsteps2shift (steps_sq),
+				p,
+				c);
     }
 }
 
@@ -877,12 +958,12 @@ draw_bezier_patch (unsigned char *data, int width, int height, int stride,
  */
 void
 _comac_mesh_pattern_rasterize (const comac_mesh_pattern_t *mesh,
-			       void                       *data,
-			       int                         width,
-			       int                         height,
-			       int                         stride,
-			       double                      x_offset,
-			       double                      y_offset)
+			       void *data,
+			       int width,
+			       int height,
+			       int stride,
+			       double x_offset,
+			       double y_offset)
 {
     comac_point_double_t nodes[4][4];
     double colors[4][4];
@@ -905,7 +986,9 @@ _comac_mesh_pattern_rasterize (const comac_mesh_pattern_t *mesh,
 	for (j = 0; j < 4; j++) {
 	    for (k = 0; k < 4; k++) {
 		nodes[j][k] = patch->points[j][k];
-		comac_matrix_transform_point (&p2u, &nodes[j][k].x, &nodes[j][k].y);
+		comac_matrix_transform_point (&p2u,
+					      &nodes[j][k].x,
+					      &nodes[j][k].y);
 		nodes[j][k].x += x_offset;
 		nodes[j][k].y += y_offset;
 	    }

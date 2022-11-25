@@ -39,30 +39,30 @@
 #include "comacint.h"
 
 typedef struct _comac_image_info {
-    int		 width;
-    int		 height;
-    int		 num_components;
-    int		 bits_per_component;
+    int width;
+    int height;
+    int num_components;
+    int bits_per_component;
 } comac_image_info_t;
 
 comac_private comac_int_status_t
-_comac_image_info_get_jpeg_info (comac_image_info_t	*info,
-				 const unsigned char	*data,
-				 unsigned long		 length);
+_comac_image_info_get_jpeg_info (comac_image_info_t *info,
+				 const unsigned char *data,
+				 unsigned long length);
 
 comac_private comac_int_status_t
-_comac_image_info_get_jpx_info (comac_image_info_t	*info,
-				const unsigned char	*data,
-				unsigned long		 length);
+_comac_image_info_get_jpx_info (comac_image_info_t *info,
+				const unsigned char *data,
+				unsigned long length);
 
 comac_private comac_int_status_t
-_comac_image_info_get_png_info (comac_image_info_t	*info,
-				const unsigned char     *data,
-				unsigned long            length);
+_comac_image_info_get_png_info (comac_image_info_t *info,
+				const unsigned char *data,
+				unsigned long length);
 
 comac_private comac_int_status_t
-_comac_image_info_get_jbig2_info (comac_image_info_t	*info,
-				  const unsigned char	*data,
-				  unsigned long		 length);
+_comac_image_info_get_jbig2_info (comac_image_info_t *info,
+				  const unsigned char *data,
+				  unsigned long length);
 
 #endif /* COMAC_IMAGE_INFO_PRIVATE_H */

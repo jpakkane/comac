@@ -49,7 +49,8 @@ draw (comac_t *cr, int width, int height)
     cr2 = comac_create (comac_get_target (cr));
 
     /* First, let's make a nil surface. */
-    surface = comac_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
+    surface =
+	comac_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
 
     /* Let the error propagate into a nil pattern. */
     pattern = comac_pattern_create_for_surface (surface);
@@ -63,9 +64,11 @@ draw (comac_t *cr, int width, int height)
 
     /* Check that the error made it all that way. */
     if (comac_status (cr2) != COMAC_STATUS_FILE_NOT_FOUND) {
-	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			comac_status_to_string (comac_status (cr2)),
-			comac_status_to_string (COMAC_STATUS_FILE_NOT_FOUND));
+	comac_test_log (
+	    ctx,
+	    "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	    comac_status_to_string (comac_status (cr2)),
+	    comac_status_to_string (COMAC_STATUS_FILE_NOT_FOUND));
 	comac_destroy (cr2);
 	return COMAC_TEST_FAILURE;
     }
@@ -88,9 +91,11 @@ draw (comac_t *cr, int width, int height)
 
     /* Check that the error made it all that way. */
     if (comac_status (cr2) != COMAC_STATUS_NULL_POINTER) {
-	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			comac_status_to_string (comac_status (cr2)),
-			comac_status_to_string (COMAC_STATUS_NULL_POINTER));
+	comac_test_log (
+	    ctx,
+	    "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	    comac_status_to_string (comac_status (cr2)),
+	    comac_status_to_string (COMAC_STATUS_NULL_POINTER));
 	comac_destroy (cr2);
 	return COMAC_TEST_FAILURE;
     }
@@ -104,7 +109,8 @@ draw (comac_t *cr, int width, int height)
 
     comac_surface_finish (NULL);
 
-    surface = comac_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
+    surface =
+	comac_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
     comac_surface_finish (surface);
     comac_surface_destroy (surface);
 
@@ -119,9 +125,11 @@ draw (comac_t *cr, int width, int height)
     /* Trigger invalid restore. */
     comac_restore (cr2);
     if (comac_status (cr2) != COMAC_STATUS_INVALID_RESTORE) {
-	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			comac_status_to_string (comac_status (cr2)),
-			comac_status_to_string (COMAC_STATUS_INVALID_RESTORE));
+	comac_test_log (
+	    ctx,
+	    "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	    comac_status_to_string (comac_status (cr2)),
+	    comac_status_to_string (COMAC_STATUS_INVALID_RESTORE));
 	comac_destroy (cr2);
 	return COMAC_TEST_FAILURE;
     }
@@ -137,9 +145,11 @@ draw (comac_t *cr, int width, int height)
     cr2 = comac_create (NULL);
 
     if (comac_status (cr2) != COMAC_STATUS_NULL_POINTER) {
-	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			comac_status_to_string (comac_status (cr2)),
-			comac_status_to_string (COMAC_STATUS_NULL_POINTER));
+	comac_test_log (
+	    ctx,
+	    "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+	    comac_status_to_string (comac_status (cr2)),
+	    comac_status_to_string (COMAC_STATUS_NULL_POINTER));
 	comac_destroy (cr2);
 	return COMAC_TEST_FAILURE;
     }
@@ -165,6 +175,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (nil_surface,
 	    "Test that nil surfaces do not make comac crash.",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    1, 1,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    1,
+	    1,
+	    NULL,
+	    draw)

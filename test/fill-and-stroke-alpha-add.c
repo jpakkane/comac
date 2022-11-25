@@ -40,10 +40,7 @@ rectangle (comac_t *cr)
 static void
 circle (comac_t *cr)
 {
-    comac_arc (cr,
-	       PAD + SIZE / 2, PAD + SIZE / 2,
-	       SIZE / 2,
-	       0, 2 * M_PI);
+    comac_arc (cr, PAD + SIZE / 2, PAD + SIZE / 2, SIZE / 2, 0, 2 * M_PI);
 }
 
 /* Given a path-generating function and two possibly translucent
@@ -51,10 +48,10 @@ circle (comac_t *cr)
  * offscreen group), then blend the result into the destination.
  */
 static void
-fill_and_stroke (comac_t		*cr,
-		 path_func_t		 path_func,
-		 comac_pattern_t	*fill_pattern,
-		 comac_pattern_t	*stroke_pattern)
+fill_and_stroke (comac_t *cr,
+		 path_func_t path_func,
+		 comac_pattern_t *fill_pattern,
+		 comac_pattern_t *stroke_pattern)
 {
     comac_push_group (cr);
     {
@@ -100,8 +97,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (fill_and_stroke_alpha_add,
-	    "Use a group to fill/stroke a path (each with different alpha) using DEST_OUT and ADD to combine",
+	    "Use a group to fill/stroke a path (each with different alpha) "
+	    "using DEST_OUT and ADD to combine",
 	    "fill-and-stroke, fill, stroke", /* keywords */
-	    NULL, /* requirements */
-	    2 * SIZE + 4 * PAD, SIZE + 2 * PAD,
-	    NULL, draw)
+	    NULL,			     /* requirements */
+	    2 * SIZE + 4 * PAD,
+	    SIZE + 2 * PAD,
+	    NULL,
+	    draw)

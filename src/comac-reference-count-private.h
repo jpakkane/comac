@@ -46,17 +46,25 @@ typedef struct {
 
 #define _comac_reference_count_inc(RC) _comac_atomic_int_inc (&(RC)->ref_count)
 #define _comac_reference_count_dec(RC) _comac_atomic_int_dec (&(RC)->ref_count)
-#define _comac_reference_count_dec_and_test(RC) _comac_atomic_int_dec_and_test (&(RC)->ref_count)
+#define _comac_reference_count_dec_and_test(RC)                                \
+    _comac_atomic_int_dec_and_test (&(RC)->ref_count)
 
 #define COMAC_REFERENCE_COUNT_INIT(RC, VALUE) ((RC)->ref_count = (VALUE))
 
-#define COMAC_REFERENCE_COUNT_GET_VALUE(RC) _comac_atomic_int_get (&(RC)->ref_count)
+#define COMAC_REFERENCE_COUNT_GET_VALUE(RC)                                    \
+    _comac_atomic_int_get (&(RC)->ref_count)
 
 #define COMAC_REFERENCE_COUNT_INVALID_VALUE ((comac_atomic_int_t) -1)
-#define COMAC_REFERENCE_COUNT_INVALID {COMAC_REFERENCE_COUNT_INVALID_VALUE}
+#define COMAC_REFERENCE_COUNT_INVALID                                          \
+    {                                                                          \
+	COMAC_REFERENCE_COUNT_INVALID_VALUE                                    \
+    }
 
-#define COMAC_REFERENCE_COUNT_IS_INVALID(RC) (COMAC_REFERENCE_COUNT_GET_VALUE (RC) == COMAC_REFERENCE_COUNT_INVALID_VALUE)
+#define COMAC_REFERENCE_COUNT_IS_INVALID(RC)                                   \
+    (COMAC_REFERENCE_COUNT_GET_VALUE (RC) ==                                   \
+     COMAC_REFERENCE_COUNT_INVALID_VALUE)
 
-#define COMAC_REFERENCE_COUNT_HAS_REFERENCE(RC) (COMAC_REFERENCE_COUNT_GET_VALUE (RC) > 0)
+#define COMAC_REFERENCE_COUNT_HAS_REFERENCE(RC)                                \
+    (COMAC_REFERENCE_COUNT_GET_VALUE (RC) > 0)
 
 #endif

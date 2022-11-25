@@ -25,7 +25,7 @@
 
 #include "comac-test.h"
 
-#define WIDTH  300
+#define WIDTH 300
 #define HEIGHT 200
 
 static comac_test_status_t
@@ -37,11 +37,12 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY "DejaVu Sans Mono",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY "DejaVu Sans Mono",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
-    font_options = comac_font_options_create();
+    font_options = comac_font_options_create ();
     comac_get_font_options (cr, font_options);
     comac_font_options_set_hint_metrics (font_options, COMAC_HINT_METRICS_OFF);
     comac_font_options_set_hint_style (font_options, COMAC_HINT_STYLE_NONE);
@@ -63,6 +64,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (text_subpixel_positioning,
 	    "Test subpixel positioning",
 	    "text, font", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

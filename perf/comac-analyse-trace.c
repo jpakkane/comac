@@ -65,7 +65,6 @@ basename_no_ext (char *path)
     return name;
 }
 
-
 #else
 #include <dirent.h>
 
@@ -97,13 +96,13 @@ basename_no_ext (char *path)
 
 struct trace {
     const comac_boilerplate_target_t *target;
-    void            *closure;
+    void *closure;
     comac_surface_t *surface;
 };
 
 comac_bool_t
 comac_perf_can_run (comac_perf_t *perf,
-		    const char	 *name,
+		    const char *name,
 		    comac_bool_t *is_explicit)
 {
     unsigned int i;
@@ -161,11 +160,11 @@ done:
 }
 
 static comac_surface_t *
-surface_create (void		 *closure,
-		comac_content_t  content,
-		double		  width,
-		double		  height,
-		long		  uid)
+surface_create (void *closure,
+		comac_content_t content,
+		double width,
+		double height,
+		long uid)
 {
     struct trace *args = closure;
     return comac_surface_create_similar (args->surface, content, width, height);
@@ -185,28 +184,25 @@ interrupt (int sig)
 }
 
 static void
-describe (comac_perf_t *perf,
-          void *closure)
+describe (comac_perf_t *perf, void *closure)
 {
     char *description = NULL;
 
     if (perf->has_described_backend)
-	    return;
+	return;
     perf->has_described_backend = TRUE;
 
     if (perf->target->describe)
-        description = perf->target->describe (closure);
+	description = perf->target->describe (closure);
 
     if (description == NULL)
-        return;
+	return;
 
     free (description);
 }
 
 static void
-execute (comac_perf_t	 *perf,
-	 struct trace	 *args,
-	 const char	 *trace)
+execute (comac_perf_t *perf, struct trace *args, const char *trace)
 {
     char *trace_cpy, *name;
     const comac_script_interpreter_hooks_t hooks = {
@@ -241,8 +237,10 @@ execute (comac_perf_t	 *perf,
 	status = comac_script_interpreter_destroy (csi);
 	if (status) {
 	    /* XXXX comac_status_to_string is just wrong! */
-	    fprintf (stderr, "Error during replay, line %d: %s\n",
-		     line_no, comac_status_to_string (status));
+	    fprintf (stderr,
+		     "Error during replay, line %d: %s\n",
+		     line_no,
+		     comac_status_to_string (status));
 	}
     }
     user_interrupt = 0;
@@ -253,25 +251,30 @@ execute (comac_perf_t	 *perf,
 static void
 usage (const char *argv0)
 {
-    fprintf (stderr,
-"Usage: %s [-l] [-i iterations] [-x exclude-file] [test-names ... | traces ...]\n"
-"\n"
-"Run the comac trace analysis suite over the given tests (all by default)\n"
-"The command-line arguments are interpreted as follows:\n"
-"\n"
-"  -i	iterations; specify the number of iterations per test case\n"
-"  -l	list only; just list selected test case names without executing\n"
-"  -x	exclude; specify a file to read a list of traces to exclude\n"
-"\n"
-"If test names are given they are used as sub-string matches so a command\n"
-"such as \"%s firefox\" can be used to run all firefox traces.\n"
-"Alternatively, you can specify a list of filenames to execute.\n",
-	     argv0, argv0);
+    fprintf (
+	stderr,
+	"Usage: %s [-l] [-i iterations] [-x exclude-file] [test-names ... | "
+	"traces ...]\n"
+	"\n"
+	"Run the comac trace analysis suite over the given tests (all by "
+	"default)\n"
+	"The command-line arguments are interpreted as follows:\n"
+	"\n"
+	"  -i	iterations; specify the number of iterations per test case\n"
+	"  -l	list only; just list selected test case names without "
+	"executing\n"
+	"  -x	exclude; specify a file to read a list of traces to exclude\n"
+	"\n"
+	"If test names are given they are used as sub-string matches so a "
+	"command\n"
+	"such as \"%s firefox\" can be used to run all firefox traces.\n"
+	"Alternatively, you can specify a list of filenames to execute.\n",
+	argv0,
+	argv0);
 }
 
 static comac_bool_t
-read_excludes (comac_perf_t *perf,
-	       const char   *filename)
+read_excludes (comac_perf_t *perf, const char *filename)
 {
     FILE *file;
     char *line = NULL;
@@ -299,9 +302,9 @@ read_excludes (comac_perf_t *perf,
 
 	if (s != t) {
 	    int i = perf->num_exclude_names;
-	    perf->exclude_names = xrealloc (perf->exclude_names,
-					    sizeof (char *) * (i+1));
-	    perf->exclude_names[i] = strndup (s, t-s);
+	    perf->exclude_names =
+		xrealloc (perf->exclude_names, sizeof (char *) * (i + 1));
+	    perf->exclude_names[i] = strndup (s, t - s);
 	    perf->num_exclude_names++;
 	}
     }
@@ -313,9 +316,7 @@ read_excludes (comac_perf_t *perf,
 }
 
 static void
-parse_options (comac_perf_t *perf,
-	       int	     argc,
-	       char	    *argv[])
+parse_options (comac_perf_t *perf, int argc, char *argv[])
 {
     char *end;
     int c;
@@ -336,7 +337,8 @@ parse_options (comac_perf_t *perf,
 	    perf->exact_iterations = TRUE;
 	    perf->iterations = strtoul (optarg, &end, 10);
 	    if (*end != '\0') {
-		fprintf (stderr, "Invalid argument for -i (not an integer): %s\n",
+		fprintf (stderr,
+			 "Invalid argument for -i (not an integer): %s\n",
 			 optarg);
 		exit (1);
 	    }
@@ -346,7 +348,8 @@ parse_options (comac_perf_t *perf,
 	    break;
 	case 'x':
 	    if (! read_excludes (perf, optarg)) {
-		fprintf (stderr, "Invalid argument for -x (not readable file): %s\n",
+		fprintf (stderr,
+			 "Invalid argument for -x (not readable file): %s\n",
 			 optarg);
 		exit (1);
 	    }
@@ -403,9 +406,9 @@ print (void *closure, const unsigned char *data, unsigned int length)
 }
 
 static void
-comac_perf_trace (comac_perf_t			   *perf,
+comac_perf_trace (comac_perf_t *perf,
 		  const comac_boilerplate_target_t *target,
-		  const char			   *trace)
+		  const char *trace)
 {
     struct trace args;
     comac_surface_t *real;
@@ -413,13 +416,15 @@ comac_perf_trace (comac_perf_t			   *perf,
     args.target = target;
     real = target->create_surface (NULL,
 				   COMAC_CONTENT_COLOR_ALPHA,
-				   1, 1,
-				   1, 1,
+				   1,
+				   1,
+				   1,
+				   1,
 				   COMAC_BOILERPLATE_MODE_PERF,
 				   &args.closure);
-    args.surface =
-	    comac_surface_create_observer (real,
-					   COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS);
+    args.surface = comac_surface_create_observer (
+	real,
+	COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS);
     comac_surface_destroy (real);
     if (comac_surface_status (args.surface)) {
 	fprintf (stderr,
@@ -435,7 +440,8 @@ comac_perf_trace (comac_perf_t			   *perf,
 
     printf ("\n");
     comac_device_observer_print (comac_surface_get_device (args.surface),
-				 print, stdout);
+				 print,
+				 stdout);
     fflush (stdout);
 
     comac_surface_destroy (args.surface);
@@ -445,22 +451,23 @@ comac_perf_trace (comac_perf_t			   *perf,
 }
 
 static void
-warn_no_traces (const char *message,
-		const char *trace_dir)
+warn_no_traces (const char *message, const char *trace_dir)
 {
     fprintf (stderr,
-"Error: %s '%s'.\n"
-"Have you cloned the comac-traces repository and uncompressed the traces?\n"
-"  git clone git://anongit.freedesktop.org/comac-traces\n"
-"  cd comac-traces && make\n"
-"Or set the env.var COMAC_TRACE_DIR to point to your traces?\n",
-	    message, trace_dir);
+	     "Error: %s '%s'.\n"
+	     "Have you cloned the comac-traces repository and uncompressed the "
+	     "traces?\n"
+	     "  git clone git://anongit.freedesktop.org/comac-traces\n"
+	     "  cd comac-traces && make\n"
+	     "Or set the env.var COMAC_TRACE_DIR to point to your traces?\n",
+	     message,
+	     trace_dir);
 }
 
 static int
-comac_perf_trace_dir (comac_perf_t		       *perf,
+comac_perf_trace_dir (comac_perf_t *perf,
 		      const comac_boilerplate_target_t *target,
-		      const char		       *dirname)
+		      const char *dirname)
 {
     DIR *dir;
     struct dirent *de;
@@ -487,7 +494,7 @@ comac_perf_trace_dir (comac_perf_t		       *perf,
 	if (stat (trace, &st) != 0)
 	    goto next;
 
-	if (S_ISDIR(st.st_mode)) {
+	if (S_ISDIR (st.st_mode)) {
 	    num_traces += comac_perf_trace_dir (perf, target, trace);
 	} else {
 	    const char *dot;
@@ -499,14 +506,13 @@ comac_perf_trace_dir (comac_perf_t		       *perf,
 		goto next;
 
 	    num_traces++;
-	    if (!force && ! comac_perf_can_run (perf, de->d_name, NULL))
+	    if (! force && ! comac_perf_can_run (perf, de->d_name, NULL))
 		goto next;
 
 	    comac_perf_trace (perf, target, trace);
 	}
-next:
+    next:
 	free (trace);
-
     }
     closedir (dir);
 
@@ -514,11 +520,11 @@ next:
 }
 
 int
-main (int   argc,
-      char *argv[])
+main (int argc, char *argv[])
 {
     comac_perf_t perf;
-    const char *trace_dir = "comac-traces:/usr/src/comac-traces:/usr/share/comac-traces";
+    const char *trace_dir =
+	"comac-traces:/usr/src/comac-traces:/usr/share/comac-traces";
     unsigned int n;
     int i;
 
@@ -563,8 +569,8 @@ main (int   argc,
 		char buf[1024];
 		const char *end = strchr (dir, ':');
 		if (end != NULL) {
-		    memcpy (buf, dir, end-dir);
-		    buf[end-dir] = '\0';
+		    memcpy (buf, dir, end - dir);
+		    buf[end - dir] = '\0';
 		    end++;
 
 		    dir = buf;

@@ -74,7 +74,8 @@ static inline comac_bool_t
 _comac_surface_is_image (const comac_surface_t *surface)
 {
     /* _comac_surface_nil sets a NULL backend so be safe */
-    return surface->backend && surface->backend->type == COMAC_SURFACE_TYPE_IMAGE;
+    return surface->backend &&
+	   surface->backend->type == COMAC_SURFACE_TYPE_IMAGE;
 }
 
 /**

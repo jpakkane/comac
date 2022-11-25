@@ -56,9 +56,9 @@ draw (comac_t *cr, int width, int height)
 
     /* Draw a diagonal line and clip to it */
 
-    comac_move_to (cr2, BORDER,                     BORDER);
-    comac_line_to (cr2, BORDER + LINE_WIDTH,        BORDER);
-    comac_line_to (cr2, SIZE - BORDER,              SIZE - BORDER);
+    comac_move_to (cr2, BORDER, BORDER);
+    comac_line_to (cr2, BORDER + LINE_WIDTH, BORDER);
+    comac_line_to (cr2, SIZE - BORDER, SIZE - BORDER);
     comac_line_to (cr2, SIZE - BORDER - LINE_WIDTH, SIZE - BORDER);
 
     comac_clip (cr2);
@@ -69,8 +69,10 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_source_rgb (cr2, 1, 1, 1); /* White */
     comac_rectangle (cr2,
-		     SIZE / 2 - LINE_WIDTH / 2, BORDER,
-		     LINE_WIDTH,                SIZE - 2 * BORDER);
+		     SIZE / 2 - LINE_WIDTH / 2,
+		     BORDER,
+		     LINE_WIDTH,
+		     SIZE - 2 * BORDER);
     comac_fill (cr2);
 
     /* But doesn't affect another comac_t that we create temporarily for
@@ -79,8 +81,10 @@ draw (comac_t *cr, int width, int height)
     cr3 = comac_create (target_surface);
     comac_set_source_rgb (cr3, 1, 1, 1); /* White */
     comac_rectangle (cr3,
-		     SIZE - BORDER - LINE_WIDTH, BORDER,
-		     LINE_WIDTH,                 SIZE - 2 * BORDER);
+		     SIZE - BORDER - LINE_WIDTH,
+		     BORDER,
+		     LINE_WIDTH,
+		     SIZE - 2 * BORDER);
     comac_fill (cr3);
 
     _propagate_status (cr, cr3);
@@ -92,18 +96,17 @@ draw (comac_t *cr, int width, int height)
     /* And doesn't affect anything after this comac_t is destroyed */
 
     comac_set_source_rgb (cr, 1, 1, 1); /* White */
-    comac_rectangle (cr,
-		     BORDER,     BORDER,
-		     LINE_WIDTH, SIZE - 2 * BORDER);
+    comac_rectangle (cr, BORDER, BORDER, LINE_WIDTH, SIZE - 2 * BORDER);
     comac_fill (cr);
 
     return COMAC_TEST_SUCCESS;
-
 }
 
 COMAC_TEST (clip_nesting,
 	    "Test clipping with multiple contexts for the same surface",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

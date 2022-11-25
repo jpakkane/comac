@@ -55,11 +55,10 @@ typedef struct _comac_pdf_resource {
     unsigned int id;
 } comac_pdf_resource_t;
 
-
 #define COMAC_NUM_OPERATORS (COMAC_OPERATOR_HSL_LUMINOSITY + 1)
 
 typedef struct _comac_pdf_group_resources {
-    comac_bool_t  operators[COMAC_NUM_OPERATORS];
+    comac_bool_t operators[COMAC_NUM_OPERATORS];
     comac_array_t alphas;
     comac_array_t smasks;
     comac_array_t patterns;
@@ -130,33 +129,33 @@ typedef enum _comac_pdf_operation {
 } comac_pdf_operation_t;
 
 typedef struct _comac_pdf_smask_group {
-    double		  width;
-    double		  height;
+    double width;
+    double height;
     comac_rectangle_int_t extents;
-    comac_pdf_resource_t  group_res;
+    comac_pdf_resource_t group_res;
     comac_pdf_operation_t operation;
-    comac_pattern_t	 *source;
-    comac_pdf_resource_t  source_res;
-    comac_pattern_t	 *mask;
-    comac_path_fixed_t	  path;
-    comac_fill_rule_t	  fill_rule;
-    comac_stroke_style_t  style;
-    comac_matrix_t	  ctm;
-    comac_matrix_t	  ctm_inverse;
-    char		 *utf8;
-    int                   utf8_len;
-    comac_glyph_t	 *glyphs;
-    int			  num_glyphs;
+    comac_pattern_t *source;
+    comac_pdf_resource_t source_res;
+    comac_pattern_t *mask;
+    comac_path_fixed_t path;
+    comac_fill_rule_t fill_rule;
+    comac_stroke_style_t style;
+    comac_matrix_t ctm;
+    comac_matrix_t ctm_inverse;
+    char *utf8;
+    int utf8_len;
+    comac_glyph_t *glyphs;
+    int num_glyphs;
     comac_text_cluster_t *clusters;
-    int                   num_clusters;
-    comac_bool_t          cluster_flags;
-    comac_scaled_font_t	 *scaled_font;
+    int num_clusters;
+    comac_bool_t cluster_flags;
+    comac_scaled_font_t *scaled_font;
 } comac_pdf_smask_group_t;
 
 typedef struct _comac_pdf_jbig2_global {
     unsigned char *id;
     unsigned long id_length;
-    comac_pdf_resource_t  res;
+    comac_pdf_resource_t res;
     comac_bool_t emitted;
 } comac_pdf_jbig2_global_t;
 
@@ -178,7 +177,7 @@ typedef struct _comac_pdf_struct_tree_node {
     comac_pdf_resource_t res;
     struct _comac_pdf_struct_tree_node *parent;
     comac_list_t children;
-    comac_array_t mcid; /* array of struct page_mcid */
+    comac_array_t mcid;		    /* array of struct page_mcid */
     comac_pdf_resource_t annot_res; /* 0 if no annot */
     struct tag_extents extents;
     comac_list_t link;
@@ -235,13 +234,14 @@ struct metadata {
 typedef struct _comac_pdf_interchange {
     comac_tag_stack_t analysis_tag_stack;
     comac_tag_stack_t render_tag_stack;
-    comac_array_t push_data; /* records analysis_tag_stack data field for each push */
+    comac_array_t
+	push_data; /* records analysis_tag_stack data field for each push */
     int push_data_index;
     comac_pdf_struct_tree_node_t *struct_root;
     comac_pdf_struct_tree_node_t *current_node;
     comac_pdf_struct_tree_node_t *begin_page_node;
     comac_pdf_struct_tree_node_t *end_page_node;
-    comac_array_t parent_tree; /* parent tree resources */
+    comac_array_t parent_tree;	/* parent tree resources */
     comac_array_t mcid_to_tree; /* mcid to tree node mapping for current page */
     comac_array_t annots; /* array of pointers to comac_pdf_annotation_t */
     comac_pdf_resource_t parent_tree_res;
@@ -318,8 +318,8 @@ struct _comac_pdf_surface {
 	comac_output_stream_t *stream;
 	comac_output_stream_t *mem_stream;
 	comac_output_stream_t *old_output;
-	comac_pdf_resource_t   resource;
-	comac_box_double_t     bbox;
+	comac_pdf_resource_t resource;
+	comac_box_double_t bbox;
 	comac_bool_t is_knockout;
     } group_stream;
 
@@ -369,8 +369,8 @@ comac_private comac_pdf_resource_t
 _comac_pdf_surface_new_object (comac_pdf_surface_t *surface);
 
 comac_private void
-_comac_pdf_surface_update_object (comac_pdf_surface_t	*surface,
-				  comac_pdf_resource_t	 resource);
+_comac_pdf_surface_update_object (comac_pdf_surface_t *surface,
+				  comac_pdf_resource_t resource);
 
 comac_private comac_int_status_t
 _comac_utf8_to_pdf_string (const char *utf8, char **str_out);
@@ -388,9 +388,9 @@ comac_private comac_int_status_t
 _comac_pdf_interchange_end_page_content (comac_pdf_surface_t *surface);
 
 comac_private comac_int_status_t
-_comac_pdf_interchange_tag_begin (comac_pdf_surface_t    *surface,
-				  const char             *name,
-				  const char             *attributes);
+_comac_pdf_interchange_tag_begin (comac_pdf_surface_t *surface,
+				  const char *name,
+				  const char *attributes);
 
 comac_private comac_int_status_t
 _comac_pdf_surface_object_begin (comac_pdf_surface_t *surface,
@@ -400,12 +400,11 @@ comac_private void
 _comac_pdf_surface_object_end (comac_pdf_surface_t *surface);
 
 comac_private comac_int_status_t
-_comac_pdf_interchange_tag_end (comac_pdf_surface_t *surface,
-				const char          *name);
+_comac_pdf_interchange_tag_end (comac_pdf_surface_t *surface, const char *name);
 
 comac_private comac_int_status_t
-_comac_pdf_interchange_add_operation_extents (comac_pdf_surface_t         *surface,
-					      const comac_rectangle_int_t *extents);
+_comac_pdf_interchange_add_operation_extents (
+    comac_pdf_surface_t *surface, const comac_rectangle_int_t *extents);
 
 comac_private comac_int_status_t
 _comac_pdf_interchange_write_page_objects (comac_pdf_surface_t *surface);
@@ -414,21 +413,21 @@ comac_private comac_int_status_t
 _comac_pdf_interchange_write_document_objects (comac_pdf_surface_t *surface);
 
 comac_private comac_int_status_t
-_comac_pdf_interchange_add_outline (comac_pdf_surface_t        *surface,
-				    int                         parent_id,
-				    const char                 *name,
-				    const char                 *dest,
-				    comac_pdf_outline_flags_t   flags,
-				    int                        *id);
+_comac_pdf_interchange_add_outline (comac_pdf_surface_t *surface,
+				    int parent_id,
+				    const char *name,
+				    const char *dest,
+				    comac_pdf_outline_flags_t flags,
+				    int *id);
 
 comac_private comac_int_status_t
-_comac_pdf_interchange_set_metadata (comac_pdf_surface_t  *surface,
-				     comac_pdf_metadata_t  metadata,
-				     const char           *utf8);
+_comac_pdf_interchange_set_metadata (comac_pdf_surface_t *surface,
+				     comac_pdf_metadata_t metadata,
+				     const char *utf8);
 
 comac_private comac_int_status_t
-_comac_pdf_interchange_set_custom_metadata (comac_pdf_surface_t  *surface,
-					const char           *name,
-					const char           *value);
+_comac_pdf_interchange_set_custom_metadata (comac_pdf_surface_t *surface,
+					    const char *name,
+					    const char *value);
 
 #endif /* COMAC_PDF_SURFACE_PRIVATE_H */

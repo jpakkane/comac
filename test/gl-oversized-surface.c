@@ -34,15 +34,17 @@
 static comac_test_status_t
 preamble (comac_test_context_t *test_ctx)
 {
-    int rgba_attribs[] = {
-	GLX_RGBA,
-	GLX_RED_SIZE, 1,
-	GLX_GREEN_SIZE, 1,
-	GLX_BLUE_SIZE, 1,
-	GLX_ALPHA_SIZE, 1,
-	GLX_DOUBLEBUFFER,
-	None
-    };
+    int rgba_attribs[] = {GLX_RGBA,
+			  GLX_RED_SIZE,
+			  1,
+			  GLX_GREEN_SIZE,
+			  1,
+			  GLX_BLUE_SIZE,
+			  1,
+			  GLX_ALPHA_SIZE,
+			  1,
+			  GLX_DOUBLEBUFFER,
+			  None};
 
     Display *display;
     XVisualInfo *visual_info;
@@ -55,7 +57,8 @@ preamble (comac_test_context_t *test_ctx)
     if (display == NULL)
 	return COMAC_TEST_UNTESTED;
 
-    visual_info = glXChooseVisual (display, DefaultScreen (display), rgba_attribs);
+    visual_info =
+	glXChooseVisual (display, DefaultScreen (display), rgba_attribs);
     if (visual_info == NULL) {
 	XCloseDisplay (display);
 	return COMAC_TEST_UNTESTED;
@@ -69,20 +72,26 @@ preamble (comac_test_context_t *test_ctx)
 
     device = comac_glx_device_create (display, glx_context);
 
-    oversized_surface = comac_gl_surface_create (device, COMAC_CONTENT_COLOR_ALPHA, INT_MAX, INT_MAX);
+    oversized_surface = comac_gl_surface_create (device,
+						 COMAC_CONTENT_COLOR_ALPHA,
+						 INT_MAX,
+						 INT_MAX);
     if (comac_surface_status (oversized_surface) != COMAC_STATUS_INVALID_SIZE)
-        test_status = COMAC_TEST_FAILURE;
+	test_status = COMAC_TEST_FAILURE;
 
     comac_device_destroy (device);
-    glXDestroyContext(display, glx_context);
+    glXDestroyContext (display, glx_context);
     XCloseDisplay (display);
 
     return test_status;
 }
 
 COMAC_TEST (gl_oversized_surface,
-	    "Test that creating a surface beyond texture limits results in an error surface",
+	    "Test that creating a surface beyond texture limits results in an "
+	    "error surface",
 	    "gl", /* keywords */
 	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    0,
+	    0,
+	    preamble,
+	    NULL)

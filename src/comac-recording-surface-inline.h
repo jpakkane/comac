@@ -43,7 +43,8 @@ static inline comac_bool_t
 _comac_recording_surface_get_bounds (comac_surface_t *surface,
 				     comac_rectangle_t *extents)
 {
-    comac_recording_surface_t *recording = (comac_recording_surface_t *)surface;
+    comac_recording_surface_t *recording =
+	(comac_recording_surface_t *) surface;
     if (recording->unbounded)
 	return FALSE;
 

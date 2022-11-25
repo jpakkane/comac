@@ -28,7 +28,7 @@
 
 #include "comac-test.h"
 
-static comac_surface_t*
+static comac_surface_t *
 draw_recording ()
 {
     comac_surface_t *recording;
@@ -40,14 +40,15 @@ draw_recording ()
     extents.width = 10;
     extents.height = 10;
 
-    recording = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+    recording =
+	comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
 
-    cr = comac_create(recording);
+    cr = comac_create (recording);
     comac_tag_begin (cr, COMAC_TAG_DEST, "name='dest'");
     comac_rectangle (cr, 3, 3, 4, 4);
     comac_stroke (cr);
     comac_tag_end (cr, COMAC_TAG_DEST);
-    comac_destroy(cr);
+    comac_destroy (cr);
 
     return recording;
 }
@@ -71,6 +72,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_448,
 	    "Exercises a bug with the tag API",
 	    "pdf", /* keywords */
-	    NULL, /* requirements */
-	    10, 10,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    10,
+	    10,
+	    NULL,
+	    draw)

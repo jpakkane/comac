@@ -34,17 +34,17 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_paint (cr);
 
-    pattern = comac_pattern_create_linear (width/2, 0, width/2, 0);
+    pattern = comac_pattern_create_linear (width / 2, 0, width / 2, 0);
     comac_pattern_add_color_stop_rgb (pattern, 0, 1, 0, 0);
     comac_pattern_add_color_stop_rgb (pattern, 1, 0, 0, 1);
     comac_set_source (cr, pattern);
 
     comac_pattern_set_extend (pattern, COMAC_EXTEND_NONE); /* nothing */
-    comac_rectangle (cr, 0, 0, width, height/2);
+    comac_rectangle (cr, 0, 0, width, height / 2);
     comac_fill (cr);
 
     comac_pattern_set_extend (pattern, COMAC_EXTEND_PAD); /* step */
-    comac_rectangle (cr, 0, height/2, width, height/2);
+    comac_rectangle (cr, 0, height / 2, width, height / 2);
     comac_fill (cr);
 
     comac_pattern_destroy (pattern);
@@ -55,6 +55,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (linear_step_function,
 	    "Tests creating a step function using a linear gradient",
 	    "gradient, linear", /* keywords */
-	    NULL, /* requirements */
-	    40, 40,
-	    NULL, draw)
+	    NULL,		/* requirements */
+	    40,
+	    40,
+	    NULL,
+	    draw)

@@ -56,6 +56,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (arc_infinite_loop,
 	    "Test comac_arc with huge angles",
 	    "arc", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,  /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

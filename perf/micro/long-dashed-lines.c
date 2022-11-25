@@ -30,7 +30,7 @@
 static comac_time_t
 do_long_dashed_lines (comac_t *cr, int width, int height, int loops)
 {
-    double dash[2] = { 2.0, 2.0 };
+    double dash[2] = {2.0, 2.0};
     int i;
 
     comac_save (cr);
@@ -43,7 +43,7 @@ do_long_dashed_lines (comac_t *cr, int width, int height, int loops)
     comac_new_path (cr);
     comac_set_line_width (cr, 1.0);
 
-    for (i = 0; i < height-1; i++) {
+    for (i = 0; i < height - 1; i++) {
 	double y0 = (double) i + 0.5;
 	comac_move_to (cr, 0.0, y0);
 	comac_line_to (cr, width, y0);

@@ -42,18 +42,20 @@
 #include "comac-error-private.h"
 
 comac_int_status_t
-_comac_compositor_paint (const comac_compositor_t	*compositor,
-			 comac_surface_t		*surface,
-			 comac_operator_t		 op,
-			 const comac_pattern_t		*source,
-			 const comac_clip_t		*clip)
+_comac_compositor_paint (const comac_compositor_t *compositor,
+			 comac_surface_t *surface,
+			 comac_operator_t op,
+			 const comac_pattern_t *source,
+			 const comac_clip_t *clip)
 {
     comac_composite_rectangles_t extents;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    status = _comac_composite_rectangles_init_for_paint (&extents, surface,
-							 op, source,
+    status = _comac_composite_rectangles_init_for_paint (&extents,
+							 surface,
+							 op,
+							 source,
 							 clip);
     if (unlikely (status))
 	return status;
@@ -68,12 +70,15 @@ _comac_compositor_paint (const comac_compositor_t	*compositor,
     } while (status == COMAC_INT_STATUS_UNSUPPORTED);
 
     if (status == COMAC_INT_STATUS_SUCCESS && surface->damage) {
-	TRACE ((stderr, "%s: applying damage (%d,%d)x(%d, %d)\n",
+	TRACE ((stderr,
+		"%s: applying damage (%d,%d)x(%d, %d)\n",
 		__FUNCTION__,
-		extents.unbounded.x, extents.unbounded.y,
-		extents.unbounded.width, extents.unbounded.height));
-	surface->damage = _comac_damage_add_rectangle (surface->damage,
-						       &extents.unbounded);
+		extents.unbounded.x,
+		extents.unbounded.y,
+		extents.unbounded.width,
+		extents.unbounded.height));
+	surface->damage =
+	    _comac_damage_add_rectangle (surface->damage, &extents.unbounded);
     }
 
     _comac_composite_rectangles_fini (&extents);
@@ -82,19 +87,22 @@ _comac_compositor_paint (const comac_compositor_t	*compositor,
 }
 
 comac_int_status_t
-_comac_compositor_mask (const comac_compositor_t	*compositor,
-			comac_surface_t			*surface,
-			comac_operator_t		 op,
-			const comac_pattern_t		*source,
-			const comac_pattern_t		*mask,
-			const comac_clip_t		*clip)
+_comac_compositor_mask (const comac_compositor_t *compositor,
+			comac_surface_t *surface,
+			comac_operator_t op,
+			const comac_pattern_t *source,
+			const comac_pattern_t *mask,
+			const comac_clip_t *clip)
 {
     comac_composite_rectangles_t extents;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    status = _comac_composite_rectangles_init_for_mask (&extents, surface,
-							op, source, mask,
+    status = _comac_composite_rectangles_init_for_mask (&extents,
+							surface,
+							op,
+							source,
+							mask,
 							clip);
     if (unlikely (status))
 	return status;
@@ -109,12 +117,15 @@ _comac_compositor_mask (const comac_compositor_t	*compositor,
     } while (status == COMAC_INT_STATUS_UNSUPPORTED);
 
     if (status == COMAC_INT_STATUS_SUCCESS && surface->damage) {
-	TRACE ((stderr, "%s: applying damage (%d,%d)x(%d, %d)\n",
+	TRACE ((stderr,
+		"%s: applying damage (%d,%d)x(%d, %d)\n",
 		__FUNCTION__,
-		extents.unbounded.x, extents.unbounded.y,
-		extents.unbounded.width, extents.unbounded.height));
-	surface->damage = _comac_damage_add_rectangle (surface->damage,
-						       &extents.unbounded);
+		extents.unbounded.x,
+		extents.unbounded.y,
+		extents.unbounded.width,
+		extents.unbounded.height));
+	surface->damage =
+	    _comac_damage_add_rectangle (surface->damage, &extents.unbounded);
     }
 
     _comac_composite_rectangles_fini (&extents);
@@ -123,29 +134,33 @@ _comac_compositor_mask (const comac_compositor_t	*compositor,
 }
 
 static comac_int_status_t
-_comac_compositor_stroke_impl (const comac_compositor_t	*compositor,
-			       comac_surface_t		*surface,
-			       comac_operator_t		 op,
-			       const comac_pattern_t		*source,
-			       const comac_path_fixed_t	*path,
-			       const comac_stroke_style_t	*style,
-			       const comac_matrix_t		*ctm,
-			       const comac_matrix_t		*ctm_inverse,
-			       double			 tolerance,
-			       comac_antialias_t		 antialias,
-			       const comac_clip_t		*clip)
+_comac_compositor_stroke_impl (const comac_compositor_t *compositor,
+			       comac_surface_t *surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_path_fixed_t *path,
+			       const comac_stroke_style_t *style,
+			       const comac_matrix_t *ctm,
+			       const comac_matrix_t *ctm_inverse,
+			       double tolerance,
+			       comac_antialias_t antialias,
+			       const comac_clip_t *clip)
 {
     comac_composite_rectangles_t extents;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    if (_comac_pen_vertices_needed (tolerance, style->line_width/2, ctm) <= 1)
+    if (_comac_pen_vertices_needed (tolerance, style->line_width / 2, ctm) <= 1)
 	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-    status = _comac_composite_rectangles_init_for_stroke (&extents, surface,
-							  op, source,
-							  path, style, ctm,
+    status = _comac_composite_rectangles_init_for_stroke (&extents,
+							  surface,
+							  op,
+							  source,
+							  path,
+							  style,
+							  ctm,
 							  clip);
     if (unlikely (status))
 	return status;
@@ -154,20 +169,28 @@ _comac_compositor_stroke_impl (const comac_compositor_t	*compositor,
 	while (compositor->stroke == NULL)
 	    compositor = compositor->delegate;
 
-	status = compositor->stroke (compositor, &extents,
-				     path, style, ctm, ctm_inverse,
-				     tolerance, antialias);
+	status = compositor->stroke (compositor,
+				     &extents,
+				     path,
+				     style,
+				     ctm,
+				     ctm_inverse,
+				     tolerance,
+				     antialias);
 
 	compositor = compositor->delegate;
     } while (status == COMAC_INT_STATUS_UNSUPPORTED);
 
     if (status == COMAC_INT_STATUS_SUCCESS && surface->damage) {
-	TRACE ((stderr, "%s: applying damage (%d,%d)x(%d, %d)\n",
+	TRACE ((stderr,
+		"%s: applying damage (%d,%d)x(%d, %d)\n",
 		__FUNCTION__,
-		extents.unbounded.x, extents.unbounded.y,
-		extents.unbounded.width, extents.unbounded.height));
-	surface->damage = _comac_damage_add_rectangle (surface->damage,
-						       &extents.unbounded);
+		extents.unbounded.x,
+		extents.unbounded.y,
+		extents.unbounded.width,
+		extents.unbounded.height));
+	surface->damage =
+	    _comac_damage_add_rectangle (surface->damage, &extents.unbounded);
     }
 
     _comac_composite_rectangles_fini (&extents);
@@ -176,23 +199,30 @@ _comac_compositor_stroke_impl (const comac_compositor_t	*compositor,
 }
 
 comac_int_status_t
-_comac_compositor_stroke (const comac_compositor_t	*compositor,
-			  comac_surface_t		*surface,
-			  comac_operator_t		 op,
-			  const comac_pattern_t	*source,
-			  const comac_path_fixed_t	*path,
-			  const comac_stroke_style_t	*style,
-			  const comac_matrix_t		*ctm,
-			  const comac_matrix_t		*ctm_inverse,
-			  double			 tolerance,
-			  comac_antialias_t		 antialias,
-			  const comac_clip_t		*clip)
+_comac_compositor_stroke (const comac_compositor_t *compositor,
+			  comac_surface_t *surface,
+			  comac_operator_t op,
+			  const comac_pattern_t *source,
+			  const comac_path_fixed_t *path,
+			  const comac_stroke_style_t *style,
+			  const comac_matrix_t *ctm,
+			  const comac_matrix_t *ctm_inverse,
+			  double tolerance,
+			  comac_antialias_t antialias,
+			  const comac_clip_t *clip)
 {
-    if (!style->is_hairline)
-	return _comac_compositor_stroke_impl (compositor, surface,
-				              op, source, path,
-					      style, ctm, ctm_inverse,
-					      tolerance, antialias, clip);
+    if (! style->is_hairline)
+	return _comac_compositor_stroke_impl (compositor,
+					      surface,
+					      op,
+					      source,
+					      path,
+					      style,
+					      ctm,
+					      ctm_inverse,
+					      tolerance,
+					      antialias,
+					      clip);
     else {
 	comac_stroke_style_t hairline_style;
 	comac_status_t status;
@@ -201,15 +231,22 @@ _comac_compositor_stroke (const comac_compositor_t	*compositor,
 	status = _comac_stroke_style_init_copy (&hairline_style, style);
 	if (unlikely (status))
 	    return status;
-	
+
 	hairline_style.line_width = 1.0;
 
 	comac_matrix_init_identity (&identity);
 
-	status = _comac_compositor_stroke_impl (compositor, surface,
-					        op, source, path,
-					        &hairline_style, &identity, &identity,
-					        tolerance, antialias, clip);
+	status = _comac_compositor_stroke_impl (compositor,
+						surface,
+						op,
+						source,
+						path,
+						&hairline_style,
+						&identity,
+						&identity,
+						tolerance,
+						antialias,
+						clip);
 
 	_comac_stroke_style_fini (&hairline_style);
 
@@ -218,22 +255,25 @@ _comac_compositor_stroke (const comac_compositor_t	*compositor,
 }
 
 comac_int_status_t
-_comac_compositor_fill (const comac_compositor_t	*compositor,
-			comac_surface_t			*surface,
-			comac_operator_t		 op,
-			const comac_pattern_t		*source,
-			const comac_path_fixed_t	*path,
-			comac_fill_rule_t		 fill_rule,
-			double				 tolerance,
-			comac_antialias_t		 antialias,
-			const comac_clip_t		*clip)
+_comac_compositor_fill (const comac_compositor_t *compositor,
+			comac_surface_t *surface,
+			comac_operator_t op,
+			const comac_pattern_t *source,
+			const comac_path_fixed_t *path,
+			comac_fill_rule_t fill_rule,
+			double tolerance,
+			comac_antialias_t antialias,
+			const comac_clip_t *clip)
 {
     comac_composite_rectangles_t extents;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    status = _comac_composite_rectangles_init_for_fill (&extents, surface,
-							op, source, path,
+    status = _comac_composite_rectangles_init_for_fill (&extents,
+							surface,
+							op,
+							source,
+							path,
 							clip);
     if (unlikely (status))
 	return status;
@@ -242,19 +282,26 @@ _comac_compositor_fill (const comac_compositor_t	*compositor,
 	while (compositor->fill == NULL)
 	    compositor = compositor->delegate;
 
-	status = compositor->fill (compositor, &extents,
-				   path, fill_rule, tolerance, antialias);
+	status = compositor->fill (compositor,
+				   &extents,
+				   path,
+				   fill_rule,
+				   tolerance,
+				   antialias);
 
 	compositor = compositor->delegate;
     } while (status == COMAC_INT_STATUS_UNSUPPORTED);
 
     if (status == COMAC_INT_STATUS_SUCCESS && surface->damage) {
-	TRACE ((stderr, "%s: applying damage (%d,%d)x(%d, %d)\n",
+	TRACE ((stderr,
+		"%s: applying damage (%d,%d)x(%d, %d)\n",
 		__FUNCTION__,
-		extents.unbounded.x, extents.unbounded.y,
-		extents.unbounded.width, extents.unbounded.height));
-	surface->damage = _comac_damage_add_rectangle (surface->damage,
-						       &extents.unbounded);
+		extents.unbounded.x,
+		extents.unbounded.y,
+		extents.unbounded.width,
+		extents.unbounded.height));
+	surface->damage =
+	    _comac_damage_add_rectangle (surface->damage, &extents.unbounded);
     }
 
     _comac_composite_rectangles_fini (&extents);
@@ -263,25 +310,29 @@ _comac_compositor_fill (const comac_compositor_t	*compositor,
 }
 
 comac_int_status_t
-_comac_compositor_glyphs (const comac_compositor_t		*compositor,
-			  comac_surface_t			*surface,
-			  comac_operator_t			 op,
-			  const comac_pattern_t			*source,
-			  comac_glyph_t				*glyphs,
-			  int					 num_glyphs,
-			  comac_scaled_font_t			*scaled_font,
-			  const comac_clip_t			*clip)
+_comac_compositor_glyphs (const comac_compositor_t *compositor,
+			  comac_surface_t *surface,
+			  comac_operator_t op,
+			  const comac_pattern_t *source,
+			  comac_glyph_t *glyphs,
+			  int num_glyphs,
+			  comac_scaled_font_t *scaled_font,
+			  const comac_clip_t *clip)
 {
     comac_composite_rectangles_t extents;
     comac_bool_t overlap;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    status = _comac_composite_rectangles_init_for_glyphs (&extents, surface,
-							  op, source,
+    status = _comac_composite_rectangles_init_for_glyphs (&extents,
+							  surface,
+							  op,
+							  source,
 							  scaled_font,
-							  glyphs, num_glyphs,
-							  clip, &overlap);
+							  glyphs,
+							  num_glyphs,
+							  clip,
+							  &overlap);
     if (unlikely (status))
 	return status;
 
@@ -289,19 +340,26 @@ _comac_compositor_glyphs (const comac_compositor_t		*compositor,
 	while (compositor->glyphs == NULL)
 	    compositor = compositor->delegate;
 
-	status = compositor->glyphs (compositor, &extents,
-				     scaled_font, glyphs, num_glyphs, overlap);
+	status = compositor->glyphs (compositor,
+				     &extents,
+				     scaled_font,
+				     glyphs,
+				     num_glyphs,
+				     overlap);
 
 	compositor = compositor->delegate;
     } while (status == COMAC_INT_STATUS_UNSUPPORTED);
 
     if (status == COMAC_INT_STATUS_SUCCESS && surface->damage) {
-	TRACE ((stderr, "%s: applying damage (%d,%d)x(%d, %d)\n",
+	TRACE ((stderr,
+		"%s: applying damage (%d,%d)x(%d, %d)\n",
 		__FUNCTION__,
-		extents.unbounded.x, extents.unbounded.y,
-		extents.unbounded.width, extents.unbounded.height));
-	surface->damage = _comac_damage_add_rectangle (surface->damage,
-						       &extents.unbounded);
+		extents.unbounded.x,
+		extents.unbounded.y,
+		extents.unbounded.width,
+		extents.unbounded.height));
+	surface->damage =
+	    _comac_damage_add_rectangle (surface->damage, &extents.unbounded);
     }
 
     _comac_composite_rectangles_fini (&extents);

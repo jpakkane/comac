@@ -49,12 +49,12 @@
 extern const comac_private comac_rectangle_list_t _comac_rectangles_nil;
 
 struct _comac_clip_path {
-    comac_reference_count_t	 ref_count;
-    comac_path_fixed_t		 path;
-    comac_fill_rule_t		 fill_rule;
-    double			 tolerance;
-    comac_antialias_t		 antialias;
-    comac_clip_path_t		*prev;
+    comac_reference_count_t ref_count;
+    comac_path_fixed_t path;
+    comac_fill_rule_t fill_rule;
+    double tolerance;
+    comac_antialias_t antialias;
+    comac_clip_path_t *prev;
 };
 
 struct _comac_clip {
@@ -103,43 +103,42 @@ comac_private comac_clip_t *
 _comac_clip_copy_with_translation (const comac_clip_t *clip, int tx, int ty);
 
 comac_private comac_bool_t
-_comac_clip_equal (const comac_clip_t *clip_a,
-		   const comac_clip_t *clip_b);
+_comac_clip_equal (const comac_clip_t *clip_a, const comac_clip_t *clip_b);
 
 comac_private comac_clip_t *
-_comac_clip_intersect_rectangle (comac_clip_t       *clip,
+_comac_clip_intersect_rectangle (comac_clip_t *clip,
 				 const comac_rectangle_int_t *rectangle);
 
 comac_private comac_clip_t *
-_comac_clip_intersect_clip (comac_clip_t *clip,
-			    const comac_clip_t *other);
+_comac_clip_intersect_clip (comac_clip_t *clip, const comac_clip_t *other);
 
 comac_private comac_clip_t *
-_comac_clip_intersect_box (comac_clip_t       *clip,
-			   const comac_box_t *box);
+_comac_clip_intersect_box (comac_clip_t *clip, const comac_box_t *box);
 
 comac_private comac_clip_t *
-_comac_clip_intersect_boxes (comac_clip_t *clip,
-			     const comac_boxes_t *boxes);
+_comac_clip_intersect_boxes (comac_clip_t *clip, const comac_boxes_t *boxes);
 
 comac_private comac_clip_t *
-_comac_clip_intersect_rectilinear_path (comac_clip_t       *clip,
+_comac_clip_intersect_rectilinear_path (comac_clip_t *clip,
 					const comac_path_fixed_t *path,
-					comac_fill_rule_t   fill_rule,
-					comac_antialias_t   antialias);
+					comac_fill_rule_t fill_rule,
+					comac_antialias_t antialias);
 
 comac_private comac_clip_t *
-_comac_clip_intersect_path (comac_clip_t       *clip,
+_comac_clip_intersect_path (comac_clip_t *clip,
 			    const comac_path_fixed_t *path,
-			    comac_fill_rule_t   fill_rule,
-			    double              tolerance,
-			    comac_antialias_t   antialias);
+			    comac_fill_rule_t fill_rule,
+			    double tolerance,
+			    comac_antialias_t antialias);
 
 comac_private const comac_rectangle_int_t *
 _comac_clip_get_extents (const comac_clip_t *clip);
 
 comac_private comac_surface_t *
-_comac_clip_get_surface (const comac_clip_t *clip, comac_surface_t *dst, int *tx, int *ty);
+_comac_clip_get_surface (const comac_clip_t *clip,
+			 comac_surface_t *dst,
+			 int *tx,
+			 int *ty);
 
 comac_private comac_surface_t *
 _comac_clip_get_image (const comac_clip_t *clip,
@@ -149,7 +148,8 @@ _comac_clip_get_image (const comac_clip_t *clip,
 comac_private comac_status_t
 _comac_clip_combine_with_surface (const comac_clip_t *clip,
 				  comac_surface_t *dst,
-				  int dst_x, int dst_y);
+				  int dst_x,
+				  int dst_y);
 
 comac_private comac_clip_t *
 _comac_clip_from_boxes (const comac_boxes_t *boxes);
@@ -173,14 +173,13 @@ _comac_clip_contains_rectangle (const comac_clip_t *clip,
 				const comac_rectangle_int_t *rect);
 
 comac_private comac_bool_t
-_comac_clip_contains_box (const comac_clip_t *clip,
-			  const comac_box_t *box);
+_comac_clip_contains_box (const comac_clip_t *clip, const comac_box_t *box);
 
 comac_private comac_bool_t
 _comac_clip_contains_extents (const comac_clip_t *clip,
 			      const comac_composite_rectangles_t *extents);
 
-comac_private comac_rectangle_list_t*
+comac_private comac_rectangle_list_t *
 _comac_clip_copy_rectangle_list (comac_clip_t *clip, comac_gstate_t *gstate);
 
 comac_private comac_rectangle_list_t *

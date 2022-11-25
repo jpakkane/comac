@@ -51,8 +51,7 @@ _comac_spline_intersects (const comac_point_t *a,
     if (_comac_box_contains_point (box, a) ||
 	_comac_box_contains_point (box, b) ||
 	_comac_box_contains_point (box, c) ||
-	_comac_box_contains_point (box, d))
-    {
+	_comac_box_contains_point (box, d)) {
 	return TRUE;
     }
 
@@ -62,8 +61,7 @@ _comac_spline_intersects (const comac_point_t *a,
     _comac_box_add_point (&bounds, d);
 
     if (bounds.p2.x <= box->p1.x || bounds.p1.x >= box->p2.x ||
-	bounds.p2.y <= box->p1.y || bounds.p1.y >= box->p2.y)
-    {
+	bounds.p2.y <= box->p1.y || bounds.p1.y >= box->p2.y) {
 	return FALSE;
     }
 
@@ -84,8 +82,10 @@ comac_bool_t
 _comac_spline_init (comac_spline_t *spline,
 		    comac_spline_add_point_func_t add_point_func,
 		    void *closure,
-		    const comac_point_t *a, const comac_point_t *b,
-		    const comac_point_t *c, const comac_point_t *d)
+		    const comac_point_t *a,
+		    const comac_point_t *b,
+		    const comac_point_t *c,
+		    const comac_point_t *d)
 {
     /* If both tangents are zero, this is just a straight line */
     if (a->x == b->x && a->y == b->y && c->x == d->x && c->y == d->y)
@@ -100,18 +100,28 @@ _comac_spline_init (comac_spline_t *spline,
     spline->knots.d = *d;
 
     if (a->x != b->x || a->y != b->y)
-	_comac_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.b);
+	_comac_slope_init (&spline->initial_slope,
+			   &spline->knots.a,
+			   &spline->knots.b);
     else if (a->x != c->x || a->y != c->y)
-	_comac_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.c);
+	_comac_slope_init (&spline->initial_slope,
+			   &spline->knots.a,
+			   &spline->knots.c);
     else if (a->x != d->x || a->y != d->y)
-	_comac_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.d);
+	_comac_slope_init (&spline->initial_slope,
+			   &spline->knots.a,
+			   &spline->knots.d);
     else
 	return FALSE;
 
     if (c->x != d->x || c->y != d->y)
-	_comac_slope_init (&spline->final_slope, &spline->knots.c, &spline->knots.d);
+	_comac_slope_init (&spline->final_slope,
+			   &spline->knots.c,
+			   &spline->knots.d);
     else if (b->x != d->x || b->y != d->y)
-	_comac_slope_init (&spline->final_slope, &spline->knots.b, &spline->knots.d);
+	_comac_slope_init (&spline->final_slope,
+			   &spline->knots.b,
+			   &spline->knots.d);
     else
 	return FALSE; /* just treat this as a straight-line from a -> d */
 
@@ -139,7 +149,9 @@ _comac_spline_add_point (comac_spline_t *spline,
 }
 
 static void
-_lerp_half (const comac_point_t *a, const comac_point_t *b, comac_point_t *result)
+_lerp_half (const comac_point_t *a,
+	    const comac_point_t *b,
+	    comac_point_t *result)
 {
     result->x = a->x + ((b->x - a->x) >> 1);
     result->y = a->y + ((b->y - a->y) >> 1);
@@ -199,7 +211,7 @@ _comac_spline_error_squared (const comac_spline_knots_t *knots)
 
 	dx = _comac_fixed_to_double (knots->d.x - knots->a.x);
 	dy = _comac_fixed_to_double (knots->d.y - knots->a.y);
-	 v = dx * dx + dy * dy;
+	v = dx * dx + dy * dy;
 
 	u = bdx * dx + bdy * dy;
 	if (u <= 0) {
@@ -210,8 +222,8 @@ _comac_spline_error_squared (const comac_spline_knots_t *knots)
 	    bdx -= dx;
 	    bdy -= dy;
 	} else {
-	    bdx -= u/v * dx;
-	    bdy -= u/v * dy;
+	    bdx -= u / v * dx;
+	    bdy -= u / v * dy;
 	}
 
 	u = cdx * dx + cdy * dy;
@@ -223,8 +235,8 @@ _comac_spline_error_squared (const comac_spline_knots_t *knots)
 	    cdx -= dx;
 	    cdy -= dy;
 	} else {
-	    cdx -= u/v * dx;
-	    cdy -= u/v * dy;
+	    cdx -= u / v * dx;
+	    cdy -= u / v * dy;
 	}
     }
 
@@ -269,15 +281,18 @@ _comac_spline_decompose (comac_spline_t *spline, double tolerance)
 	return status;
 
     return spline->add_point_func (spline->closure,
-				   &spline->knots.d, &spline->final_slope);
+				   &spline->knots.d,
+				   &spline->final_slope);
 }
 
 /* Note: this function is only good for computing bounds in device space. */
 comac_status_t
 _comac_spline_bound (comac_spline_add_point_func_t add_point_func,
 		     void *closure,
-		     const comac_point_t *p0, const comac_point_t *p1,
-		     const comac_point_t *p2, const comac_point_t *p3)
+		     const comac_point_t *p0,
+		     const comac_point_t *p1,
+		     const comac_point_t *p2,
+		     const comac_point_t *p3)
 {
     double x0, x1, x2, x3;
     double y0, y1, y2, y3;
@@ -327,57 +342,57 @@ _comac_spline_bound (comac_spline_add_point_func_t add_point_func,
      * delta is positive, and at -b/a if delta is zero.
      */
 
-#define ADD(t0) \
-    { \
-	double _t0 = (t0); \
-	if (0 < _t0 && _t0 < 1) \
-	    t[t_num++] = _t0; \
+#define ADD(t0)                                                                \
+    {                                                                          \
+	double _t0 = (t0);                                                     \
+	if (0 < _t0 && _t0 < 1)                                                \
+	    t[t_num++] = _t0;                                                  \
     }
 
-#define FIND_EXTREMES(a,b,c) \
-    { \
-	if (a == 0) { \
-	    if (b != 0) \
-		ADD (-c / (2*b)); \
-	} else { \
-	    double b2 = b * b; \
-	    double delta = b2 - a * c; \
-	    if (delta > 0) { \
-		comac_bool_t feasible; \
-		double _2ab = 2 * a * b; \
+#define FIND_EXTREMES(a, b, c)                                                 \
+    {                                                                          \
+	if (a == 0) {                                                          \
+	    if (b != 0)                                                        \
+		ADD (-c / (2 * b));                                            \
+	} else {                                                               \
+	    double b2 = b * b;                                                 \
+	    double delta = b2 - a * c;                                         \
+	    if (delta > 0) {                                                   \
+		comac_bool_t feasible;                                         \
+		double _2ab = 2 * a * b;                                       \
 		/* We are only interested in solutions t that satisfy 0<t<1 \
 		 * here.  We do some checks to avoid sqrt if the solutions \
 		 * are not in that range.  The checks can be derived from: \
 		 * \
 		 *   0 < (-b±√delta)/a < 1 \
-		 */ \
-		if (_2ab >= 0) \
-		    feasible = delta > b2 && delta < a*a + b2 + _2ab; \
-		else if (-b / a >= 1) \
-		    feasible = delta < b2 && delta > a*a + b2 + _2ab; \
-		else \
-		    feasible = delta < b2 || delta < a*a + b2 + _2ab; \
-	        \
-		if (unlikely (feasible)) { \
-		    double sqrt_delta = sqrt (delta); \
-		    ADD ((-b - sqrt_delta) / a); \
-		    ADD ((-b + sqrt_delta) / a); \
-		} \
-	    } else if (delta == 0) { \
-		ADD (-b / a); \
-	    } \
-	} \
+		 */  \
+		if (_2ab >= 0)                                                 \
+		    feasible = delta > b2 && delta < a * a + b2 + _2ab;        \
+		else if (-b / a >= 1)                                          \
+		    feasible = delta < b2 && delta > a * a + b2 + _2ab;        \
+		else                                                           \
+		    feasible = delta < b2 || delta < a * a + b2 + _2ab;        \
+                                                                               \
+		if (unlikely (feasible)) {                                     \
+		    double sqrt_delta = sqrt (delta);                          \
+		    ADD ((-b - sqrt_delta) / a);                               \
+		    ADD ((-b + sqrt_delta) / a);                               \
+		}                                                              \
+	    } else if (delta == 0) {                                           \
+		ADD (-b / a);                                                  \
+	    }                                                                  \
+	}                                                                      \
     }
 
     /* Find X extremes */
-    a = -x0 + 3*x1 - 3*x2 + x3;
-    b =  x0 - 2*x1 + x2;
+    a = -x0 + 3 * x1 - 3 * x2 + x3;
+    b = x0 - 2 * x1 + x2;
     c = -x0 + x1;
     FIND_EXTREMES (a, b, c);
 
     /* Find Y extremes */
-    a = -y0 + 3*y1 - 3*y2 + y3;
-    b =  y0 - 2*y1 + y2;
+    a = -y0 + 3 * y1 - 3 * y2 + y3;
+    b = y0 - 2 * y1 + y2;
     c = -y0 + y1;
     FIND_EXTREMES (a, b, c);
 
@@ -388,30 +403,24 @@ _comac_spline_bound (comac_spline_add_point_func_t add_point_func,
     for (i = 0; i < t_num; i++) {
 	comac_point_t p;
 	double x, y;
-        double t_1_0, t_0_1;
-        double t_2_0, t_0_2;
-        double t_3_0, t_2_1_3, t_1_2_3, t_0_3;
+	double t_1_0, t_0_1;
+	double t_2_0, t_0_2;
+	double t_3_0, t_2_1_3, t_1_2_3, t_0_3;
 
-        t_1_0 = t[i];          /*      t  */
-        t_0_1 = 1 - t_1_0;     /* (1 - t) */
+	t_1_0 = t[i];	   /*      t  */
+	t_0_1 = 1 - t_1_0; /* (1 - t) */
 
-        t_2_0 = t_1_0 * t_1_0; /*      t  *      t  */
-        t_0_2 = t_0_1 * t_0_1; /* (1 - t) * (1 - t) */
+	t_2_0 = t_1_0 * t_1_0; /*      t  *      t  */
+	t_0_2 = t_0_1 * t_0_1; /* (1 - t) * (1 - t) */
 
-        t_3_0   = t_2_0 * t_1_0;     /*      t  *      t  *      t      */
-        t_2_1_3 = t_2_0 * t_0_1 * 3; /*      t  *      t  * (1 - t) * 3 */
-        t_1_2_3 = t_1_0 * t_0_2 * 3; /*      t  * (1 - t) * (1 - t) * 3 */
-        t_0_3   = t_0_1 * t_0_2;     /* (1 - t) * (1 - t) * (1 - t)     */
+	t_3_0 = t_2_0 * t_1_0;	     /*      t  *      t  *      t      */
+	t_2_1_3 = t_2_0 * t_0_1 * 3; /*      t  *      t  * (1 - t) * 3 */
+	t_1_2_3 = t_1_0 * t_0_2 * 3; /*      t  * (1 - t) * (1 - t) * 3 */
+	t_0_3 = t_0_1 * t_0_2;	     /* (1 - t) * (1 - t) * (1 - t)     */
 
-        /* Bezier polynomial */
-        x = x0 * t_0_3
-          + x1 * t_1_2_3
-          + x2 * t_2_1_3
-          + x3 * t_3_0;
-        y = y0 * t_0_3
-          + y1 * t_1_2_3
-          + y2 * t_2_1_3
-          + y3 * t_3_0;
+	/* Bezier polynomial */
+	x = x0 * t_0_3 + x1 * t_1_2_3 + x2 * t_2_1_3 + x3 * t_3_0;
+	y = y0 * t_0_3 + y1 * t_1_2_3 + y2 * t_2_1_3 + y3 * t_3_0;
 
 	p.x = _comac_fixed_from_double (x);
 	p.y = _comac_fixed_from_double (y);

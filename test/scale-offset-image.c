@@ -36,30 +36,21 @@ create_source (comac_surface_t *target, int width, int height)
     comac_surface_t *similar;
     comac_t *cr;
 
-    similar = comac_image_surface_create (COMAC_FORMAT_RGB24,
-					    width, height);
+    similar = comac_image_surface_create (COMAC_FORMAT_RGB24, width, height);
     cr = comac_create (similar);
     comac_surface_destroy (similar);
 
     comac_set_source_rgb (cr, 1, 1, 1);
-    comac_rectangle (cr,
-		     width - 4, height - 4,
-		     2, 2);
+    comac_rectangle (cr, width - 4, height - 4, 2, 2);
     comac_fill (cr);
     comac_set_source_rgb (cr, 1, 0, 0);
-    comac_rectangle (cr,
-		     width - 2, height - 4,
-		     2, 2);
+    comac_rectangle (cr, width - 2, height - 4, 2, 2);
     comac_fill (cr);
     comac_set_source_rgb (cr, 0, 1, 0);
-    comac_rectangle (cr,
-		     width - 4, height - 2,
-		     2, 2);
+    comac_rectangle (cr, width - 4, height - 2, 2, 2);
     comac_fill (cr);
     comac_set_source_rgb (cr, 0, 0, 1);
-    comac_rectangle (cr,
-		     width - 2, height - 2,
-		     2, 2);
+    comac_rectangle (cr, width - 2, height - 2, 2, 2);
     comac_fill (cr);
 
     similar = comac_surface_reference (comac_get_target (cr));
@@ -78,14 +69,14 @@ draw_grid (comac_t *cr, comac_pattern_t *pattern, int dst_x, int dst_y)
     comac_scale (cr, 16, 16);
     comac_rotate (cr, 1);
 
-    comac_matrix_init_translate (&m, 2560-4, 1280-4);
+    comac_matrix_init_translate (&m, 2560 - 4, 1280 - 4);
     comac_pattern_set_matrix (pattern, &m);
     comac_set_source (cr, pattern);
     comac_rectangle (cr, 0, 0, 4, 4);
     comac_fill (cr);
 
     comac_set_source_rgb (cr, .7, .7, .7);
-    comac_set_line_width (cr, 1./16);
+    comac_set_line_width (cr, 1. / 16);
     comac_move_to (cr, 0, 0);
     comac_line_to (cr, 4, 0);
     comac_move_to (cr, 0, 2);
@@ -123,7 +114,7 @@ draw (comac_t *cr, int width, int height)
     draw_grid (cr, pattern, 210, 0);
     draw_grid (cr, pattern, 290, 0);
 
-    draw_grid (cr, pattern, 50,  230);
+    draw_grid (cr, pattern, 50, 230);
     draw_grid (cr, pattern, 130, 230);
     draw_grid (cr, pattern, 210, 230);
     draw_grid (cr, pattern, 290, 230);
@@ -137,7 +128,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (scale_offset_image,
 	    "Tests drawing surfaces under various scales and transforms",
 	    "surface, scale-offset", /* keywords */
-	    NULL, /* requirements */
-	    320, 320,
-	    NULL, draw)
-
+	    NULL,		     /* requirements */
+	    320,
+	    320,
+	    NULL,
+	    draw)

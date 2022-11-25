@@ -27,15 +27,17 @@
 
 #include "comac-test.h"
 
-#define CHECK_STATUS(status)						\
-    do {								\
-	if (comac_status (cr) != (status)) {				\
-	    comac_test_log (ctx, "Expected status: %s\n",		\
-			    comac_status_to_string (status));		\
-	    comac_test_log (ctx, "Actual status: %s\n",			\
-			    comac_status_to_string (comac_status (cr))); \
-	    result = COMAC_TEST_FAILURE;				\
-	}								\
+#define CHECK_STATUS(status)                                                   \
+    do {                                                                       \
+	if (comac_status (cr) != (status)) {                                   \
+	    comac_test_log (ctx,                                               \
+			    "Expected status: %s\n",                           \
+			    comac_status_to_string (status));                  \
+	    comac_test_log (ctx,                                               \
+			    "Actual status: %s\n",                             \
+			    comac_status_to_string (comac_status (cr)));       \
+	    result = COMAC_TEST_FAILURE;                                       \
+	}                                                                      \
     } while (0)
 
 static void
@@ -68,7 +70,6 @@ preamble (comac_test_context_t *ctx)
     comac_restore (cr);
     CHECK_STATUS (COMAC_STATUS_INVALID_RESTORE);
 
-
     reinit_comac (&cr);
 
     /* comac_restore() must fail with COMAC_STATUS_INVALID_RESTORE if
@@ -81,7 +82,6 @@ preamble (comac_test_context_t *ctx)
     comac_pop_group_to_source (cr);
     CHECK_STATUS (COMAC_STATUS_INVALID_POP_GROUP);
 
-
     comac_destroy (cr);
 
     return result;
@@ -91,6 +91,8 @@ COMAC_TEST (group_state,
 	    "Tests the interaction between state (comac_save, comac_restore) "
 	    "and group (comac_push_group/comac_pop_group) API",
 	    "api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,  /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

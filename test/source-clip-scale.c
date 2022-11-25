@@ -37,7 +37,8 @@ draw (comac_t *cr, int width, int height)
 
     source = comac_surface_create_similar (comac_get_group_target (cr),
 					   COMAC_CONTENT_COLOR_ALPHA,
-					   SIZE, SIZE);
+					   SIZE,
+					   SIZE);
     cr2 = comac_create (source);
     comac_surface_destroy (source);
 
@@ -50,9 +51,7 @@ draw (comac_t *cr, int width, int height)
      * the buggy behavior demonstrates that the clip remains present
      * on the surface. */
     comac_save (cr2);
-    comac_rectangle (cr2,
-		     SIZE / 4, SIZE / 4,
-		     SIZE / 2, SIZE / 2);
+    comac_rectangle (cr2, SIZE / 4, SIZE / 4, SIZE / 2, SIZE / 2);
     comac_clip (cr2);
     comac_set_source_rgb (cr2, 0, 0, 1);
     comac_paint (cr2);
@@ -77,6 +76,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (source_clip_scale,
 	    "Test that a source surface is not affected by a clip when scaling",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE * 2, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE * 2,
+	    SIZE,
+	    NULL,
+	    draw)

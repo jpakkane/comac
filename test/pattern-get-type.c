@@ -29,17 +29,16 @@ static comac_test_status_t
 preamble (comac_test_context_t *Ctx)
 {
     comac_surface_t *surface;
-    comac_pattern_t *solid_rgb, *solid_rgba, *surface_pattern, *linear, *radial, *mesh;
+    comac_pattern_t *solid_rgb, *solid_rgba, *surface_pattern, *linear, *radial,
+	*mesh;
     comac_test_status_t result = COMAC_TEST_SUCCESS;
 
     solid_rgb = comac_pattern_create_rgb (0.0, 0.1, 0.2);
     solid_rgba = comac_pattern_create_rgba (0.3, 0.4, 0.5, 0.6);
-    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32,
-					  1, 1);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
     surface_pattern = comac_pattern_create_for_surface (surface);
     linear = comac_pattern_create_linear (0.0, 0.0, 10.0, 10.0);
-    radial = comac_pattern_create_radial (10.0, 10.0, 0.1,
-					  10.0, 10.0, 1.0);
+    radial = comac_pattern_create_radial (10.0, 10.0, 0.1, 10.0, 10.0, 1.0);
     mesh = comac_pattern_create_mesh ();
 
     if (comac_pattern_get_type (solid_rgb) != COMAC_PATTERN_TYPE_SOLID)
@@ -74,6 +73,8 @@ preamble (comac_test_context_t *Ctx)
 COMAC_TEST (pattern_get_type,
 	    "Creating patterns of all types",
 	    "pattern, api", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,	    /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

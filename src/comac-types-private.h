@@ -68,7 +68,7 @@ typedef struct _comac_contour_chain comac_contour_chain_t;
 typedef struct _comac_contour_iter comac_contour_iter_t;
 typedef struct _comac_damage comac_damage_t;
 typedef struct _comac_device_backend comac_device_backend_t;
-typedef struct _comac_font_face_backend     comac_font_face_backend_t;
+typedef struct _comac_font_face_backend comac_font_face_backend_t;
 typedef struct _comac_gstate comac_gstate_t;
 typedef struct _comac_gstate_backend comac_gstate_backend_t;
 typedef struct _comac_glyph_text_info comac_glyph_text_info_t;
@@ -78,7 +78,8 @@ typedef struct _comac_image_surface comac_image_surface_t;
 typedef struct _comac_mime_data comac_mime_data_t;
 typedef struct _comac_observer comac_observer_t;
 typedef struct _comac_output_stream comac_output_stream_t;
-typedef struct _comac_paginated_surface_backend comac_paginated_surface_backend_t;
+typedef struct _comac_paginated_surface_backend
+    comac_paginated_surface_backend_t;
 typedef struct _comac_path_fixed comac_path_fixed_t;
 typedef struct _comac_rectangle_int16 comac_glyph_size_t;
 typedef struct _comac_scaled_font_subsets comac_scaled_font_subsets_t;
@@ -97,7 +98,7 @@ typedef struct _comac_xlib_screen_info comac_xlib_screen_info_t;
 typedef comac_array_t comac_user_data_array_t;
 
 typedef struct _comac_scaled_font_private comac_scaled_font_private_t;
-typedef struct _comac_scaled_font_backend   comac_scaled_font_backend_t;
+typedef struct _comac_scaled_font_backend comac_scaled_font_backend_t;
 typedef struct _comac_scaled_glyph comac_scaled_glyph_t;
 typedef struct _comac_scaled_glyph_private comac_scaled_glyph_private_t;
 
@@ -208,7 +209,6 @@ struct _comac_glyph_text_info {
     comac_text_cluster_flags_t cluster_flags;
 };
 
-
 /* XXX: Right now, the _comac_color structure puts unpremultiplied
    color in the doubles and premultiplied color in the shorts. Yes,
    this is crazy insane, (but at least we don't export this
@@ -242,9 +242,9 @@ struct _comac_color_stop {
 };
 
 typedef enum _comac_paginated_mode {
-    COMAC_PAGINATED_MODE_ANALYZE,	/* analyze page regions */
-    COMAC_PAGINATED_MODE_RENDER,	/* render page contents */
-    COMAC_PAGINATED_MODE_FALLBACK	/* paint fallback images */
+    COMAC_PAGINATED_MODE_ANALYZE, /* analyze page regions */
+    COMAC_PAGINATED_MODE_RENDER,  /* render page contents */
+    COMAC_PAGINATED_MODE_FALLBACK /* paint fallback images */
 } comac_paginated_mode_t;
 
 typedef enum _comac_internal_surface_type {
@@ -278,7 +278,7 @@ typedef struct _comac_point_double {
 
 typedef struct _comac_circle_double {
     comac_point_double_t center;
-    double               radius;
+    double radius;
 } comac_circle_double_t;
 
 typedef struct _comac_distance_double {
@@ -330,13 +330,11 @@ typedef struct _comac_polygon {
     int num_edges;
     int edges_size;
     comac_edge_t *edges;
-    comac_edge_t  edges_embedded[32];
+    comac_edge_t edges_embedded[32];
 } comac_polygon_t;
 
-typedef comac_warn comac_status_t
-(*comac_spline_add_point_func_t) (void *closure,
-				  const comac_point_t *point,
-				  const comac_slope_t *tangent);
+typedef comac_warn comac_status_t (*comac_spline_add_point_func_t) (
+    void *closure, const comac_point_t *point, const comac_slope_t *tangent);
 
 typedef struct _comac_spline_knots {
     comac_point_t a, b, c, d;
@@ -368,19 +366,19 @@ typedef struct _comac_pen {
 
     int num_vertices;
     comac_pen_vertex_t *vertices;
-    comac_pen_vertex_t  vertices_embedded[32];
+    comac_pen_vertex_t vertices_embedded[32];
 } comac_pen_t;
 
 typedef struct _comac_stroke_style {
-    double		 line_width;
-    comac_line_cap_t	 line_cap;
-    comac_line_join_t	 line_join;
-    double		 miter_limit;
-    double		*dash;
-    unsigned int	 num_dashes;
-    double		 dash_offset;
-    comac_bool_t	 is_hairline;
-    double      pre_hairline_line_width;
+    double line_width;
+    comac_line_cap_t line_cap;
+    comac_line_join_t line_join;
+    double miter_limit;
+    double *dash;
+    unsigned int num_dashes;
+    double dash_offset;
+    comac_bool_t is_hairline;
+    double pre_hairline_line_width;
 } comac_stroke_style_t;
 
 typedef struct _comac_format_masks {
@@ -412,7 +410,6 @@ typedef enum _comac_image_color {
     COMAC_IMAGE_UNKNOWN_COLOR
 } comac_image_color_t;
 
-
 struct _comac_mime_data {
     comac_reference_count_t ref_count;
     unsigned char *data;
@@ -426,9 +423,9 @@ struct _comac_mime_data {
  * glyph cache.
  */
 typedef struct _comac_unscaled_font {
-    comac_hash_entry_t			 hash_entry;
-    comac_reference_count_t		 ref_count;
-    const comac_unscaled_font_backend_t	*backend;
+    comac_hash_entry_t hash_entry;
+    comac_reference_count_t ref_count;
+    const comac_unscaled_font_backend_t *backend;
 } comac_unscaled_font_t;
 COMAC_END_DECLS
 

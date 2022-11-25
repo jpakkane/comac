@@ -41,7 +41,7 @@
 
 #include "comac-test.h"
 
-#define WIDTH  800
+#define WIDTH 800
 #define HEIGHT 800
 #define TEXT_SIZE 10000
 
@@ -53,7 +53,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1., 1., 1.);
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -68,6 +69,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (large_font,
 	    "Draws a very large font to exercise a glyph-positioning bug",
 	    "stress, font", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

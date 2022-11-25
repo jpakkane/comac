@@ -50,9 +50,7 @@
 #define OWN_STREAM 0x1
 
 csi_status_t
-csi_file_new (csi_t *ctx,
-	      csi_object_t *obj,
-	      const char *path, const char *mode)
+csi_file_new (csi_t *ctx, csi_object_t *obj, const char *path, const char *mode)
 {
     csi_file_t *file;
 
@@ -86,9 +84,7 @@ csi_file_new (csi_t *ctx,
 }
 
 csi_status_t
-csi_file_new_for_stream (csi_t *ctx,
-	                 csi_object_t *obj,
-			 FILE *stream)
+csi_file_new_for_stream (csi_t *ctx, csi_object_t *obj, FILE *stream)
 {
     csi_file_t *file;
 
@@ -137,10 +133,10 @@ csi_file_new_for_bytes (csi_t *ctx,
     file->base.ref = 1;
 
     file->type = BYTES;
-    file->src  = (uint8_t *) bytes;
+    file->src = (uint8_t *) bytes;
     file->data = (uint8_t *) bytes;
-    file->bp   = (uint8_t *) bytes;
-    file->rem  = length;
+    file->bp = (uint8_t *) bytes;
+    file->rem = length;
 
     obj->type = CSI_OBJECT_TYPE_FILE;
     obj->datum.file = file;
@@ -148,9 +144,7 @@ csi_file_new_for_bytes (csi_t *ctx,
 }
 
 csi_status_t
-csi_file_new_from_string (csi_t *ctx,
-			  csi_object_t *obj,
-			  csi_string_t *src)
+csi_file_new_from_string (csi_t *ctx, csi_object_t *obj, csi_string_t *src)
 {
     csi_file_t *file;
 
@@ -167,7 +161,7 @@ csi_file_new_from_string (csi_t *ctx,
 	csi_string_t *tmp_str;
 	csi_status_t status;
 
-	status = csi_string_new (ctx, &tmp_obj,  NULL, src->deflate);
+	status = csi_string_new (ctx, &tmp_obj, NULL, src->deflate);
 	if (_csi_unlikely (status))
 	    return status;
 
@@ -180,15 +174,19 @@ csi_file_new_from_string (csi_t *ctx,
 
 	case ZLIB:
 #if HAVE_ZLIB
-	    if (uncompress ((Bytef *) tmp_str->string, &len,
-			    (Bytef *) src->string, src->len) != Z_OK)
+	    if (uncompress ((Bytef *) tmp_str->string,
+			    &len,
+			    (Bytef *) src->string,
+			    src->len) != Z_OK)
 #endif
 		status = _csi_error (COMAC_STATUS_NO_MEMORY);
 	    break;
 	case LZO:
 #if HAVE_LZO
-	    if (lzo2a_decompress ((lzo_bytep) src->string, src->len,
-				  (lzo_bytep) tmp_str->string, &len,
+	    if (lzo2a_decompress ((lzo_bytep) src->string,
+				  src->len,
+				  (lzo_bytep) tmp_str->string,
+				  &len,
 				  NULL))
 #endif
 		status = _csi_error (COMAC_STATUS_NO_MEMORY);
@@ -200,16 +198,17 @@ csi_file_new_from_string (csi_t *ctx,
 	    return status;
 	}
 
-	file->src  = tmp_str;
+	file->src = tmp_str;
 	file->data = tmp_str->string;
-	file->rem  = tmp_str->len;
+	file->rem = tmp_str->len;
     } else {
-	file->src  = src; src->base.ref++;
+	file->src = src;
+	src->base.ref++;
 	file->data = src->string;
-	file->rem  = src->len;
+	file->rem = src->len;
     }
     file->type = BYTES;
-    file->bp   = file->data;
+    file->bp = file->data;
 
     obj->type = CSI_OBJECT_TYPE_FILE;
     obj->datum.file = file;
@@ -249,7 +248,6 @@ _csi_file_new_filter (csi_t *ctx,
 
     return COMAC_STATUS_SUCCESS;
 }
-
 
 #if 0
 csi_status_t
@@ -306,18 +304,20 @@ _getc_skip_whitespace (csi_file_t *src)
 {
     int c;
 
-    do switch ((c = csi_file_getc (src))) {
-    case 0x0:
-    case 0x9:
-    case 0xa:
-    case 0xc:
-    case 0xd:
-    case 0x20:
-	continue;
+    do
+	switch ((c = csi_file_getc (src))) {
+	case 0x0:
+	case 0x9:
+	case 0xa:
+	case 0xc:
+	case 0xd:
+	case 0x20:
+	    continue;
 
-    default:
-	return c;
-    } while (TRUE);
+	default:
+	    return c;
+	}
+    while (TRUE);
 
     return c;
 }
@@ -337,10 +337,10 @@ _ascii85_decode (csi_file_t *file)
     do {
 	unsigned int v = _getc_skip_whitespace (file->src);
 	if (v == 'z') {
-	    data->buf[n+0] = 0;
-	    data->buf[n+1] = 0;
-	    data->buf[n+2] = 0;
-	    data->buf[n+3] = 0;
+	    data->buf[n + 0] = 0;
+	    data->buf[n + 1] = 0;
+	    data->buf[n + 2] = 0;
+	    data->buf[n + 3] = 0;
 	} else if (v == '~') {
 	    _getc_skip_whitespace (file->src); /* == '>' || IO_ERROR */
 	    data->eod = TRUE;
@@ -355,7 +355,7 @@ _ascii85_decode (csi_file_t *file)
 	    v -= '!';
 	    for (i = 1; i < 5; i++) {
 		int c = _getc_skip_whitespace (file->src);
-		if (c == '~') { /* short tuple */
+		if (c == '~') {			       /* short tuple */
 		    _getc_skip_whitespace (file->src); /* == '>' || IO_ERROR */
 		    data->eod = TRUE;
 		    switch (i) {
@@ -364,30 +364,30 @@ _ascii85_decode (csi_file_t *file)
 			/* IO_ERROR */
 			break;
 		    case 2:
-			v = v * (85*85*85) + 85*85*85 -1;
+			v = v * (85 * 85 * 85) + 85 * 85 * 85 - 1;
 			goto odd1;
 		    case 3:
-			v = v * (85*85) + 85*85 -1;
+			v = v * (85 * 85) + 85 * 85 - 1;
 			goto odd2;
 		    case 4:
 			v = v * 85 + 84;
-			data->buf[n+2] = v >> 8 & 0xff;
-odd2:
-			data->buf[n+1] = v >> 16 & 0xff;
-odd1:
-			data->buf[n+0] = v >> 24 & 0xff;
+			data->buf[n + 2] = v >> 8 & 0xff;
+		    odd2:
+			data->buf[n + 1] = v >> 16 & 0xff;
+		    odd1:
+			data->buf[n + 0] = v >> 24 & 0xff;
 			data->bytes_available = n + i - 1;
 			return;
 		    }
 		    break;
 		}
-		v = 85*v + c-'!';
+		v = 85 * v + c - '!';
 	    }
 
-	    data->buf[n+0] = v >> 24 & 0xff;
-	    data->buf[n+1] = v >> 16 & 0xff;
-	    data->buf[n+2] = v >> 8 & 0xff;
-	    data->buf[n+3] = v >> 0 & 0xff;
+	    data->buf[n + 0] = v >> 24 & 0xff;
+	    data->buf[n + 1] = v >> 16 & 0xff;
+	    data->buf[n + 2] = v >> 8 & 0xff;
+	    data->buf[n + 3] = v >> 0 & 0xff;
 	}
 	n += 4;
     } while (n < sizeof (data->buf) && data->eod == FALSE);
@@ -834,7 +834,7 @@ csi_file_getc (csi_file_t *file)
 	} else {
 	    file->rem = fread (file->bp = file->data, 1, CHUNK_SIZE, file->src);
 	    /* fall through */
-    case BYTES:
+	case BYTES:
 	    if (_csi_likely (file->rem)) {
 		c = *file->bp++;
 		file->rem--;
@@ -900,7 +900,7 @@ csi_file_read (csi_file_t *file, void *buf, int len)
 	    if (file->rem < ret)
 		ret = file->rem;
 	    memcpy (buf, file->bp, ret);
-	    file->bp  += ret;
+	    file->bp += ret;
 	    file->rem -= ret;
 	} else
 	    ret = fread (buf, 1, len, file->src);
@@ -912,7 +912,7 @@ csi_file_read (csi_file_t *file, void *buf, int len)
 	    if (file->rem < ret)
 		ret = file->rem;
 	    memcpy (buf, file->bp, ret);
-	    file->bp  += ret;
+	    file->bp += ret;
 	    file->rem -= ret;
 	} else
 	    ret = 0;
@@ -1014,13 +1014,11 @@ csi_file_close (csi_t *ctx, csi_file_t *file)
 		csi_string_free (ctx, src);
 	}
 	break;
-    case FILTER:
-	{
-	    csi_file_t *src = file->src;
-	    if (src != NULL && --src->base.ref == 0)
-		_csi_file_free (ctx, src);
-	}
-	break;
+    case FILTER: {
+	csi_file_t *src = file->src;
+	if (src != NULL && --src->base.ref == 0)
+	    _csi_file_free (ctx, src);
+    } break;
     case PROCEDURE:
     default:
 	break;
@@ -1057,9 +1055,7 @@ _csi_file_free (csi_t *ctx, csi_file_t *file)
 }
 
 csi_status_t
-_csi_file_as_string (csi_t *ctx,
-		     csi_file_t *file,
-		     csi_object_t *obj)
+_csi_file_as_string (csi_t *ctx, csi_file_t *file, csi_object_t *obj)
 {
     char *bytes;
     unsigned int len;
@@ -1107,4 +1103,3 @@ _csi_file_as_string (csi_t *ctx,
 
     return COMAC_STATUS_SUCCESS;
 }
-

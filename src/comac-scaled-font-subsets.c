@@ -108,22 +108,22 @@ typedef struct _comac_sub_font_glyph {
 
     unsigned int subset_id;
     unsigned int subset_glyph_index;
-    double       x_advance;
-    double       y_advance;
+    double x_advance;
+    double y_advance;
 
     comac_bool_t is_latin;
-    int		 latin_character;
+    int latin_character;
     comac_bool_t is_mapped;
-    uint32_t     unicode;
-    char  	*utf8;
-    int          utf8_len;
+    uint32_t unicode;
+    char *utf8;
+    int utf8_len;
 } comac_sub_font_glyph_t;
 
 typedef struct _comac_sub_font_collection {
     unsigned long *glyphs; /* scaled_font_glyph_index */
-    char       **utf8;
+    char **utf8;
     unsigned int glyphs_size;
-    int           *to_latin_char;
+    int *to_latin_char;
     unsigned long *latin_to_subset_glyph_index;
     unsigned int max_glyph;
     unsigned int num_glyphs;
@@ -141,29 +141,29 @@ typedef struct _comac_string_entry {
 } comac_string_entry_t;
 
 static comac_status_t
-_comac_sub_font_map_glyph (comac_sub_font_t	*sub_font,
-			   unsigned long	 scaled_font_glyph_index,
-			   const char *		 utf8,
-			   int			 utf8_len,
-                           comac_scaled_font_subsets_glyph_t *subset_glyph);
+_comac_sub_font_map_glyph (comac_sub_font_t *sub_font,
+			   unsigned long scaled_font_glyph_index,
+			   const char *utf8,
+			   int utf8_len,
+			   comac_scaled_font_subsets_glyph_t *subset_glyph);
 
 static void
-_comac_sub_font_glyph_init_key (comac_sub_font_glyph_t  *sub_font_glyph,
-				unsigned long		 scaled_font_glyph_index)
+_comac_sub_font_glyph_init_key (comac_sub_font_glyph_t *sub_font_glyph,
+				unsigned long scaled_font_glyph_index)
 {
     sub_font_glyph->base.hash = scaled_font_glyph_index;
 }
 
 static comac_sub_font_glyph_t *
-_comac_sub_font_glyph_create (unsigned long	scaled_font_glyph_index,
-			      unsigned int	subset_id,
-			      unsigned int	subset_glyph_index,
-                              double            x_advance,
-                              double            y_advance,
-			      int	        latin_character,
-			      uint32_t          unicode,
-			      char             *utf8,
-			      int          	utf8_len)
+_comac_sub_font_glyph_create (unsigned long scaled_font_glyph_index,
+			      unsigned int subset_id,
+			      unsigned int subset_glyph_index,
+			      double x_advance,
+			      double y_advance,
+			      int latin_character,
+			      uint32_t unicode,
+			      char *utf8,
+			      int utf8_len)
 {
     comac_sub_font_glyph_t *sub_font_glyph;
 
@@ -225,9 +225,12 @@ _comac_sub_font_glyph_collect (void *entry, void *closure)
 
     collection->glyphs[subset_glyph_index] = scaled_font_glyph_index;
     collection->utf8[subset_glyph_index] = sub_font_glyph->utf8;
-    collection->to_latin_char[subset_glyph_index] = sub_font_glyph->latin_character;
+    collection->to_latin_char[subset_glyph_index] =
+	sub_font_glyph->latin_character;
     if (sub_font_glyph->is_latin)
-	collection->latin_to_subset_glyph_index[sub_font_glyph->latin_character] = subset_glyph_index;
+	collection
+	    ->latin_to_subset_glyph_index[sub_font_glyph->latin_character] =
+	    subset_glyph_index;
 
     if (subset_glyph_index > collection->max_glyph)
 	collection->max_glyph = subset_glyph_index;
@@ -244,35 +247,33 @@ _comac_sub_fonts_equal (const void *key_a, const void *key_b)
     comac_scaled_font_t *b = sub_font_b->scaled_font;
 
     if (sub_font_a->is_scaled)
-        return a == b;
+	return a == b;
     else
-	return a->font_face == b->font_face || a->original_font_face == b->original_font_face;
+	return a->font_face == b->font_face ||
+	       a->original_font_face == b->original_font_face;
 }
 
 static void
-_comac_sub_font_init_key (comac_sub_font_t	*sub_font,
-			  comac_scaled_font_t	*scaled_font)
+_comac_sub_font_init_key (comac_sub_font_t *sub_font,
+			  comac_scaled_font_t *scaled_font)
 {
-    if (sub_font->is_scaled)
-    {
-        sub_font->base.hash = (uintptr_t) scaled_font;
-        sub_font->scaled_font = scaled_font;
-    }
-    else
-    {
-        sub_font->base.hash = (uintptr_t) scaled_font->font_face;
-        sub_font->scaled_font = scaled_font;
+    if (sub_font->is_scaled) {
+	sub_font->base.hash = (uintptr_t) scaled_font;
+	sub_font->scaled_font = scaled_font;
+    } else {
+	sub_font->base.hash = (uintptr_t) scaled_font->font_face;
+	sub_font->scaled_font = scaled_font;
     }
 }
 
 static comac_status_t
-_comac_sub_font_create (comac_scaled_font_subsets_t	*parent,
-			comac_scaled_font_t		*scaled_font,
-			unsigned int			 font_id,
-			int				 max_glyphs_per_subset,
-                        comac_bool_t                     is_scaled,
-			comac_bool_t                     is_composite,
-			comac_sub_font_t               **sub_font_out)
+_comac_sub_font_create (comac_scaled_font_subsets_t *parent,
+			comac_scaled_font_t *scaled_font,
+			unsigned int font_id,
+			int max_glyphs_per_subset,
+			comac_bool_t is_scaled,
+			comac_bool_t is_composite,
+			comac_sub_font_t **sub_font_out)
 {
     comac_sub_font_t *sub_font;
     int i;
@@ -284,7 +285,7 @@ _comac_sub_font_create (comac_scaled_font_subsets_t	*parent,
     sub_font->is_scaled = is_scaled;
     sub_font->is_composite = is_composite;
     sub_font->is_user = _comac_font_face_is_user (scaled_font->font_face);
-    sub_font->reserve_notdef = !sub_font->is_user;
+    sub_font->reserve_notdef = ! sub_font->is_user;
     _comac_sub_font_init_key (sub_font, scaled_font);
 
     sub_font->parent = parent;
@@ -295,8 +296,7 @@ _comac_sub_font_create (comac_scaled_font_subsets_t	*parent,
 
     /* latin subsets of Type 3 and CID CFF fonts are not supported */
     if (sub_font->is_user || sub_font->is_scaled ||
-	_comac_cff_scaled_font_is_cid_cff (scaled_font) )
-    {
+	_comac_cff_scaled_font_is_cid_cff (scaled_font)) {
 	sub_font->use_latin_subset = FALSE;
     }
 
@@ -348,8 +348,7 @@ static unsigned int _winansi_0x80_to_0x9f[] = {
     0x20ac, 0x0000, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021,
     0x02c6, 0x2030, 0x0160, 0x2039, 0x0152, 0x0000, 0x017d, 0x0000,
     0x0000, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022, 0x2013, 0x2014,
-    0x02dc, 0x2122, 0x0161, 0x203a, 0x0153, 0x0000, 0x017e, 0x0178
-};
+    0x02dc, 0x2122, 0x0161, 0x203a, 0x0153, 0x0000, 0x017e, 0x0178};
 
 int
 _comac_unicode_to_winansi (unsigned long uni)
@@ -358,9 +357,8 @@ _comac_unicode_to_winansi (unsigned long uni)
 
     /* exclude the extra "hyphen" at 0xad to avoid duplicate glyphnames */
     if ((uni >= 0x20 && uni <= 0x7e) ||
-	(uni >= 0xa1 && uni <= 0xff && uni != 0xad) ||
-	uni == 0)
-        return uni;
+	(uni >= 0xa1 && uni <= 0xff && uni != 0xad) || uni == 0)
+	return uni;
 
     for (i = 0; i < 32; i++)
 	if (_winansi_0x80_to_0x9f[i] == uni)
@@ -370,11 +368,11 @@ _comac_unicode_to_winansi (unsigned long uni)
 }
 
 static comac_status_t
-_comac_sub_font_glyph_lookup_unicode (comac_scaled_font_t    *scaled_font,
-				      unsigned long	      scaled_font_glyph_index,
-				      uint32_t     	     *unicode_out,
-				      char  		    **utf8_out,
-				      int          	     *utf8_len_out)
+_comac_sub_font_glyph_lookup_unicode (comac_scaled_font_t *scaled_font,
+				      unsigned long scaled_font_glyph_index,
+				      uint32_t *unicode_out,
+				      char **utf8_out,
+				      int *utf8_len_out)
 {
     uint32_t unicode;
     char buf[8];
@@ -390,7 +388,7 @@ _comac_sub_font_glyph_lookup_unicode (comac_scaled_font_t    *scaled_font,
     if (_comac_status_is_error (status))
 	return status;
 
-    if (unicode == (uint32_t)-1 && scaled_font->backend->index_to_ucs4) {
+    if (unicode == (uint32_t) -1 && scaled_font->backend->index_to_ucs4) {
 	status = scaled_font->backend->index_to_ucs4 (scaled_font,
 						      scaled_font_glyph_index,
 						      &unicode);
@@ -419,9 +417,9 @@ _comac_sub_font_glyph_lookup_unicode (comac_scaled_font_t    *scaled_font,
 
 static comac_status_t
 _comac_sub_font_glyph_map_to_unicode (comac_sub_font_glyph_t *sub_font_glyph,
-				      const char	     *utf8,
-				      int		      utf8_len,
-				      comac_bool_t	     *is_mapped)
+				      const char *utf8,
+				      int utf8_len,
+				      comac_bool_t *is_mapped)
 {
     *is_mapped = FALSE;
 
@@ -434,8 +432,7 @@ _comac_sub_font_glyph_map_to_unicode (comac_sub_font_glyph_t *sub_font_glyph,
     if (utf8 != NULL && utf8_len != 0) {
 	if (sub_font_glyph->utf8 != NULL) {
 	    if (utf8_len == sub_font_glyph->utf8_len &&
-		memcmp (utf8, sub_font_glyph->utf8, utf8_len) == 0)
-	    {
+		memcmp (utf8, sub_font_glyph->utf8, utf8_len) == 0) {
 		/* Requested utf8 mapping matches the existing mapping */
 		*is_mapped = TRUE;
 	    }
@@ -456,34 +453,37 @@ _comac_sub_font_glyph_map_to_unicode (comac_sub_font_glyph_t *sub_font_glyph,
 }
 
 static comac_int_status_t
-_comac_sub_font_lookup_glyph (comac_sub_font_t	                *sub_font,
-                              unsigned long	                 scaled_font_glyph_index,
-			      const char			*utf8,
-			      int				 utf8_len,
-                              comac_scaled_font_subsets_glyph_t *subset_glyph)
+_comac_sub_font_lookup_glyph (comac_sub_font_t *sub_font,
+			      unsigned long scaled_font_glyph_index,
+			      const char *utf8,
+			      int utf8_len,
+			      comac_scaled_font_subsets_glyph_t *subset_glyph)
 {
     comac_sub_font_glyph_t key, *sub_font_glyph;
     comac_int_status_t status;
 
     _comac_sub_font_glyph_init_key (&key, scaled_font_glyph_index);
-    sub_font_glyph = _comac_hash_table_lookup (sub_font->sub_font_glyphs,
-					      &key.base);
+    sub_font_glyph =
+	_comac_hash_table_lookup (sub_font->sub_font_glyphs, &key.base);
     if (sub_font_glyph != NULL) {
-        subset_glyph->font_id = sub_font->font_id;
-        subset_glyph->subset_id = sub_font_glyph->subset_id;
+	subset_glyph->font_id = sub_font->font_id;
+	subset_glyph->subset_id = sub_font_glyph->subset_id;
 	if (sub_font_glyph->is_latin)
 	    subset_glyph->subset_glyph_index = sub_font_glyph->latin_character;
 	else
-	    subset_glyph->subset_glyph_index = sub_font_glyph->subset_glyph_index;
+	    subset_glyph->subset_glyph_index =
+		sub_font_glyph->subset_glyph_index;
 
-        subset_glyph->is_scaled = sub_font->is_scaled;
-        subset_glyph->is_composite = sub_font->is_composite;
+	subset_glyph->is_scaled = sub_font->is_scaled;
+	subset_glyph->is_composite = sub_font->is_composite;
 	subset_glyph->is_latin = sub_font_glyph->is_latin;
-        subset_glyph->x_advance = sub_font_glyph->x_advance;
-        subset_glyph->y_advance = sub_font_glyph->y_advance;
-	status = _comac_sub_font_glyph_map_to_unicode (sub_font_glyph,
-						       utf8, utf8_len,
-						       &subset_glyph->utf8_is_mapped);
+	subset_glyph->x_advance = sub_font_glyph->x_advance;
+	subset_glyph->y_advance = sub_font_glyph->y_advance;
+	status = _comac_sub_font_glyph_map_to_unicode (
+	    sub_font_glyph,
+	    utf8,
+	    utf8_len,
+	    &subset_glyph->utf8_is_mapped);
 	subset_glyph->unicode = sub_font_glyph->unicode;
 
 	return status;
@@ -493,13 +493,13 @@ _comac_sub_font_lookup_glyph (comac_sub_font_t	                *sub_font,
 }
 
 static comac_status_t
-_comac_sub_font_add_glyph (comac_sub_font_t	   *sub_font,
-			   unsigned long	    scaled_font_glyph_index,
-			   comac_bool_t		    is_latin,
-			   int			    latin_character,
-			   uint32_t 		    unicode,
-			   char 		   *utf8,
-			   int 			    utf8_len,
+_comac_sub_font_add_glyph (comac_sub_font_t *sub_font,
+			   unsigned long scaled_font_glyph_index,
+			   comac_bool_t is_latin,
+			   int latin_character,
+			   uint32_t unicode,
+			   char *utf8,
+			   int utf8_len,
 			   comac_sub_font_glyph_t **sub_font_glyph_out)
 {
     comac_scaled_glyph_t *scaled_glyph;
@@ -525,8 +525,8 @@ _comac_sub_font_add_glyph (comac_sub_font_t	   *sub_font,
     y_advance = scaled_glyph->metrics.y_advance;
     _comac_scaled_font_thaw_cache (sub_font->scaled_font);
 
-    if (!is_latin && sub_font->num_glyphs_in_current_subset == sub_font->max_glyphs_per_subset)
-    {
+    if (! is_latin && sub_font->num_glyphs_in_current_subset ==
+			  sub_font->max_glyphs_per_subset) {
 	sub_font->current_subset++;
 	sub_font->num_glyphs_in_current_subset = 0;
     }
@@ -539,20 +539,22 @@ _comac_sub_font_add_glyph (comac_sub_font_t	   *sub_font,
     if ((*num_glyphs_in_subset_ptr == 0) && sub_font->reserve_notdef)
 	(*num_glyphs_in_subset_ptr)++;
 
-    sub_font_glyph = _comac_sub_font_glyph_create (scaled_font_glyph_index,
-						   is_latin ? 0 : sub_font->current_subset,
-						   *num_glyphs_in_subset_ptr,
-						   x_advance,
-						   y_advance,
-						   is_latin ? latin_character : -1,
-						   unicode,
-						   utf8,
-						   utf8_len);
+    sub_font_glyph =
+	_comac_sub_font_glyph_create (scaled_font_glyph_index,
+				      is_latin ? 0 : sub_font->current_subset,
+				      *num_glyphs_in_subset_ptr,
+				      x_advance,
+				      y_advance,
+				      is_latin ? latin_character : -1,
+				      unicode,
+				      utf8,
+				      utf8_len);
 
     if (unlikely (sub_font_glyph == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = _comac_hash_table_insert (sub_font->sub_font_glyphs, &sub_font_glyph->base);
+    status = _comac_hash_table_insert (sub_font->sub_font_glyphs,
+				       &sub_font_glyph->base);
     if (unlikely (status)) {
 	_comac_sub_font_glyph_destroy (sub_font_glyph);
 	return status;
@@ -560,11 +562,15 @@ _comac_sub_font_add_glyph (comac_sub_font_t	   *sub_font,
 
     (*num_glyphs_in_subset_ptr)++;
     if (sub_font->is_scaled) {
-	if (*num_glyphs_in_subset_ptr > sub_font->parent->max_glyphs_per_scaled_subset_used)
-	    sub_font->parent->max_glyphs_per_scaled_subset_used = *num_glyphs_in_subset_ptr;
+	if (*num_glyphs_in_subset_ptr >
+	    sub_font->parent->max_glyphs_per_scaled_subset_used)
+	    sub_font->parent->max_glyphs_per_scaled_subset_used =
+		*num_glyphs_in_subset_ptr;
     } else {
-	if (*num_glyphs_in_subset_ptr > sub_font->parent->max_glyphs_per_unscaled_subset_used)
-	    sub_font->parent->max_glyphs_per_unscaled_subset_used = *num_glyphs_in_subset_ptr;
+	if (*num_glyphs_in_subset_ptr >
+	    sub_font->parent->max_glyphs_per_unscaled_subset_used)
+	    sub_font->parent->max_glyphs_per_unscaled_subset_used =
+		*num_glyphs_in_subset_ptr;
     }
 
     *sub_font_glyph_out = sub_font_glyph;
@@ -573,18 +579,18 @@ _comac_sub_font_add_glyph (comac_sub_font_t	   *sub_font,
 }
 
 static comac_status_t
-_comac_sub_font_map_glyph (comac_sub_font_t	*sub_font,
-			   unsigned long	 scaled_font_glyph_index,
-			   const char		*text_utf8,
-			   int			 text_utf8_len,
-                           comac_scaled_font_subsets_glyph_t *subset_glyph)
+_comac_sub_font_map_glyph (comac_sub_font_t *sub_font,
+			   unsigned long scaled_font_glyph_index,
+			   const char *text_utf8,
+			   int text_utf8_len,
+			   comac_scaled_font_subsets_glyph_t *subset_glyph)
 {
     comac_sub_font_glyph_t key, *sub_font_glyph;
     comac_status_t status;
 
     _comac_sub_font_glyph_init_key (&key, scaled_font_glyph_index);
-    sub_font_glyph = _comac_hash_table_lookup (sub_font->sub_font_glyphs,
-					       &key.base);
+    sub_font_glyph =
+	_comac_hash_table_lookup (sub_font->sub_font_glyphs, &key.base);
     if (sub_font_glyph == NULL) {
 	uint32_t font_unicode;
 	char *font_utf8;
@@ -593,21 +599,23 @@ _comac_sub_font_map_glyph (comac_sub_font_t	*sub_font,
 	int latin_character;
 
 	status = _comac_sub_font_glyph_lookup_unicode (sub_font->scaled_font,
-							   scaled_font_glyph_index,
-							   &font_unicode,
-							   &font_utf8,
-							   &font_utf8_len);
-	if (unlikely(status))
+						       scaled_font_glyph_index,
+						       &font_unicode,
+						       &font_utf8,
+						       &font_utf8_len);
+	if (unlikely (status))
 	    return status;
 
 	/* If the supplied utf8 is a valid single character, use it
 	 * instead of the font lookup */
 	if (text_utf8 != NULL && text_utf8_len > 0) {
-	    uint32_t  *ucs4;
-	    int	ucs4_len;
+	    uint32_t *ucs4;
+	    int ucs4_len;
 
-	    status = _comac_utf8_to_ucs4 (text_utf8, text_utf8_len,
-					  &ucs4, &ucs4_len);
+	    status = _comac_utf8_to_ucs4 (text_utf8,
+					  text_utf8_len,
+					  &ucs4,
+					  &ucs4_len);
 	    if (status == COMAC_STATUS_SUCCESS) {
 		if (ucs4_len == 1) {
 		    font_unicode = ucs4[0];
@@ -630,12 +638,10 @@ _comac_sub_font_map_glyph (comac_sub_font_t	*sub_font,
 	is_latin = FALSE;
 	latin_character = -1;
 	if (sub_font->use_latin_subset &&
-	    (! _comac_font_face_is_user (sub_font->scaled_font->font_face)))
-	{
+	    (! _comac_font_face_is_user (sub_font->scaled_font->font_face))) {
 	    latin_character = _comac_unicode_to_winansi (font_unicode);
-	    if (latin_character > 0)
-	    {
-		if (!sub_font->latin_char_map[latin_character]) {
+	    if (latin_character > 0) {
+		if (! sub_font->latin_char_map[latin_character]) {
 		    sub_font->latin_char_map[latin_character] = TRUE;
 		    is_latin = TRUE;
 		}
@@ -650,7 +656,7 @@ _comac_sub_font_map_glyph (comac_sub_font_t	*sub_font,
 					    font_utf8,
 					    font_utf8_len,
 					    &sub_font_glyph);
-	if (unlikely(status))
+	if (unlikely (status))
 	    return status;
     }
 
@@ -666,9 +672,11 @@ _comac_sub_font_map_glyph (comac_sub_font_t	*sub_font,
     subset_glyph->is_latin = sub_font_glyph->is_latin;
     subset_glyph->x_advance = sub_font_glyph->x_advance;
     subset_glyph->y_advance = sub_font_glyph->y_advance;
-    status = _comac_sub_font_glyph_map_to_unicode (sub_font_glyph,
-						   text_utf8, text_utf8_len,
-						   &subset_glyph->utf8_is_mapped);
+    status =
+	_comac_sub_font_glyph_map_to_unicode (sub_font_glyph,
+					      text_utf8,
+					      text_utf8_len,
+					      &subset_glyph->utf8_is_mapped);
     subset_glyph->unicode = sub_font_glyph->unicode;
 
     return status;
@@ -694,7 +702,9 @@ _comac_sub_font_collect (void *entry, void *closure)
 	collection->subset_id = i;
 	collection->num_glyphs = 0;
 	collection->max_glyph = 0;
-	memset (collection->latin_to_subset_glyph_index, 0, 256*sizeof(unsigned long));
+	memset (collection->latin_to_subset_glyph_index,
+		0,
+		256 * sizeof (unsigned long));
 
 	if (sub_font->reserve_notdef) {
 	    // add .notdef
@@ -706,7 +716,8 @@ _comac_sub_font_collect (void *entry, void *closure)
 	}
 
 	_comac_hash_table_foreach (sub_font->sub_font_glyphs,
-				   _comac_sub_font_glyph_collect, collection);
+				   _comac_sub_font_glyph_collect,
+				   collection);
 	if (collection->status)
 	    break;
 
@@ -716,7 +727,7 @@ _comac_sub_font_collect (void *entry, void *closure)
 	if (sub_font->reserve_notdef && collection->num_glyphs == 1)
 	    continue;
 
-        /* Ensure the resulting array has no uninitialized holes */
+	/* Ensure the resulting array has no uninitialized holes */
 	assert (collection->num_glyphs == collection->max_glyph + 1);
 
 	subset.scaled_font = sub_font->scaled_font;
@@ -727,23 +738,25 @@ _comac_sub_font_collect (void *entry, void *closure)
 	subset.glyphs = collection->glyphs;
 	subset.utf8 = collection->utf8;
 	subset.num_glyphs = collection->num_glyphs;
-        subset.glyph_names = NULL;
+	subset.glyph_names = NULL;
 
 	subset.is_latin = FALSE;
 	if (sub_font->use_latin_subset && i == 0) {
 	    subset.is_latin = TRUE;
 	    subset.to_latin_char = collection->to_latin_char;
-	    subset.latin_to_subset_glyph_index = collection->latin_to_subset_glyph_index;
+	    subset.latin_to_subset_glyph_index =
+		collection->latin_to_subset_glyph_index;
 	} else {
 	    subset.to_latin_char = NULL;
 	    subset.latin_to_subset_glyph_index = NULL;
 	}
 
-        collection->status = (collection->font_subset_callback) (&subset,
-					    collection->font_subset_callback_closure);
+	collection->status = (collection->font_subset_callback) (
+	    &subset,
+	    collection->font_subset_callback_closure);
 
 	if (subset.glyph_names != NULL) {
-            for (j = 0; j < collection->num_glyphs; j++)
+	    for (j = 0; j < collection->num_glyphs; j++)
 		free (subset.glyph_names[j]);
 	    free (subset.glyph_names);
 	}
@@ -770,7 +783,8 @@ _comac_scaled_font_subsets_create_internal (comac_subsets_type_t type)
     subsets->max_glyphs_per_scaled_subset_used = 0;
     subsets->num_sub_fonts = 0;
 
-    subsets->unscaled_sub_fonts = _comac_hash_table_create (_comac_sub_fonts_equal);
+    subsets->unscaled_sub_fonts =
+	_comac_hash_table_create (_comac_sub_fonts_equal);
     if (! subsets->unscaled_sub_fonts) {
 	free (subsets);
 	return NULL;
@@ -778,7 +792,8 @@ _comac_scaled_font_subsets_create_internal (comac_subsets_type_t type)
     subsets->unscaled_sub_fonts_list = NULL;
     subsets->unscaled_sub_fonts_list_end = NULL;
 
-    subsets->scaled_sub_fonts = _comac_hash_table_create (_comac_sub_fonts_equal);
+    subsets->scaled_sub_fonts =
+	_comac_hash_table_create (_comac_sub_fonts_equal);
     if (! subsets->scaled_sub_fonts) {
 	_comac_hash_table_destroy (subsets->unscaled_sub_fonts);
 	free (subsets);
@@ -811,65 +826,71 @@ _comac_scaled_font_subsets_create_composite (void)
 void
 _comac_scaled_font_subsets_destroy (comac_scaled_font_subsets_t *subsets)
 {
-    _comac_hash_table_foreach (subsets->scaled_sub_fonts, _comac_sub_font_pluck, subsets->scaled_sub_fonts);
+    _comac_hash_table_foreach (subsets->scaled_sub_fonts,
+			       _comac_sub_font_pluck,
+			       subsets->scaled_sub_fonts);
     _comac_hash_table_destroy (subsets->scaled_sub_fonts);
 
-    _comac_hash_table_foreach (subsets->unscaled_sub_fonts, _comac_sub_font_pluck, subsets->unscaled_sub_fonts);
+    _comac_hash_table_foreach (subsets->unscaled_sub_fonts,
+			       _comac_sub_font_pluck,
+			       subsets->unscaled_sub_fonts);
     _comac_hash_table_destroy (subsets->unscaled_sub_fonts);
 
     free (subsets);
 }
 
 void
-_comac_scaled_font_subsets_enable_latin_subset (comac_scaled_font_subsets_t *font_subsets,
-						comac_bool_t                 use_latin)
+_comac_scaled_font_subsets_enable_latin_subset (
+    comac_scaled_font_subsets_t *font_subsets, comac_bool_t use_latin)
 {
     font_subsets->use_latin_subset = use_latin;
 }
 
 comac_status_t
-_comac_scaled_font_subsets_map_glyph (comac_scaled_font_subsets_t	*subsets,
-				      comac_scaled_font_t		*scaled_font,
-				      unsigned long			 scaled_font_glyph_index,
-				      const char *			 utf8,
-				      int				 utf8_len,
-                                      comac_scaled_font_subsets_glyph_t *subset_glyph)
+_comac_scaled_font_subsets_map_glyph (
+    comac_scaled_font_subsets_t *subsets,
+    comac_scaled_font_t *scaled_font,
+    unsigned long scaled_font_glyph_index,
+    const char *utf8,
+    int utf8_len,
+    comac_scaled_font_subsets_glyph_t *subset_glyph)
 {
     comac_sub_font_t key, *sub_font;
     comac_scaled_glyph_t *scaled_glyph;
     comac_font_face_t *font_face;
     comac_matrix_t identity;
     comac_font_options_t font_options;
-    comac_scaled_font_t	*unscaled_font;
+    comac_scaled_font_t *unscaled_font;
     comac_int_status_t status;
     int max_glyphs;
     comac_bool_t type1_font;
 
     /* Lookup glyph in unscaled subsets */
     if (subsets->type != COMAC_SUBSETS_SCALED) {
-        key.is_scaled = FALSE;
-        _comac_sub_font_init_key (&key, scaled_font);
-	sub_font = _comac_hash_table_lookup (subsets->unscaled_sub_fonts,
-					     &key.base);
-        if (sub_font != NULL) {
-            status = _comac_sub_font_lookup_glyph (sub_font,
+	key.is_scaled = FALSE;
+	_comac_sub_font_init_key (&key, scaled_font);
+	sub_font =
+	    _comac_hash_table_lookup (subsets->unscaled_sub_fonts, &key.base);
+	if (sub_font != NULL) {
+	    status = _comac_sub_font_lookup_glyph (sub_font,
 						   scaled_font_glyph_index,
-						   utf8, utf8_len,
+						   utf8,
+						   utf8_len,
 						   subset_glyph);
 	    if (status != COMAC_INT_STATUS_UNSUPPORTED)
-                return status;
-        }
+		return status;
+	}
     }
 
     /* Lookup glyph in scaled subsets */
     key.is_scaled = TRUE;
     _comac_sub_font_init_key (&key, scaled_font);
-    sub_font = _comac_hash_table_lookup (subsets->scaled_sub_fonts,
-					 &key.base);
+    sub_font = _comac_hash_table_lookup (subsets->scaled_sub_fonts, &key.base);
     if (sub_font != NULL) {
 	status = _comac_sub_font_lookup_glyph (sub_font,
 					       scaled_font_glyph_index,
-					       utf8, utf8_len,
+					       utf8,
+					       utf8_len,
 					       subset_glyph);
 	if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	    return status;
@@ -891,46 +912,47 @@ _comac_scaled_font_subsets_map_glyph (comac_scaled_font_subsets_t	*subsets,
 	status = _comac_scaled_glyph_lookup (scaled_font,
 					     scaled_font_glyph_index,
 					     COMAC_SCALED_GLYPH_INFO_PATH,
-                                             NULL, /* foreground color */
+					     NULL, /* foreground color */
 					     &scaled_glyph);
 	_comac_scaled_font_thaw_cache (scaled_font);
     }
     if (_comac_int_status_is_error (status))
-        return status;
+	return status;
 
     if (status == COMAC_INT_STATUS_SUCCESS &&
 	subsets->type != COMAC_SUBSETS_SCALED &&
-	! _comac_font_face_is_user (scaled_font->font_face))
-    {
-        /* Path available. Add to unscaled subset. */
-        key.is_scaled = FALSE;
-        _comac_sub_font_init_key (&key, scaled_font);
-	sub_font = _comac_hash_table_lookup (subsets->unscaled_sub_fonts,
-					     &key.base);
-        if (sub_font == NULL) {
-            font_face = comac_scaled_font_get_font_face (scaled_font);
-            comac_matrix_init_identity (&identity);
-            _comac_font_options_init_default (&font_options);
-            comac_font_options_set_hint_style (&font_options, COMAC_HINT_STYLE_NONE);
-            comac_font_options_set_hint_metrics (&font_options, COMAC_HINT_METRICS_OFF);
-            unscaled_font = comac_scaled_font_create (font_face,
-                                                      &identity,
-                                                      &identity,
-                                                      &font_options);
+	! _comac_font_face_is_user (scaled_font->font_face)) {
+	/* Path available. Add to unscaled subset. */
+	key.is_scaled = FALSE;
+	_comac_sub_font_init_key (&key, scaled_font);
+	sub_font =
+	    _comac_hash_table_lookup (subsets->unscaled_sub_fonts, &key.base);
+	if (sub_font == NULL) {
+	    font_face = comac_scaled_font_get_font_face (scaled_font);
+	    comac_matrix_init_identity (&identity);
+	    _comac_font_options_init_default (&font_options);
+	    comac_font_options_set_hint_style (&font_options,
+					       COMAC_HINT_STYLE_NONE);
+	    comac_font_options_set_hint_metrics (&font_options,
+						 COMAC_HINT_METRICS_OFF);
+	    unscaled_font = comac_scaled_font_create (font_face,
+						      &identity,
+						      &identity,
+						      &font_options);
 	    if (unlikely (unscaled_font->status))
 		return unscaled_font->status;
 
-            subset_glyph->is_scaled = FALSE;
-            type1_font = _comac_type1_scaled_font_is_type1 (unscaled_font);
-            if (subsets->type == COMAC_SUBSETS_COMPOSITE && !type1_font) {
-                max_glyphs = MAX_GLYPHS_PER_COMPOSITE_FONT;
-                subset_glyph->is_composite = TRUE;
-            } else {
-                max_glyphs = MAX_GLYPHS_PER_SIMPLE_FONT;
-                subset_glyph->is_composite = FALSE;
-            }
+	    subset_glyph->is_scaled = FALSE;
+	    type1_font = _comac_type1_scaled_font_is_type1 (unscaled_font);
+	    if (subsets->type == COMAC_SUBSETS_COMPOSITE && ! type1_font) {
+		max_glyphs = MAX_GLYPHS_PER_COMPOSITE_FONT;
+		subset_glyph->is_composite = TRUE;
+	    } else {
+		max_glyphs = MAX_GLYPHS_PER_SIMPLE_FONT;
+		subset_glyph->is_composite = FALSE;
+	    }
 
-            status = _comac_sub_font_create (subsets,
+	    status = _comac_sub_font_create (subsets,
 					     unscaled_font,
 					     subsets->num_sub_fonts,
 					     max_glyphs,
@@ -938,77 +960,80 @@ _comac_scaled_font_subsets_map_glyph (comac_scaled_font_subsets_t	*subsets,
 					     subset_glyph->is_composite,
 					     &sub_font);
 
-            if (unlikely (status)) {
+	    if (unlikely (status)) {
 		comac_scaled_font_destroy (unscaled_font);
-                return status;
+		return status;
 	    }
 
-            status = _comac_hash_table_insert (subsets->unscaled_sub_fonts,
-                                               &sub_font->base);
+	    status = _comac_hash_table_insert (subsets->unscaled_sub_fonts,
+					       &sub_font->base);
 
-            if (unlikely (status)) {
+	    if (unlikely (status)) {
 		_comac_sub_font_destroy (sub_font);
-                return status;
+		return status;
 	    }
-	    if (!subsets->unscaled_sub_fonts_list)
+	    if (! subsets->unscaled_sub_fonts_list)
 		subsets->unscaled_sub_fonts_list = sub_font;
 	    else
 		subsets->unscaled_sub_fonts_list_end->next = sub_font;
 	    subsets->unscaled_sub_fonts_list_end = sub_font;
 	    subsets->num_sub_fonts++;
-        }
+	}
     } else {
-        /* No path available. Add to scaled subset. */
-        key.is_scaled = TRUE;
-        _comac_sub_font_init_key (&key, scaled_font);
-	sub_font = _comac_hash_table_lookup (subsets->scaled_sub_fonts,
-					     &key.base);
-        if (sub_font == NULL) {
-            subset_glyph->is_scaled = TRUE;
-            subset_glyph->is_composite = FALSE;
-            if (subsets->type == COMAC_SUBSETS_SCALED)
-                max_glyphs = INT_MAX;
-            else
-                max_glyphs = MAX_GLYPHS_PER_SIMPLE_FONT;
+	/* No path available. Add to scaled subset. */
+	key.is_scaled = TRUE;
+	_comac_sub_font_init_key (&key, scaled_font);
+	sub_font =
+	    _comac_hash_table_lookup (subsets->scaled_sub_fonts, &key.base);
+	if (sub_font == NULL) {
+	    subset_glyph->is_scaled = TRUE;
+	    subset_glyph->is_composite = FALSE;
+	    if (subsets->type == COMAC_SUBSETS_SCALED)
+		max_glyphs = INT_MAX;
+	    else
+		max_glyphs = MAX_GLYPHS_PER_SIMPLE_FONT;
 
-            status = _comac_sub_font_create (subsets,
-					     comac_scaled_font_reference (scaled_font),
-					     subsets->num_sub_fonts,
-					     max_glyphs,
-					     subset_glyph->is_scaled,
-					     subset_glyph->is_composite,
-					     &sub_font);
-            if (unlikely (status)) {
+	    status = _comac_sub_font_create (
+		subsets,
+		comac_scaled_font_reference (scaled_font),
+		subsets->num_sub_fonts,
+		max_glyphs,
+		subset_glyph->is_scaled,
+		subset_glyph->is_composite,
+		&sub_font);
+	    if (unlikely (status)) {
 		comac_scaled_font_destroy (scaled_font);
-                return status;
+		return status;
 	    }
 
-            status = _comac_hash_table_insert (subsets->scaled_sub_fonts,
-                                               &sub_font->base);
-            if (unlikely (status)) {
+	    status = _comac_hash_table_insert (subsets->scaled_sub_fonts,
+					       &sub_font->base);
+	    if (unlikely (status)) {
 		_comac_sub_font_destroy (sub_font);
-                return status;
+		return status;
 	    }
-	    if (!subsets->scaled_sub_fonts_list)
+	    if (! subsets->scaled_sub_fonts_list)
 		subsets->scaled_sub_fonts_list = sub_font;
 	    else
 		subsets->scaled_sub_fonts_list_end->next = sub_font;
 	    subsets->scaled_sub_fonts_list_end = sub_font;
 	    subsets->num_sub_fonts++;
-        }
+	}
     }
 
     return _comac_sub_font_map_glyph (sub_font,
 				      scaled_font_glyph_index,
-				      utf8, utf8_len,
+				      utf8,
+				      utf8_len,
 				      subset_glyph);
 }
 
 static comac_status_t
-_comac_scaled_font_subsets_foreach_internal (comac_scaled_font_subsets_t              *font_subsets,
-                                             comac_scaled_font_subset_callback_func_t  font_subset_callback,
-                                             void				      *closure,
-					     comac_subsets_foreach_type_t	       type)
+_comac_scaled_font_subsets_foreach_internal (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_subset_callback_func_t font_subset_callback,
+    void *closure,
+    comac_subsets_foreach_type_t type)
 {
     comac_sub_font_collection_t collection;
     comac_sub_font_t *sub_font;
@@ -1021,25 +1046,29 @@ _comac_scaled_font_subsets_foreach_internal (comac_scaled_font_subsets_t        
 	is_user = TRUE;
 
     if (type == COMAC_SUBSETS_FOREACH_SCALED ||
-	type == COMAC_SUBSETS_FOREACH_USER)
-    {
+	type == COMAC_SUBSETS_FOREACH_USER) {
 	is_scaled = TRUE;
     }
 
     if (is_scaled)
-        collection.glyphs_size = font_subsets->max_glyphs_per_scaled_subset_used;
+	collection.glyphs_size =
+	    font_subsets->max_glyphs_per_scaled_subset_used;
     else
-        collection.glyphs_size = font_subsets->max_glyphs_per_unscaled_subset_used;
+	collection.glyphs_size =
+	    font_subsets->max_glyphs_per_unscaled_subset_used;
 
     if (! collection.glyphs_size)
 	return COMAC_STATUS_SUCCESS;
 
-    collection.glyphs = _comac_malloc_ab (collection.glyphs_size, sizeof(unsigned long));
-    collection.utf8 = _comac_malloc_ab (collection.glyphs_size, sizeof(char *));
-    collection.to_latin_char = _comac_malloc_ab (collection.glyphs_size, sizeof(int));
-    collection.latin_to_subset_glyph_index = _comac_malloc_ab (256, sizeof(unsigned long));
-    if (unlikely (collection.glyphs == NULL ||
-		  collection.utf8 == NULL ||
+    collection.glyphs =
+	_comac_malloc_ab (collection.glyphs_size, sizeof (unsigned long));
+    collection.utf8 =
+	_comac_malloc_ab (collection.glyphs_size, sizeof (char *));
+    collection.to_latin_char =
+	_comac_malloc_ab (collection.glyphs_size, sizeof (int));
+    collection.latin_to_subset_glyph_index =
+	_comac_malloc_ab (256, sizeof (unsigned long));
+    if (unlikely (collection.glyphs == NULL || collection.utf8 == NULL ||
 		  collection.to_latin_char == NULL ||
 		  collection.latin_to_subset_glyph_index == NULL)) {
 	free (collection.glyphs);
@@ -1074,36 +1103,42 @@ _comac_scaled_font_subsets_foreach_internal (comac_scaled_font_subsets_t        
 }
 
 comac_status_t
-_comac_scaled_font_subsets_foreach_scaled (comac_scaled_font_subsets_t		    *font_subsets,
-                                           comac_scaled_font_subset_callback_func_t  font_subset_callback,
-                                           void					    *closure)
+_comac_scaled_font_subsets_foreach_scaled (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_subset_callback_func_t font_subset_callback,
+    void *closure)
 {
-    return _comac_scaled_font_subsets_foreach_internal (font_subsets,
-                                                        font_subset_callback,
-                                                        closure,
-							COMAC_SUBSETS_FOREACH_SCALED);
+    return _comac_scaled_font_subsets_foreach_internal (
+	font_subsets,
+	font_subset_callback,
+	closure,
+	COMAC_SUBSETS_FOREACH_SCALED);
 }
 
 comac_status_t
-_comac_scaled_font_subsets_foreach_unscaled (comac_scaled_font_subsets_t	    *font_subsets,
-                                           comac_scaled_font_subset_callback_func_t  font_subset_callback,
-                                           void					    *closure)
+_comac_scaled_font_subsets_foreach_unscaled (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_subset_callback_func_t font_subset_callback,
+    void *closure)
 {
-    return _comac_scaled_font_subsets_foreach_internal (font_subsets,
-                                                        font_subset_callback,
-                                                        closure,
-							COMAC_SUBSETS_FOREACH_UNSCALED);
+    return _comac_scaled_font_subsets_foreach_internal (
+	font_subsets,
+	font_subset_callback,
+	closure,
+	COMAC_SUBSETS_FOREACH_UNSCALED);
 }
 
 comac_status_t
-_comac_scaled_font_subsets_foreach_user (comac_scaled_font_subsets_t		  *font_subsets,
-					 comac_scaled_font_subset_callback_func_t  font_subset_callback,
-					 void					  *closure)
+_comac_scaled_font_subsets_foreach_user (
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_scaled_font_subset_callback_func_t font_subset_callback,
+    void *closure)
 {
-    return _comac_scaled_font_subsets_foreach_internal (font_subsets,
-                                                        font_subset_callback,
-                                                        closure,
-							COMAC_SUBSETS_FOREACH_USER);
+    return _comac_scaled_font_subsets_foreach_internal (
+	font_subsets,
+	font_subset_callback,
+	closure,
+	COMAC_SUBSETS_FOREACH_USER);
 }
 
 static comac_bool_t
@@ -1127,43 +1162,48 @@ dump_glyph (void *entry, void *closure)
     char buf[10];
     int i;
 
-    printf("    font_glyph_index: %ld\n", glyph->base.hash);
-    printf("      subset_id: %d\n", glyph->subset_id);
-    printf("      subset_glyph_index: %d\n", glyph->subset_glyph_index);
-    printf("      x_advance: %f\n", glyph->x_advance);
-    printf("      y_advance: %f\n", glyph->y_advance);
-    printf("      is_latin: %d\n", glyph->is_latin);
-    printf("      latin_character: '%c' (0x%02x)\n", glyph->latin_character, glyph->latin_character);
-    printf("      is_latin: %d\n", glyph->is_latin);
-    printf("      is_mapped: %d\n", glyph->is_mapped);
-    printf("      unicode: U+%04x\n", glyph->unicode);
-    memset(buf, 0, sizeof(buf));
-    memcpy(buf, glyph->utf8, glyph->utf8_len);
-    printf("      utf8: '%s'\n", buf);
-    printf("      utf8 (hex):");
+    printf ("    font_glyph_index: %ld\n", glyph->base.hash);
+    printf ("      subset_id: %d\n", glyph->subset_id);
+    printf ("      subset_glyph_index: %d\n", glyph->subset_glyph_index);
+    printf ("      x_advance: %f\n", glyph->x_advance);
+    printf ("      y_advance: %f\n", glyph->y_advance);
+    printf ("      is_latin: %d\n", glyph->is_latin);
+    printf ("      latin_character: '%c' (0x%02x)\n",
+	    glyph->latin_character,
+	    glyph->latin_character);
+    printf ("      is_latin: %d\n", glyph->is_latin);
+    printf ("      is_mapped: %d\n", glyph->is_mapped);
+    printf ("      unicode: U+%04x\n", glyph->unicode);
+    memset (buf, 0, sizeof (buf));
+    memcpy (buf, glyph->utf8, glyph->utf8_len);
+    printf ("      utf8: '%s'\n", buf);
+    printf ("      utf8 (hex):");
     for (i = 0; i < glyph->utf8_len; i++)
-	printf(" 0x%02x", glyph->utf8[i]);
-    printf("\n\n");
+	printf (" 0x%02x", glyph->utf8[i]);
+    printf ("\n\n");
 }
 
 static void
 dump_subfont (comac_sub_font_t *sub_font)
 {
     while (sub_font) {
-	printf("    font_id: %d\n", sub_font->font_id);
-	printf("    current_subset: %d\n", sub_font->current_subset);
-	printf("    is_scaled: %d\n", sub_font->is_scaled);
-	printf("    is_composite: %d\n", sub_font->is_composite);
-	printf("    is_user: %d\n", sub_font->is_user);
-	printf("    use_latin_subset: %d\n", sub_font->use_latin_subset);
-	printf("    reserve_notdef: %d\n", sub_font->reserve_notdef);
-	printf("    num_glyphs_in_current_subset: %d\n", sub_font->num_glyphs_in_current_subset);
-	printf("    num_glyphs_in_latin_subset: %d\n", sub_font->num_glyphs_in_latin_subset);
-	printf("    max_glyphs_per_subset: %d\n\n", sub_font->max_glyphs_per_subset);
+	printf ("    font_id: %d\n", sub_font->font_id);
+	printf ("    current_subset: %d\n", sub_font->current_subset);
+	printf ("    is_scaled: %d\n", sub_font->is_scaled);
+	printf ("    is_composite: %d\n", sub_font->is_composite);
+	printf ("    is_user: %d\n", sub_font->is_user);
+	printf ("    use_latin_subset: %d\n", sub_font->use_latin_subset);
+	printf ("    reserve_notdef: %d\n", sub_font->reserve_notdef);
+	printf ("    num_glyphs_in_current_subset: %d\n",
+		sub_font->num_glyphs_in_current_subset);
+	printf ("    num_glyphs_in_latin_subset: %d\n",
+		sub_font->num_glyphs_in_latin_subset);
+	printf ("    max_glyphs_per_subset: %d\n\n",
+		sub_font->max_glyphs_per_subset);
 
 	_comac_hash_table_foreach (sub_font->sub_font_glyphs, dump_glyph, NULL);
 
-	printf("\n");
+	printf ("\n");
 	sub_font = sub_font->next;
     }
 }
@@ -1171,33 +1211,33 @@ dump_subfont (comac_sub_font_t *sub_font)
 void
 dump_scaled_font_subsets (comac_scaled_font_subsets_t *font_subsets)
 {
-    printf("font subsets\n");
-    switch (font_subsets->type)
-    {
-	case COMAC_SUBSETS_SCALED:
-	    printf("  type: COMAC_SUBSETS_SCALED\n");
-	    break;
-	case COMAC_SUBSETS_SIMPLE:
-	    printf("  type: COMAC_SUBSETS_SIMPLE\n");
-	    break;
-	case COMAC_SUBSETS_COMPOSITE:
-	    printf("  type: COMAC_SUBSETS_COMPOSITE\n");
-	    break;
+    printf ("font subsets\n");
+    switch (font_subsets->type) {
+    case COMAC_SUBSETS_SCALED:
+	printf ("  type: COMAC_SUBSETS_SCALED\n");
+	break;
+    case COMAC_SUBSETS_SIMPLE:
+	printf ("  type: COMAC_SUBSETS_SIMPLE\n");
+	break;
+    case COMAC_SUBSETS_COMPOSITE:
+	printf ("  type: COMAC_SUBSETS_COMPOSITE\n");
+	break;
     }
-    printf("  use_latin_subset: %d\n", font_subsets->use_latin_subset);
-    printf("  max_glyphs_per_unscaled_subset_used: %d\n", font_subsets->max_glyphs_per_unscaled_subset_used);
-    printf("  max_glyphs_per_scaled_subset_used: %d\n", font_subsets->max_glyphs_per_scaled_subset_used);
-    printf("  num_sub_fonts: %d\n\n", font_subsets->num_sub_fonts);
+    printf ("  use_latin_subset: %d\n", font_subsets->use_latin_subset);
+    printf ("  max_glyphs_per_unscaled_subset_used: %d\n",
+	    font_subsets->max_glyphs_per_unscaled_subset_used);
+    printf ("  max_glyphs_per_scaled_subset_used: %d\n",
+	    font_subsets->max_glyphs_per_scaled_subset_used);
+    printf ("  num_sub_fonts: %d\n\n", font_subsets->num_sub_fonts);
 
-    printf("  scaled subsets:\n");
+    printf ("  scaled subsets:\n");
     dump_subfont (font_subsets->scaled_sub_fonts_list);
 
-    printf("\n  unscaled subsets:\n");
+    printf ("\n  unscaled subsets:\n");
     dump_subfont (font_subsets->unscaled_sub_fonts_list);
 }
 
 #endif
-
 
 static void
 _comac_string_init_key (comac_string_entry_t *key, char *s)
@@ -1205,8 +1245,8 @@ _comac_string_init_key (comac_string_entry_t *key, char *s)
     unsigned long sum = 0;
     unsigned int i;
 
-    for (i = 0; i < strlen(s); i++)
-        sum += s[i];
+    for (i = 0; i < strlen (s); i++)
+	sum += s[i];
     key->base.hash = sum;
     key->string = s;
 }
@@ -1231,7 +1271,8 @@ _pluck_entry (void *entry, void *closure)
 }
 
 comac_int_status_t
-_comac_scaled_font_subset_create_glyph_names (comac_scaled_font_subset_t *subset)
+_comac_scaled_font_subset_create_glyph_names (
+    comac_scaled_font_subset_t *subset)
 {
     unsigned int i;
     comac_hash_table_t *names;
@@ -1290,7 +1331,7 @@ _comac_scaled_font_subset_create_glyph_names (comac_scaled_font_subset_t *subset
 	    int ch = _comac_unicode_to_winansi (utf16[0]);
 	    if (ch > 0 && _comac_winansi_to_glyphname (ch)) {
 		strncpy (buf, _comac_winansi_to_glyphname (ch), sizeof (buf));
-		buf[sizeof (buf)-1] = '\0';
+		buf[sizeof (buf) - 1] = '\0';
 	    } else {
 		snprintf (buf, sizeof (buf), "uni%04X", (int) utf16[0]);
 	    }

@@ -62,17 +62,16 @@ to_factor (double x)
 {
 #if 1
     if (x > 1.)
-	return (x-1) * 100.;
+	return (x - 1) * 100.;
     else
-	return (1. - 1./x) * 100.;
+	return (1. - 1. / x) * 100.;
 #else
     return log (x);
 #endif
 }
 
 static int
-_double_cmp (const void *_a,
-	     const void *_b)
+_double_cmp (const void *_a, const void *_b)
 {
     const double *a = _a;
     const double *b = _b;
@@ -85,10 +84,7 @@ _double_cmp (const void *_a,
 }
 
 static void
-trim_outliers (double *values,
-	       int     num_values,
-	       double *min,
-	       double *max)
+trim_outliers (double *values, int num_values, double *min, double *max)
 {
     double q1, q3, iqr;
     double outlier_min, outlier_max;
@@ -104,11 +100,10 @@ trim_outliers (double *values,
      * and third quartiles and IQR is the inter-quartile range (Q3 -
      * Q1).
      */
-    qsort (values, num_values,
-	   sizeof (double), _double_cmp);
+    qsort (values, num_values, sizeof (double), _double_cmp);
 
-    q1		= values[1*num_values / 6];
-    q3		= values[5*num_values / 6];
+    q1 = values[1 * num_values / 6];
+    q3 = values[5 * num_values / 6];
 
     iqr = q3 - q1;
 
@@ -126,7 +121,7 @@ trim_outliers (double *values,
     while (i < num_values && values[i] <= outlier_max)
 	i++;
 
-    *max = values[i-1];
+    *max = values[i - 1];
 }
 
 static void
@@ -148,8 +143,8 @@ find_ranges (struct chart *chart)
     size_values = 64;
     values = xmalloc (size_values * sizeof (double));
 
-    chart->average = xmalloc(chart->num_reports * sizeof(double));
-    count = xmalloc(chart->num_reports * sizeof(int));
+    chart->average = xmalloc (chart->num_reports * sizeof (double));
+    count = xmalloc (chart->num_reports * sizeof (int));
     for (i = 0; i < chart->num_reports; i++) {
 	chart->average[i] = 0;
 	count[i] = 0;
@@ -194,8 +189,7 @@ find_ranges (struct chart *chart)
 	    double report_time = HUGE_VAL;
 
 	    while (tests[i]->name &&
-		   test_report_cmp_name (tests[i], min_test) == 0)
-	    {
+		   test_report_cmp_name (tests[i], min_test) == 0) {
 		double time = tests[i]->stats.min_ticks;
 		if (time < report_time) {
 		    time /= tests[i]->stats.ticks_per_ms;
@@ -226,10 +220,10 @@ find_ranges (struct chart *chart)
 			if (v > max)
 			    max = v;
 			if (v > 0)
-			    fast_sum += v/100, fast_count++;
+			    fast_sum += v / 100, fast_count++;
 			else
-			    slow_sum += v/100, slow_count++;
-			sum += v/100;
+			    slow_sum += v / 100, slow_count++;
+			sum += v / 100;
 			printf ("%s %d: %f\n", min_test->name, num_values, v);
 		    }
 		} else {
@@ -253,22 +247,24 @@ find_ranges (struct chart *chart)
 	trim_outliers (values, num_values, &min, &max);
     chart->min_value = min;
     chart->max_value = max;
-    chart->num_tests = num_tests + !!chart->relative;
+    chart->num_tests = num_tests + ! ! chart->relative;
 
     free (values);
     free (tests);
     free (count);
 
     printf ("%d: slow[%d] average: %f, fast[%d] average: %f, %f\n",
-	    num_values, slow_count, slow_sum / slow_count, fast_count, fast_sum / fast_count, sum / num_values);
+	    num_values,
+	    slow_count,
+	    slow_sum / slow_count,
+	    fast_count,
+	    fast_sum / fast_count,
+	    sum / num_values);
 }
 
 #define SET_COLOR(C, R, G, B) (C)->red = (R), (C)->green = (G), (C)->blue = (B)
 static void
-hsv_to_rgb (double	  h,
-	    double	  s,
-	    double	  v,
-	    struct color *color)
+hsv_to_rgb (double h, double s, double v, struct color *color)
 {
     double m, n, f;
     int i;
@@ -295,19 +291,32 @@ hsv_to_rgb (double	  h,
 
     m = v * (1 - s);
     n = v * (1 - s * f);
-    switch(i){
+    switch (i) {
     default:
     case 6:
-    case 0: SET_COLOR (color, v, n, m); break;
-    case 1: SET_COLOR (color, n, v, m); break;
-    case 2: SET_COLOR (color, m, v, n); break;
-    case 3: SET_COLOR (color, m, n, v); break;
-    case 4: SET_COLOR (color, n, m, v); break;
-    case 5: SET_COLOR (color, v, m, n); break;
+    case 0:
+	SET_COLOR (color, v, n, m);
+	break;
+    case 1:
+	SET_COLOR (color, n, v, m);
+	break;
+    case 2:
+	SET_COLOR (color, m, v, n);
+	break;
+    case 3:
+	SET_COLOR (color, m, n, v);
+	break;
+    case 4:
+	SET_COLOR (color, n, m, v);
+	break;
+    case 5:
+	SET_COLOR (color, v, m, n);
+	break;
     }
 }
 
-static void set_report_color (struct chart *chart, int report)
+static void
+set_report_color (struct chart *chart, int report)
 {
     struct color color;
 
@@ -315,31 +324,40 @@ static void set_report_color (struct chart *chart, int report)
     comac_set_source_rgb (chart->cr, color.red, color.green, color.blue);
 }
 
-static void set_report_gradient (struct chart *chart, int report,
-				 double x, double y, double w, double h)
+static void
+set_report_gradient (
+    struct chart *chart, int report, double x, double y, double w, double h)
 {
     struct color color;
     comac_pattern_t *p;
 
     hsv_to_rgb (6. / chart->num_reports * report, .7, .7, &color);
 
-    p = comac_pattern_create_linear (x, 0, x+w, 0);
-    comac_pattern_add_color_stop_rgba (p, 0.0,
-				       color.red, color.green, color.blue,
+    p = comac_pattern_create_linear (x, 0, x + w, 0);
+    comac_pattern_add_color_stop_rgba (p,
+				       0.0,
+				       color.red,
+				       color.green,
+				       color.blue,
 				       .50);
-    comac_pattern_add_color_stop_rgba (p, 0.5,
-				       color.red, color.green, color.blue,
+    comac_pattern_add_color_stop_rgba (p,
+				       0.5,
+				       color.red,
+				       color.green,
+				       color.blue,
 				       .50);
-    comac_pattern_add_color_stop_rgba (p, 1.0,
-				       color.red, color.green, color.blue,
+    comac_pattern_add_color_stop_rgba (p,
+				       1.0,
+				       color.red,
+				       color.green,
+				       color.blue,
 				       1.0);
     comac_set_source (chart->cr, p);
     comac_pattern_destroy (p);
 }
 
 static void
-test_background (struct chart *c,
-		 int	       test)
+test_background (struct chart *c, int test)
 {
     double dx, x;
 
@@ -351,16 +369,16 @@ test_background (struct chart *c,
     else
 	comac_set_source_rgba (c->cr, .8, .8, .8, .2);
 
-    comac_rectangle (c->cr, floor (x), 0,
-		     floor (dx + x) - floor (x), c->height);
+    comac_rectangle (c->cr,
+		     floor (x),
+		     0,
+		     floor (dx + x) - floor (x),
+		     c->height);
     comac_fill (c->cr);
 }
 
 static void
-add_chart (struct chart *c,
-	   int		 test,
-	   int		 report,
-	   double	 value)
+add_chart (struct chart *c, int test, int report, double value)
 {
     double dx, dy, x;
 
@@ -372,23 +390,27 @@ add_chart (struct chart *c,
 	char buf[80];
 	double y;
 
-	dy = (c->height/2. - PAD) / MAX (-c->min_value, c->max_value);
+	dy = (c->height / 2. - PAD) / MAX (-c->min_value, c->max_value);
 	/* the first report is always skipped, as it is used as the baseline */
 	dx = c->width / (double) (c->num_tests * c->num_reports);
 	x = dx * (c->num_reports * test + report - .5);
 
 	comac_rectangle (c->cr,
-			 floor (x), c->height / 2.,
+			 floor (x),
+			 c->height / 2.,
 			 floor (x + dx) - floor (x),
-			 ceil (-dy*value - c->height/2.) + c->height/2.);
+			 ceil (-dy * value - c->height / 2.) + c->height / 2.);
 	if (dx < 5) {
 	    set_report_color (c, report);
 	    comac_fill (c->cr);
 	} else {
-	    set_report_gradient (c, report,
-				 floor (x), c->height / 2.,
+	    set_report_gradient (c,
+				 report,
+				 floor (x),
+				 c->height / 2.,
 				 floor (x + dx) - floor (x),
-				 ceil (-dy*value - c->height/2.) + c->height/2.);
+				 ceil (-dy * value - c->height / 2.) +
+				     c->height / 2.);
 
 	    comac_fill_preserve (c->cr);
 	    comac_save (c->cr);
@@ -400,42 +422,44 @@ add_chart (struct chart *c,
 
 	/* Skip the label if the difference between the two is less than 0.1% */
 	if (fabs (value) < 0.1)
-		return;
+	    return;
 
 	comac_save (c->cr);
 	comac_set_font_size (c->cr, dx - 2);
 
 	if (value < 0) {
-	    sprintf (buf, "%.1f", -value/100 + 1);
+	    sprintf (buf, "%.1f", -value / 100 + 1);
 	} else {
-	    sprintf (buf, "%.1f", value/100 + 1);
+	    sprintf (buf, "%.1f", value / 100 + 1);
 	}
 	comac_text_extents (c->cr, buf, &extents);
 
 	/* will it be clipped? */
 	y = -dy * value;
-	if (y < -c->height/2) {
-	    y = -c->height/2;
-	} else if (y > c->height/2) {
-	    y = c->height/2;
+	if (y < -c->height / 2) {
+	    y = -c->height / 2;
+	} else if (y > c->height / 2) {
+	    y = c->height / 2;
 	}
 
 	if (y < 0) {
 	    if (y > -extents.width - 6)
-		    y -= extents.width + 6;
+		y -= extents.width + 6;
 	} else {
 	    if (y < extents.width + 6)
-		    y += extents.width + 6;
+		y += extents.width + 6;
 	}
 
 	comac_translate (c->cr,
-			 floor (x) + (floor (x + dx) - floor (x))/2,
-			 floor (y) + c->height/2.);
-	comac_rotate (c->cr, -M_PI/2);
+			 floor (x) + (floor (x + dx) - floor (x)) / 2,
+			 floor (y) + c->height / 2.);
+	comac_rotate (c->cr, -M_PI / 2);
 	if (y < 0) {
-	    comac_move_to (c->cr, -extents.x_bearing -extents.width - 4, -extents.y_bearing/2);
+	    comac_move_to (c->cr,
+			   -extents.x_bearing - extents.width - 4,
+			   -extents.y_bearing / 2);
 	} else {
-	    comac_move_to (c->cr, 2, -extents.y_bearing/2);
+	    comac_move_to (c->cr, 2, -extents.y_bearing / 2);
 	}
 
 	comac_set_source_rgb (c->cr, .95, .95, .95);
@@ -443,21 +467,24 @@ add_chart (struct chart *c,
 	comac_restore (c->cr);
     } else {
 	dy = (c->height - PAD) / c->max_value;
-	dx = c->width / (double) (c->num_tests * (c->num_reports+1));
-	x = dx * ((c->num_reports+1) * test + report + .5);
+	dx = c->width / (double) (c->num_tests * (c->num_reports + 1));
+	x = dx * ((c->num_reports + 1) * test + report + .5);
 
 	comac_rectangle (c->cr,
-			 floor (x), c->height,
+			 floor (x),
+			 c->height,
 			 floor (x + dx) - floor (x),
-			 floor (c->height - dy*value) - c->height);
+			 floor (c->height - dy * value) - c->height);
 	if (dx < 5) {
 	    set_report_color (c, report);
 	    comac_fill (c->cr);
 	} else {
-	    set_report_gradient (c, report,
-				 floor (x), c->height,
+	    set_report_gradient (c,
+				 report,
+				 floor (x),
+				 c->height,
 				 floor (x + dx) - floor (x),
-				 floor (c->height - dy*value) - c->height);
+				 floor (c->height - dy * value) - c->height);
 	    comac_fill_preserve (c->cr);
 	    comac_save (c->cr);
 	    comac_clip_preserve (c->cr);
@@ -469,10 +496,7 @@ add_chart (struct chart *c,
 }
 
 static void
-add_average (struct chart *c,
-	     int		 test,
-	     int		 report,
-	     double	 value)
+add_average (struct chart *c, int test, int report, double value)
 {
     double dx, dy, x;
     comac_text_extents_t extents;
@@ -482,23 +506,27 @@ add_average (struct chart *c,
     if (fabs (value) < 0.1)
 	return;
 
-    dy = (c->height/2. - PAD) / MAX (-c->min_value, c->max_value);
+    dy = (c->height / 2. - PAD) / MAX (-c->min_value, c->max_value);
     /* the first report is always skipped, as it is used as the baseline */
     dx = c->width / (double) (c->num_tests * c->num_reports);
     x = dx * (c->num_reports * test + report - .5);
 
     comac_rectangle (c->cr,
-		     floor (x), c->height / 2.,
+		     floor (x),
+		     c->height / 2.,
 		     floor (x + dx) - floor (x),
-		     ceil (-dy*value - c->height/2.) + c->height/2.);
+		     ceil (-dy * value - c->height / 2.) + c->height / 2.);
     if (dx < 5) {
 	set_report_color (c, report);
 	comac_fill (c->cr);
     } else {
-	set_report_gradient (c, report,
-			     floor (x), c->height / 2.,
+	set_report_gradient (c,
+			     report,
+			     floor (x),
+			     c->height / 2.,
 			     floor (x + dx) - floor (x),
-			     ceil (-dy*value - c->height/2.) + c->height/2.);
+			     ceil (-dy * value - c->height / 2.) +
+				 c->height / 2.);
 
 	comac_fill_preserve (c->cr);
 	comac_save (c->cr);
@@ -516,18 +544,18 @@ add_average (struct chart *c,
     comac_set_font_size (c->cr, dx - 2);
 
     if (value < 0) {
-	sprintf (buf, "%.1f", -value/100 + 1);
+	sprintf (buf, "%.1f", -value / 100 + 1);
     } else {
-	sprintf (buf, "%.1f", value/100 + 1);
+	sprintf (buf, "%.1f", value / 100 + 1);
     }
     comac_text_extents (c->cr, buf, &extents);
 
     /* will it be clipped? */
     y = -dy * value;
-    if (y < -c->height/2) {
-	y = -c->height/2;
-    } else if (y > c->height/2) {
-	y = c->height/2;
+    if (y < -c->height / 2) {
+	y = -c->height / 2;
+    } else if (y > c->height / 2) {
+	y = c->height / 2;
     }
 
     if (y < 0) {
@@ -539,13 +567,15 @@ add_average (struct chart *c,
     }
 
     comac_translate (c->cr,
-		     floor (x) + (floor (x + dx) - floor (x))/2,
-		     floor (y) + c->height/2.);
-    comac_rotate (c->cr, -M_PI/2);
+		     floor (x) + (floor (x + dx) - floor (x)) / 2,
+		     floor (y) + c->height / 2.);
+    comac_rotate (c->cr, -M_PI / 2);
     if (y < 0) {
-	comac_move_to (c->cr, -extents.x_bearing -extents.width - 4, -extents.y_bearing/2);
+	comac_move_to (c->cr,
+		       -extents.x_bearing - extents.width - 4,
+		       -extents.y_bearing / 2);
     } else {
-	comac_move_to (c->cr, 2, -extents.y_bearing/2);
+	comac_move_to (c->cr, 2, -extents.y_bearing / 2);
     }
 
     comac_set_source_rgb (c->cr, .95, .95, .95);
@@ -554,9 +584,7 @@ add_average (struct chart *c,
 }
 
 static void
-add_label (struct chart *c,
-	   int		 test,
-	   const char	*label)
+add_label (struct chart *c, int test, const char *label)
 {
     comac_text_extents_t extents;
     double dx, x;
@@ -573,15 +601,15 @@ add_label (struct chart *c,
     x = (test + .5) * dx;
     comac_save (c->cr);
     comac_translate (c->cr, x, c->height - PAD / 2);
-    comac_rotate (c->cr, -M_PI/2);
-    comac_move_to (c->cr, 0, -extents.y_bearing/2);
+    comac_rotate (c->cr, -M_PI / 2);
+    comac_move_to (c->cr, 0, -extents.y_bearing / 2);
     comac_show_text (c->cr, label);
     comac_restore (c->cr);
 
     comac_save (c->cr);
     comac_translate (c->cr, x, PAD / 2);
-    comac_rotate (c->cr, -M_PI/2);
-    comac_move_to (c->cr, -extents.width, -extents.y_bearing/2);
+    comac_rotate (c->cr, -M_PI / 2);
+    comac_move_to (c->cr, -extents.width, -extents.y_bearing / 2);
     comac_show_text (c->cr, label);
     comac_restore (c->cr);
 
@@ -610,8 +638,8 @@ add_base_line (struct chart *c)
 static void
 add_absolute_lines (struct chart *c)
 {
-    const double dashes[] = { 2, 4 };
-    const double vlog_steps[] = { 10, 5, 4, 3, 2, 1, .5, .4, .3, .2, .1};
+    const double dashes[] = {2, 4};
+    const double vlog_steps[] = {10, 5, 4, 3, 2, 1, .5, .4, .3, .2, .1};
     double v, y, dy;
     unsigned int i;
     char buf[80];
@@ -643,23 +671,30 @@ done:
 
 	comac_set_font_size (c->cr, 8);
 
-	sprintf (buf, "%.0fs", i*v/1000);
+	sprintf (buf, "%.0fs", i * v / 1000);
 	comac_text_extents (c->cr, buf, &extents);
 
 	comac_set_source_rgba (c->cr, .75, 0, 0, .95);
-	comac_move_to (c->cr, 1-extents.x_bearing, floor (y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_move_to (c->cr,
+		       1 - extents.x_bearing,
+		       floor (y) - (extents.height / 2 + extents.y_bearing) +
+			   .5);
 	comac_show_text (c->cr, buf);
 
-	comac_move_to (c->cr, c->width-extents.width-1, floor (y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_move_to (c->cr,
+		       c->width - extents.width - 1,
+		       floor (y) - (extents.height / 2 + extents.y_bearing) +
+			   .5);
 	comac_show_text (c->cr, buf);
 
 	comac_set_source_rgba (c->cr, .75, 0, 0, .5);
 	comac_move_to (c->cr,
 		       ceil (extents.width + extents.x_bearing + 2),
 		       floor (y) + .5);
-	comac_line_to (c->cr,
-		       floor (c->width - (extents.width + extents.x_bearing + 2)),
-		       floor (y) + .5);
+	comac_line_to (
+	    c->cr,
+	    floor (c->width - (extents.width + extents.x_bearing + 2)),
+	    floor (y) + .5);
 	comac_stroke (c->cr);
     } while (1);
 
@@ -669,9 +704,9 @@ done:
 static void
 add_relative_lines (struct chart *c)
 {
-    const double dashes[] = { 2, 4 };
-    const double v_steps[] = { 10, 5, 1, .5, .1, .05, .01};
-    const int precision_steps[] = { 0, 0, 0, 1, 1, 2, 2};
+    const double dashes[] = {2, 4};
+    const double v_steps[] = {10, 5, 1, .5, .1, .05, .01};
+    const int precision_steps[] = {0, 0, 0, 1, 1, 2, 2};
     int precision;
     double v, y, dy, mid;
     unsigned int i;
@@ -690,7 +725,7 @@ add_relative_lines (struct chart *c)
     return;
 done:
 
-    mid = c->height/2.;
+    mid = c->height / 2.;
     dy = (mid - PAD) / MAX (-c->min_value, c->max_value);
 
     comac_save (c->cr);
@@ -704,21 +739,33 @@ done:
 	if (y > mid)
 	    break;
 
-	sprintf (buf, "%.*fx", precision, i*v + 1);
+	sprintf (buf, "%.*fx", precision, i * v + 1);
 	comac_text_extents (c->cr, buf, &extents);
 
 	comac_set_source_rgba (c->cr, .75, 0, 0, .95);
-	comac_move_to (c->cr, 1-extents.x_bearing, floor (mid + y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_move_to (c->cr,
+		       1 - extents.x_bearing,
+		       floor (mid + y) -
+			   (extents.height / 2 + extents.y_bearing) + .5);
 	comac_show_text (c->cr, buf);
 
-	comac_move_to (c->cr, c->width-extents.width-1, floor (mid + y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_move_to (c->cr,
+		       c->width - extents.width - 1,
+		       floor (mid + y) -
+			   (extents.height / 2 + extents.y_bearing) + .5);
 	comac_show_text (c->cr, buf);
 
 	comac_set_source_rgba (c->cr, 0, .75, 0, .95);
-	comac_move_to (c->cr, 1-extents.x_bearing, ceil (mid - y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_move_to (c->cr,
+		       1 - extents.x_bearing,
+		       ceil (mid - y) -
+			   (extents.height / 2 + extents.y_bearing) + .5);
 	comac_show_text (c->cr, buf);
 
-	comac_move_to (c->cr, c->width-extents.width-1, ceil (mid - y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_move_to (c->cr,
+		       c->width - extents.width - 1,
+		       ceil (mid - y) -
+			   (extents.height / 2 + extents.y_bearing) + .5);
 	comac_show_text (c->cr, buf);
 
 	/* trim the dashes to no obscure the labels */
@@ -757,22 +804,22 @@ add_slower_faster_guide (struct chart *c)
     comac_text_extents (c->cr, "FASTER", &extents);
     comac_set_source_rgba (c->cr, 0, .75, 0, .5);
     comac_move_to (c->cr,
-		   c->width/4. - extents.width/2. + extents.x_bearing,
+		   c->width / 4. - extents.width / 2. + extents.x_bearing,
 		   1 - extents.y_bearing);
     comac_show_text (c->cr, "FASTER");
     comac_move_to (c->cr,
-		   3*c->width/4. - extents.width/2. + extents.x_bearing,
+		   3 * c->width / 4. - extents.width / 2. + extents.x_bearing,
 		   1 - extents.y_bearing);
     comac_show_text (c->cr, "FASTER");
 
     comac_text_extents (c->cr, "SLOWER", &extents);
     comac_set_source_rgba (c->cr, .75, 0, 0, .5);
     comac_move_to (c->cr,
-		   c->width/4. - extents.width/2. + extents.x_bearing,
+		   c->width / 4. - extents.width / 2. + extents.x_bearing,
 		   c->height - 1);
     comac_show_text (c->cr, "SLOWER");
     comac_move_to (c->cr,
-		   3*c->width/4. - extents.width/2. + extents.x_bearing,
+		   3 * c->width / 4. - extents.width / 2. + extents.x_bearing,
 		   c->height - 1);
     comac_show_text (c->cr, "SLOWER");
 
@@ -780,8 +827,7 @@ add_slower_faster_guide (struct chart *c)
 }
 
 static void
-comac_perf_reports_compare (struct chart *chart,
-			    comac_bool_t  print)
+comac_perf_reports_compare (struct chart *chart, comac_bool_t print)
 {
     test_report_t **tests, *min_test;
     double test_time, best_time;
@@ -842,8 +888,7 @@ comac_perf_reports_compare (struct chart *chart,
 			    min_test->name,
 			    min_test->size);
 		} else {
-		    printf ("%26s:",
-			    min_test->name);
+		    printf ("%26s:", min_test->name);
 		}
 	    }
 	}
@@ -855,8 +900,7 @@ comac_perf_reports_compare (struct chart *chart,
 	    double report_time = HUGE_VAL;
 
 	    while (tests[i]->name &&
-		   test_report_cmp_name (tests[i], min_test) == 0)
-	    {
+		   test_report_cmp_name (tests[i], min_test) == 0) {
 		double time = tests[i]->stats.min_ticks;
 		if (time < report_time) {
 		    time /= tests[i]->stats.ticks_per_ms;
@@ -878,8 +922,7 @@ comac_perf_reports_compare (struct chart *chart,
 	    double report_time = HUGE_VAL;
 
 	    while (tests[i]->name &&
-		   test_report_cmp_name (tests[i], min_test) == 0)
-	    {
+		   test_report_cmp_name (tests[i], min_test) == 0) {
 		double time = tests[i]->stats.min_ticks;
 		if (time > 0) {
 		    time /= tests[i]->stats.ticks_per_ms;
@@ -893,16 +936,17 @@ comac_perf_reports_compare (struct chart *chart,
 		if (chart->use_html) {
 		    if (report_time < HUGE_VAL) {
 			if (report_time / best_time < 1.01) {
-			    printf ("<td><strong>%.1f</strong></td>", report_time/1000);
+			    printf ("<td><strong>%.1f</strong></td>",
+				    report_time / 1000);
 			} else {
-			    printf ("<td>%.1f</td>", report_time/1000);
+			    printf ("<td>%.1f</td>", report_time / 1000);
 			}
 		    } else {
 			printf ("<td></td>");
 		    }
 		} else {
 		    if (report_time < HUGE_VAL)
-			printf (" %6.1f",  report_time/1000);
+			printf (" %6.1f", report_time / 1000);
 		    else
 			printf ("    ---");
 		}
@@ -910,7 +954,9 @@ comac_perf_reports_compare (struct chart *chart,
 
 	    if (report_time < HUGE_VAL) {
 		if (chart->relative) {
-		    add_chart (chart, num_test, i,
+		    add_chart (chart,
+			       num_test,
+			       i,
 			       to_factor (test_time / report_time));
 		} else {
 		    add_chart (chart, num_test, i, report_time);
@@ -943,10 +989,10 @@ comac_perf_reports_compare (struct chart *chart,
 	for (i = 0; i < chart->num_reports; i++) {
 	    if (chart->names[i]) {
 		printf ("[%s] %s\n",
-			chart->names[i], chart->reports[i].configuration);
+			chart->names[i],
+			chart->reports[i].configuration);
 	    } else {
-		printf ("[%d] %s\n",
-			i, chart->reports[i].configuration);
+		printf ("[%d] %s\n", i, chart->reports[i].configuration);
 	    }
 	}
     }
@@ -964,8 +1010,8 @@ add_legend (struct chart *chart)
     x = PAD;
     y = chart->height + PAD;
     for (i = chart->relative; i < chart->num_reports; i++) {
-	str = chart->names[i] ?
-	      chart->names[i] : chart->reports[i].configuration;
+	str =
+	    chart->names[i] ? chart->names[i] : chart->reports[i].configuration;
 
 	set_report_color (chart, i);
 
@@ -983,8 +1029,8 @@ add_legend (struct chart *chart)
     if (chart->relative) {
 	char buf[80];
 
-	str = chart->names[0] ?
-	      chart->names[0] : chart->reports[0].configuration;
+	str =
+	    chart->names[0] ? chart->names[0] : chart->reports[0].configuration;
 
 	sprintf (buf, "(relative to %s)", str);
 	comac_text_extents (chart->cr, buf, &extents);
@@ -1000,31 +1046,30 @@ add_legend (struct chart *chart)
 static void
 usage (void)
 {
-	printf("Usage:\n");
-	printf("  comac-perf-chart [OPTION...] <result1> <result2>...<resultN>\n");
-	printf("\n");
-	printf("Help Options:\n");
-	printf("  --help, --?\tShow help options\n");
-	printf("\n");
-	printf("Application Options:\n");
-	printf("  --html\tOutput an HTML table comparing the results\n");
-	printf("  --height=\tSet the height of the output graph"\
-			" (default 480)\n");
-	printf("  --width=\tSet the width of the output graph"\
-			" (default 640)\n");
-	printf("  --name\tSet the name of graph series."\
-			" This only sets the name for the\n\t\tfirst result file."\
-			" The graph series is usually set using the\n\t\tfile name for"\
-			" the results file.\n");
-	printf("\n");
-	printf("Example:\n");
-	printf("  comac-perf-chart --width=1024 --height=768 run1 run2 run3\n");
-	return;
+    printf ("Usage:\n");
+    printf ("  comac-perf-chart [OPTION...] <result1> <result2>...<resultN>\n");
+    printf ("\n");
+    printf ("Help Options:\n");
+    printf ("  --help, --?\tShow help options\n");
+    printf ("\n");
+    printf ("Application Options:\n");
+    printf ("  --html\tOutput an HTML table comparing the results\n");
+    printf ("  --height=\tSet the height of the output graph"
+	    " (default 480)\n");
+    printf ("  --width=\tSet the width of the output graph"
+	    " (default 640)\n");
+    printf ("  --name\tSet the name of graph series."
+	    " This only sets the name for the\n\t\tfirst result file."
+	    " The graph series is usually set using the\n\t\tfile name for"
+	    " the results file.\n");
+    printf ("\n");
+    printf ("Example:\n");
+    printf ("  comac-perf-chart --width=1024 --height=768 run1 run2 run3\n");
+    return;
 }
 
 int
-main (int	  argc,
-      const char *argv[])
+main (int argc, const char *argv[])
 {
     comac_surface_t *surface;
     struct chart chart;
@@ -1035,8 +1080,8 @@ main (int	  argc,
     chart.width = 640;
     chart.height = 480;
 
-    chart.reports = xcalloc (argc-1, sizeof (comac_perf_report_t));
-    chart.names = xcalloc (argc-1, sizeof (comac_perf_report_t));
+    chart.reports = xcalloc (argc - 1, sizeof (comac_perf_report_t));
+    chart.names = xcalloc (argc - 1, sizeof (comac_perf_report_t));
 
     chart.num_reports = 0;
     for (i = 1; i < argc; i++) {
@@ -1052,12 +1097,13 @@ main (int	  argc,
 	} else if (strncmp (argv[i], "--name=", 7) == 0) {
 	    chart.names[chart.num_reports] = argv[i] + 7;
 	} else if ((strcmp (argv[i], "--help") == 0) ||
-		(strcmp (argv[i], "--?") == 0)) {
-		usage();
-		return 0;
+		   (strcmp (argv[i], "--?") == 0)) {
+	    usage ();
+	    return 0;
 	} else {
 	    comac_perf_report_load (&chart.reports[chart.num_reports++],
-				    argv[i], i,
+				    argv[i],
+				    i,
 				    test_report_cmp_name);
 	}
     }
@@ -1065,7 +1111,8 @@ main (int	  argc,
     for (chart.relative = 0; chart.relative <= 1; chart.relative++) {
 	surface = comac_image_surface_create (COMAC_FORMAT_ARGB32,
 					      chart.width,
-					      chart.height + (FONT_SIZE + PAD) + 2*PAD);
+					      chart.height + (FONT_SIZE + PAD) +
+						  2 * PAD);
 	chart.cr = comac_create (surface);
 	comac_surface_destroy (surface);
 
@@ -1085,14 +1132,15 @@ main (int	  argc,
 	comac_save (chart.cr);
 	comac_rectangle (chart.cr, 0, 0, chart.width, chart.height);
 	comac_clip (chart.cr);
-	comac_perf_reports_compare (&chart, !chart.relative);
+	comac_perf_reports_compare (&chart, ! chart.relative);
 	comac_restore (chart.cr);
 
 	add_base_line (&chart);
 	add_legend (&chart);
 
 	comac_surface_write_to_png (comac_get_target (chart.cr),
-				    chart.relative ? "relative.png" : "absolute.png");
+				    chart.relative ? "relative.png"
+						   : "absolute.png");
 	comac_destroy (chart.cr);
     }
 

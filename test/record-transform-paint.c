@@ -27,13 +27,16 @@
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_surface_t *surface2 = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
+    comac_surface_t *surface2 =
+	comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
     {
 	comac_t *cr2 = comac_create (surface2);
-	comac_surface_t *surface3 = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
+	comac_surface_t *surface3 =
+	    comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
 	{
 	    comac_t *cr3 = comac_create (surface3);
-	    comac_pattern_t *pattern4 = comac_pattern_create_linear (0.0, 0.0, width, height);
+	    comac_pattern_t *pattern4 =
+		comac_pattern_create_linear (0.0, 0.0, width, height);
 	    comac_pattern_add_color_stop_rgb (pattern4, 0, 0, 1, 0);
 	    comac_pattern_add_color_stop_rgb (pattern4, 1, 0, 0, 1);
 	    comac_set_source (cr3, pattern4);
@@ -59,6 +62,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (record_transform_paint,
 	    "Tests paint in nested transformed recording patterns",
 	    "record, paint", /* keywords */
-	    NULL, /* requirements */
-	    512, 512,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    512,
+	    512,
+	    NULL,
+	    draw)

@@ -92,11 +92,11 @@ _comac_rectilinear_stroker_limit (comac_rectilinear_stroker_t *stroker,
 }
 
 static comac_bool_t
-_comac_rectilinear_stroker_init (comac_rectilinear_stroker_t	*stroker,
-				 const comac_stroke_style_t	*stroke_style,
-				 const comac_matrix_t		*ctm,
-				 comac_antialias_t		 antialias,
-				 comac_boxes_t			*boxes)
+_comac_rectilinear_stroker_init (comac_rectilinear_stroker_t *stroker,
+				 const comac_stroke_style_t *stroke_style,
+				 const comac_matrix_t *ctm,
+				 comac_antialias_t antialias,
+				 comac_boxes_t *boxes)
 {
     /* This special-case rectilinear stroker only supports
      * miter-joined lines (not curves) and a translation-only matrix
@@ -108,7 +108,7 @@ _comac_rectilinear_stroker_init (comac_rectilinear_stroker_t	*stroker,
      * UNSUPPORTED from _comac_rectilinear_stroker_line_to if any
      * non-rectilinear line_to is encountered.
      */
-    if (stroke_style->line_join	!= COMAC_LINE_JOIN_MITER)
+    if (stroke_style->line_join != COMAC_LINE_JOIN_MITER)
 	return FALSE;
 
     /* If the miter limit turns right angles into bevels, then we
@@ -119,8 +119,7 @@ _comac_rectilinear_stroker_init (comac_rectilinear_stroker_t	*stroker,
 	return FALSE;
 
     if (! (stroke_style->line_cap == COMAC_LINE_CAP_BUTT ||
-	   stroke_style->line_cap == COMAC_LINE_CAP_SQUARE))
-    {
+	   stroke_style->line_cap == COMAC_LINE_CAP_SQUARE)) {
 	return FALSE;
     }
 
@@ -131,10 +130,10 @@ _comac_rectilinear_stroker_init (comac_rectilinear_stroker_t	*stroker,
     stroker->ctm = ctm;
     stroker->antialias = antialias;
 
-    stroker->half_line_x =
-	_comac_fixed_from_double (fabs(ctm->xx) * stroke_style->line_width / 2.0);
-    stroker->half_line_y =
-	_comac_fixed_from_double (fabs(ctm->yy) * stroke_style->line_width / 2.0);
+    stroker->half_line_x = _comac_fixed_from_double (
+	fabs (ctm->xx) * stroke_style->line_width / 2.0);
+    stroker->half_line_y = _comac_fixed_from_double (
+	fabs (ctm->yy) * stroke_style->line_width / 2.0);
 
     stroker->open_sub_path = FALSE;
     stroker->segments = stroker->segments_embedded;
@@ -151,7 +150,7 @@ _comac_rectilinear_stroker_init (comac_rectilinear_stroker_t	*stroker,
 }
 
 static void
-_comac_rectilinear_stroker_fini (comac_rectilinear_stroker_t	*stroker)
+_comac_rectilinear_stroker_fini (comac_rectilinear_stroker_t *stroker)
 {
     if (stroker->segments != stroker->segments_embedded)
 	free (stroker->segments);
@@ -159,9 +158,9 @@ _comac_rectilinear_stroker_fini (comac_rectilinear_stroker_t	*stroker)
 
 static comac_status_t
 _comac_rectilinear_stroker_add_segment (comac_rectilinear_stroker_t *stroker,
-					const comac_point_t	*p1,
-					const comac_point_t	*p2,
-					unsigned		 flags)
+					const comac_point_t *p1,
+					const comac_point_t *p2,
+					unsigned flags)
 {
     if (COMAC_INJECT_FAULT ())
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -175,11 +174,13 @@ _comac_rectilinear_stroker_add_segment (comac_rectilinear_stroker_t *stroker,
 	    if (unlikely (new_segments == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	    memcpy (new_segments, stroker->segments,
+	    memcpy (new_segments,
+		    stroker->segments,
 		    stroker->num_segments * sizeof (segment_t));
 	} else {
 	    new_segments = _comac_realloc_ab (stroker->segments,
-					      new_size, sizeof (segment_t));
+					      new_size,
+					      sizeof (segment_t));
 	    if (unlikely (new_segments == NULL))
 		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
@@ -229,10 +230,14 @@ _comac_rectilinear_stroker_emit_segments (comac_rectilinear_stroker_t *stroker)
 	 * Ideally, we would not emit these self-intersections at all,
 	 * but that is tricky with segments shorter than half_line_width.
 	 */
-	j = i == 0 ? stroker->num_segments - 1 : i-1;
-	lengthen_initial = (stroker->segments[i].flags ^ stroker->segments[j].flags) & HORIZONTAL;
-	j = i == stroker->num_segments - 1 ? 0 : i+1;
-	lengthen_final = (stroker->segments[i].flags ^ stroker->segments[j].flags) & HORIZONTAL;
+	j = i == 0 ? stroker->num_segments - 1 : i - 1;
+	lengthen_initial =
+	    (stroker->segments[i].flags ^ stroker->segments[j].flags) &
+	    HORIZONTAL;
+	j = i == stroker->num_segments - 1 ? 0 : i + 1;
+	lengthen_final =
+	    (stroker->segments[i].flags ^ stroker->segments[j].flags) &
+	    HORIZONTAL;
 	if (stroker->open_sub_path) {
 	    if (i == 0)
 		lengthen_initial = line_cap != COMAC_LINE_CAP_BUTT;
@@ -305,7 +310,8 @@ _comac_rectilinear_stroker_emit_segments (comac_rectilinear_stroker_t *stroker)
 }
 
 static comac_status_t
-_comac_rectilinear_stroker_emit_segments_dashed (comac_rectilinear_stroker_t *stroker)
+_comac_rectilinear_stroker_emit_segments_dashed (
+    comac_rectilinear_stroker_t *stroker)
 {
     comac_status_t status;
     comac_line_cap_t line_cap = stroker->stroke_style->line_cap;
@@ -327,11 +333,10 @@ _comac_rectilinear_stroker_emit_segments_dashed (comac_rectilinear_stroker_t *st
 	if (line_cap == COMAC_LINE_CAP_BUTT &&
 	    stroker->segments[i].flags & JOIN &&
 	    (i != stroker->num_segments - 1 ||
-	     (! stroker->open_sub_path && stroker->dash.dash_starts_on)))
-	{
+	     (! stroker->open_sub_path && stroker->dash.dash_starts_on))) {
 	    comac_slope_t out_slope;
 	    int j = (i + 1) % stroker->num_segments;
-	    comac_bool_t forwards = !!(stroker->segments[i].flags & FORWARDS);
+	    comac_bool_t forwards = ! ! (stroker->segments[i].flags & FORWARDS);
 
 	    _comac_slope_init (&out_slope,
 			       &stroker->segments[j].p1,
@@ -360,7 +365,8 @@ _comac_rectilinear_stroker_emit_segments_dashed (comac_rectilinear_stroker_t *st
 		    box.p2.x += half_line_x;
 	    }
 
-	    status = _comac_boxes_add (stroker->boxes, stroker->antialias, &box);
+	    status =
+		_comac_boxes_add (stroker->boxes, stroker->antialias, &box);
 	    if (unlikely (status))
 		return status;
 	}
@@ -423,8 +429,7 @@ _comac_rectilinear_stroker_emit_segments_dashed (comac_rectilinear_stroker_t *st
 }
 
 static comac_status_t
-_comac_rectilinear_stroker_move_to (void		*closure,
-				    const comac_point_t	*point)
+_comac_rectilinear_stroker_move_to (void *closure, const comac_point_t *point)
 {
     comac_rectilinear_stroker_t *stroker = closure;
     comac_status_t status;
@@ -446,8 +451,7 @@ _comac_rectilinear_stroker_move_to (void		*closure,
 }
 
 static comac_status_t
-_comac_rectilinear_stroker_line_to (void		*closure,
-				    const comac_point_t	*b)
+_comac_rectilinear_stroker_line_to (void *closure, const comac_point_t *b)
 {
     comac_rectilinear_stroker_t *stroker = closure;
     comac_point_t *a = &stroker->current_point;
@@ -460,7 +464,9 @@ _comac_rectilinear_stroker_line_to (void		*closure,
     if (a->x == b->x && a->y == b->y)
 	return COMAC_STATUS_SUCCESS;
 
-    status = _comac_rectilinear_stroker_add_segment (stroker, a, b,
+    status = _comac_rectilinear_stroker_add_segment (stroker,
+						     a,
+						     b,
 						     (a->y == b->y) | JOIN);
 
     stroker->current_point = *b;
@@ -470,8 +476,8 @@ _comac_rectilinear_stroker_line_to (void		*closure,
 }
 
 static comac_status_t
-_comac_rectilinear_stroker_line_to_dashed (void		*closure,
-					   const comac_point_t	*point)
+_comac_rectilinear_stroker_line_to_dashed (void *closure,
+					   const comac_point_t *point)
 {
     comac_rectilinear_stroker_t *stroker = closure;
     const comac_point_t *a = &stroker->current_point;
@@ -494,8 +500,7 @@ _comac_rectilinear_stroker_line_to_dashed (void		*closure,
     fully_in_bounds = TRUE;
     if (stroker->has_bounds &&
 	(! _comac_box_contains_point (&stroker->bounds, a) ||
-	 ! _comac_box_contains_point (&stroker->bounds, b)))
-    {
+	 ! _comac_box_contains_point (&stroker->bounds, b))) {
 	fully_in_bounds = FALSE;
     }
 
@@ -523,7 +528,7 @@ _comac_rectilinear_stroker_line_to_dashed (void		*closure,
 	step_length = MIN (sf * stroker->dash.dash_remain, remain);
 	remain -= step_length;
 
-	mag = _comac_fixed_from_double (sign*remain);
+	mag = _comac_fixed_from_double (sign * remain);
 	if (is_horizontal & 0x1)
 	    segment.p2.x = b->x + mag;
 	else
@@ -531,19 +536,17 @@ _comac_rectilinear_stroker_line_to_dashed (void		*closure,
 
 	if (stroker->dash.dash_on &&
 	    (fully_in_bounds ||
-	     _comac_box_intersects_line_segment (&stroker->bounds, &segment)))
-	{
-	    status = _comac_rectilinear_stroker_add_segment (stroker,
-							     &segment.p1,
-							     &segment.p2,
-							     is_horizontal | (remain <= 0.) << 2);
+	     _comac_box_intersects_line_segment (&stroker->bounds, &segment))) {
+	    status = _comac_rectilinear_stroker_add_segment (
+		stroker,
+		&segment.p1,
+		&segment.p2,
+		is_horizontal | (remain <= 0.) << 2);
 	    if (unlikely (status))
 		return status;
 
 	    dash_on = TRUE;
-	}
-	else
-	{
+	} else {
 	    dash_on = FALSE;
 	}
 
@@ -553,8 +556,7 @@ _comac_rectilinear_stroker_line_to_dashed (void		*closure,
 
     if (stroker->dash.dash_on && ! dash_on &&
 	(fully_in_bounds ||
-	 _comac_box_intersects_line_segment (&stroker->bounds, &segment)))
-    {
+	 _comac_box_intersects_line_segment (&stroker->bounds, &segment))) {
 
 	/* This segment ends on a transition to dash_on, compute a new face
 	 * and add cap for the beginning of the next dash_on step.
@@ -585,11 +587,12 @@ _comac_rectilinear_stroker_close_path (void *closure)
 	return COMAC_STATUS_SUCCESS;
 
     if (stroker->dash.dashed) {
-	status = _comac_rectilinear_stroker_line_to_dashed (stroker,
-							    &stroker->first_point);
+	status =
+	    _comac_rectilinear_stroker_line_to_dashed (stroker,
+						       &stroker->first_point);
     } else {
-	status = _comac_rectilinear_stroker_line_to (stroker,
-						     &stroker->first_point);
+	status =
+	    _comac_rectilinear_stroker_line_to (stroker, &stroker->first_point);
     }
     if (unlikely (status))
 	return status;
@@ -607,11 +610,12 @@ _comac_rectilinear_stroker_close_path (void *closure)
 }
 
 comac_int_status_t
-_comac_path_fixed_stroke_rectilinear_to_boxes (const comac_path_fixed_t	*path,
-					       const comac_stroke_style_t	*stroke_style,
-					       const comac_matrix_t	*ctm,
-					       comac_antialias_t	 antialias,
-					       comac_boxes_t		*boxes)
+_comac_path_fixed_stroke_rectilinear_to_boxes (
+    const comac_path_fixed_t *path,
+    const comac_stroke_style_t *stroke_style,
+    const comac_matrix_t *ctm,
+    comac_antialias_t antialias,
+    comac_boxes_t *boxes)
 {
     comac_rectilinear_stroker_t rectilinear_stroker;
     comac_int_status_t status;
@@ -620,18 +624,18 @@ _comac_path_fixed_stroke_rectilinear_to_boxes (const comac_path_fixed_t	*path,
     assert (_comac_path_fixed_stroke_is_rectilinear (path));
 
     if (! _comac_rectilinear_stroker_init (&rectilinear_stroker,
-					   stroke_style, ctm, antialias,
-					   boxes))
-    {
+					   stroke_style,
+					   ctm,
+					   antialias,
+					   boxes)) {
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
     if (! rectilinear_stroker.dash.dashed &&
 	_comac_path_fixed_is_stroke_box (path, &box) &&
 	/* if the segments overlap we need to feed them into the tessellator */
-	box.p2.x - box.p1.x > 2* rectilinear_stroker.half_line_x &&
-	box.p2.y - box.p1.y > 2* rectilinear_stroker.half_line_y)
-    {
+	box.p2.x - box.p1.x > 2 * rectilinear_stroker.half_line_x &&
+	box.p2.y - box.p1.y > 2 * rectilinear_stroker.half_line_y) {
 	comac_box_t b;
 
 	/* top */
@@ -675,21 +679,24 @@ _comac_path_fixed_stroke_rectilinear_to_boxes (const comac_path_fixed_t	*path,
 					  boxes->num_limits);
     }
 
-    status = _comac_path_fixed_interpret (path,
-					  _comac_rectilinear_stroker_move_to,
-					  rectilinear_stroker.dash.dashed ?
-					  _comac_rectilinear_stroker_line_to_dashed :
-					  _comac_rectilinear_stroker_line_to,
-					  NULL,
-					  _comac_rectilinear_stroker_close_path,
-					  &rectilinear_stroker);
+    status = _comac_path_fixed_interpret (
+	path,
+	_comac_rectilinear_stroker_move_to,
+	rectilinear_stroker.dash.dashed
+	    ? _comac_rectilinear_stroker_line_to_dashed
+	    : _comac_rectilinear_stroker_line_to,
+	NULL,
+	_comac_rectilinear_stroker_close_path,
+	&rectilinear_stroker);
     if (unlikely (status))
 	goto BAIL;
 
     if (rectilinear_stroker.dash.dashed)
-	status = _comac_rectilinear_stroker_emit_segments_dashed (&rectilinear_stroker);
+	status = _comac_rectilinear_stroker_emit_segments_dashed (
+	    &rectilinear_stroker);
     else
-	status = _comac_rectilinear_stroker_emit_segments (&rectilinear_stroker);
+	status =
+	    _comac_rectilinear_stroker_emit_segments (&rectilinear_stroker);
     if (unlikely (status))
 	goto BAIL;
 

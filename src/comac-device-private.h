@@ -73,8 +73,6 @@ _comac_device_init (comac_device_t *device,
 		    const comac_device_backend_t *backend);
 
 comac_private comac_status_t
-_comac_device_set_error (comac_device_t *device,
-		         comac_status_t error);
-
+_comac_device_set_error (comac_device_t *device, comac_status_t error);
 
 #endif /* _COMAC_DEVICE_PRIVATE_H_ */

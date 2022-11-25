@@ -26,18 +26,18 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 10.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
 {
     comac_move_to (cr, 0, 0);
-    comac_rel_line_to (cr, -SIZE/2, SIZE);
+    comac_rel_line_to (cr, -SIZE / 2, SIZE);
     comac_rel_line_to (cr, SIZE, 0);
     /* back to the start, but do not close */
-    comac_rel_line_to (cr, -SIZE/2, -SIZE);
+    comac_rel_line_to (cr, -SIZE / 2, -SIZE);
 }
 
 static comac_test_status_t
@@ -76,8 +76,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (unclosed_strokes,
 	    "Test coincident end-points are capped and not joined",
 	    "stroke, caps", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	    /* requirements */
 	    PAD + SIZE + PAD,
 	    3 * (PAD + SIZE) + PAD,
-	    NULL, draw)
-
+	    NULL,
+	    draw)

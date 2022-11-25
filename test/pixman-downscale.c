@@ -66,138 +66,164 @@ draw (comac_t *cr, int width, int height, comac_filter_t filter)
 static comac_test_status_t
 draw_fast (comac_t *cr, int width, int height)
 {
-  return draw (cr, width, height, COMAC_FILTER_FAST);
+    return draw (cr, width, height, COMAC_FILTER_FAST);
 }
 
 static comac_test_status_t
 draw_good (comac_t *cr, int width, int height)
 {
-  return draw (cr, width, height, COMAC_FILTER_GOOD);
+    return draw (cr, width, height, COMAC_FILTER_GOOD);
 }
 
 static comac_test_status_t
 draw_best (comac_t *cr, int width, int height)
 {
-  return draw (cr, width, height, COMAC_FILTER_BEST);
+    return draw (cr, width, height, COMAC_FILTER_BEST);
 }
 
 static comac_test_status_t
 draw_nearest (comac_t *cr, int width, int height)
 {
-  return draw (cr, width, height, COMAC_FILTER_NEAREST);
+    return draw (cr, width, height, COMAC_FILTER_NEAREST);
 }
 
 static comac_test_status_t
 draw_bilinear (comac_t *cr, int width, int height)
 {
-  return draw (cr, width, height, COMAC_FILTER_BILINEAR);
+    return draw (cr, width, height, COMAC_FILTER_BILINEAR);
 }
 
 COMAC_TEST (pixman_downscale_fast_96,
 	    "Tests scaling to equivalent size using the fast filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    96, 96,
-	    NULL, draw_fast)
+	    NULL,				   /* requirements */
+	    96,
+	    96,
+	    NULL,
+	    draw_fast)
 
 COMAC_TEST (pixman_downscale_fast_95,
 	    "Tests downscaling by a single pixel using the fast filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    95, 95,
-	    NULL, draw_fast)
+	    NULL,				   /* requirements */
+	    95,
+	    95,
+	    NULL,
+	    draw_fast)
 
 COMAC_TEST (pixman_downscale_fast_24,
 	    "Tests downscaling by an even multiple using the fast filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    24, 24,
-	    NULL, draw_fast)
-
+	    NULL,				   /* requirements */
+	    24,
+	    24,
+	    NULL,
+	    draw_fast)
 
 COMAC_TEST (pixman_downscale_good_96,
 	    "Tests scaling to equivalent size using the good filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    96, 96,
-	    NULL, draw_good)
+	    NULL,				   /* requirements */
+	    96,
+	    96,
+	    NULL,
+	    draw_good)
 
 COMAC_TEST (pixman_downscale_good_95,
 	    "Tests downscaling by a single pixel using the good filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    95, 95,
-	    NULL, draw_good)
+	    NULL,				   /* requirements */
+	    95,
+	    95,
+	    NULL,
+	    draw_good)
 
 COMAC_TEST (pixman_downscale_good_24,
 	    "Tests downscaling by an even multiple using the good filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    24, 24,
-	    NULL, draw_good)
-
+	    NULL,				   /* requirements */
+	    24,
+	    24,
+	    NULL,
+	    draw_good)
 
 COMAC_TEST (pixman_downscale_best_96,
 	    "Tests scaling to equivalent size using the best filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    96, 96,
-	    NULL, draw_best)
+	    NULL,				   /* requirements */
+	    96,
+	    96,
+	    NULL,
+	    draw_best)
 
 COMAC_TEST (pixman_downscale_best_95,
 	    "Tests downscaling by a single pixel using the best filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    95, 95,
-	    NULL, draw_best)
+	    NULL,				   /* requirements */
+	    95,
+	    95,
+	    NULL,
+	    draw_best)
 
 COMAC_TEST (pixman_downscale_best_24,
 	    "Tests downscaling by an even multiple using the best filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    24, 24,
-	    NULL, draw_best)
-
+	    NULL,				   /* requirements */
+	    24,
+	    24,
+	    NULL,
+	    draw_best)
 
 COMAC_TEST (pixman_downscale_nearest_96,
 	    "Tests scaling to equivalent size using the nearest filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    96, 96,
-	    NULL, draw_nearest)
+	    NULL,				   /* requirements */
+	    96,
+	    96,
+	    NULL,
+	    draw_nearest)
 
 COMAC_TEST (pixman_downscale_nearest_95,
 	    "Tests downscaling by a single pixel using the nearest filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    95, 95,
-	    NULL, draw_nearest)
+	    NULL,				   /* requirements */
+	    95,
+	    95,
+	    NULL,
+	    draw_nearest)
 
 COMAC_TEST (pixman_downscale_nearest_24,
 	    "Tests downscaling by an even multiple using the nearest filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    24, 24,
-	    NULL, draw_nearest)
-
+	    NULL,				   /* requirements */
+	    24,
+	    24,
+	    NULL,
+	    draw_nearest)
 
 COMAC_TEST (pixman_downscale_bilinear_96,
 	    "Tests scaling to equivalent size using the bilinear filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    96, 96,
-	    NULL, draw_bilinear)
+	    NULL,				   /* requirements */
+	    96,
+	    96,
+	    NULL,
+	    draw_bilinear)
 
 COMAC_TEST (pixman_downscale_bilinear_95,
 	    "Tests downscaling by a single pixel using the bilinear filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    95, 95,
-	    NULL, draw_bilinear)
+	    NULL,				   /* requirements */
+	    95,
+	    95,
+	    NULL,
+	    draw_bilinear)
 
 COMAC_TEST (pixman_downscale_bilinear_24,
 	    "Tests downscaling by an even multiple using the bilinear filter",
 	    "image, transform, raster, downscale", /* keywords */
-	    NULL, /* requirements */
-	    24, 24,
-	    NULL, draw_bilinear)
+	    NULL,				   /* requirements */
+	    24,
+	    24,
+	    NULL,
+	    draw_bilinear)

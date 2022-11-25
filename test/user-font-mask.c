@@ -35,28 +35,29 @@
 
 #define BORDER 10
 #define TEXT_SIZE 64
-#define WIDTH  (TEXT_SIZE * 15 + 2*BORDER)
+#define WIDTH (TEXT_SIZE * 15 + 2 * BORDER)
 #ifndef ROTATED
- #define HEIGHT ((TEXT_SIZE + 2*BORDER)*2)
+#define HEIGHT ((TEXT_SIZE + 2 * BORDER) * 2)
 #else
- #define HEIGHT WIDTH
+#define HEIGHT WIDTH
 #endif
 #define END_GLYPH 0
-#define TEXT   "comac"
+#define TEXT "comac"
 
 /* Reverse the bits in a byte with 7 operations (no 64-bit):
  * Devised by Sean Anderson, July 13, 2001.
  * Source: http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith32Bits
  */
-#define COMAC_BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+#define COMAC_BITSWAP8(c)                                                      \
+    ((((c) *0x0802LU & 0x22110LU) | ((c) *0x8020LU & 0x88440LU)) *             \
+	 0x10101LU >>                                                          \
+     16)
 
 #ifdef WORDS_BIGENDIAN
 #define COMAC_BITSWAP8_IF_LITTLE_ENDIAN(c) (c)
 #else
-#define COMAC_BITSWAP8_IF_LITTLE_ENDIAN(c) COMAC_BITSWAP8(c)
+#define COMAC_BITSWAP8_IF_LITTLE_ENDIAN(c) COMAC_BITSWAP8 (c)
 #endif
-
-
 
 /* Simple glyph definition. data is an 8x8 bitmap.
  */
@@ -69,22 +70,23 @@ typedef struct {
 static comac_user_data_key_t test_font_face_glyphs_key;
 
 static comac_status_t
-test_scaled_font_init (comac_scaled_font_t  *scaled_font,
-		       comac_t              *cr,
+test_scaled_font_init (comac_scaled_font_t *scaled_font,
+		       comac_t *cr,
 		       comac_font_extents_t *metrics)
 {
-  metrics->ascent  = 1;
-  metrics->descent = 0;
-  return COMAC_STATUS_SUCCESS;
+    metrics->ascent = 1;
+    metrics->descent = 0;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static comac_status_t
 test_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
-				   unsigned long        unicode,
-				   unsigned long       *glyph)
+				   unsigned long unicode,
+				   unsigned long *glyph)
 {
-    test_scaled_font_glyph_t *glyphs = comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
-								      &test_font_face_glyphs_key);
+    test_scaled_font_glyph_t *glyphs = comac_font_face_get_user_data (
+	comac_scaled_font_get_font_face (scaled_font),
+	&test_font_face_glyphs_key);
     int i;
 
     for (i = 0; glyphs[i].ucs4 != (unsigned long) -1; i++)
@@ -98,13 +100,14 @@ test_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
 }
 
 static comac_status_t
-test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
-			       unsigned long         glyph,
-			       comac_t              *cr,
+test_scaled_font_render_glyph (comac_scaled_font_t *scaled_font,
+			       unsigned long glyph,
+			       comac_t *cr,
 			       comac_text_extents_t *metrics)
 {
-    test_scaled_font_glyph_t *glyphs = comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
-								      &test_font_face_glyphs_key);
+    test_scaled_font_glyph_t *glyphs = comac_font_face_get_user_data (
+	comac_scaled_font_get_font_face (scaled_font),
+	&test_font_face_glyphs_key);
     int i;
     unsigned char *data;
     comac_surface_t *image;
@@ -116,7 +119,8 @@ test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 
     metrics->x_advance = (glyphs[glyph].width + 1) / 8.0;
 
-    image = comac_image_surface_create (COMAC_FORMAT_A1, glyphs[glyph].width, 8);
+    image =
+	comac_image_surface_create (COMAC_FORMAT_A1, glyphs[glyph].width, 8);
     if (comac_surface_status (image))
 	return comac_surface_status (image);
 
@@ -132,7 +136,7 @@ test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
     comac_surface_destroy (image);
 
     comac_matrix_init_identity (&matrix);
-    comac_matrix_scale (&matrix, 1.0/8.0, 1.0/8.0);
+    comac_matrix_scale (&matrix, 1.0 / 8.0, 1.0 / 8.0);
     comac_matrix_translate (&matrix, 0, -8);
     comac_matrix_invert (&matrix);
     comac_pattern_set_matrix (pattern, &matrix);
@@ -147,26 +151,30 @@ test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 static comac_status_t
 _user_font_face_create (comac_font_face_t **out)
 {
-    static const test_scaled_font_glyph_t glyphs [] = {
-	{ 'c',  6, { 0x00, 0x38, 0x44, 0x80, 0x80, 0x80, 0x44, 0x38 } },
-	{ 'a',  6, { 0x00, 0x70, 0x88, 0x3c, 0x44, 0x84, 0x8c, 0x74 } },
-	{ 'i',  1, { 0x80, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 } },
-	{ 'r',  6, { 0x00, 0xb8, 0xc4, 0x80, 0x80, 0x80, 0x80, 0x80 } },
-	{ 'o',  7, { 0x00, 0x38, 0x44, 0x82, 0x82, 0x82, 0x44, 0x38 } },
-	{  -1,  8, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } },
+    static const test_scaled_font_glyph_t glyphs[] = {
+	{'c', 6, {0x00, 0x38, 0x44, 0x80, 0x80, 0x80, 0x44, 0x38}},
+	{'a', 6, {0x00, 0x70, 0x88, 0x3c, 0x44, 0x84, 0x8c, 0x74}},
+	{'i', 1, {0x80, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80}},
+	{'r', 6, {0x00, 0xb8, 0xc4, 0x80, 0x80, 0x80, 0x80, 0x80}},
+	{'o', 7, {0x00, 0x38, 0x44, 0x82, 0x82, 0x82, 0x44, 0x38}},
+	{-1, 8, {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
     };
 
     comac_font_face_t *user_font_face;
     comac_status_t status;
 
     user_font_face = comac_user_font_face_create ();
-    comac_user_font_face_set_init_func             (user_font_face, test_scaled_font_init);
-    comac_user_font_face_set_render_glyph_func     (user_font_face, test_scaled_font_render_glyph);
-    comac_user_font_face_set_unicode_to_glyph_func (user_font_face, test_scaled_font_unicode_to_glyph);
+    comac_user_font_face_set_init_func (user_font_face, test_scaled_font_init);
+    comac_user_font_face_set_render_glyph_func (user_font_face,
+						test_scaled_font_render_glyph);
+    comac_user_font_face_set_unicode_to_glyph_func (
+	user_font_face,
+	test_scaled_font_unicode_to_glyph);
 
     status = comac_font_face_set_user_data (user_font_face,
 					    &test_font_face_glyphs_key,
-					    (void*) glyphs, NULL);
+					    (void *) glyphs,
+					    NULL);
     if (status) {
 	comac_font_face_destroy (user_font_face);
 	return status;
@@ -215,17 +223,19 @@ draw (comac_t *cr, int width, int height)
     comac_move_to (cr, 0, BORDER + font_extents.ascent + font_extents.descent);
     comac_rel_line_to (cr, WIDTH, 0);
     comac_move_to (cr, BORDER, 0);
-    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_rel_line_to (cr, 0, 2 * BORDER + TEXT_SIZE);
     comac_move_to (cr, BORDER + extents.x_advance, 0);
-    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_rel_line_to (cr, 0, 2 * BORDER + TEXT_SIZE);
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_set_line_width (cr, 2);
     comac_stroke (cr);
 
     /* ink boundaries in green */
     comac_rectangle (cr,
-		     BORDER + extents.x_bearing, BORDER + font_extents.ascent + extents.y_bearing,
-		     extents.width, extents.height);
+		     BORDER + extents.x_bearing,
+		     BORDER + font_extents.ascent + extents.y_bearing,
+		     extents.width,
+		     extents.height);
     comac_set_source_rgb (cr, 0, 1, 0);
     comac_set_line_width (cr, 2);
     comac_stroke (cr);
@@ -235,10 +245,12 @@ draw (comac_t *cr, int width, int height)
     comac_move_to (cr, BORDER, BORDER + font_extents.ascent);
     comac_show_text (cr, text);
 
-
     /* filled version of text in blue */
     comac_set_source_rgb (cr, 0, 0, 1);
-    comac_move_to (cr, BORDER, BORDER + font_extents.height + 2*BORDER + font_extents.ascent);
+    comac_move_to (cr,
+		   BORDER,
+		   BORDER + font_extents.height + 2 * BORDER +
+		       font_extents.ascent);
     comac_text_path (cr, text);
     comac_fill (cr);
 
@@ -248,6 +260,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (user_font_mask,
 	    "Tests a user-font using comac_mask with bitmap images",
 	    "user-font, mask", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	       /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

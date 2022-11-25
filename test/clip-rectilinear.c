@@ -28,18 +28,20 @@
 
 #define SIZE 120
 
-static void L(comac_t *cr, int w, int h)
+static void
+L (comac_t *cr, int w, int h)
 {
-	comac_move_to (cr, 0, 0);
-	comac_line_to (cr, 0, h);
-	comac_line_to (cr, w, h);
-	comac_line_to (cr, w, h/2);
-	comac_line_to (cr, w/2, h/2);
-	comac_line_to (cr, w/2, 0);
-	comac_close_path (cr);
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, 0, h);
+    comac_line_to (cr, w, h);
+    comac_line_to (cr, w, h / 2);
+    comac_line_to (cr, w / 2, h / 2);
+    comac_line_to (cr, w / 2, 0);
+    comac_close_path (cr);
 }
 
-static void LL(comac_t *cr, int w, int h)
+static void
+LL (comac_t *cr, int w, int h)
 {
     comac_save (cr);
 
@@ -52,7 +54,7 @@ static void LL(comac_t *cr, int w, int h)
     comac_reset_clip (cr);
 
     /* unaligned */
-    comac_translate (cr, w+.25, .25);
+    comac_translate (cr, w + .25, .25);
     comac_rectangle (cr, 0, 0, w, h);
     comac_clip (cr);
     L (cr, w, h);
@@ -66,7 +68,7 @@ static void LL(comac_t *cr, int w, int h)
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    int w = SIZE/2, h = SIZE/2;
+    int w = SIZE / 2, h = SIZE / 2;
 
     comac_paint (cr); /* opaque background */
 
@@ -85,6 +87,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_rectilinear,
 	    "Test handling of rectilinear clipping",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

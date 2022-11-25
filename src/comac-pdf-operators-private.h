@@ -53,10 +53,8 @@
  */
 #define PDF_GLYPH_BUFFER_SIZE 200
 
-typedef comac_int_status_t
-(*comac_pdf_operators_use_font_subset_t) (unsigned int  font_id,
-					  unsigned int  subset_id,
-					  void         *closure);
+typedef comac_int_status_t (*comac_pdf_operators_use_font_subset_t) (
+    unsigned int font_id, unsigned int subset_id, void *closure);
 
 typedef struct _comac_pdf_glyph {
     unsigned int glyph_index;
@@ -75,13 +73,16 @@ typedef struct _comac_pdf_operators {
     comac_bool_t in_text_object; /* inside BT/ET pair */
 
     /* PDF text state */
-    comac_bool_t is_new_text_object; /* text object started but matrix and font not yet selected */
+    comac_bool_t
+	is_new_text_object; /* text object started but matrix and font not yet selected */
     unsigned int font_id;
     unsigned int subset_id;
     comac_matrix_t text_matrix; /* PDF text matrix (Tlm in the PDF reference) */
-    comac_matrix_t comac_to_pdftext; /* translate comac coords to PDF text space */
+    comac_matrix_t
+	comac_to_pdftext; /* translate comac coords to PDF text space */
     comac_matrix_t font_matrix_inverse;
-    double cur_x; /* Current position in PDF text space (Tm in the PDF reference) */
+    double
+	cur_x; /* Current position in PDF text space (Tm in the PDF reference) */
     double cur_y;
     int hex_width;
     comac_bool_t is_latin;
@@ -90,93 +91,93 @@ typedef struct _comac_pdf_operators {
     comac_pdf_glyph_t glyphs[PDF_GLYPH_BUFFER_SIZE];
 
     /* PDF line style */
-    comac_bool_t         has_line_style;
-    double		 line_width;
-    comac_line_cap_t	 line_cap;
-    comac_line_join_t	 line_join;
-    double		 miter_limit;
-    comac_bool_t         has_dashes;
+    comac_bool_t has_line_style;
+    double line_width;
+    comac_line_cap_t line_cap;
+    comac_line_join_t line_join;
+    double miter_limit;
+    comac_bool_t has_dashes;
 } comac_pdf_operators_t;
 
 comac_private void
-_comac_pdf_operators_init (comac_pdf_operators_t       *pdf_operators,
-			   comac_output_stream_t       *stream,
-			   comac_matrix_t 	       *comac_to_pdf,
+_comac_pdf_operators_init (comac_pdf_operators_t *pdf_operators,
+			   comac_output_stream_t *stream,
+			   comac_matrix_t *comac_to_pdf,
 			   comac_scaled_font_subsets_t *font_subsets,
-			   comac_bool_t                 ps);
+			   comac_bool_t ps);
 
 comac_private comac_status_t
-_comac_pdf_operators_fini (comac_pdf_operators_t       *pdf_operators);
+_comac_pdf_operators_fini (comac_pdf_operators_t *pdf_operators);
 
 comac_private void
-_comac_pdf_operators_set_font_subsets_callback (comac_pdf_operators_t 		     *pdf_operators,
-						comac_pdf_operators_use_font_subset_t use_font_subset,
-						void				     *closure);
+_comac_pdf_operators_set_font_subsets_callback (
+    comac_pdf_operators_t *pdf_operators,
+    comac_pdf_operators_use_font_subset_t use_font_subset,
+    void *closure);
 
 comac_private void
-_comac_pdf_operators_set_stream (comac_pdf_operators_t 	 *pdf_operators,
-				 comac_output_stream_t   *stream);
-
+_comac_pdf_operators_set_stream (comac_pdf_operators_t *pdf_operators,
+				 comac_output_stream_t *stream);
 
 comac_private void
-_comac_pdf_operators_set_comac_to_pdf_matrix (comac_pdf_operators_t *pdf_operators,
-					      comac_matrix_t 	    *comac_to_pdf);
+_comac_pdf_operators_set_comac_to_pdf_matrix (
+    comac_pdf_operators_t *pdf_operators, comac_matrix_t *comac_to_pdf);
 
 comac_private void
 _comac_pdf_operators_enable_actual_text (comac_pdf_operators_t *pdf_operators,
-					 comac_bool_t 	  	enable);
+					 comac_bool_t enable);
 
 comac_private comac_status_t
-_comac_pdf_operators_flush (comac_pdf_operators_t	 *pdf_operators);
+_comac_pdf_operators_flush (comac_pdf_operators_t *pdf_operators);
 
 comac_private void
-_comac_pdf_operators_reset (comac_pdf_operators_t	 *pdf_operators);
+_comac_pdf_operators_reset (comac_pdf_operators_t *pdf_operators);
 
 comac_private comac_int_status_t
-_comac_pdf_operators_clip (comac_pdf_operators_t	*pdf_operators,
-			   const comac_path_fixed_t	*path,
-			   comac_fill_rule_t		 fill_rule);
+_comac_pdf_operators_clip (comac_pdf_operators_t *pdf_operators,
+			   const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule);
 
 comac_private comac_int_status_t
-_comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t		*pdf_operators,
-					const comac_stroke_style_t	*style,
-					double				 scale);
+_comac_pdf_operators_emit_stroke_style (comac_pdf_operators_t *pdf_operators,
+					const comac_stroke_style_t *style,
+					double scale);
 
 comac_private comac_int_status_t
-_comac_pdf_operators_stroke (comac_pdf_operators_t	*pdf_operators,
-			     const comac_path_fixed_t	*path,
-			     const comac_stroke_style_t	*style,
-			     const comac_matrix_t	*ctm,
-			     const comac_matrix_t	*ctm_inverse);
+_comac_pdf_operators_stroke (comac_pdf_operators_t *pdf_operators,
+			     const comac_path_fixed_t *path,
+			     const comac_stroke_style_t *style,
+			     const comac_matrix_t *ctm,
+			     const comac_matrix_t *ctm_inverse);
 
 comac_private comac_int_status_t
-_comac_pdf_operators_fill (comac_pdf_operators_t	*pdf_operators,
-			   const comac_path_fixed_t	*path,
-			   comac_fill_rule_t		fill_rule);
+_comac_pdf_operators_fill (comac_pdf_operators_t *pdf_operators,
+			   const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule);
 
 comac_private comac_int_status_t
-_comac_pdf_operators_fill_stroke (comac_pdf_operators_t		*pdf_operators,
-				  const comac_path_fixed_t	*path,
-				  comac_fill_rule_t		 fill_rule,
-				  const comac_stroke_style_t	*style,
-				  const comac_matrix_t		*ctm,
-				  const comac_matrix_t		*ctm_inverse);
+_comac_pdf_operators_fill_stroke (comac_pdf_operators_t *pdf_operators,
+				  const comac_path_fixed_t *path,
+				  comac_fill_rule_t fill_rule,
+				  const comac_stroke_style_t *style,
+				  const comac_matrix_t *ctm,
+				  const comac_matrix_t *ctm_inverse);
 
 comac_private comac_int_status_t
-_comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t	  *pdf_operators,
-				       const char                 *utf8,
-				       int                         utf8_len,
-				       comac_glyph_t              *glyphs,
-				       int                         num_glyphs,
+_comac_pdf_operators_show_text_glyphs (comac_pdf_operators_t *pdf_operators,
+				       const char *utf8,
+				       int utf8_len,
+				       comac_glyph_t *glyphs,
+				       int num_glyphs,
 				       const comac_text_cluster_t *clusters,
-				       int                         num_clusters,
-				       comac_text_cluster_flags_t  cluster_flags,
-				       comac_scaled_font_t	  *scaled_font);
+				       int num_clusters,
+				       comac_text_cluster_flags_t cluster_flags,
+				       comac_scaled_font_t *scaled_font);
 
 comac_private comac_int_status_t
 _comac_pdf_operators_tag_begin (comac_pdf_operators_t *pdf_operators,
-				const char            *tag_name,
-				int                    mcid);
+				const char *tag_name,
+				int mcid);
 
 comac_private comac_int_status_t
 _comac_pdf_operators_tag_end (comac_pdf_operators_t *pdf_operators);

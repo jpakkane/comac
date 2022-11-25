@@ -26,24 +26,23 @@
 
 #include "comac-test.h"
 
-#define WIDTH	3
-#define HEIGHT	3
+#define WIDTH 3
+#define HEIGHT 3
 
 /* A single, black pixel */
 static const uint32_t black_pixel_argb = 0xff000000;
-static const uint32_t black_pixel      = 0x00000000;
+static const uint32_t black_pixel = 0x00000000;
 
 static comac_bool_t
-set_pixel_black(uint8_t *data, int stride,
-	  comac_format_t format, int x, int y)
+set_pixel_black (uint8_t *data, int stride, comac_format_t format, int x, int y)
 {
     switch (format) {
     case COMAC_FORMAT_ARGB32:
     case COMAC_FORMAT_RGB24:
-	*(uint32_t *)(data + y * stride + 4*x) = black_pixel_argb;
+	*(uint32_t *) (data + y * stride + 4 * x) = black_pixel_argb;
 	break;
     case COMAC_FORMAT_RGB16_565:
-	*(uint16_t *)(data + y * stride + 2*x) = black_pixel;
+	*(uint16_t *) (data + y * stride + 2 * x) = black_pixel;
 	break;
     case COMAC_FORMAT_RGBA128F:
     case COMAC_FORMAT_RGB96F:
@@ -140,19 +139,25 @@ fill (comac_t *cr, int width, int height)
 
 COMAC_TEST (map_all_to_image,
 	    "Test mapping a surface to an image and modifying it externally",
-	    "image", /* keywords */
+	    "image",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, all)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    all)
 COMAC_TEST (map_bit_to_image,
 	    "Test mapping a surface to an image and modifying it externally",
-	    "image", /* keywords */
+	    "image",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, bit)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    bit)
 COMAC_TEST (map_to_image_fill,
 	    "Test mapping a surface to an image and modifying it externally",
-	    "image", /* keywords */
+	    "image",	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, fill)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    fill)

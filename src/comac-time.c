@@ -101,7 +101,7 @@ _comac_time_get (void)
 
     QueryPerformanceCounter (&t);
 
-    return _comac_time_from_large_integer(t);
+    return _comac_time_from_large_integer (t);
 }
 
 #elif defined(COMAC_CLOCK)
@@ -155,8 +155,7 @@ _comac_time_get (void)
 #endif
 
 int
-_comac_time_cmp (const void *a,
-		 const void *b)
+_comac_time_cmp (const void *a, const void *b)
 {
     const comac_time_t *ta = a, *tb = b;
     return _comac_int64_cmp (*ta, *tb);

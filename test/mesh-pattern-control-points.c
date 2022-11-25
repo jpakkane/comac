@@ -31,7 +31,6 @@
 #define WIDTH (PAD + 2 * (SIZE + PAD))
 #define HEIGHT (PAD + SIZE + PAD)
 
-
 /*
  * This test is designed to paint a two mesh patches. One with default
  * control points and one with a control point at a no default
@@ -55,10 +54,10 @@ draw (comac_t *cr, int width, int height)
     pattern = comac_pattern_create_mesh ();
     comac_mesh_pattern_begin_patch (pattern);
 
-    comac_mesh_pattern_move_to (pattern,    0,    0);
-    comac_mesh_pattern_line_to (pattern, SIZE,    0);
+    comac_mesh_pattern_move_to (pattern, 0, 0);
+    comac_mesh_pattern_line_to (pattern, SIZE, 0);
     comac_mesh_pattern_line_to (pattern, SIZE, SIZE);
-    comac_mesh_pattern_line_to (pattern,    0, SIZE);
+    comac_mesh_pattern_line_to (pattern, 0, SIZE);
 
     comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
     comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
@@ -74,10 +73,10 @@ draw (comac_t *cr, int width, int height)
 
     comac_mesh_pattern_begin_patch (pattern);
 
-    comac_mesh_pattern_move_to (pattern,   SIZE + PAD,    0);
-    comac_mesh_pattern_line_to (pattern, 2*SIZE + PAD,    0);
-    comac_mesh_pattern_line_to (pattern, 2*SIZE + PAD, SIZE);
-    comac_mesh_pattern_line_to (pattern,   SIZE + PAD, SIZE);
+    comac_mesh_pattern_move_to (pattern, SIZE + PAD, 0);
+    comac_mesh_pattern_line_to (pattern, 2 * SIZE + PAD, 0);
+    comac_mesh_pattern_line_to (pattern, 2 * SIZE + PAD, SIZE);
+    comac_mesh_pattern_line_to (pattern, SIZE + PAD, SIZE);
 
     comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
     comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
@@ -105,10 +104,11 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-
 COMAC_TEST (mesh_pattern_control_points,
 	    "Paint mesh pattern with non default control points",
 	    "mesh, pattern", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

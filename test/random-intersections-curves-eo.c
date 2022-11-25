@@ -35,8 +35,8 @@ uniform_random (double minval, double maxval)
 {
     static uint32_t const poly = 0x9a795537U;
     uint32_t n = 32;
-    while (n-->0)
-	state = 2*state < state ? (2*state ^ poly) : 2*state;
+    while (n-- > 0)
+	state = 2 * state < state ? (2 * state ^ poly) : 2 * state;
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
@@ -54,16 +54,13 @@ draw (comac_t *cr, int width, int height)
 
     comac_move_to (cr, 0, 0);
     for (i = 0; i < NUM_SEGMENTS; i++) {
-        double y3 = uniform_random (0, SIZE);
-        double x3 = uniform_random (0, SIZE);
-        double y2 = uniform_random (-SIZE, SIZE);
-        double x2 = uniform_random (-SIZE, SIZE);
-        double y1 = uniform_random (-SIZE, SIZE);
-        double x1 = uniform_random (-SIZE, SIZE);
-        comac_curve_to (cr,
-                        x1, y1,
-                        x2, y2,
-                        x3, y3);
+	double y3 = uniform_random (0, SIZE);
+	double x3 = uniform_random (0, SIZE);
+	double y2 = uniform_random (-SIZE, SIZE);
+	double x2 = uniform_random (-SIZE, SIZE);
+	double y1 = uniform_random (-SIZE, SIZE);
+	double x1 = uniform_random (-SIZE, SIZE);
+	comac_curve_to (cr, x1, y1, x2, y2, x3, y3);
     }
     comac_close_path (cr);
 
@@ -76,9 +73,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (random_intersections_curves_eo,
-	    "Tests the tessellator trapezoid generation and intersection computation",
-	    "trap", /* keywords */
-	    NULL, /* requirements */
-	    SIZE+3, SIZE+3,
-	    NULL, draw)
+COMAC_TEST (
+    random_intersections_curves_eo,
+    "Tests the tessellator trapezoid generation and intersection computation",
+    "trap", /* keywords */
+    NULL,   /* requirements */
+    SIZE + 3,
+    SIZE + 3,
+    NULL,
+    draw)

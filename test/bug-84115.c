@@ -26,8 +26,8 @@
 
 #include "comac-test.h"
 
-#define WIDTH	800
-#define HEIGHT	800
+#define WIDTH 800
+#define HEIGHT 800
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -35,16 +35,20 @@ draw (comac_t *cr, int width, int height)
     double lw = 800;
     int n = 0;
 
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 
     comac_set_source_rgba (cr, 0, 0, 0, .4);
     comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
     do {
-	comac_set_line_width(cr, lw);
-	comac_arc(cr, WIDTH/2, HEIGHT/2, lw/2,
-		  2*M_PI*(13*n + 1) / 130, 2*M_PI*(13*n + 12) / 130);
-	comac_stroke(cr);
+	comac_set_line_width (cr, lw);
+	comac_arc (cr,
+		   WIDTH / 2,
+		   HEIGHT / 2,
+		   lw / 2,
+		   2 * M_PI * (13 * n + 1) / 130,
+		   2 * M_PI * (13 * n + 12) / 130);
+	comac_stroke (cr);
 
 	n++;
 	lw /= 1.1;
@@ -56,6 +60,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bug_84115,
 	    "Exercises a bug found in stroke generation using trapezoids",
 	    "stroke", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

@@ -55,29 +55,29 @@
 #include "comac-surface-observer-private.h"
 
 typedef struct {
-    comac_polygon_t	*polygon;
-    comac_fill_rule_t	 fill_rule;
-    comac_antialias_t	 antialias;
+    comac_polygon_t *polygon;
+    comac_fill_rule_t fill_rule;
+    comac_antialias_t antialias;
 } composite_spans_info_t;
 
 static comac_int_status_t
-composite_polygon (const comac_spans_compositor_t	*compositor,
-		   comac_composite_rectangles_t		 *extents,
-		   comac_polygon_t			*polygon,
-		   comac_fill_rule_t			 fill_rule,
-		   comac_antialias_t			 antialias);
+composite_polygon (const comac_spans_compositor_t *compositor,
+		   comac_composite_rectangles_t *extents,
+		   comac_polygon_t *polygon,
+		   comac_fill_rule_t fill_rule,
+		   comac_antialias_t antialias);
 
 static comac_int_status_t
 composite_boxes (const comac_spans_compositor_t *compositor,
 		 comac_composite_rectangles_t *extents,
-		 comac_boxes_t		*boxes);
+		 comac_boxes_t *boxes);
 
 static comac_int_status_t
-clip_and_composite_polygon (const comac_spans_compositor_t	*compositor,
-			    comac_composite_rectangles_t	 *extents,
-			    comac_polygon_t			*polygon,
-			    comac_fill_rule_t			 fill_rule,
-			    comac_antialias_t			 antialias);
+clip_and_composite_polygon (const comac_spans_compositor_t *compositor,
+			    comac_composite_rectangles_t *extents,
+			    comac_polygon_t *polygon,
+			    comac_fill_rule_t fill_rule,
+			    comac_antialias_t antialias);
 static comac_surface_t *
 get_clip_surface (const comac_spans_compositor_t *compositor,
 		  comac_surface_t *dst,
@@ -121,12 +121,14 @@ get_clip_surface (const comac_spans_compositor_t *compositor,
 	comac_boxes_t tmp;
 
 	_comac_boxes_init_for_array (&tmp, clip->boxes, clip->num_boxes);
-	status= _comac_polygon_init_boxes (&intersect, &tmp);
+	status = _comac_polygon_init_boxes (&intersect, &tmp);
 	if (unlikely (status))
 	    goto cleanup_polygon;
 
-	status = _comac_polygon_intersect (&polygon, fill_rule,
-					   &intersect, COMAC_FILL_RULE_WINDING);
+	status = _comac_polygon_intersect (&polygon,
+					   fill_rule,
+					   &intersect,
+					   COMAC_FILL_RULE_WINDING);
 	_comac_polygon_fini (&intersect);
 
 	if (unlikely (status))
@@ -148,8 +150,10 @@ get_clip_surface (const comac_spans_compositor_t *compositor,
 							clip_path->tolerance,
 							&next);
 	    if (likely (status == COMAC_INT_STATUS_SUCCESS))
-		status = _comac_polygon_intersect (&polygon, fill_rule,
-						   &next, clip_path->fill_rule);
+		status = _comac_polygon_intersect (&polygon,
+						   fill_rule,
+						   &next,
+						   clip_path->fill_rule);
 	    _comac_polygon_fini (&next);
 	    if (unlikely (status))
 		goto cleanup_polygon;
@@ -161,16 +165,21 @@ get_clip_surface (const comac_spans_compositor_t *compositor,
     }
 
     _comac_polygon_translate (&polygon, -extents->x, -extents->y);
-    status = _comac_composite_rectangles_init_for_polygon (&composite, surface,
-							   COMAC_OPERATOR_ADD,
-							   &_comac_pattern_white.base,
-							   &polygon,
-							   NULL);
+    status = _comac_composite_rectangles_init_for_polygon (
+	&composite,
+	surface,
+	COMAC_OPERATOR_ADD,
+	&_comac_pattern_white.base,
+	&polygon,
+	NULL);
     if (unlikely (status))
 	goto cleanup_polygon;
 
-    status = composite_polygon (compositor, &composite,
-				&polygon, fill_rule, antialias);
+    status = composite_polygon (compositor,
+				&composite,
+				&polygon,
+				fill_rule,
+				antialias);
     _comac_composite_rectangles_fini (&composite);
     _comac_polygon_fini (&polygon);
     if (unlikely (status))
@@ -179,14 +188,17 @@ get_clip_surface (const comac_spans_compositor_t *compositor,
     _comac_polygon_init (&polygon, &box, 1);
 
     clip_path = clip->path;
-    antialias = clip_path->antialias == COMAC_ANTIALIAS_DEFAULT ? COMAC_ANTIALIAS_NONE : COMAC_ANTIALIAS_DEFAULT;
+    antialias = clip_path->antialias == COMAC_ANTIALIAS_DEFAULT
+		    ? COMAC_ANTIALIAS_NONE
+		    : COMAC_ANTIALIAS_DEFAULT;
     clip_path = clip_path->prev;
     while (clip_path) {
 	if (clip_path->antialias == antialias) {
 	    if (polygon.num_edges == 0) {
-		status = _comac_path_fixed_fill_to_polygon (&clip_path->path,
-							    clip_path->tolerance,
-							    &polygon);
+		status =
+		    _comac_path_fixed_fill_to_polygon (&clip_path->path,
+						       clip_path->tolerance,
+						       &polygon);
 
 		fill_rule = clip_path->fill_rule;
 		polygon.limits = NULL;
@@ -195,12 +207,15 @@ get_clip_surface (const comac_spans_compositor_t *compositor,
 		comac_polygon_t next;
 
 		_comac_polygon_init (&next, NULL, 0);
-		status = _comac_path_fixed_fill_to_polygon (&clip_path->path,
-							    clip_path->tolerance,
-							    &next);
+		status =
+		    _comac_path_fixed_fill_to_polygon (&clip_path->path,
+						       clip_path->tolerance,
+						       &next);
 		if (likely (status == COMAC_INT_STATUS_SUCCESS))
-		    status = _comac_polygon_intersect (&polygon, fill_rule,
-						       &next, clip_path->fill_rule);
+		    status = _comac_polygon_intersect (&polygon,
+						       fill_rule,
+						       &next,
+						       clip_path->fill_rule);
 		_comac_polygon_fini (&next);
 		fill_rule = COMAC_FILL_RULE_WINDING;
 	    }
@@ -213,16 +228,21 @@ get_clip_surface (const comac_spans_compositor_t *compositor,
 
     if (polygon.num_edges) {
 	_comac_polygon_translate (&polygon, -extents->x, -extents->y);
-	status = _comac_composite_rectangles_init_for_polygon (&composite, surface,
-							       COMAC_OPERATOR_IN,
-							       &_comac_pattern_white.base,
-							       &polygon,
-							       NULL);
+	status = _comac_composite_rectangles_init_for_polygon (
+	    &composite,
+	    surface,
+	    COMAC_OPERATOR_IN,
+	    &_comac_pattern_white.base,
+	    &polygon,
+	    NULL);
 	if (unlikely (status))
 	    goto cleanup_polygon;
 
-	status = composite_polygon (compositor, &composite,
-				    &polygon, fill_rule, antialias);
+	status = composite_polygon (compositor,
+				    &composite,
+				    &polygon,
+				    fill_rule,
+				    antialias);
 	_comac_composite_rectangles_fini (&composite);
 	_comac_polygon_fini (&polygon);
 	if (unlikely (status))
@@ -247,23 +267,26 @@ fixup_unbounded_mask (const comac_spans_compositor_t *compositor,
     comac_surface_t *clip;
     comac_int_status_t status;
 
-    TRACE((stderr, "%s\n", __FUNCTION__));
+    TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    clip = get_clip_surface (compositor, extents->surface, extents->clip,
+    clip = get_clip_surface (compositor,
+			     extents->surface,
+			     extents->clip,
 			     &extents->unbounded);
     if (unlikely (clip->status)) {
-	if ((comac_int_status_t)clip->status == COMAC_INT_STATUS_NOTHING_TO_DO)
+	if ((comac_int_status_t) clip->status == COMAC_INT_STATUS_NOTHING_TO_DO)
 	    return COMAC_STATUS_SUCCESS;
 
 	return clip->status;
     }
 
-    status = _comac_composite_rectangles_init_for_boxes (&composite,
-							 extents->surface,
-							 COMAC_OPERATOR_CLEAR,
-							 &_comac_pattern_clear.base,
-							 boxes,
-							 NULL);
+    status =
+	_comac_composite_rectangles_init_for_boxes (&composite,
+						    extents->surface,
+						    COMAC_OPERATOR_CLEAR,
+						    &_comac_pattern_clear.base,
+						    boxes,
+						    NULL);
     if (unlikely (status))
 	goto cleanup_clip;
 
@@ -292,36 +315,44 @@ fixup_unbounded_polygon (const comac_spans_compositor_t *compositor,
     comac_antialias_t antialias;
     comac_int_status_t status;
 
-    TRACE((stderr, "%s\n", __FUNCTION__));
+    TRACE ((stderr, "%s\n", __FUNCTION__));
 
     /* Can we treat the clip as a regular clear-polygon and use it to fill? */
-    status = _comac_clip_get_polygon (extents->clip, &polygon,
-				      &fill_rule, &antialias);
+    status = _comac_clip_get_polygon (extents->clip,
+				      &polygon,
+				      &fill_rule,
+				      &antialias);
     if (status == COMAC_INT_STATUS_UNSUPPORTED)
 	return status;
 
-    status= _comac_polygon_init_boxes (&intersect, boxes);
+    status = _comac_polygon_init_boxes (&intersect, boxes);
     if (unlikely (status))
 	goto cleanup_polygon;
 
-    status = _comac_polygon_intersect (&polygon, fill_rule,
-				       &intersect, COMAC_FILL_RULE_WINDING);
+    status = _comac_polygon_intersect (&polygon,
+				       fill_rule,
+				       &intersect,
+				       COMAC_FILL_RULE_WINDING);
     _comac_polygon_fini (&intersect);
 
     if (unlikely (status))
 	goto cleanup_polygon;
 
-    status = _comac_composite_rectangles_init_for_polygon (&composite,
-							   extents->surface,
-							   COMAC_OPERATOR_CLEAR,
-							   &_comac_pattern_clear.base,
-							   &polygon,
-							   NULL);
+    status = _comac_composite_rectangles_init_for_polygon (
+	&composite,
+	extents->surface,
+	COMAC_OPERATOR_CLEAR,
+	&_comac_pattern_clear.base,
+	&polygon,
+	NULL);
     if (unlikely (status))
 	goto cleanup_polygon;
 
-    status = composite_polygon (compositor, &composite,
-				&polygon, fill_rule, antialias);
+    status = composite_polygon (compositor,
+				&composite,
+				&polygon,
+				fill_rule,
+				antialias);
 
     _comac_composite_rectangles_fini (&composite);
 cleanup_polygon:
@@ -342,19 +373,20 @@ fixup_unbounded_boxes (const comac_spans_compositor_t *compositor,
     assert (boxes->is_pixel_aligned);
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    if (extents->bounded.width  == extents->unbounded.width &&
-	extents->bounded.height == extents->unbounded.height)
-    {
+    if (extents->bounded.width == extents->unbounded.width &&
+	extents->bounded.height == extents->unbounded.height) {
 	return COMAC_STATUS_SUCCESS;
     }
 
     /* subtract the drawn boxes from the unbounded area */
     _comac_boxes_init (&clear);
 
-    box.p1.x = _comac_fixed_from_int (extents->unbounded.x + extents->unbounded.width);
+    box.p1.x =
+	_comac_fixed_from_int (extents->unbounded.x + extents->unbounded.width);
     box.p1.y = _comac_fixed_from_int (extents->unbounded.y);
     box.p2.x = _comac_fixed_from_int (extents->unbounded.x);
-    box.p2.y = _comac_fixed_from_int (extents->unbounded.y + extents->unbounded.height);
+    box.p2.y = _comac_fixed_from_int (extents->unbounded.y +
+				      extents->unbounded.height);
 
     if (boxes->num_boxes) {
 	_comac_boxes_init (&tmp);
@@ -365,15 +397,17 @@ fixup_unbounded_boxes (const comac_spans_compositor_t *compositor,
 	tmp.chunks.next = &boxes->chunks;
 	tmp.num_boxes += boxes->num_boxes;
 
-	status = _comac_bentley_ottmann_tessellate_boxes (&tmp,
-							  COMAC_FILL_RULE_WINDING,
-							  &clear);
+	status =
+	    _comac_bentley_ottmann_tessellate_boxes (&tmp,
+						     COMAC_FILL_RULE_WINDING,
+						     &clear);
 	tmp.chunks.next = NULL;
 	if (unlikely (status))
 	    goto error;
     } else {
 	box.p1.x = _comac_fixed_from_int (extents->unbounded.x);
-	box.p2.x = _comac_fixed_from_int (extents->unbounded.x + extents->unbounded.width);
+	box.p2.x = _comac_fixed_from_int (extents->unbounded.x +
+					  extents->unbounded.width);
 
 	status = _comac_boxes_add (&clear, COMAC_ANTIALIAS_DEFAULT, &box);
 	assert (status == COMAC_INT_STATUS_SUCCESS);
@@ -403,12 +437,13 @@ fixup_unbounded_boxes (const comac_spans_compositor_t *compositor,
 	} else {
 	    comac_composite_rectangles_t composite;
 
-	    status = _comac_composite_rectangles_init_for_boxes (&composite,
-								 extents->surface,
-								 COMAC_OPERATOR_CLEAR,
-								 &_comac_pattern_clear.base,
-								 &clear,
-								 NULL);
+	    status = _comac_composite_rectangles_init_for_boxes (
+		&composite,
+		extents->surface,
+		COMAC_OPERATOR_CLEAR,
+		&_comac_pattern_clear.base,
+		&clear,
+		NULL);
 	    if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 		status = composite_boxes (compositor, &composite, &clear);
 		_comac_composite_rectangles_fini (&composite);
@@ -426,7 +461,7 @@ unwrap_source (const comac_pattern_t *pattern)
 {
     comac_rectangle_int_t limit;
 
-    return _comac_pattern_get_source ((comac_surface_pattern_t *)pattern,
+    return _comac_pattern_get_source ((comac_surface_pattern_t *) pattern,
 				      &limit);
 }
 
@@ -469,7 +504,8 @@ op_reduces_to_source (const comac_composite_rectangles_t *extents,
 	return TRUE;
 
     if (extents->surface->is_clear)
-	return extents->op == COMAC_OPERATOR_OVER || extents->op == COMAC_OPERATOR_ADD;
+	return extents->op == COMAC_OPERATOR_OVER ||
+	       extents->op == COMAC_OPERATOR_ADD;
 
     if (no_mask && extents->op == COMAC_OPERATOR_OVER)
 	return _comac_pattern_is_opaque (&extents->source_pattern.base,
@@ -492,8 +528,8 @@ upload_boxes (const comac_spans_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    src = _comac_pattern_get_source(source, &limit);
-    if (!(src->type == COMAC_SURFACE_TYPE_IMAGE || src->type == dst->type))
+    src = _comac_pattern_get_source (source, &limit);
+    if (! (src->type == COMAC_SURFACE_TYPE_IMAGE || src->type == dst->type))
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     if (! _comac_matrix_is_integer_translation (&source->base.matrix, &tx, &ty))
@@ -503,8 +539,10 @@ upload_boxes (const comac_spans_compositor_t *compositor,
     if (extents->bounded.x + tx < limit.x || extents->bounded.y + ty < limit.y)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    if (extents->bounded.x + extents->bounded.width  + tx > limit.x + limit.width ||
-	extents->bounded.y + extents->bounded.height + ty > limit.y + limit.height)
+    if (extents->bounded.x + extents->bounded.width + tx >
+	    limit.x + limit.width ||
+	extents->bounded.y + extents->bounded.height + ty >
+	    limit.y + limit.height)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     tx += limit.x;
@@ -512,11 +550,13 @@ upload_boxes (const comac_spans_compositor_t *compositor,
 
     if (src->type == COMAC_SURFACE_TYPE_IMAGE)
 	status = compositor->draw_image_boxes (dst,
-					       (comac_image_surface_t *)src,
-					       boxes, tx, ty);
+					       (comac_image_surface_t *) src,
+					       boxes,
+					       tx,
+					       ty);
     else
-	status = compositor->copy_boxes (dst, src, boxes, &extents->bounded,
-					 tx, ty);
+	status =
+	    compositor->copy_boxes (dst, src, boxes, &extents->bounded, tx, ty);
 
     return status;
 }
@@ -534,7 +574,7 @@ _clip_is_region (const comac_clip_t *clip)
 
     for (i = 0; i < clip->num_boxes; i++) {
 	const comac_box_t *b = &clip->boxes[i];
-	if (!_comac_fixed_is_integer (b->p1.x | b->p1.y |  b->p2.x | b->p2.y))
+	if (! _comac_fixed_is_integer (b->p1.x | b->p1.y | b->p2.x | b->p2.y))
 	    return FALSE;
     }
 
@@ -542,9 +582,9 @@ _clip_is_region (const comac_clip_t *clip)
 }
 
 static comac_int_status_t
-composite_aligned_boxes (const comac_spans_compositor_t		*compositor,
-			 const comac_composite_rectangles_t	*extents,
-			 comac_boxes_t				*boxes)
+composite_aligned_boxes (const comac_spans_compositor_t *compositor,
+			 const comac_composite_rectangles_t *extents,
+			 comac_boxes_t *boxes)
 {
     comac_surface_t *dst = extents->surface;
     comac_operator_t op = extents->op;
@@ -555,20 +595,28 @@ composite_aligned_boxes (const comac_spans_compositor_t		*compositor,
     comac_bool_t no_mask;
     comac_bool_t inplace;
 
-    TRACE ((stderr, "%s: need_clip_mask=%d, is-bounded=%d\n",
-	    __FUNCTION__, need_clip_mask, extents->is_bounded));
+    TRACE ((stderr,
+	    "%s: need_clip_mask=%d, is-bounded=%d\n",
+	    __FUNCTION__,
+	    need_clip_mask,
+	    extents->is_bounded));
     if (need_clip_mask && ! extents->is_bounded) {
 	TRACE ((stderr, "%s: unsupported clip\n", __FUNCTION__));
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
     no_mask = extents->mask_pattern.base.type == COMAC_PATTERN_TYPE_SOLID &&
-	COMAC_COLOR_IS_OPAQUE (&extents->mask_pattern.solid.color);
+	      COMAC_COLOR_IS_OPAQUE (&extents->mask_pattern.solid.color);
     op_is_source = op_reduces_to_source (extents, no_mask);
     inplace = ! need_clip_mask && op_is_source && no_mask;
 
-    TRACE ((stderr, "%s: op-is-source=%d [op=%d], no-mask=%d, inplace=%d\n",
-	    __FUNCTION__, op_is_source, op, no_mask, inplace));
+    TRACE ((stderr,
+	    "%s: op-is-source=%d [op=%d], no-mask=%d, inplace=%d\n",
+	    __FUNCTION__,
+	    op_is_source,
+	    op,
+	    no_mask,
+	    inplace));
 
     if (op == COMAC_OPERATOR_SOURCE && (need_clip_mask || ! no_mask)) {
 	/* SOURCE with a mask is actually a LERP in comac semantics */
@@ -581,8 +629,7 @@ composite_aligned_boxes (const comac_spans_compositor_t		*compositor,
     /* Are we just copying a recording surface? */
     if (inplace &&
 	recording_pattern_contains_sample (&extents->source_pattern.base,
-					   &extents->source_sample_area))
-    {
+					   &extents->source_sample_area)) {
 	comac_clip_t *recording_clip;
 	const comac_pattern_t *source = &extents->source_pattern.base;
 	const comac_matrix_t *m;
@@ -611,15 +658,19 @@ composite_aligned_boxes (const comac_spans_compositor_t		*compositor,
 	}
 
 	recording_clip = _comac_clip_from_boxes (boxes);
-	status = _comac_recording_surface_replay_with_clip (unwrap_source (source),
-							    m, dst, recording_clip);
+	status =
+	    _comac_recording_surface_replay_with_clip (unwrap_source (source),
+						       m,
+						       dst,
+						       recording_clip);
 	_comac_clip_destroy (recording_clip);
 
 	return status;
     }
 
     status = COMAC_INT_STATUS_UNSUPPORTED;
-    if (! need_clip_mask && no_mask && source->type == COMAC_PATTERN_TYPE_SOLID) {
+    if (! need_clip_mask && no_mask &&
+	source->type == COMAC_PATTERN_TYPE_SOLID) {
 	const comac_color_t *color;
 
 	color = &((comac_solid_pattern_t *) source)->color;
@@ -637,7 +688,9 @@ composite_aligned_boxes (const comac_spans_compositor_t		*compositor,
 
 	/* All typical cases will have been resolved before now... */
 	if (need_clip_mask) {
-	    mask = get_clip_surface (compositor, dst, extents->clip,
+	    mask = get_clip_surface (compositor,
+				     dst,
+				     extents->clip,
 				     &extents->bounded);
 	    if (unlikely (mask->status))
 		return mask->status;
@@ -653,19 +706,26 @@ composite_aligned_boxes (const comac_spans_compositor_t		*compositor,
 						  TRUE,
 						  &extents->bounded,
 						  &extents->mask_sample_area,
-						  &src_x, &src_y);
+						  &src_x,
+						  &src_y);
 	    if (unlikely (src->status)) {
 		comac_surface_destroy (mask);
 		return src->status;
 	    }
 
 	    if (mask != NULL) {
-		status = compositor->composite_boxes (mask, COMAC_OPERATOR_IN,
-						      src, NULL,
-						      src_x, src_y,
-						      0, 0,
-						      mask_x, mask_y,
-						      boxes, &extents->bounded);
+		status = compositor->composite_boxes (mask,
+						      COMAC_OPERATOR_IN,
+						      src,
+						      NULL,
+						      src_x,
+						      src_y,
+						      0,
+						      0,
+						      mask_x,
+						      mask_y,
+						      boxes,
+						      &extents->bounded);
 
 		comac_surface_destroy (src);
 	    } else {
@@ -675,16 +735,26 @@ composite_aligned_boxes (const comac_spans_compositor_t		*compositor,
 	    }
 	}
 
-	src = compositor->pattern_to_surface (dst, source, FALSE,
+	src = compositor->pattern_to_surface (dst,
+					      source,
+					      FALSE,
 					      &extents->bounded,
 					      &extents->source_sample_area,
-					      &src_x, &src_y);
+					      &src_x,
+					      &src_y);
 	if (likely (src->status == COMAC_STATUS_SUCCESS)) {
-	    status = compositor->composite_boxes (dst, op, src, mask,
-						  src_x, src_y,
-						  mask_x, mask_y,
-						  0, 0,
-						  boxes, &extents->bounded);
+	    status = compositor->composite_boxes (dst,
+						  op,
+						  src,
+						  mask,
+						  src_x,
+						  src_y,
+						  mask_x,
+						  mask_y,
+						  0,
+						  0,
+						  boxes,
+						  &extents->bounded);
 	    comac_surface_destroy (src);
 	} else
 	    status = src->status;
@@ -702,13 +772,13 @@ static comac_bool_t
 composite_needs_clip (const comac_composite_rectangles_t *composite,
 		      const comac_box_t *extents)
 {
-    return !_comac_clip_contains_box (composite->clip, extents);
+    return ! _comac_clip_contains_box (composite->clip, extents);
 }
 
 static comac_int_status_t
 composite_boxes (const comac_spans_compositor_t *compositor,
 		 comac_composite_rectangles_t *extents,
-		 comac_boxes_t		*boxes)
+		 comac_boxes_t *boxes)
 {
     comac_abstract_span_renderer_t renderer;
     comac_rectangular_scan_converter_t converter;
@@ -729,14 +799,18 @@ composite_boxes (const comac_spans_compositor_t *compositor,
 	int i;
 
 	for (i = 0; i < chunk->count; i++) {
-	    status = _comac_rectangular_scan_converter_add_box (&converter, &box[i], 1);
+	    status = _comac_rectangular_scan_converter_add_box (&converter,
+								&box[i],
+								1);
 	    if (unlikely (status))
 		goto cleanup_converter;
 	}
     }
 
-    status = compositor->renderer_init (&renderer, extents,
-					COMAC_ANTIALIAS_DEFAULT, FALSE);
+    status = compositor->renderer_init (&renderer,
+					extents,
+					COMAC_ANTIALIAS_DEFAULT,
+					FALSE);
     if (likely (status == COMAC_INT_STATUS_SUCCESS))
 	status = converter.base.generate (&converter.base, &renderer.base);
     compositor->renderer_fini (&renderer, status);
@@ -747,11 +821,11 @@ cleanup_converter:
 }
 
 static comac_int_status_t
-composite_polygon (const comac_spans_compositor_t	*compositor,
-		   comac_composite_rectangles_t		 *extents,
-		   comac_polygon_t			*polygon,
-		   comac_fill_rule_t			 fill_rule,
-		   comac_antialias_t			 antialias)
+composite_polygon (const comac_spans_compositor_t *compositor,
+		   comac_composite_rectangles_t *extents,
+		   comac_polygon_t *polygon,
+		   comac_fill_rule_t fill_rule,
+		   comac_antialias_t antialias)
 {
     comac_abstract_span_renderer_t renderer;
     comac_scan_converter_t *converter;
@@ -761,42 +835,51 @@ composite_polygon (const comac_spans_compositor_t	*compositor,
     if (extents->is_bounded)
 	needs_clip = extents->clip->path != NULL;
     else
-	needs_clip = !_clip_is_region (extents->clip) || extents->clip->num_boxes > 1;
+	needs_clip =
+	    ! _clip_is_region (extents->clip) || extents->clip->num_boxes > 1;
     TRACE ((stderr, "%s - needs_clip=%d\n", __FUNCTION__, needs_clip));
     if (needs_clip) {
 	TRACE ((stderr, "%s: unsupported clip\n", __FUNCTION__));
 	return COMAC_INT_STATUS_UNSUPPORTED;
 	converter = _comac_clip_tor_scan_converter_create (extents->clip,
 							   polygon,
-							   fill_rule, antialias);
+							   fill_rule,
+							   antialias);
     } else {
 	const comac_rectangle_int_t *r = &extents->unbounded;
 
 	if (antialias == COMAC_ANTIALIAS_FAST) {
-	    converter = _comac_tor22_scan_converter_create (r->x, r->y,
+	    converter = _comac_tor22_scan_converter_create (r->x,
+							    r->y,
 							    r->x + r->width,
 							    r->y + r->height,
-							    fill_rule, antialias);
-	    status = _comac_tor22_scan_converter_add_polygon (converter, polygon);
+							    fill_rule,
+							    antialias);
+	    status =
+		_comac_tor22_scan_converter_add_polygon (converter, polygon);
 	} else if (antialias == COMAC_ANTIALIAS_NONE) {
-	    converter = _comac_mono_scan_converter_create (r->x, r->y,
+	    converter = _comac_mono_scan_converter_create (r->x,
+							   r->y,
 							   r->x + r->width,
 							   r->y + r->height,
 							   fill_rule);
-	    status = _comac_mono_scan_converter_add_polygon (converter, polygon);
+	    status =
+		_comac_mono_scan_converter_add_polygon (converter, polygon);
 	} else {
-	    converter = _comac_tor_scan_converter_create (r->x, r->y,
+	    converter = _comac_tor_scan_converter_create (r->x,
+							  r->y,
 							  r->x + r->width,
 							  r->y + r->height,
-							  fill_rule, antialias);
+							  fill_rule,
+							  antialias);
 	    status = _comac_tor_scan_converter_add_polygon (converter, polygon);
 	}
     }
     if (unlikely (status))
 	goto cleanup_converter;
 
-    status = compositor->renderer_init (&renderer, extents,
-					antialias, needs_clip);
+    status =
+	compositor->renderer_init (&renderer, extents, antialias, needs_clip);
     if (likely (status == COMAC_INT_STATUS_SUCCESS))
 	status = converter->generate (converter, &renderer.base);
     compositor->renderer_fini (&renderer, status);
@@ -820,14 +903,15 @@ static comac_int_status_t
 trim_extents_to_polygon (comac_composite_rectangles_t *extents,
 			 comac_polygon_t *polygon)
 {
-    return _comac_composite_rectangles_intersect_mask_extents (extents,
-							       &polygon->extents);
+    return _comac_composite_rectangles_intersect_mask_extents (
+	extents,
+	&polygon->extents);
 }
 
 static comac_int_status_t
-clip_and_composite_boxes (const comac_spans_compositor_t	*compositor,
-			  comac_composite_rectangles_t		*extents,
-			  comac_boxes_t				*boxes)
+clip_and_composite_boxes (const comac_spans_compositor_t *compositor,
+			  comac_composite_rectangles_t *extents,
+			  comac_boxes_t *boxes)
 {
     comac_int_status_t status;
     comac_polygon_t polygon;
@@ -856,16 +940,19 @@ clip_and_composite_boxes (const comac_spans_compositor_t	*compositor,
 	if (_comac_clip_is_all_clipped (clip))
 	    return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-	status = _comac_clip_get_polygon (clip, &polygon,
-					  &fill_rule, &antialias);
+	status =
+	    _comac_clip_get_polygon (clip, &polygon, &fill_rule, &antialias);
 	_comac_clip_path_destroy (clip->path);
 	clip->path = NULL;
 	if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	    comac_clip_t *saved_clip = extents->clip;
 	    extents->clip = clip;
 
-	    status = clip_and_composite_polygon (compositor, extents, &polygon,
-						 fill_rule, antialias);
+	    status = clip_and_composite_polygon (compositor,
+						 extents,
+						 &polygon,
+						 fill_rule,
+						 antialias);
 
 	    clip = extents->clip;
 	    extents->clip = saved_clip;
@@ -892,7 +979,9 @@ clip_and_composite_boxes (const comac_spans_compositor_t	*compositor,
     if (unlikely (status))
 	return status;
 
-    status = composite_polygon (compositor, extents, &polygon,
+    status = composite_polygon (compositor,
+				extents,
+				&polygon,
 				COMAC_FILL_RULE_WINDING,
 				COMAC_ANTIALIAS_DEFAULT);
     _comac_polygon_fini (&polygon);
@@ -901,11 +990,11 @@ clip_and_composite_boxes (const comac_spans_compositor_t	*compositor,
 }
 
 static comac_int_status_t
-clip_and_composite_polygon (const comac_spans_compositor_t	*compositor,
-			    comac_composite_rectangles_t	 *extents,
-			    comac_polygon_t			*polygon,
-			    comac_fill_rule_t			 fill_rule,
-			    comac_antialias_t			 antialias)
+clip_and_composite_polygon (const comac_spans_compositor_t *compositor,
+			    comac_composite_rectangles_t *extents,
+			    comac_polygon_t *polygon,
+			    comac_fill_rule_t fill_rule,
+			    comac_antialias_t antialias)
 {
     comac_int_status_t status;
 
@@ -932,8 +1021,8 @@ clip_and_composite_polygon (const comac_spans_compositor_t	*compositor,
 	comac_antialias_t clip_antialias;
 	comac_fill_rule_t clip_fill_rule;
 
-	TRACE((stderr, "%s - combining shape with clip polygon\n",
-	       __FUNCTION__));
+	TRACE (
+	    (stderr, "%s - combining shape with clip polygon\n", __FUNCTION__));
 
 	status = _comac_clip_get_polygon (extents->clip,
 					  &clipper,
@@ -943,8 +1032,10 @@ clip_and_composite_polygon (const comac_spans_compositor_t	*compositor,
 	    comac_clip_t *old_clip;
 
 	    if (clip_antialias == antialias) {
-		status = _comac_polygon_intersect (polygon, fill_rule,
-						   &clipper, clip_fill_rule);
+		status = _comac_polygon_intersect (polygon,
+						   fill_rule,
+						   &clipper,
+						   clip_fill_rule);
 		_comac_polygon_fini (&clipper);
 		if (unlikely (status))
 		    return status;
@@ -964,17 +1055,21 @@ clip_and_composite_polygon (const comac_spans_compositor_t	*compositor,
 	}
     }
 
-    return composite_polygon (compositor, extents,
-			      polygon, fill_rule, antialias);
+    return composite_polygon (compositor,
+			      extents,
+			      polygon,
+			      fill_rule,
+			      antialias);
 }
 
 /* high-level compositor interface */
 
 static comac_int_status_t
-_comac_spans_compositor_paint (const comac_compositor_t		*_compositor,
-			       comac_composite_rectangles_t	*extents)
+_comac_spans_compositor_paint (const comac_compositor_t *_compositor,
+			       comac_composite_rectangles_t *extents)
 {
-    const comac_spans_compositor_t *compositor = (comac_spans_compositor_t*)_compositor;
+    const comac_spans_compositor_t *compositor =
+	(comac_spans_compositor_t *) _compositor;
     comac_boxes_t boxes;
     comac_int_status_t status;
 
@@ -987,10 +1082,11 @@ _comac_spans_compositor_paint (const comac_compositor_t		*_compositor,
 }
 
 static comac_int_status_t
-_comac_spans_compositor_mask (const comac_compositor_t		*_compositor,
-			      comac_composite_rectangles_t	*extents)
+_comac_spans_compositor_mask (const comac_compositor_t *_compositor,
+			      comac_composite_rectangles_t *extents)
 {
-    const comac_spans_compositor_t *compositor = (comac_spans_compositor_t*)_compositor;
+    const comac_spans_compositor_t *compositor =
+	(comac_spans_compositor_t *) _compositor;
     comac_int_status_t status;
     comac_boxes_t boxes;
 
@@ -1003,16 +1099,17 @@ _comac_spans_compositor_mask (const comac_compositor_t		*_compositor,
 }
 
 static comac_int_status_t
-_comac_spans_compositor_stroke (const comac_compositor_t	*_compositor,
-				comac_composite_rectangles_t	 *extents,
-				const comac_path_fixed_t	*path,
-				const comac_stroke_style_t	*style,
-				const comac_matrix_t		*ctm,
-				const comac_matrix_t		*ctm_inverse,
-				double				 tolerance,
-				comac_antialias_t		 antialias)
+_comac_spans_compositor_stroke (const comac_compositor_t *_compositor,
+				comac_composite_rectangles_t *extents,
+				const comac_path_fixed_t *path,
+				const comac_stroke_style_t *style,
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias)
 {
-    const comac_spans_compositor_t *compositor = (comac_spans_compositor_t*)_compositor;
+    const comac_spans_compositor_t *compositor =
+	(comac_spans_compositor_t *) _compositor;
     comac_int_status_t status;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
@@ -1045,43 +1142,47 @@ _comac_spans_compositor_stroke (const comac_compositor_t	*_compositor,
 	comac_fill_rule_t fill_rule = COMAC_FILL_RULE_WINDING;
 
 	if (! _comac_rectangle_contains_rectangle (&extents->unbounded,
-						   &extents->mask))
-	{
+						   &extents->mask)) {
 	    if (extents->clip->num_boxes == 1) {
 		_comac_polygon_init (&polygon, extents->clip->boxes, 1);
 	    } else {
 		_comac_box_from_rectangle (&limits, &extents->unbounded);
 		_comac_polygon_init (&polygon, &limits, 1);
 	    }
-	}
-	else
-	{
+	} else {
 	    _comac_polygon_init (&polygon, NULL, 0);
 	}
 	status = _comac_path_fixed_stroke_to_polygon (path,
 						      style,
-						      ctm, ctm_inverse,
+						      ctm,
+						      ctm_inverse,
 						      tolerance,
 						      &polygon);
 	TRACE_ (_comac_debug_print_polygon (stderr, &polygon));
 	polygon.num_limits = 0;
 
-	if (status == COMAC_INT_STATUS_SUCCESS && extents->clip->num_boxes > 1) {
-	    status = _comac_polygon_intersect_with_boxes (&polygon, &fill_rule,
-							  extents->clip->boxes,
-							  extents->clip->num_boxes);
+	if (status == COMAC_INT_STATUS_SUCCESS &&
+	    extents->clip->num_boxes > 1) {
+	    status =
+		_comac_polygon_intersect_with_boxes (&polygon,
+						     &fill_rule,
+						     extents->clip->boxes,
+						     extents->clip->num_boxes);
 	}
 	if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	    comac_clip_t *saved_clip = extents->clip;
 
 	    if (extents->is_bounded) {
 		extents->clip = _comac_clip_copy_path (extents->clip);
-		extents->clip = _comac_clip_intersect_box(extents->clip,
-							  &polygon.extents);
+		extents->clip =
+		    _comac_clip_intersect_box (extents->clip, &polygon.extents);
 	    }
 
-	    status = clip_and_composite_polygon (compositor, extents, &polygon,
-						 fill_rule, antialias);
+	    status = clip_and_composite_polygon (compositor,
+						 extents,
+						 &polygon,
+						 fill_rule,
+						 antialias);
 
 	    if (extents->is_bounded) {
 		_comac_clip_destroy (extents->clip);
@@ -1095,23 +1196,28 @@ _comac_spans_compositor_stroke (const comac_compositor_t	*_compositor,
 }
 
 static comac_int_status_t
-_comac_spans_compositor_fill (const comac_compositor_t		*_compositor,
-			      comac_composite_rectangles_t	 *extents,
-			      const comac_path_fixed_t		*path,
-			      comac_fill_rule_t			 fill_rule,
-			      double				 tolerance,
-			      comac_antialias_t			 antialias)
+_comac_spans_compositor_fill (const comac_compositor_t *_compositor,
+			      comac_composite_rectangles_t *extents,
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias)
 {
-    const comac_spans_compositor_t *compositor = (comac_spans_compositor_t*)_compositor;
+    const comac_spans_compositor_t *compositor =
+	(comac_spans_compositor_t *) _compositor;
     comac_int_status_t status;
 
-    TRACE((stderr, "%s op=%d, antialias=%d\n", __FUNCTION__, extents->op, antialias));
+    TRACE ((stderr,
+	    "%s op=%d, antialias=%d\n",
+	    __FUNCTION__,
+	    extents->op,
+	    antialias));
 
     status = COMAC_INT_STATUS_UNSUPPORTED;
     if (_comac_path_fixed_fill_is_rectilinear (path)) {
 	comac_boxes_t boxes;
 
-	TRACE((stderr, "%s - rectilinear\n", __FUNCTION__));
+	TRACE ((stderr, "%s - rectilinear\n", __FUNCTION__));
 
 	_comac_boxes_init (&boxes);
 	if (! _comac_clip_contains_rectangle (extents->clip, &extents->mask))
@@ -1130,21 +1236,18 @@ _comac_spans_compositor_fill (const comac_compositor_t		*_compositor,
 	comac_polygon_t polygon;
 	comac_box_t limits;
 
-	TRACE((stderr, "%s - polygon\n", __FUNCTION__));
+	TRACE ((stderr, "%s - polygon\n", __FUNCTION__));
 
 	if (! _comac_rectangle_contains_rectangle (&extents->unbounded,
-						   &extents->mask))
-	{
-	    TRACE((stderr, "%s - clipping to bounds\n", __FUNCTION__));
+						   &extents->mask)) {
+	    TRACE ((stderr, "%s - clipping to bounds\n", __FUNCTION__));
 	    if (extents->clip->num_boxes == 1) {
 		_comac_polygon_init (&polygon, extents->clip->boxes, 1);
 	    } else {
 		_comac_box_from_rectangle (&limits, &extents->unbounded);
 		_comac_polygon_init (&polygon, &limits, 1);
 	    }
-	}
-	else
-	{
+	} else {
 	    _comac_polygon_init (&polygon, NULL, 0);
 	}
 
@@ -1152,27 +1255,36 @@ _comac_spans_compositor_fill (const comac_compositor_t		*_compositor,
 	TRACE_ (_comac_debug_print_polygon (stderr, &polygon));
 	polygon.num_limits = 0;
 
-	if (status == COMAC_INT_STATUS_SUCCESS && extents->clip->num_boxes > 1) {
-	    TRACE((stderr, "%s - polygon intersect with %d clip boxes\n",
-		   __FUNCTION__, extents->clip->num_boxes));
-	    status = _comac_polygon_intersect_with_boxes (&polygon, &fill_rule,
-							  extents->clip->boxes,
-							  extents->clip->num_boxes);
+	if (status == COMAC_INT_STATUS_SUCCESS &&
+	    extents->clip->num_boxes > 1) {
+	    TRACE ((stderr,
+		    "%s - polygon intersect with %d clip boxes\n",
+		    __FUNCTION__,
+		    extents->clip->num_boxes));
+	    status =
+		_comac_polygon_intersect_with_boxes (&polygon,
+						     &fill_rule,
+						     extents->clip->boxes,
+						     extents->clip->num_boxes);
 	}
 	TRACE_ (_comac_debug_print_polygon (stderr, &polygon));
 	if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	    comac_clip_t *saved_clip = extents->clip;
 
 	    if (extents->is_bounded) {
-		TRACE((stderr, "%s - polygon discard clip boxes\n",
-		       __FUNCTION__));
+		TRACE ((stderr,
+			"%s - polygon discard clip boxes\n",
+			__FUNCTION__));
 		extents->clip = _comac_clip_copy_path (extents->clip);
-		extents->clip = _comac_clip_intersect_box(extents->clip,
-							  &polygon.extents);
+		extents->clip =
+		    _comac_clip_intersect_box (extents->clip, &polygon.extents);
 	    }
 
-	    status = clip_and_composite_polygon (compositor, extents, &polygon,
-						 fill_rule, antialias);
+	    status = clip_and_composite_polygon (compositor,
+						 extents,
+						 &polygon,
+						 fill_rule,
+						 antialias);
 
 	    if (extents->is_bounded) {
 		_comac_clip_destroy (extents->clip);
@@ -1181,7 +1293,7 @@ _comac_spans_compositor_fill (const comac_compositor_t		*_compositor,
 	}
 	_comac_polygon_fini (&polygon);
 
-	TRACE((stderr, "%s - polygon status=%d\n", __FUNCTION__, status));
+	TRACE ((stderr, "%s - polygon status=%d\n", __FUNCTION__, status));
     }
 
     return status;
@@ -1189,13 +1301,13 @@ _comac_spans_compositor_fill (const comac_compositor_t		*_compositor,
 
 void
 _comac_spans_compositor_init (comac_spans_compositor_t *compositor,
-			      const comac_compositor_t  *delegate)
+			      const comac_compositor_t *delegate)
 {
     compositor->base.delegate = delegate;
 
-    compositor->base.paint  = _comac_spans_compositor_paint;
-    compositor->base.mask   = _comac_spans_compositor_mask;
-    compositor->base.fill   = _comac_spans_compositor_fill;
+    compositor->base.paint = _comac_spans_compositor_paint;
+    compositor->base.mask = _comac_spans_compositor_mask;
+    compositor->base.fill = _comac_spans_compositor_fill;
     compositor->base.stroke = _comac_spans_compositor_stroke;
     compositor->base.glyphs = NULL;
 }

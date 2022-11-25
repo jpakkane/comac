@@ -35,48 +35,53 @@
 
 #include "comac-mutex-private.h"
 
-#define COMAC_MUTEX_DECLARE(mutex) comac_mutex_t mutex = COMAC_MUTEX_NIL_INITIALIZER;
+#define COMAC_MUTEX_DECLARE(mutex)                                             \
+    comac_mutex_t mutex = COMAC_MUTEX_NIL_INITIALIZER;
 #include "comac-mutex-list-private.h"
-#undef   COMAC_MUTEX_DECLARE
+#undef COMAC_MUTEX_DECLARE
 
-#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER || _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
+#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER ||                                \
+    _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
 
-# if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER
-#  define _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE FALSE
-# else
-#  define _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE TRUE
-# endif
+#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER
+#define _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE FALSE
+#else
+#define _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE TRUE
+#endif
 
-comac_bool_t _comac_mutex_initialized = _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE;
+comac_bool_t _comac_mutex_initialized =
+    _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE;
 
-# undef _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE
+#undef _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE
 
 #endif
 
 #if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER
-void _comac_mutex_initialize (void)
+void
+_comac_mutex_initialize (void)
 {
     if (_comac_mutex_initialized)
-        return;
+	return;
 
     _comac_mutex_initialized = TRUE;
 
-#define  COMAC_MUTEX_DECLARE(mutex) COMAC_MUTEX_INIT (mutex);
+#define COMAC_MUTEX_DECLARE(mutex) COMAC_MUTEX_INIT (mutex);
 #include "comac-mutex-list-private.h"
-#undef   COMAC_MUTEX_DECLARE
+#undef COMAC_MUTEX_DECLARE
 }
 #endif
 
 #if _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
-void _comac_mutex_finalize (void)
+void
+_comac_mutex_finalize (void)
 {
-    if (!_comac_mutex_initialized)
-        return;
+    if (! _comac_mutex_initialized)
+	return;
 
     _comac_mutex_initialized = FALSE;
 
-#define  COMAC_MUTEX_DECLARE(mutex) COMAC_MUTEX_FINI (mutex);
+#define COMAC_MUTEX_DECLARE(mutex) COMAC_MUTEX_FINI (mutex);
 #include "comac-mutex-list-private.h"
-#undef   COMAC_MUTEX_DECLARE
+#undef COMAC_MUTEX_DECLARE
 }
 #endif

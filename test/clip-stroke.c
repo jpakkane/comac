@@ -47,7 +47,7 @@ shapes (comac_t *cr)
     comac_set_source_rgb (cr, 0.7, 0.7, 0);
     comac_save (cr);
     comac_translate (cr, 10, 10);
-    comac_rotate (cr, M_PI/4);
+    comac_rotate (cr, M_PI / 4);
     comac_translate (cr, -10, -10);
     comac_rectangle (cr, -5, -5, 30, 30);
     comac_stroke (cr);
@@ -115,7 +115,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_stroke,
 	    "Tests stroke through complex clips.",
 	    "clip, stroke", /* keywords */
-	    NULL, /* requirements */
-	    2 * WIDTH, 2* HEIGHT,
-	    NULL, draw)
-
+	    NULL,	    /* requirements */
+	    2 * WIDTH,
+	    2 * HEIGHT,
+	    NULL,
+	    draw)

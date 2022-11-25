@@ -107,14 +107,13 @@ proxy_finish (void *abstract_surface)
     return COMAC_STATUS_SUCCESS;
 }
 
-static const comac_surface_backend_t proxy_backend  = {
+static const comac_surface_backend_t proxy_backend = {
     COMAC_INTERNAL_SURFACE_TYPE_NULL,
     proxy_finish,
 };
 
 static comac_surface_t *
-attach_proxy (comac_surface_t *source,
-	      comac_surface_t *target)
+attach_proxy (comac_surface_t *source, comac_surface_t *target)
 {
     struct proxy *proxy;
 
@@ -122,7 +121,11 @@ attach_proxy (comac_surface_t *source,
     if (unlikely (proxy == NULL))
 	return _comac_surface_create_in_error (COMAC_STATUS_NO_MEMORY);
 
-    _comac_surface_init (&proxy->base, &proxy_backend, NULL, target->content, target->is_vector);
+    _comac_surface_init (&proxy->base,
+			 &proxy_backend,
+			 NULL,
+			 target->content,
+			 target->is_vector);
 
     proxy->target = target;
     _comac_surface_attach_snapshot (source, &proxy->base, NULL);
@@ -139,8 +142,8 @@ detach_proxy (comac_surface_t *proxy)
 
 static comac_int_status_t
 _add_operation (comac_analysis_surface_t *surface,
-		comac_rectangle_int_t    *rect,
-		comac_int_status_t        backend_status)
+		comac_rectangle_int_t *rect,
+		comac_int_status_t backend_status)
 {
     comac_int_status_t status;
     comac_box_t bbox;
@@ -151,12 +154,9 @@ _add_operation (comac_analysis_surface_t *surface,
 	 * backend during COMAC_PAGINATED_MODE_RENDER */
 	if (backend_status == COMAC_INT_STATUS_SUCCESS ||
 	    backend_status == COMAC_INT_STATUS_FLATTEN_TRANSPARENCY ||
-	    backend_status == COMAC_INT_STATUS_NOTHING_TO_DO)
-	{
+	    backend_status == COMAC_INT_STATUS_NOTHING_TO_DO) {
 	    return COMAC_INT_STATUS_SUCCESS;
-	}
-	else
-	{
+	} else {
 	    return COMAC_INT_STATUS_IMAGE_FALLBACK;
 	}
     }
@@ -179,7 +179,8 @@ _add_operation (comac_analysis_surface_t *surface,
 	    bbox.p2.y += ty;
 	} else {
 	    _comac_matrix_transform_bounding_box_fixed (&surface->ctm,
-							&bbox, NULL);
+							&bbox,
+							NULL);
 
 	    if (bbox.p1.x == bbox.p2.x || bbox.p1.y == bbox.p2.y) {
 		/* Even though the operation is not visible we must be
@@ -188,12 +189,9 @@ _add_operation (comac_analysis_surface_t *surface,
 		 * COMAC_PAGINATED_MODE_RENDER */
 		if (backend_status == COMAC_INT_STATUS_SUCCESS ||
 		    backend_status == COMAC_INT_STATUS_FLATTEN_TRANSPARENCY ||
-		    backend_status == COMAC_INT_STATUS_NOTHING_TO_DO)
-		{
+		    backend_status == COMAC_INT_STATUS_NOTHING_TO_DO) {
 		    return COMAC_INT_STATUS_SUCCESS;
-		}
-		else
-		{
+		} else {
 		    return COMAC_INT_STATUS_IMAGE_FALLBACK;
 		}
 	    }
@@ -206,13 +204,14 @@ _add_operation (comac_analysis_surface_t *surface,
 	surface->first_op = FALSE;
 	surface->page_bbox = bbox;
     } else
-	_comac_box_add_box(&surface->page_bbox, &bbox);
+	_comac_box_add_box (&surface->page_bbox, &bbox);
 
     /* If the operation is completely enclosed within the fallback
      * region there is no benefit in emitting a native operation as
      * the fallback image will be painted on top.
      */
-    if (comac_region_contains_rectangle (&surface->fallback_region, rect) == COMAC_REGION_OVERLAP_IN)
+    if (comac_region_contains_rectangle (&surface->fallback_region, rect) ==
+	COMAC_REGION_OVERLAP_IN)
 	return COMAC_INT_STATUS_IMAGE_FALLBACK;
 
     if (backend_status == COMAC_INT_STATUS_FLATTEN_TRANSPARENCY) {
@@ -223,7 +222,8 @@ _add_operation (comac_analysis_surface_t *surface,
 	 * natively supported and the backend will blend the
 	 * transparency into the white background.
 	 */
-	if (comac_region_contains_rectangle (&surface->supported_region, rect) == COMAC_REGION_OVERLAP_OUT)
+	if (comac_region_contains_rectangle (&surface->supported_region,
+					     rect) == COMAC_REGION_OVERLAP_OUT)
 	    backend_status = COMAC_INT_STATUS_SUCCESS;
     }
 
@@ -256,8 +256,8 @@ _add_operation (comac_analysis_surface_t *surface,
 
 static comac_int_status_t
 _analyze_recording_surface_pattern (comac_analysis_surface_t *surface,
-				    const comac_pattern_t    *pattern,
-				    comac_rectangle_int_t    *extents)
+				    const comac_pattern_t *pattern,
+				    comac_rectangle_int_t *extents)
 {
     const comac_surface_pattern_t *surface_pattern;
     comac_analysis_surface_t *tmp;
@@ -279,10 +279,10 @@ _analyze_recording_surface_pattern (comac_analysis_surface_t *surface,
 	return COMAC_STATUS_SUCCESS;
     }
 
-    tmp = (comac_analysis_surface_t *)
-	_comac_analysis_surface_create (surface->target);
+    tmp = (comac_analysis_surface_t *) _comac_analysis_surface_create (
+	surface->target);
     if (unlikely (tmp->base.status)) {
-	status =tmp->base.status;
+	status = tmp->base.status;
 	goto cleanup1;
     }
     proxy = attach_proxy (source, &tmp->base);
@@ -292,19 +292,20 @@ _analyze_recording_surface_pattern (comac_analysis_surface_t *surface,
     assert (status == COMAC_INT_STATUS_SUCCESS);
     _comac_analysis_surface_set_ctm (&tmp->base, &p2d);
 
-
     source = _comac_surface_get_source (source, NULL);
-    surface_is_unbounded = (pattern->extend == COMAC_EXTEND_REPEAT
-				     || pattern->extend == COMAC_EXTEND_REFLECT);
-    status = _comac_recording_surface_replay_and_create_regions (source,
-								 &pattern->matrix,
-								 &tmp->base,
-								 surface_is_unbounded);
+    surface_is_unbounded = (pattern->extend == COMAC_EXTEND_REPEAT ||
+			    pattern->extend == COMAC_EXTEND_REFLECT);
+    status = _comac_recording_surface_replay_and_create_regions (
+	source,
+	&pattern->matrix,
+	&tmp->base,
+	surface_is_unbounded);
     if (unlikely (status))
 	goto cleanup2;
 
     /* black background or mime data fills entire extents */
-    if (!(source->content & COMAC_CONTENT_ALPHA) || _comac_surface_has_mime_image (source)) {
+    if (! (source->content & COMAC_CONTENT_ALPHA) ||
+	_comac_surface_has_mime_image (source)) {
 	comac_rectangle_int_t rect;
 
 	if (_comac_surface_get_extents (source, &rect)) {
@@ -323,27 +324,31 @@ _analyze_recording_surface_pattern (comac_analysis_surface_t *surface,
 
     if (tmp->has_supported) {
 	surface->has_supported = TRUE;
-	unused = comac_region_union (&surface->supported_region, &tmp->supported_region);
+	unused = comac_region_union (&surface->supported_region,
+				     &tmp->supported_region);
     }
 
     if (tmp->has_unsupported) {
 	surface->has_unsupported = TRUE;
-	unused = comac_region_union (&surface->fallback_region, &tmp->fallback_region);
+	unused = comac_region_union (&surface->fallback_region,
+				     &tmp->fallback_region);
     }
 
-    analysis_status = tmp->has_unsupported ? COMAC_INT_STATUS_IMAGE_FALLBACK : COMAC_INT_STATUS_SUCCESS;
+    analysis_status = tmp->has_unsupported ? COMAC_INT_STATUS_IMAGE_FALLBACK
+					   : COMAC_INT_STATUS_SUCCESS;
     if (pattern->extend != COMAC_EXTEND_NONE) {
 	_comac_unbounded_rectangle_init (extents);
     } else {
 	status = comac_matrix_invert (&tmp->ctm);
 	_comac_matrix_transform_bounding_box_fixed (&tmp->ctm,
-						    &tmp->page_bbox, NULL);
+						    &tmp->page_bbox,
+						    NULL);
 	_comac_box_round_to_rectangle (&tmp->page_bbox, extents);
     }
 
-  cleanup2:
+cleanup2:
     detach_proxy (proxy);
-  cleanup1:
+cleanup1:
     comac_surface_destroy (&tmp->base);
 
     if (unlikely (status))
@@ -355,7 +360,8 @@ _analyze_recording_surface_pattern (comac_analysis_surface_t *surface,
 static comac_status_t
 _comac_analysis_surface_finish (void *abstract_surface)
 {
-    comac_analysis_surface_t	*surface = (comac_analysis_surface_t *) abstract_surface;
+    comac_analysis_surface_t *surface =
+	(comac_analysis_surface_t *) abstract_surface;
 
     _comac_region_fini (&surface->supported_region);
     _comac_region_fini (&surface->fallback_region);
@@ -366,8 +372,8 @@ _comac_analysis_surface_finish (void *abstract_surface)
 }
 
 static comac_bool_t
-_comac_analysis_surface_get_extents (void			*abstract_surface,
-				     comac_rectangle_int_t	*rectangle)
+_comac_analysis_surface_get_extents (void *abstract_surface,
+				     comac_rectangle_int_t *rectangle)
 {
     comac_analysis_surface_t *surface = abstract_surface;
 
@@ -375,7 +381,8 @@ _comac_analysis_surface_get_extents (void			*abstract_surface,
 }
 
 static void
-_rectangle_intersect_clip (comac_rectangle_int_t *extents, const comac_clip_t *clip)
+_rectangle_intersect_clip (comac_rectangle_int_t *extents,
+			   const comac_clip_t *clip)
 {
     if (clip != NULL)
 	_comac_rectangle_intersect (extents, _comac_clip_get_extents (clip));
@@ -395,7 +402,9 @@ _comac_analysis_surface_operation_extents (comac_analysis_surface_t *surface,
     if (_comac_operator_bounded_by_source (op)) {
 	comac_rectangle_int_t source_extents;
 
-	_comac_pattern_get_extents (source, &source_extents, surface->target->is_vector);
+	_comac_pattern_get_extents (source,
+				    &source_extents,
+				    surface->target->is_vector);
 	_comac_rectangle_intersect (extents, &source_extents);
     }
 
@@ -403,31 +412,33 @@ _comac_analysis_surface_operation_extents (comac_analysis_surface_t *surface,
 }
 
 static comac_int_status_t
-_comac_analysis_surface_paint (void			*abstract_surface,
-			       comac_operator_t		op,
-			       const comac_pattern_t	*source,
-			       const comac_clip_t	*clip)
+_comac_analysis_surface_paint (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_clip_t *clip)
 {
     comac_analysis_surface_t *surface = abstract_surface;
-    comac_int_status_t	     backend_status;
-    comac_rectangle_int_t  extents;
+    comac_int_status_t backend_status;
+    comac_rectangle_int_t extents;
 
     if (surface->target->backend->paint == NULL) {
 	backend_status = COMAC_INT_STATUS_UNSUPPORTED;
     } else {
 	backend_status =
-	    surface->target->backend->paint (surface->target,
-					     op, source, clip);
+	    surface->target->backend->paint (surface->target, op, source, clip);
 	if (_comac_int_status_is_error (backend_status))
 	    return backend_status;
     }
 
     _comac_analysis_surface_operation_extents (surface,
-					       op, source, clip,
+					       op,
+					       source,
+					       clip,
 					       &extents);
     if (backend_status == COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN) {
 	comac_rectangle_int_t rec_extents;
-	backend_status = _analyze_recording_surface_pattern (surface, source, &rec_extents);
+	backend_status =
+	    _analyze_recording_surface_pattern (surface, source, &rec_extents);
 	_comac_rectangle_intersect (&extents, &rec_extents);
     }
 
@@ -435,28 +446,32 @@ _comac_analysis_surface_paint (void			*abstract_surface,
 }
 
 static comac_int_status_t
-_comac_analysis_surface_mask (void			*abstract_surface,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_pattern_t	*mask,
-			      const comac_clip_t	*clip)
+_comac_analysis_surface_mask (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_pattern_t *mask,
+			      const comac_clip_t *clip)
 {
     comac_analysis_surface_t *surface = abstract_surface;
-    comac_int_status_t	      backend_status;
-    comac_rectangle_int_t   extents;
+    comac_int_status_t backend_status;
+    comac_rectangle_int_t extents;
 
     if (surface->target->backend->mask == NULL) {
 	backend_status = COMAC_INT_STATUS_UNSUPPORTED;
     } else {
-	backend_status =
-	    surface->target->backend->mask (surface->target,
-					    op, source, mask, clip);
+	backend_status = surface->target->backend->mask (surface->target,
+							 op,
+							 source,
+							 mask,
+							 clip);
 	if (_comac_int_status_is_error (backend_status))
 	    return backend_status;
     }
 
     _comac_analysis_surface_operation_extents (surface,
-					       op, source, clip,
+					       op,
+					       source,
+					       clip,
 					       &extents);
     if (backend_status == COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN) {
 	comac_int_status_t backend_source_status = COMAC_STATUS_SUCCESS;
@@ -464,11 +479,14 @@ _comac_analysis_surface_mask (void			*abstract_surface,
 	comac_rectangle_int_t rec_extents;
 
 	if (source->type == COMAC_PATTERN_TYPE_SURFACE) {
-	    comac_surface_t *src_surface = ((comac_surface_pattern_t *)source)->surface;
+	    comac_surface_t *src_surface =
+		((comac_surface_pattern_t *) source)->surface;
 	    src_surface = _comac_surface_get_source (src_surface, NULL);
 	    if (_comac_surface_is_recording (src_surface)) {
 		backend_source_status =
-		    _analyze_recording_surface_pattern (surface, source, &rec_extents);
+		    _analyze_recording_surface_pattern (surface,
+							source,
+							&rec_extents);
 		if (_comac_int_status_is_error (backend_source_status))
 		    return backend_source_status;
 
@@ -477,11 +495,14 @@ _comac_analysis_surface_mask (void			*abstract_surface,
 	}
 
 	if (mask->type == COMAC_PATTERN_TYPE_SURFACE) {
-	    comac_surface_t *mask_surface = ((comac_surface_pattern_t *)mask)->surface;
+	    comac_surface_t *mask_surface =
+		((comac_surface_pattern_t *) mask)->surface;
 	    mask_surface = _comac_surface_get_source (mask_surface, NULL);
 	    if (_comac_surface_is_recording (mask_surface)) {
 		backend_mask_status =
-		    _analyze_recording_surface_pattern (surface, mask, &rec_extents);
+		    _analyze_recording_surface_pattern (surface,
+							mask,
+							&rec_extents);
 		if (_comac_int_status_is_error (backend_mask_status))
 		    return backend_mask_status;
 
@@ -497,7 +518,9 @@ _comac_analysis_surface_mask (void			*abstract_surface,
     if (_comac_operator_bounded_by_mask (op)) {
 	comac_rectangle_int_t mask_extents;
 
-	_comac_pattern_get_extents (mask, &mask_extents, surface->target->is_vector);
+	_comac_pattern_get_extents (mask,
+				    &mask_extents,
+				    surface->target->is_vector);
 	_comac_rectangle_intersect (&extents, &mask_extents);
     }
 
@@ -505,40 +528,47 @@ _comac_analysis_surface_mask (void			*abstract_surface,
 }
 
 static comac_int_status_t
-_comac_analysis_surface_stroke (void			   *abstract_surface,
-				comac_operator_t	    op,
-				const comac_pattern_t	   *source,
-				const comac_path_fixed_t   *path,
+_comac_analysis_surface_stroke (void *abstract_surface,
+				comac_operator_t op,
+				const comac_pattern_t *source,
+				const comac_path_fixed_t *path,
 				const comac_stroke_style_t *style,
-				const comac_matrix_t	   *ctm,
-				const comac_matrix_t	   *ctm_inverse,
-				double			    tolerance,
-				comac_antialias_t	    antialias,
-				const comac_clip_t	   *clip)
+				const comac_matrix_t *ctm,
+				const comac_matrix_t *ctm_inverse,
+				double tolerance,
+				comac_antialias_t antialias,
+				const comac_clip_t *clip)
 {
     comac_analysis_surface_t *surface = abstract_surface;
-    comac_int_status_t	     backend_status;
-    comac_rectangle_int_t    extents;
+    comac_int_status_t backend_status;
+    comac_rectangle_int_t extents;
 
     if (surface->target->backend->stroke == NULL) {
 	backend_status = COMAC_INT_STATUS_UNSUPPORTED;
     } else {
-	backend_status =
-	    surface->target->backend->stroke (surface->target, op,
-					      source, path, style,
-					      ctm, ctm_inverse,
-					      tolerance, antialias,
-					      clip);
+	backend_status = surface->target->backend->stroke (surface->target,
+							   op,
+							   source,
+							   path,
+							   style,
+							   ctm,
+							   ctm_inverse,
+							   tolerance,
+							   antialias,
+							   clip);
 	if (_comac_int_status_is_error (backend_status))
 	    return backend_status;
     }
 
     _comac_analysis_surface_operation_extents (surface,
-					       op, source, clip,
+					       op,
+					       source,
+					       clip,
 					       &extents);
     if (backend_status == COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN) {
 	comac_rectangle_int_t rec_extents;
-	backend_status = _analyze_recording_surface_pattern (surface, source, &rec_extents);
+	backend_status =
+	    _analyze_recording_surface_pattern (surface, source, &rec_extents);
 	_comac_rectangle_intersect (&extents, &rec_extents);
     }
 
@@ -546,8 +576,10 @@ _comac_analysis_surface_stroke (void			   *abstract_surface,
 	comac_rectangle_int_t mask_extents;
 	comac_int_status_t status;
 
-	status = _comac_path_fixed_stroke_extents (path, style,
-						   ctm, ctm_inverse,
+	status = _comac_path_fixed_stroke_extents (path,
+						   style,
+						   ctm,
+						   ctm_inverse,
 						   tolerance,
 						   &mask_extents);
 	if (unlikely (status))
@@ -560,44 +592,52 @@ _comac_analysis_surface_stroke (void			   *abstract_surface,
 }
 
 static comac_int_status_t
-_comac_analysis_surface_fill (void			*abstract_surface,
-			      comac_operator_t		 op,
-			      const comac_pattern_t	*source,
-			      const comac_path_fixed_t	*path,
-			      comac_fill_rule_t		 fill_rule,
-			      double			 tolerance,
-			      comac_antialias_t		 antialias,
-			      const comac_clip_t	*clip)
+_comac_analysis_surface_fill (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_path_fixed_t *path,
+			      comac_fill_rule_t fill_rule,
+			      double tolerance,
+			      comac_antialias_t antialias,
+			      const comac_clip_t *clip)
 {
     comac_analysis_surface_t *surface = abstract_surface;
-    comac_int_status_t	     backend_status;
-    comac_rectangle_int_t    extents;
+    comac_int_status_t backend_status;
+    comac_rectangle_int_t extents;
 
     if (surface->target->backend->fill == NULL) {
 	backend_status = COMAC_INT_STATUS_UNSUPPORTED;
     } else {
-	backend_status =
-	    surface->target->backend->fill (surface->target, op,
-					    source, path, fill_rule,
-					    tolerance, antialias,
-					    clip);
+	backend_status = surface->target->backend->fill (surface->target,
+							 op,
+							 source,
+							 path,
+							 fill_rule,
+							 tolerance,
+							 antialias,
+							 clip);
 	if (_comac_int_status_is_error (backend_status))
 	    return backend_status;
     }
 
     _comac_analysis_surface_operation_extents (surface,
-					       op, source, clip,
+					       op,
+					       source,
+					       clip,
 					       &extents);
     if (backend_status == COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN) {
 	comac_rectangle_int_t rec_extents;
-	backend_status = _analyze_recording_surface_pattern (surface, source, &rec_extents);
+	backend_status =
+	    _analyze_recording_surface_pattern (surface, source, &rec_extents);
 	_comac_rectangle_intersect (&extents, &rec_extents);
     }
 
     if (_comac_operator_bounded_by_mask (op)) {
 	comac_rectangle_int_t mask_extents;
 
-	_comac_path_fixed_fill_extents (path, fill_rule, tolerance,
+	_comac_path_fixed_fill_extents (path,
+					fill_rule,
+					tolerance,
 					&mask_extents);
 
 	_comac_rectangle_intersect (&extents, &mask_extents);
@@ -607,54 +647,58 @@ _comac_analysis_surface_fill (void			*abstract_surface,
 }
 
 static comac_int_status_t
-_comac_analysis_surface_show_glyphs (void		  *abstract_surface,
-				     comac_operator_t	   op,
+_comac_analysis_surface_show_glyphs (void *abstract_surface,
+				     comac_operator_t op,
 				     const comac_pattern_t *source,
-				     comac_glyph_t	  *glyphs,
-				     int		   num_glyphs,
-				     comac_scaled_font_t  *scaled_font,
-				     const comac_clip_t         *clip)
+				     comac_glyph_t *glyphs,
+				     int num_glyphs,
+				     comac_scaled_font_t *scaled_font,
+				     const comac_clip_t *clip)
 {
     comac_analysis_surface_t *surface = abstract_surface;
-    comac_int_status_t	     status, backend_status;
-    comac_rectangle_int_t    extents, glyph_extents;
+    comac_int_status_t status, backend_status;
+    comac_rectangle_int_t extents, glyph_extents;
 
     /* Adapted from _comac_surface_show_glyphs */
     if (surface->target->backend->show_glyphs != NULL) {
-	backend_status =
-	    surface->target->backend->show_glyphs (surface->target, op,
-						   source,
-						   glyphs, num_glyphs,
-						   scaled_font,
-						   clip);
+	backend_status = surface->target->backend->show_glyphs (surface->target,
+								op,
+								source,
+								glyphs,
+								num_glyphs,
+								scaled_font,
+								clip);
 	if (_comac_int_status_is_error (backend_status))
 	    return backend_status;
-    }
-    else if (surface->target->backend->show_text_glyphs != NULL)
-    {
+    } else if (surface->target->backend->show_text_glyphs != NULL) {
 	backend_status =
-	    surface->target->backend->show_text_glyphs (surface->target, op,
+	    surface->target->backend->show_text_glyphs (surface->target,
+							op,
 							source,
-							NULL, 0,
-							glyphs, num_glyphs,
-							NULL, 0,
+							NULL,
+							0,
+							glyphs,
+							num_glyphs,
+							NULL,
+							0,
 							FALSE,
 							scaled_font,
 							clip);
 	if (_comac_int_status_is_error (backend_status))
 	    return backend_status;
-    }
-    else
-    {
+    } else {
 	backend_status = COMAC_INT_STATUS_UNSUPPORTED;
     }
 
     _comac_analysis_surface_operation_extents (surface,
-					       op, source, clip,
+					       op,
+					       source,
+					       clip,
 					       &extents);
     if (backend_status == COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN) {
 	comac_rectangle_int_t rec_extents;
-	backend_status = _analyze_recording_surface_pattern (surface, source, &rec_extents);
+	backend_status =
+	    _analyze_recording_surface_pattern (surface, source, &rec_extents);
 	_comac_rectangle_intersect (&extents, &rec_extents);
     }
 
@@ -682,32 +726,37 @@ _comac_analysis_surface_has_show_text_glyphs (void *abstract_surface)
 }
 
 static comac_int_status_t
-_comac_analysis_surface_show_text_glyphs (void			    *abstract_surface,
-					  comac_operator_t	     op,
-					  const comac_pattern_t	    *source,
-					  const char		    *utf8,
-					  int			     utf8_len,
-					  comac_glyph_t		    *glyphs,
-					  int			     num_glyphs,
-					  const comac_text_cluster_t *clusters,
-					  int			     num_clusters,
-					  comac_text_cluster_flags_t cluster_flags,
-					  comac_scaled_font_t	    *scaled_font,
-					  const comac_clip_t		    *clip)
+_comac_analysis_surface_show_text_glyphs (
+    void *abstract_surface,
+    comac_operator_t op,
+    const comac_pattern_t *source,
+    const char *utf8,
+    int utf8_len,
+    comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_text_cluster_t *clusters,
+    int num_clusters,
+    comac_text_cluster_flags_t cluster_flags,
+    comac_scaled_font_t *scaled_font,
+    const comac_clip_t *clip)
 {
     comac_analysis_surface_t *surface = abstract_surface;
-    comac_int_status_t	     status, backend_status;
-    comac_rectangle_int_t    extents, glyph_extents;
+    comac_int_status_t status, backend_status;
+    comac_rectangle_int_t extents, glyph_extents;
 
     /* Adapted from _comac_surface_show_glyphs */
     backend_status = COMAC_INT_STATUS_UNSUPPORTED;
     if (surface->target->backend->show_text_glyphs != NULL) {
 	backend_status =
-	    surface->target->backend->show_text_glyphs (surface->target, op,
+	    surface->target->backend->show_text_glyphs (surface->target,
+							op,
 							source,
-							utf8, utf8_len,
-							glyphs, num_glyphs,
-							clusters, num_clusters,
+							utf8,
+							utf8_len,
+							glyphs,
+							num_glyphs,
+							clusters,
+							num_clusters,
 							cluster_flags,
 							scaled_font,
 							clip);
@@ -715,24 +764,27 @@ _comac_analysis_surface_show_text_glyphs (void			    *abstract_surface,
 	    return backend_status;
     }
     if (backend_status == COMAC_INT_STATUS_UNSUPPORTED &&
-	surface->target->backend->show_glyphs != NULL)
-    {
-	backend_status =
-	    surface->target->backend->show_glyphs (surface->target, op,
-						   source,
-						   glyphs, num_glyphs,
-						   scaled_font,
-						   clip);
+	surface->target->backend->show_glyphs != NULL) {
+	backend_status = surface->target->backend->show_glyphs (surface->target,
+								op,
+								source,
+								glyphs,
+								num_glyphs,
+								scaled_font,
+								clip);
 	if (_comac_int_status_is_error (backend_status))
 	    return backend_status;
     }
 
     _comac_analysis_surface_operation_extents (surface,
-					       op, source, clip,
+					       op,
+					       source,
+					       clip,
 					       &extents);
     if (backend_status == COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN) {
 	comac_rectangle_int_t rec_extents;
-	backend_status = _analyze_recording_surface_pattern (surface, source, &rec_extents);
+	backend_status =
+	    _analyze_recording_surface_pattern (surface, source, &rec_extents);
 	_comac_rectangle_intersect (&extents, &rec_extents);
     }
 
@@ -752,23 +804,22 @@ _comac_analysis_surface_show_text_glyphs (void			    *abstract_surface,
 }
 
 static comac_int_status_t
-_comac_analysis_surface_tag (void	                *abstract_surface,
-			     comac_bool_t                begin,
-			     const char                 *tag_name,
-			     const char                 *attributes)
+_comac_analysis_surface_tag (void *abstract_surface,
+			     comac_bool_t begin,
+			     const char *tag_name,
+			     const char *attributes)
 {
     comac_analysis_surface_t *surface = abstract_surface;
-    comac_int_status_t	     backend_status;
+    comac_int_status_t backend_status;
 
     backend_status = COMAC_INT_STATUS_SUCCESS;
     if (surface->target->backend->tag != NULL) {
-	backend_status =
-	    surface->target->backend->tag (surface->target,
-					   begin,
-					   tag_name,
-					   attributes);
-        if (backend_status == COMAC_INT_STATUS_SUCCESS)
-            surface->has_supported = TRUE;
+	backend_status = surface->target->backend->tag (surface->target,
+							begin,
+							tag_name,
+							attributes);
+	if (backend_status == COMAC_INT_STATUS_SUCCESS)
+	    surface->has_supported = TRUE;
     }
 
     return backend_status;
@@ -808,11 +859,10 @@ static const comac_surface_backend_t comac_analysis_surface_backend = {
     _comac_analysis_surface_has_show_text_glyphs,
     _comac_analysis_surface_show_text_glyphs,
     NULL, /* get_supported_mime_types */
-    _comac_analysis_surface_tag
-};
+    _comac_analysis_surface_tag};
 
 comac_surface_t *
-_comac_analysis_surface_create (comac_surface_t		*target)
+_comac_analysis_surface_create (comac_surface_t *target)
 {
     comac_analysis_surface_t *surface;
     comac_status_t status;
@@ -823,7 +873,8 @@ _comac_analysis_surface_create (comac_surface_t		*target)
 
     surface = _comac_malloc (sizeof (comac_analysis_surface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     /* I believe the content type here is truly arbitrary. I'm quite
      * sure nothing will ever use this value. */
@@ -837,7 +888,7 @@ _comac_analysis_surface_create (comac_surface_t		*target)
     surface->has_ctm = FALSE;
 
     surface->target = comac_surface_reference (target);
-    surface->first_op  = TRUE;
+    surface->first_op = TRUE;
     surface->has_supported = FALSE;
     surface->has_unsupported = FALSE;
 
@@ -854,9 +905,9 @@ _comac_analysis_surface_create (comac_surface_t		*target)
 
 void
 _comac_analysis_surface_set_ctm (comac_surface_t *abstract_surface,
-				 const comac_matrix_t  *ctm)
+				 const comac_matrix_t *ctm)
 {
-    comac_analysis_surface_t	*surface;
+    comac_analysis_surface_t *surface;
 
     if (abstract_surface->status)
 	return;
@@ -869,18 +920,19 @@ _comac_analysis_surface_set_ctm (comac_surface_t *abstract_surface,
 
 void
 _comac_analysis_surface_get_ctm (comac_surface_t *abstract_surface,
-				 comac_matrix_t  *ctm)
+				 comac_matrix_t *ctm)
 {
-    comac_analysis_surface_t	*surface = (comac_analysis_surface_t *) abstract_surface;
+    comac_analysis_surface_t *surface =
+	(comac_analysis_surface_t *) abstract_surface;
 
     *ctm = surface->ctm;
 }
 
-
 comac_region_t *
 _comac_analysis_surface_get_supported (comac_surface_t *abstract_surface)
 {
-    comac_analysis_surface_t	*surface = (comac_analysis_surface_t *) abstract_surface;
+    comac_analysis_surface_t *surface =
+	(comac_analysis_surface_t *) abstract_surface;
 
     return &surface->supported_region;
 }
@@ -888,7 +940,8 @@ _comac_analysis_surface_get_supported (comac_surface_t *abstract_surface)
 comac_region_t *
 _comac_analysis_surface_get_unsupported (comac_surface_t *abstract_surface)
 {
-    comac_analysis_surface_t	*surface = (comac_analysis_surface_t *) abstract_surface;
+    comac_analysis_surface_t *surface =
+	(comac_analysis_surface_t *) abstract_surface;
 
     return &surface->fallback_region;
 }
@@ -896,7 +949,8 @@ _comac_analysis_surface_get_unsupported (comac_surface_t *abstract_surface)
 comac_bool_t
 _comac_analysis_surface_has_supported (comac_surface_t *abstract_surface)
 {
-    comac_analysis_surface_t	*surface = (comac_analysis_surface_t *) abstract_surface;
+    comac_analysis_surface_t *surface =
+	(comac_analysis_surface_t *) abstract_surface;
 
     return surface->has_supported;
 }
@@ -904,16 +958,18 @@ _comac_analysis_surface_has_supported (comac_surface_t *abstract_surface)
 comac_bool_t
 _comac_analysis_surface_has_unsupported (comac_surface_t *abstract_surface)
 {
-    comac_analysis_surface_t	*surface = (comac_analysis_surface_t *) abstract_surface;
+    comac_analysis_surface_t *surface =
+	(comac_analysis_surface_t *) abstract_surface;
 
     return surface->has_unsupported;
 }
 
 void
 _comac_analysis_surface_get_bounding_box (comac_surface_t *abstract_surface,
-					  comac_box_t     *bbox)
+					  comac_box_t *bbox)
 {
-    comac_analysis_surface_t	*surface = (comac_analysis_surface_t *) abstract_surface;
+    comac_analysis_surface_t *surface =
+	(comac_analysis_surface_t *) abstract_surface;
 
     *bbox = surface->page_bbox;
 }
@@ -921,60 +977,60 @@ _comac_analysis_surface_get_bounding_box (comac_surface_t *abstract_surface,
 /* null surface type: a surface that does nothing (has no side effects, yay!) */
 
 static comac_int_status_t
-_paint_return_success (void			*surface,
-		       comac_operator_t		 op,
-		       const comac_pattern_t	*source,
-		       const comac_clip_t	*clip)
+_paint_return_success (void *surface,
+		       comac_operator_t op,
+		       const comac_pattern_t *source,
+		       const comac_clip_t *clip)
 {
     return COMAC_INT_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_mask_return_success (void			*surface,
-		      comac_operator_t		 op,
-		      const comac_pattern_t	*source,
-		      const comac_pattern_t	*mask,
-		      const comac_clip_t	*clip)
+_mask_return_success (void *surface,
+		      comac_operator_t op,
+		      const comac_pattern_t *source,
+		      const comac_pattern_t *mask,
+		      const comac_clip_t *clip)
 {
     return COMAC_INT_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_stroke_return_success (void				*surface,
-			comac_operator_t		 op,
-			const comac_pattern_t		*source,
-			const comac_path_fixed_t	*path,
-			const comac_stroke_style_t	*style,
-			const comac_matrix_t		*ctm,
-			const comac_matrix_t		*ctm_inverse,
-			double				 tolerance,
-			comac_antialias_t		 antialias,
-			const comac_clip_t		*clip)
+_stroke_return_success (void *surface,
+			comac_operator_t op,
+			const comac_pattern_t *source,
+			const comac_path_fixed_t *path,
+			const comac_stroke_style_t *style,
+			const comac_matrix_t *ctm,
+			const comac_matrix_t *ctm_inverse,
+			double tolerance,
+			comac_antialias_t antialias,
+			const comac_clip_t *clip)
 {
     return COMAC_INT_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_fill_return_success (void			*surface,
-		      comac_operator_t		 op,
-		      const comac_pattern_t	*source,
-		      const comac_path_fixed_t	*path,
-		      comac_fill_rule_t		 fill_rule,
-		      double			 tolerance,
-		      comac_antialias_t		 antialias,
-		      const comac_clip_t	*clip)
+_fill_return_success (void *surface,
+		      comac_operator_t op,
+		      const comac_pattern_t *source,
+		      const comac_path_fixed_t *path,
+		      comac_fill_rule_t fill_rule,
+		      double tolerance,
+		      comac_antialias_t antialias,
+		      const comac_clip_t *clip)
 {
     return COMAC_INT_STATUS_SUCCESS;
 }
 
 static comac_int_status_t
-_show_glyphs_return_success (void			*surface,
-			     comac_operator_t		 op,
-			     const comac_pattern_t	*source,
-			     comac_glyph_t		*glyphs,
-			     int			 num_glyphs,
-			     comac_scaled_font_t	*scaled_font,
-			     const comac_clip_t		*clip)
+_show_glyphs_return_success (void *surface,
+			     comac_operator_t op,
+			     const comac_pattern_t *source,
+			     comac_glyph_t *glyphs,
+			     int num_glyphs,
+			     comac_scaled_font_t *scaled_font,
+			     const comac_clip_t *clip)
 {
     return COMAC_INT_STATUS_SUCCESS;
 }
@@ -1004,14 +1060,14 @@ static const comac_surface_backend_t comac_null_surface_backend = {
     NULL, /* flush */
     NULL, /* mark_dirty_rectangle */
 
-    _paint_return_success,	    /* paint */
-    _mask_return_success,	    /* mask */
-    _stroke_return_success,	    /* stroke */
-    _fill_return_success,	    /* fill */
-    NULL, /* fill_stroke */
-    _show_glyphs_return_success,    /* show_glyphs */
-    NULL, /* has_show_text_glyphs */
-    NULL  /* show_text_glyphs */
+    _paint_return_success,	 /* paint */
+    _mask_return_success,	 /* mask */
+    _stroke_return_success,	 /* stroke */
+    _fill_return_success,	 /* fill */
+    NULL,			 /* fill_stroke */
+    _show_glyphs_return_success, /* show_glyphs */
+    NULL,			 /* has_show_text_glyphs */
+    NULL			 /* show_text_glyphs */
 };
 
 comac_surface_t *
@@ -1021,7 +1077,8 @@ _comac_null_surface_create (comac_content_t content)
 
     surface = _comac_malloc (sizeof (comac_surface_t));
     if (unlikely (surface == NULL)) {
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     _comac_surface_init (surface,

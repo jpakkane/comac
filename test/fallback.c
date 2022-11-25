@@ -27,8 +27,8 @@
 #include "comac-test.h"
 
 #define SIZE 40
-#define WIDTH (7*SIZE)
-#define HEIGHT (5*SIZE)
+#define WIDTH (7 * SIZE)
+#define HEIGHT (5 * SIZE)
 
 #define FALLBACK_RES_X 300
 #define FALLBACK_RES_Y 150
@@ -38,8 +38,8 @@ rectangles (comac_t *cr)
 {
     comac_save (cr);
 
-    comac_rotate (cr, M_PI/8);
-    comac_translate (cr, 2*SIZE, SIZE/16);
+    comac_rotate (cr, M_PI / 8);
+    comac_translate (cr, 2 * SIZE, SIZE / 16);
     comac_scale (cr, 1.5, 1.5);
 
     comac_rectangle (cr, 0, 0, SIZE, SIZE);
@@ -49,7 +49,7 @@ rectangles (comac_t *cr)
     /* Select an operator not supported by PDF/PS/SVG to trigger fallback */
     comac_set_operator (cr, COMAC_OPERATOR_SATURATE);
 
-    comac_rectangle (cr, SIZE/2, SIZE/2, SIZE, SIZE);
+    comac_rectangle (cr, SIZE / 2, SIZE / 2, SIZE, SIZE);
     comac_set_source_rgba (cr, 0, 1, 0, 0.5);
     comac_fill (cr);
 
@@ -59,10 +59,12 @@ rectangles (comac_t *cr)
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_surface_set_fallback_resolution (comac_get_target (cr), FALLBACK_RES_X, FALLBACK_RES_Y);
+    comac_surface_set_fallback_resolution (comac_get_target (cr),
+					   FALLBACK_RES_X,
+					   FALLBACK_RES_Y);
 
     rectangles (cr);
-    comac_translate (cr, 3*SIZE, 0);
+    comac_translate (cr, 3 * SIZE, 0);
     comac_push_group (cr);
     rectangles (cr);
     comac_pop_group_to_source (cr);
@@ -72,8 +74,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (fallback,
-	    "Check that fallback images are correct when fallback resolution is not 72ppi",
+	    "Check that fallback images are correct when fallback resolution "
+	    "is not 72ppi",
 	    "fallback", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

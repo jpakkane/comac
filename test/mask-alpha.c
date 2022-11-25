@@ -60,8 +60,8 @@ draw (comac_t *cr, int width, int height)
     comac_rectangle (cr, 0.3 * SIZE, 0.2 * SIZE, 0.5 * SIZE, 0.5 * SIZE);
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_fill (cr);
-    comac_move_to     (cr,   0.0,          0.8 * SIZE);
-    comac_rel_line_to (cr,   0.7 * SIZE,   0.0);
+    comac_move_to (cr, 0.0, 0.8 * SIZE);
+    comac_rel_line_to (cr, 0.7 * SIZE, 0.0);
     comac_rel_line_to (cr, -0.375 * SIZE, -0.6 * SIZE);
     comac_close_path (cr);
     comac_set_source_rgb (cr, 0, 1, 0);
@@ -77,6 +77,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mask_alpha,
 	    "A simple test painting a group through a circle mask",
 	    "mask, alpha", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	   /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

@@ -50,11 +50,11 @@ halo_around_text (comac_t *cr, const char *str)
     comac_text_path (cr, str);
 
     comac_set_source_rgb (cr, 0, .5, 1);
-    comac_stroke(cr);
+    comac_stroke (cr);
 
     comac_set_source_rgb (cr, 1, .5, 0);
     comac_move_to (cr, x, y);
-    comac_show_text  (cr, str);
+    comac_show_text (cr, str);
 }
 
 static comac_test_status_t
@@ -146,13 +146,17 @@ draw_transform (comac_t *cr, int width, int height)
 COMAC_TEST (halo,
 	    "Check the show_glyphs() vs glyph_path()",
 	    "text", /* keywords */
-	    NULL, /* requirements */
-	    200, 100,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    200,
+	    100,
+	    NULL,
+	    draw)
 
 COMAC_TEST (halo_transform,
 	    "Check the show_glyphs() vs glyph_path()",
 	    "text", /* keywords */
-	    NULL, /* requirements */
-	    400, 200,
-	    NULL, draw_transform)
+	    NULL,   /* requirements */
+	    400,
+	    200,
+	    NULL,
+	    draw_transform)

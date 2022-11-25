@@ -48,7 +48,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
     comac_paint (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
@@ -58,28 +59,36 @@ draw (comac_t *cr, int width, int height)
     comac_text_extents (cr, comac, &comac_extents);
     comac_text_extents (cr, giza, &giza_extents);
 
-    x0 = WIDTH/2. - (comac_extents.width/2. + comac_extents.x_bearing);
-    y0 = HEIGHT/2. - (comac_extents.height/2. + comac_extents.y_bearing);
+    x0 = WIDTH / 2. - (comac_extents.width / 2. + comac_extents.x_bearing);
+    y0 = HEIGHT / 2. - (comac_extents.height / 2. + comac_extents.y_bearing);
     glyphs = glyphs_stack;
     count = MAX_GLYPHS;
     comac_scaled_font_text_to_glyphs (comac_get_scaled_font (cr),
-				      x0, y0,
-				      comac, strlen (comac),
-				      &glyphs, &count,
-				      NULL, NULL,
+				      x0,
+				      y0,
+				      comac,
+				      strlen (comac),
+				      &glyphs,
+				      &count,
+				      NULL,
+				      NULL,
 				      NULL);
     assert (glyphs == glyphs_stack);
     num_glyphs = count;
 
-    x0 = WIDTH/2. - (giza_extents.width/2. + giza_extents.x_bearing);
-    y0 = HEIGHT/2. - (giza_extents.height/2. + giza_extents.y_bearing);
+    x0 = WIDTH / 2. - (giza_extents.width / 2. + giza_extents.x_bearing);
+    y0 = HEIGHT / 2. - (giza_extents.height / 2. + giza_extents.y_bearing);
     glyphs = glyphs_stack + count;
     count = MAX_GLYPHS - count;
     comac_scaled_font_text_to_glyphs (comac_get_scaled_font (cr),
-				      x0, y0,
-				      giza, strlen (giza),
-				      &glyphs, &count,
-				      NULL, NULL,
+				      x0,
+				      y0,
+				      giza,
+				      strlen (giza),
+				      &glyphs,
+				      &count,
+				      NULL,
+				      NULL,
 				      NULL);
     assert (glyphs == glyphs_stack + num_glyphs);
     glyphs = glyphs_stack;
@@ -117,7 +126,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (overlapping_glyphs,
 	    "Test handing of overlapping glyphs",
 	    "text, glyphs", /* keywords */
-	    NULL, /* requirements */
-	    2 * WIDTH, 2 * HEIGHT,
-	    NULL, draw)
-
+	    NULL,	    /* requirements */
+	    2 * WIDTH,
+	    2 * HEIGHT,
+	    NULL,
+	    draw)

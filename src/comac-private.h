@@ -53,8 +53,7 @@ comac_private comac_t *
 _comac_create_in_error (comac_status_t status);
 
 comac_private void
-_comac_init (comac_t *cr,
-	     const comac_backend_t *backend);
+_comac_init (comac_t *cr, const comac_backend_t *backend);
 
 comac_private void
 _comac_fini (comac_t *cr);

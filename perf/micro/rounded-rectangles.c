@@ -40,8 +40,7 @@
 #define MODE comac_perf_cover_sources_and_operators
 #endif
 
-static struct
-{
+static struct {
     double x;
     double y;
     double width;
@@ -49,15 +48,19 @@ static struct
 } rects[RECTANGLE_COUNT];
 
 static void
-rounded_rectangle (comac_t *cr,
-		   double x, double y, double w, double h,
-		   double radius)
+rounded_rectangle (
+    comac_t *cr, double x, double y, double w, double h, double radius)
 {
-    comac_move_to (cr, x+radius, y);
-    comac_arc (cr, x+w-radius, y+radius,   radius, M_PI + M_PI / 2, M_PI * 2        );
-    comac_arc (cr, x+w-radius, y+h-radius, radius, 0,               M_PI / 2        );
-    comac_arc (cr, x+radius,   y+h-radius, radius, M_PI/2,          M_PI            );
-    comac_arc (cr, x+radius,   y+radius,   radius, M_PI,            270 * M_PI / 180);
+    comac_move_to (cr, x + radius, y);
+    comac_arc (cr,
+	       x + w - radius,
+	       y + radius,
+	       radius,
+	       M_PI + M_PI / 2,
+	       M_PI * 2);
+    comac_arc (cr, x + w - radius, y + h - radius, radius, 0, M_PI / 2);
+    comac_arc (cr, x + radius, y + h - radius, radius, M_PI / 2, M_PI);
+    comac_arc (cr, x + radius, y + radius, radius, M_PI, 270 * M_PI / 180);
 }
 
 static comac_time_t
@@ -85,8 +88,10 @@ do_rectangles (comac_t *cr, int width, int height, int loops)
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
 	    rounded_rectangle (cr,
-			       rects[i].x, rects[i].y,
-			       rects[i].width, rects[i].height,
+			       rects[i].x,
+			       rects[i].y,
+			       rects[i].width,
+			       rects[i].height,
 			       3.0);
 	    comac_fill (cr);
 	}
@@ -107,8 +112,10 @@ do_rectangles_once (comac_t *cr, int width, int height, int loops)
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
 	    rounded_rectangle (cr,
-			       rects[i].x, rects[i].y,
-			       rects[i].width, rects[i].height,
+			       rects[i].x,
+			       rects[i].y,
+			       rects[i].width,
+			       rects[i].height,
 			       3.0);
 	}
 	comac_fill (cr);
@@ -132,10 +139,10 @@ rounded_rectangles (comac_perf_t *perf, comac_t *cr, int width, int height)
 
     srand (8478232);
     for (i = 0; i < RECTANGLE_COUNT; i++) {
-        rects[i].x = rand () % width;
-        rects[i].y = rand () % height;
-        rects[i].width  = (rand () % (width / 10)) + 1;
-        rects[i].height = (rand () % (height / 10)) + 1;
+	rects[i].x = rand () % width;
+	rects[i].y = rand () % height;
+	rects[i].width = (rand () % (width / 10)) + 1;
+	rects[i].height = (rand () % (height / 10)) + 1;
     }
 
     MODE (perf, "one-rounded-rectangle", do_rectangle, NULL);

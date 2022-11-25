@@ -41,32 +41,39 @@ draw (comac_t *cr, int width, int height)
     for (i = 0; i < 4; i++) {
 	for (j = 0; j < 4; j++) {
 	    comac_save (cr);
-	    comac_rectangle (cr, 100*i, 100*j, 100, 100);
+	    comac_rectangle (cr, 100 * i, 100 * j, 100, 100);
 	    comac_clip (cr);
 
-	    radial = comac_pattern_create_radial (cos (angle), sin (angle), 0,
-						  0, 0, 1);
+	    radial = comac_pattern_create_radial (cos (angle),
+						  sin (angle),
+						  0,
+						  0,
+						  0,
+						  1);
 	    comac_pattern_add_color_stop_rgb (radial, 0.0, 1, 0, 0);
 	    comac_pattern_add_color_stop_rgb (radial, 1.0, 0, 1, 0);
 
-	    comac_translate (cr, 100*i+50, 100*j+50);
+	    comac_translate (cr, 100 * i + 50, 100 * j + 50);
 	    comac_scale (cr, 50, -50);
 	    comac_set_source (cr, radial);
 	    comac_pattern_destroy (radial);
 
-	    comac_paint(cr);
+	    comac_paint (cr);
 	    comac_restore (cr);
 
-	    angle += M_PI/17;
+	    angle += M_PI / 17;
 	}
     }
 
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (radial_outer_focus,
-	    "Exercises the condition of rendering a radial gradial on its outer focus",
-	    "radial", /* keywords */
-	    NULL, /* requirements */
-	    400, 400,
-	    NULL, draw)
+COMAC_TEST (
+    radial_outer_focus,
+    "Exercises the condition of rendering a radial gradial on its outer focus",
+    "radial", /* keywords */
+    NULL,     /* requirements */
+    400,
+    400,
+    NULL,
+    draw)

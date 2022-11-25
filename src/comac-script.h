@@ -60,8 +60,7 @@ comac_public comac_device_t *
 comac_script_create (const char *filename);
 
 comac_public comac_device_t *
-comac_script_create_for_stream (comac_write_func_t	 write_func,
-				void			*closure);
+comac_script_create_for_stream (comac_write_func_t write_func, void *closure);
 
 comac_public void
 comac_script_write_comment (comac_device_t *script,
@@ -69,8 +68,7 @@ comac_script_write_comment (comac_device_t *script,
 			    int len);
 
 comac_public void
-comac_script_set_mode (comac_device_t *script,
-		       comac_script_mode_t mode);
+comac_script_set_mode (comac_device_t *script, comac_script_mode_t mode);
 
 comac_public comac_script_mode_t
 comac_script_get_mode (comac_device_t *script);
@@ -86,13 +84,13 @@ comac_script_surface_create_for_target (comac_device_t *script,
 					comac_surface_t *target);
 
 comac_public comac_status_t
-comac_script_from_recording_surface (comac_device_t	*script,
-				     comac_surface_t	*recording_surface);
+comac_script_from_recording_surface (comac_device_t *script,
+				     comac_surface_t *recording_surface);
 
 COMAC_END_DECLS
 
-#else  /*COMAC_HAS_SCRIPT_SURFACE*/
-# error Comac was not compiled with support for the ComacScript backend
+#else /*COMAC_HAS_SCRIPT_SURFACE*/
+#error Comac was not compiled with support for the ComacScript backend
 #endif /*COMAC_HAS_SCRIPT_SURFACE*/
 
 #endif /*COMAC_SCRIPT_H*/

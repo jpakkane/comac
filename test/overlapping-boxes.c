@@ -31,8 +31,8 @@
 
 #include "comac-test.h"
 
-#define WIDTH		(20)
-#define HEIGHT		(20)
+#define WIDTH (20)
+#define HEIGHT (20)
 
 static void
 border (comac_t *cr)
@@ -88,9 +88,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (overlapping_boxes,
-	    "A sub-pixel double border to highlight the danger in an easy optimisation",
-	    "fill", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    overlapping_boxes,
+    "A sub-pixel double border to highlight the danger in an easy optimisation",
+    "fill", /* keywords */
+    NULL,   /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

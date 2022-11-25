@@ -33,26 +33,30 @@ T (comac_t *cr, int size)
 {
     comac_move_to (cr, 0, 0);
     comac_line_to (cr, size, 0);
-    comac_line_to (cr, size/2, size*m_1_sqrt_3);
+    comac_line_to (cr, size / 2, size * m_1_sqrt_3);
 
     size /= 2;
     if (size >= 4) {
 	T (cr, size);
-	comac_save (cr); {
+	comac_save (cr);
+	{
 	    comac_translate (cr, size, 0);
 	    T (cr, size);
-	} comac_restore (cr);
-	comac_save (cr); {
-	    comac_translate (cr, size/2, size*m_1_sqrt_3);
+	}
+	comac_restore (cr);
+	comac_save (cr);
+	{
+	    comac_translate (cr, size / 2, size * m_1_sqrt_3);
 	    T (cr, size);
-	} comac_restore (cr);
+	}
+	comac_restore (cr);
     }
 }
 
 static comac_time_t
 draw (comac_t *cr, int width, int height, int loops)
 {
-    int t_height = height/2;
+    int t_height = height / 2;
     int t_width = t_height / m_1_sqrt_3;
 
     comac_set_source_rgb (cr, 1, 1, 1);

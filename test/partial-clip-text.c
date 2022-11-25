@@ -29,92 +29,102 @@
 #define HEIGHT 15
 #define WIDTH 40
 
-static void background (comac_t *cr)
+static void
+background (comac_t *cr)
 {
-     comac_set_source_rgb( cr, 0, 0, 0 );
-     comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 }
 
-static void text (comac_t *cr)
+static void
+text (comac_t *cr)
 {
-     comac_move_to (cr, 0, 12);
-     comac_set_source_rgb (cr, 1, 1, 1);
-     comac_show_text (cr, "COMAC");
+    comac_move_to (cr, 0, 12);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_show_text (cr, "COMAC");
 }
 
 static comac_test_status_t
 top (comac_t *cr, int width, int height)
 {
-     background (cr);
+    background (cr);
 
-     comac_rectangle (cr, 0, 0, WIDTH, 5);
-     comac_clip (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, 5);
+    comac_clip (cr);
 
-     text (cr);
+    text (cr);
 
-     return COMAC_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
 bottom (comac_t *cr, int width, int height)
 {
-     background (cr);
+    background (cr);
 
-     comac_rectangle (cr, 0, HEIGHT-5, WIDTH, 5);
-     comac_clip (cr);
+    comac_rectangle (cr, 0, HEIGHT - 5, WIDTH, 5);
+    comac_clip (cr);
 
-     text (cr);
+    text (cr);
 
-     return COMAC_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
 left (comac_t *cr, int width, int height)
 {
-     background (cr);
+    background (cr);
 
-     comac_rectangle (cr, 0, 0, 10, HEIGHT);
-     comac_clip (cr);
+    comac_rectangle (cr, 0, 0, 10, HEIGHT);
+    comac_clip (cr);
 
-     text (cr);
+    text (cr);
 
-     return COMAC_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static comac_test_status_t
 right (comac_t *cr, int width, int height)
 {
-     background (cr);
+    background (cr);
 
-     comac_rectangle (cr, WIDTH-10, 0, 10, HEIGHT);
-     comac_clip (cr);
+    comac_rectangle (cr, WIDTH - 10, 0, 10, HEIGHT);
+    comac_clip (cr);
 
-     text (cr);
+    text (cr);
 
-     return COMAC_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 COMAC_TEST (partial_clip_text_top,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, top)
+	    NULL,	  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    top)
 COMAC_TEST (partial_clip_text_bottom,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, bottom)
+	    NULL,	  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    bottom)
 COMAC_TEST (partial_clip_text_left,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, left)
+	    NULL,	  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    left)
 COMAC_TEST (partial_clip_text_right,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, right)
+	    NULL,	  /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    right)

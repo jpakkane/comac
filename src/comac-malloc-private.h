@@ -42,7 +42,7 @@
 
 #if HAVE_MEMFAULT
 #include <memfault.h>
-#define COMAC_INJECT_FAULT() MEMFAULT_INJECT_FAULT()
+#define COMAC_INJECT_FAULT() MEMFAULT_INJECT_FAULT ()
 #else
 #define COMAC_INJECT_FAULT() 0
 #endif
@@ -59,8 +59,7 @@
  * case of malloc() failure or size is 0.
  **/
 
-#define _comac_malloc(size) \
-   ((size) != 0 ? malloc(size) : NULL)
+#define _comac_malloc(size) ((size) != 0 ? malloc (size) : NULL)
 
 /**
  * _comac_malloc_ab:
@@ -80,13 +79,13 @@
  **/
 
 static comac_always_inline void *
-_comac_malloc_ab(size_t a, size_t size)
+_comac_malloc_ab (size_t a, size_t size)
 {
     size_t c;
     if (_comac_mul_size_t_overflow (a, size, &c))
 	return NULL;
 
-    return _comac_malloc(c);
+    return _comac_malloc (c);
 }
 
 /**
@@ -108,13 +107,13 @@ _comac_malloc_ab(size_t a, size_t size)
  **/
 
 static comac_always_inline void *
-_comac_realloc_ab(void *ptr, size_t a, size_t size)
+_comac_realloc_ab (void *ptr, size_t a, size_t size)
 {
     size_t c;
     if (_comac_mul_size_t_overflow (a, size, &c))
 	return NULL;
 
-    return realloc(ptr, c);
+    return realloc (ptr, c);
 }
 
 /**
@@ -135,7 +134,7 @@ _comac_realloc_ab(void *ptr, size_t a, size_t size)
  **/
 
 static comac_always_inline void *
-_comac_malloc_abc(size_t a, size_t b, size_t size)
+_comac_malloc_abc (size_t a, size_t b, size_t size)
 {
     size_t c, d;
     if (_comac_mul_size_t_overflow (a, b, &c))
@@ -144,7 +143,7 @@ _comac_malloc_abc(size_t a, size_t b, size_t size)
     if (_comac_mul_size_t_overflow (c, size, &d))
 	return NULL;
 
-    return _comac_malloc(d);
+    return _comac_malloc (d);
 }
 
 /**
@@ -162,7 +161,7 @@ _comac_malloc_abc(size_t a, size_t b, size_t size)
  **/
 
 static comac_always_inline void *
-_comac_malloc_ab_plus_c(size_t a, size_t size, size_t c)
+_comac_malloc_ab_plus_c (size_t a, size_t size, size_t c)
 {
     size_t d, e;
     if (_comac_mul_size_t_overflow (a, size, &d))
@@ -171,7 +170,7 @@ _comac_malloc_ab_plus_c(size_t a, size_t size, size_t c)
     if (_comac_add_size_t_overflow (d, c, &e))
 	return NULL;
 
-    return _comac_malloc(e);
+    return _comac_malloc (e);
 }
 
 #endif /* COMAC_MALLOC_PRIVATE_H */

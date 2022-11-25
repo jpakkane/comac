@@ -46,7 +46,7 @@ draw (comac_t *cr, int width, int height)
 
     /* https://bugs.freedesktop.org/show_bug.cgi?id=13084 */
     comac_select_font_face (cr,
-	                    COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
@@ -59,6 +59,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (clip_empty,
 	    "Test clipping with an empty clip path",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

@@ -31,9 +31,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	10.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 10.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
@@ -61,7 +61,7 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
     comac_restore (cr);
 
-    for (i=0; i<2; i++) {
+    for (i = 0; i < 2; i++) {
 	comac_save (cr);
 	comac_set_line_width (cr, LINE_WIDTH);
 	comac_set_dash (cr, dash, ARRAY_LENGTH (dash), dash_offset);
@@ -98,7 +98,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (dash_caps_joins,
 	    "Test caps and joins when dashing",
 	    "dash, stroke", /* keywords */
-	    NULL, /* requirements */
+	    NULL,	    /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    PAD + SIZE + PAD + SIZE + PAD,
-	    NULL, draw)
+	    NULL,
+	    draw)

@@ -101,7 +101,8 @@ png_round_trip (comac_surface_t *input_surface)
     to_free = buffer.data;
 
     // Load the PNG again
-    output_surface = comac_image_surface_create_from_png_stream (read_callback, &buffer);
+    output_surface =
+	comac_image_surface_create_from_png_stream (read_callback, &buffer);
 
     free (to_free);
     return output_surface;
@@ -131,6 +132,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (record_write_png,
 	    "Test writing to png with non-zero origin",
 	    "record, transform", /* keywords */
-	    NULL, /* requirements */
-	    4, 4,
-	    NULL, draw)
+	    NULL,		 /* requirements */
+	    4,
+	    4,
+	    NULL,
+	    draw)

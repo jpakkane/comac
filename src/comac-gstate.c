@@ -58,31 +58,31 @@ static void
 _comac_gstate_unset_scaled_font (comac_gstate_t *gstate);
 
 static void
-_comac_gstate_transform_glyphs_to_backend (comac_gstate_t      *gstate,
-                                           const comac_glyph_t *glyphs,
-                                           int                  num_glyphs,
-					   const comac_text_cluster_t	*clusters,
-					   int			 num_clusters,
-					   comac_text_cluster_flags_t cluster_flags,
-                                           comac_glyph_t       *transformed_glyphs,
-					   int			*num_transformed_glyphs,
-					   comac_text_cluster_t *transformed_clusters);
+_comac_gstate_transform_glyphs_to_backend (
+    comac_gstate_t *gstate,
+    const comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_text_cluster_t *clusters,
+    int num_clusters,
+    comac_text_cluster_flags_t cluster_flags,
+    comac_glyph_t *transformed_glyphs,
+    int *num_transformed_glyphs,
+    comac_text_cluster_t *transformed_clusters);
 
 static void
-_comac_gstate_update_device_transform (comac_observer_t *observer,
-				       void *arg)
+_comac_gstate_update_device_transform (comac_observer_t *observer, void *arg)
 {
     comac_gstate_t *gstate = comac_container_of (observer,
 						 comac_gstate_t,
 						 device_transform_observer);
 
-    gstate->is_identity = (_comac_matrix_is_identity (&gstate->ctm) &&
-			   _comac_matrix_is_identity (&gstate->target->device_transform));
+    gstate->is_identity =
+	(_comac_matrix_is_identity (&gstate->ctm) &&
+	 _comac_matrix_is_identity (&gstate->target->device_transform));
 }
 
 comac_status_t
-_comac_gstate_init (comac_gstate_t  *gstate,
-		    comac_surface_t *target)
+_comac_gstate_init (comac_gstate_t *gstate, comac_surface_t *target)
 {
     VG (VALGRIND_MAKE_MEM_UNDEFINED (gstate, sizeof (comac_gstate_t)));
 
@@ -114,11 +114,13 @@ _comac_gstate_init (comac_gstate_t  *gstate,
     gstate->parent_target = NULL;
     gstate->original_target = comac_surface_reference (target);
 
-    gstate->device_transform_observer.callback = _comac_gstate_update_device_transform;
+    gstate->device_transform_observer.callback =
+	_comac_gstate_update_device_transform;
     comac_list_add (&gstate->device_transform_observer.link,
 		    &gstate->target->device_transform_observers);
 
-    gstate->is_identity = _comac_matrix_is_identity (&gstate->target->device_transform);
+    gstate->is_identity =
+	_comac_matrix_is_identity (&gstate->target->device_transform);
     comac_matrix_init_identity (&gstate->ctm);
     gstate->ctm_inverse = gstate->ctm;
     gstate->source_ctm_inverse = gstate->ctm;
@@ -160,11 +162,12 @@ _comac_gstate_init_copy (comac_gstate_t *gstate, comac_gstate_t *other)
 
     gstate->font_face = comac_font_face_reference (other->font_face);
     gstate->scaled_font = comac_scaled_font_reference (other->scaled_font);
-    gstate->previous_scaled_font = comac_scaled_font_reference (other->previous_scaled_font);
+    gstate->previous_scaled_font =
+	comac_scaled_font_reference (other->previous_scaled_font);
 
     gstate->font_matrix = other->font_matrix;
 
-    _comac_font_options_init_copy (&gstate->font_options , &other->font_options);
+    _comac_font_options_init_copy (&gstate->font_options, &other->font_options);
 
     gstate->clip = _comac_clip_copy (other->clip);
 
@@ -173,7 +176,8 @@ _comac_gstate_init_copy (comac_gstate_t *gstate, comac_gstate_t *other)
     gstate->parent_target = NULL;
     gstate->original_target = comac_surface_reference (other->original_target);
 
-    gstate->device_transform_observer.callback = _comac_gstate_update_device_transform;
+    gstate->device_transform_observer.callback =
+	_comac_gstate_update_device_transform;
     comac_list_add (&gstate->device_transform_observer.link,
 		    &gstate->target->device_transform_observers);
 
@@ -316,9 +320,11 @@ _comac_gstate_redirect_target (comac_gstate_t *gstate, comac_surface_t *child)
     /* The clip is in surface backend coordinates for the previous target;
      * translate it into the child's backend coordinates. */
     _comac_clip_destroy (gstate->clip);
-    gstate->clip = _comac_clip_copy_with_translation (gstate->next->clip,
-						      child->device_transform.x0 - gstate->parent_target->device_transform.x0,
-						      child->device_transform.y0 - gstate->parent_target->device_transform.y0);
+    gstate->clip = _comac_clip_copy_with_translation (
+	gstate->next->clip,
+	child->device_transform.x0 - gstate->parent_target->device_transform.x0,
+	child->device_transform.y0 -
+	    gstate->parent_target->device_transform.y0);
 
     return COMAC_STATUS_SUCCESS;
 }
@@ -386,8 +392,7 @@ _comac_gstate_get_clip (comac_gstate_t *gstate)
 }
 
 comac_status_t
-_comac_gstate_set_source (comac_gstate_t  *gstate,
-			  comac_pattern_t *source)
+_comac_gstate_set_source (comac_gstate_t *gstate, comac_pattern_t *source)
 {
     if (source->status)
 	return source->status;
@@ -405,7 +410,7 @@ _comac_gstate_get_source (comac_gstate_t *gstate)
 {
     if (gstate->source == &_comac_pattern_black.base) {
 	/* do not expose the static object to the user */
-        gstate->source = _comac_pattern_create_solid (COMAC_COLOR_BLACK);
+	gstate->source = _comac_pattern_create_solid (COMAC_COLOR_BLACK);
     }
 
     return gstate->source;
@@ -454,7 +459,8 @@ _comac_gstate_get_tolerance (comac_gstate_t *gstate)
 }
 
 comac_status_t
-_comac_gstate_set_fill_rule (comac_gstate_t *gstate, comac_fill_rule_t fill_rule)
+_comac_gstate_set_fill_rule (comac_gstate_t *gstate,
+			     comac_fill_rule_t fill_rule)
 {
     gstate->fill_rule = fill_rule;
 
@@ -472,7 +478,7 @@ _comac_gstate_set_line_width (comac_gstate_t *gstate, double width)
 {
     if (gstate->stroke_style.is_hairline)
 	gstate->stroke_style.pre_hairline_line_width = width;
-	else
+    else
 	gstate->stroke_style.line_width = width;
 
     return COMAC_STATUS_SUCCESS;
@@ -488,14 +494,16 @@ comac_status_t
 _comac_gstate_set_hairline (comac_gstate_t *gstate, comac_bool_t set_hairline)
 {
     if (gstate->stroke_style.is_hairline != set_hairline) {
-        gstate->stroke_style.is_hairline = set_hairline;
+	gstate->stroke_style.is_hairline = set_hairline;
 
-        if (set_hairline) {
-            gstate->stroke_style.pre_hairline_line_width = gstate->stroke_style.line_width;
-            gstate->stroke_style.line_width = 0.0;
-        } else {
-            gstate->stroke_style.line_width = gstate->stroke_style.pre_hairline_line_width;
-        }
+	if (set_hairline) {
+	    gstate->stroke_style.pre_hairline_line_width =
+		gstate->stroke_style.line_width;
+	    gstate->stroke_style.line_width = 0.0;
+	} else {
+	    gstate->stroke_style.line_width =
+		gstate->stroke_style.pre_hairline_line_width;
+	}
     }
 
     return COMAC_STATUS_SUCCESS;
@@ -522,7 +530,8 @@ _comac_gstate_get_line_cap (comac_gstate_t *gstate)
 }
 
 comac_status_t
-_comac_gstate_set_line_join (comac_gstate_t *gstate, comac_line_join_t line_join)
+_comac_gstate_set_line_join (comac_gstate_t *gstate,
+			     comac_line_join_t line_join)
 {
     gstate->stroke_style.line_join = line_join;
 
@@ -536,7 +545,10 @@ _comac_gstate_get_line_join (comac_gstate_t *gstate)
 }
 
 comac_status_t
-_comac_gstate_set_dash (comac_gstate_t *gstate, const double *dash, int num_dashes, double offset)
+_comac_gstate_set_dash (comac_gstate_t *gstate,
+			const double *dash,
+			int num_dashes,
+			double offset)
 {
     double dash_total, on_total, off_total;
     int i, j;
@@ -551,7 +563,8 @@ _comac_gstate_set_dash (comac_gstate_t *gstate, const double *dash, int num_dash
 	return COMAC_STATUS_SUCCESS;
     }
 
-    gstate->stroke_style.dash = _comac_malloc_ab (gstate->stroke_style.num_dashes, sizeof (double));
+    gstate->stroke_style.dash =
+	_comac_malloc_ab (gstate->stroke_style.num_dashes, sizeof (double));
     if (unlikely (gstate->stroke_style.dash == NULL)) {
 	gstate->stroke_style.num_dashes = 0;
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -566,7 +579,7 @@ _comac_gstate_set_dash (comac_gstate_t *gstate, const double *dash, int num_dash
 	    if (dash[++i] < 0)
 		return _comac_error (COMAC_STATUS_INVALID_DASH);
 
-	    gstate->stroke_style.dash[j-1] += dash[i];
+	    gstate->stroke_style.dash[j - 1] += dash[i];
 	    gstate->stroke_style.num_dashes -= 2;
 	} else
 	    gstate->stroke_style.dash[j++] = dash[i];
@@ -605,7 +618,7 @@ _comac_gstate_set_dash (comac_gstate_t *gstate, const double *dash, int num_dash
     offset = fmod (offset, dash_total);
     if (offset < 0.0)
 	offset += dash_total;
-    if (offset <= 0.0)		/* Take care of -0 */
+    if (offset <= 0.0) /* Take care of -0 */
 	offset = 0.0;
     gstate->stroke_style.dash_offset = offset;
 
@@ -614,9 +627,9 @@ _comac_gstate_set_dash (comac_gstate_t *gstate, const double *dash, int num_dash
 
 void
 _comac_gstate_get_dash (comac_gstate_t *gstate,
-			double         *dashes,
-			int            *num_dashes,
-			double         *offset)
+			double *dashes,
+			int *num_dashes,
+			double *offset)
 {
     if (dashes) {
 	memcpy (dashes,
@@ -695,7 +708,7 @@ _comac_gstate_scale (comac_gstate_t *gstate, double sx, double sy)
     if (! _comac_matrix_is_invertible (&gstate->ctm))
 	return _comac_error (COMAC_STATUS_INVALID_MATRIX);
 
-    comac_matrix_init_scale (&tmp, 1/sx, 1/sy);
+    comac_matrix_init_scale (&tmp, 1 / sx, 1 / sy);
     comac_matrix_multiply (&gstate->ctm_inverse, &gstate->ctm_inverse, &tmp);
 
     return COMAC_STATUS_SUCCESS;
@@ -729,8 +742,7 @@ _comac_gstate_rotate (comac_gstate_t *gstate, double angle)
 }
 
 comac_status_t
-_comac_gstate_transform (comac_gstate_t	      *gstate,
-			 const comac_matrix_t *matrix)
+_comac_gstate_transform (comac_gstate_t *gstate, const comac_matrix_t *matrix)
 {
     comac_matrix_t tmp;
     comac_status_t status;
@@ -760,8 +772,7 @@ _comac_gstate_transform (comac_gstate_t	      *gstate,
 }
 
 comac_status_t
-_comac_gstate_set_matrix (comac_gstate_t       *gstate,
-			  const comac_matrix_t *matrix)
+_comac_gstate_set_matrix (comac_gstate_t *gstate, const comac_matrix_t *matrix)
 {
     comac_status_t status;
 
@@ -797,7 +808,8 @@ _comac_gstate_identity_matrix (comac_gstate_t *gstate)
 
     comac_matrix_init_identity (&gstate->ctm);
     comac_matrix_init_identity (&gstate->ctm_inverse);
-    gstate->is_identity = _comac_matrix_is_identity (&gstate->target->device_transform);
+    gstate->is_identity =
+	_comac_matrix_is_identity (&gstate->target->device_transform);
 }
 
 void
@@ -808,7 +820,8 @@ _comac_gstate_user_to_device (comac_gstate_t *gstate, double *x, double *y)
 
 void
 _comac_gstate_user_to_device_distance (comac_gstate_t *gstate,
-				       double *dx, double *dy)
+				       double *dx,
+				       double *dy)
 {
     comac_matrix_transform_distance (&gstate->ctm, dx, dy);
 }
@@ -821,7 +834,8 @@ _comac_gstate_device_to_user (comac_gstate_t *gstate, double *x, double *y)
 
 void
 _comac_gstate_device_to_user_distance (comac_gstate_t *gstate,
-				       double *dx, double *dy)
+				       double *dx,
+				       double *dy)
 {
     comac_matrix_transform_distance (&gstate->ctm_inverse, dx, dy);
 }
@@ -834,7 +848,9 @@ _do_comac_gstate_user_to_backend (comac_gstate_t *gstate, double *x, double *y)
 }
 
 void
-_do_comac_gstate_user_to_backend_distance (comac_gstate_t *gstate, double *x, double *y)
+_do_comac_gstate_user_to_backend_distance (comac_gstate_t *gstate,
+					   double *x,
+					   double *y)
 {
     comac_matrix_transform_distance (&gstate->ctm, x, y);
     comac_matrix_transform_distance (&gstate->target->device_transform, x, y);
@@ -843,37 +859,48 @@ _do_comac_gstate_user_to_backend_distance (comac_gstate_t *gstate, double *x, do
 void
 _do_comac_gstate_backend_to_user (comac_gstate_t *gstate, double *x, double *y)
 {
-    comac_matrix_transform_point (&gstate->target->device_transform_inverse, x, y);
+    comac_matrix_transform_point (&gstate->target->device_transform_inverse,
+				  x,
+				  y);
     comac_matrix_transform_point (&gstate->ctm_inverse, x, y);
 }
 
 void
-_do_comac_gstate_backend_to_user_distance (comac_gstate_t *gstate, double *x, double *y)
+_do_comac_gstate_backend_to_user_distance (comac_gstate_t *gstate,
+					   double *x,
+					   double *y)
 {
-    comac_matrix_transform_distance (&gstate->target->device_transform_inverse, x, y);
+    comac_matrix_transform_distance (&gstate->target->device_transform_inverse,
+				     x,
+				     y);
     comac_matrix_transform_distance (&gstate->ctm_inverse, x, y);
 }
 
 void
 _comac_gstate_backend_to_user_rectangle (comac_gstate_t *gstate,
-                                         double *x1, double *y1,
-                                         double *x2, double *y2,
-                                         comac_bool_t *is_tight)
+					 double *x1,
+					 double *y1,
+					 double *x2,
+					 double *y2,
+					 comac_bool_t *is_tight)
 {
     comac_matrix_t matrix_inverse;
 
-    if (! _comac_matrix_is_identity (&gstate->target->device_transform_inverse) ||
-    ! _comac_matrix_is_identity (&gstate->ctm_inverse))
-    {
+    if (! _comac_matrix_is_identity (
+	    &gstate->target->device_transform_inverse) ||
+	! _comac_matrix_is_identity (&gstate->ctm_inverse)) {
 	comac_matrix_multiply (&matrix_inverse,
 			       &gstate->target->device_transform_inverse,
 			       &gstate->ctm_inverse);
 	_comac_matrix_transform_bounding_box (&matrix_inverse,
-					      x1, y1, x2, y2, is_tight);
+					      x1,
+					      y1,
+					      x2,
+					      y2,
+					      is_tight);
     }
 
-    else
-    {
+    else {
 	if (is_tight)
 	    *is_tight = TRUE;
     }
@@ -891,10 +918,12 @@ _comac_gstate_stroke_to_path (comac_gstate_t *gstate)
 */
 
 void
-_comac_gstate_path_extents (comac_gstate_t     *gstate,
+_comac_gstate_path_extents (comac_gstate_t *gstate,
 			    comac_path_fixed_t *path,
-			    double *x1, double *y1,
-			    double *x2, double *y2)
+			    double *x1,
+			    double *y1,
+			    double *x2,
+			    double *y2)
 {
     comac_box_t box;
     double px1, py1, px2, py2;
@@ -906,7 +935,10 @@ _comac_gstate_path_extents (comac_gstate_t     *gstate,
 	py2 = _comac_fixed_to_double (box.p2.y);
 
 	_comac_gstate_backend_to_user_rectangle (gstate,
-						 &px1, &py1, &px2, &py2,
+						 &px1,
+						 &py1,
+						 &px2,
+						 &py2,
 						 NULL);
     } else {
 	px1 = 0.0;
@@ -935,19 +967,18 @@ _comac_gstate_copy_pattern (comac_pattern_t *pattern,
      */
 
     if (_comac_pattern_is_clear (original)) {
-        _comac_pattern_init_solid ((comac_solid_pattern_t *) pattern,
+	_comac_pattern_init_solid ((comac_solid_pattern_t *) pattern,
 				   COMAC_COLOR_TRANSPARENT);
 	return;
     }
 
     if (original->type == COMAC_PATTERN_TYPE_LINEAR ||
-	original->type == COMAC_PATTERN_TYPE_RADIAL)
-    {
-        comac_color_t color;
-	if (_comac_gradient_pattern_is_solid ((comac_gradient_pattern_t *) original,
-					      NULL,
-					      &color))
-	{
+	original->type == COMAC_PATTERN_TYPE_RADIAL) {
+	comac_color_t color;
+	if (_comac_gradient_pattern_is_solid (
+		(comac_gradient_pattern_t *) original,
+		NULL,
+		&color)) {
 	    _comac_pattern_init_solid ((comac_solid_pattern_t *) pattern,
 				       &color);
 	    return;
@@ -958,10 +989,10 @@ _comac_gstate_copy_pattern (comac_pattern_t *pattern,
 }
 
 static void
-_comac_gstate_copy_transformed_pattern (comac_gstate_t  *gstate,
+_comac_gstate_copy_transformed_pattern (comac_gstate_t *gstate,
 					comac_pattern_t *pattern,
 					const comac_pattern_t *original,
-					const comac_matrix_t  *ctm_inverse)
+					const comac_matrix_t *ctm_inverse)
 {
     /*
      * What calculations below do can be described in pseudo-code (so using nonexistent fields) as (using column vectors):
@@ -983,8 +1014,8 @@ _comac_gstate_copy_transformed_pattern (comac_gstate_t  *gstate,
 	comac_surface_pattern_t *surface_pattern;
 	comac_surface_t *surface;
 
-        surface_pattern = (comac_surface_pattern_t *) original;
-        surface = surface_pattern->surface;
+	surface_pattern = (comac_surface_pattern_t *) original;
+	surface = surface_pattern->surface;
 
 	if (_comac_surface_has_device_transform (surface))
 	    _comac_pattern_pretransform (pattern, &surface->device_transform);
@@ -994,26 +1025,28 @@ _comac_gstate_copy_transformed_pattern (comac_gstate_t  *gstate,
 	_comac_pattern_transform (pattern, ctm_inverse);
 
     if (_comac_surface_has_device_transform (gstate->target)) {
-        _comac_pattern_transform (pattern,
-                                  &gstate->target->device_transform_inverse);
+	_comac_pattern_transform (pattern,
+				  &gstate->target->device_transform_inverse);
     }
 }
 
 static void
-_comac_gstate_copy_transformed_source (comac_gstate_t   *gstate,
-				       comac_pattern_t  *pattern)
+_comac_gstate_copy_transformed_source (comac_gstate_t *gstate,
+				       comac_pattern_t *pattern)
 {
-    _comac_gstate_copy_transformed_pattern (gstate, pattern,
+    _comac_gstate_copy_transformed_pattern (gstate,
+					    pattern,
 					    gstate->source,
 					    &gstate->source_ctm_inverse);
 }
 
 static void
-_comac_gstate_copy_transformed_mask (comac_gstate_t   *gstate,
-				     comac_pattern_t  *pattern,
-				     comac_pattern_t  *mask)
+_comac_gstate_copy_transformed_mask (comac_gstate_t *gstate,
+				     comac_pattern_t *pattern,
+				     comac_pattern_t *mask)
 {
-    _comac_gstate_copy_transformed_pattern (gstate, pattern,
+    _comac_gstate_copy_transformed_pattern (gstate,
+					    pattern,
 					    mask,
 					    &gstate->ctm_inverse);
 }
@@ -1034,22 +1067,21 @@ _reduce_op (comac_gstate_t *gstate)
 	if (solid->color.alpha_short <= 0x00ff) {
 	    op = COMAC_OPERATOR_CLEAR;
 	} else if ((gstate->target->content & COMAC_CONTENT_ALPHA) == 0) {
-	    if ((solid->color.red_short |
-		 solid->color.green_short |
-		 solid->color.blue_short) <= 0x00ff)
-	    {
+	    if ((solid->color.red_short | solid->color.green_short |
+		 solid->color.blue_short) <= 0x00ff) {
 		op = COMAC_OPERATOR_CLEAR;
 	    }
 	}
     } else if (pattern->type == COMAC_PATTERN_TYPE_SURFACE) {
-	const comac_surface_pattern_t *surface = (comac_surface_pattern_t *) pattern;
+	const comac_surface_pattern_t *surface =
+	    (comac_surface_pattern_t *) pattern;
 	if (surface->surface->is_clear &&
-	    surface->surface->content & COMAC_CONTENT_ALPHA)
-	{
+	    surface->surface->content & COMAC_CONTENT_ALPHA) {
 	    op = COMAC_OPERATOR_CLEAR;
 	}
     } else {
-	const comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t *) pattern;
+	const comac_gradient_pattern_t *gradient =
+	    (comac_gradient_pattern_t *) pattern;
 	if (gradient->n_stops == 0)
 	    op = COMAC_OPERATOR_CLEAR;
     }
@@ -1061,8 +1093,7 @@ static comac_status_t
 _comac_gstate_get_pattern_status (const comac_pattern_t *pattern)
 {
     if (unlikely (pattern->type == COMAC_PATTERN_TYPE_MESH &&
-		  ((const comac_mesh_pattern_t *) pattern)->current_patch))
-    {
+		  ((const comac_mesh_pattern_t *) pattern)->current_patch)) {
 	/* If current patch != NULL, the pattern is under construction
 	 * and cannot be used as a source */
 	return COMAC_STATUS_INVALID_MESH_CONSTRUCTION;
@@ -1097,14 +1128,11 @@ _comac_gstate_paint (comac_gstate_t *gstate)
 	pattern = &source_pattern.base;
     }
 
-    return _comac_surface_paint (gstate->target,
-				 op, pattern,
-				 gstate->clip);
+    return _comac_surface_paint (gstate->target, op, pattern, gstate->clip);
 }
 
 comac_status_t
-_comac_gstate_mask (comac_gstate_t  *gstate,
-		    comac_pattern_t *mask)
+_comac_gstate_mask (comac_gstate_t *gstate, comac_pattern_t *mask)
 {
     comac_pattern_union_t source_pattern, mask_pattern;
     const comac_pattern_t *source;
@@ -1131,8 +1159,7 @@ _comac_gstate_mask (comac_gstate_t  *gstate,
 	return _comac_gstate_paint (gstate);
 
     if (_comac_pattern_is_clear (mask) &&
-	_comac_operator_bounded_by_mask (gstate->op))
-    {
+	_comac_operator_bounded_by_mask (gstate->op)) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -1147,32 +1174,32 @@ _comac_gstate_mask (comac_gstate_t  *gstate,
 
     if (source->type == COMAC_PATTERN_TYPE_SOLID &&
 	mask_pattern.base.type == COMAC_PATTERN_TYPE_SOLID &&
-	_comac_operator_bounded_by_source (op))
-    {
+	_comac_operator_bounded_by_source (op)) {
 	const comac_solid_pattern_t *solid = (comac_solid_pattern_t *) source;
 	comac_color_t combined;
 
 	if (mask_pattern.base.has_component_alpha) {
 #define M(R, A, B, c) R.c = A.c * B.c
-	    M(combined, solid->color, mask_pattern.solid.color, red);
-	    M(combined, solid->color, mask_pattern.solid.color, green);
-	    M(combined, solid->color, mask_pattern.solid.color, blue);
-	    M(combined, solid->color, mask_pattern.solid.color, alpha);
+	    M (combined, solid->color, mask_pattern.solid.color, red);
+	    M (combined, solid->color, mask_pattern.solid.color, green);
+	    M (combined, solid->color, mask_pattern.solid.color, blue);
+	    M (combined, solid->color, mask_pattern.solid.color, alpha);
 #undef M
 	} else {
 	    combined = solid->color;
-	    _comac_color_multiply_alpha (&combined, mask_pattern.solid.color.alpha);
+	    _comac_color_multiply_alpha (&combined,
+					 mask_pattern.solid.color.alpha);
 	}
 
 	_comac_pattern_init_solid (&source_pattern.solid, &combined);
 
-	status = _comac_surface_paint (gstate->target, op,
+	status = _comac_surface_paint (gstate->target,
+				       op,
 				       &source_pattern.base,
 				       gstate->clip);
-    }
-    else
-    {
-	status = _comac_surface_mask (gstate->target, op,
+    } else {
+	status = _comac_surface_mask (gstate->target,
+				      op,
 				      source,
 				      &mask_pattern.base,
 				      gstate->clip);
@@ -1198,7 +1225,8 @@ _comac_gstate_stroke (comac_gstate_t *gstate, comac_path_fixed_t *path)
     if (gstate->op == COMAC_OPERATOR_DEST)
 	return COMAC_STATUS_SUCCESS;
 
-    if (gstate->stroke_style.line_width <= 0.0 && !gstate->stroke_style.is_hairline)
+    if (gstate->stroke_style.line_width <= 0.0 &&
+	! gstate->stroke_style.is_hairline)
 	return COMAC_STATUS_SUCCESS;
 
     if (_comac_clip_is_all_clipped (gstate->clip))
@@ -1207,16 +1235,20 @@ _comac_gstate_stroke (comac_gstate_t *gstate, comac_path_fixed_t *path)
     assert (gstate->opacity == 1.0);
 
     comac_matrix_multiply (&aggregate_transform,
-                           &gstate->ctm,
-                           &gstate->target->device_transform);
+			   &gstate->ctm,
+			   &gstate->target->device_transform);
     comac_matrix_multiply (&aggregate_transform_inverse,
-                           &gstate->target->device_transform_inverse,
-                           &gstate->ctm_inverse);
+			   &gstate->target->device_transform_inverse,
+			   &gstate->ctm_inverse);
 
     memcpy (&style, &gstate->stroke_style, sizeof (gstate->stroke_style));
-    if (_comac_stroke_style_dash_can_approximate (&gstate->stroke_style, &aggregate_transform, gstate->tolerance)) {
-        style.dash = dash;
-        _comac_stroke_style_dash_approximate (&gstate->stroke_style, &gstate->ctm, gstate->tolerance,
+    if (_comac_stroke_style_dash_can_approximate (&gstate->stroke_style,
+						  &aggregate_transform,
+						  gstate->tolerance)) {
+	style.dash = dash;
+	_comac_stroke_style_dash_approximate (&gstate->stroke_style,
+					      &gstate->ctm,
+					      gstate->tolerance,
 					      &style.dash_offset,
 					      style.dash,
 					      &style.num_dashes);
@@ -1237,11 +1269,11 @@ _comac_gstate_stroke (comac_gstate_t *gstate, comac_path_fixed_t *path)
 }
 
 comac_status_t
-_comac_gstate_in_stroke (comac_gstate_t	    *gstate,
+_comac_gstate_in_stroke (comac_gstate_t *gstate,
 			 comac_path_fixed_t *path,
-			 double		     x,
-			 double		     y,
-			 comac_bool_t	    *inside_ret)
+			 double x,
+			 double y,
+			 comac_bool_t *inside_ret)
 {
     comac_status_t status;
     comac_rectangle_int_t extents;
@@ -1263,9 +1295,8 @@ _comac_gstate_in_stroke (comac_gstate_t	    *gstate,
 						  &gstate->ctm,
 						  gstate->target->is_vector,
 						  &extents);
-    if (x < extents.x || x > extents.x + extents.width ||
-	y < extents.y || y > extents.y + extents.height)
-    {
+    if (x < extents.x || x > extents.x + extents.width || y < extents.y ||
+	y > extents.y + extents.height) {
 	*inside_ret = FALSE;
 	return COMAC_STATUS_SUCCESS;
     }
@@ -1331,7 +1362,8 @@ _comac_gstate_fill (comac_gstate_t *gstate, comac_path_fixed_t *path)
 	if (op == COMAC_OPERATOR_CLEAR) {
 	    pattern = &_comac_pattern_clear.base;
 	} else {
-	    _comac_gstate_copy_transformed_source (gstate, &source_pattern.base);
+	    _comac_gstate_copy_transformed_source (gstate,
+						   &source_pattern.base);
 	    pattern = &source_pattern.base;
 	}
 
@@ -1341,14 +1373,15 @@ _comac_gstate_fill (comac_gstate_t *gstate, comac_path_fixed_t *path)
 	    box.p1.x <= _comac_fixed_from_int (extents.x) &&
 	    box.p1.y <= _comac_fixed_from_int (extents.y) &&
 	    box.p2.x >= _comac_fixed_from_int (extents.x + extents.width) &&
-	    box.p2.y >= _comac_fixed_from_int (extents.y + extents.height))
-	{
-	    status = _comac_surface_paint (gstate->target, op, pattern,
+	    box.p2.y >= _comac_fixed_from_int (extents.y + extents.height)) {
+	    status = _comac_surface_paint (gstate->target,
+					   op,
+					   pattern,
 					   gstate->clip);
-	}
-	else
-	{
-	    status = _comac_surface_fill (gstate->target, op, pattern,
+	} else {
+	    status = _comac_surface_fill (gstate->target,
+					  op,
+					  pattern,
 					  path,
 					  gstate->fill_rule,
 					  gstate->tolerance,
@@ -1361,23 +1394,22 @@ _comac_gstate_fill (comac_gstate_t *gstate, comac_path_fixed_t *path)
 }
 
 comac_bool_t
-_comac_gstate_in_fill (comac_gstate_t	  *gstate,
+_comac_gstate_in_fill (comac_gstate_t *gstate,
 		       comac_path_fixed_t *path,
-		       double		   x,
-		       double		   y)
+		       double x,
+		       double y)
 {
     _comac_gstate_user_to_backend (gstate, &x, &y);
 
     return _comac_path_fixed_in_fill (path,
 				      gstate->fill_rule,
 				      gstate->tolerance,
-				      x, y);
+				      x,
+				      y);
 }
 
 comac_bool_t
-_comac_gstate_in_clip (comac_gstate_t	  *gstate,
-		       double		   x,
-		       double		   y)
+_comac_gstate_in_clip (comac_gstate_t *gstate, double x, double y)
 {
     comac_clip_t *clip = gstate->clip;
     int i;
@@ -1390,11 +1422,8 @@ _comac_gstate_in_clip (comac_gstate_t	  *gstate,
 
     _comac_gstate_user_to_backend (gstate, &x, &y);
 
-    if (x <  clip->extents.x ||
-	x >= clip->extents.x + clip->extents.width ||
-	y <  clip->extents.y ||
-	y >= clip->extents.y + clip->extents.height)
-    {
+    if (x < clip->extents.x || x >= clip->extents.x + clip->extents.width ||
+	y < clip->extents.y || y >= clip->extents.y + clip->extents.height) {
 	return FALSE;
     }
 
@@ -1418,7 +1447,8 @@ _comac_gstate_in_clip (comac_gstate_t	  *gstate,
 	    if (! _comac_path_fixed_in_fill (&clip_path->path,
 					     clip_path->fill_rule,
 					     clip_path->tolerance,
-					     x, y))
+					     x,
+					     y))
 		return FALSE;
 	} while ((clip_path = clip_path->prev) != NULL);
     }
@@ -1441,10 +1471,12 @@ _comac_gstate_show_page (comac_gstate_t *gstate)
 }
 
 static void
-_comac_gstate_extents_to_user_rectangle (comac_gstate_t	  *gstate,
+_comac_gstate_extents_to_user_rectangle (comac_gstate_t *gstate,
 					 const comac_box_t *extents,
-					 double *x1, double *y1,
-					 double *x2, double *y2)
+					 double *x1,
+					 double *y1,
+					 double *x2,
+					 double *y2)
 {
     double px1, py1, px2, py2;
 
@@ -1454,7 +1486,10 @@ _comac_gstate_extents_to_user_rectangle (comac_gstate_t	  *gstate,
     py2 = _comac_fixed_to_double (extents->p2.y);
 
     _comac_gstate_backend_to_user_rectangle (gstate,
-					     &px1, &py1, &px2, &py2,
+					     &px1,
+					     &py1,
+					     &px2,
+					     &py2,
 					     NULL);
     if (x1)
 	*x1 = px1;
@@ -1467,10 +1502,12 @@ _comac_gstate_extents_to_user_rectangle (comac_gstate_t	  *gstate,
 }
 
 comac_status_t
-_comac_gstate_stroke_extents (comac_gstate_t	 *gstate,
+_comac_gstate_stroke_extents (comac_gstate_t *gstate,
 			      comac_path_fixed_t *path,
-                              double *x1, double *y1,
-			      double *x2, double *y2)
+			      double *x1,
+			      double *y1,
+			      double *x2,
+			      double *y2)
 {
     comac_int_status_t status;
     comac_box_t extents;
@@ -1493,11 +1530,12 @@ _comac_gstate_stroke_extents (comac_gstate_t	 *gstate,
 	comac_boxes_t boxes;
 
 	_comac_boxes_init (&boxes);
-	status = _comac_path_fixed_stroke_rectilinear_to_boxes (path,
-								&gstate->stroke_style,
-								&gstate->ctm,
-								gstate->antialias,
-								&boxes);
+	status = _comac_path_fixed_stroke_rectilinear_to_boxes (
+	    path,
+	    &gstate->stroke_style,
+	    &gstate->ctm,
+	    gstate->antialias,
+	    &boxes);
 	empty = boxes.num_boxes == 0;
 	if (! empty)
 	    _comac_boxes_extents (&boxes, &extents);
@@ -1520,18 +1558,24 @@ _comac_gstate_stroke_extents (comac_gstate_t	 *gstate,
 	_comac_polygon_fini (&polygon);
     }
     if (! empty) {
-	_comac_gstate_extents_to_user_rectangle (gstate, &extents,
-						 x1, y1, x2, y2);
+	_comac_gstate_extents_to_user_rectangle (gstate,
+						 &extents,
+						 x1,
+						 y1,
+						 x2,
+						 y2);
     }
 
     return status;
 }
 
 comac_status_t
-_comac_gstate_fill_extents (comac_gstate_t     *gstate,
+_comac_gstate_fill_extents (comac_gstate_t *gstate,
 			    comac_path_fixed_t *path,
-                            double *x1, double *y1,
-			    double *x2, double *y2)
+			    double *x1,
+			    double *y1,
+			    double *x2,
+			    double *y2)
 {
     comac_status_t status;
     comac_box_t extents;
@@ -1579,8 +1623,12 @@ _comac_gstate_fill_extents (comac_gstate_t     *gstate,
     }
 
     if (! empty) {
-	_comac_gstate_extents_to_user_rectangle (gstate, &extents,
-						 x1, y1, x2, y2);
+	_comac_gstate_extents_to_user_rectangle (gstate,
+						 &extents,
+						 x1,
+						 y1,
+						 x2,
+						 y2);
     }
 
     return status;
@@ -1598,18 +1646,17 @@ _comac_gstate_reset_clip (comac_gstate_t *gstate)
 comac_status_t
 _comac_gstate_clip (comac_gstate_t *gstate, comac_path_fixed_t *path)
 {
-    gstate->clip =
-	_comac_clip_intersect_path (gstate->clip,
-				    path,
-				    gstate->fill_rule,
-				    gstate->tolerance,
-				    gstate->antialias);
+    gstate->clip = _comac_clip_intersect_path (gstate->clip,
+					       path,
+					       gstate->fill_rule,
+					       gstate->tolerance,
+					       gstate->antialias);
     /* XXX */
     return COMAC_STATUS_SUCCESS;
 }
 
 static comac_bool_t
-_comac_gstate_int_clip_extents (comac_gstate_t        *gstate,
+_comac_gstate_int_clip_extents (comac_gstate_t *gstate,
 				comac_rectangle_int_t *extents)
 {
     comac_bool_t is_bounded;
@@ -1626,11 +1673,8 @@ _comac_gstate_int_clip_extents (comac_gstate_t        *gstate,
 }
 
 comac_bool_t
-_comac_gstate_clip_extents (comac_gstate_t *gstate,
-		            double         *x1,
-		            double         *y1,
-			    double         *x2,
-			    double         *y2)
+_comac_gstate_clip_extents (
+    comac_gstate_t *gstate, double *x1, double *y1, double *x2, double *y2)
 {
     comac_rectangle_int_t extents;
     double px1, py1, px2, py2;
@@ -1644,7 +1688,10 @@ _comac_gstate_clip_extents (comac_gstate_t *gstate,
     py2 = extents.y + (int) extents.height;
 
     _comac_gstate_backend_to_user_rectangle (gstate,
-					     &px1, &py1, &px2, &py2,
+					     &px1,
+					     &py1,
+					     &px2,
+					     &py2,
 					     NULL);
 
     if (x1)
@@ -1659,7 +1706,7 @@ _comac_gstate_clip_extents (comac_gstate_t *gstate,
     return TRUE;
 }
 
-comac_rectangle_list_t*
+comac_rectangle_list_t *
 _comac_gstate_copy_clip_rectangle_list (comac_gstate_t *gstate)
 {
     comac_rectangle_int_t extents;
@@ -1681,7 +1728,8 @@ _comac_gstate_copy_clip_rectangle_list (comac_gstate_t *gstate)
 
 comac_status_t
 _comac_gstate_tag_begin (comac_gstate_t *gstate,
-			 const char *tag_name, const char *attributes)
+			 const char *tag_name,
+			 const char *attributes)
 {
     return _comac_surface_tag (gstate->target,
 			       TRUE, /* begin */
@@ -1690,8 +1738,7 @@ _comac_gstate_tag_begin (comac_gstate_t *gstate,
 }
 
 comac_status_t
-_comac_gstate_tag_end (comac_gstate_t *gstate,
-		       const char *tag_name)
+_comac_gstate_tag_end (comac_gstate_t *gstate, const char *tag_name)
 {
     return _comac_surface_tag (gstate->target,
 			       FALSE, /* begin */
@@ -1713,8 +1760,7 @@ _comac_gstate_unset_scaled_font (comac_gstate_t *gstate)
 }
 
 comac_status_t
-_comac_gstate_set_font_size (comac_gstate_t *gstate,
-			     double          size)
+_comac_gstate_set_font_size (comac_gstate_t *gstate, double size)
 {
     _comac_gstate_unset_scaled_font (gstate);
 
@@ -1724,7 +1770,7 @@ _comac_gstate_set_font_size (comac_gstate_t *gstate,
 }
 
 comac_status_t
-_comac_gstate_set_font_matrix (comac_gstate_t	    *gstate,
+_comac_gstate_set_font_matrix (comac_gstate_t *gstate,
 			       const comac_matrix_t *matrix)
 {
     if (memcmp (matrix, &gstate->font_matrix, sizeof (comac_matrix_t)) == 0)
@@ -1738,17 +1784,18 @@ _comac_gstate_set_font_matrix (comac_gstate_t	    *gstate,
 }
 
 void
-_comac_gstate_get_font_matrix (comac_gstate_t *gstate,
-			       comac_matrix_t *matrix)
+_comac_gstate_get_font_matrix (comac_gstate_t *gstate, comac_matrix_t *matrix)
 {
     *matrix = gstate->font_matrix;
 }
 
 void
-_comac_gstate_set_font_options (comac_gstate_t             *gstate,
+_comac_gstate_set_font_options (comac_gstate_t *gstate,
 				const comac_font_options_t *options)
 {
-    if (memcmp (options, &gstate->font_options, sizeof (comac_font_options_t)) == 0)
+    if (memcmp (options,
+		&gstate->font_options,
+		sizeof (comac_font_options_t)) == 0)
 	return;
 
     _comac_gstate_unset_scaled_font (gstate);
@@ -1757,14 +1804,14 @@ _comac_gstate_set_font_options (comac_gstate_t             *gstate,
 }
 
 void
-_comac_gstate_get_font_options (comac_gstate_t       *gstate,
+_comac_gstate_get_font_options (comac_gstate_t *gstate,
 				comac_font_options_t *options)
 {
     *options = gstate->font_options;
 }
 
 comac_status_t
-_comac_gstate_get_font_face (comac_gstate_t     *gstate,
+_comac_gstate_get_font_face (comac_gstate_t *gstate,
 			     comac_font_face_t **font_face)
 {
     comac_status_t status;
@@ -1779,7 +1826,7 @@ _comac_gstate_get_font_face (comac_gstate_t     *gstate,
 }
 
 comac_status_t
-_comac_gstate_get_scaled_font (comac_gstate_t       *gstate,
+_comac_gstate_get_scaled_font (comac_gstate_t *gstate,
 			       comac_scaled_font_t **scaled_font)
 {
     comac_status_t status;
@@ -1878,7 +1925,6 @@ _comac_gstate_ensure_font_face (comac_gstate_t *gstate)
     if (gstate->font_face != NULL)
 	return gstate->font_face->status;
 
-
     font_face = comac_toy_font_face_create (COMAC_FONT_FAMILY_DEFAULT,
 					    COMAC_FONT_SLANT_DEFAULT,
 					    COMAC_FONT_WEIGHT_DEFAULT);
@@ -1913,7 +1959,7 @@ _comac_gstate_ensure_scaled_font (comac_gstate_t *gstate)
 			   &gstate->target->device_transform);
 
     scaled_font = comac_scaled_font_create (gstate->font_face,
-				            &gstate->font_matrix,
+					    &gstate->font_matrix,
 					    &font_ctm,
 					    &options);
 
@@ -1940,7 +1986,7 @@ _comac_gstate_get_font_extents (comac_gstate_t *gstate,
 }
 
 comac_status_t
-_comac_gstate_set_font_face (comac_gstate_t    *gstate,
+_comac_gstate_set_font_face (comac_gstate_t *gstate,
 			     comac_font_face_t *font_face)
 {
     if (font_face && font_face->status)
@@ -1970,20 +2016,23 @@ _comac_gstate_glyph_extents (comac_gstate_t *gstate,
 	return status;
 
     comac_scaled_font_glyph_extents (gstate->scaled_font,
-				     glyphs, num_glyphs,
+				     glyphs,
+				     num_glyphs,
 				     extents);
 
     return comac_scaled_font_status (gstate->scaled_font);
 }
 
 comac_status_t
-_comac_gstate_show_text_glyphs (comac_gstate_t		   *gstate,
-				const comac_glyph_t	   *glyphs,
-				int			    num_glyphs,
-				comac_glyph_text_info_t    *info)
+_comac_gstate_show_text_glyphs (comac_gstate_t *gstate,
+				const comac_glyph_t *glyphs,
+				int num_glyphs,
+				comac_glyph_text_info_t *info)
 {
-    comac_glyph_t stack_transformed_glyphs[COMAC_STACK_ARRAY_LENGTH (comac_glyph_t)];
-    comac_text_cluster_t stack_transformed_clusters[COMAC_STACK_ARRAY_LENGTH (comac_text_cluster_t)];
+    comac_glyph_t
+	stack_transformed_glyphs[COMAC_STACK_ARRAY_LENGTH (comac_glyph_t)];
+    comac_text_cluster_t stack_transformed_clusters[COMAC_STACK_ARRAY_LENGTH (
+	comac_text_cluster_t)];
     comac_pattern_union_t source_pattern;
     comac_glyph_t *transformed_glyphs;
     const comac_pattern_t *pattern;
@@ -2016,7 +2065,8 @@ _comac_gstate_show_text_glyphs (comac_gstate_t		   *gstate,
 
     if (info != NULL) {
 	if (info->num_clusters > ARRAY_LENGTH (stack_transformed_clusters)) {
-	    transformed_clusters = comac_text_cluster_allocate (info->num_clusters);
+	    transformed_clusters =
+		comac_text_cluster_allocate (info->num_clusters);
 	    if (unlikely (transformed_clusters == NULL)) {
 		status = _comac_error (COMAC_STATUS_NO_MEMORY);
 		goto CLEANUP_GLYPHS;
@@ -2024,7 +2074,8 @@ _comac_gstate_show_text_glyphs (comac_gstate_t		   *gstate,
 	}
 
 	_comac_gstate_transform_glyphs_to_backend (gstate,
-						   glyphs, num_glyphs,
+						   glyphs,
+						   num_glyphs,
 						   info->clusters,
 						   info->num_clusters,
 						   info->cluster_flags,
@@ -2033,8 +2084,11 @@ _comac_gstate_show_text_glyphs (comac_gstate_t		   *gstate,
 						   transformed_clusters);
     } else {
 	_comac_gstate_transform_glyphs_to_backend (gstate,
-						   glyphs, num_glyphs,
-						   NULL, 0, 0,
+						   glyphs,
+						   num_glyphs,
+						   NULL,
+						   0,
+						   0,
 						   transformed_glyphs,
 						   &num_glyphs,
 						   NULL);
@@ -2062,43 +2116,55 @@ _comac_gstate_show_text_glyphs (comac_gstate_t		   *gstate,
      *
      * Needless to say, do this only if show_text_glyphs is not available. */
     if (comac_surface_has_show_text_glyphs (gstate->target) ||
-	_comac_scaled_font_get_max_scale (gstate->scaled_font) <= 10240)
-    {
+	_comac_scaled_font_get_max_scale (gstate->scaled_font) <= 10240) {
 
 	if (info != NULL) {
-	    status = _comac_surface_show_text_glyphs (gstate->target, op, pattern,
-						      info->utf8, info->utf8_len,
-						      transformed_glyphs, num_glyphs,
-						      transformed_clusters, info->num_clusters,
+	    status = _comac_surface_show_text_glyphs (gstate->target,
+						      op,
+						      pattern,
+						      info->utf8,
+						      info->utf8_len,
+						      transformed_glyphs,
+						      num_glyphs,
+						      transformed_clusters,
+						      info->num_clusters,
 						      info->cluster_flags,
 						      gstate->scaled_font,
 						      gstate->clip);
 	} else {
-	    status = _comac_surface_show_text_glyphs (gstate->target, op, pattern,
-						      NULL, 0,
-						      transformed_glyphs, num_glyphs,
-						      NULL, 0, 0,
+	    status = _comac_surface_show_text_glyphs (gstate->target,
+						      op,
+						      pattern,
+						      NULL,
+						      0,
+						      transformed_glyphs,
+						      num_glyphs,
+						      NULL,
+						      0,
+						      0,
 						      gstate->scaled_font,
 						      gstate->clip);
 	}
-    }
-    else
-    {
+    } else {
 	comac_path_fixed_t path;
 
 	_comac_path_fixed_init (&path);
 
 	status = _comac_scaled_font_glyph_path (gstate->scaled_font,
-						transformed_glyphs, num_glyphs,
+						transformed_glyphs,
+						num_glyphs,
 						&path);
 
 	if (status == COMAC_STATUS_SUCCESS) {
-	    status = _comac_surface_fill (gstate->target, op, pattern,
-					  &path,
-					  COMAC_FILL_RULE_WINDING,
-					  gstate->tolerance,
-					  gstate->scaled_font->options.antialias,
-					  gstate->clip);
+	    status =
+		_comac_surface_fill (gstate->target,
+				     op,
+				     pattern,
+				     &path,
+				     COMAC_FILL_RULE_WINDING,
+				     gstate->tolerance,
+				     gstate->scaled_font->options.antialias,
+				     gstate->clip);
 	}
 
 	_comac_path_fixed_fini (&path);
@@ -2106,20 +2172,21 @@ _comac_gstate_show_text_glyphs (comac_gstate_t		   *gstate,
 
 CLEANUP_GLYPHS:
     if (transformed_glyphs != stack_transformed_glyphs)
-      comac_glyph_free (transformed_glyphs);
+	comac_glyph_free (transformed_glyphs);
     if (transformed_clusters != stack_transformed_clusters)
-      comac_text_cluster_free (transformed_clusters);
+	comac_text_cluster_free (transformed_clusters);
 
     return status;
 }
 
 comac_status_t
-_comac_gstate_glyph_path (comac_gstate_t      *gstate,
+_comac_gstate_glyph_path (comac_gstate_t *gstate,
 			  const comac_glyph_t *glyphs,
-			  int		       num_glyphs,
-			  comac_path_fixed_t  *path)
+			  int num_glyphs,
+			  comac_path_fixed_t *path)
 {
-    comac_glyph_t stack_transformed_glyphs[COMAC_STACK_ARRAY_LENGTH (comac_glyph_t)];
+    comac_glyph_t
+	stack_transformed_glyphs[COMAC_STACK_ARRAY_LENGTH (comac_glyph_t)];
     comac_glyph_t *transformed_glyphs;
     comac_status_t status;
 
@@ -2136,17 +2203,22 @@ _comac_gstate_glyph_path (comac_gstate_t      *gstate,
     }
 
     _comac_gstate_transform_glyphs_to_backend (gstate,
-					       glyphs, num_glyphs,
-					       NULL, 0, 0,
+					       glyphs,
+					       num_glyphs,
+					       NULL,
+					       0,
+					       0,
 					       transformed_glyphs,
-					       &num_glyphs, NULL);
+					       &num_glyphs,
+					       NULL);
 
     status = _comac_scaled_font_glyph_path (gstate->scaled_font,
-					    transformed_glyphs, num_glyphs,
+					    transformed_glyphs,
+					    num_glyphs,
 					    path);
 
     if (transformed_glyphs != stack_transformed_glyphs)
-      comac_glyph_free (transformed_glyphs);
+	comac_glyph_free (transformed_glyphs);
 
     return status;
 }
@@ -2185,15 +2257,16 @@ _comac_gstate_get_antialias (comac_gstate_t *gstate)
  * cull/drop glyphs that will not be visible.
  **/
 static void
-_comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
-                                           const comac_glyph_t	*glyphs,
-                                           int			 num_glyphs,
-					   const comac_text_cluster_t	*clusters,
-					   int			 num_clusters,
-					   comac_text_cluster_flags_t cluster_flags,
-                                           comac_glyph_t	*transformed_glyphs,
-					   int			*num_transformed_glyphs,
-					   comac_text_cluster_t *transformed_clusters)
+_comac_gstate_transform_glyphs_to_backend (
+    comac_gstate_t *gstate,
+    const comac_glyph_t *glyphs,
+    int num_glyphs,
+    const comac_text_cluster_t *clusters,
+    int num_clusters,
+    comac_text_cluster_flags_t cluster_flags,
+    comac_glyph_t *transformed_glyphs,
+    int *num_transformed_glyphs,
+    comac_text_cluster_t *transformed_clusters)
 {
     comac_rectangle_int_t surface_extents;
     comac_matrix_t *ctm = &gstate->ctm;
@@ -2207,11 +2280,12 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
     if (! _comac_gstate_int_clip_extents (gstate, &surface_extents)) {
 	drop = FALSE; /* unbounded surface */
     } else {
-	double scale10 = 10 * _comac_scaled_font_get_max_scale (gstate->scaled_font);
+	double scale10 =
+	    10 * _comac_scaled_font_get_max_scale (gstate->scaled_font);
 	if (surface_extents.width == 0 || surface_extents.height == 0) {
-	  /* No visible area.  Don't draw anything */
-	  *num_transformed_glyphs = 0;
-	  return;
+	    /* No visible area.  Don't draw anything */
+	    *num_transformed_glyphs = 0;
+	    return;
 	}
 	/* XXX We currently drop any glyphs that have their position outside
 	 * of the surface boundaries by a safety margin depending on the
@@ -2223,24 +2297,26 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
 	 */
 	x1 = surface_extents.x - scale10;
 	y1 = surface_extents.y - scale10;
-	x2 = surface_extents.x + (int) surface_extents.width  + scale10;
+	x2 = surface_extents.x + (int) surface_extents.width + scale10;
 	y2 = surface_extents.y + (int) surface_extents.height + scale10;
     }
 
-    if (!drop)
+    if (! drop)
 	*num_transformed_glyphs = num_glyphs;
 
-#define KEEP_GLYPH(glyph) (x1 <= glyph.x && glyph.x <= x2 && y1 <= glyph.y && glyph.y <= y2)
+#define KEEP_GLYPH(glyph)                                                      \
+    (x1 <= glyph.x && glyph.x <= x2 && y1 <= glyph.y && glyph.y <= y2)
 
     j = 0;
     if (_comac_matrix_is_identity (ctm) &&
-        _comac_matrix_is_identity (device_transform) &&
-	font_matrix->x0 == 0 && font_matrix->y0 == 0)
-    {
+	_comac_matrix_is_identity (device_transform) && font_matrix->x0 == 0 &&
+	font_matrix->y0 == 0) {
 	if (! drop) {
-	    memcpy (transformed_glyphs, glyphs,
+	    memcpy (transformed_glyphs,
+		    glyphs,
 		    num_glyphs * sizeof (comac_glyph_t));
-	    memcpy (transformed_clusters, clusters,
+	    memcpy (transformed_clusters,
+		    clusters,
 		    num_clusters * sizeof (comac_text_cluster_t));
 	    j = num_glyphs;
 	} else if (num_clusters == 0) {
@@ -2263,10 +2339,10 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
 		comac_bool_t cluster_visible = FALSE;
 
 		for (k = 0; k < clusters[i].num_glyphs; k++) {
-		    transformed_glyphs[j+k].index = cur_glyph->index;
-		    transformed_glyphs[j+k].x = cur_glyph->x;
-		    transformed_glyphs[j+k].y = cur_glyph->y;
-		    if (KEEP_GLYPH (transformed_glyphs[j+k]))
+		    transformed_glyphs[j + k].index = cur_glyph->index;
+		    transformed_glyphs[j + k].x = cur_glyph->x;
+		    transformed_glyphs[j + k].y = cur_glyph->y;
+		    if (KEEP_GLYPH (transformed_glyphs[j + k]))
 			cluster_visible = TRUE;
 
 		    if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
@@ -2282,22 +2358,21 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
 		    transformed_clusters[i].num_glyphs = 0;
 	    }
 	}
-    }
-    else if (_comac_matrix_is_translation (ctm) &&
-             _comac_matrix_is_translation (device_transform))
-    {
-        double tx = font_matrix->x0 + ctm->x0 + device_transform->x0;
-        double ty = font_matrix->y0 + ctm->y0 + device_transform->y0;
+    } else if (_comac_matrix_is_translation (ctm) &&
+	       _comac_matrix_is_translation (device_transform)) {
+	double tx = font_matrix->x0 + ctm->x0 + device_transform->x0;
+	double ty = font_matrix->y0 + ctm->y0 + device_transform->y0;
 
 	if (! drop || num_clusters == 0) {
 	    for (i = 0; i < num_glyphs; i++) {
 		transformed_glyphs[j].index = glyphs[i].index;
 		transformed_glyphs[j].x = glyphs[i].x + tx;
 		transformed_glyphs[j].y = glyphs[i].y + ty;
-		if (!drop || KEEP_GLYPH (transformed_glyphs[j]))
+		if (! drop || KEEP_GLYPH (transformed_glyphs[j]))
 		    j++;
 	    }
-	    memcpy (transformed_clusters, clusters,
+	    memcpy (transformed_clusters,
+		    clusters,
 		    num_clusters * sizeof (comac_text_cluster_t));
 	} else {
 	    const comac_glyph_t *cur_glyph;
@@ -2311,10 +2386,10 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
 		comac_bool_t cluster_visible = FALSE;
 
 		for (k = 0; k < clusters[i].num_glyphs; k++) {
-		    transformed_glyphs[j+k].index = cur_glyph->index;
-		    transformed_glyphs[j+k].x = cur_glyph->x + tx;
-		    transformed_glyphs[j+k].y = cur_glyph->y + ty;
-		    if (KEEP_GLYPH (transformed_glyphs[j+k]))
+		    transformed_glyphs[j + k].index = cur_glyph->index;
+		    transformed_glyphs[j + k].x = cur_glyph->x + tx;
+		    transformed_glyphs[j + k].y = cur_glyph->y + ty;
+		    if (KEEP_GLYPH (transformed_glyphs[j + k]))
 			cluster_visible = TRUE;
 
 		    if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
@@ -2330,18 +2405,16 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
 		    transformed_clusters[i].num_glyphs = 0;
 	    }
 	}
-    }
-    else
-    {
-        comac_matrix_t aggregate_transform;
+    } else {
+	comac_matrix_t aggregate_transform;
 
-        comac_matrix_init_translate (&aggregate_transform,
-                                     gstate->font_matrix.x0,
-                                     gstate->font_matrix.y0);
-        comac_matrix_multiply (&aggregate_transform,
-                               &aggregate_transform, ctm);
-        comac_matrix_multiply (&aggregate_transform,
-                               &aggregate_transform, device_transform);
+	comac_matrix_init_translate (&aggregate_transform,
+				     gstate->font_matrix.x0,
+				     gstate->font_matrix.y0);
+	comac_matrix_multiply (&aggregate_transform, &aggregate_transform, ctm);
+	comac_matrix_multiply (&aggregate_transform,
+			       &aggregate_transform,
+			       device_transform);
 
 	if (! drop || num_clusters == 0) {
 	    for (i = 0; i < num_glyphs; i++) {
@@ -2352,7 +2425,8 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
 		if (! drop || KEEP_GLYPH (transformed_glyphs[j]))
 		    j++;
 	    }
-	    memcpy (transformed_clusters, clusters,
+	    memcpy (transformed_clusters,
+		    clusters,
 		    num_clusters * sizeof (comac_text_cluster_t));
 	} else {
 	    const comac_glyph_t *cur_glyph;
@@ -2365,11 +2439,11 @@ _comac_gstate_transform_glyphs_to_backend (comac_gstate_t	*gstate,
 	    for (i = 0; i < num_clusters; i++) {
 		comac_bool_t cluster_visible = FALSE;
 		for (k = 0; k < clusters[i].num_glyphs; k++) {
-		    transformed_glyphs[j+k] = *cur_glyph;
+		    transformed_glyphs[j + k] = *cur_glyph;
 		    comac_matrix_transform_point (&aggregate_transform,
-						  &transformed_glyphs[j+k].x,
-						  &transformed_glyphs[j+k].y);
-		    if (KEEP_GLYPH (transformed_glyphs[j+k]))
+						  &transformed_glyphs[j + k].x,
+						  &transformed_glyphs[j + k].y);
+		    if (KEEP_GLYPH (transformed_glyphs[j + k]))
 			cluster_visible = TRUE;
 
 		    if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)

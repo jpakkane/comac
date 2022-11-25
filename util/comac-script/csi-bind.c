@@ -41,9 +41,7 @@
 #include <stdlib.h>
 
 static comac_status_t
-write_func (void *closure,
-	    const unsigned char *data,
-	    unsigned int length)
+write_func (void *closure, const unsigned char *data, unsigned int length)
 {
     if (fwrite (data, length, 1, closure) != 1)
 	return COMAC_STATUS_WRITE_ERROR;
@@ -59,10 +57,12 @@ main (int argc, char **argv)
     int i;
 
     if (argc >= 3) {
-	if (strcmp (argv[argc-1], "-")) {
-	    out = fopen (argv[argc-1], "w");
+	if (strcmp (argv[argc - 1], "-")) {
+	    out = fopen (argv[argc - 1], "w");
 	    if (out == NULL) {
-		fprintf (stderr, "Failed to open output '%s'\n", argv[argc-1]);
+		fprintf (stderr,
+			 "Failed to open output '%s'\n",
+			 argv[argc - 1]);
 		return 1;
 	    }
 	}
@@ -76,7 +76,8 @@ main (int argc, char **argv)
 		return 1;
 	    }
 
-	    status = comac_script_interpreter_translate_stream (in, write_func, out);
+	    status =
+		comac_script_interpreter_translate_stream (in, write_func, out);
 	    fclose (in);
 
 	    if (status)
@@ -93,7 +94,8 @@ main (int argc, char **argv)
 	    }
 	}
 
-	status = comac_script_interpreter_translate_stream (in, write_func, out);
+	status =
+	    comac_script_interpreter_translate_stream (in, write_func, out);
 
 	if (in != stdin)
 	    fclose (in);
@@ -103,8 +105,9 @@ main (int argc, char **argv)
 	fclose (out);
 
     if (status) {
-	fprintf (stderr, "Translation failed: %s\n",
-		comac_status_to_string (status));
+	fprintf (stderr,
+		 "Translation failed: %s\n",
+		 comac_status_to_string (status));
 	return status;
     }
 

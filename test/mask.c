@@ -42,18 +42,23 @@ set_solid_pattern (const comac_test_context_t *ctx, comac_t *cr, int x, int y)
 }
 
 static void
-set_translucent_pattern (const comac_test_context_t *ctx, comac_t *cr, int x, int y)
+set_translucent_pattern (const comac_test_context_t *ctx,
+			 comac_t *cr,
+			 int x,
+			 int y)
 {
     comac_set_source_rgba (cr, 0, 0, 0.6, 0.5);
 }
 
 static void
-set_gradient_pattern (const comac_test_context_t *ctx, comac_t *cr, int x, int y)
+set_gradient_pattern (const comac_test_context_t *ctx,
+		      comac_t *cr,
+		      int x,
+		      int y)
 {
     comac_pattern_t *pattern;
 
-    pattern =
-	comac_pattern_create_linear (x, y, x + WIDTH, y + HEIGHT);
+    pattern = comac_pattern_create_linear (x, y, x + WIDTH, y + HEIGHT);
     comac_pattern_add_color_stop_rgba (pattern, 0, 1, 1, 1, 1);
     comac_pattern_add_color_stop_rgba (pattern, 1, 0, 0, 0.4, 1);
     comac_set_source (cr, pattern);
@@ -84,7 +89,8 @@ mask_polygon (comac_t *cr, int x, int y)
 
     mask_surface = comac_surface_create_similar (comac_get_group_target (cr),
 						 COMAC_CONTENT_ALPHA,
-						 WIDTH, HEIGHT);
+						 WIDTH,
+						 HEIGHT);
     cr2 = comac_create (mask_surface);
     comac_surface_destroy (mask_surface);
 
@@ -120,15 +126,10 @@ mask_gradient (comac_t *cr, int x, int y)
 {
     comac_pattern_t *pattern;
 
-    pattern = comac_pattern_create_linear (x, y,
-					   x + WIDTH, y + HEIGHT);
+    pattern = comac_pattern_create_linear (x, y, x + WIDTH, y + HEIGHT);
 
-    comac_pattern_add_color_stop_rgba (pattern,
-				       0,
-				       1, 1, 1, 1);
-    comac_pattern_add_color_stop_rgba (pattern,
-				       1,
-				       1, 1, 1, 0);
+    comac_pattern_add_color_stop_rgba (pattern, 0, 1, 1, 1, 1);
+    comac_pattern_add_color_stop_rgba (pattern, 1, 1, 1, 1, 0);
 
     comac_mask (cr, pattern);
 
@@ -155,33 +156,37 @@ static void
 clip_circle (comac_t *cr, int x, int y)
 {
     comac_new_path (cr);
-    comac_arc (cr, x + WIDTH / 2, y + HEIGHT / 2,
-	       WIDTH / 2, 0, 2 * M_PI);
+    comac_arc (cr, x + WIDTH / 2, y + HEIGHT / 2, WIDTH / 2, 0, 2 * M_PI);
     comac_clip (cr);
     comac_new_path (cr);
 }
 
-static void (* const pattern_funcs[])(const comac_test_context_t *ctx, comac_t *cr, int x, int y) = {
+static void (*const pattern_funcs[]) (const comac_test_context_t *ctx,
+				      comac_t *cr,
+				      int x,
+				      int y) = {
     set_solid_pattern,
     set_translucent_pattern,
     set_gradient_pattern,
     set_image_pattern,
 };
 
-static void (* const mask_funcs[])(comac_t *cr, int x, int y) = {
+static void (*const mask_funcs[]) (comac_t *cr, int x, int y) = {
     mask_alpha,
     mask_gradient,
     mask_polygon,
 };
 
-static void (* const clip_funcs[])(comac_t *cr, int x, int y) = {
+static void (*const clip_funcs[]) (comac_t *cr, int x, int y) = {
     clip_none,
     clip_rects,
     clip_circle,
 };
 
 #define IMAGE_WIDTH (ARRAY_LENGTH (pattern_funcs) * (WIDTH + PAD) + PAD)
-#define IMAGE_HEIGHT (ARRAY_LENGTH (mask_funcs) * ARRAY_LENGTH (clip_funcs) * (HEIGHT + PAD) + PAD)
+#define IMAGE_HEIGHT                                                           \
+    (ARRAY_LENGTH (mask_funcs) * ARRAY_LENGTH (clip_funcs) * (HEIGHT + PAD) +  \
+     PAD)
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
@@ -196,7 +201,8 @@ draw (comac_t *cr, int width, int height)
      */
     tmp_surface = comac_surface_create_similar (comac_get_group_target (cr),
 						COMAC_CONTENT_COLOR_ALPHA,
-						IMAGE_WIDTH, IMAGE_HEIGHT);
+						IMAGE_WIDTH,
+						IMAGE_HEIGHT);
     cr2 = comac_create (tmp_surface);
     comac_surface_destroy (tmp_surface);
 
@@ -204,7 +210,8 @@ draw (comac_t *cr, int width, int height)
 	for (j = 0; j < ARRAY_LENGTH (mask_funcs); j++) {
 	    for (i = 0; i < ARRAY_LENGTH (pattern_funcs); i++) {
 		int x = i * (WIDTH + PAD) + PAD;
-		int y = (ARRAY_LENGTH (mask_funcs) * k + j) * (HEIGHT + PAD) + PAD;
+		int y =
+		    (ARRAY_LENGTH (mask_funcs) * k + j) * (HEIGHT + PAD) + PAD;
 
 		/* Clear intermediate surface we are going to be drawing onto */
 		comac_save (cr2);
@@ -215,9 +222,9 @@ draw (comac_t *cr, int width, int height)
 		/* draw */
 		comac_save (cr2);
 
-		clip_funcs[k] (cr2, x, y);
-		pattern_funcs[i] (ctx, cr2, x, y);
-		mask_funcs[j] (cr2, x, y);
+		clip_funcs[k](cr2, x, y);
+		pattern_funcs[i](ctx, cr2, x, y);
+		mask_funcs[j](cr2, x, y);
 
 		comac_restore (cr2);
 
@@ -240,7 +247,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mask,
 	    "Tests of comac_mask",
 	    "mask", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
-
+	    NULL,   /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

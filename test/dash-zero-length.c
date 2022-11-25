@@ -37,7 +37,7 @@ static void
 draw_dash (comac_t *cr, double *dash, int num_dashes)
 {
     comac_set_dash (cr, dash, num_dashes, 0.0);
-    comac_move_to (cr,  1, 2);
+    comac_move_to (cr, 1, 2);
     comac_line_to (cr, 18, 2);
     comac_stroke (cr);
     comac_translate (cr, 0, 3);
@@ -45,29 +45,29 @@ draw_dash (comac_t *cr, double *dash, int num_dashes)
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    static double solid_line[] = { 4, 0 };
-    static double invisible_line[] = { 0, 4 };
-    static double dotted_line[] = { 0, 6 };
-    static double zero_1_of_3[] = { 0, 2, 3 };
-    static double zero_2_of_3[] = { 1, 0, 3 };
-    static double zero_3_of_3[] = { 1, 2, 0 };
-    static double zero_1_of_4[] = { 0, 2, 3, 4 };
-    static double zero_2_of_4[] = { 1, 0, 3, 4 };
-    static double zero_3_of_4[] = { 1, 2, 0, 4 };
-    static double zero_4_of_4[] = { 1, 2, 3, 0 };
-    static double zero_1_2_of_4[] = { 0, 0, 3, 4 };
-    static double zero_1_3_of_4[] = { 0, 2, 0, 4 };
+    static double solid_line[] = {4, 0};
+    static double invisible_line[] = {0, 4};
+    static double dotted_line[] = {0, 6};
+    static double zero_1_of_3[] = {0, 2, 3};
+    static double zero_2_of_3[] = {1, 0, 3};
+    static double zero_3_of_3[] = {1, 2, 0};
+    static double zero_1_of_4[] = {0, 2, 3, 4};
+    static double zero_2_of_4[] = {1, 0, 3, 4};
+    static double zero_3_of_4[] = {1, 2, 0, 4};
+    static double zero_4_of_4[] = {1, 2, 3, 0};
+    static double zero_1_2_of_4[] = {0, 0, 3, 4};
+    static double zero_1_3_of_4[] = {0, 2, 0, 4};
 /* Clearly it would be nice to draw this one as well, but it seems to trigger a bug in ghostscript. */
 #if BUG_FIXED_IN_GHOSTSCRIPT
-    static double zero_1_4_of_4[] = { 0, 2, 3, 0 };
+    static double zero_1_4_of_4[] = {0, 2, 3, 0};
 #endif
-    static double zero_2_3_of_4[] = { 1, 0, 0, 4 };
-    static double zero_2_4_of_4[] = { 1, 0, 3, 0 };
-    static double zero_3_4_of_4[] = { 1, 2, 0, 0 };
-    static double zero_1_2_3_of_4[] = { 0, 0, 0, 4 };
-    static double zero_1_2_4_of_4[] = { 0, 0, 3, 0 };
-    static double zero_1_3_4_of_4[] = { 0, 2, 0, 0 };
-    static double zero_2_3_4_of_4[] = { 1, 0, 0, 0 };
+    static double zero_2_3_of_4[] = {1, 0, 0, 4};
+    static double zero_2_4_of_4[] = {1, 0, 3, 0};
+    static double zero_3_4_of_4[] = {1, 2, 0, 0};
+    static double zero_1_2_3_of_4[] = {0, 0, 0, 4};
+    static double zero_1_2_4_of_4[] = {0, 0, 3, 0};
+    static double zero_1_3_4_of_4[] = {0, 2, 0, 0};
+    static double zero_2_3_4_of_4[] = {1, 0, 0, 0};
 
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_set_line_width (cr, 2);
@@ -105,6 +105,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (dash_zero_length,
 	    "Tests comac_set_dash with zero length",
 	    "dash, stroke", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

@@ -39,10 +39,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_translate (cr, SIZE + 2 * PAD, 0);
 
-    comac_arc (cr,
-	       PAD + SIZE / 2, PAD + SIZE / 2,
-	       SIZE / 2,
-	       0, 2 * M_PI);
+    comac_arc (cr, PAD + SIZE / 2, PAD + SIZE / 2, SIZE / 2, 0, 2 * M_PI);
     comac_fill_preserve (cr);
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_stroke (cr);
@@ -50,9 +47,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (fill_and_stroke,
-	    "Tests using comac_fill_preserve/comac_stroke to fill/stroke the same path",
-	    "fill-and-stroke, fill, stroke", /* keywords */
-	    NULL, /* requirements */
-	    2 * SIZE + 4 * PAD, SIZE + 2 * PAD,
-	    NULL, draw)
+COMAC_TEST (
+    fill_and_stroke,
+    "Tests using comac_fill_preserve/comac_stroke to fill/stroke the same path",
+    "fill-and-stroke, fill, stroke", /* keywords */
+    NULL,			     /* requirements */
+    2 * SIZE + 4 * PAD,
+    SIZE + 2 * PAD,
+    NULL,
+    draw)

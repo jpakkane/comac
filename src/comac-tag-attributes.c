@@ -44,9 +44,9 @@
 #include <string.h>
 
 typedef enum {
-    ATTRIBUTE_BOOL,  /* Either true/false or 1/0 may be used. */
+    ATTRIBUTE_BOOL, /* Either true/false or 1/0 may be used. */
     ATTRIBUTE_INT,
-    ATTRIBUTE_FLOAT, /* Decimal separator is in current locale. */
+    ATTRIBUTE_FLOAT,  /* Decimal separator is in current locale. */
     ATTRIBUTE_STRING, /* Enclose in single quotes. String escapes:
                        *   \'  - single quote
                        *   \\  - backslash
@@ -68,13 +68,11 @@ typedef struct _attribute_spec {
  * internal [optional] If true, the name may be optimized out of the PDF where
  *                     possible. Default false.
  */
-static attribute_spec_t _dest_attrib_spec[] = {
-    { "name",     ATTRIBUTE_STRING },
-    { "x",        ATTRIBUTE_FLOAT },
-    { "y",        ATTRIBUTE_FLOAT },
-    { "internal", ATTRIBUTE_BOOL },
-    { NULL }
-};
+static attribute_spec_t _dest_attrib_spec[] = {{"name", ATTRIBUTE_STRING},
+					       {"x", ATTRIBUTE_FLOAT},
+					       {"y", ATTRIBUTE_FLOAT},
+					       {"internal", ATTRIBUTE_BOOL},
+					       {NULL}};
 
 /*
  * rect [optional] One or more rectangles to define link region. Default
@@ -103,16 +101,13 @@ static attribute_spec_t _dest_attrib_spec[] = {
  *     page - Page number in the PDF file to link to
  *     pos  - [optional] Position of destination on page. Default is 0,0.
  */
-static attribute_spec_t _link_attrib_spec[] =
-{
-    { "rect", ATTRIBUTE_FLOAT, -1 },
-    { "dest", ATTRIBUTE_STRING },
-    { "uri",  ATTRIBUTE_STRING },
-    { "file", ATTRIBUTE_STRING },
-    { "page", ATTRIBUTE_INT },
-    { "pos",  ATTRIBUTE_FLOAT, 2 },
-    { NULL }
-};
+static attribute_spec_t _link_attrib_spec[] = {{"rect", ATTRIBUTE_FLOAT, -1},
+					       {"dest", ATTRIBUTE_STRING},
+					       {"uri", ATTRIBUTE_STRING},
+					       {"file", ATTRIBUTE_STRING},
+					       {"page", ATTRIBUTE_INT},
+					       {"pos", ATTRIBUTE_FLOAT, 2},
+					       {NULL}};
 
 /*
  * Required:
@@ -131,18 +126,16 @@ static attribute_spec_t _link_attrib_spec[] =
  *   DamagedRowsBeforeError - Number of damages rows tolerated before an error
  *                            occurs. Default: 0.
  */
-static attribute_spec_t _ccitt_params_spec[] =
-{
-    { "Columns",                ATTRIBUTE_INT },
-    { "Rows",                   ATTRIBUTE_INT },
-    { "K",                      ATTRIBUTE_INT },
-    { "EndOfLine",              ATTRIBUTE_BOOL },
-    { "EncodedByteAlign",       ATTRIBUTE_BOOL },
-    { "EndOfBlock",             ATTRIBUTE_BOOL },
-    { "BlackIs1",               ATTRIBUTE_BOOL },
-    { "DamagedRowsBeforeError", ATTRIBUTE_INT },
-    { NULL }
-};
+static attribute_spec_t _ccitt_params_spec[] = {
+    {"Columns", ATTRIBUTE_INT},
+    {"Rows", ATTRIBUTE_INT},
+    {"K", ATTRIBUTE_INT},
+    {"EndOfLine", ATTRIBUTE_BOOL},
+    {"EncodedByteAlign", ATTRIBUTE_BOOL},
+    {"EndOfBlock", ATTRIBUTE_BOOL},
+    {"BlackIs1", ATTRIBUTE_BOOL},
+    {"DamagedRowsBeforeError", ATTRIBUTE_INT},
+    {NULL}};
 
 /*
  * bbox - Bounding box of EPS file. The format is [ llx lly urx ury ]
@@ -152,11 +145,8 @@ static attribute_spec_t _ccitt_params_spec[] =
  *          ury - upper right y xoordinate
  *        all coordinates are in PostScript coordinates.
  */
-static attribute_spec_t _eps_params_spec[] =
-{
-    { "bbox", ATTRIBUTE_FLOAT, 4 },
-    { NULL }
-};
+static attribute_spec_t _eps_params_spec[] = {{"bbox", ATTRIBUTE_FLOAT, 4},
+					      {NULL}};
 
 typedef union {
     comac_bool_t b;
@@ -208,7 +198,7 @@ parse_int (const char *p, int *i)
 {
     int n;
 
-    if (sscanf(p, "%d%n", i, &n) > 0)
+    if (sscanf (p, "%d%n", i, &n) > 0)
 	return p + n;
 
     return NULL;
@@ -237,7 +227,7 @@ parse_float (const char *p, double *d)
 	    return end;
 
     } else {
-	if (sscanf(start, "%lf%n", d, &n) > 0)
+	if (sscanf (start, "%lf%n", d, &n) > 0)
 	    return start + n;
     }
 
@@ -284,7 +274,7 @@ parse_string (const char *p, char **s)
     int len;
 
     end = decode_string (p, &len, NULL);
-    if (!end)
+    if (! end)
 	return NULL;
 
     *s = _comac_malloc (len + 1);
@@ -298,21 +288,25 @@ static const char *
 parse_scalar (const char *p, attribute_type_t type, attrib_val_t *scalar)
 {
     switch (type) {
-	case ATTRIBUTE_BOOL:
-	    return parse_bool (p, &scalar->b);
-	case ATTRIBUTE_INT:
-	    return parse_int (p, &scalar->i);
-	case ATTRIBUTE_FLOAT:
-	    return parse_float (p, &scalar->f);
-	case ATTRIBUTE_STRING:
-	    return parse_string (p, &scalar->s);
+    case ATTRIBUTE_BOOL:
+	return parse_bool (p, &scalar->b);
+    case ATTRIBUTE_INT:
+	return parse_int (p, &scalar->i);
+    case ATTRIBUTE_FLOAT:
+	return parse_float (p, &scalar->f);
+    case ATTRIBUTE_STRING:
+	return parse_string (p, &scalar->s);
     }
 
     return NULL;
 }
 
 static comac_int_status_t
-parse_array (const char *attributes, const char *p, attribute_type_t type, comac_array_t *array, const char **end)
+parse_array (const char *attributes,
+	     const char *p,
+	     attribute_type_t type,
+	     comac_array_t *array,
+	     const char **end)
 {
     attrib_val_t val;
     comac_int_status_t status;
@@ -335,7 +329,7 @@ parse_array (const char *attributes, const char *p, attribute_type_t type, comac
 	}
 
 	p = parse_scalar (p, type, &val);
-	if (!p)
+	if (! p)
 	    goto error;
 
 	status = _comac_array_append (array, &val);
@@ -343,9 +337,10 @@ parse_array (const char *attributes, const char *p, attribute_type_t type, comac
 	    return status;
     }
 
-  error:
+error:
     return _comac_tag_error (
-	"while parsing attributes: \"%s\". Error parsing array", attributes);
+	"while parsing attributes: \"%s\". Error parsing array",
+	attributes);
 }
 
 static comac_int_status_t
@@ -359,7 +354,8 @@ parse_name (const char *attributes, const char *p, const char **end, char **s)
 	return _comac_tag_error (
 	    "while parsing attributes: \"%s\". Error parsing name."
 	    " \"%s\" does not start with an alphabetic character",
-	    attributes, p);
+	    attributes,
+	    p);
 
     p2 = p;
     while (_comac_isalpha (*p2) || _comac_isdigit (*p2))
@@ -379,7 +375,9 @@ parse_name (const char *attributes, const char *p, const char **end, char **s)
 }
 
 static comac_int_status_t
-parse_attributes (const char *attributes, attribute_spec_t *attrib_def, comac_list_t *list)
+parse_attributes (const char *attributes,
+		  attribute_spec_t *attrib_def,
+		  comac_list_t *list)
 {
     attribute_spec_t *def;
     attribute_t *attrib;
@@ -407,9 +405,10 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, comac_li
 	}
 
 	if (! def->name) {
-	    status = _comac_tag_error (
-		"while parsing attributes: \"%s\". Unknown attribute name \"%s\"",
-		attributes, name);
+	    status = _comac_tag_error ("while parsing attributes: \"%s\". "
+				       "Unknown attribute name \"%s\"",
+				       attributes,
+				       name);
 	    goto fail1;
 	}
 
@@ -421,40 +420,47 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, comac_li
 
 	attrib->name = name;
 	attrib->type = def->type;
-	_comac_array_init (&attrib->array, sizeof(attrib_val_t));
+	_comac_array_init (&attrib->array, sizeof (attrib_val_t));
 
 	p = skip_space (p);
 	if (def->type == ATTRIBUTE_BOOL && *p != '=') {
 	    attrib->scalar.b = TRUE;
 	} else {
 	    if (*p++ != '=') {
-		status = _comac_tag_error (
-		    "while parsing attributes: \"%s\". Expected '=' after \"%s\"",
-		    attributes, name);
+		status = _comac_tag_error ("while parsing attributes: \"%s\". "
+					   "Expected '=' after \"%s\"",
+					   attributes,
+					   name);
 		goto fail2;
 	    }
 
 	    if (def->array_size == 0) {
 		const char *s = p;
 		p = parse_scalar (p, def->type, &attrib->scalar);
-		if (!p) {
-		    status = _comac_tag_error (
-			"while parsing attributes: \"%s\". Error parsing \"%s\"",
-			attributes, s);
+		if (! p) {
+		    status = _comac_tag_error ("while parsing attributes: "
+					       "\"%s\". Error parsing \"%s\"",
+					       attributes,
+					       s);
 		    goto fail2;
 		}
 
 		attrib->array_len = 0;
 	    } else {
-		status = parse_array (attributes, p, def->type, &attrib->array, &p);
+		status =
+		    parse_array (attributes, p, def->type, &attrib->array, &p);
 		if (unlikely (status))
 		    goto fail2;
 
 		attrib->array_len = _comac_array_num_elements (&attrib->array);
-		if (def->array_size > 0 && attrib->array_len != def->array_size) {
+		if (def->array_size > 0 &&
+		    attrib->array_len != def->array_size) {
 		    status = _comac_tag_error (
-			"while parsing attributes: \"%s\". Expected %d elements in array. Found %d",
-			attributes, def->array_size, attrib->array_len);
+			"while parsing attributes: \"%s\". Expected %d "
+			"elements in array. Found %d",
+			attributes,
+			def->array_size,
+			attrib->array_len);
 		    goto fail2;
 		}
 	    }
@@ -465,12 +471,12 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, comac_li
 
     return COMAC_INT_STATUS_SUCCESS;
 
-  fail2:
+fail2:
     _comac_array_fini (&attrib->array);
     if (attrib->type == ATTRIBUTE_STRING)
 	free (attrib->scalar.s);
     free (attrib);
-  fail1:
+fail1:
     free (name);
 
     return status;
@@ -493,7 +499,8 @@ free_attributes_list (comac_list_t *list)
 }
 
 comac_int_status_t
-_comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *link_attrs)
+_comac_tag_parse_link_attributes (const char *attributes,
+				  comac_link_attrs_t *link_attrs)
 {
     comac_list_t list;
     comac_int_status_t status;
@@ -510,14 +517,17 @@ _comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *li
     memset (link_attrs, 0, sizeof (comac_link_attrs_t));
     _comac_array_init (&link_attrs->rects, sizeof (comac_rectangle_t));
 
-    comac_list_foreach_entry (attr, attribute_t, &list, link) {
+    comac_list_foreach_entry (attr, attribute_t, &list, link)
+    {
 	if (strcmp (attr->name, "dest") == 0) {
 	    link_attrs->dest = strdup (attr->scalar.s);
 
 	} else if (strcmp (attr->name, "page") == 0) {
 	    link_attrs->page = attr->scalar.i;
 	    if (link_attrs->page < 1) {
-		status = _comac_tag_error ("Link attributes: \"%s\" page must be >= 1", attributes);
+		status = _comac_tag_error (
+		    "Link attributes: \"%s\" page must be >= 1",
+		    attributes);
 		goto cleanup;
 	    }
 
@@ -539,7 +549,8 @@ _comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *li
 	    int i;
 	    int num_elem = _comac_array_num_elements (&attr->array);
 	    if (num_elem == 0 || num_elem % 4 != 0) {
-		status = _comac_tag_error ("Link attributes: \"%s\" rect array size must be multiple of 4",
+		status = _comac_tag_error ("Link attributes: \"%s\" rect array "
+					   "size must be multiple of 4",
 					   attributes);
 		goto cleanup;
 	    }
@@ -547,11 +558,11 @@ _comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *li
 	    for (i = 0; i < num_elem; i += 4) {
 		_comac_array_copy_element (&attr->array, i, &val);
 		rect.x = val.f;
-		_comac_array_copy_element (&attr->array, i+1, &val);
+		_comac_array_copy_element (&attr->array, i + 1, &val);
 		rect.y = val.f;
-		_comac_array_copy_element (&attr->array, i+2, &val);
+		_comac_array_copy_element (&attr->array, i + 2, &val);
 		rect.width = val.f;
-		_comac_array_copy_element (&attr->array, i+3, &val);
+		_comac_array_copy_element (&attr->array, i + 3, &val);
 		rect.height = val.f;
 		status = _comac_array_append (&link_attrs->rects, &rect);
 		if (unlikely (status))
@@ -563,7 +574,8 @@ _comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *li
 
     if (link_attrs->uri) {
 	link_attrs->link_type = TAG_LINK_URI;
-	if (link_attrs->dest || link_attrs->page || link_attrs->has_pos || link_attrs->file)
+	if (link_attrs->dest || link_attrs->page || link_attrs->has_pos ||
+	    link_attrs->file)
 	    invalid_combination = TRUE;
 
     } else if (link_attrs->file) {
@@ -591,10 +603,11 @@ _comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *li
 
     if (invalid_combination) {
 	status = _comac_tag_error (
-	    "Link attributes: \"%s\" invalid combination of attributes", attributes);
+	    "Link attributes: \"%s\" invalid combination of attributes",
+	    attributes);
     }
 
-  cleanup:
+cleanup:
     free_attributes_list (&list);
     if (unlikely (status)) {
 	free (link_attrs->dest);
@@ -607,7 +620,8 @@ _comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *li
 }
 
 comac_int_status_t
-_comac_tag_parse_dest_attributes (const char *attributes, comac_dest_attrs_t *dest_attrs)
+_comac_tag_parse_dest_attributes (const char *attributes,
+				  comac_dest_attrs_t *dest_attrs)
 {
     comac_list_t list;
     comac_int_status_t status;
@@ -635,17 +649,19 @@ _comac_tag_parse_dest_attributes (const char *attributes, comac_dest_attrs_t *de
     }
 
     if (! dest_attrs->name)
-	status = _comac_tag_error ("Destination attributes: \"%s\" missing name attribute",
-				   attributes);
+	status = _comac_tag_error (
+	    "Destination attributes: \"%s\" missing name attribute",
+	    attributes);
 
-  cleanup:
+cleanup:
     free_attributes_list (&list);
 
     return status;
 }
 
 comac_int_status_t
-_comac_tag_parse_ccitt_params (const char *attributes, comac_ccitt_params_t *ccitt_params)
+_comac_tag_parse_ccitt_params (const char *attributes,
+			       comac_ccitt_params_t *ccitt_params)
 {
     comac_list_t list;
     comac_int_status_t status;
@@ -688,14 +704,15 @@ _comac_tag_parse_ccitt_params (const char *attributes, comac_ccitt_params_t *cci
 	}
     }
 
-  cleanup:
+cleanup:
     free_attributes_list (&list);
 
     return status;
 }
 
 comac_int_status_t
-_comac_tag_parse_eps_params (const char *attributes, comac_eps_params_t *eps_params)
+_comac_tag_parse_eps_params (const char *attributes,
+			     comac_eps_params_t *eps_params)
 {
     comac_list_t list;
     comac_int_status_t status;
@@ -721,7 +738,7 @@ _comac_tag_parse_eps_params (const char *attributes, comac_eps_params_t *eps_par
 	}
     }
 
-  cleanup:
+cleanup:
     free_attributes_list (&list);
 
     return status;

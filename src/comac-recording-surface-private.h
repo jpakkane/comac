@@ -61,76 +61,76 @@ typedef enum {
 } comac_recording_region_type_t;
 
 typedef struct _comac_command_header {
-    comac_command_type_t	 type;
+    comac_command_type_t type;
     comac_recording_region_type_t region;
-    comac_operator_t		 op;
-    comac_rectangle_int_t	 extents;
-    comac_clip_t		*clip;
+    comac_operator_t op;
+    comac_rectangle_int_t extents;
+    comac_clip_t *clip;
 
     int index;
     struct _comac_command_header *chain;
 } comac_command_header_t;
 
 typedef struct _comac_command_paint {
-    comac_command_header_t       header;
-    comac_pattern_union_t	 source;
+    comac_command_header_t header;
+    comac_pattern_union_t source;
 } comac_command_paint_t;
 
 typedef struct _comac_command_mask {
-    comac_command_header_t       header;
-    comac_pattern_union_t	 source;
-    comac_pattern_union_t	 mask;
+    comac_command_header_t header;
+    comac_pattern_union_t source;
+    comac_pattern_union_t mask;
 } comac_command_mask_t;
 
 typedef struct _comac_command_stroke {
-    comac_command_header_t       header;
-    comac_pattern_union_t	 source;
-    comac_path_fixed_t		 path;
-    comac_stroke_style_t	 style;
-    comac_matrix_t		 ctm;
-    comac_matrix_t		 ctm_inverse;
-    double			 tolerance;
-    comac_antialias_t		 antialias;
+    comac_command_header_t header;
+    comac_pattern_union_t source;
+    comac_path_fixed_t path;
+    comac_stroke_style_t style;
+    comac_matrix_t ctm;
+    comac_matrix_t ctm_inverse;
+    double tolerance;
+    comac_antialias_t antialias;
 } comac_command_stroke_t;
 
 typedef struct _comac_command_fill {
-    comac_command_header_t       header;
-    comac_pattern_union_t	 source;
-    comac_path_fixed_t		 path;
-    comac_fill_rule_t		 fill_rule;
-    double			 tolerance;
-    comac_antialias_t		 antialias;
+    comac_command_header_t header;
+    comac_pattern_union_t source;
+    comac_path_fixed_t path;
+    comac_fill_rule_t fill_rule;
+    double tolerance;
+    comac_antialias_t antialias;
 } comac_command_fill_t;
 
 typedef struct _comac_command_show_text_glyphs {
-    comac_command_header_t       header;
-    comac_pattern_union_t	 source;
-    char			*utf8;
-    int				 utf8_len;
-    comac_glyph_t		*glyphs;
-    unsigned int		 num_glyphs;
-    comac_text_cluster_t	*clusters;
-    int				 num_clusters;
-    comac_text_cluster_flags_t   cluster_flags;
-    comac_scaled_font_t		*scaled_font;
+    comac_command_header_t header;
+    comac_pattern_union_t source;
+    char *utf8;
+    int utf8_len;
+    comac_glyph_t *glyphs;
+    unsigned int num_glyphs;
+    comac_text_cluster_t *clusters;
+    int num_clusters;
+    comac_text_cluster_flags_t cluster_flags;
+    comac_scaled_font_t *scaled_font;
 } comac_command_show_text_glyphs_t;
 
 typedef struct _comac_command_tag {
-    comac_command_header_t       header;
-    comac_bool_t                 begin;
-    char                        *tag_name;
-    char                        *attributes;
+    comac_command_header_t header;
+    comac_bool_t begin;
+    char *tag_name;
+    char *attributes;
 } comac_command_tag_t;
 
 typedef union _comac_command {
-    comac_command_header_t      header;
+    comac_command_header_t header;
 
-    comac_command_paint_t			paint;
-    comac_command_mask_t			mask;
-    comac_command_stroke_t			stroke;
-    comac_command_fill_t			fill;
-    comac_command_show_text_glyphs_t		show_text_glyphs;
-    comac_command_tag_t                         tag;
+    comac_command_paint_t paint;
+    comac_command_mask_t mask;
+    comac_command_stroke_t stroke;
+    comac_command_fill_t fill;
+    comac_command_show_text_glyphs_t show_text_glyphs;
+    comac_command_tag_t tag;
 } comac_command_t;
 
 typedef struct _comac_recording_surface {
@@ -157,13 +157,12 @@ typedef struct _comac_recording_surface {
     } bbtree;
 } comac_recording_surface_t;
 
-
 comac_private comac_int_status_t
-_comac_recording_surface_get_path (comac_surface_t	 *surface,
+_comac_recording_surface_get_path (comac_surface_t *surface,
 				   comac_path_fixed_t *path);
 
 comac_private comac_status_t
-_comac_recording_surface_replay_one (comac_recording_surface_t	*surface,
+_comac_recording_surface_replay_one (comac_recording_surface_t *surface,
 				     long unsigned index,
 				     comac_surface_t *target);
 
@@ -172,26 +171,30 @@ _comac_recording_surface_replay (comac_surface_t *surface,
 				 comac_surface_t *target);
 
 comac_private comac_status_t
-_comac_recording_surface_replay_with_foreground_color (comac_surface_t *surface,
-                                                       comac_surface_t *target,
-                                                       const comac_color_t *color);
+_comac_recording_surface_replay_with_foreground_color (
+    comac_surface_t *surface,
+    comac_surface_t *target,
+    const comac_color_t *color);
 
 comac_private comac_status_t
-_comac_recording_surface_replay_with_clip (comac_surface_t *surface,
-					   const comac_matrix_t *surface_transform,
-					   comac_surface_t *target,
-					   const comac_clip_t *target_clip);
+_comac_recording_surface_replay_with_clip (
+    comac_surface_t *surface,
+    const comac_matrix_t *surface_transform,
+    comac_surface_t *target,
+    const comac_clip_t *target_clip);
 
 comac_private comac_status_t
-_comac_recording_surface_replay_and_create_regions (comac_surface_t *surface,
-						    const comac_matrix_t *surface_transform,
-						    comac_surface_t *target,
-						    comac_bool_t surface_is_unbounded);
+_comac_recording_surface_replay_and_create_regions (
+    comac_surface_t *surface,
+    const comac_matrix_t *surface_transform,
+    comac_surface_t *target,
+    comac_bool_t surface_is_unbounded);
 comac_private comac_status_t
-_comac_recording_surface_replay_region (comac_surface_t			*surface,
-					const comac_rectangle_int_t *surface_extents,
-					comac_surface_t			*target,
-					comac_recording_region_type_t	region);
+_comac_recording_surface_replay_region (
+    comac_surface_t *surface,
+    const comac_rectangle_int_t *surface_extents,
+    comac_surface_t *target,
+    comac_recording_region_type_t region);
 
 comac_private comac_status_t
 _comac_recording_surface_get_bbox (comac_recording_surface_t *recording,
@@ -204,7 +207,8 @@ _comac_recording_surface_get_ink_bbox (comac_recording_surface_t *surface,
 				       const comac_matrix_t *transform);
 
 comac_private comac_bool_t
-_comac_recording_surface_has_only_bilevel_alpha (comac_recording_surface_t *surface);
+_comac_recording_surface_has_only_bilevel_alpha (
+    comac_recording_surface_t *surface);
 
 comac_private comac_bool_t
 _comac_recording_surface_has_only_op_over (comac_recording_surface_t *surface);

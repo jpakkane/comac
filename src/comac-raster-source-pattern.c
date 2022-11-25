@@ -73,8 +73,10 @@ _comac_raster_source_pattern_acquire (const comac_pattern_t *abstract_pattern,
     if (extents == NULL)
 	extents = &pattern->extents;
 
-    return pattern->acquire (&pattern->base, pattern->user_data,
-			     target, extents);
+    return pattern->acquire (&pattern->base,
+			     pattern->user_data,
+			     target,
+			     extents);
 }
 
 void
@@ -98,8 +100,9 @@ _comac_raster_source_pattern_init_copy (comac_pattern_t *abstract_pattern,
 	(comac_raster_source_pattern_t *) abstract_pattern;
     comac_status_t status;
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_raster_source_pattern_t)));
-    memcpy(pattern, other, sizeof (comac_raster_source_pattern_t));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern,
+				     sizeof (comac_raster_source_pattern_t)));
+    memcpy (pattern, other, sizeof (comac_raster_source_pattern_t));
 
     status = COMAC_STATUS_SUCCESS;
     if (pattern->copy)
@@ -156,7 +159,8 @@ _comac_raster_source_pattern_finish (comac_pattern_t *abstract_pattern)
 comac_pattern_t *
 comac_pattern_create_raster_source (void *user_data,
 				    comac_content_t content,
-				    int width, int height)
+				    int width,
+				    int height)
 {
     comac_raster_source_pattern_t *pattern;
 
@@ -172,15 +176,14 @@ comac_pattern_create_raster_source (void *user_data,
     if (unlikely (pattern == NULL))
 	return _comac_pattern_create_in_error (COMAC_STATUS_NO_MEMORY);
 
-    _comac_pattern_init (&pattern->base,
-			 COMAC_PATTERN_TYPE_RASTER_SOURCE);
+    _comac_pattern_init (&pattern->base, COMAC_PATTERN_TYPE_RASTER_SOURCE);
     COMAC_REFERENCE_COUNT_INIT (&pattern->base.ref_count, 1);
 
     pattern->content = content;
 
     pattern->extents.x = 0;
     pattern->extents.y = 0;
-    pattern->extents.width  = width;
+    pattern->extents.width = width;
     pattern->extents.height = height;
 
     pattern->user_data = user_data;
@@ -198,8 +201,8 @@ comac_pattern_create_raster_source (void *user_data,
  * Since: 1.12
  **/
 void
-comac_raster_source_pattern_set_callback_data (comac_pattern_t *abstract_pattern,
-					       void *data)
+comac_raster_source_pattern_set_callback_data (
+    comac_pattern_t *abstract_pattern, void *data)
 {
     comac_raster_source_pattern_t *pattern;
 
@@ -221,7 +224,8 @@ comac_raster_source_pattern_set_callback_data (comac_pattern_t *abstract_pattern
  * Since: 1.12
  **/
 void *
-comac_raster_source_pattern_get_callback_data (comac_pattern_t *abstract_pattern)
+comac_raster_source_pattern_get_callback_data (
+    comac_pattern_t *abstract_pattern)
 {
     comac_raster_source_pattern_t *pattern;
 
@@ -252,9 +256,10 @@ comac_raster_source_pattern_get_callback_data (comac_pattern_t *abstract_pattern
  * Since: 1.12
  **/
 void
-comac_raster_source_pattern_set_acquire (comac_pattern_t *abstract_pattern,
-					 comac_raster_source_acquire_func_t acquire,
-					 comac_raster_source_release_func_t release)
+comac_raster_source_pattern_set_acquire (
+    comac_pattern_t *abstract_pattern,
+    comac_raster_source_acquire_func_t acquire,
+    comac_raster_source_release_func_t release)
 {
     comac_raster_source_pattern_t *pattern;
 
@@ -277,9 +282,10 @@ comac_raster_source_pattern_set_acquire (comac_pattern_t *abstract_pattern,
  * Since: 1.12
  **/
 void
-comac_raster_source_pattern_get_acquire (comac_pattern_t *abstract_pattern,
-					 comac_raster_source_acquire_func_t *acquire,
-					 comac_raster_source_release_func_t *release)
+comac_raster_source_pattern_get_acquire (
+    comac_pattern_t *abstract_pattern,
+    comac_raster_source_acquire_func_t *acquire,
+    comac_raster_source_release_func_t *release)
 {
     comac_raster_source_pattern_t *pattern;
 
@@ -305,8 +311,9 @@ comac_raster_source_pattern_get_acquire (comac_pattern_t *abstract_pattern,
  * Since: 1.12
  **/
 void
-comac_raster_source_pattern_set_snapshot (comac_pattern_t *abstract_pattern,
-					  comac_raster_source_snapshot_func_t snapshot)
+comac_raster_source_pattern_set_snapshot (
+    comac_pattern_t *abstract_pattern,
+    comac_raster_source_snapshot_func_t snapshot)
 {
     comac_raster_source_pattern_t *pattern;
 
@@ -395,8 +402,8 @@ comac_raster_source_pattern_get_copy (comac_pattern_t *abstract_pattern)
  * Since: 1.12
  **/
 void
-comac_raster_source_pattern_set_finish (comac_pattern_t *abstract_pattern,
-					comac_raster_source_finish_func_t finish)
+comac_raster_source_pattern_set_finish (
+    comac_pattern_t *abstract_pattern, comac_raster_source_finish_func_t finish)
 {
     comac_raster_source_pattern_t *pattern;
 

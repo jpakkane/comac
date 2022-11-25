@@ -40,31 +40,30 @@
  *  A3b   B3b  C3b  D3b
  */
 
-static const double gradient_angles[] = { 0, 45, 90 };
+static const double gradient_angles[] = {0, 45, 90};
 #define N_GRADIENT_ANGLES 3
-static const double rotate_angles[] = { 0, 45, 90 };
+static const double rotate_angles[] = {0, 45, 90};
 #define N_ROTATE_ANGLES 3
-static const int n_stops[] = { 2, 3 };
+static const int n_stops[] = {2, 3};
 #define N_N_STOPS 2
 
 #define UNIT_SIZE 6
 #define UNIT_SIZE 6
 #define PAD 1
 
-#define WIDTH  N_GRADIENT_ANGLES * UNIT_SIZE + (N_GRADIENT_ANGLES + 1) * PAD
-#define HEIGHT N_N_STOPS * N_ROTATE_ANGLES * UNIT_SIZE + (N_N_STOPS * N_ROTATE_ANGLES + 1) * PAD
+#define WIDTH N_GRADIENT_ANGLES *UNIT_SIZE + (N_GRADIENT_ANGLES + 1) * PAD
+#define HEIGHT                                                                 \
+    N_N_STOPS *N_ROTATE_ANGLES *UNIT_SIZE +                                    \
+	(N_N_STOPS * N_ROTATE_ANGLES + 1) * PAD
 
 static void
-draw_unit (comac_t *cr,
-	   double   gradient_angle,
-	   double   rotate_angle,
-	   int      n_stops)
+draw_unit (comac_t *cr, double gradient_angle, double rotate_angle, int n_stops)
 {
     comac_pattern_t *pattern;
 
     comac_rectangle (cr, 0, 0, 1, 1);
     comac_clip (cr);
-    comac_new_path(cr);
+    comac_new_path (cr);
 
     comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
     comac_rectangle (cr, 0, 0, 1, 1);
@@ -74,8 +73,10 @@ draw_unit (comac_t *cr,
     comac_scale (cr, 1 / 1.5, 1 / 1.5);
     comac_rotate (cr, rotate_angle);
 
-    pattern = comac_pattern_create_linear (-0.5 * cos (gradient_angle),  -0.5 * sin (gradient_angle),
-					    0.5 * cos (gradient_angle),   0.5 * sin (gradient_angle));
+    pattern = comac_pattern_create_linear (-0.5 * cos (gradient_angle),
+					   -0.5 * sin (gradient_angle),
+					   0.5 * cos (gradient_angle),
+					   0.5 * sin (gradient_angle));
 
     if (n_stops == 2) {
 	comac_pattern_add_color_stop_rgb (pattern, 0.2, 0.3, 0.3, 0.3);
@@ -102,11 +103,12 @@ draw (comac_t *cr, int width, int height)
 
     for (i = 0; i < N_GRADIENT_ANGLES; i++)
 	for (j = 0; j < N_ROTATE_ANGLES; j++)
-	  for (k = 0; k < N_N_STOPS; k++) {
+	    for (k = 0; k < N_N_STOPS; k++) {
 		comac_save (cr);
 		comac_translate (cr,
 				 PAD + (PAD + UNIT_SIZE) * i,
-				 PAD + (PAD + UNIT_SIZE) * (N_ROTATE_ANGLES * k + j));
+				 PAD + (PAD + UNIT_SIZE) *
+					   (N_ROTATE_ANGLES * k + j));
 		comac_scale (cr, UNIT_SIZE, UNIT_SIZE);
 
 		draw_unit (cr,
@@ -122,6 +124,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (linear_gradient_subset,
 	    "Tests the drawing of linear gradients",
 	    "gradient", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	/* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

@@ -29,13 +29,23 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *surface;
-    uint32_t data[16] = {
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
-	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
+    uint32_t data[16] = {0xffffffff,
+			 0xffffffff,
+			 0xffff0000,
+			 0xffff0000,
+			 0xffffffff,
+			 0xffffffff,
+			 0xffff0000,
+			 0xffff0000,
 
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff,
-	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
-    };
+			 0xff00ff00,
+			 0xff00ff00,
+			 0xff0000ff,
+			 0xff0000ff,
+			 0xff00ff00,
+			 0xff00ff00,
+			 0xff0000ff,
+			 0xff0000ff};
 
     /* First paint opaque background (black) so we don't need separate
      * ARGB32 and RGB24 reference images. */
@@ -43,7 +53,10 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     surface = comac_image_surface_create_for_data ((unsigned char *) data,
-						   COMAC_FORMAT_RGB24, 4, 4, 16);
+						   COMAC_FORMAT_RGB24,
+						   4,
+						   4,
+						   16);
 
     comac_scale (cr, 0.5, 0.5);
 
@@ -58,8 +71,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (scale_down_source_surface_paint,
-	    "Test call sequence: comac_scale; comac_set_source_surface; comac_paint, with a scale < 1.0",
+	    "Test call sequence: comac_scale; comac_set_source_surface; "
+	    "comac_paint, with a scale < 1.0",
 	    "paint, transform", /* keywords */
-	    NULL, /* requirements */
-	    6, 6,
-	    NULL, draw)
+	    NULL,		/* requirements */
+	    6,
+	    6,
+	    NULL,
+	    draw)

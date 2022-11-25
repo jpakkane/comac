@@ -86,6 +86,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (pass_through,
 	    "tests pixel values",
 	    "color", /* keywords */
-	    NULL, /* requirements */
-	    16, 256,
-	    NULL, draw)
+	    NULL,    /* requirements */
+	    16,
+	    256,
+	    NULL,
+	    draw)

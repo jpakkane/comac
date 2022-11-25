@@ -28,8 +28,8 @@
 
 #define CIRCLE_SIZE 10
 #define PAD 2
-#define WIDTH (CIRCLE_SIZE*6.5 + PAD)
-#define HEIGHT (CIRCLE_SIZE*7.0 + PAD)
+#define WIDTH (CIRCLE_SIZE * 6.5 + PAD)
+#define HEIGHT (CIRCLE_SIZE * 7.0 + PAD)
 
 static void
 draw_circle (comac_t *cr, double x, double y)
@@ -57,23 +57,23 @@ draw_image_circle (comac_t *cr, comac_surface_t *source, double x, double y)
 static void
 draw_circles (comac_t *cr)
 {
-    draw_circle (cr, 0,               -CIRCLE_SIZE*0.1);
-    draw_circle (cr, CIRCLE_SIZE*0.4,  CIRCLE_SIZE*0.25);
+    draw_circle (cr, 0, -CIRCLE_SIZE * 0.1);
+    draw_circle (cr, CIRCLE_SIZE * 0.4, CIRCLE_SIZE * 0.25);
 
-    draw_circle (cr, CIRCLE_SIZE*2, 0);
-    draw_circle (cr, CIRCLE_SIZE*4, 0);
-    draw_circle (cr, CIRCLE_SIZE*6, 0);
+    draw_circle (cr, CIRCLE_SIZE * 2, 0);
+    draw_circle (cr, CIRCLE_SIZE * 4, 0);
+    draw_circle (cr, CIRCLE_SIZE * 6, 0);
 }
 
 static void
 draw_image_circles (comac_t *cr, comac_surface_t *source)
 {
-    draw_image_circle (cr, source, 0,               -CIRCLE_SIZE*0.1);
-    draw_image_circle (cr, source, CIRCLE_SIZE*0.4,  CIRCLE_SIZE*0.25);
+    draw_image_circle (cr, source, 0, -CIRCLE_SIZE * 0.1);
+    draw_image_circle (cr, source, CIRCLE_SIZE * 0.4, CIRCLE_SIZE * 0.25);
 
-    draw_image_circle (cr, source, CIRCLE_SIZE*2, 0);
-    draw_image_circle (cr, source, CIRCLE_SIZE*4, 0);
-    draw_image_circle (cr, source, CIRCLE_SIZE*6, 0);
+    draw_image_circle (cr, source, CIRCLE_SIZE * 2, 0);
+    draw_image_circle (cr, source, CIRCLE_SIZE * 4, 0);
+    draw_image_circle (cr, source, CIRCLE_SIZE * 6, 0);
 }
 
 /* For each of circle and fallback_circle we draw:
@@ -101,12 +101,13 @@ surface_create (comac_t *target)
 
     surface = comac_surface_create_similar (comac_get_target (target),
 					    COMAC_CONTENT_COLOR_ALPHA,
-					    CIRCLE_SIZE, CIRCLE_SIZE);
+					    CIRCLE_SIZE,
+					    CIRCLE_SIZE);
     cr = comac_create (surface);
     comac_surface_destroy (surface);
 
     comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
-    draw_circle (cr, CIRCLE_SIZE/2, CIRCLE_SIZE/2);
+    draw_circle (cr, CIRCLE_SIZE / 2, CIRCLE_SIZE / 2);
 
     surface = comac_surface_reference (comac_get_target (cr));
     comac_destroy (cr);
@@ -126,22 +127,22 @@ draw (comac_t *cr, int width, int height)
     /* Draw overlapping circle and fallback circle */
     comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
-    draw_circle (cr, CIRCLE_SIZE*0.5,  CIRCLE_SIZE*1.5);
+    draw_circle (cr, CIRCLE_SIZE * 0.5, CIRCLE_SIZE * 1.5);
 
     comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
     comac_set_operator (cr, COMAC_OPERATOR_ADD);
-    draw_circle (cr, CIRCLE_SIZE*0.75, CIRCLE_SIZE*1.75);
+    draw_circle (cr, CIRCLE_SIZE * 0.75, CIRCLE_SIZE * 1.75);
 
     /* Draw circles */
     comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
-    comac_translate (cr, CIRCLE_SIZE*2.5, CIRCLE_SIZE*0.6);
+    comac_translate (cr, CIRCLE_SIZE * 2.5, CIRCLE_SIZE * 0.6);
     draw_circles (cr);
 
     /* Draw fallback circles */
     comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
     comac_set_operator (cr, COMAC_OPERATOR_ADD);
-    comac_translate (cr, 0, CIRCLE_SIZE*2);
+    comac_translate (cr, 0, CIRCLE_SIZE * 2);
     draw_circles (cr);
 
     comac_restore (cr);
@@ -152,19 +153,22 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
-    draw_circle (cr, CIRCLE_SIZE*0.5,  CIRCLE_SIZE*1.5);
+    draw_circle (cr, CIRCLE_SIZE * 0.5, CIRCLE_SIZE * 1.5);
 
     comac_set_operator (cr, COMAC_OPERATOR_ADD);
-    draw_image_circle (cr, surface, CIRCLE_SIZE/4, CIRCLE_SIZE + CIRCLE_SIZE/4);
+    draw_image_circle (cr,
+		       surface,
+		       CIRCLE_SIZE / 4,
+		       CIRCLE_SIZE + CIRCLE_SIZE / 4);
 
     /* Draw circles */
     comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
-    comac_translate (cr, CIRCLE_SIZE*2.5, CIRCLE_SIZE*0.6);
+    comac_translate (cr, CIRCLE_SIZE * 2.5, CIRCLE_SIZE * 0.6);
     draw_circles (cr);
 
     comac_set_operator (cr, COMAC_OPERATOR_ADD);
-    comac_translate (cr, -CIRCLE_SIZE/2, CIRCLE_SIZE*1.5);
+    comac_translate (cr, -CIRCLE_SIZE / 2, CIRCLE_SIZE * 1.5);
     draw_image_circles (cr, surface);
 
     comac_surface_destroy (surface);
@@ -173,8 +177,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (finer_grained_fallbacks,
-	    "Test that multiple PS/PDF fallback images in various locations are correct",
+	    "Test that multiple PS/PDF fallback images in various locations "
+	    "are correct",
 	    "fallbacks", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,	 /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

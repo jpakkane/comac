@@ -47,9 +47,9 @@ typedef struct comac_hull {
 } comac_hull_t;
 
 static void
-_comac_hull_init (comac_hull_t			*hull,
-	          comac_pen_vertex_t		*vertices,
-		  int				 num_vertices)
+_comac_hull_init (comac_hull_t *hull,
+		  comac_pen_vertex_t *vertices,
+		  int num_vertices)
 {
     comac_point_t *p, *extremum, tmp;
     int i;
@@ -69,11 +69,11 @@ _comac_hull_init (comac_hull_t			*hull,
 	hull[i].point = vertices[i].point;
 	_comac_slope_init (&hull[i].slope, &hull[0].point, &hull[i].point);
 
-        /* give each point a unique id for later comparison */
-        hull[i].id = i;
+	/* give each point a unique id for later comparison */
+	hull[i].id = i;
 
-        /* Don't discard by default */
-        hull[i].discard = 0;
+	/* Don't discard by default */
+	hull[i].discard = 0;
 
 	/* Discard all points coincident with the extremal point */
 	if (i != 0 && hull[i].slope.dx == 0 && hull[i].slope.dy == 0)
@@ -186,7 +186,9 @@ _comac_hull_eliminate_concave (comac_hull_t *hull, int num_hull)
 }
 
 static void
-_comac_hull_to_pen (comac_hull_t *hull, comac_pen_vertex_t *vertices, int *num_vertices)
+_comac_hull_to_pen (comac_hull_t *hull,
+		    comac_pen_vertex_t *vertices,
+		    int *num_vertices)
 {
     int i, j = 0;
 
@@ -221,8 +223,10 @@ _comac_hull_compute (comac_pen_vertex_t *vertices, int *num_vertices)
 
     _comac_hull_init (hull, vertices, num_hull);
 
-    qsort (hull + 1, num_hull - 1,
-	   sizeof (comac_hull_t), _comac_hull_vertex_compare);
+    qsort (hull + 1,
+	   num_hull - 1,
+	   sizeof (comac_hull_t),
+	   _comac_hull_vertex_compare);
 
     _comac_hull_eliminate_concave (hull, num_hull);
 

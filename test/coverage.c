@@ -44,7 +44,7 @@ static uint32_t state;
 static uint32_t
 hars_petruska_f54_1_random (void)
 {
-#define rol(x,k) ((x << k) | (x >> (32-k)))
+#define rol(x, k) ((x << k) | (x >> (32 - k)))
     return state = (state ^ rol (state, 5) ^ rol (state, 24)) + 0x37798849;
 #undef rol
 }
@@ -52,7 +52,8 @@ hars_petruska_f54_1_random (void)
 static double
 random_offset (int range, int precise)
 {
-    double x = hars_petruska_f54_1_random() / (double) UINT32_MAX * range / WIDTH;
+    double x =
+	hars_petruska_f54_1_random () / (double) UINT32_MAX * range / WIDTH;
     if (precise)
 	x = floor (x * PRECISION) / PRECISION;
     return x;
@@ -79,16 +80,26 @@ rectangles (comac_t *cr, int width, int height)
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0:
+	    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+	    break;
+	case 1:
+	    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+	    break;
+	case 2:
+	    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+	    break;
 	}
 
 	for (x = 0; x < WIDTH; x++) {
 	    for (y = 0; y < HEIGHT; y++) {
 		double dx = random_offset (WIDTH - x, TRUE);
 		double dy = random_offset (WIDTH - x, TRUE);
-		comac_rectangle (cr, x + dx, y + dy, x / (double) WIDTH, x / (double) WIDTH);
+		comac_rectangle (cr,
+				 x + dx,
+				 y + dy,
+				 x / (double) WIDTH,
+				 x / (double) WIDTH);
 	    }
 	}
 	comac_fill (cr);
@@ -109,9 +120,8 @@ rhombus (comac_t *cr, int width, int height)
 #if GENERATE_REFERENCE
     for (y = 0; y < WIDTH; y++) {
 	for (x = 0; x < WIDTH; x++) {
-	    comac_set_source_rgba (cr, 1, 1, 1,
-				   x * y / (2. * WIDTH * WIDTH));
-	    comac_rectangle (cr, 2*x, 2*y, 2, 2);
+	    comac_set_source_rgba (cr, 1, 1, 1, x * y / (2. * WIDTH * WIDTH));
+	    comac_rectangle (cr, 2 * x, 2 * y, 2, 2);
 	    comac_fill (cr);
 	}
     }
@@ -124,18 +134,10 @@ rhombus (comac_t *cr, int width, int height)
 	for (x = 0; x < WIDTH; x++) {
 	    double xf = x / (double) WIDTH;
 
-	    comac_move_to (cr,
-			   2*x + 1 - xf,
-			   2*y + 1);
-	    comac_line_to (cr,
-			   2*x + 1,
-			   2*y + 1 - yf);
-	    comac_line_to (cr,
-			   2*x + 1 + xf,
-			   2*y + 1);
-	    comac_line_to (cr,
-			   2*x + 1,
-			   2*y + 1 + yf);
+	    comac_move_to (cr, 2 * x + 1 - xf, 2 * y + 1);
+	    comac_line_to (cr, 2 * x + 1, 2 * y + 1 - yf);
+	    comac_line_to (cr, 2 * x + 1 + xf, 2 * y + 1);
+	    comac_line_to (cr, 2 * x + 1, 2 * y + 1 + yf);
 	    comac_close_path (cr);
 	}
     }
@@ -167,9 +169,15 @@ intersecting_quads (comac_t *cr, int width, int height)
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0:
+	    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+	    break;
+	case 1:
+	    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+	    break;
+	case 2:
+	    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+	    break;
 	}
 
 	for (x = 0; x < WIDTH; x++) {
@@ -212,9 +220,15 @@ intersecting_triangles (comac_t *cr, int width, int height)
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0:
+	    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+	    break;
+	case 1:
+	    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+	    break;
+	case 2:
+	    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+	    break;
 	}
 
 	for (x = 0; x < WIDTH; x++) {
@@ -264,9 +278,15 @@ triangles (comac_t *cr, int width, int height)
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0:
+	    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+	    break;
+	case 1:
+	    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+	    break;
+	case 2:
+	    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+	    break;
 	}
 
 	for (x = 0; x < WIDTH; x++) {
@@ -354,9 +374,15 @@ column_triangles (comac_t *cr, int width, int height)
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0:
+	    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+	    break;
+	case 1:
+	    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+	    break;
+	case 2:
+	    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+	    break;
 	}
 
 	for (x = 0; x < WIDTH; x++) {
@@ -393,7 +419,8 @@ column_triangles (comac_t *cr, int width, int height)
 		    comac_rel_line_to (cr, 0, -step);
 		    comac_close_path (cr);
 		}
-		comac_fill (cr); /* do these per-pixel due to the extra volume of edges */
+		comac_fill (
+		    cr); /* do these per-pixel due to the extra volume of edges */
 	    }
 	}
     }
@@ -423,9 +450,15 @@ row_triangles (comac_t *cr, int width, int height)
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0:
+	    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+	    break;
+	case 1:
+	    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+	    break;
+	case 2:
+	    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+	    break;
 	}
 
 	for (x = 0; x < WIDTH; x++) {
@@ -439,12 +472,13 @@ row_triangles (comac_t *cr, int width, int height)
 		     */
 
 		    comac_move_to (cr, x + dx, y + i / (double) PRECISION);
-		    comac_rel_line_to (cr,  step, 0);
-		    comac_rel_line_to (cr,  step, 1 / (double) PRECISION);
+		    comac_rel_line_to (cr, step, 0);
+		    comac_rel_line_to (cr, step, 1 / (double) PRECISION);
 		    comac_rel_line_to (cr, -step, 0);
 		    comac_close_path (cr);
 		}
-		comac_fill (cr); /* do these per-pixel due to the extra volume of edges */
+		comac_fill (
+		    cr); /* do these per-pixel due to the extra volume of edges */
 	    }
 	}
     }
@@ -455,52 +489,68 @@ row_triangles (comac_t *cr, int width, int height)
 
 COMAC_TEST (coverage_rectangles,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, rectangles)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    rectangles)
 
 COMAC_TEST (coverage_rhombus,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    2*WIDTH, 2*WIDTH,
-	    NULL, rhombus)
+	    2 * WIDTH,
+	    2 * WIDTH,
+	    NULL,
+	    rhombus)
 
 COMAC_TEST (coverage_intersecting_quads,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, intersecting_quads)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    intersecting_quads)
 
 COMAC_TEST (coverage_intersecting_triangles,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, intersecting_triangles)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    intersecting_triangles)
 COMAC_TEST (coverage_row_triangles,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, row_triangles)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    row_triangles)
 COMAC_TEST (coverage_column_triangles,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, column_triangles)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    column_triangles)
 COMAC_TEST (coverage_triangles,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, triangles)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    triangles)
 COMAC_TEST (coverage_abutting,
 	    "Check the fidelity of the rasterisation.",
-	    NULL, /* keywords */
+	    NULL,	     /* keywords */
 	    "target=raster", /* requirements */
-	    16*16, 16*16,
-	    NULL, abutting)
+	    16 * 16,
+	    16 * 16,
+	    NULL,
+	    abutting)

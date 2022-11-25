@@ -31,10 +31,18 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     uint32_t data[] = {
-	RGBx, RGBx, RGBx,
-	RGBx, RGBx, RGBx,
-	RGBx, RGBx, RGBx,
-	RGBx, RGBx, RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
+	RGBx,
     };
     comac_surface_t *mask;
 
@@ -42,7 +50,10 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
 
     mask = comac_image_surface_create_for_data ((unsigned char *) data,
-						COMAC_FORMAT_ARGB32, 12, 4, 48);
+						COMAC_FORMAT_ARGB32,
+						12,
+						4,
+						48);
 
     comac_set_source_surface (cr, mask, 0, 0);
     comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
@@ -58,6 +69,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (bilevel_image,
 	    "Test that PS can embed an RGB image with a bilevel alpha channel.",
 	    "alpha, ps", /* keywords */
-	    NULL, /* requirements */
-	    12, 4,
-	    NULL, draw)
+	    NULL,	 /* requirements */
+	    12,
+	    4,
+	    NULL,
+	    draw)

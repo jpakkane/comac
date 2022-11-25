@@ -29,23 +29,23 @@
 #include <stdio.h>
 #include <math.h>
 
-#define PAT_SIZE  32
-#define REPLAY_SIZE (PAT_SIZE*4)
+#define PAT_SIZE 32
+#define REPLAY_SIZE (PAT_SIZE * 4)
 #define PAD 10
-#define WIDTH (REPLAY_SIZE*4 + PAD*5)
-#define HEIGHT (REPLAY_SIZE + PAD*2)
+#define WIDTH (REPLAY_SIZE * 4 + PAD * 5)
+#define HEIGHT (REPLAY_SIZE + PAD * 2)
 
 /* Test replaying a recording surface pattern for each type of extend. */
 
 static void
-transform_extents(comac_rectangle_t *extents, comac_matrix_t *mat)
+transform_extents (comac_rectangle_t *extents, comac_matrix_t *mat)
 {
     double x1, y1, x2, y2, x, y;
 
-#define UPDATE_BBOX \
-    x1 = x < x1 ? x : x1; \
-    y1 = y < y1 ? y : y1; \
-    x2 = x > x2 ? x : x2; \
+#define UPDATE_BBOX                                                            \
+    x1 = x < x1 ? x : x1;                                                      \
+    y1 = y < y1 ? y : y1;                                                      \
+    x2 = x > x2 ? x : x2;                                                      \
     y2 = y > y2 ? y : y2;
 
     x = extents->x;
@@ -83,7 +83,7 @@ create_pattern (comac_matrix_t *mat, comac_extend_t extend)
     comac_surface_t *surf;
     comac_pattern_t *pat;
     comac_t *cr;
-    comac_rectangle_t extents = { 0, 0, PAT_SIZE, PAT_SIZE };
+    comac_rectangle_t extents = {0, 0, PAT_SIZE, PAT_SIZE};
 
     transform_extents (&extents, mat);
     surf = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
@@ -91,22 +91,22 @@ create_pattern (comac_matrix_t *mat, comac_extend_t extend)
     cr = comac_create (surf);
     comac_transform (cr, mat);
 
-    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_rectangle (cr, 0, 0, PAT_SIZE / 2, PAT_SIZE / 2);
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_fill (cr);
 
-    comac_translate (cr, PAT_SIZE/2, 0);
-    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_translate (cr, PAT_SIZE / 2, 0);
+    comac_rectangle (cr, 0, 0, PAT_SIZE / 2, PAT_SIZE / 2);
     comac_set_source_rgb (cr, 0, 1, 0);
     comac_fill (cr);
 
-    comac_translate (cr, 0, PAT_SIZE/2);
-    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_translate (cr, 0, PAT_SIZE / 2);
+    comac_rectangle (cr, 0, 0, PAT_SIZE / 2, PAT_SIZE / 2);
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_fill (cr);
 
-    comac_translate (cr, -PAT_SIZE/2, 0);
-    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_translate (cr, -PAT_SIZE / 2, 0);
+    comac_rectangle (cr, 0, 0, PAT_SIZE / 2, PAT_SIZE / 2);
     comac_set_source_rgb (cr, 1, 1, 0);
     comac_fill (cr);
 
@@ -129,12 +129,12 @@ record_replay_extend (comac_t *cr, int width, int height, comac_extend_t extend)
 
     /* record surface extents (-PAT_SIZE/2, -PAT_SIZE/2) to (PAT_SIZE/2, PAT_SIZE/2) */
     comac_translate (cr, PAD, PAD);
-    comac_matrix_init_translate (&mat, -PAT_SIZE/2, -PAT_SIZE/2);
+    comac_matrix_init_translate (&mat, -PAT_SIZE / 2, -PAT_SIZE / 2);
     pat = create_pattern (&mat, extend);
 
     /* test repeating patterns when the source is outside of the target clip */
     if (extend == COMAC_EXTEND_REPEAT || extend == COMAC_EXTEND_REFLECT) {
-	comac_matrix_init_translate (&mat, 3*PAT_SIZE/2, 3*PAT_SIZE/2);
+	comac_matrix_init_translate (&mat, 3 * PAT_SIZE / 2, 3 * PAT_SIZE / 2);
 	comac_pattern_set_matrix (pat, &mat);
     }
 
@@ -145,7 +145,9 @@ record_replay_extend (comac_t *cr, int width, int height, comac_extend_t extend)
 
     /* record surface extents (-2*PAT_SIZE/2, -2*PAT_SIZE/2) to (2*PAT_SIZE/2, 2*PAT_SIZE/2) */
     comac_translate (cr, REPLAY_SIZE + PAD, 0);
-    comac_matrix_init_translate (&mat, -2.0*PAT_SIZE/2, -2.0*PAT_SIZE/2);
+    comac_matrix_init_translate (&mat,
+				 -2.0 * PAT_SIZE / 2,
+				 -2.0 * PAT_SIZE / 2);
     comac_matrix_scale (&mat, 2, 2);
     pat = create_pattern (&mat, extend);
     comac_set_source (cr, pat);
@@ -155,7 +157,9 @@ record_replay_extend (comac_t *cr, int width, int height, comac_extend_t extend)
 
     /* record surface extents (-0.5*PAT_SIZE/2, -0.5*PAT_SIZE/2) to (0.5*PAT_SIZE/2, 0.5*PAT_SIZE/2) */
     comac_translate (cr, REPLAY_SIZE + PAD, 0);
-    comac_matrix_init_translate (&mat, -0.5*PAT_SIZE/2, -0.5*PAT_SIZE/2);
+    comac_matrix_init_translate (&mat,
+				 -0.5 * PAT_SIZE / 2,
+				 -0.5 * PAT_SIZE / 2);
     comac_matrix_scale (&mat, 0.5, 0.5);
     pat = create_pattern (&mat, extend);
     comac_set_source (cr, pat);
@@ -165,9 +169,11 @@ record_replay_extend (comac_t *cr, int width, int height, comac_extend_t extend)
 
     /* record surface centered on (0,0) and rotated 45 deg */
     comac_translate (cr, REPLAY_SIZE + PAD, 0);
-    comac_matrix_init_translate (&mat, -PAT_SIZE/sqrt(2), -PAT_SIZE/sqrt(2));
-    comac_matrix_rotate (&mat, M_PI/4.0);
-    comac_matrix_translate (&mat, PAT_SIZE/2, -PAT_SIZE/2);
+    comac_matrix_init_translate (&mat,
+				 -PAT_SIZE / sqrt (2),
+				 -PAT_SIZE / sqrt (2));
+    comac_matrix_rotate (&mat, M_PI / 4.0);
+    comac_matrix_translate (&mat, PAT_SIZE / 2, -PAT_SIZE / 2);
     pat = create_pattern (&mat, extend);
     comac_set_source (cr, pat);
     comac_pattern_destroy (pat);
@@ -204,24 +210,32 @@ record_replay_extend_pad (comac_t *cr, int width, int height)
 COMAC_TEST (record_replay_extend_none,
 	    "Paint recording pattern with COMAC_EXTEND_NONE",
 	    "record,pattern,extend", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, record_replay_extend_none)
+	    NULL,		     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    record_replay_extend_none)
 COMAC_TEST (record_replay_extend_repeat,
 	    "Paint recording pattern with COMAC_EXTEND_REPEAT",
 	    "record,pattern,extend", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, record_replay_extend_repeat)
+	    NULL,		     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    record_replay_extend_repeat)
 COMAC_TEST (record_replay_extend_reflect,
 	    "Paint recording pattern with COMAC_EXTEND_REFLECT",
 	    "record,pattern,extend", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, record_replay_extend_reflect)
+	    NULL,		     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    record_replay_extend_reflect)
 COMAC_TEST (record_replay_extend_pad,
 	    "Paint recording pattern with COMAC_EXTEND_PAD",
 	    "record,pattern,extend", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, record_replay_extend_pad)
+	    NULL,		     /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    record_replay_extend_pad)

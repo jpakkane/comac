@@ -45,25 +45,20 @@
 
 static comac_bool_t
 text_extents_equal (const comac_text_extents_t *A,
-	            const comac_text_extents_t *B)
+		    const comac_text_extents_t *B)
 {
-    return A->x_bearing == B->x_bearing &&
-	   A->y_bearing == B->y_bearing &&
-	   A->width     == B->width     &&
-	   A->height    == B->height    &&
-	   A->x_advance == B->x_advance &&
-	   A->y_advance == B->y_advance;
+    return A->x_bearing == B->x_bearing && A->y_bearing == B->y_bearing &&
+	   A->width == B->width && A->height == B->height &&
+	   A->x_advance == B->x_advance && A->y_advance == B->y_advance;
 }
 
 static comac_bool_t
 font_extents_equal (const comac_font_extents_t *A,
-	            const comac_font_extents_t *B)
+		    const comac_font_extents_t *B)
 {
-    return A->ascent    == B->ascent        &&
-	   A->descent   == B->descent       &&
-	   A->height    == B->height        &&
-       A->max_x_advance == B->max_x_advance &&
-       A->max_y_advance == B->max_y_advance;
+    return A->ascent == B->ascent && A->descent == B->descent &&
+	   A->height == B->height && A->max_x_advance == B->max_x_advance &&
+	   A->max_y_advance == B->max_y_advance;
 }
 
 static comac_test_status_t
@@ -74,7 +69,8 @@ draw (comac_t *cr, int width, int height)
     comac_font_extents_t font_extents, nil_font_extents;
     comac_scaled_font_t *scaled_font;
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, 16);
@@ -83,12 +79,12 @@ draw (comac_t *cr, int width, int height)
     comac_show_text (cr, NULL);
     comac_show_text (cr, "");
     comac_show_glyphs (cr, NULL, 0);
-    comac_show_glyphs (cr, (void*)8, 0);
+    comac_show_glyphs (cr, (void *) 8, 0);
 
     comac_move_to (cr, 10, 55);
     comac_text_path (cr, NULL);
     comac_text_path (cr, "");
-    comac_glyph_path (cr, (void*)8, 0);
+    comac_glyph_path (cr, (void *) 8, 0);
     comac_fill (cr);
 
     memset (&nil_extents, 0, sizeof (comac_text_extents_t));
@@ -96,30 +92,45 @@ draw (comac_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (comac_text_extents_t));
     comac_text_extents (cr, "", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	comac_test_log (ctx, "Error: comac_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance);
+	comac_test_log (ctx,
+			"Error: comac_text_extents(\"\"); extents (%g, %g, %g, "
+			"%g, %g, %g)\n",
+			extents.x_bearing,
+			extents.y_bearing,
+			extents.width,
+			extents.height,
+			extents.x_advance,
+			extents.y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
     memset (&extents, 0xff, sizeof (comac_text_extents_t));
     comac_text_extents (cr, NULL, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	comac_test_log (ctx, "Error: comac_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance);
+	comac_test_log (ctx,
+			"Error: comac_text_extents(NULL); extents (%g, %g, %g, "
+			"%g, %g, %g)\n",
+			extents.x_bearing,
+			extents.y_bearing,
+			extents.width,
+			extents.height,
+			extents.x_advance,
+			extents.y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
     memset (&extents, 0xff, sizeof (comac_text_extents_t));
-    comac_glyph_extents (cr, (void*)8, 0, &extents);
+    comac_glyph_extents (cr, (void *) 8, 0, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	comac_test_log (ctx, "Error: comac_glyph_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance);
+	comac_test_log (
+	    ctx,
+	    "Error: comac_glyph_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
+	    extents.x_bearing,
+	    extents.y_bearing,
+	    extents.width,
+	    extents.height,
+	    extents.x_advance,
+	    extents.y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
@@ -128,30 +139,45 @@ draw (comac_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (comac_text_extents_t));
     comac_scaled_font_text_extents (scaled_font, "", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	comac_test_log (ctx, "Error: comac_scaled_font_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance);
+	comac_test_log (ctx,
+			"Error: comac_scaled_font_text_extents(\"\"); extents "
+			"(%g, %g, %g, %g, %g, %g)\n",
+			extents.x_bearing,
+			extents.y_bearing,
+			extents.width,
+			extents.height,
+			extents.x_advance,
+			extents.y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
     memset (&extents, 0xff, sizeof (comac_text_extents_t));
     comac_scaled_font_text_extents (scaled_font, NULL, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	comac_test_log (ctx, "Error: comac_scaled_font_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance);
+	comac_test_log (ctx,
+			"Error: comac_scaled_font_text_extents(NULL); extents "
+			"(%g, %g, %g, %g, %g, %g)\n",
+			extents.x_bearing,
+			extents.y_bearing,
+			extents.width,
+			extents.height,
+			extents.x_advance,
+			extents.y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
     memset (&extents, 0xff, sizeof (comac_text_extents_t));
-    comac_scaled_font_glyph_extents (scaled_font, (void*)8, 0, &extents);
+    comac_scaled_font_glyph_extents (scaled_font, (void *) 8, 0, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	comac_test_log (ctx, "Error: comac_scaled_font_glyph_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance);
+	comac_test_log (ctx,
+			"Error: comac_scaled_font_glyph_extents(NULL); extents "
+			"(%g, %g, %g, %g, %g, %g)\n",
+			extents.x_bearing,
+			extents.y_bearing,
+			extents.width,
+			extents.height,
+			extents.x_advance,
+			extents.y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
@@ -161,34 +187,49 @@ draw (comac_t *cr, int width, int height)
     memset (&extents, 0xff, sizeof (comac_text_extents_t));
     comac_text_extents (cr, "test", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	comac_test_log (ctx, "Error: comac_set_font_size(0); comac_text_extents(\"test\"); extents (%g, %g, %g, %g, %g, %g)\n",
-		        extents.x_bearing, extents.y_bearing,
-			extents.width, extents.height,
-			extents.x_advance, extents.y_advance);
+	comac_test_log (
+	    ctx,
+	    "Error: comac_set_font_size(0); comac_text_extents(\"test\"); "
+	    "extents (%g, %g, %g, %g, %g, %g)\n",
+	    extents.x_bearing,
+	    extents.y_bearing,
+	    extents.width,
+	    extents.height,
+	    extents.x_advance,
+	    extents.y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
     memset (&nil_font_extents, 0, sizeof (comac_font_extents_t));
 
     memset (&font_extents, 0xff, sizeof (comac_font_extents_t));
-    comac_font_extents (cr,  &font_extents);
+    comac_font_extents (cr, &font_extents);
     if (! font_extents_equal (&font_extents, &nil_font_extents)) {
-	comac_test_log (ctx, "Error: comac_set_font_size(0); comac_font_extents(); extents (%g, %g, %g, %g, %g)\n",
-		        font_extents.ascent, font_extents.descent,
+	comac_test_log (ctx,
+			"Error: comac_set_font_size(0); comac_font_extents(); "
+			"extents (%g, %g, %g, %g, %g)\n",
+			font_extents.ascent,
+			font_extents.descent,
 			font_extents.height,
-			font_extents.max_x_advance, font_extents.max_y_advance);
+			font_extents.max_x_advance,
+			font_extents.max_y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
     scaled_font = comac_get_scaled_font (cr);
 
     memset (&font_extents, 0xff, sizeof (comac_font_extents_t));
-    comac_scaled_font_extents (scaled_font,  &font_extents);
+    comac_scaled_font_extents (scaled_font, &font_extents);
     if (! font_extents_equal (&font_extents, &nil_font_extents)) {
-	comac_test_log (ctx, "Error: comac_set_font_size(0); comac_scaled_font_extents(); extents (%g, %g, %g, %g, %g)\n",
-		        font_extents.ascent, font_extents.descent,
-			font_extents.height,
-			font_extents.max_x_advance, font_extents.max_y_advance);
+	comac_test_log (
+	    ctx,
+	    "Error: comac_set_font_size(0); comac_scaled_font_extents(); "
+	    "extents (%g, %g, %g, %g, %g)\n",
+	    font_extents.ascent,
+	    font_extents.descent,
+	    font_extents.height,
+	    font_extents.max_x_advance,
+	    font_extents.max_y_advance);
 	return COMAC_TEST_FAILURE;
     }
 
@@ -198,6 +239,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (text_zero_len,
 	    "Tests show_text and text_path with a zero-sized string",
 	    "text, stress, extents", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+	    NULL,		     /* requirements */
+	    0,
+	    0,
+	    NULL,
+	    draw)

@@ -26,14 +26,14 @@
 #include "comac-perf.h"
 
 /* Options passed in flags to mosaic_perform(): */
-#define MOSAIC_FILL 1		/* do rasterise */
-#define MOSAIC_TESSELLATE 0	/* just tessellate */
-#define MOSAIC_CURVE_TO 2	/* use curve bounded regions */
-#define MOSAIC_LINE_TO 0	/* use line bounded regions */
+#define MOSAIC_FILL 1	    /* do rasterise */
+#define MOSAIC_TESSELLATE 0 /* just tessellate */
+#define MOSAIC_CURVE_TO 2   /* use curve bounded regions */
+#define MOSAIC_LINE_TO 0    /* use line bounded regions */
 
 struct mosaic_region {
-    unsigned rgb;		/* colour of this region in 0xRRGGBB format */
-    unsigned ncurves;		/* number of boundary curves. */
+    unsigned rgb;     /* colour of this region in 0xRRGGBB format */
+    unsigned ncurves; /* number of boundary curves. */
 };
 
 struct mosaic_region_iter {
@@ -66,34 +66,35 @@ mosaic_next_path (comac_t *cr, struct mosaic_region_iter *iter)
     comac_new_path (cr);
     comac_move_to (cr, points[0], points[1]);
     points += 2;
-    for (i=0; i < ncurves; i++, points += 6) {
+    for (i = 0; i < ncurves; i++, points += 6) {
 	if (iter->do_curves) {
 	    comac_curve_to (cr,
-			    points[0], points[1],
-			    points[2], points[3],
-			    points[4], points[5]);
-	}
-	else {
-	    comac_line_to (cr,
-			    points[4], points[5]);
+			    points[0],
+			    points[1],
+			    points[2],
+			    points[3],
+			    points[4],
+			    points[5]);
+	} else {
+	    comac_line_to (cr, points[4], points[5]);
 	}
     }
     comac_close_path (cr);
     {
 	unsigned rgb = iter->region->rgb;
 	double r = ((rgb >> 16) & 255) / 255.0;
-	double g = ((rgb >>  8) & 255) / 255.0;
-	double b = ((rgb >>  0) & 255) / 255.0;
+	double g = ((rgb >> 8) & 255) / 255.0;
+	double b = ((rgb >> 0) & 255) / 255.0;
 	comac_set_source_rgb (cr, r, g, b);
     }
 
-    iter->points = iter->points + 2*(1 + 3*iter->region->ncurves);
+    iter->points = iter->points + 2 * (1 + 3 * iter->region->ncurves);
     iter->region++;
     return 1;
 }
 
 static comac_time_t
-mosaic_perform(comac_t *cr, unsigned flags, int width, int height, int loops)
+mosaic_perform (comac_t *cr, unsigned flags, int width, int height, int loops)
 {
     struct mosaic_region_iter iter;
 
@@ -111,7 +112,7 @@ mosaic_perform(comac_t *cr, unsigned flags, int width, int height, int loops)
 	comac_fill (cr);
     }
 
-    comac_scale (cr, width / (maxx - minx) , height / (maxy - miny));
+    comac_scale (cr, width / (maxx - minx), height / (maxy - miny));
     comac_translate (cr, -minx, -miny);
 
     /* Iterate over all closed regions in the mosaic filling or
@@ -123,8 +124,7 @@ mosaic_perform(comac_t *cr, unsigned flags, int width, int height, int loops)
 	while (mosaic_next_path (cr, &iter)) {
 	    if (flags & MOSAIC_FILL) {
 		comac_fill (cr);
-	    }
-	    else {
+	    } else {
 		double x, y;
 		comac_get_current_point (cr, &x, &y);
 		comac_in_fill (cr, x, y);
@@ -139,25 +139,41 @@ mosaic_perform(comac_t *cr, unsigned flags, int width, int height, int loops)
 static comac_time_t
 mosaic_fill_curves (comac_t *cr, int width, int height, int loops)
 {
-    return mosaic_perform (cr, MOSAIC_FILL | MOSAIC_CURVE_TO, width, height, loops);
+    return mosaic_perform (cr,
+			   MOSAIC_FILL | MOSAIC_CURVE_TO,
+			   width,
+			   height,
+			   loops);
 }
 
 static comac_time_t
 mosaic_fill_lines (comac_t *cr, int width, int height, int loops)
 {
-    return mosaic_perform (cr, MOSAIC_FILL | MOSAIC_LINE_TO, width, height, loops);
+    return mosaic_perform (cr,
+			   MOSAIC_FILL | MOSAIC_LINE_TO,
+			   width,
+			   height,
+			   loops);
 }
 
 static comac_time_t
 mosaic_tessellate_lines (comac_t *cr, int width, int height, int loops)
 {
-    return mosaic_perform (cr, MOSAIC_TESSELLATE | MOSAIC_LINE_TO, width, height, loops);
+    return mosaic_perform (cr,
+			   MOSAIC_TESSELLATE | MOSAIC_LINE_TO,
+			   width,
+			   height,
+			   loops);
 }
 
 static comac_time_t
 mosaic_tessellate_curves (comac_t *cr, int width, int height, int loops)
 {
-    return mosaic_perform (cr, MOSAIC_TESSELLATE | MOSAIC_CURVE_TO, width, height, loops);
+    return mosaic_perform (cr,
+			   MOSAIC_TESSELLATE | MOSAIC_CURVE_TO,
+			   width,
+			   height,
+			   loops);
 }
 
 comac_bool_t
@@ -171,6 +187,12 @@ mosaic (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     comac_perf_run (perf, "mosaic-fill-curves", mosaic_fill_curves, NULL);
     comac_perf_run (perf, "mosaic-fill-lines", mosaic_fill_lines, NULL);
-    comac_perf_run (perf, "mosaic-tessellate-curves", mosaic_tessellate_curves, NULL);
-    comac_perf_run (perf, "mosaic-tessellate-lines", mosaic_tessellate_lines, NULL);
+    comac_perf_run (perf,
+		    "mosaic-tessellate-curves",
+		    mosaic_tessellate_curves,
+		    NULL);
+    comac_perf_run (perf,
+		    "mosaic-tessellate-lines",
+		    mosaic_tessellate_lines,
+		    NULL);
 }

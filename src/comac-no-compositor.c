@@ -62,12 +62,12 @@ _comac_no_compositor_mask (const comac_compositor_t *compositor,
 static comac_int_status_t
 _comac_no_compositor_stroke (const comac_compositor_t *_compositor,
 			     comac_composite_rectangles_t *extents,
-			     const comac_path_fixed_t	*path,
-			     const comac_stroke_style_t	*style,
-			     const comac_matrix_t	*ctm,
-			     const comac_matrix_t	*ctm_inverse,
-			     double		 tolerance,
-			     comac_antialias_t	 antialias)
+			     const comac_path_fixed_t *path,
+			     const comac_stroke_style_t *style,
+			     const comac_matrix_t *ctm,
+			     const comac_matrix_t *ctm_inverse,
+			     double tolerance,
+			     comac_antialias_t antialias)
 {
     ASSERT_NOT_REACHED;
     return COMAC_INT_STATUS_NOTHING_TO_DO;
@@ -76,10 +76,10 @@ _comac_no_compositor_stroke (const comac_compositor_t *_compositor,
 static comac_int_status_t
 _comac_no_compositor_fill (const comac_compositor_t *_compositor,
 			   comac_composite_rectangles_t *extents,
-			   const comac_path_fixed_t	*path,
-			   comac_fill_rule_t	 fill_rule,
-			   double			 tolerance,
-			   comac_antialias_t	 antialias)
+			   const comac_path_fixed_t *path,
+			   comac_fill_rule_t fill_rule,
+			   double tolerance,
+			   comac_antialias_t antialias)
 {
     ASSERT_NOT_REACHED;
     return COMAC_INT_STATUS_NOTHING_TO_DO;
@@ -88,9 +88,9 @@ _comac_no_compositor_fill (const comac_compositor_t *_compositor,
 static comac_int_status_t
 _comac_no_compositor_glyphs (const comac_compositor_t *compositor,
 			     comac_composite_rectangles_t *extents,
-			     comac_scaled_font_t	*scaled_font,
-			     comac_glyph_t		*glyphs,
-			     int			 num_glyphs,
+			     comac_scaled_font_t *scaled_font,
+			     comac_glyph_t *glyphs,
+			     int num_glyphs,
 			     comac_bool_t overlap)
 {
     ASSERT_NOT_REACHED;

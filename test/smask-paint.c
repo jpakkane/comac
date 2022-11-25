@@ -33,15 +33,18 @@ draw (comac_t *cr, int width, int height)
     comac_t *cr2;
 
     mask = comac_surface_create_similar (comac_get_group_target (cr),
-				         COMAC_CONTENT_ALPHA,
-					 width, height);
+					 COMAC_CONTENT_ALPHA,
+					 width,
+					 height);
     cr2 = comac_create (mask);
     comac_surface_destroy (mask);
 
-    comac_save (cr2); {
+    comac_save (cr2);
+    {
 	comac_set_operator (cr2, COMAC_OPERATOR_CLEAR);
 	comac_paint (cr2);
-    } comac_restore (cr2);
+    }
+    comac_restore (cr2);
 
     pattern = comac_pattern_create_linear (0, 0, width, height);
     comac_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.);
@@ -57,9 +60,12 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 1.0);
     comac_paint (cr);
 
-    pattern = comac_pattern_create_radial (
-	    0.5 * width, 0.5 * height, 0,
-	    0.5 * width, 0.5 * height, 0.5 *height);
+    pattern = comac_pattern_create_radial (0.5 * width,
+					   0.5 * height,
+					   0,
+					   0.5 * width,
+					   0.5 * height,
+					   0.5 * height);
     comac_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.);
     comac_pattern_add_color_stop_rgba (pattern, 0.25, 1., 0., 0., 1.);
     comac_pattern_add_color_stop_rgba (pattern, 0.50, 1., 0., 0., .5);
@@ -76,6 +82,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (smask_paint,
 	    "Test the support of \"soft\" masks with paints",
 	    "smask, paint", /* keywords */
-	    NULL, /* requirements */
-	    60, 60,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    60,
+	    60,
+	    NULL,
+	    draw)

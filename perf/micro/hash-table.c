@@ -110,6 +110,8 @@ hash_table_enabled (comac_perf_t *perf)
 void
 hash_table (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    comac_perf_cover_sources_and_operators (perf, "hash-table",
-					    do_hash_table, NULL);
+    comac_perf_cover_sources_and_operators (perf,
+					    "hash-table",
+					    do_hash_table,
+					    NULL);
 }

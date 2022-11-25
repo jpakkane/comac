@@ -35,13 +35,14 @@ create_mask (comac_t *dst, int width, int height)
     comac_t *cr;
 
     mask = comac_surface_create_similar (comac_get_target (dst),
-	                                 COMAC_CONTENT_ALPHA,
-					 width, height);
+					 COMAC_CONTENT_ALPHA,
+					 width,
+					 height);
     cr = comac_create (mask);
     comac_surface_destroy (mask);
 
     comac_set_operator (cr, COMAC_OPERATOR_OVER);
-    comac_rectangle (cr, width/4, height/4, width/2, height/2);
+    comac_rectangle (cr, width / 4, height / 4, width / 2, height / 2);
     comac_fill (cr);
 
     mask = comac_surface_reference (comac_get_target (cr));
@@ -64,13 +65,13 @@ draw (comac_t *cr, int width, int height)
 
     /* center */
     comac_translate (cr,
-	             (width - comac_image_surface_get_width (image)) / 2.,
+		     (width - comac_image_surface_get_width (image)) / 2.,
 		     (height - comac_image_surface_get_height (image)) / 2.);
 
     /* rotate 30 degree around the center */
-    comac_translate (cr, width/2., height/2.);
+    comac_translate (cr, width / 2., height / 2.);
     comac_rotate (cr, -30 * 2 * M_PI / 360);
-    comac_translate (cr, -width/2., -height/2.);
+    comac_translate (cr, -width / 2., -height / 2.);
 
     /* place the image on our surface */
     comac_set_source_surface (cr, image, 0, 0);
@@ -90,9 +91,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (mask_transformed_similar,
-	    "Test that comac_mask() is affected properly by the CTM and not the image",
-	    "mask", /* keywords */
-	    NULL, /* requirements */
-	    80, 80,
-	    NULL, draw)
+COMAC_TEST (
+    mask_transformed_similar,
+    "Test that comac_mask() is affected properly by the CTM and not the image",
+    "mask", /* keywords */
+    NULL,   /* requirements */
+    80,
+    80,
+    NULL,
+    draw)

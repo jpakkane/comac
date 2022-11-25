@@ -86,6 +86,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (reflected_stroke,
 	    "Exercises the stroker with a reflected ctm",
 	    "stroke, transform", /* keywords */
-	    NULL, /* requirements */
-	    200, 200,
-	    NULL, draw)
+	    NULL,		 /* requirements */
+	    200,
+	    200,
+	    NULL,
+	    draw)

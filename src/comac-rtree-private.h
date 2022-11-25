@@ -70,16 +70,16 @@ typedef struct _comac_rtree {
 } comac_rtree_t;
 
 comac_private comac_rtree_node_t *
-_comac_rtree_node_create (comac_rtree_t		 *rtree,
-		          comac_rtree_node_t	 *parent,
-			  int			  x,
-			  int			  y,
-			  int			  width,
-			  int			  height);
+_comac_rtree_node_create (comac_rtree_t *rtree,
+			  comac_rtree_node_t *parent,
+			  int x,
+			  int y,
+			  int width,
+			  int height);
 
 comac_private comac_status_t
 _comac_rtree_node_insert (comac_rtree_t *rtree,
-	                  comac_rtree_node_t *node,
+			  comac_rtree_node_t *node,
 			  int width,
 			  int height,
 			  comac_rtree_node_t **out);
@@ -94,28 +94,28 @@ comac_private void
 _comac_rtree_node_destroy (comac_rtree_t *rtree, comac_rtree_node_t *node);
 
 comac_private void
-_comac_rtree_init (comac_rtree_t	*rtree,
-	           int			 width,
-		   int			 height,
-		   int			 min_size,
-		   int			 node_size,
-		   void (*destroy)(comac_rtree_node_t *));
+_comac_rtree_init (comac_rtree_t *rtree,
+		   int width,
+		   int height,
+		   int min_size,
+		   int node_size,
+		   void (*destroy) (comac_rtree_node_t *));
 
 comac_private comac_int_status_t
-_comac_rtree_insert (comac_rtree_t	     *rtree,
-		     int		      width,
-	             int		      height,
-	             comac_rtree_node_t	    **out);
+_comac_rtree_insert (comac_rtree_t *rtree,
+		     int width,
+		     int height,
+		     comac_rtree_node_t **out);
 
 comac_private comac_int_status_t
-_comac_rtree_evict_random (comac_rtree_t	 *rtree,
-		           int			  width,
-		           int			  height,
-		           comac_rtree_node_t	**out);
+_comac_rtree_evict_random (comac_rtree_t *rtree,
+			   int width,
+			   int height,
+			   comac_rtree_node_t **out);
 
 comac_private void
 _comac_rtree_foreach (comac_rtree_t *rtree,
-		      void (*func)(comac_rtree_node_t *, void *data),
+		      void (*func) (comac_rtree_node_t *, void *data),
 		      void *data);
 
 static inline void *

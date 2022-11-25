@@ -38,21 +38,29 @@ static comac_test_status_t
 preamble (comac_test_context_t *test_ctx)
 {
     EGLint rgba_attribs[] = {
-	EGL_RED_SIZE, 8,
-	EGL_GREEN_SIZE, 8,
-	EGL_BLUE_SIZE, 8,
-	EGL_ALPHA_SIZE, 8,
-	EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+	EGL_RED_SIZE,
+	8,
+	EGL_GREEN_SIZE,
+	8,
+	EGL_BLUE_SIZE,
+	8,
+	EGL_ALPHA_SIZE,
+	8,
+	EGL_SURFACE_TYPE,
+	EGL_PBUFFER_BIT,
 #if COMAC_HAS_GL_SURFACE
-	EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+	EGL_RENDERABLE_TYPE,
+	EGL_OPENGL_BIT,
 #elif COMAC_HAS_GLESV2_SURFACE
-	EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+	EGL_RENDERABLE_TYPE,
+	EGL_OPENGL_ES2_BIT,
 #endif
 	EGL_NONE
     };
     const EGLint ctx_attribs[] = {
 #if COMAC_HAS_GLESV2_SURFACE
-	EGL_CONTEXT_CLIENT_VERSION, 2,
+	EGL_CONTEXT_CLIENT_VERSION,
+	2,
 #endif
 	EGL_NONE
     };
@@ -84,8 +92,7 @@ preamble (comac_test_context_t *test_ctx)
     eglBindAPI (EGL_OPENGL_ES_API);
 #endif
 
-   ctx = eglCreateContext (dpy, config, EGL_NO_CONTEXT,
-				  ctx_attribs);
+    ctx = eglCreateContext (dpy, config, EGL_NO_CONTEXT, ctx_attribs);
     if (ctx == EGL_NO_CONTEXT) {
 	test_status = COMAC_TEST_UNTESTED;
 	goto CLEANUP_2;
@@ -93,9 +100,12 @@ preamble (comac_test_context_t *test_ctx)
 
     device = comac_egl_device_create (dpy, ctx);
 
-    oversized_surface = comac_gl_surface_create (device, COMAC_CONTENT_COLOR_ALPHA, INT_MAX, INT_MAX);
+    oversized_surface = comac_gl_surface_create (device,
+						 COMAC_CONTENT_COLOR_ALPHA,
+						 INT_MAX,
+						 INT_MAX);
     if (comac_surface_status (oversized_surface) != COMAC_STATUS_INVALID_SIZE)
-        test_status = COMAC_TEST_FAILURE;
+	test_status = COMAC_TEST_FAILURE;
 
     comac_device_destroy (device);
     eglDestroyContext (dpy, ctx);
@@ -110,8 +120,11 @@ CLEANUP_1:
 }
 
 COMAC_TEST (egl_oversized_surface,
-	    "Test that creating a surface beyond texture limits results in an error surface",
+	    "Test that creating a surface beyond texture limits results in an "
+	    "error surface",
 	    "egl", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,  /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

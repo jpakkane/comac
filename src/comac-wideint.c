@@ -37,24 +37,24 @@
 
 #if HAVE_UINT64_T
 
-#define uint64_lo32(i)	((i) & 0xffffffff)
-#define uint64_hi32(i)	((i) >> 32)
-#define uint64_lo(i)	((i) & 0xffffffff)
-#define uint64_hi(i)	((i) >> 32)
-#define uint64_shift32(i)   ((i) << 32)
-#define uint64_carry32	(((uint64_t) 1) << 32)
+#define uint64_lo32(i) ((i) &0xffffffff)
+#define uint64_hi32(i) ((i) >> 32)
+#define uint64_lo(i) ((i) &0xffffffff)
+#define uint64_hi(i) ((i) >> 32)
+#define uint64_shift32(i) ((i) << 32)
+#define uint64_carry32 (((uint64_t) 1) << 32)
 
-#define _comac_uint32s_to_uint64(h,l) ((uint64_t) (h) << 32 | (l))
+#define _comac_uint32s_to_uint64(h, l) ((uint64_t) (h) << 32 | (l))
 
 #else
 
-#define uint64_lo32(i)	((i).lo)
-#define uint64_hi32(i)	((i).hi)
+#define uint64_lo32(i) ((i).lo)
+#define uint64_hi32(i) ((i).hi)
 
 static comac_uint64_t
 uint64_lo (comac_uint64_t i)
 {
-    comac_uint64_t  s;
+    comac_uint64_t s;
 
     s.lo = i.lo;
     s.hi = 0;
@@ -64,7 +64,7 @@ uint64_lo (comac_uint64_t i)
 static comac_uint64_t
 uint64_hi (comac_uint64_t i)
 {
-    comac_uint64_t  s;
+    comac_uint64_t s;
 
     s.lo = i.hi;
     s.hi = 0;
@@ -74,19 +74,19 @@ uint64_hi (comac_uint64_t i)
 static comac_uint64_t
 uint64_shift32 (comac_uint64_t i)
 {
-    comac_uint64_t  s;
+    comac_uint64_t s;
 
     s.lo = 0;
     s.hi = i.lo;
     return s;
 }
 
-static const comac_uint64_t uint64_carry32 = { 0, 1 };
+static const comac_uint64_t uint64_carry32 = {0, 1};
 
 comac_uint64_t
 _comac_double_to_uint64 (double i)
 {
-    comac_uint64_t	q;
+    comac_uint64_t q;
 
     q.hi = i * (1. / 4294967296.);
     q.lo = i - q.hi * 4294967296.;
@@ -102,10 +102,10 @@ _comac_uint64_to_double (comac_uint64_t i)
 comac_int64_t
 _comac_double_to_int64 (double i)
 {
-    comac_uint64_t	q;
+    comac_uint64_t q;
 
     q.hi = i * (1. / INT32_MAX);
-    q.lo = i - q.hi * (double)INT32_MAX;
+    q.lo = i - q.hi * (double) INT32_MAX;
     return q;
 }
 
@@ -118,7 +118,7 @@ _comac_int64_to_double (comac_int64_t i)
 comac_uint64_t
 _comac_uint32_to_uint64 (uint32_t i)
 {
-    comac_uint64_t	q;
+    comac_uint64_t q;
 
     q.lo = i;
     q.hi = 0;
@@ -128,7 +128,7 @@ _comac_uint32_to_uint64 (uint32_t i)
 comac_int64_t
 _comac_int32_to_int64 (int32_t i)
 {
-    comac_uint64_t	q;
+    comac_uint64_t q;
 
     q.lo = i;
     q.hi = i < 0 ? -1 : 0;
@@ -138,7 +138,7 @@ _comac_int32_to_int64 (int32_t i)
 static comac_uint64_t
 _comac_uint32s_to_uint64 (uint32_t h, uint32_t l)
 {
-    comac_uint64_t	q;
+    comac_uint64_t q;
 
     q.lo = l;
     q.hi = h;
@@ -148,7 +148,7 @@ _comac_uint32s_to_uint64 (uint32_t h, uint32_t l)
 comac_uint64_t
 _comac_uint64_add (comac_uint64_t a, comac_uint64_t b)
 {
-    comac_uint64_t	s;
+    comac_uint64_t s;
 
     s.hi = a.hi + b.hi;
     s.lo = a.lo + b.lo;
@@ -160,7 +160,7 @@ _comac_uint64_add (comac_uint64_t a, comac_uint64_t b)
 comac_uint64_t
 _comac_uint64_sub (comac_uint64_t a, comac_uint64_t b)
 {
-    comac_uint64_t	s;
+    comac_uint64_t s;
 
     s.hi = a.hi - b.hi;
     s.lo = a.lo - b.lo;
@@ -169,17 +169,17 @@ _comac_uint64_sub (comac_uint64_t a, comac_uint64_t b)
     return s;
 }
 
-#define uint32_lo(i)	((i) & 0xffff)
-#define uint32_hi(i)	((i) >> 16)
-#define uint32_carry16	((1) << 16)
+#define uint32_lo(i) ((i) &0xffff)
+#define uint32_hi(i) ((i) >> 16)
+#define uint32_carry16 ((1) << 16)
 
 comac_uint64_t
 _comac_uint32x32_64_mul (uint32_t a, uint32_t b)
 {
-    comac_uint64_t  s;
+    comac_uint64_t s;
 
-    uint16_t	ah, al, bh, bl;
-    uint32_t	r0, r1, r2, r3;
+    uint16_t ah, al, bh, bl;
+    uint32_t r0, r1, r2, r3;
 
     al = uint32_lo (a);
     ah = uint32_hi (a);
@@ -191,12 +191,12 @@ _comac_uint32x32_64_mul (uint32_t a, uint32_t b)
     r2 = (uint32_t) ah * bl;
     r3 = (uint32_t) ah * bh;
 
-    r1 += uint32_hi(r0);    /* no carry possible */
-    r1 += r2;		    /* but this can carry */
-    if (r1 < r2)	    /* check */
+    r1 += uint32_hi (r0); /* no carry possible */
+    r1 += r2;		  /* but this can carry */
+    if (r1 < r2)	  /* check */
 	r3 += uint32_carry16;
 
-    s.hi = r3 + uint32_hi(r1);
+    s.hi = r3 + uint32_hi (r1);
     s.lo = (uint32_lo (r1) << 16) + uint32_lo (r0);
     return s;
 }
@@ -216,7 +216,7 @@ _comac_int32x32_64_mul (int32_t a, int32_t b)
 comac_uint64_t
 _comac_uint64_mul (comac_uint64_t a, comac_uint64_t b)
 {
-    comac_uint64_t	s;
+    comac_uint64_t s;
 
     s = _comac_uint32x32_64_mul (a.lo, b.lo);
     s.hi += a.lo * b.hi + a.hi * b.lo;
@@ -226,14 +226,12 @@ _comac_uint64_mul (comac_uint64_t a, comac_uint64_t b)
 comac_uint64_t
 _comac_uint64_lsl (comac_uint64_t a, int shift)
 {
-    if (shift >= 32)
-    {
+    if (shift >= 32) {
 	a.hi = a.lo;
 	a.lo = 0;
 	shift -= 32;
     }
-    if (shift)
-    {
+    if (shift) {
 	a.hi = a.hi << shift | a.lo >> (32 - shift);
 	a.lo = a.lo << shift;
     }
@@ -243,33 +241,29 @@ _comac_uint64_lsl (comac_uint64_t a, int shift)
 comac_uint64_t
 _comac_uint64_rsl (comac_uint64_t a, int shift)
 {
-    if (shift >= 32)
-    {
+    if (shift >= 32) {
 	a.lo = a.hi;
 	a.hi = 0;
 	shift -= 32;
     }
-    if (shift)
-    {
+    if (shift) {
 	a.lo = a.lo >> shift | a.hi << (32 - shift);
 	a.hi = a.hi >> shift;
     }
     return a;
 }
 
-#define _comac_uint32_rsa(a,n)	((uint32_t) (((int32_t) (a)) >> (n)))
+#define _comac_uint32_rsa(a, n) ((uint32_t) (((int32_t) (a)) >> (n)))
 
 comac_int64_t
 _comac_uint64_rsa (comac_int64_t a, int shift)
 {
-    if (shift >= 32)
-    {
+    if (shift >= 32) {
 	a.lo = a.hi;
 	a.hi = _comac_uint32_rsa (a.hi, 31);
 	shift -= 32;
     }
-    if (shift)
-    {
+    if (shift) {
 	a.lo = a.lo >> shift | a.hi << (32 - shift);
 	a.hi = _comac_uint32_rsa (a.hi, shift);
     }
@@ -279,8 +273,7 @@ _comac_uint64_rsa (comac_int64_t a, int shift)
 int
 _comac_uint64_lt (comac_uint64_t a, comac_uint64_t b)
 {
-    return (a.hi < b.hi ||
-	    (a.hi == b.hi && a.lo < b.lo));
+    return (a.hi < b.hi || (a.hi == b.hi && a.lo < b.lo));
 }
 
 int
@@ -292,9 +285,9 @@ _comac_uint64_eq (comac_uint64_t a, comac_uint64_t b)
 int
 _comac_int64_lt (comac_int64_t a, comac_int64_t b)
 {
-    if (_comac_int64_negative (a) && !_comac_int64_negative (b))
+    if (_comac_int64_negative (a) && ! _comac_int64_negative (b))
 	return 1;
-    if (!_comac_int64_negative (a) && _comac_int64_negative (b))
+    if (! _comac_int64_negative (a) && _comac_int64_negative (b))
 	return 0;
     return _comac_uint64_lt (a, b);
 }
@@ -317,9 +310,9 @@ _comac_uint64_cmp (comac_uint64_t a, comac_uint64_t b)
 int
 _comac_int64_cmp (comac_int64_t a, comac_int64_t b)
 {
-    if (_comac_int64_negative (a) && !_comac_int64_negative (b))
+    if (_comac_int64_negative (a) && ! _comac_int64_negative (b))
 	return -1;
-    if (!_comac_int64_negative (a) && _comac_int64_negative (b))
+    if (! _comac_int64_negative (a) && _comac_int64_negative (b))
 	return 1;
 
     return _comac_uint64_cmp (a, b);
@@ -349,25 +342,22 @@ _comac_uint64_negate (comac_uint64_t a)
 comac_uquorem64_t
 _comac_uint64_divrem (comac_uint64_t num, comac_uint64_t den)
 {
-    comac_uquorem64_t	qr;
-    comac_uint64_t	bit;
-    comac_uint64_t	quo;
+    comac_uquorem64_t qr;
+    comac_uint64_t bit;
+    comac_uint64_t quo;
 
     bit = _comac_uint32_to_uint64 (1);
 
     /* normalize to make den >= num, but not overflow */
-    while (_comac_uint64_lt (den, num) && (den.hi & 0x80000000) == 0)
-    {
+    while (_comac_uint64_lt (den, num) && (den.hi & 0x80000000) == 0) {
 	bit = _comac_uint64_lsl (bit, 1);
 	den = _comac_uint64_lsl (den, 1);
     }
     quo = _comac_uint32_to_uint64 (0);
 
     /* generate quotient, one bit at a time */
-    while (bit.hi | bit.lo)
-    {
-	if (_comac_uint64_le (den, num))
-	{
+    while (bit.hi | bit.lo) {
+	if (_comac_uint64_le (den, num)) {
 	    num = _comac_uint64_sub (num, den);
 	    quo = _comac_uint64_add (quo, bit);
 	}
@@ -385,7 +375,7 @@ _comac_uint64_divrem (comac_uint64_t num, comac_uint64_t den)
 comac_uquorem128_t
 _comac_uint128_divrem (comac_uint128_t num, comac_uint128_t den)
 {
-    comac_uquorem128_t	qr;
+    comac_uquorem128_t qr;
 
     qr.quo = num / den;
     qr.rem = num % den;
@@ -397,7 +387,7 @@ _comac_uint128_divrem (comac_uint128_t num, comac_uint128_t den)
 comac_uint128_t
 _comac_uint32_to_uint128 (uint32_t i)
 {
-    comac_uint128_t	q;
+    comac_uint128_t q;
 
     q.lo = _comac_uint32_to_uint64 (i);
     q.hi = _comac_uint32_to_uint64 (0);
@@ -407,7 +397,7 @@ _comac_uint32_to_uint128 (uint32_t i)
 comac_int128_t
 _comac_int32_to_int128 (int32_t i)
 {
-    comac_int128_t	q;
+    comac_int128_t q;
 
     q.lo = _comac_int32_to_int64 (i);
     q.hi = _comac_int32_to_int64 (i < 0 ? -1 : 0);
@@ -417,7 +407,7 @@ _comac_int32_to_int128 (int32_t i)
 comac_uint128_t
 _comac_uint64_to_uint128 (comac_uint64_t i)
 {
-    comac_uint128_t	q;
+    comac_uint128_t q;
 
     q.lo = i;
     q.hi = _comac_uint32_to_uint64 (0);
@@ -427,17 +417,17 @@ _comac_uint64_to_uint128 (comac_uint64_t i)
 comac_int128_t
 _comac_int64_to_int128 (comac_int64_t i)
 {
-    comac_int128_t	q;
+    comac_int128_t q;
 
     q.lo = i;
-    q.hi = _comac_int32_to_int64 (_comac_int64_negative(i) ? -1 : 0);
+    q.hi = _comac_int32_to_int64 (_comac_int64_negative (i) ? -1 : 0);
     return q;
 }
 
 comac_uint128_t
 _comac_uint128_add (comac_uint128_t a, comac_uint128_t b)
 {
-    comac_uint128_t	s;
+    comac_uint128_t s;
 
     s.hi = _comac_uint64_add (a.hi, b.hi);
     s.lo = _comac_uint64_add (a.lo, b.lo);
@@ -449,21 +439,21 @@ _comac_uint128_add (comac_uint128_t a, comac_uint128_t b)
 comac_uint128_t
 _comac_uint128_sub (comac_uint128_t a, comac_uint128_t b)
 {
-    comac_uint128_t	s;
+    comac_uint128_t s;
 
     s.hi = _comac_uint64_sub (a.hi, b.hi);
     s.lo = _comac_uint64_sub (a.lo, b.lo);
     if (_comac_uint64_gt (s.lo, a.lo))
-	s.hi = _comac_uint64_sub (s.hi, _comac_uint32_to_uint64(1));
+	s.hi = _comac_uint64_sub (s.hi, _comac_uint32_to_uint64 (1));
     return s;
 }
 
 comac_uint128_t
 _comac_uint64x64_128_mul (comac_uint64_t a, comac_uint64_t b)
 {
-    comac_uint128_t	s;
-    uint32_t		ah, al, bh, bl;
-    comac_uint64_t	r0, r1, r2, r3;
+    comac_uint128_t s;
+    uint32_t ah, al, bh, bl;
+    comac_uint64_t r0, r1, r2, r3;
 
     al = uint64_lo32 (a);
     ah = uint64_hi32 (a);
@@ -475,58 +465,51 @@ _comac_uint64x64_128_mul (comac_uint64_t a, comac_uint64_t b)
     r2 = _comac_uint32x32_64_mul (ah, bl);
     r3 = _comac_uint32x32_64_mul (ah, bh);
 
-    r1 = _comac_uint64_add (r1, uint64_hi (r0));    /* no carry possible */
-    r1 = _comac_uint64_add (r1, r2);	    	    /* but this can carry */
-    if (_comac_uint64_lt (r1, r2))		    /* check */
+    r1 = _comac_uint64_add (r1, uint64_hi (r0)); /* no carry possible */
+    r1 = _comac_uint64_add (r1, r2);		 /* but this can carry */
+    if (_comac_uint64_lt (r1, r2))		 /* check */
 	r3 = _comac_uint64_add (r3, uint64_carry32);
 
-    s.hi = _comac_uint64_add (r3, uint64_hi(r1));
-    s.lo = _comac_uint64_add (uint64_shift32 (r1),
-				uint64_lo (r0));
+    s.hi = _comac_uint64_add (r3, uint64_hi (r1));
+    s.lo = _comac_uint64_add (uint64_shift32 (r1), uint64_lo (r0));
     return s;
 }
 
 comac_int128_t
 _comac_int64x64_128_mul (comac_int64_t a, comac_int64_t b)
 {
-    comac_int128_t  s;
-    s = _comac_uint64x64_128_mul (_comac_int64_to_uint64(a),
-				  _comac_int64_to_uint64(b));
-    if (_comac_int64_negative (a))
-	s.hi = _comac_uint64_sub (s.hi,
+    comac_int128_t s;
+    s = _comac_uint64x64_128_mul (_comac_int64_to_uint64 (a),
 				  _comac_int64_to_uint64 (b));
+    if (_comac_int64_negative (a))
+	s.hi = _comac_uint64_sub (s.hi, _comac_int64_to_uint64 (b));
     if (_comac_int64_negative (b))
-	s.hi = _comac_uint64_sub (s.hi,
-				  _comac_int64_to_uint64 (a));
+	s.hi = _comac_uint64_sub (s.hi, _comac_int64_to_uint64 (a));
     return s;
 }
 
 comac_uint128_t
 _comac_uint128_mul (comac_uint128_t a, comac_uint128_t b)
 {
-    comac_uint128_t	s;
+    comac_uint128_t s;
 
     s = _comac_uint64x64_128_mul (a.lo, b.lo);
-    s.hi = _comac_uint64_add (s.hi,
-				_comac_uint64_mul (a.lo, b.hi));
-    s.hi = _comac_uint64_add (s.hi,
-				_comac_uint64_mul (a.hi, b.lo));
+    s.hi = _comac_uint64_add (s.hi, _comac_uint64_mul (a.lo, b.hi));
+    s.hi = _comac_uint64_add (s.hi, _comac_uint64_mul (a.hi, b.lo));
     return s;
 }
 
 comac_uint128_t
 _comac_uint128_lsl (comac_uint128_t a, int shift)
 {
-    if (shift >= 64)
-    {
+    if (shift >= 64) {
 	a.hi = a.lo;
 	a.lo = _comac_uint32_to_uint64 (0);
 	shift -= 64;
     }
-    if (shift)
-    {
+    if (shift) {
 	a.hi = _comac_uint64_add (_comac_uint64_lsl (a.hi, shift),
-				    _comac_uint64_rsl (a.lo, (64 - shift)));
+				  _comac_uint64_rsl (a.lo, (64 - shift)));
 	a.lo = _comac_uint64_lsl (a.lo, shift);
     }
     return a;
@@ -535,16 +518,14 @@ _comac_uint128_lsl (comac_uint128_t a, int shift)
 comac_uint128_t
 _comac_uint128_rsl (comac_uint128_t a, int shift)
 {
-    if (shift >= 64)
-    {
+    if (shift >= 64) {
 	a.lo = a.hi;
 	a.hi = _comac_uint32_to_uint64 (0);
 	shift -= 64;
     }
-    if (shift)
-    {
+    if (shift) {
 	a.lo = _comac_uint64_add (_comac_uint64_rsl (a.lo, shift),
-				    _comac_uint64_lsl (a.hi, (64 - shift)));
+				  _comac_uint64_lsl (a.hi, (64 - shift)));
 	a.hi = _comac_uint64_rsl (a.hi, shift);
     }
     return a;
@@ -553,16 +534,14 @@ _comac_uint128_rsl (comac_uint128_t a, int shift)
 comac_uint128_t
 _comac_uint128_rsa (comac_int128_t a, int shift)
 {
-    if (shift >= 64)
-    {
+    if (shift >= 64) {
 	a.lo = a.hi;
-	a.hi = _comac_uint64_rsa (a.hi, 64-1);
+	a.hi = _comac_uint64_rsa (a.hi, 64 - 1);
 	shift -= 64;
     }
-    if (shift)
-    {
+    if (shift) {
 	a.lo = _comac_uint64_add (_comac_uint64_rsl (a.lo, shift),
-				    _comac_uint64_lsl (a.hi, (64 - shift)));
+				  _comac_uint64_lsl (a.hi, (64 - shift)));
 	a.hi = _comac_uint64_rsa (a.hi, shift);
     }
     return a;
@@ -572,16 +551,15 @@ int
 _comac_uint128_lt (comac_uint128_t a, comac_uint128_t b)
 {
     return (_comac_uint64_lt (a.hi, b.hi) ||
-	    (_comac_uint64_eq (a.hi, b.hi) &&
-	     _comac_uint64_lt (a.lo, b.lo)));
+	    (_comac_uint64_eq (a.hi, b.hi) && _comac_uint64_lt (a.lo, b.lo)));
 }
 
 int
 _comac_int128_lt (comac_int128_t a, comac_int128_t b)
 {
-    if (_comac_int128_negative (a) && !_comac_int128_negative (b))
+    if (_comac_int128_negative (a) && ! _comac_int128_negative (b))
 	return 1;
-    if (!_comac_int128_negative (a) && _comac_int128_negative (b))
+    if (! _comac_int128_negative (a) && _comac_int128_negative (b))
 	return 0;
     return _comac_uint128_lt (a, b);
 }
@@ -600,9 +578,9 @@ _comac_uint128_cmp (comac_uint128_t a, comac_uint128_t b)
 int
 _comac_int128_cmp (comac_int128_t a, comac_int128_t b)
 {
-    if (_comac_int128_negative (a) && !_comac_int128_negative (b))
+    if (_comac_int128_negative (a) && ! _comac_int128_negative (b))
 	return -1;
-    if (!_comac_int128_negative (a) && _comac_int128_negative (b))
+    if (! _comac_int128_negative (a) && _comac_int128_negative (b))
 	return 1;
 
     return _comac_uint128_cmp (a, b);
@@ -611,38 +589,34 @@ _comac_int128_cmp (comac_int128_t a, comac_int128_t b)
 int
 _comac_uint128_eq (comac_uint128_t a, comac_uint128_t b)
 {
-    return (_comac_uint64_eq (a.hi, b.hi) &&
-	    _comac_uint64_eq (a.lo, b.lo));
+    return (_comac_uint64_eq (a.hi, b.hi) && _comac_uint64_eq (a.lo, b.lo));
 }
 
 #if HAVE_UINT64_T
-#define _comac_msbset64(q)  (q & ((uint64_t) 1 << 63))
+#define _comac_msbset64(q) (q & ((uint64_t) 1 << 63))
 #else
-#define _comac_msbset64(q)  (q.hi & ((uint32_t) 1 << 31))
+#define _comac_msbset64(q) (q.hi & ((uint32_t) 1 << 31))
 #endif
 
 comac_uquorem128_t
 _comac_uint128_divrem (comac_uint128_t num, comac_uint128_t den)
 {
-    comac_uquorem128_t	qr;
-    comac_uint128_t	bit;
-    comac_uint128_t	quo;
+    comac_uquorem128_t qr;
+    comac_uint128_t bit;
+    comac_uint128_t quo;
 
     bit = _comac_uint32_to_uint128 (1);
 
     /* normalize to make den >= num, but not overflow */
-    while (_comac_uint128_lt (den, num) && !_comac_msbset64(den.hi))
-    {
+    while (_comac_uint128_lt (den, num) && ! _comac_msbset64 (den.hi)) {
 	bit = _comac_uint128_lsl (bit, 1);
 	den = _comac_uint128_lsl (den, 1);
     }
     quo = _comac_uint32_to_uint128 (0);
 
     /* generate quotient, one bit at a time */
-    while (_comac_uint128_ne (bit, _comac_uint32_to_uint128(0)))
-    {
-	if (_comac_uint128_le (den, num))
-	{
+    while (_comac_uint128_ne (bit, _comac_uint32_to_uint128 (0))) {
+	if (_comac_uint128_le (den, num)) {
 	    num = _comac_uint128_sub (num, den);
 	    quo = _comac_uint128_add (quo, bit);
 	}
@@ -675,10 +649,10 @@ _comac_uint128_not (comac_uint128_t a)
 comac_quorem128_t
 _comac_int128_divrem (comac_int128_t num, comac_int128_t den)
 {
-    int			num_neg = _comac_int128_negative (num);
-    int			den_neg = _comac_int128_negative (den);
-    comac_uquorem128_t	uqr;
-    comac_quorem128_t	qr;
+    int num_neg = _comac_int128_negative (num);
+    int den_neg = _comac_int128_negative (den);
+    comac_uquorem128_t uqr;
+    comac_quorem128_t qr;
 
     if (num_neg)
 	num = _comac_int128_negate (num);
@@ -707,8 +681,7 @@ _comac_int128_divrem (comac_int128_t num, comac_int128_t den)
  * non-zero.
  **/
 comac_uquorem64_t
-_comac_uint_96by64_32x64_divrem (comac_uint128_t num,
-				 comac_uint64_t den)
+_comac_uint_96by64_32x64_divrem (comac_uint128_t num, comac_uint64_t den)
 {
     comac_uquorem64_t result;
     comac_uint64_t B = _comac_uint32s_to_uint64 (1, 0);
@@ -716,7 +689,7 @@ _comac_uint_96by64_32x64_divrem (comac_uint128_t num,
     /* These are the high 64 bits of the *96* bit numerator.  We're
      * going to represent the numerator as xB + y, where x is a 64,
      * and y is a 32 bit number. */
-    comac_uint64_t x = _comac_uint128_to_uint64 (_comac_uint128_rsl(num, 32));
+    comac_uint64_t x = _comac_uint128_to_uint64 (_comac_uint128_rsl (num, 32));
 
     /* Initialise the result to indicate overflow. */
     result.quo = _comac_uint32s_to_uint64 (-1U, -1U);
@@ -731,8 +704,7 @@ _comac_uint_96by64_32x64_divrem (comac_uint128_t num,
 	/* When the final quotient is known to fit in 32 bits, then
 	 * num < 2^64 if and only if den < 2^32. */
 	return _comac_uint64_divrem (_comac_uint128_to_uint64 (num), den);
-    }
-    else {
+    } else {
 	/* Denominator is >= 2^32. the numerator is >= 2^64, and the
 	 * division won't overflow: need two divrems.  Write the
 	 * numerator and denominator as
@@ -766,18 +738,17 @@ _comac_uint_96by64_32x64_divrem (comac_uint128_t num,
 
 	comac_uquorem64_t quorem;
 	comac_uint64_t remainder; /* will contain final remainder */
-	uint32_t quotient;	/* will contain final quotient. */
+	uint32_t quotient;	  /* will contain final quotient. */
 	uint32_t q;
 	uint32_t r;
 
 	/* Approximate quotient by dividing the high 64 bits of num by
 	 * u+1. Watch out for overflow of u+1. */
-	if (u+1) {
-	    quorem = _comac_uint64_divrem (x, _comac_uint32_to_uint64 (u+1));
+	if (u + 1) {
+	    quorem = _comac_uint64_divrem (x, _comac_uint32_to_uint64 (u + 1));
 	    q = _comac_uint64_to_uint32 (quorem.quo);
 	    r = _comac_uint64_to_uint32 (quorem.rem);
-	}
-	else {
+	} else {
 	    q = uint64_hi32 (x);
 	    r = _comac_uint64_to_uint32 (x);
 	}
@@ -786,9 +757,11 @@ _comac_uint_96by64_32x64_divrem (comac_uint128_t num,
 	/* Add the main term's contribution to quotient.  Note B-v =
 	 * -v as an uint32 (unless v = 0) */
 	if (v)
-	    quorem = _comac_uint64_divrem (_comac_uint32x32_64_mul (q, -v), den);
+	    quorem =
+		_comac_uint64_divrem (_comac_uint32x32_64_mul (q, -v), den);
 	else
-	    quorem = _comac_uint64_divrem (_comac_uint32s_to_uint64 (q, 0), den);
+	    quorem =
+		_comac_uint64_divrem (_comac_uint32s_to_uint64 (q, 0), den);
 	quotient += _comac_uint64_to_uint32 (quorem.quo);
 
 	/* Add the contribution of the subterm and start computing the
@@ -804,8 +777,7 @@ _comac_uint_96by64_32x64_divrem (comac_uint128_t num,
 	 * taking into account overflow of the addition. */
 	remainder = _comac_uint64_add (remainder, quorem.rem);
 	if (_comac_uint64_ge (remainder, den) ||
-	    _comac_uint64_lt (remainder, quorem.rem))
-	{
+	    _comac_uint64_lt (remainder, quorem.rem)) {
 	    remainder = _comac_uint64_sub (remainder, den);
 	    quotient++;
 	}
@@ -819,11 +791,11 @@ _comac_uint_96by64_32x64_divrem (comac_uint128_t num,
 comac_quorem64_t
 _comac_int_96by64_32x64_divrem (comac_int128_t num, comac_int64_t den)
 {
-    int			num_neg = _comac_int128_negative (num);
-    int			den_neg = _comac_int64_negative (den);
-    comac_uint64_t	nonneg_den;
-    comac_uquorem64_t	uqr;
-    comac_quorem64_t	qr;
+    int num_neg = _comac_int128_negative (num);
+    int den_neg = _comac_int64_negative (den);
+    comac_uint64_t nonneg_den;
+    comac_uquorem64_t uqr;
+    comac_quorem64_t qr;
 
     if (num_neg)
 	num = _comac_int128_negate (num);

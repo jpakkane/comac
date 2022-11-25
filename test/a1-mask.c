@@ -65,7 +65,8 @@ check_status (const comac_test_context_t *ctx,
 
 static comac_test_status_t
 test_surface_with_width_and_stride (const comac_test_context_t *ctx,
-				    int width, int stride,
+				    int width,
+				    int stride,
 				    comac_status_t expected)
 {
     comac_test_status_t status;
@@ -76,15 +77,19 @@ test_surface_with_width_and_stride (const comac_test_context_t *ctx,
 
     comac_test_log (ctx,
 		    "Creating surface with width %d and stride %d\n",
-		    width, stride);
+		    width,
+		    stride);
 
     len = stride;
     if (len < 0)
 	len = -len;
     data = xmalloc (len);
 
-    surface = comac_image_surface_create_for_data (data, COMAC_FORMAT_A1,
-						   width, 1, stride);
+    surface = comac_image_surface_create_for_data (data,
+						   COMAC_FORMAT_A1,
+						   width,
+						   1,
+						   stride);
     cr = comac_create (surface);
 
     comac_paint (cr);
@@ -97,7 +102,7 @@ test_surface_with_width_and_stride (const comac_test_context_t *ctx,
     if (status)
 	goto BAIL;
 
-  BAIL:
+BAIL:
     comac_destroy (cr);
     comac_surface_destroy (surface);
     free (data);
@@ -110,9 +115,8 @@ draw (comac_t *cr, int dst_width, int dst_height)
     unsigned char *mask_aligned;
     comac_surface_t *surface;
 
-    surface = comac_image_surface_create (COMAC_FORMAT_A1,
-					  MASK_WIDTH,
-					  MASK_HEIGHT);
+    surface =
+	comac_image_surface_create (COMAC_FORMAT_A1, MASK_WIDTH, MASK_HEIGHT);
 
     mask_aligned = comac_image_surface_get_data (surface);
     if (mask_aligned != NULL) {
@@ -148,15 +152,15 @@ preamble (comac_test_context_t *ctx)
     /* first check the API strictness */
     for (test_width = 0; test_width < 40; test_width++) {
 	int test_stride = (test_width + 7) / 8;
-	int stride = comac_format_stride_for_width (COMAC_FORMAT_A1,
-						    test_width);
+	int stride =
+	    comac_format_stride_for_width (COMAC_FORMAT_A1, test_width);
 	comac_status_t expected;
 
 	/* First create a surface using the width as the stride,
 	 * (most of these should fail).
 	 */
-	expected = (stride == test_stride) ?
-	    COMAC_STATUS_SUCCESS : COMAC_STATUS_INVALID_STRIDE;
+	expected = (stride == test_stride) ? COMAC_STATUS_SUCCESS
+					   : COMAC_STATUS_INVALID_STRIDE;
 
 	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
@@ -171,7 +175,6 @@ preamble (comac_test_context_t *ctx)
 						     expected);
 	if (status)
 	    return status;
-
 
 	/* Then create a surface using the correct stride,
 	 * (should always succeed).
@@ -195,8 +198,10 @@ preamble (comac_test_context_t *ctx)
 }
 
 COMAC_TEST (a1_mask,
-            "test masks of COMAC_FORMAT_A1",
+	    "test masks of COMAC_FORMAT_A1",
 	    "alpha, mask", /* keywords */
-	    NULL, /* requirements */
-	    MASK_WIDTH, MASK_HEIGHT,
-	    preamble, draw)
+	    NULL,	   /* requirements */
+	    MASK_WIDTH,
+	    MASK_HEIGHT,
+	    preamble,
+	    draw)

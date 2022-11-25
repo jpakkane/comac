@@ -35,9 +35,7 @@
 
 #define GETLINE_MIN_BUFFER_SIZE 128
 ssize_t
-getline (char	**lineptr,
-	 size_t  *n,
-	 FILE	 *stream)
+getline (char **lineptr, size_t *n, FILE *stream)
 {
     char *line, *tmpline;
     size_t len, offset;

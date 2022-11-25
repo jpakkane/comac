@@ -29,18 +29,16 @@
 
 #include "comac-test.h"
 
-
 #define BORDER 10
 #define REPEAT 16
 #define TEXT_SIZE 24
-#define WIDTH  (TEXT_SIZE * REPEAT + 2*BORDER)
-#define HEIGHT (TEXT_SIZE + 2*BORDER)
-
+#define WIDTH (TEXT_SIZE * REPEAT + 2 * BORDER)
+#define HEIGHT (TEXT_SIZE + 2 * BORDER)
 
 static comac_status_t
-test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
-			       unsigned long         glyph,
-			       comac_t              *cr,
+test_scaled_font_render_glyph (comac_scaled_font_t *scaled_font,
+			       unsigned long glyph,
+			       comac_t *cr,
 			       comac_text_extents_t *metrics)
 {
     comac_rectangle (cr, 0, .45, 1., .1);
@@ -54,7 +52,8 @@ _user_font_face_create (void)
     comac_font_face_t *user_font_face;
 
     user_font_face = comac_user_font_face_create ();
-    comac_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
+    comac_user_font_face_set_render_glyph_func (user_font_face,
+						test_scaled_font_render_glyph);
 
     return user_font_face;
 }
@@ -75,10 +74,9 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_set_font_size (cr, TEXT_SIZE);
 
-    for (unsigned i = 0; i < REPEAT; i++)
-    {
-      comac_move_to (cr, BORDER + TEXT_SIZE * i, BORDER + i * .1);
-      comac_show_text (cr, "-");
+    for (unsigned i = 0; i < REPEAT; i++) {
+	comac_move_to (cr, BORDER + TEXT_SIZE * i, BORDER + i * .1);
+	comac_show_text (cr, "-");
     }
 
     return COMAC_TEST_SUCCESS;
@@ -88,5 +86,7 @@ COMAC_TEST (user_font_subpixel,
 	    "Tests user font subpixel rendering",
 	    "font, user-font", /* keywords */
 	    "comac >= 1.17.4", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

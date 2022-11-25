@@ -38,7 +38,7 @@ zrusin_another_path (comac_t *cr)
 {
     unsigned int i;
 
-    for (i=0; i < ARRAY_LENGTH (zrusin_another); i++)
+    for (i = 0; i < ARRAY_LENGTH (zrusin_another); i++)
 	comac_line_to (cr, zrusin_another[i].x, zrusin_another[i].y);
 }
 
@@ -92,6 +92,9 @@ void
 zrusin (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
 
-    comac_perf_run (perf, "zrusin-another-tessellate", zrusin_another_tessellate, NULL);
+    comac_perf_run (perf,
+		    "zrusin-another-tessellate",
+		    zrusin_another_tessellate,
+		    NULL);
     comac_perf_run (perf, "zrusin-another-fill", zrusin_another_fill, NULL);
 }

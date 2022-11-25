@@ -29,7 +29,6 @@
 #define IMAGE_WIDTH 80
 #define IMAGE_HEIGHT 80
 
-
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
@@ -41,17 +40,14 @@ draw (comac_t *cr, int width, int height)
     comac_translate (cr, 50, 50);
 
     pattern = comac_pattern_create_linear (70, 100, 130, 100);
-    comac_pattern_add_color_stop_rgba (pattern, 0,  1, 0, 0,  1.0);
-    comac_pattern_add_color_stop_rgba (pattern, 1,  0, 1, 0,  0.5);
+    comac_pattern_add_color_stop_rgba (pattern, 0, 1, 0, 0, 1.0);
+    comac_pattern_add_color_stop_rgba (pattern, 1, 0, 1, 0, 0.5);
 
     comac_pattern_set_extend (pattern, COMAC_EXTEND_PAD);
     comac_set_source (cr, pattern);
 
-    comac_move_to(cr, 20, 20);
-    comac_curve_to(cr,
-                   130, 0,
-                   70, 200,
-                   180, 180);
+    comac_move_to (cr, 20, 20);
+    comac_curve_to (cr, 130, 0, 70, 200, 180, 180);
     comac_set_line_width (cr, 20);
     comac_stroke (cr);
 
@@ -63,6 +59,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (stroke_pattern,
 	    "Patterned stroke",
 	    "stroke, pattern", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,	       /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

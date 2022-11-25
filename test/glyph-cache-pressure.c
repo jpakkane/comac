@@ -58,14 +58,17 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
     comac_restore (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, TEXT_SIZE);
 
     comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    comac_boilerplate_scaled_font_set_max_glyphs_cached (comac_get_scaled_font (cr), 1);
+    comac_boilerplate_scaled_font_set_max_glyphs_cached (
+	comac_get_scaled_font (cr),
+	1);
 
     comac_move_to (cr, 1, TEXT_SIZE);
     comac_show_text (cr, "the five boxing wizards jump quickly");
@@ -74,8 +77,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (glyph_cache_pressure,
-	    "Ensure that all backends behave well under artificial glyph cache pressure",
+	    "Ensure that all backends behave well under artificial glyph cache "
+	    "pressure",
 	    "stress", /* keywords */
-	    NULL, /* requirements */
-	    223, TEXT_SIZE + 4,
-	    NULL, draw)
+	    NULL,     /* requirements */
+	    223,
+	    TEXT_SIZE + 4,
+	    NULL,
+	    draw)

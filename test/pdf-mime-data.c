@@ -54,41 +54,46 @@ read_file (const comac_test_context_t *ctx,
 	char filename[4096];
 
 	/* try again with srcdir */
-	snprintf (filename, sizeof (filename),
-		  "%s/%s", ctx->srcdir, file);
+	snprintf (filename, sizeof (filename), "%s/%s", ctx->srcdir, file);
 	fp = fopen (filename, "rb");
     }
     if (fp == NULL) {
 	switch (errno) {
 	case ENOMEM:
-	    comac_test_log (ctx, "Could not create file handle for %s due to \
-				lack of memory\n", file);
+	    comac_test_log (ctx,
+			    "Could not create file handle for %s due to \
+				lack of memory\n",
+			    file);
 	    return COMAC_TEST_NO_MEMORY;
 	default:
-	    comac_test_log (ctx, "Could not get the file handle for %s\n", file);
+	    comac_test_log (ctx,
+			    "Could not get the file handle for %s\n",
+			    file);
 	    return COMAC_TEST_FAILURE;
 	}
     }
 
     fseek (fp, 0, SEEK_END);
-    *len = ftell(fp);
+    *len = ftell (fp);
     fseek (fp, 0, SEEK_SET);
     *data = malloc (*len);
     if (*data == NULL) {
-	fclose(fp);
-	comac_test_log (ctx, "Could not allocate memory for buffer to read \
-				from file %s\n", file);
+	fclose (fp);
+	comac_test_log (ctx,
+			"Could not allocate memory for buffer to read \
+				from file %s\n",
+			file);
 	return COMAC_TEST_NO_MEMORY;
     }
 
-    if (fread(*data, *len, 1, fp) != 1) {
+    if (fread (*data, *len, 1, fp) != 1) {
 	free (*data);
-	fclose(fp);
+	fclose (fp);
 	comac_test_log (ctx, "Could not read data from file %s\n", file);
 	return COMAC_TEST_FAILURE;
     }
 
-    fclose(fp);
+    fclose (fp);
     return COMAC_TEST_SUCCESS;
 }
 
@@ -107,7 +112,8 @@ preamble (comac_test_context_t *ctx)
     char command[4096];
     int exit_status;
     char *filename;
-    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
+    const char *path =
+	comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
     if (! comac_test_is_target_enabled (ctx, "pdf"))
 	return COMAC_TEST_UNTESTED;
@@ -124,9 +130,12 @@ preamble (comac_test_context_t *ctx)
 	return test_status;
     }
 
-    comac_surface_set_mime_data (image, COMAC_MIME_TYPE_JPEG,
-				 data, len,
-				 free, data);
+    comac_surface_set_mime_data (image,
+				 COMAC_MIME_TYPE_JPEG,
+				 data,
+				 len,
+				 free,
+				 data);
     width = comac_image_surface_get_width (image);
     height = comac_image_surface_get_height (image);
 
@@ -146,19 +155,28 @@ preamble (comac_test_context_t *ctx)
     comac_surface_destroy (image);
 
     if (status) {
-	comac_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
-			filename, comac_status_to_string (status));
-        free (filename);
+	comac_test_log (ctx,
+			"Failed to create pdf surface for file %s: %s\n",
+			filename,
+			comac_status_to_string (status));
+	free (filename);
 	return COMAC_TEST_FAILURE;
     }
 
-    printf ("pdf-mime-data: Please check %s to ensure it looks/prints correctly.\n", filename);
+    printf (
+	"pdf-mime-data: Please check %s to ensure it looks/prints correctly.\n",
+	filename);
 
-    sprintf (command, "pdfimages -j %s %s", filename, COMAC_TEST_OUTPUT_DIR "/" BASENAME);
+    sprintf (command,
+	     "pdfimages -j %s %s",
+	     filename,
+	     COMAC_TEST_OUTPUT_DIR "/" BASENAME);
     exit_status = system (command);
     free (filename);
     if (exit_status) {
-	comac_test_log (ctx, "pdfimages failed with exit status %d\n", exit_status);
+	comac_test_log (ctx,
+			"pdfimages failed with exit status %d\n",
+			exit_status);
 	return COMAC_TEST_FAILURE;
     }
 
@@ -167,15 +185,19 @@ preamble (comac_test_context_t *ctx)
 	return test_status;
     }
 
-    test_status = read_file (ctx, COMAC_TEST_OUTPUT_DIR "/" BASENAME "-000.jpg", &out_data, &out_len);
+    test_status = read_file (ctx,
+			     COMAC_TEST_OUTPUT_DIR "/" BASENAME "-000.jpg",
+			     &out_data,
+			     &out_len);
     if (test_status) {
 	return test_status;
     }
 
-    if (len != out_len || memcmp(data, out_data, len) != 0) {
+    if (len != out_len || memcmp (data, out_data, len) != 0) {
 	free (data);
 	free (out_data);
-	comac_test_log (ctx, "output mime data does not match source mime data\n");
+	comac_test_log (ctx,
+			"output mime data does not match source mime data\n");
 	return COMAC_TEST_FAILURE;
     }
 
@@ -188,6 +210,8 @@ preamble (comac_test_context_t *ctx)
 COMAC_TEST (pdf_mime_data,
 	    "Check mime data correctly used by PDF surface",
 	    "pdf, mime-data", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    preamble, NULL)
+	    NULL,	      /* requirements */
+	    0,
+	    0,
+	    preamble,
+	    NULL)

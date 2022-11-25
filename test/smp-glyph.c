@@ -35,7 +35,8 @@ draw (comac_t *cr, int width, int height)
 
     comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
@@ -51,6 +52,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (smp_glyph,
 	    "Test glyphs for symbols in the Supplementary Multilingual Plane",
 	    "text, glyphs", /* keywords */
-	    NULL, /* requirements */
-	    64, 64,
-	    NULL, draw)
+	    NULL,	    /* requirements */
+	    64,
+	    64,
+	    NULL,
+	    draw)

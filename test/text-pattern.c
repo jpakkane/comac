@@ -28,13 +28,13 @@
 #define IMAGE_WIDTH 128
 #define IMAGE_HEIGHT 64
 
-
 static void
 draw_text_pattern (comac_t *cr, double alpha)
 {
     comac_pattern_t *pat;
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
 
@@ -57,7 +57,7 @@ draw_text_pattern (comac_t *cr, double alpha)
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
-    comac_scale (cr, width/2, height);
+    comac_scale (cr, width / 2, height);
     draw_text_pattern (cr, 1.0);
     comac_translate (cr, 1, 0);
     draw_text_pattern (cr, 0.5);
@@ -68,6 +68,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (text_pattern,
 	    "Patterned Text",
 	    "text, pattern", /* keywords */
-	    NULL, /* requirements */
-	    IMAGE_WIDTH, IMAGE_HEIGHT,
-	    NULL, draw)
+	    NULL,	     /* requirements */
+	    IMAGE_WIDTH,
+	    IMAGE_HEIGHT,
+	    NULL,
+	    draw)

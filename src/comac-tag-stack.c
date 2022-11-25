@@ -39,19 +39,11 @@
 #include "comac-tag-stack-private.h"
 
 /* Tagged PDF must have one of these tags at the top level */
-static const char * _comac_tag_stack_tagged_pdf_top_level_element_list[] =
-{
-    "Document",
-    "Part",
-    "Art",
-    "Sect",
-    "Div",
-    NULL
-};
+static const char *_comac_tag_stack_tagged_pdf_top_level_element_list[] = {
+    "Document", "Part", "Art", "Sect", "Div", NULL};
 
 /* List of valid tag names. Table numbers reference PDF 32000 */
-static const char * _comac_tag_stack_struct_pdf_list[] =
-{
+static const char *_comac_tag_stack_struct_pdf_list[] = {
     /* Table 333 - Grouping Elements */
     "Document",
     "Part",
@@ -67,16 +59,29 @@ static const char * _comac_tag_stack_struct_pdf_list[] =
     "Private",
 
     /* Table 335 - Standard structure types for paragraphlike elements */
-    "P", "H",
-    "H1", "H2", "H3", "H4", "H5", "H6",
+    "P",
+    "H",
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
 
     /* Table 336 - Standard structure types for list elements */
-    "L", "LI", "Lbl", "LBody",
+    "L",
+    "LI",
+    "Lbl",
+    "LBody",
 
     /* Table 337 - Standard structure types for table elements */
     "Table",
-    "TR", "TH", "TD",
-    "THead", "TBody", "TFoot",
+    "TR",
+    "TH",
+    "TD",
+    "THead",
+    "TBody",
+    "TFoot",
 
     /* Table 338 - Standard structure types for inline-level structure elements */
     "Span",
@@ -91,23 +96,21 @@ static const char * _comac_tag_stack_struct_pdf_list[] =
     "Warichu",
 
     /* Table 339 - Standard structure types for Ruby and Warichu elements */
-    "RB", "RT", "RP",
-    "WT", "WP",
+    "RB",
+    "RT",
+    "RP",
+    "WT",
+    "WP",
 
     /* Table 340 - Standard structure types for illustration elements */
     "Figure",
     "Formula",
     "Form",
 
-    NULL
-};
+    NULL};
 
 /* List of comac specific tag names */
-static const char * _comac_tag_stack_comac_tag_list[] =
-{
-    COMAC_TAG_DEST,
-    NULL
-};
+static const char *_comac_tag_stack_comac_tag_list[] = {COMAC_TAG_DEST, NULL};
 
 void
 _comac_tag_stack_init (comac_tag_stack_t *stack)
@@ -123,7 +126,8 @@ _comac_tag_stack_fini (comac_tag_stack_t *stack)
     while (! comac_list_is_empty (&stack->list)) {
 	comac_tag_stack_elem_t *elem;
 
-	elem = comac_list_first_entry (&stack->list, comac_tag_stack_elem_t, link);
+	elem =
+	    comac_list_first_entry (&stack->list, comac_tag_stack_elem_t, link);
 	comac_list_del (&elem->link);
 	free (elem->name);
 	free (elem->attributes);
@@ -154,20 +158,20 @@ name_in_list (const char *name, const char **list)
 
 comac_int_status_t
 _comac_tag_stack_push (comac_tag_stack_t *stack,
-		       const char        *name,
-		       const char        *attributes)
+		       const char *name,
+		       const char *attributes)
 {
     comac_tag_stack_elem_t *elem;
 
     if (! name_in_list (name, _comac_tag_stack_struct_pdf_list) &&
-	! name_in_list (name, _comac_tag_stack_comac_tag_list))
-    {
+	! name_in_list (name, _comac_tag_stack_comac_tag_list)) {
 	stack->type = TAG_TYPE_INVALID;
 	return _comac_tag_error ("Invalid tag: %s", name);
     }
 
     if (stack->type == TAG_TREE_TYPE_NO_TAGS) {
-	if (name_in_list (name, _comac_tag_stack_tagged_pdf_top_level_element_list))
+	if (name_in_list (name,
+			  _comac_tag_stack_tagged_pdf_top_level_element_list))
 	    stack->type = TAG_TREE_TYPE_TAGGED;
 	else if (strcmp (name, "Link") == 0)
 	    stack->type = TAG_TREE_TYPE_LINK_ONLY;
@@ -176,13 +180,12 @@ _comac_tag_stack_push (comac_tag_stack_t *stack,
     } else {
 	if (stack->type == TAG_TREE_TYPE_LINK_ONLY &&
 	    (strcmp (name, "Link") != 0) &&
-	    name_in_list (name, _comac_tag_stack_struct_pdf_list))
-	{
+	    name_in_list (name, _comac_tag_stack_struct_pdf_list)) {
 	    stack->type = TAG_TREE_TYPE_STRUCTURE;
 	}
     }
 
-    elem = _comac_malloc (sizeof(comac_tag_stack_elem_t));
+    elem = _comac_malloc (sizeof (comac_tag_stack_elem_t));
     if (unlikely (elem == NULL))
 	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
@@ -207,8 +210,7 @@ _comac_tag_stack_push (comac_tag_stack_t *stack,
 }
 
 comac_private void
-_comac_tag_stack_set_top_data (comac_tag_stack_t *stack,
-			       void        *data)
+_comac_tag_stack_set_top_data (comac_tag_stack_t *stack, void *data)
 {
     comac_tag_stack_elem_t *top;
 
@@ -225,9 +227,10 @@ _comac_tag_stack_pop (comac_tag_stack_t *stack,
     comac_tag_stack_elem_t *top;
 
     top = _comac_tag_stack_top_elem (stack);
-    if (!top) {
+    if (! top) {
 	stack->type = TAG_TYPE_INVALID;
-	return _comac_tag_error ("comac_tag_end(\"%s\") no matching begin tag", name);
+	return _comac_tag_error ("comac_tag_end(\"%s\") no matching begin tag",
+				 name);
     }
 
     comac_list_del (&top->link);
@@ -235,8 +238,10 @@ _comac_tag_stack_pop (comac_tag_stack_t *stack,
     if (strcmp (top->name, name) != 0) {
 	stack->type = TAG_TYPE_INVALID;
 	_comac_tag_stack_free_elem (top);
-	return _comac_tag_error ("comac_tag_end(\"%s\") does not matching previous begin tag \"%s\"",
-				 name, top->name);
+	return _comac_tag_error (
+	    "comac_tag_end(\"%s\") does not matching previous begin tag \"%s\"",
+	    name,
+	    top->name);
     }
 
     if (elem)
@@ -271,10 +276,10 @@ _comac_tag_get_type (const char *name)
 	! name_in_list (name, _comac_tag_stack_comac_tag_list))
 	return TAG_TYPE_INVALID;
 
-    if (strcmp(name, "Link") == 0)
+    if (strcmp (name, "Link") == 0)
 	return (TAG_TYPE_LINK | TAG_TYPE_STRUCTURE);
 
-    if (strcmp(name, "comac.dest") == 0)
+    if (strcmp (name, "comac.dest") == 0)
 	return TAG_TYPE_DEST;
 
     return TAG_TYPE_STRUCTURE;

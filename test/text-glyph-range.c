@@ -42,7 +42,7 @@
 
 #include "comac-test.h"
 
-#define WIDTH  100
+#define WIDTH 100
 #define HEIGHT 75
 #define NUM_TEXT 20
 #define TEXT_SIZE 12
@@ -56,11 +56,15 @@ draw (comac_t *cr, int width, int height)
      * text is to make the space obvious.
      */
     long int index[] = {
-	0, /* 'no matching glyph' */
-	0xffff, /* kATSDeletedGlyphCode */
+	0,	 /* 'no matching glyph' */
+	0xffff,	 /* kATSDeletedGlyphCode */
 	0x1ffff, /* out of range */
-	-1L, /* out of range */
-	70, 68, 76, 85, 82 /* 'comac' */
+	-1L,	 /* out of range */
+	70,
+	68,
+	76,
+	85,
+	82 /* 'comac' */
     };
 
     /* We draw in the default black, so paint white first. */
@@ -69,16 +73,15 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr);
     comac_restore (cr);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
 			    COMAC_FONT_SLANT_NORMAL,
 			    COMAC_FONT_WEIGHT_NORMAL);
     comac_set_font_size (cr, 16);
 
     for (i = 0; i < 9; i++) {
 	/* since we're just drawing glyphs directly we need to position them. */
-	comac_glyph_t glyph = {
-	    index[i], 10 * i, 25
-	};
+	comac_glyph_t glyph = {index[i], 10 * i, 25};
 
 	/* test comac_glyph_extents. Every glyph index should
 	 * have extents, invalid glyphs should be zero-width.
@@ -116,10 +119,14 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (text_glyph_range,
-	    "Tests show_glyphs, glyph_path, glyph_extents with out of range glyph ids."
-	    "\nft and atsui font backends fail, misreporting errors from FT_Load_Glyph and ATSUGlyphGetCubicPaths",
-	    "text, stress", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+COMAC_TEST (
+    text_glyph_range,
+    "Tests show_glyphs, glyph_path, glyph_extents with out of range glyph ids."
+    "\nft and atsui font backends fail, misreporting errors from FT_Load_Glyph "
+    "and ATSUGlyphGetCubicPaths",
+    "text, stress", /* keywords */
+    NULL,	    /* requirements */
+    WIDTH,
+    HEIGHT,
+    NULL,
+    draw)

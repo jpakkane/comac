@@ -66,9 +66,9 @@ draw (comac_t *cr, int width, int height)
     comac_set_line_width (cr, 1.0);
     comac_set_source_rgb (cr, 0, 1, 0);
     for (i = 0; i < 10; i++) {
-        comac_move_to (cr, 10, 70 + (i * 4));
-        comac_line_to (cr, 120, 70 + (i * 18));
-        comac_stroke (cr);
+	comac_move_to (cr, 10, 70 + (i * 4));
+	comac_line_to (cr, 120, 70 + (i * 18));
+	comac_stroke (cr);
     }
 
     /* Try filling a poly */
@@ -82,9 +82,9 @@ draw (comac_t *cr, int width, int height)
     /* How about some curves? */
     comac_set_source_rgb (cr, 1, 0, 1);
     for (i = 0; i < 10; i++) {
-        comac_move_to (cr, 150, 50 + (i * 5));
-        comac_curve_to (cr, 250, 50, 200, (i * 10), 300, 50 + (i * 10));
-        comac_stroke (cr);
+	comac_move_to (cr, 150, 50 + (i * 5));
+	comac_curve_to (cr, 250, 50, 200, (i * 10), 300, 50 + (i * 10));
+	comac_stroke (cr);
     }
 
     return COMAC_TEST_SUCCESS;
@@ -92,7 +92,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (unantialiased_shapes,
 	    "Test shape drawing without antialiasing",
-	    "fill, stroke", /* keywords */
+	    "fill, stroke",  /* keywords */
 	    "target=raster", /* requirements */
-	    320, 240,
-	    NULL, draw)
+	    320,
+	    240,
+	    NULL,
+	    draw)

@@ -98,67 +98,95 @@
  * devices.
  **/
 
-#define DEFINE_NIL_SURFACE(status, name)			\
-const comac_surface_t name = {					\
-    NULL,				/* backend */		\
-    NULL,				/* device */		\
-    COMAC_SURFACE_TYPE_IMAGE,		/* type */		\
-    COMAC_CONTENT_COLOR,		/* content */		\
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */		\
-    status,				/* status */		\
-    0,					/* unique id */		\
-    0,					/* serial */		\
-    NULL,				/* damage */		\
-    FALSE,				/* _finishing */	\
-    FALSE,				/* finished */		\
-    TRUE,				/* is_clear */		\
-    FALSE,				/* has_font_options */	\
-    FALSE,				/* owns_device */ \
-    FALSE,                              /* is_vector */ \
-    { 0, 0, 0, NULL, },			/* user_data */		\
-    { 0, 0, 0, NULL, },			/* mime_data */         \
-    { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 },   /* device_transform */	\
-    { 1.0, 0.0,	0.0, 1.0, 0.0, 0.0 },	/* device_transform_inverse */	\
-    { NULL, NULL },			/* device_transform_observers */ \
-    0.0,				/* x_resolution */	\
-    0.0,				/* y_resolution */	\
-    0.0,				/* x_fallback_resolution */	\
-    0.0,				/* y_fallback_resolution */	\
-    NULL,				/* snapshot_of */	\
-    NULL,				/* snapshot_detach */	\
-    { NULL, NULL },			/* snapshots */		\
-    { NULL, NULL },			/* snapshot */		\
-    { COMAC_ANTIALIAS_DEFAULT,		/* antialias */		\
-      COMAC_SUBPIXEL_ORDER_DEFAULT,	/* subpixel_order */	\
-      COMAC_LCD_FILTER_DEFAULT,		/* lcd_filter */	\
-      COMAC_HINT_STYLE_DEFAULT,		/* hint_style */	\
-      COMAC_HINT_METRICS_DEFAULT,	/* hint_metrics */	\
-      COMAC_ROUND_GLYPH_POS_DEFAULT	/* round_glyph_positions */	\
-    }					/* font_options */	\
-}
+#define DEFINE_NIL_SURFACE(status, name)                                       \
+    const comac_surface_t name = {                                             \
+	NULL,			       /* backend */                           \
+	NULL,			       /* device */                            \
+	COMAC_SURFACE_TYPE_IMAGE,      /* type */                              \
+	COMAC_CONTENT_COLOR,	       /* content */                           \
+	COMAC_REFERENCE_COUNT_INVALID, /* ref_count */                         \
+	status,			       /* status */                            \
+	0,			       /* unique id */                         \
+	0,			       /* serial */                            \
+	NULL,			       /* damage */                            \
+	FALSE,			       /* _finishing */                        \
+	FALSE,			       /* finished */                          \
+	TRUE,			       /* is_clear */                          \
+	FALSE,			       /* has_font_options */                  \
+	FALSE,			       /* owns_device */                       \
+	FALSE,			       /* is_vector */                         \
+	{                                                                      \
+	    0,                                                                 \
+	    0,                                                                 \
+	    0,                                                                 \
+	    NULL,                                                              \
+	}, /* user_data */                                                     \
+	{                                                                      \
+	    0,                                                                 \
+	    0,                                                                 \
+	    0,                                                                 \
+	    NULL,                                                              \
+	},				/* mime_data */                        \
+	{1.0, 0.0, 0.0, 1.0, 0.0, 0.0}, /* device_transform */                 \
+	{1.0, 0.0, 0.0, 1.0, 0.0, 0.0}, /* device_transform_inverse */         \
+	{NULL, NULL},			/* device_transform_observers */       \
+	0.0,				/* x_resolution */                     \
+	0.0,				/* y_resolution */                     \
+	0.0,				/* x_fallback_resolution */            \
+	0.0,				/* y_fallback_resolution */            \
+	NULL,				/* snapshot_of */                      \
+	NULL,				/* snapshot_detach */                  \
+	{NULL, NULL},			/* snapshots */                        \
+	{NULL, NULL},			/* snapshot */                         \
+	{                                                                      \
+	    COMAC_ANTIALIAS_DEFAULT,	  /* antialias */                      \
+	    COMAC_SUBPIXEL_ORDER_DEFAULT, /* subpixel_order */                 \
+	    COMAC_LCD_FILTER_DEFAULT,	  /* lcd_filter */                     \
+	    COMAC_HINT_STYLE_DEFAULT,	  /* hint_style */                     \
+	    COMAC_HINT_METRICS_DEFAULT,	  /* hint_metrics */                   \
+	    COMAC_ROUND_GLYPH_POS_DEFAULT /* round_glyph_positions */          \
+	}				  /* font_options */                   \
+    }
 
 /* XXX error object! */
 
-static DEFINE_NIL_SURFACE(COMAC_STATUS_NO_MEMORY, _comac_surface_nil);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_SURFACE_TYPE_MISMATCH, _comac_surface_nil_surface_type_mismatch);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_INVALID_STATUS, _comac_surface_nil_invalid_status);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_INVALID_CONTENT, _comac_surface_nil_invalid_content);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_INVALID_FORMAT, _comac_surface_nil_invalid_format);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_INVALID_VISUAL, _comac_surface_nil_invalid_visual);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_FILE_NOT_FOUND, _comac_surface_nil_file_not_found);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_TEMP_FILE_ERROR, _comac_surface_nil_temp_file_error);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_READ_ERROR, _comac_surface_nil_read_error);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_WRITE_ERROR, _comac_surface_nil_write_error);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_INVALID_STRIDE, _comac_surface_nil_invalid_stride);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_INVALID_SIZE, _comac_surface_nil_invalid_size);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_DEVICE_TYPE_MISMATCH, _comac_surface_nil_device_type_mismatch);
-static DEFINE_NIL_SURFACE(COMAC_STATUS_DEVICE_ERROR, _comac_surface_nil_device_error);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_NO_MEMORY, _comac_surface_nil);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_SURFACE_TYPE_MISMATCH,
+			   _comac_surface_nil_surface_type_mismatch);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_INVALID_STATUS,
+			   _comac_surface_nil_invalid_status);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_INVALID_CONTENT,
+			   _comac_surface_nil_invalid_content);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_INVALID_FORMAT,
+			   _comac_surface_nil_invalid_format);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_INVALID_VISUAL,
+			   _comac_surface_nil_invalid_visual);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_FILE_NOT_FOUND,
+			   _comac_surface_nil_file_not_found);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_TEMP_FILE_ERROR,
+			   _comac_surface_nil_temp_file_error);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_READ_ERROR,
+			   _comac_surface_nil_read_error);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_WRITE_ERROR,
+			   _comac_surface_nil_write_error);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_INVALID_STRIDE,
+			   _comac_surface_nil_invalid_stride);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_INVALID_SIZE,
+			   _comac_surface_nil_invalid_size);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_DEVICE_TYPE_MISMATCH,
+			   _comac_surface_nil_device_type_mismatch);
+static DEFINE_NIL_SURFACE (COMAC_STATUS_DEVICE_ERROR,
+			   _comac_surface_nil_device_error);
 
-static DEFINE_NIL_SURFACE(COMAC_INT_STATUS_UNSUPPORTED, _comac_surface_nil_unsupported);
-static DEFINE_NIL_SURFACE(COMAC_INT_STATUS_NOTHING_TO_DO, _comac_surface_nil_nothing_to_do);
+static DEFINE_NIL_SURFACE (COMAC_INT_STATUS_UNSUPPORTED,
+			   _comac_surface_nil_unsupported);
+static DEFINE_NIL_SURFACE (COMAC_INT_STATUS_NOTHING_TO_DO,
+			   _comac_surface_nil_nothing_to_do);
 
-static void _comac_surface_finish_snapshots (comac_surface_t *surface);
-static void _comac_surface_finish (comac_surface_t *surface);
+static void
+_comac_surface_finish_snapshots (comac_surface_t *surface);
+static void
+_comac_surface_finish (comac_surface_t *surface);
 
 /**
  * _comac_surface_set_error:
@@ -181,8 +209,7 @@ static void _comac_surface_finish (comac_surface_t *surface);
  * Return value: the error status.
  **/
 comac_int_status_t
-_comac_surface_set_error (comac_surface_t *surface,
-			  comac_int_status_t status)
+_comac_surface_set_error (comac_surface_t *surface, comac_int_status_t status)
 {
     /* NOTHING_TO_DO is magic. We use it to break out of the inner-most
      * surface function, but anything higher just sees "success".
@@ -191,12 +218,12 @@ _comac_surface_set_error (comac_surface_t *surface,
 	status = COMAC_INT_STATUS_SUCCESS;
 
     if (status == COMAC_INT_STATUS_SUCCESS ||
-        status >= (int)COMAC_INT_STATUS_LAST_STATUS)
-        return status;
+	status >= (int) COMAC_INT_STATUS_LAST_STATUS)
+	return status;
 
     /* Don't overwrite an existing error. This preserves the first
      * error, which is the most significant. */
-    _comac_status_set_error (&surface->status, (comac_status_t)status);
+    _comac_status_set_error (&surface->status, (comac_status_t) status);
 
     return _comac_error (status);
 }
@@ -330,9 +357,10 @@ static void
 _comac_surface_detach_snapshots (comac_surface_t *surface)
 {
     while (_comac_surface_has_snapshots (surface)) {
-	_comac_surface_detach_snapshot (comac_list_first_entry (&surface->snapshots,
-								comac_surface_t,
-								snapshot));
+	_comac_surface_detach_snapshot (
+	    comac_list_first_entry (&surface->snapshots,
+				    comac_surface_t,
+				    snapshot));
     }
 }
 
@@ -352,8 +380,8 @@ _comac_surface_detach_snapshot (comac_surface_t *snapshot)
 
 void
 _comac_surface_attach_snapshot (comac_surface_t *surface,
-				 comac_surface_t *snapshot,
-				 comac_surface_func_t detach_func)
+				comac_surface_t *snapshot,
+				comac_surface_func_t detach_func)
 {
     assert (surface != snapshot);
     assert (snapshot->snapshot_of != surface);
@@ -368,7 +396,8 @@ _comac_surface_attach_snapshot (comac_surface_t *surface,
 
     comac_list_add (&snapshot->snapshot, &surface->snapshots);
 
-    assert (_comac_surface_has_snapshot (surface, snapshot->backend) == snapshot);
+    assert (_comac_surface_has_snapshot (surface, snapshot->backend) ==
+	    snapshot);
 }
 
 comac_surface_t *
@@ -377,8 +406,10 @@ _comac_surface_has_snapshot (comac_surface_t *surface,
 {
     comac_surface_t *snapshot;
 
-    comac_list_foreach_entry (snapshot, comac_surface_t,
-			      &surface->snapshots, snapshot)
+    comac_list_foreach_entry (snapshot,
+			      comac_surface_t,
+			      &surface->snapshots,
+			      snapshot)
     {
 	if (snapshot->backend == backend)
 	    return snapshot;
@@ -397,11 +428,11 @@ _comac_surface_begin_modification (comac_surface_t *surface)
 }
 
 void
-_comac_surface_init (comac_surface_t			*surface,
-		     const comac_surface_backend_t	*backend,
-		     comac_device_t			*device,
-		     comac_content_t			 content,
-		     comac_bool_t                        is_vector)
+_comac_surface_init (comac_surface_t *surface,
+		     const comac_surface_backend_t *backend,
+		     comac_device_t *device,
+		     comac_content_t content,
+		     comac_bool_t is_vector)
 {
     COMAC_MUTEX_INITIALIZE ();
 
@@ -488,10 +519,10 @@ _comac_surface_copy_similar_properties (comac_surface_t *surface,
  * Since: 1.0
  **/
 comac_surface_t *
-comac_surface_create_similar (comac_surface_t  *other,
-			      comac_content_t	content,
-			      int		width,
-			      int		height)
+comac_surface_create_similar (comac_surface_t *other,
+			      comac_content_t content,
+			      int width,
+			      int height)
 {
     comac_surface_t *surface;
     comac_status_t status;
@@ -512,11 +543,14 @@ comac_surface_create_similar (comac_surface_t  *other,
 
     surface = NULL;
     if (other->backend->create_similar)
-	surface = other->backend->create_similar (other, content, width, height);
+	surface =
+	    other->backend->create_similar (other, content, width, height);
     if (surface == NULL)
-	surface = comac_surface_create_similar_image (other,
-						      _comac_format_from_content (content),
-						      width, height);
+	surface = comac_surface_create_similar_image (
+	    other,
+	    _comac_format_from_content (content),
+	    width,
+	    height);
 
     if (unlikely (surface->status))
 	return surface;
@@ -532,7 +566,8 @@ comac_surface_create_similar (comac_surface_t  *other,
     _comac_pattern_init_solid (&pattern, COMAC_COLOR_TRANSPARENT);
     status = _comac_surface_paint (surface,
 				   COMAC_OPERATOR_CLEAR,
-				   &pattern.base, NULL);
+				   &pattern.base,
+				   NULL);
     if (unlikely (status)) {
 	comac_surface_destroy (surface);
 	surface = _comac_surface_create_in_error (status);
@@ -572,10 +607,10 @@ comac_surface_create_similar (comac_surface_t  *other,
  * Since: 1.12
  **/
 comac_surface_t *
-comac_surface_create_similar_image (comac_surface_t  *other,
-				    comac_format_t    format,
-				    int		width,
-				    int		height)
+comac_surface_create_similar_image (comac_surface_t *other,
+				    comac_format_t format,
+				    int width,
+				    int height)
 {
     comac_surface_t *image;
 
@@ -591,8 +626,8 @@ comac_surface_create_similar_image (comac_surface_t  *other,
 
     image = NULL;
     if (other->backend->create_similar_image)
-	image = other->backend->create_similar_image (other,
-						      format, width, height);
+	image =
+	    other->backend->create_similar_image (other, format, width, height);
     if (image == NULL)
 	image = comac_image_surface_create (format, width, height);
 
@@ -632,7 +667,7 @@ comac_surface_create_similar_image (comac_surface_t  *other,
  * The returned image might have a %COMAC_FORMAT_INVALID format.
  **/
 comac_image_surface_t *
-_comac_surface_map_to_image (comac_surface_t  *surface,
+_comac_surface_map_to_image (comac_surface_t *surface,
 			     const comac_rectangle_int_t *extents)
 {
     comac_image_surface_t *image = NULL;
@@ -671,7 +706,7 @@ _comac_surface_map_to_image (comac_surface_t  *surface,
  * Even if the unmap status is not successful, @image is destroyed.
  **/
 comac_int_status_t
-_comac_surface_unmap_image (comac_surface_t       *surface,
+_comac_surface_unmap_image (comac_surface_t *surface,
 			    comac_image_surface_t *image)
 {
     comac_surface_pattern_t pattern;
@@ -693,8 +728,7 @@ _comac_surface_unmap_image (comac_surface_t       *surface,
 
     /* TODO: require unmap_image != NULL */
     if (surface->backend->unmap_image &&
-	! _comac_image_surface_is_clone (image))
-    {
+	! _comac_image_surface_is_clone (image)) {
 	status = surface->backend->unmap_image (surface, image);
 	if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	    return status;
@@ -711,7 +745,7 @@ _comac_surface_unmap_image (comac_surface_t       *surface,
     /* And we also have to clip the operation to the image's extents */
     extents.x = image->base.device_transform_inverse.x0;
     extents.y = image->base.device_transform_inverse.y0;
-    extents.width  = image->width;
+    extents.width = image->width;
     extents.height = image->height;
     clip = _comac_clip_intersect_rectangle (NULL, &extents);
 
@@ -759,7 +793,7 @@ destroy:
  * Since: 1.12
  **/
 comac_surface_t *
-comac_surface_map_to_image (comac_surface_t  *surface,
+comac_surface_map_to_image (comac_surface_t *surface,
 			    const comac_rectangle_int_t *extents)
 {
     comac_rectangle_int_t rect;
@@ -781,9 +815,13 @@ comac_surface_map_to_image (comac_surface_t  *surface,
 
 	/* If this surface is bounded, we can't map parts
 	 * that are outside of it. */
-	if (likely (surface->backend->get_extents (surface, &surface_extents))) {
-	    if (unlikely (! _comac_rectangle_contains_rectangle (&surface_extents, extents)))
-		return _comac_surface_create_in_error (COMAC_STATUS_INVALID_SIZE);
+	if (likely (
+		surface->backend->get_extents (surface, &surface_extents))) {
+	    if (unlikely (
+		    ! _comac_rectangle_contains_rectangle (&surface_extents,
+							   extents)))
+		return _comac_surface_create_in_error (
+		    COMAC_STATUS_INVALID_SIZE);
 	}
     }
 
@@ -819,8 +857,7 @@ comac_surface_map_to_image (comac_surface_t  *surface,
  * Since: 1.12
  **/
 void
-comac_surface_unmap_image (comac_surface_t *surface,
-			   comac_surface_t *image)
+comac_surface_unmap_image (comac_surface_t *surface, comac_surface_t *image)
 {
     comac_int_status_t status = COMAC_STATUS_SUCCESS;
 
@@ -845,8 +882,8 @@ comac_surface_unmap_image (comac_surface_t *surface,
 	goto error;
     }
 
-    status = _comac_surface_unmap_image (surface,
-					 (comac_image_surface_t *) image);
+    status =
+	_comac_surface_unmap_image (surface, (comac_image_surface_t *) image);
     if (unlikely (status))
 	_comac_surface_set_error (surface, status);
 
@@ -859,10 +896,10 @@ error:
 }
 
 comac_surface_t *
-_comac_surface_create_scratch (comac_surface_t	 *other,
-			       comac_content_t	  content,
-			       int		  width,
-			       int		  height,
+_comac_surface_create_scratch (comac_surface_t *other,
+			       comac_content_t content,
+			       int width,
+			       int height,
 			       const comac_color_t *color)
 {
     comac_surface_t *surface;
@@ -874,11 +911,14 @@ _comac_surface_create_scratch (comac_surface_t	 *other,
 
     surface = NULL;
     if (other->backend->create_similar)
-	surface = other->backend->create_similar (other, content, width, height);
+	surface =
+	    other->backend->create_similar (other, content, width, height);
     if (surface == NULL)
-	surface = comac_surface_create_similar_image (other,
-						      _comac_format_from_content (content),
-						      width, height);
+	surface = comac_surface_create_similar_image (
+	    other,
+	    _comac_format_from_content (content),
+	    width,
+	    height);
 
     if (unlikely (surface->status))
 	return surface;
@@ -891,9 +931,11 @@ _comac_surface_create_scratch (comac_surface_t	 *other,
     if (color) {
 	_comac_pattern_init_solid (&pattern, color);
 	status = _comac_surface_paint (surface,
-				       color == COMAC_COLOR_TRANSPARENT ?
-				       COMAC_OPERATOR_CLEAR : COMAC_OPERATOR_SOURCE,
-				       &pattern.base, NULL);
+				       color == COMAC_COLOR_TRANSPARENT
+					   ? COMAC_OPERATOR_CLEAR
+					   : COMAC_OPERATOR_SOURCE,
+				       &pattern.base,
+				       NULL);
 	if (unlikely (status)) {
 	    comac_surface_destroy (surface);
 	    surface = _comac_surface_create_in_error (status);
@@ -922,7 +964,7 @@ comac_surface_t *
 comac_surface_reference (comac_surface_t *surface)
 {
     if (surface == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
 	return surface;
 
     assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&surface->ref_count));
@@ -946,7 +988,7 @@ void
 comac_surface_destroy (comac_surface_t *surface)
 {
     if (surface == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
 	return;
 
     assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&surface->ref_count));
@@ -974,7 +1016,7 @@ comac_surface_destroy (comac_surface_t *surface)
     _comac_user_data_array_fini (&surface->mime_data);
 
     if (surface->owns_device)
-        comac_device_destroy (surface->device);
+	comac_device_destroy (surface->device);
 
     assert (surface->snapshot_of == NULL);
     assert (! _comac_surface_has_snapshots (surface));
@@ -999,7 +1041,7 @@ unsigned int
 comac_surface_get_reference_count (comac_surface_t *surface)
 {
     if (surface == NULL ||
-	    COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
+	COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
 	return 0;
 
     return COMAC_REFERENCE_COUNT_GET_VALUE (&surface->ref_count);
@@ -1031,7 +1073,7 @@ _comac_surface_finish (comac_surface_t *surface)
     surface->finished = TRUE;
 
     assert (surface->snapshot_of == NULL);
-    assert (!_comac_surface_has_snapshots (surface));
+    assert (! _comac_surface_has_snapshots (surface));
 }
 
 /**
@@ -1113,7 +1155,7 @@ _comac_surface_release_device_reference (comac_surface_t *surface)
  * Since: 1.0
  **/
 void *
-comac_surface_get_user_data (comac_surface_t		 *surface,
+comac_surface_get_user_data (comac_surface_t *surface,
 			     const comac_user_data_key_t *key)
 {
     /* Prevent reads of the array during teardown */
@@ -1142,10 +1184,10 @@ comac_surface_get_user_data (comac_surface_t		 *surface,
  * Since: 1.0
  **/
 comac_status_t
-comac_surface_set_user_data (comac_surface_t		 *surface,
+comac_surface_set_user_data (comac_surface_t *surface,
 			     const comac_user_data_key_t *key,
-			     void			 *user_data,
-			     comac_destroy_func_t	 destroy)
+			     void *user_data,
+			     comac_destroy_func_t destroy)
 {
     if (COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
 	return surface->status;
@@ -1154,7 +1196,9 @@ comac_surface_set_user_data (comac_surface_t		 *surface,
 	return _comac_error (COMAC_STATUS_SURFACE_FINISHED);
 
     return _comac_user_data_array_set_data (&surface->user_data,
-					    key, user_data, destroy);
+					    key,
+					    user_data,
+					    destroy);
 }
 
 /**
@@ -1171,10 +1215,10 @@ comac_surface_set_user_data (comac_surface_t		 *surface,
  * Since: 1.10
  **/
 void
-comac_surface_get_mime_data (comac_surface_t		*surface,
-                             const char			*mime_type,
-                             const unsigned char       **data,
-                             unsigned long		*length)
+comac_surface_get_mime_data (comac_surface_t *surface,
+			     const char *mime_type,
+			     const unsigned char **data,
+			     unsigned long *length)
 {
     comac_user_data_slot_t *slots;
     int i, num_slots;
@@ -1194,7 +1238,8 @@ comac_surface_get_mime_data (comac_surface_t		*surface,
     num_slots = surface->mime_data.num_elements;
     slots = _comac_array_index (&surface->mime_data, 0);
     for (i = 0; i < num_slots; i++) {
-	if (slots[i].key != NULL && strcmp ((char *) slots[i].key, mime_type) == 0) {
+	if (slots[i].key != NULL &&
+	    strcmp ((char *) slots[i].key, mime_type) == 0) {
 	    comac_mime_data_t *mime_data = slots[i].user_data;
 
 	    *data = mime_data->data;
@@ -1217,7 +1262,6 @@ _comac_mime_data_destroy (void *ptr)
 
     free (mime_data);
 }
-
 
 static const char *_comac_surface_image_mime_types[] = {
     COMAC_MIME_TYPE_JPEG,
@@ -1246,8 +1290,10 @@ _comac_surface_has_mime_image (comac_surface_t *surface)
     slots = _comac_array_index (&surface->mime_data, 0);
     for (i = 0; i < num_slots; i++) {
 	if (slots[i].key != NULL) {
-	    for (j = 0; j < ARRAY_LENGTH (_comac_surface_image_mime_types); j++) {
-		if (strcmp ((char *) slots[i].key, _comac_surface_image_mime_types[j]) == 0)
+	    for (j = 0; j < ARRAY_LENGTH (_comac_surface_image_mime_types);
+		 j++) {
+		if (strcmp ((char *) slots[i].key,
+			    _comac_surface_image_mime_types[j]) == 0)
 		    return TRUE;
 	    }
 	}
@@ -1406,12 +1452,12 @@ _comac_surface_has_mime_image (comac_surface_t *surface)
  * Since: 1.10
  **/
 comac_status_t
-comac_surface_set_mime_data (comac_surface_t		*surface,
-                             const char			*mime_type,
-                             const unsigned char	*data,
-                             unsigned long		 length,
-			     comac_destroy_func_t	 destroy,
-			     void			*closure)
+comac_surface_set_mime_data (comac_surface_t *surface,
+			     const char *mime_type,
+			     const unsigned char *data,
+			     unsigned long length,
+			     comac_destroy_func_t destroy,
+			     void *closure)
 {
     comac_status_t status;
     comac_mime_data_t *mime_data;
@@ -1425,7 +1471,9 @@ comac_surface_set_mime_data (comac_surface_t		*surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     status = _comac_intern_string (&mime_type, -1);
     if (unlikely (status))
@@ -1434,7 +1482,9 @@ comac_surface_set_mime_data (comac_surface_t		*surface,
     if (data != NULL) {
 	mime_data = _comac_malloc (sizeof (comac_mime_data_t));
 	if (unlikely (mime_data == NULL))
-	    return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_NO_MEMORY));
+	    return _comac_surface_set_error (
+		surface,
+		_comac_error (COMAC_STATUS_NO_MEMORY));
 
 	COMAC_REFERENCE_COUNT_INIT (&mime_data->ref_count, 1);
 
@@ -1445,10 +1495,11 @@ comac_surface_set_mime_data (comac_surface_t		*surface,
     } else
 	mime_data = NULL;
 
-    status = _comac_user_data_array_set_data (&surface->mime_data,
-					      (comac_user_data_key_t *) mime_type,
-					      mime_data,
-					      _comac_mime_data_destroy);
+    status =
+	_comac_user_data_array_set_data (&surface->mime_data,
+					 (comac_user_data_key_t *) mime_type,
+					 mime_data,
+					 _comac_mime_data_destroy);
     if (unlikely (status)) {
 	free (mime_data);
 
@@ -1473,15 +1524,16 @@ comac_surface_set_mime_data (comac_surface_t		*surface,
  * Since: 1.12
  **/
 comac_bool_t
-comac_surface_supports_mime_type (comac_surface_t		*surface,
-				  const char			*mime_type)
+comac_surface_supports_mime_type (comac_surface_t *surface,
+				  const char *mime_type)
 {
     const char **types;
 
     if (unlikely (surface->status))
 	return FALSE;
     if (unlikely (surface->finished)) {
-	_comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	_comac_surface_set_error (surface,
+				  _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return FALSE;
     }
 
@@ -1508,8 +1560,7 @@ _comac_mime_data_reference (const void *key, void *elt, void *closure)
 }
 
 comac_status_t
-_comac_surface_copy_mime_data (comac_surface_t *dst,
-			       comac_surface_t *src)
+_comac_surface_copy_mime_data (comac_surface_t *dst, comac_surface_t *src)
 {
     comac_status_t status;
 
@@ -1550,8 +1601,8 @@ _comac_surface_copy_mime_data (comac_surface_t *dst,
  * the backend default.
  **/
 void
-_comac_surface_set_font_options (comac_surface_t       *surface,
-				 comac_font_options_t  *options)
+_comac_surface_set_font_options (comac_surface_t *surface,
+				 comac_font_options_t *options)
 {
     if (surface->status)
 	return;
@@ -1559,7 +1610,8 @@ _comac_surface_set_font_options (comac_surface_t       *surface,
     assert (surface->snapshot_of == NULL);
 
     if (surface->finished) {
-	_comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	_comac_surface_set_error (surface,
+				  _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return;
     }
 
@@ -1586,8 +1638,8 @@ _comac_surface_set_font_options (comac_surface_t       *surface,
  * Since: 1.0
  **/
 void
-comac_surface_get_font_options (comac_surface_t       *surface,
-				comac_font_options_t  *options)
+comac_surface_get_font_options (comac_surface_t *surface,
+				comac_font_options_t *options)
 {
     if (comac_font_options_status (options))
 	return;
@@ -1602,8 +1654,9 @@ comac_surface_get_font_options (comac_surface_t       *surface,
 
 	_comac_font_options_init_default (&surface->font_options);
 
-	if (!surface->finished && surface->backend->get_font_options) {
-	    surface->backend->get_font_options (surface, &surface->font_options);
+	if (! surface->finished && surface->backend->get_font_options) {
+	    surface->backend->get_font_options (surface,
+						&surface->font_options);
 	}
     }
 
@@ -1669,14 +1722,17 @@ comac_surface_mark_dirty (comac_surface_t *surface)
     if (unlikely (surface->status))
 	return;
     if (unlikely (surface->finished)) {
-	_comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	_comac_surface_set_error (surface,
+				  _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return;
     }
 
     _comac_surface_get_extents (surface, &extents);
     comac_surface_mark_dirty_rectangle (surface,
-					extents.x, extents.y,
-					extents.width, extents.height);
+					extents.x,
+					extents.y,
+					extents.width,
+					extents.height);
 }
 
 /**
@@ -1698,11 +1754,8 @@ comac_surface_mark_dirty (comac_surface_t *surface)
  * Since: 1.0
  **/
 void
-comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
-				    int              x,
-				    int              y,
-				    int              width,
-				    int              height)
+comac_surface_mark_dirty_rectangle (
+    comac_surface_t *surface, int x, int y, int width, int height)
 {
     comac_status_t status;
 
@@ -1712,7 +1765,8 @@ comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
     assert (surface->snapshot_of == NULL);
 
     if (unlikely (surface->finished)) {
-	_comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	_comac_surface_set_error (surface,
+				  _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return;
     }
 
@@ -1742,10 +1796,12 @@ comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
 	 * do would actually be if there were some scaling here, but
 	 * we avoid this since device_transfom scaling is not exported
 	 * publicly and mark_dirty is not used internally. */
-	status = surface->backend->mark_dirty_rectangle (surface,
-                                                         x + surface->device_transform.x0,
-                                                         y + surface->device_transform.y0,
-							 width, height);
+	status = surface->backend->mark_dirty_rectangle (
+	    surface,
+	    x + surface->device_transform.x0,
+	    y + surface->device_transform.y0,
+	    width,
+	    height);
 
 	if (unlikely (status))
 	    _comac_surface_set_error (surface, status);
@@ -1773,8 +1829,8 @@ comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
  **/
 void
 comac_surface_set_device_scale (comac_surface_t *surface,
-				double		 x_scale,
-				double		 y_scale)
+				double x_scale,
+				double y_scale)
 {
     comac_status_t status;
 
@@ -1784,7 +1840,8 @@ comac_surface_set_device_scale (comac_surface_t *surface,
     assert (surface->snapshot_of == NULL);
 
     if (unlikely (surface->finished)) {
-	_comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	_comac_surface_set_error (surface,
+				  _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return;
     }
 
@@ -1820,8 +1877,8 @@ comac_surface_set_device_scale (comac_surface_t *surface,
  **/
 void
 comac_surface_get_device_scale (comac_surface_t *surface,
-				double          *x_scale,
-				double          *y_scale)
+				double *x_scale,
+				double *y_scale)
 {
     if (x_scale)
 	*x_scale = surface->device_transform.xx;
@@ -1851,8 +1908,8 @@ comac_surface_get_device_scale (comac_surface_t *surface,
  **/
 void
 comac_surface_set_device_offset (comac_surface_t *surface,
-				 double           x_offset,
-				 double           y_offset)
+				 double x_offset,
+				 double y_offset)
 {
     comac_status_t status;
 
@@ -1862,7 +1919,8 @@ comac_surface_set_device_offset (comac_surface_t *surface,
     assert (surface->snapshot_of == NULL);
 
     if (unlikely (surface->finished)) {
-	_comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	_comac_surface_set_error (surface,
+				  _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return;
     }
 
@@ -1896,8 +1954,8 @@ comac_surface_set_device_offset (comac_surface_t *surface,
  **/
 void
 comac_surface_get_device_offset (comac_surface_t *surface,
-				 double          *x_offset,
-				 double          *y_offset)
+				 double *x_offset,
+				 double *y_offset)
 {
     if (x_offset)
 	*x_offset = surface->device_transform.x0;
@@ -1939,9 +1997,9 @@ comac_surface_get_device_offset (comac_surface_t *surface,
  * Since: 1.2
  **/
 void
-comac_surface_set_fallback_resolution (comac_surface_t	*surface,
-				       double		 x_pixels_per_inch,
-				       double		 y_pixels_per_inch)
+comac_surface_set_fallback_resolution (comac_surface_t *surface,
+				       double x_pixels_per_inch,
+				       double y_pixels_per_inch)
 {
     comac_status_t status;
 
@@ -1951,7 +2009,8 @@ comac_surface_set_fallback_resolution (comac_surface_t	*surface,
     assert (surface->snapshot_of == NULL);
 
     if (unlikely (surface->finished)) {
-	_comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	_comac_surface_set_error (surface,
+				  _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 	return;
     }
 
@@ -1986,9 +2045,9 @@ comac_surface_set_fallback_resolution (comac_surface_t	*surface,
  * Since: 1.8
  **/
 void
-comac_surface_get_fallback_resolution (comac_surface_t	*surface,
-				       double		*x_pixels_per_inch,
-				       double		*y_pixels_per_inch)
+comac_surface_get_fallback_resolution (comac_surface_t *surface,
+				       double *x_pixels_per_inch,
+				       double *y_pixels_per_inch)
 {
     if (x_pixels_per_inch)
 	*x_pixels_per_inch = surface->x_fallback_resolution;
@@ -2020,22 +2079,23 @@ _comac_surface_has_device_transform (comac_surface_t *surface)
  * surface. Or %COMAC_STATUS_NO_MEMORY.
  **/
 comac_status_t
-_comac_surface_acquire_source_image (comac_surface_t         *surface,
-				     comac_image_surface_t  **image_out,
-				     void                   **image_extra)
+_comac_surface_acquire_source_image (comac_surface_t *surface,
+				     comac_image_surface_t **image_out,
+				     void **image_extra)
 {
     comac_status_t status;
 
     if (unlikely (surface->status))
 	return surface->status;
 
-    assert (!surface->finished);
+    assert (! surface->finished);
 
     if (surface->backend->acquire_source_image == NULL)
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     status = surface->backend->acquire_source_image (surface,
-						     image_out, image_extra);
+						     image_out,
+						     image_extra);
     if (unlikely (status))
 	return _comac_surface_set_error (surface, status);
 
@@ -2045,9 +2105,9 @@ _comac_surface_acquire_source_image (comac_surface_t         *surface,
 }
 
 comac_status_t
-_comac_surface_default_acquire_source_image (void                    *_surface,
-					     comac_image_surface_t  **image_out,
-					     void                   **image_extra)
+_comac_surface_default_acquire_source_image (void *_surface,
+					     comac_image_surface_t **image_out,
+					     void **image_extra)
 {
     comac_surface_t *surface = _surface;
     comac_rectangle_int_t extents;
@@ -2068,27 +2128,26 @@ _comac_surface_default_acquire_source_image (void                    *_surface,
  * Releases any resources obtained with _comac_surface_acquire_source_image()
  **/
 void
-_comac_surface_release_source_image (comac_surface_t        *surface,
-				     comac_image_surface_t  *image,
-				     void                   *image_extra)
+_comac_surface_release_source_image (comac_surface_t *surface,
+				     comac_image_surface_t *image,
+				     void *image_extra)
 {
-    assert (!surface->finished);
+    assert (! surface->finished);
 
     if (surface->backend->release_source_image)
 	surface->backend->release_source_image (surface, image, image_extra);
 }
 
 void
-_comac_surface_default_release_source_image (void                   *surface,
-					     comac_image_surface_t  *image,
-					     void                   *image_extra)
+_comac_surface_default_release_source_image (void *surface,
+					     comac_image_surface_t *image,
+					     void *image_extra)
 {
     comac_status_t ignored;
 
     ignored = _comac_surface_unmap_image (surface, image);
-    (void)ignored;
+    (void) ignored;
 }
-
 
 comac_surface_t *
 _comac_surface_get_source (comac_surface_t *surface,
@@ -2099,11 +2158,10 @@ _comac_surface_get_source (comac_surface_t *surface,
 }
 
 comac_surface_t *
-_comac_surface_default_source (void *surface,
-			       comac_rectangle_int_t *extents)
+_comac_surface_default_source (void *surface, comac_rectangle_int_t *extents)
 {
     if (extents)
-	_comac_surface_get_extents(surface, extents);
+	_comac_surface_get_extents (surface, extents);
     return surface;
 }
 
@@ -2144,17 +2202,18 @@ nothing_to_do (comac_surface_t *surface,
     if (op == COMAC_OPERATOR_CLEAR && surface->is_clear)
 	return TRUE;
 
-    if (op == COMAC_OPERATOR_ATOP && (surface->content & COMAC_CONTENT_COLOR) ==0)
+    if (op == COMAC_OPERATOR_ATOP &&
+	(surface->content & COMAC_CONTENT_COLOR) == 0)
 	return TRUE;
 
     return FALSE;
 }
 
 comac_status_t
-_comac_surface_paint (comac_surface_t		*surface,
-		      comac_operator_t		 op,
-		      const comac_pattern_t	*source,
-		      const comac_clip_t	*clip)
+_comac_surface_paint (comac_surface_t *surface,
+		      comac_operator_t op,
+		      const comac_pattern_t *source,
+		      const comac_clip_t *clip)
 {
     comac_int_status_t status;
     comac_bool_t is_clear;
@@ -2163,7 +2222,9 @@ _comac_surface_paint (comac_surface_t		*surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (_comac_clip_is_all_clipped (clip))
 	return COMAC_STATUS_SUCCESS;
@@ -2190,11 +2251,11 @@ _comac_surface_paint (comac_surface_t		*surface,
 }
 
 comac_status_t
-_comac_surface_mask (comac_surface_t		*surface,
-		     comac_operator_t		 op,
-		     const comac_pattern_t	*source,
-		     const comac_pattern_t	*mask,
-		     const comac_clip_t		*clip)
+_comac_surface_mask (comac_surface_t *surface,
+		     comac_operator_t op,
+		     const comac_pattern_t *source,
+		     const comac_pattern_t *mask,
+		     const comac_clip_t *clip)
 {
     comac_int_status_t status;
 
@@ -2202,15 +2263,16 @@ _comac_surface_mask (comac_surface_t		*surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (_comac_clip_is_all_clipped (clip))
 	return COMAC_STATUS_SUCCESS;
 
     /* If the mask is blank, this is just an expensive no-op */
     if (_comac_pattern_is_clear (mask) &&
-	_comac_operator_bounded_by_mask (op))
-    {
+	_comac_operator_bounded_by_mask (op)) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -2239,21 +2301,21 @@ _comac_surface_mask (comac_surface_t		*surface,
 }
 
 comac_status_t
-_comac_surface_fill_stroke (comac_surface_t	    *surface,
-			    comac_operator_t	     fill_op,
-			    const comac_pattern_t   *fill_source,
-			    comac_fill_rule_t	     fill_rule,
-			    double		     fill_tolerance,
-			    comac_antialias_t	     fill_antialias,
-			    comac_path_fixed_t	    *path,
-			    comac_operator_t	     stroke_op,
-			    const comac_pattern_t   *stroke_source,
-			    const comac_stroke_style_t    *stroke_style,
-			    const comac_matrix_t	    *stroke_ctm,
-			    const comac_matrix_t	    *stroke_ctm_inverse,
-			    double		     stroke_tolerance,
-			    comac_antialias_t	     stroke_antialias,
-			    const comac_clip_t	    *clip)
+_comac_surface_fill_stroke (comac_surface_t *surface,
+			    comac_operator_t fill_op,
+			    const comac_pattern_t *fill_source,
+			    comac_fill_rule_t fill_rule,
+			    double fill_tolerance,
+			    comac_antialias_t fill_antialias,
+			    comac_path_fixed_t *path,
+			    comac_operator_t stroke_op,
+			    const comac_pattern_t *stroke_source,
+			    const comac_stroke_style_t *stroke_style,
+			    const comac_matrix_t *stroke_ctm,
+			    const comac_matrix_t *stroke_ctm_inverse,
+			    double stroke_tolerance,
+			    comac_antialias_t stroke_antialias,
+			    const comac_clip_t *clip)
 {
     comac_int_status_t status;
 
@@ -2261,15 +2323,15 @@ _comac_surface_fill_stroke (comac_surface_t	    *surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (_comac_clip_is_all_clipped (clip))
 	return COMAC_STATUS_SUCCESS;
 
-    if (surface->is_clear &&
-	fill_op == COMAC_OPERATOR_CLEAR &&
-	stroke_op == COMAC_OPERATOR_CLEAR)
-    {
+    if (surface->is_clear && fill_op == COMAC_OPERATOR_CLEAR &&
+	stroke_op == COMAC_OPERATOR_CLEAR) {
 	return COMAC_STATUS_SUCCESS;
     }
 
@@ -2290,33 +2352,50 @@ _comac_surface_fill_stroke (comac_surface_t	    *surface,
 	comac_matrix_t dev_ctm_inverse = *stroke_ctm_inverse;
 
 	status = surface->backend->fill_stroke (surface,
-						fill_op, fill_source, fill_rule,
-						fill_tolerance, fill_antialias,
+						fill_op,
+						fill_source,
+						fill_rule,
+						fill_tolerance,
+						fill_antialias,
 						path,
-						stroke_op, stroke_source,
+						stroke_op,
+						stroke_source,
 						stroke_style,
-						&dev_ctm, &dev_ctm_inverse,
-						stroke_tolerance, stroke_antialias,
+						&dev_ctm,
+						&dev_ctm_inverse,
+						stroke_tolerance,
+						stroke_antialias,
 						clip);
 
 	if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	    goto FINISH;
     }
 
-    status = _comac_surface_fill (surface, fill_op, fill_source, path,
-				  fill_rule, fill_tolerance, fill_antialias,
+    status = _comac_surface_fill (surface,
+				  fill_op,
+				  fill_source,
+				  path,
+				  fill_rule,
+				  fill_tolerance,
+				  fill_antialias,
 				  clip);
     if (unlikely (status))
 	goto FINISH;
 
-    status = _comac_surface_stroke (surface, stroke_op, stroke_source, path,
-				    stroke_style, stroke_ctm, stroke_ctm_inverse,
-				    stroke_tolerance, stroke_antialias,
+    status = _comac_surface_stroke (surface,
+				    stroke_op,
+				    stroke_source,
+				    path,
+				    stroke_style,
+				    stroke_ctm,
+				    stroke_ctm_inverse,
+				    stroke_tolerance,
+				    stroke_antialias,
 				    clip);
     if (unlikely (status))
 	goto FINISH;
 
-  FINISH:
+FINISH:
     if (status != COMAC_INT_STATUS_NOTHING_TO_DO) {
 	surface->is_clear = FALSE;
 	surface->serial++;
@@ -2326,16 +2405,16 @@ _comac_surface_fill_stroke (comac_surface_t	    *surface,
 }
 
 comac_status_t
-_comac_surface_stroke (comac_surface_t			*surface,
-		       comac_operator_t			 op,
-		       const comac_pattern_t		*source,
-		       const comac_path_fixed_t		*path,
-		       const comac_stroke_style_t	*stroke_style,
-		       const comac_matrix_t		*ctm,
-		       const comac_matrix_t		*ctm_inverse,
-		       double				 tolerance,
-		       comac_antialias_t		 antialias,
-		       const comac_clip_t		*clip)
+_comac_surface_stroke (comac_surface_t *surface,
+		       comac_operator_t op,
+		       const comac_pattern_t *source,
+		       const comac_path_fixed_t *path,
+		       const comac_stroke_style_t *stroke_style,
+		       const comac_matrix_t *ctm,
+		       const comac_matrix_t *ctm_inverse,
+		       double tolerance,
+		       comac_antialias_t antialias,
+		       const comac_clip_t *clip)
 {
     comac_int_status_t status;
 
@@ -2343,7 +2422,9 @@ _comac_surface_stroke (comac_surface_t			*surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (_comac_clip_is_all_clipped (clip))
 	return COMAC_STATUS_SUCCESS;
@@ -2359,10 +2440,15 @@ _comac_surface_stroke (comac_surface_t			*surface,
     if (unlikely (status))
 	return status;
 
-    status = surface->backend->stroke (surface, op, source,
-				       path, stroke_style,
-				       ctm, ctm_inverse,
-				       tolerance, antialias,
+    status = surface->backend->stroke (surface,
+				       op,
+				       source,
+				       path,
+				       stroke_style,
+				       ctm,
+				       ctm_inverse,
+				       tolerance,
+				       antialias,
 				       clip);
     if (status != COMAC_INT_STATUS_NOTHING_TO_DO) {
 	surface->is_clear = FALSE;
@@ -2373,14 +2459,14 @@ _comac_surface_stroke (comac_surface_t			*surface,
 }
 
 comac_status_t
-_comac_surface_fill (comac_surface_t		*surface,
-		     comac_operator_t		 op,
-		     const comac_pattern_t	 *source,
-		     const comac_path_fixed_t	*path,
-		     comac_fill_rule_t		 fill_rule,
-		     double			 tolerance,
-		     comac_antialias_t		 antialias,
-		     const comac_clip_t		*clip)
+_comac_surface_fill (comac_surface_t *surface,
+		     comac_operator_t op,
+		     const comac_pattern_t *source,
+		     const comac_path_fixed_t *path,
+		     comac_fill_rule_t fill_rule,
+		     double tolerance,
+		     comac_antialias_t antialias,
+		     const comac_clip_t *clip)
 {
     comac_int_status_t status;
 
@@ -2388,7 +2474,9 @@ _comac_surface_fill (comac_surface_t		*surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (_comac_clip_is_all_clipped (clip))
 	return COMAC_STATUS_SUCCESS;
@@ -2404,9 +2492,13 @@ _comac_surface_fill (comac_surface_t		*surface,
     if (unlikely (status))
 	return status;
 
-    status = surface->backend->fill (surface, op, source,
-				     path, fill_rule,
-				     tolerance, antialias,
+    status = surface->backend->fill (surface,
+				     op,
+				     source,
+				     path,
+				     fill_rule,
+				     tolerance,
+				     antialias,
 				     clip);
     if (status != COMAC_INT_STATUS_NOTHING_TO_DO) {
 	surface->is_clear = FALSE;
@@ -2513,15 +2605,15 @@ comac_surface_show_page (comac_surface_t *surface)
  * variant of this function.
  **/
 comac_bool_t
-_comac_surface_get_extents (comac_surface_t         *surface,
-			    comac_rectangle_int_t   *extents)
+_comac_surface_get_extents (comac_surface_t *surface,
+			    comac_rectangle_int_t *extents)
 {
     comac_bool_t bounded;
 
     if (unlikely (surface->status))
 	goto zero_extents;
     if (unlikely (surface->finished)) {
-	_comac_surface_set_error(surface, COMAC_STATUS_SURFACE_FINISHED);
+	_comac_surface_set_error (surface, COMAC_STATUS_SURFACE_FINISHED);
 	goto zero_extents;
     }
 
@@ -2562,7 +2654,7 @@ zero_extents:
  * Since: 1.8
  **/
 comac_bool_t
-comac_surface_has_show_text_glyphs (comac_surface_t	    *surface)
+comac_surface_has_show_text_glyphs (comac_surface_t *surface)
 {
     if (unlikely (surface->status))
 	return FALSE;
@@ -2581,49 +2673,52 @@ comac_surface_has_show_text_glyphs (comac_surface_t	    *surface)
 #define GLYPH_CACHE_SIZE 64
 
 static inline comac_int_status_t
-ensure_scaled_glyph (comac_scaled_font_t   *scaled_font,
-		     comac_color_t         *foreground_color,
-                     comac_scaled_glyph_t **glyph_cache,
-                     comac_glyph_t         *glyph,
-                     comac_scaled_glyph_t **scaled_glyph)
+ensure_scaled_glyph (comac_scaled_font_t *scaled_font,
+		     comac_color_t *foreground_color,
+		     comac_scaled_glyph_t **glyph_cache,
+		     comac_glyph_t *glyph,
+		     comac_scaled_glyph_t **scaled_glyph)
 {
     int cache_index;
     comac_int_status_t status = COMAC_INT_STATUS_SUCCESS;
 
     cache_index = glyph->index % GLYPH_CACHE_SIZE;
     *scaled_glyph = glyph_cache[cache_index];
-    if (*scaled_glyph == NULL || _comac_scaled_glyph_index (*scaled_glyph) != glyph->index) {
-        status = _comac_scaled_glyph_lookup (scaled_font,
-                                             glyph->index,
-                                             COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE,
-                                             foreground_color,
-                                             scaled_glyph);
-        if (status == COMAC_INT_STATUS_UNSUPPORTED) {
-            /* If the color surface not available, ensure scaled_glyph is not NULL. */
-            status = _comac_scaled_glyph_lookup (scaled_font,
-                                                 glyph->index,
-                                                 COMAC_SCALED_GLYPH_INFO_SURFACE,
-                                                 NULL, /* foreground color */
-                                                 scaled_glyph);
-        }
-        if (unlikely (status))
-            status = _comac_scaled_font_set_error (scaled_font, status);
+    if (*scaled_glyph == NULL ||
+	_comac_scaled_glyph_index (*scaled_glyph) != glyph->index) {
+	status =
+	    _comac_scaled_glyph_lookup (scaled_font,
+					glyph->index,
+					COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE,
+					foreground_color,
+					scaled_glyph);
+	if (status == COMAC_INT_STATUS_UNSUPPORTED) {
+	    /* If the color surface not available, ensure scaled_glyph is not NULL. */
+	    status =
+		_comac_scaled_glyph_lookup (scaled_font,
+					    glyph->index,
+					    COMAC_SCALED_GLYPH_INFO_SURFACE,
+					    NULL, /* foreground color */
+					    scaled_glyph);
+	}
+	if (unlikely (status))
+	    status = _comac_scaled_font_set_error (scaled_font, status);
 
-        glyph_cache[cache_index] = *scaled_glyph;
+	glyph_cache[cache_index] = *scaled_glyph;
     }
 
     return status;
 }
 
 static inline comac_int_status_t
-composite_one_color_glyph (comac_surface_t       *surface,
-                           comac_operator_t       op,
-                           const comac_pattern_t *source,
-                           const comac_clip_t    *clip,
-                           comac_glyph_t         *glyph,
-                           comac_scaled_glyph_t  *scaled_glyph,
-			   double                 x_scale,
-			   double                 y_scale)
+composite_one_color_glyph (comac_surface_t *surface,
+			   comac_operator_t op,
+			   const comac_pattern_t *source,
+			   const comac_clip_t *clip,
+			   comac_glyph_t *glyph,
+			   comac_scaled_glyph_t *scaled_glyph,
+			   double x_scale,
+			   double y_scale)
 {
     comac_int_status_t status;
     comac_image_surface_t *glyph_surface;
@@ -2635,44 +2730,48 @@ composite_one_color_glyph (comac_surface_t       *surface,
 
     has_color = scaled_glyph->has_info & COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE;
     if (has_color)
-        glyph_surface = scaled_glyph->color_surface;
+	glyph_surface = scaled_glyph->color_surface;
     else
-        glyph_surface = scaled_glyph->surface;
+	glyph_surface = scaled_glyph->surface;
 
     if (glyph_surface->width && glyph_surface->height) {
-        int x, y;
-        /* round glyph locations to the nearest pixels */
-        /* XXX: FRAGILE: We're ignoring device_transform scaling here. A bug? */
-	x = _comac_lround (glyph->x * x_scale - glyph_surface->base.device_transform.x0);
-	y = _comac_lround (glyph->y * y_scale - glyph_surface->base.device_transform.y0);
+	int x, y;
+	/* round glyph locations to the nearest pixels */
+	/* XXX: FRAGILE: We're ignoring device_transform scaling here. A bug? */
+	x = _comac_lround (glyph->x * x_scale -
+			   glyph_surface->base.device_transform.x0);
+	y = _comac_lround (glyph->y * y_scale -
+			   glyph_surface->base.device_transform.y0);
 
-        pattern = comac_pattern_create_for_surface ((comac_surface_t *)glyph_surface);
-        comac_matrix_init_translate (&matrix, - x, - y);
+	pattern = comac_pattern_create_for_surface (
+	    (comac_surface_t *) glyph_surface);
+	comac_matrix_init_translate (&matrix, -x, -y);
 	comac_matrix_scale (&matrix, x_scale, y_scale);
-        comac_pattern_set_matrix (pattern, &matrix);
-        if (op == COMAC_OPERATOR_SOURCE || op == COMAC_OPERATOR_CLEAR || !has_color)
+	comac_pattern_set_matrix (pattern, &matrix);
+	if (op == COMAC_OPERATOR_SOURCE || op == COMAC_OPERATOR_CLEAR ||
+	    ! has_color)
 	    status = _comac_surface_mask (surface, op, pattern, pattern, clip);
-        else
+	else
 	    status = _comac_surface_paint (surface, op, pattern, clip);
-        comac_pattern_destroy (pattern);
+	comac_pattern_destroy (pattern);
     }
 
     return status;
 }
 
 static comac_int_status_t
-composite_color_glyphs (comac_surface_t             *surface,
-                        comac_operator_t             op,
-                        const comac_pattern_t       *source,
-                        char                        *utf8,
-                        int                         *utf8_len,
-                        comac_glyph_t               *glyphs,
-                        int                         *num_glyphs,
-                        comac_text_cluster_t        *clusters,
-	                int			    *num_clusters,
-		        comac_text_cluster_flags_t   cluster_flags,
-                        comac_scaled_font_t         *scaled_font,
-                        const comac_clip_t          *clip)
+composite_color_glyphs (comac_surface_t *surface,
+			comac_operator_t op,
+			const comac_pattern_t *source,
+			char *utf8,
+			int *utf8_len,
+			comac_glyph_t *glyphs,
+			int *num_glyphs,
+			comac_text_cluster_t *clusters,
+			int *num_clusters,
+			comac_text_cluster_flags_t cluster_flags,
+			comac_scaled_font_t *scaled_font,
+			const comac_clip_t *clip)
 {
     comac_int_status_t status;
     int i, j;
@@ -2718,99 +2817,127 @@ composite_color_glyphs (comac_surface_t             *surface,
 
     if (clusters) {
 
-        if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
-            glyph_pos = *num_glyphs - 1;
+	if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
+	    glyph_pos = *num_glyphs - 1;
 
-        for (i = 0; i < *num_clusters; i++) {
-            comac_bool_t skip_cluster = TRUE;
+	for (i = 0; i < *num_clusters; i++) {
+	    comac_bool_t skip_cluster = TRUE;
 
-            for (j = 0; j < clusters[i].num_glyphs; j++) {
-                if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
-                    gp = glyph_pos - j;
-                else
-                    gp = glyph_pos + j;
+	    for (j = 0; j < clusters[i].num_glyphs; j++) {
+		if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
+		    gp = glyph_pos - j;
+		else
+		    gp = glyph_pos + j;
 
-                status = ensure_scaled_glyph (scaled_font, foreground_color, glyph_cache,
-                                              &glyphs[gp], &scaled_glyph);
-                if (unlikely (status))
-                    goto UNLOCK;
+		status = ensure_scaled_glyph (scaled_font,
+					      foreground_color,
+					      glyph_cache,
+					      &glyphs[gp],
+					      &scaled_glyph);
+		if (unlikely (status))
+		    goto UNLOCK;
 
-                if ((scaled_glyph->has_info & COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) != 0) {
-                    skip_cluster = FALSE;
-                    break;
-                }
-            }
+		if ((scaled_glyph->has_info &
+		     COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) != 0) {
+		    skip_cluster = FALSE;
+		    break;
+		}
+	    }
 
-            if (skip_cluster) {
-                memmove (utf8 + remaining_bytes, utf8 + byte_pos, clusters[i].num_bytes);
-                remaining_bytes += clusters[i].num_bytes;
-                byte_pos += clusters[i].num_bytes;
-                for (j = 0; j < clusters[i].num_glyphs; j++, remaining_glyphs++) {
-                    if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
-                        glyphs[*num_glyphs - 1 - remaining_glyphs] = glyphs[glyph_pos--];
-                    else
-                        glyphs[remaining_glyphs] = glyphs[glyph_pos++];
-                }
-                clusters[remaining_clusters++] = clusters[i];
-                continue;
-            }
+	    if (skip_cluster) {
+		memmove (utf8 + remaining_bytes,
+			 utf8 + byte_pos,
+			 clusters[i].num_bytes);
+		remaining_bytes += clusters[i].num_bytes;
+		byte_pos += clusters[i].num_bytes;
+		for (j = 0; j < clusters[i].num_glyphs;
+		     j++, remaining_glyphs++) {
+		    if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
+			glyphs[*num_glyphs - 1 - remaining_glyphs] =
+			    glyphs[glyph_pos--];
+		    else
+			glyphs[remaining_glyphs] = glyphs[glyph_pos++];
+		}
+		clusters[remaining_clusters++] = clusters[i];
+		continue;
+	    }
 
-            for (j = 0; j < clusters[i].num_glyphs; j++) {
-                if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
-                    gp = glyph_pos - j;
-                else
-                    gp = glyph_pos + j;
+	    for (j = 0; j < clusters[i].num_glyphs; j++) {
+		if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
+		    gp = glyph_pos - j;
+		else
+		    gp = glyph_pos + j;
 
-                status = ensure_scaled_glyph (scaled_font, foreground_color, glyph_cache,
-                                              &glyphs[gp], &scaled_glyph);
-                if (unlikely (status))
-                    goto UNLOCK;
+		status = ensure_scaled_glyph (scaled_font,
+					      foreground_color,
+					      glyph_cache,
+					      &glyphs[gp],
+					      &scaled_glyph);
+		if (unlikely (status))
+		    goto UNLOCK;
 
-                status = composite_one_color_glyph (surface, op, source, clip,
-						    &glyphs[gp], scaled_glyph,
-						    x_scale, y_scale);
-                if (unlikely (status && status != COMAC_INT_STATUS_NOTHING_TO_DO))
-                    goto UNLOCK;
-            }
+		status = composite_one_color_glyph (surface,
+						    op,
+						    source,
+						    clip,
+						    &glyphs[gp],
+						    scaled_glyph,
+						    x_scale,
+						    y_scale);
+		if (unlikely (status &&
+			      status != COMAC_INT_STATUS_NOTHING_TO_DO))
+		    goto UNLOCK;
+	    }
 
-            if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
-                glyph_pos -= clusters[i].num_glyphs;
-            else
-                glyph_pos += clusters[i].num_glyphs;
+	    if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD)
+		glyph_pos -= clusters[i].num_glyphs;
+	    else
+		glyph_pos += clusters[i].num_glyphs;
 
-            byte_pos += clusters[i].num_bytes;
-        }
+	    byte_pos += clusters[i].num_bytes;
+	}
 
-        if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD) {
-            memmove (utf8, utf8 + *utf8_len - remaining_bytes, remaining_bytes);
-            memmove (glyphs, glyphs + (*num_glyphs - remaining_glyphs), sizeof (comac_glyph_t) * remaining_glyphs);
-        }
+	if (cluster_flags & COMAC_TEXT_CLUSTER_FLAG_BACKWARD) {
+	    memmove (utf8, utf8 + *utf8_len - remaining_bytes, remaining_bytes);
+	    memmove (glyphs,
+		     glyphs + (*num_glyphs - remaining_glyphs),
+		     sizeof (comac_glyph_t) * remaining_glyphs);
+	}
 
-        *utf8_len = remaining_bytes;
-        *num_glyphs = remaining_glyphs;
-        *num_clusters = remaining_clusters;
+	*utf8_len = remaining_bytes;
+	*num_glyphs = remaining_glyphs;
+	*num_clusters = remaining_clusters;
 
     } else {
 
-       for (glyph_pos = 0; glyph_pos < *num_glyphs; glyph_pos++) {
-           status = ensure_scaled_glyph (scaled_font, foreground_color, glyph_cache,
-                                         &glyphs[glyph_pos], &scaled_glyph);
-           if (unlikely (status))
-               goto UNLOCK;
+	for (glyph_pos = 0; glyph_pos < *num_glyphs; glyph_pos++) {
+	    status = ensure_scaled_glyph (scaled_font,
+					  foreground_color,
+					  glyph_cache,
+					  &glyphs[glyph_pos],
+					  &scaled_glyph);
+	    if (unlikely (status))
+		goto UNLOCK;
 
-           if ((scaled_glyph->has_info & COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) == 0) {
-               glyphs[remaining_glyphs++] = glyphs[glyph_pos];
-               continue;
-           }
+	    if ((scaled_glyph->has_info &
+		 COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) == 0) {
+		glyphs[remaining_glyphs++] = glyphs[glyph_pos];
+		continue;
+	    }
 
-           status = composite_one_color_glyph (surface, op, source, clip,
-					       &glyphs[glyph_pos], scaled_glyph,
-					       x_scale, y_scale);
-           if (unlikely (status && status != COMAC_INT_STATUS_NOTHING_TO_DO))
-               goto UNLOCK;
-        }
+	    status = composite_one_color_glyph (surface,
+						op,
+						source,
+						clip,
+						&glyphs[glyph_pos],
+						scaled_glyph,
+						x_scale,
+						y_scale);
+	    if (unlikely (status && status != COMAC_INT_STATUS_NOTHING_TO_DO))
+		goto UNLOCK;
+	}
 
-        *num_glyphs = remaining_glyphs;
+	*num_glyphs = remaining_glyphs;
     }
 
 UNLOCK:
@@ -2838,18 +2965,18 @@ UNLOCK:
  * 1781e6018c17909311295a9cc74b70500c6b4d0a for the rationale.
  */
 comac_status_t
-_comac_surface_show_text_glyphs (comac_surface_t	    *surface,
-				 comac_operator_t	     op,
-				 const comac_pattern_t	    *source,
-				 const char		    *utf8,
-				 int			     utf8_len,
-				 comac_glyph_t		    *glyphs,
-				 int			     num_glyphs,
+_comac_surface_show_text_glyphs (comac_surface_t *surface,
+				 comac_operator_t op,
+				 const comac_pattern_t *source,
+				 const char *utf8,
+				 int utf8_len,
+				 comac_glyph_t *glyphs,
+				 int num_glyphs,
 				 const comac_text_cluster_t *clusters,
-				 int			     num_clusters,
-				 comac_text_cluster_flags_t  cluster_flags,
-				 comac_scaled_font_t	    *scaled_font,
-				 const comac_clip_t	    *clip)
+				 int num_clusters,
+				 comac_text_cluster_flags_t cluster_flags,
+				 comac_scaled_font_t *scaled_font,
+				 const comac_clip_t *clip)
 {
     comac_int_status_t status;
     char *utf8_copy = NULL;
@@ -2858,7 +2985,9 @@ _comac_surface_show_text_glyphs (comac_surface_t	    *surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (num_glyphs == 0 && utf8_len == 0)
 	return COMAC_STATUS_SUCCESS;
@@ -2882,59 +3011,70 @@ _comac_surface_show_text_glyphs (comac_surface_t	    *surface,
 	return status;
 
     if (_comac_scaled_font_has_color_glyphs (scaled_font) &&
-	scaled_font->options.color_mode != COMAC_COLOR_MODE_NO_COLOR)
-    {
-        utf8_copy = malloc (sizeof (char) * utf8_len);
-        memcpy (utf8_copy, utf8, sizeof (char) * utf8_len);
-        utf8 = utf8_copy;
+	scaled_font->options.color_mode != COMAC_COLOR_MODE_NO_COLOR) {
+	utf8_copy = malloc (sizeof (char) * utf8_len);
+	memcpy (utf8_copy, utf8, sizeof (char) * utf8_len);
+	utf8 = utf8_copy;
 
-        status = composite_color_glyphs (surface, op,
-                                         source,
-                                         (char *)utf8, &utf8_len,
-                                         glyphs, &num_glyphs,
-                                         (comac_text_cluster_t *)clusters, &num_clusters, cluster_flags,
-                                         scaled_font,
-                                         clip);
+	status = composite_color_glyphs (surface,
+					 op,
+					 source,
+					 (char *) utf8,
+					 &utf8_len,
+					 glyphs,
+					 &num_glyphs,
+					 (comac_text_cluster_t *) clusters,
+					 &num_clusters,
+					 cluster_flags,
+					 scaled_font,
+					 clip);
 
-        if (unlikely (status && status != COMAC_INT_STATUS_NOTHING_TO_DO))
-            goto DONE;
+	if (unlikely (status && status != COMAC_INT_STATUS_NOTHING_TO_DO))
+	    goto DONE;
 
-        if (num_glyphs == 0)
-            goto DONE;
-    }
-    else
-      utf8_copy = NULL;
+	if (num_glyphs == 0)
+	    goto DONE;
+    } else
+	utf8_copy = NULL;
 
     /* The logic here is duplicated in _comac_analysis_surface show_glyphs and
      * show_text_glyphs.  Keep in synch. */
     if (clusters) {
-        status = COMAC_INT_STATUS_UNSUPPORTED;
+	status = COMAC_INT_STATUS_UNSUPPORTED;
 	/* A real show_text_glyphs call.  Try show_text_glyphs backend
 	 * method first */
 	if (surface->backend->show_text_glyphs != NULL) {
-	    status = surface->backend->show_text_glyphs (surface, op,
+	    status = surface->backend->show_text_glyphs (surface,
+							 op,
 							 source,
-							 utf8, utf8_len,
-							 glyphs, num_glyphs,
-							 clusters, num_clusters, cluster_flags,
+							 utf8,
+							 utf8_len,
+							 glyphs,
+							 num_glyphs,
+							 clusters,
+							 num_clusters,
+							 cluster_flags,
 							 scaled_font,
 							 clip);
 	}
 	if (status == COMAC_INT_STATUS_UNSUPPORTED &&
-	    surface->backend->show_glyphs)
-	{
-	    status = surface->backend->show_glyphs (surface, op,
+	    surface->backend->show_glyphs) {
+	    status = surface->backend->show_glyphs (surface,
+						    op,
 						    source,
-						    glyphs, num_glyphs,
+						    glyphs,
+						    num_glyphs,
 						    scaled_font,
 						    clip);
 	}
     } else {
 	/* A mere show_glyphs call.  Try show_glyphs backend method first */
 	if (surface->backend->show_glyphs != NULL) {
-	    status = surface->backend->show_glyphs (surface, op,
+	    status = surface->backend->show_glyphs (surface,
+						    op,
 						    source,
-						    glyphs, num_glyphs,
+						    glyphs,
+						    num_glyphs,
 						    scaled_font,
 						    clip);
 	} else if (surface->backend->show_text_glyphs != NULL) {
@@ -2946,11 +3086,16 @@ _comac_surface_show_text_glyphs (comac_surface_t	    *surface,
 	     * implies that UTF-8 is not NULL, unless the text is
 	     * zero-length).
 	     */
-	    status = surface->backend->show_text_glyphs (surface, op,
+	    status = surface->backend->show_text_glyphs (surface,
+							 op,
 							 source,
-							 utf8, utf8_len,
-							 glyphs, num_glyphs,
-							 clusters, num_clusters, cluster_flags,
+							 utf8,
+							 utf8_len,
+							 glyphs,
+							 num_glyphs,
+							 clusters,
+							 num_clusters,
+							 cluster_flags,
 							 scaled_font,
 							 clip);
 	}
@@ -2963,16 +3108,16 @@ DONE:
     }
 
     if (utf8_copy)
-        free (utf8_copy);
+	free (utf8_copy);
 
     return _comac_surface_set_error (surface, status);
 }
 
 comac_status_t
-_comac_surface_tag (comac_surface_t	        *surface,
-		    comac_bool_t                 begin,
-		    const char                  *tag_name,
-		    const char                  *attributes)
+_comac_surface_tag (comac_surface_t *surface,
+		    comac_bool_t begin,
+		    const char *tag_name,
+		    const char *attributes)
 {
     comac_int_status_t status;
 
@@ -2980,7 +3125,9 @@ _comac_surface_tag (comac_surface_t	        *surface,
     if (unlikely (surface->status))
 	return surface->status;
     if (unlikely (surface->finished))
-	return _comac_surface_set_error (surface, _comac_error (COMAC_STATUS_SURFACE_FINISHED));
+	return _comac_surface_set_error (
+	    surface,
+	    _comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
     if (surface->backend->tag == NULL)
 	return COMAC_STATUS_SUCCESS;
@@ -2990,7 +3137,6 @@ _comac_surface_tag (comac_surface_t	        *surface,
 
     return _comac_surface_set_error (surface, status);
 }
-
 
 /**
  * _comac_surface_set_resolution:
@@ -3102,7 +3248,7 @@ _comac_int_surface_create_in_error (comac_int_status_t status)
     if (status < COMAC_INT_STATUS_LAST_STATUS)
 	return _comac_surface_create_in_error (status);
 
-    switch ((int)status) {
+    switch ((int) status) {
     case COMAC_INT_STATUS_UNSUPPORTED:
 	return (comac_surface_t *) &_comac_surface_nil_unsupported;
     case COMAC_INT_STATUS_NOTHING_TO_DO:

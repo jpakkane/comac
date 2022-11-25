@@ -76,8 +76,7 @@ _comac_stroke_style_init_copy (comac_stroke_style_t *style,
 	if (unlikely (style->dash == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	memcpy (style->dash, other->dash,
-		style->num_dashes * sizeof (double));
+	memcpy (style->dash, other->dash, style->num_dashes * sizeof (double));
     }
 
     style->dash_offset = other->dash_offset;
@@ -106,8 +105,9 @@ _comac_stroke_style_fini (comac_stroke_style_t *style)
 void
 _comac_stroke_style_max_distance_from_path (const comac_stroke_style_t *style,
 					    const comac_path_fixed_t *path,
-                                            const comac_matrix_t *ctm,
-                                            double *dx, double *dy)
+					    const comac_matrix_t *ctm,
+					    double *dx,
+					    double *dy)
 {
     double style_expansion = 0.5;
 
@@ -116,8 +116,7 @@ _comac_stroke_style_max_distance_from_path (const comac_stroke_style_t *style,
 
     if (style->line_join == COMAC_LINE_JOIN_MITER &&
 	! path->stroke_is_rectilinear &&
-	style_expansion < M_SQRT2 * style->miter_limit)
-    {
+	style_expansion < M_SQRT2 * style->miter_limit) {
 	style_expansion = M_SQRT2 * style->miter_limit;
     }
 
@@ -132,10 +131,12 @@ _comac_stroke_style_max_distance_from_path (const comac_stroke_style_t *style,
 }
 
 void
-_comac_stroke_style_max_line_distance_from_path (const comac_stroke_style_t *style,
-						 const comac_path_fixed_t *path,
-						 const comac_matrix_t *ctm,
-						 double *dx, double *dy)
+_comac_stroke_style_max_line_distance_from_path (
+    const comac_stroke_style_t *style,
+    const comac_path_fixed_t *path,
+    const comac_matrix_t *ctm,
+    double *dx,
+    double *dy)
 {
     double style_expansion = 0.5 * style->line_width;
     if (_comac_matrix_has_unity_scale (ctm)) {
@@ -147,17 +148,18 @@ _comac_stroke_style_max_line_distance_from_path (const comac_stroke_style_t *sty
 }
 
 void
-_comac_stroke_style_max_join_distance_from_path (const comac_stroke_style_t *style,
-						 const comac_path_fixed_t *path,
-						 const comac_matrix_t *ctm,
-						 double *dx, double *dy)
+_comac_stroke_style_max_join_distance_from_path (
+    const comac_stroke_style_t *style,
+    const comac_path_fixed_t *path,
+    const comac_matrix_t *ctm,
+    double *dx,
+    double *dy)
 {
     double style_expansion = 0.5;
 
     if (style->line_join == COMAC_LINE_JOIN_MITER &&
 	! path->stroke_is_rectilinear &&
-	style_expansion < M_SQRT2 * style->miter_limit)
-    {
+	style_expansion < M_SQRT2 * style->miter_limit) {
 	style_expansion = M_SQRT2 * style->miter_limit;
     }
 
@@ -210,7 +212,7 @@ _comac_stroke_style_dash_period (const comac_stroke_style_t *style)
  *   c = 1*w
  * but in this case it would not be an approximation, since f is already linear in d.
  */
-#define ROUND_MINSQ_APPROXIMATION (9*M_PI/32)
+#define ROUND_MINSQ_APPROXIMATION (9 * M_PI / 32)
 
 /*
  * Computes the length of the "on" part of a dashed stroke style,
@@ -224,23 +226,32 @@ _comac_stroke_style_dash_stroked (const comac_stroke_style_t *style)
     unsigned int i;
 
     switch (style->line_cap) {
-    default: ASSERT_NOT_REACHED;
-    case COMAC_LINE_CAP_BUTT:   cap_scale = 0.0; break;
-    case COMAC_LINE_CAP_ROUND:  cap_scale = ROUND_MINSQ_APPROXIMATION; break;
-    case COMAC_LINE_CAP_SQUARE: cap_scale = 1.0; break;
+    default:
+	ASSERT_NOT_REACHED;
+    case COMAC_LINE_CAP_BUTT:
+	cap_scale = 0.0;
+	break;
+    case COMAC_LINE_CAP_ROUND:
+	cap_scale = ROUND_MINSQ_APPROXIMATION;
+	break;
+    case COMAC_LINE_CAP_SQUARE:
+	cap_scale = 1.0;
+	break;
     }
 
     stroked = 0.0;
     if (style->num_dashes & 1) {
-        /* Each dash element is used both as on and as off. The order in which they are summed is
+	/* Each dash element is used both as on and as off. The order in which they are summed is
 	 * irrelevant, so sum the coverage of one dash element, taken both on and off at each iteration */
 	for (i = 0; i < style->num_dashes; i++)
-	    stroked += style->dash[i] + cap_scale * MIN (style->dash[i], style->line_width);
+	    stroked += style->dash[i] +
+		       cap_scale * MIN (style->dash[i], style->line_width);
     } else {
-        /* Even (0, 2, ...) dashes are on and simply counted for the coverage, odd dashes are off, thus
+	/* Even (0, 2, ...) dashes are on and simply counted for the coverage, odd dashes are off, thus
 	 * their coverage is approximated based on the area covered by the caps of adjacent on dases. */
 	for (i = 0; i + 1 < style->num_dashes; i += 2)
-	    stroked += style->dash[i] + cap_scale * MIN (style->dash[i+1], style->line_width);
+	    stroked += style->dash[i] +
+		       cap_scale * MIN (style->dash[i + 1], style->line_width);
     }
 
     return stroked;
@@ -260,10 +271,11 @@ _comac_stroke_style_dash_can_approximate (const comac_stroke_style_t *style,
     double period;
 
     if (! style->num_dashes)
-        return FALSE;
+	return FALSE;
 
     period = _comac_stroke_style_dash_period (style);
-    return _comac_matrix_transformed_circle_major_axis (ctm, period) < tolerance;
+    return _comac_matrix_transformed_circle_major_axis (ctm, period) <
+	   tolerance;
 }
 
 /*
@@ -282,7 +294,8 @@ _comac_stroke_style_dash_approximate (const comac_stroke_style_t *style,
     comac_bool_t on = TRUE;
     unsigned int i = 0;
 
-    coverage = _comac_stroke_style_dash_stroked (style) / _comac_stroke_style_dash_period (style);
+    coverage = _comac_stroke_style_dash_stroked (style) /
+	       _comac_stroke_style_dash_period (style);
     coverage = MIN (coverage, 1.0);
     scale = tolerance / _comac_matrix_transformed_circle_major_axis (ctm, 1.0);
 
@@ -292,7 +305,7 @@ _comac_stroke_style_dash_approximate (const comac_stroke_style_t *style,
     offset = style->dash_offset;
     while (offset > 0.0 && offset >= style->dash[i]) {
 	offset -= style->dash[i];
-	on = !on;
+	on = ! on;
 	if (++i == style->num_dashes)
 	    i = 0;
     }
@@ -328,27 +341,29 @@ _comac_stroke_style_dash_approximate (const comac_stroke_style_t *style,
      */
     switch (style->line_cap) {
     default:
-        ASSERT_NOT_REACHED;
+	ASSERT_NOT_REACHED;
 	dashes[0] = 0.0;
 	break;
 
     case COMAC_LINE_CAP_BUTT:
-        /* Simplified formula (substituting 0 for cap_scale): */
-        dashes[0] = scale * coverage;
+	/* Simplified formula (substituting 0 for cap_scale): */
+	dashes[0] = scale * coverage;
 	break;
 
     case COMAC_LINE_CAP_ROUND:
-        dashes[0] = MAX(scale * (coverage - ROUND_MINSQ_APPROXIMATION) / (1.0 - ROUND_MINSQ_APPROXIMATION),
-			scale * coverage - ROUND_MINSQ_APPROXIMATION * style->line_width);
+	dashes[0] = MAX (scale * (coverage - ROUND_MINSQ_APPROXIMATION) /
+			     (1.0 - ROUND_MINSQ_APPROXIMATION),
+			 scale * coverage -
+			     ROUND_MINSQ_APPROXIMATION * style->line_width);
 	break;
 
     case COMAC_LINE_CAP_SQUARE:
-        /*
+	/*
 	 * Special attention is needed to handle the case cap_scale == 1 (since the first solution
 	 * is either indeterminate or -inf in this case). Since dash lengths are always >=0, using
 	 * 0 as first solution always leads to the correct solution.
 	 */
-        dashes[0] = MAX(0.0, scale * coverage - style->line_width);
+	dashes[0] = MAX (0.0, scale * coverage - style->line_width);
 	break;
     }
 

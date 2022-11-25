@@ -26,11 +26,12 @@
 
 #include "comac-test.h"
 
-#define STEP	5
-#define WIDTH	100
-#define HEIGHT	100
+#define STEP 5
+#define WIDTH 100
+#define HEIGHT 100
 
-static void hatching (comac_t *cr)
+static void
+hatching (comac_t *cr)
 {
     int i;
 
@@ -38,84 +39,97 @@ static void hatching (comac_t *cr)
     comac_clip (cr);
 
     for (i = 0; i < WIDTH; i += STEP) {
-	comac_rectangle (cr, i-1, -2, 2, HEIGHT+4);
-	comac_rectangle (cr, -2, i-1, WIDTH+4, 2);
+	comac_rectangle (cr, i - 1, -2, 2, HEIGHT + 4);
+	comac_rectangle (cr, -2, i - 1, WIDTH + 4, 2);
     }
 }
 
-static void background (comac_t *cr)
+static void
+background (comac_t *cr)
 {
     comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
-    comac_set_source_rgb (cr, 1,1,1);
+    comac_set_source_rgb (cr, 1, 1, 1);
     comac_paint (cr);
 }
 
-static void clip_to_quadrant (comac_t *cr)
+static void
+clip_to_quadrant (comac_t *cr)
 {
     comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
     comac_clip (cr);
 }
 
-static void draw_hatching (comac_t *cr, void (*func) (comac_t *))
+static void
+draw_hatching (comac_t *cr, void (*func) (comac_t *))
 {
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 	hatching (cr);
 	func (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, WIDTH, 0);
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
 	comac_translate (cr, 0.25, 0.25);
 	hatching (cr);
 	func (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, WIDTH, 0);
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	clip_to_quadrant (cr);
-	comac_translate (cr, WIDTH/2, HEIGHT/2);
-	comac_rotate (cr, M_PI/4);
-	comac_translate (cr, -WIDTH/2, -HEIGHT/2);
+	comac_translate (cr, WIDTH / 2, HEIGHT / 2);
+	comac_rotate (cr, M_PI / 4);
+	comac_translate (cr, -WIDTH / 2, -HEIGHT / 2);
 	hatching (cr);
 	func (cr);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, WIDTH, 0);
 }
 
-static void do_clip (comac_t *cr)
+static void
+do_clip (comac_t *cr)
 {
     comac_clip (cr);
     comac_paint (cr);
 }
 
-static void do_clip_alpha (comac_t *cr)
+static void
+do_clip_alpha (comac_t *cr)
 {
     comac_clip (cr);
     comac_paint_with_alpha (cr, .5);
 }
 
-static void hatchings (comac_t *cr, void (*func) (comac_t *))
+static void
+hatchings (comac_t *cr, void (*func) (comac_t *))
 {
-    comac_save (cr); {
-	comac_set_source_rgb(cr, 1, 0, 0);
+    comac_save (cr);
+    {
+	comac_set_source_rgb (cr, 1, 0, 0);
 	comac_set_antialias (cr, COMAC_ANTIALIAS_DEFAULT);
 	draw_hatching (cr, func);
-	comac_set_source_rgb(cr, 0, 0, 1);
+	comac_set_source_rgb (cr, 0, 0, 1);
 	comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 	draw_hatching (cr, func);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 }
 
 static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     background (cr);
-
 
     /* aligned, misaligned, diagonal; mono repeat
      * x fill
@@ -147,7 +161,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (hatchings,
 	    "Test drawing through various aligned/unaliged clips",
-	    "clip, alpha", /* keywords */
+	    "clip, alpha",   /* keywords */
 	    "target=raster", /* requirements */
-	    6*WIDTH, 6*HEIGHT,
-	    NULL, draw)
+	    6 * WIDTH,
+	    6 * HEIGHT,
+	    NULL,
+	    draw)

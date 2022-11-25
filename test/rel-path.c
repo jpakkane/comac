@@ -31,7 +31,7 @@ invalid_rel_move_to (comac_surface_t *target)
     comac_status_t status;
 
     cr = comac_create (target);
-    comac_rel_move_to (cr, SIZE, SIZE/2);
+    comac_rel_move_to (cr, SIZE, SIZE / 2);
     status = comac_status (cr);
     comac_destroy (cr);
 
@@ -45,7 +45,7 @@ invalid_rel_line_to (comac_surface_t *target)
     comac_status_t status;
 
     cr = comac_create (target);
-    comac_rel_line_to (cr, -SIZE, SIZE/2);
+    comac_rel_line_to (cr, -SIZE, SIZE / 2);
     status = comac_status (cr);
     comac_destroy (cr);
 
@@ -60,9 +60,12 @@ invalid_rel_curve_to (comac_surface_t *target)
 
     cr = comac_create (target);
     comac_rel_curve_to (cr,
-			SIZE/2, -SIZE/2,
-			SIZE*2/3, -SIZE/3,
-			SIZE/2, -SIZE);
+			SIZE / 2,
+			-SIZE / 2,
+			SIZE * 2 / 3,
+			-SIZE / 3,
+			SIZE / 2,
+			-SIZE);
     status = comac_status (cr);
     comac_destroy (cr);
 
@@ -83,7 +86,9 @@ draw (comac_t *cr, int width, int height)
 	if (result == COMAC_TEST_NO_MEMORY)
 	    return result;
 
-	comac_test_log (ctx, "Error: invalid comac_rel_move_to() did not raise NO_CURRENT_POINT\n");
+	comac_test_log (ctx,
+			"Error: invalid comac_rel_move_to() did not raise "
+			"NO_CURRENT_POINT\n");
 	return result;
     }
 
@@ -93,7 +98,9 @@ draw (comac_t *cr, int width, int height)
 	if (result == COMAC_TEST_NO_MEMORY)
 	    return result;
 
-	comac_test_log (ctx, "Error: invalid comac_rel_line_to() did not raise NO_CURRENT_POINT\n");
+	comac_test_log (ctx,
+			"Error: invalid comac_rel_line_to() did not raise "
+			"NO_CURRENT_POINT\n");
 	return result;
     }
 
@@ -103,18 +110,23 @@ draw (comac_t *cr, int width, int height)
 	if (result == COMAC_TEST_NO_MEMORY)
 	    return result;
 
-	comac_test_log (ctx, "Error: invalid comac_rel_curve_to() did not raise NO_CURRENT_POINT\n");
+	comac_test_log (ctx,
+			"Error: invalid comac_rel_curve_to() did not raise "
+			"NO_CURRENT_POINT\n");
 	return result;
     }
 
     comac_set_source_rgb (cr, 1, 1, 1);
     comac_move_to (cr, 0, 0);
-    comac_rel_move_to (cr, SIZE, SIZE/2);
-    comac_rel_line_to (cr, -SIZE, SIZE/2);
+    comac_rel_move_to (cr, SIZE, SIZE / 2);
+    comac_rel_line_to (cr, -SIZE, SIZE / 2);
     comac_rel_curve_to (cr,
-			SIZE/2, -SIZE/2,
-			SIZE*2/3, -SIZE/3,
-			SIZE/2, -SIZE);
+			SIZE / 2,
+			-SIZE / 2,
+			SIZE * 2 / 3,
+			-SIZE / 3,
+			SIZE / 2,
+			-SIZE);
 
     comac_stroke (cr);
 
@@ -124,6 +136,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (rel_path,
 	    "Tests calls to various relative path functions",
 	    "path", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

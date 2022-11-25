@@ -50,32 +50,31 @@
 static const comac_surface_backend_t comac_type3_glyph_surface_backend;
 
 static comac_status_t
-_comac_type3_glyph_surface_clipper_intersect_clip_path (comac_surface_clipper_t *clipper,
-							comac_path_fixed_t *path,
-							comac_fill_rule_t   fill_rule,
-							double		    tolerance,
-							comac_antialias_t   antialias)
+_comac_type3_glyph_surface_clipper_intersect_clip_path (
+    comac_surface_clipper_t *clipper,
+    comac_path_fixed_t *path,
+    comac_fill_rule_t fill_rule,
+    double tolerance,
+    comac_antialias_t antialias)
 {
-    comac_type3_glyph_surface_t *surface = comac_container_of (clipper,
-							       comac_type3_glyph_surface_t,
-							       clipper);
+    comac_type3_glyph_surface_t *surface =
+	comac_container_of (clipper, comac_type3_glyph_surface_t, clipper);
 
     if (path == NULL) {
 	_comac_output_stream_printf (surface->stream, "Q q\n");
 	return COMAC_STATUS_SUCCESS;
     }
 
-    return _comac_pdf_operators_clip (&surface->pdf_operators,
-				      path,
-				      fill_rule);
+    return _comac_pdf_operators_clip (&surface->pdf_operators, path, fill_rule);
 }
 
 comac_surface_t *
-_comac_type3_glyph_surface_create (comac_scaled_font_t			 *scaled_font,
-				   comac_output_stream_t		 *stream,
-				   comac_type3_glyph_surface_emit_image_t emit_image,
-				   comac_scaled_font_subsets_t		 *font_subsets,
-				   comac_bool_t ps)
+_comac_type3_glyph_surface_create (
+    comac_scaled_font_t *scaled_font,
+    comac_output_stream_t *stream,
+    comac_type3_glyph_surface_emit_image_t emit_image,
+    comac_scaled_font_subsets_t *font_subsets,
+    comac_bool_t ps)
 {
     comac_type3_glyph_surface_t *surface;
 
@@ -84,7 +83,8 @@ _comac_type3_glyph_surface_create (comac_scaled_font_t			 *scaled_font,
 
     surface = _comac_malloc (sizeof (comac_type3_glyph_surface_t));
     if (unlikely (surface == NULL))
-	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     _comac_surface_init (&surface->base,
 			 &comac_type3_glyph_surface_backend,
@@ -108,16 +108,17 @@ _comac_type3_glyph_surface_create (comac_scaled_font_t			 *scaled_font,
 			       font_subsets,
 			       ps);
 
-    _comac_surface_clipper_init (&surface->clipper,
-				 _comac_type3_glyph_surface_clipper_intersect_clip_path);
+    _comac_surface_clipper_init (
+	&surface->clipper,
+	_comac_type3_glyph_surface_clipper_intersect_clip_path);
 
     return &surface->base;
 }
 
 static comac_status_t
 _comac_type3_glyph_surface_emit_image (comac_type3_glyph_surface_t *surface,
-				       comac_image_surface_t       *image,
-				       comac_matrix_t              *image_matrix)
+				       comac_image_surface_t *image,
+				       comac_matrix_t *image_matrix)
 {
     comac_status_t status;
 
@@ -139,16 +140,16 @@ _comac_type3_glyph_surface_emit_image (comac_type3_glyph_surface_t *surface,
     status = surface->emit_image (image, surface->stream);
     comac_surface_destroy (&image->base);
 
-    _comac_output_stream_printf (surface->stream,
-				 "Q\n");
+    _comac_output_stream_printf (surface->stream, "Q\n");
 
     return status;
 }
 
 static comac_status_t
-_comac_type3_glyph_surface_emit_image_pattern (comac_type3_glyph_surface_t *surface,
-					       comac_image_surface_t       *image,
-					       const comac_matrix_t              *pattern_matrix)
+_comac_type3_glyph_surface_emit_image_pattern (
+    comac_type3_glyph_surface_t *surface,
+    comac_image_surface_t *image,
+    const comac_matrix_t *pattern_matrix)
 {
     comac_matrix_t mat, upside_down;
     comac_status_t status;
@@ -186,10 +187,10 @@ _comac_type3_glyph_surface_finish (void *abstract_surface)
 }
 
 static comac_int_status_t
-_comac_type3_glyph_surface_paint (void			*abstract_surface,
-				  comac_operator_t	 op,
-				  const comac_pattern_t	*source,
-				  const comac_clip_t	*clip)
+_comac_type3_glyph_surface_paint (void *abstract_surface,
+				  comac_operator_t op,
+				  const comac_pattern_t *source,
+				  const comac_clip_t *clip)
 {
     comac_type3_glyph_surface_t *surface = abstract_surface;
     const comac_surface_pattern_t *pattern;
@@ -206,13 +207,15 @@ _comac_type3_glyph_surface_paint (void			*abstract_surface,
 
     pattern = (const comac_surface_pattern_t *) source;
     status = _comac_surface_acquire_source_image (pattern->surface,
-						  &image, &image_extra);
+						  &image,
+						  &image_extra);
     if (unlikely (status))
 	goto fail;
 
-    status = _comac_type3_glyph_surface_emit_image_pattern (surface,
-							    image,
-							    &pattern->base.matrix);
+    status =
+	_comac_type3_glyph_surface_emit_image_pattern (surface,
+						       image,
+						       &pattern->base.matrix);
 
 fail:
     _comac_surface_release_source_image (pattern->surface, image, image_extra);
@@ -221,28 +224,26 @@ fail:
 }
 
 static comac_int_status_t
-_comac_type3_glyph_surface_mask (void			*abstract_surface,
-				 comac_operator_t	 op,
-				 const comac_pattern_t	*source,
-				 const comac_pattern_t	*mask,
-				 const comac_clip_t	*clip)
+_comac_type3_glyph_surface_mask (void *abstract_surface,
+				 comac_operator_t op,
+				 const comac_pattern_t *source,
+				 const comac_pattern_t *mask,
+				 const comac_clip_t *clip)
 {
-    return _comac_type3_glyph_surface_paint (abstract_surface,
-					     op, mask,
-					     clip);
+    return _comac_type3_glyph_surface_paint (abstract_surface, op, mask, clip);
 }
 
 static comac_int_status_t
-_comac_type3_glyph_surface_stroke (void			*abstract_surface,
-				   comac_operator_t	 op,
+_comac_type3_glyph_surface_stroke (void *abstract_surface,
+				   comac_operator_t op,
 				   const comac_pattern_t *source,
-				   const comac_path_fixed_t	*path,
-				   const comac_stroke_style_t	*style,
-				   const comac_matrix_t	*ctm,
-				   const comac_matrix_t	*ctm_inverse,
-				   double		 tolerance,
-				   comac_antialias_t	 antialias,
-				   const comac_clip_t	*clip)
+				   const comac_path_fixed_t *path,
+				   const comac_stroke_style_t *style,
+				   const comac_matrix_t *ctm,
+				   const comac_matrix_t *ctm_inverse,
+				   double tolerance,
+				   comac_antialias_t antialias,
+				   const comac_clip_t *clip)
 {
     comac_type3_glyph_surface_t *surface = abstract_surface;
     comac_int_status_t status;
@@ -259,14 +260,14 @@ _comac_type3_glyph_surface_stroke (void			*abstract_surface,
 }
 
 static comac_int_status_t
-_comac_type3_glyph_surface_fill (void			*abstract_surface,
-				 comac_operator_t	 op,
-				 const comac_pattern_t	*source,
-				 const comac_path_fixed_t	*path,
-				 comac_fill_rule_t	 fill_rule,
-				 double			 tolerance,
-				 comac_antialias_t	 antialias,
-				 const comac_clip_t		*clip)
+_comac_type3_glyph_surface_fill (void *abstract_surface,
+				 comac_operator_t op,
+				 const comac_pattern_t *source,
+				 const comac_path_fixed_t *path,
+				 comac_fill_rule_t fill_rule,
+				 double tolerance,
+				 comac_antialias_t antialias,
+				 const comac_clip_t *clip)
 {
     comac_type3_glyph_surface_t *surface = abstract_surface;
     comac_int_status_t status;
@@ -275,19 +276,17 @@ _comac_type3_glyph_surface_fill (void			*abstract_surface,
     if (unlikely (status))
 	return status;
 
-    return _comac_pdf_operators_fill (&surface->pdf_operators,
-				      path,
-				      fill_rule);
+    return _comac_pdf_operators_fill (&surface->pdf_operators, path, fill_rule);
 }
 
 static comac_int_status_t
-_comac_type3_glyph_surface_show_glyphs (void		     *abstract_surface,
-					comac_operator_t      op,
+_comac_type3_glyph_surface_show_glyphs (void *abstract_surface,
+					comac_operator_t op,
 					const comac_pattern_t *source,
-					comac_glyph_t        *glyphs,
-					int		      num_glyphs,
-					comac_scaled_font_t  *scaled_font,
-					const comac_clip_t     *clip)
+					comac_glyph_t *glyphs,
+					int num_glyphs,
+					comac_scaled_font_t *scaled_font,
+					const comac_clip_t *clip)
 {
     comac_type3_glyph_surface_t *surface = abstract_surface;
     comac_int_status_t status;
@@ -307,9 +306,12 @@ _comac_type3_glyph_surface_show_glyphs (void		     *abstract_surface,
 	return font->status;
 
     status = _comac_pdf_operators_show_text_glyphs (&surface->pdf_operators,
-						    NULL, 0,
-						    glyphs, num_glyphs,
-						    NULL, 0,
+						    NULL,
+						    0,
+						    glyphs,
+						    num_glyphs,
+						    NULL,
+						    0,
 						    FALSE,
 						    font);
 
@@ -353,15 +355,15 @@ static const comac_surface_backend_t comac_type3_glyph_surface_backend = {
 
 static void
 _comac_type3_glyph_surface_set_stream (comac_type3_glyph_surface_t *surface,
-				       comac_output_stream_t       *stream)
+				       comac_output_stream_t *stream)
 {
     surface->stream = stream;
     _comac_pdf_operators_set_stream (&surface->pdf_operators, stream);
 }
 
 static comac_status_t
-_comac_type3_glyph_surface_emit_fallback_image (comac_type3_glyph_surface_t *surface,
-						unsigned long		     glyph_index)
+_comac_type3_glyph_surface_emit_fallback_image (
+    comac_type3_glyph_surface_t *surface, unsigned long glyph_index)
 {
     comac_scaled_glyph_t *scaled_glyph;
     comac_status_t status;
@@ -372,7 +374,7 @@ _comac_type3_glyph_surface_emit_fallback_image (comac_type3_glyph_surface_t *sur
     status = _comac_scaled_glyph_lookup (surface->scaled_font,
 					 glyph_index,
 					 COMAC_SCALED_GLYPH_INFO_METRICS |
-					 COMAC_SCALED_GLYPH_INFO_SURFACE,
+					     COMAC_SCALED_GLYPH_INFO_SURFACE,
 					 NULL, /* foreground color */
 					 &scaled_glyph);
     if (unlikely (status))
@@ -384,18 +386,17 @@ _comac_type3_glyph_surface_emit_fallback_image (comac_type3_glyph_surface_t *sur
 
     x = _comac_fixed_to_double (scaled_glyph->bbox.p1.x);
     y = _comac_fixed_to_double (scaled_glyph->bbox.p2.y);
-    comac_matrix_init(&mat, image->width, 0,
-		      0, -image->height,
-		      x, y);
+    comac_matrix_init (&mat, image->width, 0, 0, -image->height, x, y);
     comac_matrix_multiply (&mat, &mat, &surface->scaled_font->scale_inverse);
 
     return _comac_type3_glyph_surface_emit_image (surface, image, &mat);
 }
 
 void
-_comac_type3_glyph_surface_set_font_subsets_callback (void		     		    *abstract_surface,
-						      comac_pdf_operators_use_font_subset_t  use_font_subset,
-						      void				    *closure)
+_comac_type3_glyph_surface_set_font_subsets_callback (
+    void *abstract_surface,
+    comac_pdf_operators_use_font_subset_t use_font_subset,
+    void *closure)
 {
     comac_type3_glyph_surface_t *surface = abstract_surface;
 
@@ -408,8 +409,8 @@ _comac_type3_glyph_surface_set_font_subsets_callback (void		     		    *abstract
 }
 
 comac_status_t
-_comac_type3_glyph_surface_analyze_glyph (void		     *abstract_surface,
-					  unsigned long	      glyph_index)
+_comac_type3_glyph_surface_analyze_glyph (void *abstract_surface,
+					  unsigned long glyph_index)
 {
     comac_type3_glyph_surface_t *surface = abstract_surface;
     comac_scaled_glyph_t *scaled_glyph;
@@ -426,11 +427,12 @@ _comac_type3_glyph_surface_analyze_glyph (void		     *abstract_surface,
     _comac_type3_glyph_surface_set_stream (surface, null_stream);
 
     _comac_scaled_font_freeze_cache (surface->scaled_font);
-    status = _comac_scaled_glyph_lookup (surface->scaled_font,
-					 glyph_index,
-					 COMAC_SCALED_GLYPH_INFO_RECORDING_SURFACE,
-					 NULL, /* foreground color */
-					 &scaled_glyph);
+    status =
+	_comac_scaled_glyph_lookup (surface->scaled_font,
+				    glyph_index,
+				    COMAC_SCALED_GLYPH_INFO_RECORDING_SURFACE,
+				    NULL, /* foreground color */
+				    &scaled_glyph);
 
     if (_comac_int_status_is_error (status))
 	goto cleanup;
@@ -460,11 +462,11 @@ cleanup:
 }
 
 comac_status_t
-_comac_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
+_comac_type3_glyph_surface_emit_glyph (void *abstract_surface,
 				       comac_output_stream_t *stream,
-				       unsigned long	      glyph_index,
-				       comac_box_t           *bbox,
-				       double                *width)
+				       unsigned long glyph_index,
+				       comac_box_t *bbox,
+				       double *width)
 {
     comac_type3_glyph_surface_t *surface = abstract_surface;
     comac_scaled_glyph_t *scaled_glyph;
@@ -478,12 +480,13 @@ _comac_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
     _comac_type3_glyph_surface_set_stream (surface, stream);
 
     _comac_scaled_font_freeze_cache (surface->scaled_font);
-    status = _comac_scaled_glyph_lookup (surface->scaled_font,
-					 glyph_index,
-					 COMAC_SCALED_GLYPH_INFO_METRICS |
-					 COMAC_SCALED_GLYPH_INFO_RECORDING_SURFACE,
-					 NULL, /* foreground color */
-					 &scaled_glyph);
+    status = _comac_scaled_glyph_lookup (
+	surface->scaled_font,
+	glyph_index,
+	COMAC_SCALED_GLYPH_INFO_METRICS |
+	    COMAC_SCALED_GLYPH_INFO_RECORDING_SURFACE,
+	NULL, /* foreground color */
+	&scaled_glyph);
     if (status == COMAC_INT_STATUS_UNSUPPORTED) {
 	status = _comac_scaled_glyph_lookup (surface->scaled_font,
 					     glyph_index,
@@ -508,16 +511,20 @@ _comac_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
      * subset. */
     assert (status2 == COMAC_INT_STATUS_SUCCESS);
 
-    comac_matrix_transform_distance (&font_matrix_inverse, &x_advance, &y_advance);
+    comac_matrix_transform_distance (&font_matrix_inverse,
+				     &x_advance,
+				     &y_advance);
     *width = x_advance;
 
     *bbox = scaled_glyph->bbox;
-    _comac_matrix_transform_bounding_box_fixed (&surface->scaled_font->scale_inverse,
-						bbox, NULL);
+    _comac_matrix_transform_bounding_box_fixed (
+	&surface->scaled_font->scale_inverse,
+	bbox,
+	NULL);
 
     _comac_output_stream_printf (surface->stream,
 				 "%f 0 %f %f %f %f d1\n",
-                                 x_advance,
+				 x_advance,
 				 _comac_fixed_to_double (bbox->p1.x),
 				 _comac_fixed_to_double (bbox->p1.y),
 				 _comac_fixed_to_double (bbox->p2.x),
@@ -534,8 +541,9 @@ _comac_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
 	_comac_type3_glyph_surface_set_stream (surface, mem_stream);
 
 	_comac_output_stream_printf (surface->stream, "q\n");
-	status = _comac_recording_surface_replay (scaled_glyph->recording_surface,
-						  &surface->base);
+	status =
+	    _comac_recording_surface_replay (scaled_glyph->recording_surface,
+					     &surface->base);
 
 	status2 = _comac_pdf_operators_flush (&surface->pdf_operators);
 	if (status == COMAC_INT_STATUS_SUCCESS)
@@ -553,9 +561,10 @@ _comac_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
     }
 
     if (status == COMAC_INT_STATUS_IMAGE_FALLBACK)
-	status = _comac_type3_glyph_surface_emit_fallback_image (surface, glyph_index);
+	status = _comac_type3_glyph_surface_emit_fallback_image (surface,
+								 glyph_index);
 
-  FAIL:
+FAIL:
     _comac_scaled_font_thaw_cache (surface->scaled_font);
 
     return status;

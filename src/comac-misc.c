@@ -49,7 +49,8 @@
 #include <xlocale.h>
 #endif
 
-COMPILE_TIME_ASSERT ((int)COMAC_STATUS_LAST_STATUS < (int)COMAC_INT_STATUS_UNSUPPORTED);
+COMPILE_TIME_ASSERT ((int) COMAC_STATUS_LAST_STATUS <
+		     (int) COMAC_INT_STATUS_UNSUPPORTED);
 COMPILE_TIME_ASSERT (COMAC_INT_STATUS_LAST_STATUS <= 127);
 
 /**
@@ -95,7 +96,8 @@ comac_status_to_string (comac_status_t status)
     case COMAC_STATUS_INVALID_RESTORE:
 	return "comac_restore() without matching comac_save()";
     case COMAC_STATUS_INVALID_POP_GROUP:
-	return "no saved group to pop, i.e. comac_pop_group() without matching comac_push_group()";
+	return "no saved group to pop, i.e. comac_pop_group() without matching "
+	       "comac_push_group()";
     case COMAC_STATUS_NO_CURRENT_POINT:
 	return "no current point defined";
     case COMAC_STATUS_INVALID_MATRIX:
@@ -133,7 +135,7 @@ comac_status_to_string (comac_status_t status)
     case COMAC_STATUS_INVALID_INDEX:
 	return "invalid index passed to getter";
     case COMAC_STATUS_CLIP_NOT_REPRESENTABLE:
-        return "clip region not representable in desired format";
+	return "clip region not representable in desired format";
     case COMAC_STATUS_TEMP_FILE_ERROR:
 	return "error creating or writing to a temporary file";
     case COMAC_STATUS_INVALID_STRIDE:
@@ -147,13 +149,15 @@ comac_status_to_string (comac_status_t status)
     case COMAC_STATUS_NEGATIVE_COUNT:
 	return "negative number used where it is not allowed";
     case COMAC_STATUS_INVALID_CLUSTERS:
-	return "input clusters do not represent the accompanying text and glyph arrays";
+	return "input clusters do not represent the accompanying text and "
+	       "glyph arrays";
     case COMAC_STATUS_INVALID_SLANT:
 	return "invalid value for an input comac_font_slant_t";
     case COMAC_STATUS_INVALID_WEIGHT:
 	return "invalid value for an input comac_font_weight_t";
     case COMAC_STATUS_INVALID_SIZE:
-	return "invalid value (typically too big) for the size of the input (surface, pattern, etc.)";
+	return "invalid value (typically too big) for the size of the input "
+	       "(surface, pattern, etc.)";
     case COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED:
 	return "user-font method not implemented";
     case COMAC_STATUS_DEVICE_TYPE_MISMATCH:
@@ -165,9 +169,11 @@ comac_status_to_string (comac_status_t status)
     case COMAC_STATUS_DEVICE_FINISHED:
 	return "the target device has been finished";
     case COMAC_STATUS_JBIG2_GLOBAL_MISSING:
-	return "COMAC_MIME_TYPE_JBIG2_GLOBAL_ID used but no COMAC_MIME_TYPE_JBIG2_GLOBAL data provided";
+	return "COMAC_MIME_TYPE_JBIG2_GLOBAL_ID used but no "
+	       "COMAC_MIME_TYPE_JBIG2_GLOBAL data provided";
     case COMAC_STATUS_PNG_ERROR:
-	return "error occurred in libpng while reading from or writing to a PNG file";
+	return "error occurred in libpng while reading from or writing to a "
+	       "PNG file";
     case COMAC_STATUS_FREETYPE_ERROR:
 	return "error occurred in libfreetype";
     case COMAC_STATUS_WIN32_GDI_ERROR:
@@ -181,7 +187,6 @@ comac_status_to_string (comac_status_t status)
 	return "<unknown error status>";
     }
 }
-
 
 /**
  * comac_glyph_allocate:
@@ -279,7 +284,6 @@ comac_text_cluster_free (comac_text_cluster_t *clusters)
     free (clusters);
 }
 
-
 /* Private stuff */
 
 /**
@@ -301,21 +305,21 @@ comac_text_cluster_free (comac_text_cluster_t *clusters)
  *               or bad cluster mapping.
  **/
 comac_status_t
-_comac_validate_text_clusters (const char		   *utf8,
-			       int			    utf8_len,
-			       const comac_glyph_t	   *glyphs,
-			       int			    num_glyphs,
-			       const comac_text_cluster_t  *clusters,
-			       int			    num_clusters,
-			       comac_text_cluster_flags_t   cluster_flags)
+_comac_validate_text_clusters (const char *utf8,
+			       int utf8_len,
+			       const comac_glyph_t *glyphs,
+			       int num_glyphs,
+			       const comac_text_cluster_t *clusters,
+			       int num_clusters,
+			       comac_text_cluster_flags_t cluster_flags)
 {
     comac_status_t status;
-    unsigned int n_bytes  = 0;
+    unsigned int n_bytes = 0;
     unsigned int n_glyphs = 0;
     int i;
 
     for (i = 0; i < num_clusters; i++) {
-	int cluster_bytes  = clusters[i].num_bytes;
+	int cluster_bytes = clusters[i].num_bytes;
 	int cluster_glyphs = clusters[i].num_glyphs;
 
 	if (cluster_bytes < 0 || cluster_glyphs < 0)
@@ -332,20 +336,23 @@ _comac_validate_text_clusters (const char		   *utf8,
 
 	/* Since n_bytes and n_glyphs are unsigned, but the rest of
 	 * values involved are signed, we can detect overflow easily */
-	if (n_bytes+cluster_bytes > (unsigned int)utf8_len || n_glyphs+cluster_glyphs > (unsigned int)num_glyphs)
+	if (n_bytes + cluster_bytes > (unsigned int) utf8_len ||
+	    n_glyphs + cluster_glyphs > (unsigned int) num_glyphs)
 	    goto BAD;
 
 	/* Make sure we've got valid UTF-8 for the cluster */
-	status = _comac_utf8_to_ucs4 (utf8+n_bytes, cluster_bytes, NULL, NULL);
+	status =
+	    _comac_utf8_to_ucs4 (utf8 + n_bytes, cluster_bytes, NULL, NULL);
 	if (unlikely (status))
 	    return _comac_error (COMAC_STATUS_INVALID_CLUSTERS);
 
-	n_bytes  += cluster_bytes ;
+	n_bytes += cluster_bytes;
 	n_glyphs += cluster_glyphs;
     }
 
-    if (n_bytes != (unsigned int) utf8_len || n_glyphs != (unsigned int) num_glyphs) {
-      BAD:
+    if (n_bytes != (unsigned int) utf8_len ||
+	n_glyphs != (unsigned int) num_glyphs) {
+    BAD:
 	return _comac_error (COMAC_STATUS_INVALID_CLUSTERS);
     }
 
@@ -501,7 +508,6 @@ _comac_operator_bounded_by_either (comac_operator_t op)
 	ASSERT_NOT_REACHED;
 	return FALSE; /* squelch warning */
     }
-
 }
 
 #if DISABLE_SOME_FLOATING_POINT
@@ -529,9 +535,9 @@ _comac_lround (double d)
 {
     uint32_t top, shift_amount, output;
     union {
-        double d;
-        uint64_t ui64;
-        uint32_t ui32[2];
+	double d;
+	uint64_t ui64;
+	uint32_t ui32[2];
     } u;
 
     u.d = d;
@@ -545,21 +551,21 @@ _comac_lround (double d)
      * same as the integer word order which, on the modern machines that we
      * care about, is OK.
      */
-#if ( defined(FLOAT_WORDS_BIGENDIAN) && !defined(WORDS_BIGENDIAN)) || \
-    (!defined(FLOAT_WORDS_BIGENDIAN) &&  defined(WORDS_BIGENDIAN))
+#if (defined(FLOAT_WORDS_BIGENDIAN) && ! defined(WORDS_BIGENDIAN)) ||          \
+    (! defined(FLOAT_WORDS_BIGENDIAN) && defined(WORDS_BIGENDIAN))
     {
-        uint32_t temp = u.ui32[0];
-        u.ui32[0] = u.ui32[1];
-        u.ui32[1] = temp;
+	uint32_t temp = u.ui32[0];
+	u.ui32[0] = u.ui32[1];
+	u.ui32[1] = temp;
     }
 #endif
 
 #ifdef WORDS_BIGENDIAN
-    #define MSW (0) /* Most Significant Word */
-    #define LSW (1) /* Least Significant Word */
+#define MSW (0) /* Most Significant Word */
+#define LSW (1) /* Least Significant Word */
 #else
-    #define MSW (1)
-    #define LSW (0)
+#define MSW (1)
+#define LSW (0)
 #endif
 
     /* By shifting the most significant word of the input double to the
@@ -730,9 +736,9 @@ _comac_half_from_float (float f)
     int s, e, m;
 
     u.f = f;
-    s =  (u.ui >> 16) & 0x00008000;
+    s = (u.ui >> 16) & 0x00008000;
     e = ((u.ui >> 23) & 0x000000ff) - (127 - 15);
-    m =   u.ui        & 0x007fffff;
+    m = u.ui & 0x007fffff;
     if (e <= 0) {
 	if (e < -10) {
 	    /* underflow */
@@ -742,7 +748,7 @@ _comac_half_from_float (float f)
 	m = (m | 0x00800000) >> (1 - e);
 
 	/* round to nearest, round 0.5 up. */
-	if (m &  0x00001000)
+	if (m & 0x00001000)
 	    m += 0x00002000;
 	return s | (m >> 13);
     } else if (e == 0xff - (127 - 15)) {
@@ -756,11 +762,11 @@ _comac_half_from_float (float f)
 	}
     } else {
 	/* round to nearest, round 0.5 up. */
-	if (m &  0x00001000) {
+	if (m & 0x00001000) {
 	    m += 0x00002000;
 
 	    if (m & 0x00800000) {
-		m =  0;
+		m = 0;
 		e += 1;
 	    }
 	}
@@ -775,7 +781,7 @@ _comac_half_from_float (float f)
 }
 
 #ifndef __BIONIC__
-# include <locale.h>
+#include <locale.h>
 
 const char *
 _comac_get_locale_decimal_point (void)
@@ -793,7 +799,7 @@ _comac_get_locale_decimal_point (void)
 }
 #endif
 
-#if defined (HAVE_NEWLOCALE) && defined (HAVE_STRTOD_L)
+#if defined(HAVE_NEWLOCALE) && defined(HAVE_STRTOD_L)
 
 static locale_t C_locale;
 
@@ -805,13 +811,13 @@ get_C_locale (void)
 retry:
     C = (locale_t) _comac_atomic_ptr_get ((void **) &C_locale);
 
-    if (unlikely (!C)) {
-        C = newlocale (LC_ALL_MASK, "C", NULL);
+    if (unlikely (! C)) {
+	C = newlocale (LC_ALL_MASK, "C", NULL);
 
-        if (!_comac_atomic_ptr_cmpxchg ((void **) &C_locale, NULL, C)) {
-            freelocale (C_locale);
-            goto retry;
-        }
+	if (! _comac_atomic_ptr_cmpxchg ((void **) &C_locale, NULL, C)) {
+	    freelocale (C_locale);
+	    goto retry;
+	}
     }
 
     return C;
@@ -834,7 +840,7 @@ _comac_strtod (const char *nptr, char **endptr)
     const char *p;
     char buf[100];
     char *bufptr;
-    char *bufend = buf + sizeof(buf) - 1;
+    char *bufend = buf + sizeof (buf) - 1;
     double value;
     char *end;
     int delta;
@@ -875,9 +881,9 @@ _comac_strtod (const char *nptr, char **endptr)
     value = strtod (buf, &end);
     if (endptr) {
 	if (end == buf)
-	    *endptr = (char*)(nptr);
+	    *endptr = (char *) (nptr);
 	else
-	    *endptr = (char*)(nptr + (end - buf) + delta);
+	    *endptr = (char *) (nptr + (end - buf) + delta);
     }
 
     return value;
@@ -918,18 +924,20 @@ _comac_fopen (const char *filename, const char *mode, FILE **file_out)
 	return COMAC_STATUS_SUCCESS;
     }
 
-    if ((status = _comac_utf8_to_utf16 (filename, -1, &filename_w, NULL)) != COMAC_STATUS_SUCCESS) {
+    if ((status = _comac_utf8_to_utf16 (filename, -1, &filename_w, NULL)) !=
+	COMAC_STATUS_SUCCESS) {
 	errno = EINVAL;
 	return status;
     }
 
-    if ((status = _comac_utf8_to_utf16 (mode, -1, &mode_w, NULL)) != COMAC_STATUS_SUCCESS) {
+    if ((status = _comac_utf8_to_utf16 (mode, -1, &mode_w, NULL)) !=
+	COMAC_STATUS_SUCCESS) {
 	free (filename_w);
 	errno = EINVAL;
 	return status;
     }
 
-    result = _wfopen(filename_w, mode_w);
+    result = _wfopen (filename_w, mode_w);
 
     free (filename_w);
     free (mode_w);
@@ -947,17 +955,17 @@ _comac_fopen (const char *filename, const char *mode, FILE **file_out)
 
 #define WIN32_LEAN_AND_MEAN
 /* We require Windows 2000 features such as ETO_PDY */
-#if !defined(WINVER) || (WINVER < 0x0500)
-# define WINVER 0x0500
+#if ! defined(WINVER) || (WINVER < 0x0500)
+#define WINVER 0x0500
 #endif
-#if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0500)
-# define _WIN32_WINNT 0x0500
+#if ! defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0500)
+#define _WIN32_WINNT 0x0500
 #endif
 
 #include <windows.h>
 #include <io.h>
 
-#if !_WIN32_WCE
+#if ! _WIN32_WCE
 /* tmpfile() replacement for Windows.
  *
  * On Windows tmpfile() creates the file in the root directory. This
@@ -982,26 +990,26 @@ _comac_win32_tmpfile (void)
 	return NULL;
 
     handle = CreateFileW (file_name,
-			 GENERIC_READ | GENERIC_WRITE,
-			 0,
-			 NULL,
-			 CREATE_ALWAYS,
-			 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE,
-			 NULL);
+			  GENERIC_READ | GENERIC_WRITE,
+			  0,
+			  NULL,
+			  CREATE_ALWAYS,
+			  FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE,
+			  NULL);
     if (handle == INVALID_HANDLE_VALUE) {
 	DeleteFileW (file_name);
 	return NULL;
     }
 
-    fd = _open_osfhandle((intptr_t) handle, 0);
+    fd = _open_osfhandle ((intptr_t) handle, 0);
     if (fd < 0) {
 	CloseHandle (handle);
 	return NULL;
     }
 
-    fp = fdopen(fd, "w+b");
+    fp = fdopen (fd, "w+b");
     if (fp == NULL) {
-	_close(fd);
+	_close (fd);
 	return NULL;
     }
 
@@ -1061,15 +1069,16 @@ _comac_intern_string (const char **str_inout, int len)
 
     COMAC_MUTEX_LOCK (_comac_intern_string_mutex);
     if (_comac_intern_string_ht == NULL) {
-	_comac_intern_string_ht = _comac_hash_table_create (_intern_string_equal);
+	_comac_intern_string_ht =
+	    _comac_hash_table_create (_intern_string_equal);
 	if (unlikely (_comac_intern_string_ht == NULL)) {
 	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto BAIL;
 	}
     }
 
-    istring = _comac_hash_table_lookup (_comac_intern_string_ht,
-					&tmpl.hash_entry);
+    istring =
+	_comac_hash_table_lookup (_comac_intern_string_ht, &tmpl.hash_entry);
     if (istring == NULL) {
 	istring = _comac_malloc (sizeof (comac_intern_string_t) + len + 1);
 	if (likely (istring != NULL)) {
@@ -1093,7 +1102,7 @@ _comac_intern_string (const char **str_inout, int len)
 
     *str_inout = istring->string;
 
-  BAIL:
+BAIL:
     COMAC_MUTEX_UNLOCK (_comac_intern_string_mutex);
     return status;
 }
@@ -1113,7 +1122,7 @@ _comac_intern_string_reset_static_data (void)
 	_comac_hash_table_foreach (_comac_intern_string_ht,
 				   _intern_string_pluck,
 				   _comac_intern_string_ht);
-	_comac_hash_table_destroy(_comac_intern_string_ht);
+	_comac_hash_table_destroy (_comac_intern_string_ht);
 	_comac_intern_string_ht = NULL;
     }
     COMAC_MUTEX_UNLOCK (_comac_intern_string_mutex);

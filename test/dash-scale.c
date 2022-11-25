@@ -25,9 +25,9 @@
 
 #include "comac-test.h"
 
-#define LINE_WIDTH	8.
-#define SIZE		(5 * LINE_WIDTH)
-#define PAD		(2 * LINE_WIDTH)
+#define LINE_WIDTH 8.
+#define SIZE (5 * LINE_WIDTH)
+#define PAD (2 * LINE_WIDTH)
 
 static void
 make_path (comac_t *cr)
@@ -82,7 +82,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_translate (cr, PAD, PAD);
 
-    comac_set_dash (cr, dash, ARRAY_LENGTH (dash), - 2 * LINE_WIDTH);
+    comac_set_dash (cr, dash, ARRAY_LENGTH (dash), -2 * LINE_WIDTH);
     comac_set_line_width (cr, LINE_WIDTH);
     draw_three_shapes (cr);
 
@@ -90,7 +90,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_save (cr);
     {
-	comac_set_dash (cr, dash, ARRAY_LENGTH (dash), - 2 * LINE_WIDTH);
+	comac_set_dash (cr, dash, ARRAY_LENGTH (dash), -2 * LINE_WIDTH);
 	comac_set_line_width (cr, LINE_WIDTH);
 	comac_scale (cr, 1, 2);
 	draw_three_shapes (cr);
@@ -102,7 +102,7 @@ draw (comac_t *cr, int width, int height)
     comac_save (cr);
     {
 	comac_scale (cr, 1, 2);
-	comac_set_dash (cr, dash, ARRAY_LENGTH (dash), - 2 * LINE_WIDTH);
+	comac_set_dash (cr, dash, ARRAY_LENGTH (dash), -2 * LINE_WIDTH);
 	comac_set_line_width (cr, LINE_WIDTH);
 	draw_three_shapes (cr);
     }
@@ -112,9 +112,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (dash_scale,
-	    "Test interactions of comac_set_dash and comac_scale, (in particular with a non-uniformly scaled pen)",
+	    "Test interactions of comac_set_dash and comac_scale, (in "
+	    "particular with a non-uniformly scaled pen)",
 	    "dash, stroke, transform", /* keywords */
-	    NULL, /* requirements */
+	    NULL,		       /* requirements */
 	    3 * (PAD + SIZE) + PAD,
 	    PAD + 5 * SIZE + 2 * (2 * PAD) + PAD,
-	    NULL, draw)
+	    NULL,
+	    draw)

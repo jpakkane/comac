@@ -55,10 +55,7 @@ draw (comac_t *cr, int width, int height)
     comac_move_to (cr, 8, 4);
     comac_arc_negative (cr, 8, 8, 4, 3 * M_PI / 2.0, M_PI / 2.0);
     comac_close_path (cr);
-    comac_curve_to (cr,
-		    12, 4,
-		    12, 12,
-		    8, 12);
+    comac_curve_to (cr, 12, 4, 12, 12, 8, 12);
 
     path = comac_copy_path_flat (cr);
     comac_new_path (cr);
@@ -73,6 +70,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (close_path,
 	    "Test some corner cases related to comac_close_path",
 	    "path", /* keywords */
-	    NULL, /* requirements */
-	    32, 16,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    32,
+	    16,
+	    NULL,
+	    draw)

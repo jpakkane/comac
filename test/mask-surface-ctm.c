@@ -30,12 +30,17 @@ draw (comac_t *cr, int width, int height)
 {
     comac_surface_t *mask;
     uint32_t data[] = {
-	0x80000000, 0x80000000,
-	0x80000000, 0x80000000,
+	0x80000000,
+	0x80000000,
+	0x80000000,
+	0x80000000,
     };
 
     mask = comac_image_surface_create_for_data ((unsigned char *) data,
-						COMAC_FORMAT_ARGB32, 2, 2, 8);
+						COMAC_FORMAT_ARGB32,
+						2,
+						2,
+						8);
 
     comac_set_source_rgb (cr, 1.0, 0, 0);
 
@@ -66,6 +71,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (mask_surface_ctm,
 	    "Test that comac_mask_surface is affected properly by the CTM",
 	    "mask", /* keywords */
-	    NULL, /* requirements */
-	    10, 10,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    10,
+	    10,
+	    NULL,
+	    draw)

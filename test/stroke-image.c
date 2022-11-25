@@ -27,7 +27,7 @@
 
 #define PAD 10
 #define SIZE 100
-#define IMAGE_SIZE (SIZE-PAD*2)
+#define IMAGE_SIZE (SIZE - PAD * 2)
 #define LINE_WIDTH 10
 
 static comac_test_status_t
@@ -39,7 +39,8 @@ draw (comac_t *cr, int width, int height)
     comac_set_source_rgb (cr, 0, 0, 0);
     comac_paint (cr);
 
-    image = comac_image_surface_create (COMAC_FORMAT_RGB24, IMAGE_SIZE, IMAGE_SIZE);
+    image =
+	comac_image_surface_create (COMAC_FORMAT_RGB24, IMAGE_SIZE, IMAGE_SIZE);
     cr_image = comac_create (image);
     comac_surface_destroy (image);
 
@@ -48,7 +49,12 @@ draw (comac_t *cr, int width, int height)
     comac_paint (cr_image);
     comac_set_source_rgb (cr_image, 0, 1, 0);
     comac_set_line_width (cr_image, LINE_WIDTH);
-    comac_arc (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH/2, 0, M_PI * 2.0);
+    comac_arc (cr_image,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2 - LINE_WIDTH / 2,
+	       0,
+	       M_PI * 2.0);
     comac_stroke (cr_image);
 
     /* Now stroke with it */
@@ -59,7 +65,12 @@ draw (comac_t *cr, int width, int height)
 
     comac_new_path (cr);
     comac_set_line_width (cr, LINE_WIDTH);
-    comac_arc (cr, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH/2, 0, M_PI * 2.0);
+    comac_arc (cr,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2,
+	       IMAGE_SIZE / 2 - LINE_WIDTH / 2,
+	       0,
+	       M_PI * 2.0);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -68,6 +79,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (stroke_image,
 	    "Test stroking with an image source, with a non-identity CTM",
 	    "stroke, image, transform", /* keywords */
-	    NULL, /* requirements */
-	    SIZE, SIZE,
-	    NULL, draw)
+	    NULL,			/* requirements */
+	    SIZE,
+	    SIZE,
+	    NULL,
+	    draw)

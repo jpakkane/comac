@@ -26,19 +26,19 @@
 #include "comac-test.h"
 
 typedef struct _point {
-    double x,y;
+    double x, y;
 } point_t;
 
 typedef struct _knots {
-    point_t a,b,c,d;
+    point_t a, b, c, d;
 } knots_t;
 
 static knots_t knots[5] = {
-    { {0, 0}, {0, 100}, {100, 100}, {100, 0} },
-    { {0, 0}, {75, 100}, {25, 100}, {100, 0} },
-    { {0, 0}, {100, 100}, {0, 100}, {100, 0} },
-    { {0, 0}, {150, 100}, {-50, 100}, {100, 0} },
-    { {0, 0}, {100, 200}, {0, -100}, {100, 100} },
+    {{0, 0}, {0, 100}, {100, 100}, {100, 0}},
+    {{0, 0}, {75, 100}, {25, 100}, {100, 0}},
+    {{0, 0}, {100, 100}, {0, 100}, {100, 0}},
+    {{0, 0}, {150, 100}, {-50, 100}, {100, 0}},
+    {{0, 0}, {100, 200}, {0, -100}, {100, 100}},
 };
 
 #ifdef REFERENCE
@@ -107,8 +107,8 @@ _spline_error_squared (const knots_t *knots)
 	    bdx -= dx;
 	    bdy -= dy;
 	} else {
-	    bdx -= u/v * dx;
-	    bdy -= u/v * dy;
+	    bdx -= u / v * dx;
+	    bdy -= u / v * dy;
 	}
 
 	u = cdx * dx + cdy * dy;
@@ -120,8 +120,8 @@ _spline_error_squared (const knots_t *knots)
 	    cdx -= dx;
 	    cdy -= dy;
 	} else {
-	    cdx -= u/v * dx;
-	    cdy -= u/v * dy;
+	    cdx -= u / v * dx;
+	    cdy -= u / v * dy;
 	}
     }
 
@@ -145,22 +145,22 @@ _offset_line_to (comac_t *cr,
 
     dx = p1->x - p0->x;
     dy = p1->y - p0->y;
-     v = hypot (dx, dy);
-     if (v == 0) {
-	 dx = p2->x - p0->x;
-	 dy = p2->y - p0->y;
-	 v = hypot (dx, dy);
-	 if (v == 0) {
-	     dx = p3->x - p0->x;
-	     dy = p3->y - p0->y;
-	     v = hypot (dx, dy);
-	 }
-     }
+    v = hypot (dx, dy);
+    if (v == 0) {
+	dx = p2->x - p0->x;
+	dy = p2->y - p0->y;
+	v = hypot (dx, dy);
+	if (v == 0) {
+	    dx = p3->x - p0->x;
+	    dy = p3->y - p0->y;
+	    v = hypot (dx, dy);
+	}
+    }
 
-     if (v == 0) {
-	 comac_line_to (cr, p0->x, p0->y);
-     } else
-	 comac_line_to (cr, p0->x - offset * dy / v, p0->y + offset * dx / v);
+    if (v == 0) {
+	comac_line_to (cr, p0->x, p0->y);
+    } else
+	comac_line_to (cr, p0->x - offset * dy / v, p0->y + offset * dx / v);
 }
 
 static void
@@ -184,7 +184,8 @@ _spline_decompose_into (knots_t *k1,
 
 static void
 _spline_decompose (const knots_t *knots,
-		   double tolerance, double offset,
+		   double tolerance,
+		   double offset,
 		   comac_t *cr)
 {
     knots_t k;
@@ -313,8 +314,10 @@ static void
 draw_bbox (comac_t *cr, double x0, double y0, double x1, double y1)
 {
     comac_rectangle (cr,
-		     floor (x0) + .5, floor (y0) + .5,
-		     ceil (x1) - floor (x0), ceil (y1) - floor (y0));
+		     floor (x0) + .5,
+		     floor (y0) + .5,
+		     ceil (x1) - floor (x0),
+		     ceil (y1) - floor (y0));
     comac_stroke (cr);
 }
 
@@ -328,107 +331,127 @@ stroke_splines (comac_t *cr)
     comac_translate (cr, 15, 15);
 
     comac_new_path (cr);
-    comac_move_to (cr,
-		   knots[0].a.x, knots[0].a.y);
+    comac_move_to (cr, knots[0].a.x, knots[0].a.y);
     comac_curve_to (cr,
-		    knots[0].b.x, knots[0].b.y,
-		    knots[0].c.x, knots[0].c.y,
-		    knots[0].d.x, knots[0].d.y);
+		    knots[0].b.x,
+		    knots[0].b.y,
+		    knots[0].c.x,
+		    knots[0].c.y,
+		    knots[0].d.x,
+		    knots[0].d.y);
     comac_stroke_extents (cr, &stroke_x0, &stroke_y0, &stroke_x1, &stroke_y1);
     comac_path_extents (cr, &path_x0, &path_y0, &path_x1, &path_y1);
     comac_stroke (cr);
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	comac_set_line_width (cr, 1);
 	comac_set_source_rgb (cr, 1, 0, 0);
 	draw_bbox (cr, stroke_x0, stroke_y0, stroke_x1, stroke_y1);
 	comac_set_source_rgb (cr, 0, 0, 1);
 	draw_bbox (cr, path_x0, path_y0, path_x1, path_y1);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, 130, 0);
 
     comac_new_path (cr);
-    comac_move_to (cr,
-		   knots[1].a.x, knots[1].a.y);
+    comac_move_to (cr, knots[1].a.x, knots[1].a.y);
     comac_curve_to (cr,
-		    knots[1].b.x, knots[1].b.y,
-		    knots[1].c.x, knots[1].c.y,
-		    knots[1].d.x, knots[1].d.y);
+		    knots[1].b.x,
+		    knots[1].b.y,
+		    knots[1].c.x,
+		    knots[1].c.y,
+		    knots[1].d.x,
+		    knots[1].d.y);
     comac_stroke_extents (cr, &stroke_x0, &stroke_y0, &stroke_x1, &stroke_y1);
     comac_path_extents (cr, &path_x0, &path_y0, &path_x1, &path_y1);
     comac_stroke (cr);
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	comac_set_line_width (cr, 1);
 	comac_set_source_rgb (cr, 1, 0, 0);
 	draw_bbox (cr, stroke_x0, stroke_y0, stroke_x1, stroke_y1);
 	comac_set_source_rgb (cr, 0, 0, 1);
 	draw_bbox (cr, path_x0, path_y0, path_x1, path_y1);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, 130, 0);
 
     comac_new_path (cr);
-    comac_move_to (cr,
-		   knots[2].a.x, knots[2].a.y);
+    comac_move_to (cr, knots[2].a.x, knots[2].a.y);
     comac_curve_to (cr,
-		    knots[2].b.x, knots[2].b.y,
-		    knots[2].c.x, knots[2].c.y,
-		    knots[2].d.x, knots[2].d.y);
+		    knots[2].b.x,
+		    knots[2].b.y,
+		    knots[2].c.x,
+		    knots[2].c.y,
+		    knots[2].d.x,
+		    knots[2].d.y);
     comac_stroke_extents (cr, &stroke_x0, &stroke_y0, &stroke_x1, &stroke_y1);
     comac_path_extents (cr, &path_x0, &path_y0, &path_x1, &path_y1);
     comac_stroke (cr);
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	comac_set_line_width (cr, 1);
 	comac_set_source_rgb (cr, 1, 0, 0);
 	draw_bbox (cr, stroke_x0, stroke_y0, stroke_x1, stroke_y1);
 	comac_set_source_rgb (cr, 0, 0, 1);
 	draw_bbox (cr, path_x0, path_y0, path_x1, path_y1);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, -130 - 65, 130);
 
     comac_new_path (cr);
-    comac_move_to (cr,
-		   knots[3].a.x, knots[3].a.y);
+    comac_move_to (cr, knots[3].a.x, knots[3].a.y);
     comac_curve_to (cr,
-		    knots[3].b.x, knots[3].b.y,
-		    knots[3].c.x, knots[3].c.y,
-		    knots[3].d.x, knots[3].d.y);
+		    knots[3].b.x,
+		    knots[3].b.y,
+		    knots[3].c.x,
+		    knots[3].c.y,
+		    knots[3].d.x,
+		    knots[3].d.y);
     comac_stroke_extents (cr, &stroke_x0, &stroke_y0, &stroke_x1, &stroke_y1);
     comac_path_extents (cr, &path_x0, &path_y0, &path_x1, &path_y1);
     comac_stroke (cr);
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	comac_set_line_width (cr, 1);
 	comac_set_source_rgb (cr, 1, 0, 0);
 	draw_bbox (cr, stroke_x0, stroke_y0, stroke_x1, stroke_y1);
 	comac_set_source_rgb (cr, 0, 0, 1);
 	draw_bbox (cr, path_x0, path_y0, path_x1, path_y1);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_translate (cr, 130, 0);
 
     comac_new_path (cr);
-    comac_move_to (cr,
-		   knots[4].a.x, knots[4].a.y);
+    comac_move_to (cr, knots[4].a.x, knots[4].a.y);
     comac_curve_to (cr,
-		    knots[4].b.x, knots[4].b.y,
-		    knots[4].c.x, knots[4].c.y,
-		    knots[4].d.x, knots[4].d.y);
+		    knots[4].b.x,
+		    knots[4].b.y,
+		    knots[4].c.x,
+		    knots[4].c.y,
+		    knots[4].d.x,
+		    knots[4].d.y);
     comac_stroke_extents (cr, &stroke_x0, &stroke_y0, &stroke_x1, &stroke_y1);
     comac_path_extents (cr, &path_x0, &path_y0, &path_x1, &path_y1);
     comac_stroke (cr);
 
-    comac_save (cr); {
+    comac_save (cr);
+    {
 	comac_set_line_width (cr, 1);
 	comac_set_source_rgb (cr, 1, 0, 0);
 	draw_bbox (cr, stroke_x0, stroke_y0, stroke_x1, stroke_y1);
 	comac_set_source_rgb (cr, 0, 0, 1);
 	draw_bbox (cr, path_x0, path_y0, path_x1, path_y1);
-    } comac_restore (cr);
+    }
+    comac_restore (cr);
 
     comac_restore (cr);
 }
@@ -466,6 +489,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (spline_decomposition,
 	    "Tests splines with various inflection points",
 	    "stroke, spline", /* keywords */
-	    NULL, /* requirements */
-	    390, 260,
-	    NULL, draw)
+	    NULL,	      /* requirements */
+	    390,
+	    260,
+	    NULL,
+	    draw)

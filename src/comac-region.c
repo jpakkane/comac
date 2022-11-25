@@ -55,8 +55,8 @@
  **/
 
 static const comac_region_t _comac_region_nil = {
-    COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
-    COMAC_STATUS_NO_MEMORY,		/* status */
+    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+    COMAC_STATUS_NO_MEMORY,	   /* status */
 };
 
 comac_region_t *
@@ -139,11 +139,10 @@ _comac_region_create_in_error (comac_status_t status)
  * Return value: the error status.
  **/
 static comac_status_t
-_comac_region_set_error (comac_region_t *region,
-			 comac_status_t status)
+_comac_region_set_error (comac_region_t *region, comac_status_t status)
 {
     if (status == COMAC_STATUS_SUCCESS)
-        return COMAC_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     /* Don't overwrite an existing error. This preserves the first
      * error, which is the most significant. */
@@ -171,8 +170,10 @@ _comac_region_init_rectangle (comac_region_t *region,
     region->status = COMAC_STATUS_SUCCESS;
     COMAC_REFERENCE_COUNT_INIT (&region->ref_count, 0);
     pixman_region32_init_rect (&region->rgn,
-			       rectangle->x, rectangle->y,
-			       rectangle->width, rectangle->height);
+			       rectangle->x,
+			       rectangle->y,
+			       rectangle->width,
+			       rectangle->height);
 }
 
 void
@@ -229,8 +230,7 @@ comac_region_create (void)
  * Since: 1.10
  **/
 comac_region_t *
-comac_region_create_rectangles (const comac_rectangle_int_t *rects,
-				int count)
+comac_region_create_rectangles (const comac_rectangle_int_t *rects, int count)
 {
     pixman_box32_t stack_pboxes[COMAC_STACK_ARRAY_LENGTH (pixman_box32_t)];
     pixman_box32_t *pboxes = stack_pboxes;
@@ -239,15 +239,18 @@ comac_region_create_rectangles (const comac_rectangle_int_t *rects,
 
     region = _comac_malloc (sizeof (comac_region_t));
     if (unlikely (region == NULL))
-	return _comac_region_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_region_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     COMAC_REFERENCE_COUNT_INIT (&region->ref_count, 1);
     region->status = COMAC_STATUS_SUCCESS;
 
     if (count == 1) {
 	pixman_region32_init_rect (&region->rgn,
-				   rects->x, rects->y,
-				   rects->width, rects->height);
+				   rects->x,
+				   rects->y,
+				   rects->width,
+				   rects->height);
 
 	return region;
     }
@@ -256,7 +259,8 @@ comac_region_create_rectangles (const comac_rectangle_int_t *rects,
 	pboxes = _comac_malloc_ab (count, sizeof (pixman_box32_t));
 	if (unlikely (pboxes == NULL)) {
 	    free (region);
-	    return _comac_region_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	    return _comac_region_create_in_error (
+		_comac_error (COMAC_STATUS_NO_MEMORY));
 	}
     }
 
@@ -274,7 +278,8 @@ comac_region_create_rectangles (const comac_rectangle_int_t *rects,
 
     if (unlikely (i == 0)) {
 	free (region);
-	return _comac_region_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_region_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     return region;
@@ -287,15 +292,18 @@ _comac_region_create_from_boxes (const comac_box_t *boxes, int count)
 
     region = _comac_malloc (sizeof (comac_region_t));
     if (unlikely (region == NULL))
-	return _comac_region_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_region_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
 
     COMAC_REFERENCE_COUNT_INIT (&region->ref_count, 1);
     region->status = COMAC_STATUS_SUCCESS;
 
     if (! pixman_region32_init_rects (&region->rgn,
-				      (pixman_box32_t *)boxes, count)) {
+				      (pixman_box32_t *) boxes,
+				      count)) {
 	free (region);
-	return _comac_region_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
+	return _comac_region_create_in_error (
+	    _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     return region;
@@ -309,7 +317,8 @@ _comac_region_get_boxes (const comac_region_t *region, int *nbox)
 	return NULL;
     }
 
-    return (comac_box_t *) pixman_region32_rectangles (CONST_CAST &region->rgn, nbox);
+    return (comac_box_t *) pixman_region32_rectangles (CONST_CAST & region->rgn,
+						       nbox);
 }
 
 /**
@@ -339,8 +348,10 @@ comac_region_create_rectangle (const comac_rectangle_int_t *rectangle)
     COMAC_REFERENCE_COUNT_INIT (&region->ref_count, 1);
 
     pixman_region32_init_rect (&region->rgn,
-			       rectangle->x, rectangle->y,
-			       rectangle->width, rectangle->height);
+			       rectangle->x,
+			       rectangle->y,
+			       rectangle->width,
+			       rectangle->height);
 
     return region;
 }
@@ -372,8 +383,7 @@ comac_region_copy (const comac_region_t *original)
 	return copy;
 
     if (original != NULL &&
-	! pixman_region32_copy (&copy->rgn, CONST_CAST &original->rgn))
-    {
+	! pixman_region32_copy (&copy->rgn, CONST_CAST & original->rgn)) {
 	comac_region_destroy (copy);
 	return (comac_region_t *) &_comac_region_nil;
     }
@@ -446,7 +456,7 @@ comac_region_num_rectangles (const comac_region_t *region)
     if (region->status)
 	return 0;
 
-    return pixman_region32_n_rects (CONST_CAST &region->rgn);
+    return pixman_region32_n_rects (CONST_CAST & region->rgn);
 }
 
 /**
@@ -472,7 +482,7 @@ comac_region_get_rectangle (const comac_region_t *region,
 	return;
     }
 
-    pbox = pixman_region32_rectangles (CONST_CAST &region->rgn, NULL) + nth;
+    pbox = pixman_region32_rectangles (CONST_CAST & region->rgn, NULL) + nth;
 
     rectangle->x = pbox->x1;
     rectangle->y = pbox->y1;
@@ -501,7 +511,7 @@ comac_region_get_extents (const comac_region_t *region,
 	return;
     }
 
-    pextents = pixman_region32_extents (CONST_CAST &region->rgn);
+    pextents = pixman_region32_extents (CONST_CAST & region->rgn);
 
     extents->x = pextents->x1;
     extents->y = pextents->y1;
@@ -548,8 +558,7 @@ comac_region_subtract (comac_region_t *dst, const comac_region_t *other)
 
     if (! pixman_region32_subtract (&dst->rgn,
 				    &dst->rgn,
-				    CONST_CAST &other->rgn))
-    {
+				    CONST_CAST & other->rgn)) {
 	return _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
     }
 
@@ -578,8 +587,10 @@ comac_region_subtract_rectangle (comac_region_t *dst,
 	return dst->status;
 
     pixman_region32_init_rect (&region,
-			       rectangle->x, rectangle->y,
-			       rectangle->width, rectangle->height);
+			       rectangle->x,
+			       rectangle->y,
+			       rectangle->width,
+			       rectangle->height);
 
     if (! pixman_region32_subtract (&dst->rgn, &dst->rgn, &region))
 	status = _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
@@ -609,7 +620,9 @@ comac_region_intersect (comac_region_t *dst, const comac_region_t *other)
     if (other->status)
 	return _comac_region_set_error (dst, other->status);
 
-    if (! pixman_region32_intersect (&dst->rgn, &dst->rgn, CONST_CAST &other->rgn))
+    if (! pixman_region32_intersect (&dst->rgn,
+				     &dst->rgn,
+				     CONST_CAST & other->rgn))
 	return _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
 
     return COMAC_STATUS_SUCCESS;
@@ -638,8 +651,10 @@ comac_region_intersect_rectangle (comac_region_t *dst,
 	return dst->status;
 
     pixman_region32_init_rect (&region,
-			       rectangle->x, rectangle->y,
-			       rectangle->width, rectangle->height);
+			       rectangle->x,
+			       rectangle->y,
+			       rectangle->width,
+			       rectangle->height);
 
     if (! pixman_region32_intersect (&dst->rgn, &dst->rgn, &region))
 	status = _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
@@ -661,8 +676,7 @@ comac_region_intersect_rectangle (comac_region_t *dst,
  * Since: 1.10
  **/
 comac_status_t
-comac_region_union (comac_region_t *dst,
-		    const comac_region_t *other)
+comac_region_union (comac_region_t *dst, const comac_region_t *other)
 {
     if (dst->status)
 	return dst->status;
@@ -670,7 +684,7 @@ comac_region_union (comac_region_t *dst,
     if (other->status)
 	return _comac_region_set_error (dst, other->status);
 
-    if (! pixman_region32_union (&dst->rgn, &dst->rgn, CONST_CAST &other->rgn))
+    if (! pixman_region32_union (&dst->rgn, &dst->rgn, CONST_CAST & other->rgn))
 	return _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
 
     return COMAC_STATUS_SUCCESS;
@@ -698,8 +712,10 @@ comac_region_union_rectangle (comac_region_t *dst,
 	return dst->status;
 
     pixman_region32_init_rect (&region,
-			       rectangle->x, rectangle->y,
-			       rectangle->width, rectangle->height);
+			       rectangle->x,
+			       rectangle->y,
+			       rectangle->width,
+			       rectangle->height);
 
     if (! pixman_region32_union (&dst->rgn, &dst->rgn, &region))
 	status = _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
@@ -737,9 +753,11 @@ comac_region_xor (comac_region_t *dst, const comac_region_t *other)
     pixman_region32_init (&tmp);
 
     /* XXX: get an xor function into pixman */
-    if (! pixman_region32_subtract (&tmp, CONST_CAST &other->rgn, &dst->rgn) ||
-        ! pixman_region32_subtract (&dst->rgn, &dst->rgn, CONST_CAST &other->rgn) || 
-        ! pixman_region32_union (&dst->rgn, &dst->rgn, &tmp))
+    if (! pixman_region32_subtract (&tmp, CONST_CAST & other->rgn, &dst->rgn) ||
+	! pixman_region32_subtract (&dst->rgn,
+				    &dst->rgn,
+				    CONST_CAST & other->rgn) ||
+	! pixman_region32_union (&dst->rgn, &dst->rgn, &tmp))
 	status = _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
 
     pixman_region32_fini (&tmp);
@@ -771,14 +789,16 @@ comac_region_xor_rectangle (comac_region_t *dst,
 	return dst->status;
 
     pixman_region32_init_rect (&region,
-			       rectangle->x, rectangle->y,
-			       rectangle->width, rectangle->height);
+			       rectangle->x,
+			       rectangle->y,
+			       rectangle->width,
+			       rectangle->height);
     pixman_region32_init (&tmp);
 
     /* XXX: get an xor function into pixman */
     if (! pixman_region32_subtract (&tmp, &region, &dst->rgn) ||
-        ! pixman_region32_subtract (&dst->rgn, &dst->rgn, &region) || 
-        ! pixman_region32_union (&dst->rgn, &dst->rgn, &tmp))
+	! pixman_region32_subtract (&dst->rgn, &dst->rgn, &region) ||
+	! pixman_region32_union (&dst->rgn, &dst->rgn, &tmp))
 	status = _comac_region_set_error (dst, COMAC_STATUS_NO_MEMORY);
 
     pixman_region32_fini (&tmp);
@@ -803,7 +823,7 @@ comac_region_is_empty (const comac_region_t *region)
     if (region->status)
 	return TRUE;
 
-    return ! pixman_region32_not_empty (CONST_CAST &region->rgn);
+    return ! pixman_region32_not_empty (CONST_CAST & region->rgn);
 }
 
 /**
@@ -817,8 +837,7 @@ comac_region_is_empty (const comac_region_t *region)
  * Since: 1.10
  **/
 void
-comac_region_translate (comac_region_t *region,
-			int dx, int dy)
+comac_region_translate (comac_region_t *region, int dx, int dy)
 {
     if (region->status)
 	return;
@@ -856,13 +875,16 @@ comac_region_contains_rectangle (const comac_region_t *region,
     pbox.x2 = rectangle->x + rectangle->width;
     pbox.y2 = rectangle->y + rectangle->height;
 
-    poverlap = pixman_region32_contains_rectangle (CONST_CAST &region->rgn,
-						   &pbox);
+    poverlap =
+	pixman_region32_contains_rectangle (CONST_CAST & region->rgn, &pbox);
     switch (poverlap) {
     default:
-    case PIXMAN_REGION_OUT:  return COMAC_REGION_OVERLAP_OUT;
-    case PIXMAN_REGION_IN:   return COMAC_REGION_OVERLAP_IN;
-    case PIXMAN_REGION_PART: return COMAC_REGION_OVERLAP_PART;
+    case PIXMAN_REGION_OUT:
+	return COMAC_REGION_OVERLAP_OUT;
+    case PIXMAN_REGION_IN:
+	return COMAC_REGION_OVERLAP_IN;
+    case PIXMAN_REGION_PART:
+	return COMAC_REGION_OVERLAP_PART;
     }
 }
 
@@ -879,15 +901,17 @@ comac_region_contains_rectangle (const comac_region_t *region,
  * Since: 1.10
  **/
 comac_bool_t
-comac_region_contains_point (const comac_region_t *region,
-			     int x, int y)
+comac_region_contains_point (const comac_region_t *region, int x, int y)
 {
     pixman_box32_t box;
 
     if (region->status)
 	return FALSE;
 
-    return pixman_region32_contains_point (CONST_CAST &region->rgn, x, y, &box);
+    return pixman_region32_contains_point (CONST_CAST & region->rgn,
+					   x,
+					   y,
+					   &box);
 }
 
 /**
@@ -904,8 +928,7 @@ comac_region_contains_point (const comac_region_t *region,
  * Since: 1.10
  **/
 comac_bool_t
-comac_region_equal (const comac_region_t *a,
-		    const comac_region_t *b)
+comac_region_equal (const comac_region_t *a, const comac_region_t *b)
 {
     /* error objects are never equal */
     if ((a != NULL && a->status) || (b != NULL && b->status))
@@ -917,5 +940,5 @@ comac_region_equal (const comac_region_t *a,
     if (a == NULL || b == NULL)
 	return FALSE;
 
-    return pixman_region32_equal (CONST_CAST &a->rgn, CONST_CAST &b->rgn);
+    return pixman_region32_equal (CONST_CAST & a->rgn, CONST_CAST & b->rgn);
 }

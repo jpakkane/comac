@@ -28,9 +28,9 @@
 
 #include "comac-test.h"
 
-#define PAT_WIDTH  120
+#define PAT_WIDTH 120
 #define PAT_HEIGHT 120
-#define SIZE (PAT_WIDTH*2)
+#define SIZE (PAT_WIDTH * 2)
 #define PAD 2
 #define WIDTH (PAD + SIZE + PAD)
 #define HEIGHT WIDTH
@@ -48,7 +48,7 @@ draw (comac_t *cr, int width, int height)
 
     comac_matrix_init_scale (&m, 2, 1.5);
     comac_matrix_rotate (&m, 1);
-    comac_matrix_translate (&m, -PAT_WIDTH/4.0, -PAT_WIDTH/2.0);
+    comac_matrix_translate (&m, -PAT_WIDTH / 4.0, -PAT_WIDTH / 2.0);
     comac_matrix_invert (&m);
     comac_set_matrix (cr, &m);
 
@@ -56,47 +56,55 @@ draw (comac_t *cr, int width, int height)
     comac_clip (cr);
 
     comac_set_source_rgba (cr, 1, 0, 1, 0.5);
-    comac_rectangle (cr, PAT_WIDTH/6.0, PAT_HEIGHT/6.0, PAT_WIDTH/4.0, PAT_HEIGHT/4.0);
+    comac_rectangle (cr,
+		     PAT_WIDTH / 6.0,
+		     PAT_HEIGHT / 6.0,
+		     PAT_WIDTH / 4.0,
+		     PAT_HEIGHT / 4.0);
     comac_fill (cr);
 
     comac_set_source_rgba (cr, 0, 1, 1, 0.5);
-    comac_rectangle (cr, PAT_WIDTH/2.0, PAT_HEIGHT/2.0, PAT_WIDTH/4.0, PAT_HEIGHT/4.0);
+    comac_rectangle (cr,
+		     PAT_WIDTH / 2.0,
+		     PAT_HEIGHT / 2.0,
+		     PAT_WIDTH / 4.0,
+		     PAT_HEIGHT / 4.0);
     comac_fill (cr);
 
     comac_set_line_width (cr, 1);
-    comac_move_to (cr, PAT_WIDTH/6.0, 0);
+    comac_move_to (cr, PAT_WIDTH / 6.0, 0);
     comac_line_to (cr, 0, 0);
-    comac_line_to (cr, 0, PAT_HEIGHT/6.0);
+    comac_line_to (cr, 0, PAT_HEIGHT / 6.0);
     comac_set_source_rgb (cr, 1, 0, 0);
     comac_stroke (cr);
 
-    comac_move_to (cr, PAT_WIDTH/6.0, PAT_HEIGHT);
+    comac_move_to (cr, PAT_WIDTH / 6.0, PAT_HEIGHT);
     comac_line_to (cr, 0, PAT_HEIGHT);
-    comac_line_to (cr, 0, 5*PAT_HEIGHT/6.0);
+    comac_line_to (cr, 0, 5 * PAT_HEIGHT / 6.0);
     comac_set_source_rgb (cr, 0, 1, 0);
     comac_stroke (cr);
 
-    comac_move_to (cr, 5*PAT_WIDTH/6.0, 0);
+    comac_move_to (cr, 5 * PAT_WIDTH / 6.0, 0);
     comac_line_to (cr, PAT_WIDTH, 0);
-    comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT/6.0);
+    comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT / 6.0);
     comac_set_source_rgb (cr, 0, 0, 1);
     comac_stroke (cr);
 
-    comac_move_to (cr, 5*PAT_WIDTH/6.0, PAT_HEIGHT);
+    comac_move_to (cr, 5 * PAT_WIDTH / 6.0, PAT_HEIGHT);
     comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT);
-    comac_line_to (cr, PAT_WIDTH, 5*PAT_HEIGHT/6.0);
+    comac_line_to (cr, PAT_WIDTH, 5 * PAT_HEIGHT / 6.0);
     comac_set_source_rgb (cr, 1, 1, 0);
     comac_stroke (cr);
 
     comac_set_source_rgb (cr, 0.5, 0.5, 0.5);
-    comac_set_line_width (cr, PAT_WIDTH/10.0);
+    comac_set_line_width (cr, PAT_WIDTH / 10.0);
 
-    comac_move_to (cr, 0,         PAT_HEIGHT/4.0);
-    comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT/4.0);
+    comac_move_to (cr, 0, PAT_HEIGHT / 4.0);
+    comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT / 4.0);
     comac_stroke (cr);
 
-    comac_move_to (cr, PAT_WIDTH/4.0,         0);
-    comac_line_to (cr, PAT_WIDTH/4.0, PAT_WIDTH);
+    comac_move_to (cr, PAT_WIDTH / 4.0, 0);
+    comac_line_to (cr, PAT_WIDTH / 4.0, PAT_WIDTH);
     comac_stroke (cr);
 
     return COMAC_TEST_SUCCESS;
@@ -105,6 +113,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (rotated_clip,
 	    "Test clipping with non identity pattern matrix",
 	    "clip", /* keywords */
-	    NULL, /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    NULL,   /* requirements */
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

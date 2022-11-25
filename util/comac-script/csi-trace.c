@@ -44,9 +44,10 @@
 
 static comac_surface_t *
 _script_surface_create (void *closure,
-			 comac_content_t content,
-			 double width, double height,
-			 long uid)
+			comac_content_t content,
+			double width,
+			double height,
+			long uid)
 {
     return comac_script_surface_create (closure, content, width, height);
 }
@@ -64,13 +65,13 @@ main (int argc, char **argv)
     csi = comac_script_interpreter_create ();
 
     for (i = 1; i < argc; i++) {
-        if (strcmp (argv[i], "--version") == 0) {
-            printf ("%s: version %s\n", argv[0], __DATE__);
+	if (strcmp (argv[i], "--version") == 0) {
+	    printf ("%s: version %s\n", argv[0], __DATE__);
 	    exit (0);
-        } else if (strcmp (argv[i], "--help") == 0) {
+	} else if (strcmp (argv[i], "--help") == 0) {
 	    printf ("usage: %s < in > out\n", argv[0]);
 	    exit (0);
-        }
+	}
 
 	snprintf (buf, sizeof (buf), "%s.trace", basename (argv[i]));
 	comac_device_destroy (hooks.closure);

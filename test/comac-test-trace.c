@@ -178,12 +178,12 @@ struct surface_tag {
 };
 static const comac_user_data_key_t surface_tag;
 
-#define TARGET_NAME(T)  ((T) ? (T)->name : "recording")
+#define TARGET_NAME(T) ((T) ? (T)->name : "recording")
 
 #if COMAC_HAS_REAL_PTHREAD
-#define tr_die(t) t->is_recording ? pthread_exit(NULL) : exit(1)
+#define tr_die(t) t->is_recording ? pthread_exit (NULL) : exit (1)
 #else
-#define tr_die(t) exit(1)
+#define tr_die(t) exit (1)
 #endif
 
 static comac_bool_t
@@ -260,7 +260,8 @@ format_for_content (comac_content_t content)
 
 static void
 send_recording_surface (test_runner_t *tr,
-			int width, int height,
+			int width,
+			int height,
 			struct context_closure *closure)
 {
 #if COMAC_HAS_REAL_PTHREAD
@@ -269,7 +270,8 @@ send_recording_surface (test_runner_t *tr,
 	closure->start_line,
 	closure->end_line,
 	-1,
-	width, height,
+	width,
+	height,
 	(long) closure->surface,
     };
     unsigned long offset;
@@ -304,14 +306,17 @@ static void *
 request_image (test_runner_t *tr,
 	       struct context_closure *closure,
 	       comac_format_t format,
-	       int width, int height, int stride)
+	       int width,
+	       int height,
+	       int stride)
 {
-    const struct request_image rq = {
-	closure->id,
-	closure->start_line,
-	closure->end_line,
-	format, width, height, stride
-    };
+    const struct request_image rq = {closure->id,
+				     closure->start_line,
+				     closure->end_line,
+				     format,
+				     width,
+				     height,
+				     stride};
     unsigned long offset = -1;
 
     assert (format != (comac_format_t) -1);
@@ -325,8 +330,7 @@ request_image (test_runner_t *tr,
 }
 
 static void
-send_surface (test_runner_t *tr,
-	      struct context_closure *closure)
+send_surface (test_runner_t *tr, struct context_closure *closure)
 {
     comac_surface_t *source = closure->surface;
     comac_surface_t *image;
@@ -338,7 +342,8 @@ send_surface (test_runner_t *tr,
 
     if (DEBUG > 1) {
 	printf ("send-surface: '%s', is-recording? %d\n",
-		tr->name, tr->is_recording);
+		tr->name,
+		tr->is_recording);
     }
 
     if (comac_surface_get_type (source) == COMAC_SURFACE_TYPE_IMAGE) {
@@ -385,7 +390,8 @@ send_surface (test_runner_t *tr,
 
     image = comac_image_surface_create_for_data (data,
 						 format,
-						 width, height,
+						 width,
+						 height,
 						 stride);
     cr = comac_create (image);
     comac_surface_destroy (image);
@@ -408,14 +414,15 @@ send_surface (test_runner_t *tr,
 static comac_surface_t *
 _surface_create (void *closure,
 		 comac_content_t content,
-		 double width, double height,
+		 double width,
+		 double height,
 		 long uid)
 {
     test_runner_t *tr = closure;
     comac_surface_t *surface;
 
-    surface = comac_surface_create_similar (tr->surface,
-					    content, width, height);
+    surface =
+	comac_surface_create_similar (tr->surface, content, width, height);
     if (comac_surface_get_type (surface) != COMAC_SURFACE_TYPE_IMAGE) {
 	struct surface_tag *tag;
 
@@ -436,8 +443,9 @@ _context_create (void *closure, comac_surface_t *surface)
     struct context_closure *l;
 
     if (DEBUG) {
-	fprintf (stderr, "%s: starting context %lu on line %d\n",
-		 tr->name ? tr->name : "recording" ,
+	fprintf (stderr,
+		 "%s: starting context %lu on line %d\n",
+		 tr->name ? tr->name : "recording",
 		 tr->context_id + 1,
 		 comac_script_interpreter_get_line_number (tr->csi));
     }
@@ -465,29 +473,31 @@ _context_destroy (void *closure, void *ptr)
     while ((l = *prev) != NULL) {
 	if (l->context == ptr) {
 	    if (DEBUG) {
-		fprintf (stderr, "%s: context %lu complete on line %d\n",
-			 tr->name ? tr->name : "recording" ,
+		fprintf (stderr,
+			 "%s: context %lu complete on line %d\n",
+			 tr->name ? tr->name : "recording",
 			 tr->context_id,
 			 comac_script_interpreter_get_line_number (tr->csi));
 	    }
-	    l->end_line =
-		comac_script_interpreter_get_line_number (tr->csi);
+	    l->end_line = comac_script_interpreter_get_line_number (tr->csi);
 	    if (comac_surface_status (l->surface) == COMAC_STATUS_SUCCESS) {
 		send_surface (tr, l);
-            } else {
-		fprintf (stderr, "%s: error during replay, line %lu: %s!\n",
-			 tr->name,
-			 l->end_line,
-			 comac_status_to_string (comac_surface_status (l->surface)));
+	    } else {
+		fprintf (
+		    stderr,
+		    "%s: error during replay, line %lu: %s!\n",
+		    tr->name,
+		    l->end_line,
+		    comac_status_to_string (comac_surface_status (l->surface)));
 		tr_die (tr);
 	    }
 
-            comac_surface_destroy (l->surface);
-            *prev = l->next;
-            free (l);
-            return;
-        }
-        prev = &l->next;
+	    comac_surface_destroy (l->surface);
+	    *prev = l->next;
+	    free (l);
+	    return;
+	}
+	prev = &l->next;
     }
 }
 
@@ -550,10 +560,12 @@ spawn_shm (const char *shm_path)
     if (fd == -1)
 	return MAP_FAILED;
 
-    base = mmap (NULL, DATA_SIZE,
+    base = mmap (NULL,
+		 DATA_SIZE,
 		 PROT_READ | PROT_WRITE,
 		 MAP_SHARED | MAP_NORESERVE,
-		 fd, 0);
+		 fd,
+		 0);
     close (fd);
 
     return base;
@@ -580,14 +592,14 @@ spawn_target (const char *socket_path,
 
     tr.sk = spawn_socket (socket_path, tr.pid);
     if (tr.sk == -1) {
-	fprintf (stderr, "%s: Failed to open socket.\n",
-		 target->name);
+	fprintf (stderr, "%s: Failed to open socket.\n", target->name);
 	exit (-1);
     }
 
     tr.base = spawn_shm (shm_path);
     if (tr.base == MAP_FAILED) {
-	fprintf (stderr, "%s: Failed to map shared memory segment.\n",
+	fprintf (stderr,
+		 "%s: Failed to map shared memory segment.\n",
 		 target->name);
 	exit (-1);
     }
@@ -599,8 +611,10 @@ spawn_target (const char *socket_path,
 
     tr.surface = target->create_surface (NULL,
 					 target->content,
-					 1, 1,
-					 1, 1,
+					 1,
+					 1,
+					 1,
+					 1,
 					 COMAC_BOILERPLATE_MODE_TEST,
 					 &tr.closure);
     if (tr.surface == NULL) {
@@ -682,8 +696,8 @@ spawn_recorder (const char *socket_path, const char *trace, test_runner_t **out)
     tr->context_id = 0;
     tr->trace = trace;
 
-    tr->surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA,
-						  NULL);
+    tr->surface =
+	comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
     if (tr->surface == NULL) {
 	cleanup_recorder (tr);
 	return -1;
@@ -697,7 +711,6 @@ spawn_recorder (const char *socket_path, const char *trace, test_runner_t **out)
 	return -1;
     }
     pthread_attr_destroy (&attr);
-
 
     *out = tr;
     return pid;
@@ -725,16 +738,19 @@ matches_reference (struct slave *slave)
     if (comac_surface_get_type (a) != comac_surface_get_type (b))
 	return FALSE;
 
-    if (comac_image_surface_get_format (a) != comac_image_surface_get_format (b))
+    if (comac_image_surface_get_format (a) !=
+	comac_image_surface_get_format (b))
 	return FALSE;
 
     if (comac_image_surface_get_width (a) != comac_image_surface_get_width (b))
 	return FALSE;
 
-    if (comac_image_surface_get_height (a) != comac_image_surface_get_height (b))
+    if (comac_image_surface_get_height (a) !=
+	comac_image_surface_get_height (b))
 	return FALSE;
 
-    if (comac_image_surface_get_stride (a) != comac_image_surface_get_stride (b))
+    if (comac_image_surface_get_stride (a) !=
+	comac_image_surface_get_stride (b))
 	return FALSE;
 
     if (FALSE && comac_surface_get_content (a) & COMAC_CONTENT_COLOR) {
@@ -751,11 +767,16 @@ matches_reference (struct slave *slave)
 	if (data == NULL)
 	    return FALSE;
 
-	diff = comac_image_surface_create_for_data (data,
-						    comac_image_surface_get_format (a),
-						    width, height, stride);
-	comac_surface_set_user_data (diff, (comac_user_data_key_t *) diff,
-				     data, free);
+	diff = comac_image_surface_create_for_data (
+	    data,
+	    comac_image_surface_get_format (a),
+	    width,
+	    height,
+	    stride);
+	comac_surface_set_user_data (diff,
+				     (comac_user_data_key_t *) diff,
+				     data,
+				     free);
 
 	status = image_diff (NULL, a, b, diff, &slave->result);
 	if (status) {
@@ -763,7 +784,8 @@ matches_reference (struct slave *slave)
 	    return FALSE;
 	}
 
-	if (image_diff_is_failure (&slave->result, slave->target->error_tolerance)) {
+	if (image_diff_is_failure (&slave->result,
+				   slave->target->error_tolerance)) {
 	    slave->difference = diff;
 	    return FALSE;
 	} else {
@@ -794,8 +816,8 @@ matches_reference (struct slave *slave)
 			    int va, vb;
 			    unsigned diff;
 
-			    va = (ua[x] >> (channel*8)) & 0xff;
-			    vb = (ub[x] >> (channel*8)) & 0xff;
+			    va = (ua[x] >> (channel * 8)) & 0xff;
+			    vb = (ub[x] >> (channel * 8)) & 0xff;
 			    diff = abs (va - vb);
 			    if (diff > slave->target->error_tolerance)
 				return FALSE;
@@ -819,8 +841,8 @@ matches_reference (struct slave *slave)
 			    int va, vb;
 			    unsigned diff;
 
-			    va = (ua[x] >> (channel*8)) & 0xff;
-			    vb = (ub[x] >> (channel*8)) & 0xff;
+			    va = (ua[x] >> (channel * 8)) & 0xff;
+			    vb = (ub[x] >> (channel * 8)) & 0xff;
 			    diff = abs (va - vb);
 			    if (diff > slave->target->error_tolerance)
 				return FALSE;
@@ -858,8 +880,8 @@ matches_reference (struct slave *slave)
 
 	case COMAC_FORMAT_RGB30:
 	case COMAC_FORMAT_RGB16_565:
-        case COMAC_FORMAT_RGB96F:
-        case COMAC_FORMAT_RGBA128F:
+	case COMAC_FORMAT_RGB96F:
+	case COMAC_FORMAT_RGBA128F:
 	case COMAC_FORMAT_INVALID:
 	    assert (0);
 	}
@@ -894,14 +916,15 @@ write_images (const char *trace, struct slave *slave, int num_slaves)
 	if (slave->image != NULL && ! slave->is_recording) {
 	    char *filename;
 
-	    xasprintf (&filename, "%s-%s-fail.png",
-		       trace, slave->target->name);
+	    xasprintf (&filename, "%s-%s-fail.png", trace, slave->target->name);
 	    comac_surface_write_to_png (slave->image, filename);
 	    free (filename);
 
 	    if (slave->difference) {
-		xasprintf (&filename, "%s-%s-diff.png",
-			   trace, slave->target->name);
+		xasprintf (&filename,
+			   "%s-%s-diff.png",
+			   trace,
+			   slave->target->name);
 		comac_surface_write_to_png (slave->difference, filename);
 		free (filename);
 	    }
@@ -917,9 +940,13 @@ write_result (const char *trace, struct slave *slave)
     static int index;
     char *filename;
 
-    xasprintf (&filename, "%s-%s-pass-%d-%ld-%ld.png",
-	       trace, slave->target->name, ++index,
-	       slave->start_line, slave->end_line);
+    xasprintf (&filename,
+	       "%s-%s-pass-%d-%ld-%ld.png",
+	       trace,
+	       slave->target->name,
+	       ++index,
+	       slave->start_line,
+	       slave->end_line);
     comac_surface_write_to_png (slave->image, filename);
     free (filename);
 }
@@ -956,8 +983,12 @@ dump_traces (test_runner_t *tr,
 	comac_device_t *script;
 	char *filename;
 
-	xasprintf (&filename, "%s-%s-%s.%lu.trace",
-		   trace, target, fail, c->start_line);
+	xasprintf (&filename,
+		   "%s-%s-%s.%lu.trace",
+		   trace,
+		   target,
+		   fail,
+		   c->start_line);
 
 	script = comac_script_create (filename);
 	comac_script_from_recording_surface (script, c->surface);
@@ -988,7 +1019,8 @@ allocate_image_for_slave (uint8_t *base,
     slave->height = rq.height;
 
     if (DEBUG > 1) {
-	printf ("allocate-image-for-slave: %s %lu [%lu, %lu] %ldx%ld stride=%lu => %lu, is-recording? %d\n",
+	printf ("allocate-image-for-slave: %s %lu [%lu, %lu] %ldx%ld "
+		"stride=%lu => %lu, is-recording? %d\n",
 		TARGET_NAME (slave->target),
 		slave->image_serial,
 		slave->start_line,
@@ -1010,8 +1042,10 @@ allocate_image_for_slave (uint8_t *base,
 	offset += size;
 	assert (offset <= DATA_SIZE);
 
-	slave->image = comac_image_surface_create_for_data (data, rq.format,
-							    rq.width, rq.height,
+	slave->image = comac_image_surface_create_for_data (data,
+							    rq.format,
+							    rq.width,
+							    rq.height,
 							    rq.stride);
     }
 
@@ -1039,11 +1073,10 @@ test_run (void *base,
     unsigned long image;
 
     if (DEBUG) {
-	printf ("Running trace '%s' over %d slaves\n",
-		trace, num_slaves);
+	printf ("Running trace '%s' over %d slaves\n", trace, num_slaves);
     }
 
-    pfd = xcalloc (num_slaves+1, sizeof (*pfd));
+    pfd = xcalloc (num_slaves + 1, sizeof (*pfd));
 
     pfd[0].fd = sk;
     pfd[0].events = POLLIN;
@@ -1112,10 +1145,9 @@ test_run (void *base,
 		    if (slaves[i].image_serial == 0) {
 			unsigned long offset;
 
-			image =
-			    allocate_image_for_slave (base,
-						      offset = image,
-						      &slaves[i]);
+			image = allocate_image_for_slave (base,
+							  offset = image,
+							  &slaves[i]);
 			if (! writen (pfd[n].fd, &offset, sizeof (offset))) {
 			    pfd[n].events = pfd[n].revents = 0;
 			    err = 1;
@@ -1127,7 +1159,8 @@ test_run (void *base,
 			       &slaves[i].image_ready,
 			       sizeof (slaves[i].image_ready));
 			if (DEBUG) {
-			    printf ("slave '%s' reports completion on %lu (expecting %lu)\n",
+			    printf ("slave '%s' reports completion on %lu "
+				    "(expecting %lu)\n",
 				    TARGET_NAME (slaves[i].target),
 				    slaves[i].image_ready,
 				    slaves[i].image_serial);
@@ -1183,7 +1216,8 @@ test_run (void *base,
 		goto out;
 	    }
 
-	    if (write_results) write_result (trace, &slaves[1]);
+	    if (write_results)
+		write_result (trace, &slaves[1]);
 	    if (write_traces && slaves[0].is_recording) {
 		char buf[80];
 		snprintf (buf, sizeof (buf), "%ld", slaves[0].image_serial);
@@ -1201,8 +1235,7 @@ test_run (void *base,
 		}
 		if (! writen (slaves[i].fd,
 			      &slaves[i].image_serial,
-			      sizeof (slaves[i].image_serial)))
-		{
+			      sizeof (slaves[i].image_serial))) {
 		    goto out;
 		}
 
@@ -1331,22 +1364,24 @@ _test_trace (test_trace_t *test,
     /* allocate some shared memory */
     fd = server_shm (shm_path);
     if (fd == -1) {
-	fprintf (stderr, "Unable to create shared memory '%s': %s\n",
-		 shm_path, strerror (errno));
+	fprintf (stderr,
+		 "Unable to create shared memory '%s': %s\n",
+		 shm_path,
+		 strerror (errno));
 	goto cleanup_sk;
     }
 
     image = comac_boilerplate_get_image_target (COMAC_CONTENT_COLOR_ALPHA);
     assert (image != NULL);
 
-    s = slaves = xcalloc (2*test->num_targets + 1, sizeof (struct slave));
+    s = slaves = xcalloc (2 * test->num_targets + 1, sizeof (struct slave));
 
 #if COMAC_HAS_REAL_PTHREAD
     /* set-up a recording-surface to reconstruct errors */
     slave = spawn_recorder (socket_path, trace, &recorder);
     if (slave < 0) {
-        fprintf (stderr, "Unable to create recording surface\n");
-        goto cleanup_sk;
+	fprintf (stderr, "Unable to create recording surface\n");
+	goto cleanup_sk;
     }
 
     s->pid = slave;
@@ -1366,7 +1401,10 @@ _test_trace (test_trace_t *test,
 
 	if (DEBUG)
 	    printf ("setting up target[%d]? '%s' (image? %d, measurable? %d)\n",
-		    i, target->name, target == image, target->is_measurable);
+		    i,
+		    target->name,
+		    target == image,
+		    target->is_measurable);
 
 	if (target == image || ! target->is_measurable)
 	    continue;
@@ -1438,7 +1476,7 @@ cleanup:
 
 	kill (s->pid, SIGKILL);
 	waitpid (s->pid, &status, 0);
-	if (WIFSIGNALED (status) && WTERMSIG(status) != SIGKILL) {
+	if (WIFSIGNALED (status) && WTERMSIG (status) != SIGKILL) {
 	    fprintf (stderr, "%s crashed\n", s->target->name);
 	    if (recorder)
 		dump_traces (recorder, trace, s->target->name, "crash");
@@ -1524,9 +1562,9 @@ read_excludes (test_trace_t *test, const char *filename)
 
 	if (s != t) {
 	    int i = test->num_exclude_names;
-	    test->exclude_names = xrealloc (test->exclude_names,
-					    sizeof (char *) * (i+1));
-	    test->exclude_names[i] = strndup (s, t-s);
+	    test->exclude_names =
+		xrealloc (test->exclude_names, sizeof (char *) * (i + 1));
+	    test->exclude_names[i] = strndup (s, t - s);
 	    test->num_exclude_names++;
 	}
     }
@@ -1540,19 +1578,23 @@ read_excludes (test_trace_t *test, const char *filename)
 static void
 usage (const char *argv0)
 {
-    fprintf (stderr,
-"Usage: %s [-l] [-x exclude-file] [test-names ... | traces ...]\n"
-"\n"
-"Run the comac test suite over the given traces (all by default).\n"
-"The command-line arguments are interpreted as follows:\n"
-"\n"
-"  -l	list only; just list selected test case names without executing\n"
-"  -x	exclude; specify a file to read a list of traces to exclude\n"
-"\n"
-"If test names are given they are used as sub-string matches so a command\n"
-"such as \"%s firefox\" can be used to run all firefox traces.\n"
-"Alternatively, you can specify a list of filenames to execute.\n",
-	     argv0, argv0);
+    fprintf (
+	stderr,
+	"Usage: %s [-l] [-x exclude-file] [test-names ... | traces ...]\n"
+	"\n"
+	"Run the comac test suite over the given traces (all by default).\n"
+	"The command-line arguments are interpreted as follows:\n"
+	"\n"
+	"  -l	list only; just list selected test case names without "
+	"executing\n"
+	"  -x	exclude; specify a file to read a list of traces to exclude\n"
+	"\n"
+	"If test names are given they are used as sub-string matches so a "
+	"command\n"
+	"such as \"%s firefox\" can be used to run all firefox traces.\n"
+	"Alternatively, you can specify a list of filenames to execute.\n",
+	argv0,
+	argv0);
 }
 
 static void
@@ -1577,7 +1619,8 @@ parse_options (test_trace_t *test, int argc, char *argv[])
 	    break;
 	case 'x':
 	    if (! read_excludes (test, optarg)) {
-		fprintf (stderr, "Invalid argument for -x (not readable file): %s\n",
+		fprintf (stderr,
+			 "Invalid argument for -x (not readable file): %s\n",
 			 optarg);
 		exit (1);
 	    }
@@ -1679,12 +1722,14 @@ static void
 warn_no_traces (const char *message, const char *trace_dir)
 {
     fprintf (stderr,
-"Error: %s '%s'.\n"
-"Have you cloned the comac-traces repository and uncompressed the traces?\n"
-"  git clone git://anongit.freedesktop.org/comac-traces\n"
-"  cd comac-traces && make\n"
-"Or set the env.var COMAC_TRACE_DIR to point to your traces?\n",
-	    message, trace_dir);
+	     "Error: %s '%s'.\n"
+	     "Have you cloned the comac-traces repository and uncompressed the "
+	     "traces?\n"
+	     "  git clone git://anongit.freedesktop.org/comac-traces\n"
+	     "  cd comac-traces && make\n"
+	     "Or set the env.var COMAC_TRACE_DIR to point to your traces?\n",
+	     message,
+	     trace_dir);
 }
 
 static void
@@ -1753,7 +1798,6 @@ main (int argc, char *argv[])
 	    test_reset (&test);
 
 	    free (trace);
-
 	}
 	closedir (dir);
 
@@ -1770,8 +1814,7 @@ main (int argc, char *argv[])
 }
 
 void
-comac_test_logv (const comac_test_context_t *ctx,
-		 const char *fmt, va_list va)
+comac_test_logv (const comac_test_context_t *ctx, const char *fmt, va_list va)
 {
 #if 0
     vfprintf (stderr, fmt, va);

@@ -26,11 +26,11 @@
 
 #include "comac-test.h"
 
-#define POINTS	10
-#define STEP	(1.0 / POINTS)
-#define PAD	1
-#define WIDTH	(PAD + POINTS * 2 + PAD)
-#define HEIGHT	(WIDTH)
+#define POINTS 10
+#define STEP (1.0 / POINTS)
+#define PAD 1
+#define WIDTH (PAD + POINTS * 2 + PAD)
+#define HEIGHT (WIDTH)
 
 /* A single, black pixel */
 static const uint32_t black_pixel = 0xff000000;
@@ -41,9 +41,12 @@ draw (comac_t *cr, int width, int height)
     int i, j;
     comac_surface_t *surface;
 
-    surface = comac_image_surface_create_for_data ((unsigned char *) &black_pixel,
-						   COMAC_FORMAT_ARGB32,
-						   1, 1, 4);
+    surface =
+	comac_image_surface_create_for_data ((unsigned char *) &black_pixel,
+					     COMAC_FORMAT_ARGB32,
+					     1,
+					     1,
+					     4);
 
     /* Fill background white */
     comac_set_source_rgb (cr, 1, 1, 1);
@@ -53,8 +56,10 @@ draw (comac_t *cr, int width, int height)
 
     for (i = 0; i < POINTS; i++)
 	for (j = 0; j < POINTS; j++) {
-	    comac_set_source_surface (cr, surface,
-				      2 * i + i * STEP, 2 * j + j * STEP);
+	    comac_set_source_surface (cr,
+				      surface,
+				      2 * i + i * STEP,
+				      2 * j + j * STEP);
 	    comac_pattern_set_filter (comac_get_source (cr),
 				      COMAC_FILTER_NEAREST);
 	    comac_paint (cr);
@@ -67,7 +72,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (a1_image_sample,
 	    "Test sample position when drawing images with FILTER_NEAREST",
-	    "image, alpha", /* keywords */
+	    "image, alpha",  /* keywords */
 	    "target=raster", /* requirements */
-	    WIDTH, HEIGHT,
-	    NULL, draw)
+	    WIDTH,
+	    HEIGHT,
+	    NULL,
+	    draw)

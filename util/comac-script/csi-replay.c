@@ -51,7 +51,8 @@ static const comac_user_data_key_t _key;
 static comac_surface_t *
 _similar_surface_create (void *closure,
 			 comac_content_t content,
-			 double width, double height,
+			 double width,
+			 double height,
 			 long uid)
 {
     return comac_surface_create_similar (closure, content, width, height);
@@ -121,13 +122,14 @@ static void
 _destroy_window (void *closure)
 {
     XFlush (_get_display ());
-    XDestroyWindow (_get_display(), (Window) closure);
+    XDestroyWindow (_get_display (), (Window) closure);
 }
 
 static comac_surface_t *
 _xlib_surface_create (void *closure,
 		      comac_content_t content,
-		      double width, double height,
+		      double width,
+		      double height,
 		      long uid)
 {
     Display *dpy;
@@ -142,11 +144,18 @@ _xlib_surface_create (void *closure,
     visual = DefaultVisual (dpy, DefaultScreen (dpy));
     depth = DefaultDepth (dpy, DefaultScreen (dpy));
     attr.override_redirect = True;
-    w = XCreateWindow (dpy, DefaultRootWindow (dpy), 0, 0,
+    w = XCreateWindow (dpy,
+		       DefaultRootWindow (dpy),
+		       0,
+		       0,
 		       width <= 0 ? 1 : width,
 		       height <= 0 ? 1 : height,
-		       0, depth,
-		       InputOutput, visual, CWOverrideRedirect, &attr);
+		       0,
+		       depth,
+		       InputOutput,
+		       visual,
+		       CWOverrideRedirect,
+		       &attr);
     XMapWindow (dpy, w);
 
     surface = comac_xlib_surface_create (dpy, w, visual, width, height);
@@ -161,13 +170,14 @@ _xlib_surface_create (void *closure,
 static void
 _destroy_pixmap (void *closure)
 {
-    XFreePixmap (_get_display(), (Pixmap) closure);
+    XFreePixmap (_get_display (), (Pixmap) closure);
 }
 
 static comac_surface_t *
 _xrender_surface_create (void *closure,
 			 comac_content_t content,
-			 double width, double height,
+			 double width,
+			 double height,
 			 long uid)
 {
     Display *dpy;
@@ -191,15 +201,23 @@ _xrender_surface_create (void *closure,
 	xrender_format = XRenderFindStandardFormat (dpy, PictStandardA8);
     }
 
-    pixmap = XCreatePixmap (dpy, DefaultRootWindow (dpy),
-		       width, height, xrender_format->depth);
+    pixmap = XCreatePixmap (dpy,
+			    DefaultRootWindow (dpy),
+			    width,
+			    height,
+			    xrender_format->depth);
 
-    surface = comac_xlib_surface_create_with_xrender_format (dpy, pixmap,
-							     DefaultScreenOfDisplay (dpy),
-							     xrender_format,
-							     width, height);
-    comac_surface_set_user_data (surface, &_key,
-				 (void *) pixmap, _destroy_pixmap);
+    surface = comac_xlib_surface_create_with_xrender_format (
+	dpy,
+	pixmap,
+	DefaultScreenOfDisplay (dpy),
+	xrender_format,
+	width,
+	height);
+    comac_surface_set_user_data (surface,
+				 &_key,
+				 (void *) pixmap,
+				 _destroy_pixmap);
 
     return surface;
 }
@@ -214,15 +232,17 @@ _glx_get_context (comac_content_t content)
     static comac_gl_context_t *context;
 
     if (context == NULL) {
-	int rgba_attribs[] = {
-	    GLX_RGBA,
-	    GLX_RED_SIZE, 1,
-	    GLX_GREEN_SIZE, 1,
-	    GLX_BLUE_SIZE, 1,
-	    GLX_ALPHA_SIZE, 1,
-	    GLX_DOUBLEBUFFER,
-	    None
-	};
+	int rgba_attribs[] = {GLX_RGBA,
+			      GLX_RED_SIZE,
+			      1,
+			      GLX_GREEN_SIZE,
+			      1,
+			      GLX_BLUE_SIZE,
+			      1,
+			      GLX_ALPHA_SIZE,
+			      1,
+			      GLX_DOUBLEBUFFER,
+			      None};
 	XVisualInfo *visinfo;
 	GLXContext gl_ctx;
 	Display *dpy;
@@ -251,7 +271,8 @@ _glx_get_context (comac_content_t content)
 static comac_surface_t *
 _glx_surface_create (void *closure,
 		     comac_content_t content,
-		     double width, double height,
+		     double width,
+		     double height,
 		     long uid)
 {
     if (width == 0)
@@ -260,7 +281,9 @@ _glx_surface_create (void *closure,
 	height = 1;
 
     return comac_gl_surface_create (_glx_get_context (content),
-				    content, width, height);
+				    content,
+				    width,
+				    height);
 }
 #endif
 
@@ -269,7 +292,8 @@ _glx_surface_create (void *closure,
 static comac_surface_t *
 _pdf_surface_create (void *closure,
 		     comac_content_t content,
-		     double width, double height,
+		     double width,
+		     double height,
 		     long uid)
 {
     return comac_pdf_surface_create_for_stream (NULL, NULL, width, height);
@@ -281,7 +305,8 @@ _pdf_surface_create (void *closure,
 static comac_surface_t *
 _ps_surface_create (void *closure,
 		    comac_content_t content,
-		    double width, double height,
+		    double width,
+		    double height,
 		    long uid)
 {
     return comac_ps_surface_create_for_stream (NULL, NULL, width, height);
@@ -293,7 +318,8 @@ _ps_surface_create (void *closure,
 static comac_surface_t *
 _svg_surface_create (void *closure,
 		     comac_content_t content,
-		     double width, double height,
+		     double width,
+		     double height,
 		     long uid)
 {
     return comac_svg_surface_create_for_stream (NULL, NULL, width, height);
@@ -303,7 +329,8 @@ _svg_surface_create (void *closure,
 static comac_surface_t *
 _image_surface_create (void *closure,
 		       comac_content_t content,
-		       double width, double height,
+		       double width,
+		       double height,
 		       long uid)
 {
     return comac_image_surface_create (COMAC_FORMAT_ARGB32, width, height);
@@ -337,35 +364,32 @@ main (int argc, char **argv)
 	const char *name;
 	csi_surface_create_func_t create;
     } backends[] = {
-	{ "--image", _image_surface_create },
+	{"--image", _image_surface_create},
 #if COMAC_HAS_XLIB_XRENDER_SURFACE
-	{ "--xrender", _xrender_surface_create },
+	{"--xrender", _xrender_surface_create},
 #endif
 #if COMAC_HAS_GL_GLX_SURFACE
-	{ "--glx", _glx_surface_create },
+	{"--glx", _glx_surface_create},
 #endif
 #if COMAC_HAS_XLIB_SURFACE
-	{ "--xlib", _xlib_surface_create },
+	{"--xlib", _xlib_surface_create},
 #endif
 #if COMAC_HAS_PDF_SURFACE
-	{ "--pdf", _pdf_surface_create },
+	{"--pdf", _pdf_surface_create},
 #endif
 #if COMAC_HAS_PS_SURFACE
-	{ "--ps", _ps_surface_create },
+	{"--ps", _ps_surface_create},
 #endif
 #if COMAC_HAS_SVG_SURFACE
-	{ "--svg", _svg_surface_create },
+	{"--svg", _svg_surface_create},
 #endif
-	{ NULL, NULL }
+	{NULL, NULL}
     };
 
 #if SINGLE_SURFACE
-    hooks.closure = backends[0].create (NULL,
-					COMAC_CONTENT_COLOR_ALPHA,
-					512, 512,
-					0);
+    hooks.closure =
+	backends[0].create (NULL, COMAC_CONTENT_COLOR_ALPHA, 512, 512, 0);
 #endif
-
 
     csi = comac_script_interpreter_create ();
     comac_script_interpreter_install_hooks (csi, &hooks);
@@ -377,10 +401,8 @@ main (int argc, char **argv)
 	    if (strcmp (b->name, argv[i]) == 0) {
 #if SINGLE_SURFACE
 		comac_surface_destroy (hooks.closure);
-		hooks.closure = b->create (NULL,
-					   COMAC_CONTENT_COLOR_ALPHA,
-					   512, 512,
-					   0);
+		hooks.closure =
+		    b->create (NULL, COMAC_CONTENT_COLOR_ALPHA, 512, 512, 0);
 #else
 		hooks.surface_create = b->create;
 #endif

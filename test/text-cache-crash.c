@@ -66,12 +66,16 @@ static comac_test_status_t
 draw (comac_t *cr, int width, int height)
 {
     /* Once there was a bug that choked when selecting the same font twice. */
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
-			    COMAC_FONT_SLANT_NORMAL, COMAC_FONT_WEIGHT_BOLD);
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_BOLD);
     comac_set_font_size (cr, 40.0);
 
-    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
-			    COMAC_FONT_SLANT_NORMAL, COMAC_FONT_WEIGHT_BOLD);
+    comac_select_font_face (cr,
+			    COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_BOLD);
     comac_set_font_size (cr, 40.0);
     comac_move_to (cr, 10, 50);
     comac_show_text (cr, "hello");
@@ -85,9 +89,12 @@ draw (comac_t *cr, int width, int height)
     return COMAC_TEST_SUCCESS;
 }
 
-COMAC_TEST (text_cache_crash,
-	    "Test case for bug causing an assertion failure in _comac_cache_lookup",
-	    "text, stress", /* keywords */
-	    NULL, /* requirements */
-	    0, 0,
-	    NULL, draw)
+COMAC_TEST (
+    text_cache_crash,
+    "Test case for bug causing an assertion failure in _comac_cache_lookup",
+    "text, stress", /* keywords */
+    NULL,	    /* requirements */
+    0,
+    0,
+    NULL,
+    draw)

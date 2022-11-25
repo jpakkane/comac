@@ -247,7 +247,7 @@ comac_version (void)
  *
  * Since: 1.0
  **/
-const char*
+const char *
 comac_version_string (void)
 {
     return COMAC_VERSION_STRING;

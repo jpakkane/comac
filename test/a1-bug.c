@@ -29,11 +29,11 @@ draw (comac_t *cr, int width, int height)
 	double x;
 	double y;
     } xy[] = {
-	{ 627.016212, 221.749777 },
-	{ 756.120787, 221.749777 },
-	{ 756.120787, 557.602766 },
-	{ 626.952721, 557.602766 },
-	{ 626.548456, 493.315729 },
+	{627.016212, 221.749777},
+	{756.120787, 221.749777},
+	{756.120787, 557.602766},
+	{626.952721, 557.602766},
+	{626.548456, 493.315729},
     };
     unsigned int i;
 
@@ -55,7 +55,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (a1_bug,
 	    "Check the fidelity of the rasterisation.",
-	    "a1, raster", /* keywords */
+	    "a1, raster",    /* keywords */
 	    "target=raster", /* requirements */
-	    1000, 800,
-	    NULL, draw)
+	    1000,
+	    800,
+	    NULL,
+	    draw)

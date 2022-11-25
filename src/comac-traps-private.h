@@ -59,7 +59,7 @@ struct _comac_traps {
     int num_traps;
     int traps_size;
     comac_trapezoid_t *traps;
-    comac_trapezoid_t  traps_embedded[16];
+    comac_trapezoid_t traps_embedded[16];
 };
 
 /* comac-traps.c */
@@ -67,17 +67,15 @@ comac_private void
 _comac_traps_init (comac_traps_t *traps);
 
 comac_private void
-_comac_traps_init_with_clip (comac_traps_t *traps,
-			     const comac_clip_t *clip);
+_comac_traps_init_with_clip (comac_traps_t *traps, const comac_clip_t *clip);
 
 comac_private void
-_comac_traps_limit (comac_traps_t	*traps,
-		    const comac_box_t	*boxes,
-		    int			 num_boxes);
+_comac_traps_limit (comac_traps_t *traps,
+		    const comac_box_t *boxes,
+		    int num_boxes);
 
 comac_private comac_status_t
-_comac_traps_init_boxes (comac_traps_t	    *traps,
-		         const comac_boxes_t *boxes);
+_comac_traps_init_boxes (comac_traps_t *traps, const comac_boxes_t *boxes);
 
 comac_private void
 _comac_traps_clear (comac_traps_t *traps);
@@ -106,20 +104,19 @@ _comac_traps_tessellate_rectangle (comac_traps_t *traps,
 
 comac_private void
 _comac_traps_add_trap (comac_traps_t *traps,
-		       comac_fixed_t top, comac_fixed_t bottom,
+		       comac_fixed_t top,
+		       comac_fixed_t bottom,
 		       const comac_line_t *left,
 		       const comac_line_t *right);
 
 comac_private int
-_comac_traps_contain (const comac_traps_t *traps,
-		      double x, double y);
+_comac_traps_contain (const comac_traps_t *traps, double x, double y);
 
 comac_private void
-_comac_traps_extents (const comac_traps_t *traps,
-		      comac_box_t         *extents);
+_comac_traps_extents (const comac_traps_t *traps, comac_box_t *extents);
 
 comac_private comac_int_status_t
-_comac_traps_extract_region (comac_traps_t  *traps,
+_comac_traps_extract_region (comac_traps_t *traps,
 			     comac_antialias_t antialias,
 			     comac_region_t **region);
 
@@ -129,13 +126,12 @@ _comac_traps_to_boxes (comac_traps_t *traps,
 		       comac_boxes_t *boxes);
 
 comac_private comac_status_t
-_comac_traps_path (const comac_traps_t *traps,
-		   comac_path_fixed_t  *path);
+_comac_traps_path (const comac_traps_t *traps, comac_path_fixed_t *path);
 
 comac_private comac_int_status_t
-_comac_rasterise_polygon_to_traps (comac_polygon_t			*polygon,
-				   comac_fill_rule_t			 fill_rule,
-				   comac_antialias_t			 antialias,
+_comac_rasterise_polygon_to_traps (comac_polygon_t *polygon,
+				   comac_fill_rule_t fill_rule,
+				   comac_antialias_t antialias,
 				   comac_traps_t *traps);
 
 COMAC_END_DECLS

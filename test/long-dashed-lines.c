@@ -61,6 +61,8 @@ draw (comac_t *cr, int width, int height)
 COMAC_TEST (long_dashed_lines,
 	    "Exercises _comac_box_intersects_line_segment()",
 	    "dash, stroke, stress", /* keywords */
-	    NULL, /* requirements */
-	    60, 60,
-	    NULL, draw)
+	    NULL,		    /* requirements */
+	    60,
+	    60,
+	    NULL,
+	    draw)

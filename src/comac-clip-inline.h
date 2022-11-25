@@ -39,7 +39,8 @@
 
 #include "comac-clip-private.h"
 
-static inline comac_bool_t _comac_clip_is_all_clipped(const comac_clip_t *clip)
+static inline comac_bool_t
+_comac_clip_is_all_clipped (const comac_clip_t *clip)
 {
     return clip == &__comac_clip_all;
 }
@@ -52,7 +53,7 @@ _comac_clip_set_all_clipped (comac_clip_t *clip)
 }
 
 static inline comac_clip_t *
-_comac_clip_copy_intersect_rectangle (const comac_clip_t       *clip,
+_comac_clip_copy_intersect_rectangle (const comac_clip_t *clip,
 				      const comac_rectangle_int_t *r)
 {
     return _comac_clip_intersect_rectangle (_comac_clip_copy (clip), r);
@@ -84,7 +85,7 @@ static inline void
 _comac_clip_unsteal_boxes (comac_clip_t *clip, comac_boxes_t *boxes)
 {
     if (boxes->chunks.base == &boxes->boxes_embedded[0]) {
-	assert(boxes->num_boxes == 1);
+	assert (boxes->num_boxes == 1);
 	clip->embedded_box = *boxes->chunks.base;
 	clip->boxes = &clip->embedded_box;
     } else {

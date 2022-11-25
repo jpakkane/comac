@@ -121,8 +121,7 @@ typedef struct _comac_bo_sweep_line {
 } comac_bo_sweep_line_t;
 
 static comac_fixed_t
-_line_compute_intersection_x_for_y (const comac_line_t *line,
-				    comac_fixed_t y)
+_line_compute_intersection_x_for_y (const comac_line_t *line, comac_fixed_t y)
 {
     comac_fixed_t x, dy;
 
@@ -190,8 +189,7 @@ _comac_bo_point32_compare (comac_bo_point32_t const *a,
  * have a common stop point.
  */
 static inline int
-_slope_compare (const comac_bo_edge_t *a,
-		const comac_bo_edge_t *b)
+_slope_compare (const comac_bo_edge_t *a, const comac_bo_edge_t *b)
 {
     /* XXX: We're assuming here that dx and dy will still fit in 32
      * bits. That's not true in general as there could be overflow. We
@@ -266,37 +264,39 @@ edges_compare_x_for_y_general (const comac_bo_edge_t *a,
     int32_t adx, ady;
     int32_t bdx, bdy;
     enum {
-       HAVE_NONE    = 0x0,
-       HAVE_DX      = 0x1,
-       HAVE_ADX     = 0x2,
-       HAVE_DX_ADX  = HAVE_DX | HAVE_ADX,
-       HAVE_BDX     = 0x4,
-       HAVE_DX_BDX  = HAVE_DX | HAVE_BDX,
-       HAVE_ADX_BDX = HAVE_ADX | HAVE_BDX,
-       HAVE_ALL     = HAVE_DX | HAVE_ADX | HAVE_BDX
+	HAVE_NONE = 0x0,
+	HAVE_DX = 0x1,
+	HAVE_ADX = 0x2,
+	HAVE_DX_ADX = HAVE_DX | HAVE_ADX,
+	HAVE_BDX = 0x4,
+	HAVE_DX_BDX = HAVE_DX | HAVE_BDX,
+	HAVE_ADX_BDX = HAVE_ADX | HAVE_BDX,
+	HAVE_ALL = HAVE_DX | HAVE_ADX | HAVE_BDX
     } have_dx_adx_bdx = HAVE_ALL;
 
     /* don't bother solving for abscissa if the edges' bounding boxes
      * can be used to order them. */
     {
-           int32_t amin, amax;
-           int32_t bmin, bmax;
-           if (a->edge.line.p1.x < a->edge.line.p2.x) {
-                   amin = a->edge.line.p1.x;
-                   amax = a->edge.line.p2.x;
-           } else {
-                   amin = a->edge.line.p2.x;
-                   amax = a->edge.line.p1.x;
-           }
-           if (b->edge.line.p1.x < b->edge.line.p2.x) {
-                   bmin = b->edge.line.p1.x;
-                   bmax = b->edge.line.p2.x;
-           } else {
-                   bmin = b->edge.line.p2.x;
-                   bmax = b->edge.line.p1.x;
-           }
-           if (amax < bmin) return -1;
-           if (amin > bmax) return +1;
+	int32_t amin, amax;
+	int32_t bmin, bmax;
+	if (a->edge.line.p1.x < a->edge.line.p2.x) {
+	    amin = a->edge.line.p1.x;
+	    amax = a->edge.line.p2.x;
+	} else {
+	    amin = a->edge.line.p2.x;
+	    amax = a->edge.line.p1.x;
+	}
+	if (b->edge.line.p1.x < b->edge.line.p2.x) {
+	    bmin = b->edge.line.p1.x;
+	    bmax = b->edge.line.p2.x;
+	} else {
+	    bmin = b->edge.line.p2.x;
+	    bmax = b->edge.line.p1.x;
+	}
+	if (amax < bmin)
+	    return -1;
+	if (amin > bmax)
+	    return +1;
     }
 
     ady = a->edge.line.p2.y - a->edge.line.p1.y;
@@ -314,8 +314,12 @@ edges_compare_x_for_y_general (const comac_bo_edge_t *a,
 	have_dx_adx_bdx &= ~HAVE_DX;
 
 #define L _comac_int64x32_128_mul (_comac_int32x32_64_mul (ady, bdy), dx)
-#define A _comac_int64x32_128_mul (_comac_int32x32_64_mul (adx, bdy), y - a->edge.line.p1.y)
-#define B _comac_int64x32_128_mul (_comac_int32x32_64_mul (bdx, ady), y - b->edge.line.p1.y)
+#define A                                                                      \
+    _comac_int64x32_128_mul (_comac_int32x32_64_mul (adx, bdy),                \
+			     y - a->edge.line.p1.y)
+#define B                                                                      \
+    _comac_int64x32_128_mul (_comac_int32x32_64_mul (bdx, ady),                \
+			     y - b->edge.line.p1.y)
     switch (have_dx_adx_bdx) {
     default:
     case HAVE_NONE:
@@ -399,9 +403,7 @@ edges_compare_x_for_y_general (const comac_bo_edge_t *a,
  * edges_compare_x_for_y_general().
  */
 static int
-edge_compare_for_y_against_x (const comac_bo_edge_t *a,
-			      int32_t y,
-			      int32_t x)
+edge_compare_for_y_against_x (const comac_bo_edge_t *a, int32_t y, int32_t x)
 {
     int32_t adx, ady;
     int32_t dx, dy;
@@ -440,10 +442,10 @@ edges_compare_x_for_y (const comac_bo_edge_t *a,
      * special casing).
      */
     enum {
-       HAVE_NEITHER = 0x0,
-       HAVE_AX      = 0x1,
-       HAVE_BX      = 0x2,
-       HAVE_BOTH    = HAVE_AX | HAVE_BX
+	HAVE_NEITHER = 0x0,
+	HAVE_AX = 0x1,
+	HAVE_BX = 0x2,
+	HAVE_BOTH = HAVE_AX | HAVE_BX
     } have_ax_bx = HAVE_BOTH;
     int32_t ax = 0, bx = 0;
 
@@ -477,14 +479,14 @@ edges_compare_x_for_y (const comac_bo_edge_t *a,
 static inline int
 _line_equal (const comac_line_t *a, const comac_line_t *b)
 {
-    return (a->p1.x == b->p1.x && a->p1.y == b->p1.y &&
-	    a->p2.x == b->p2.x && a->p2.y == b->p2.y);
+    return (a->p1.x == b->p1.x && a->p1.y == b->p1.y && a->p2.x == b->p2.x &&
+	    a->p2.y == b->p2.y);
 }
 
 static int
-_comac_bo_sweep_line_compare_edges (comac_bo_sweep_line_t	*sweep_line,
-				    const comac_bo_edge_t	*a,
-				    const comac_bo_edge_t	*b)
+_comac_bo_sweep_line_compare_edges (comac_bo_sweep_line_t *sweep_line,
+				    const comac_bo_edge_t *a,
+				    const comac_bo_edge_t *b)
 {
     int cmp;
 
@@ -509,8 +511,7 @@ _comac_bo_sweep_line_compare_edges (comac_bo_sweep_line_t	*sweep_line,
 }
 
 static inline comac_int64_t
-det32_64 (int32_t a, int32_t b,
-	  int32_t c, int32_t d)
+det32_64 (int32_t a, int32_t b, int32_t c, int32_t d)
 {
     /* det = a * d - b * c */
     return _comac_int64_sub (_comac_int32x32_64_mul (a, d),
@@ -518,8 +519,7 @@ det32_64 (int32_t a, int32_t b,
 }
 
 static inline comac_int128_t
-det64x32_128 (comac_int64_t a, int32_t       b,
-	      comac_int64_t c, int32_t       d)
+det64x32_128 (comac_int64_t a, int32_t b, comac_int64_t c, int32_t d)
 {
     /* det = a * d - b * c */
     return _comac_int128_sub (_comac_int64x32_128_mul (a, d),
@@ -533,9 +533,9 @@ det64x32_128 (comac_int64_t a, int32_t       b,
  * %COMAC_BO_STATUS_PARALLEL if the two lines are exactly parallel.
  */
 static comac_bool_t
-intersect_lines (comac_bo_edge_t		*a,
-		 comac_bo_edge_t		*b,
-		 comac_bo_intersect_point_t	*intersection)
+intersect_lines (comac_bo_edge_t *a,
+		 comac_bo_edge_t *b,
+		 comac_bo_intersect_point_t *intersection)
 {
     comac_int64_t a_det, b_det;
 
@@ -557,7 +557,7 @@ intersect_lines (comac_bo_edge_t		*a,
 
     den_det = det32_64 (dx1, dy1, dx2, dy2);
 
-     /* Q: Can we determine that the lines do not intersect (within range)
+    /* Q: Can we determine that the lines do not intersect (within range)
       * much more cheaply than computing the intersection point i.e. by
       * avoiding the division?
       *
@@ -576,7 +576,8 @@ intersect_lines (comac_bo_edge_t		*a,
       * A similar substitution can be performed for s, yielding:
       *   s * (ady*bdx - bdy*adx) = ady * (ax - bx) - adx * (ay - by)
       */
-    R = det32_64 (dx2, dy2,
+    R = det32_64 (dx2,
+		  dy2,
 		  b->edge.line.p1.x - a->edge.line.p1.x,
 		  b->edge.line.p1.y - a->edge.line.p1.y);
     if (_comac_int64_negative (den_det)) {
@@ -587,7 +588,8 @@ intersect_lines (comac_bo_edge_t		*a,
 	    return FALSE;
     }
 
-    R = det32_64 (dy1, dx1,
+    R = det32_64 (dy1,
+		  dx1,
 		  a->edge.line.p1.y - b->edge.line.p1.y,
 		  a->edge.line.p1.x - b->edge.line.p1.x);
     if (_comac_int64_negative (den_det)) {
@@ -600,14 +602,17 @@ intersect_lines (comac_bo_edge_t		*a,
 
     /* We now know that the two lines should intersect within range. */
 
-    a_det = det32_64 (a->edge.line.p1.x, a->edge.line.p1.y,
-		      a->edge.line.p2.x, a->edge.line.p2.y);
-    b_det = det32_64 (b->edge.line.p1.x, b->edge.line.p1.y,
-		      b->edge.line.p2.x, b->edge.line.p2.y);
+    a_det = det32_64 (a->edge.line.p1.x,
+		      a->edge.line.p1.y,
+		      a->edge.line.p2.x,
+		      a->edge.line.p2.y);
+    b_det = det32_64 (b->edge.line.p1.x,
+		      b->edge.line.p1.y,
+		      b->edge.line.p2.x,
+		      b->edge.line.p2.y);
 
     /* x = det (a_det, dx1, b_det, dx2) / den_det */
-    qr = _comac_int_96by64_32x64_divrem (det64x32_128 (a_det, dx1,
-						       b_det, dx2),
+    qr = _comac_int_96by64_32x64_divrem (det64x32_128 (a_det, dx1, b_det, dx2),
 					 den_det);
     if (_comac_int64_eq (qr.rem, den_det))
 	return FALSE;
@@ -620,8 +625,10 @@ intersect_lines (comac_bo_edge_t		*a,
 	    qr.rem = _comac_int64_negate (qr.rem);
 	qr.rem = _comac_int64_mul (qr.rem, _comac_int32_to_int64 (2));
 	if (_comac_int64_ge (qr.rem, den_det)) {
-	    qr.quo = _comac_int64_add (qr.quo,
-				       _comac_int32_to_int64 (_comac_int64_negative (qr.quo) ? -1 : 1));
+	    qr.quo =
+		_comac_int64_add (qr.quo,
+				  _comac_int32_to_int64 (
+				      _comac_int64_negative (qr.quo) ? -1 : 1));
 	} else
 	    intersection->x.exactness = INEXACT;
     }
@@ -629,8 +636,7 @@ intersect_lines (comac_bo_edge_t		*a,
     intersection->x.ordinate = _comac_int64_to_int32 (qr.quo);
 
     /* y = det (a_det, dy1, b_det, dy2) / den_det */
-    qr = _comac_int_96by64_32x64_divrem (det64x32_128 (a_det, dy1,
-						       b_det, dy2),
+    qr = _comac_int_96by64_32x64_divrem (det64x32_128 (a_det, dy1, b_det, dy2),
 					 den_det);
     if (_comac_int64_eq (qr.rem, den_det))
 	return FALSE;
@@ -643,8 +649,10 @@ intersect_lines (comac_bo_edge_t		*a,
 	    qr.rem = _comac_int64_negate (qr.rem);
 	qr.rem = _comac_int64_mul (qr.rem, _comac_int32_to_int64 (2));
 	if (_comac_int64_ge (qr.rem, den_det)) {
-	    qr.quo = _comac_int64_add (qr.quo,
-				       _comac_int32_to_int64 (_comac_int64_negative (qr.quo) ? -1 : 1));
+	    qr.quo =
+		_comac_int64_add (qr.quo,
+				  _comac_int32_to_int64 (
+				      _comac_int64_negative (qr.quo) ? -1 : 1));
 	} else
 	    intersection->y.exactness = INEXACT;
     }
@@ -655,8 +663,8 @@ intersect_lines (comac_bo_edge_t		*a,
 }
 
 static int
-_comac_bo_intersect_ordinate_32_compare (comac_bo_intersect_ordinate_t	a,
-					 int32_t			b)
+_comac_bo_intersect_ordinate_32_compare (comac_bo_intersect_ordinate_t a,
+					 int32_t b)
 {
     /* First compare the quotient */
     if (a.ordinate > b)
@@ -686,8 +694,8 @@ _comac_bo_intersect_ordinate_32_compare (comac_bo_intersect_ordinate_t	a,
  * in the implementation for more details.
  */
 static comac_bool_t
-_comac_bo_edge_contains_intersect_point (comac_bo_edge_t		*edge,
-					 comac_bo_intersect_point_t	*point)
+_comac_bo_edge_contains_intersect_point (comac_bo_edge_t *edge,
+					 comac_bo_intersect_point_t *point)
 {
     int cmp_top, cmp_bottom;
 
@@ -698,18 +706,16 @@ _comac_bo_edge_contains_intersect_point (comac_bo_edge_t		*edge,
      * finder which needs them.
      */
 
-    cmp_top = _comac_bo_intersect_ordinate_32_compare (point->y,
-						       edge->edge.top);
-    cmp_bottom = _comac_bo_intersect_ordinate_32_compare (point->y,
-							  edge->edge.bottom);
+    cmp_top =
+	_comac_bo_intersect_ordinate_32_compare (point->y, edge->edge.top);
+    cmp_bottom =
+	_comac_bo_intersect_ordinate_32_compare (point->y, edge->edge.bottom);
 
-    if (cmp_top < 0 || cmp_bottom > 0)
-    {
+    if (cmp_top < 0 || cmp_bottom > 0) {
 	return FALSE;
     }
 
-    if (cmp_top > 0 && cmp_bottom < 0)
-    {
+    if (cmp_top > 0 && cmp_bottom < 0) {
 	return TRUE;
     }
 
@@ -756,9 +762,9 @@ _comac_bo_edge_contains_intersect_point (comac_bo_edge_t		*edge,
  * intersection point has the same
  */
 static comac_bool_t
-_comac_bo_edge_intersect (comac_bo_edge_t	*a,
-			  comac_bo_edge_t	*b,
-			  comac_bo_point32_t	*intersection)
+_comac_bo_edge_intersect (comac_bo_edge_t *a,
+			  comac_bo_edge_t *b,
+			  comac_bo_point32_t *intersection)
 {
     comac_bo_intersect_point_t quorem;
 
@@ -783,8 +789,7 @@ _comac_bo_edge_intersect (comac_bo_edge_t	*a,
 }
 
 static inline int
-comac_bo_event_compare (const comac_bo_event_t *a,
-			const comac_bo_event_t *b)
+comac_bo_event_compare (const comac_bo_event_t *a, const comac_bo_event_t *b)
 {
     int cmp;
 
@@ -822,12 +827,13 @@ _pqueue_grow (pqueue_t *pq)
     pq->max_size *= 2;
 
     if (pq->elements == pq->elements_embedded) {
-	new_elements = _comac_malloc_ab (pq->max_size,
-					 sizeof (comac_bo_event_t *));
+	new_elements =
+	    _comac_malloc_ab (pq->max_size, sizeof (comac_bo_event_t *));
 	if (unlikely (new_elements == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	memcpy (new_elements, pq->elements_embedded,
+	memcpy (new_elements,
+		pq->elements_embedded,
 		sizeof (pq->elements_embedded));
     } else {
 	new_elements = _comac_realloc_ab (pq->elements,
@@ -861,8 +867,7 @@ _pqueue_push (pqueue_t *pq, comac_bo_event_t *event)
 	 i != PQ_FIRST_ENTRY &&
 	 comac_bo_event_compare (event,
 				 elements[parent = PQ_PARENT_INDEX (i)]) < 0;
-	 i = parent)
-    {
+	 i = parent) {
 	elements[i] = elements[parent];
     }
 
@@ -884,14 +889,10 @@ _pqueue_pop (pqueue_t *pq)
 	return;
     }
 
-    for (i = PQ_FIRST_ENTRY;
-	 (child = PQ_LEFT_CHILD_INDEX (i)) <= pq->size;
-	 i = child)
-    {
+    for (i = PQ_FIRST_ENTRY; (child = PQ_LEFT_CHILD_INDEX (i)) <= pq->size;
+	 i = child) {
 	if (child != pq->size &&
-	    comac_bo_event_compare (elements[child+1],
-				    elements[child]) < 0)
-	{
+	    comac_bo_event_compare (elements[child + 1], elements[child]) < 0) {
 	    child++;
 	}
 
@@ -904,11 +905,11 @@ _pqueue_pop (pqueue_t *pq)
 }
 
 static inline comac_status_t
-_comac_bo_event_queue_insert (comac_bo_event_queue_t	*queue,
-			      comac_bo_event_type_t	 type,
-			      comac_bo_edge_t		*e1,
-			      comac_bo_edge_t		*e2,
-			      const comac_point_t	 *point)
+_comac_bo_event_queue_insert (comac_bo_event_queue_t *queue,
+			      comac_bo_event_type_t type,
+			      comac_bo_edge_t *e1,
+			      comac_bo_edge_t *e2,
+			      const comac_point_t *point)
 {
     comac_bo_queue_event_t *event;
 
@@ -926,7 +927,7 @@ _comac_bo_event_queue_insert (comac_bo_event_queue_t	*queue,
 
 static void
 _comac_bo_event_queue_delete (comac_bo_event_queue_t *queue,
-			      comac_bo_event_t	     *event)
+			      comac_bo_event_t *event)
 {
     _comac_freepool_free (&queue->pool, event);
 }
@@ -939,13 +940,10 @@ _comac_bo_event_dequeue (comac_bo_event_queue_t *event_queue)
     event = event_queue->pqueue.elements[PQ_FIRST_ENTRY];
     cmp = *event_queue->start_events;
     if (event == NULL ||
-	(cmp != NULL && comac_bo_event_compare (cmp, event) < 0))
-    {
+	(cmp != NULL && comac_bo_event_compare (cmp, event) < 0)) {
 	event = cmp;
 	event_queue->start_events++;
-    }
-    else
-    {
+    } else {
 	_pqueue_pop (&event_queue->pqueue);
     }
 
@@ -957,33 +955,32 @@ COMAC_COMBSORT_DECLARE (_comac_bo_event_queue_sort,
 			comac_bo_event_compare)
 
 static void
-_comac_bo_event_queue_init (comac_bo_event_queue_t	 *event_queue,
-			    comac_bo_event_t		**start_events,
-			    int				  num_events)
+_comac_bo_event_queue_init (comac_bo_event_queue_t *event_queue,
+			    comac_bo_event_t **start_events,
+			    int num_events)
 {
     _comac_bo_event_queue_sort (start_events, num_events);
     start_events[num_events] = NULL;
 
     event_queue->start_events = start_events;
 
-    _comac_freepool_init (&event_queue->pool,
-			  sizeof (comac_bo_queue_event_t));
+    _comac_freepool_init (&event_queue->pool, sizeof (comac_bo_queue_event_t));
     _pqueue_init (&event_queue->pqueue);
     event_queue->pqueue.elements[PQ_FIRST_ENTRY] = NULL;
 }
 
 static comac_status_t
-_comac_bo_event_queue_insert_stop (comac_bo_event_queue_t	*event_queue,
-				   comac_bo_edge_t		*edge)
+_comac_bo_event_queue_insert_stop (comac_bo_event_queue_t *event_queue,
+				   comac_bo_edge_t *edge)
 {
     comac_bo_point32_t point;
 
     point.y = edge->edge.bottom;
-    point.x = _line_compute_intersection_x_for_y (&edge->edge.line,
-						  point.y);
+    point.x = _line_compute_intersection_x_for_y (&edge->edge.line, point.y);
     return _comac_bo_event_queue_insert (event_queue,
 					 COMAC_BO_EVENT_TYPE_STOP,
-					 edge, NULL,
+					 edge,
+					 NULL,
 					 &point);
 }
 
@@ -995,9 +992,10 @@ _comac_bo_event_queue_fini (comac_bo_event_queue_t *event_queue)
 }
 
 static inline comac_status_t
-_comac_bo_event_queue_insert_if_intersect_below_current_y (comac_bo_event_queue_t	*event_queue,
-							   comac_bo_edge_t	*left,
-							   comac_bo_edge_t *right)
+_comac_bo_event_queue_insert_if_intersect_below_current_y (
+    comac_bo_event_queue_t *event_queue,
+    comac_bo_edge_t *left,
+    comac_bo_edge_t *right)
 {
     comac_bo_point32_t intersection;
 
@@ -1017,7 +1015,8 @@ _comac_bo_event_queue_insert_if_intersect_below_current_y (comac_bo_event_queue_
 
     return _comac_bo_event_queue_insert (event_queue,
 					 COMAC_BO_EVENT_TYPE_INTERSECTION,
-					 left, right,
+					 left,
+					 right,
 					 &intersection);
 }
 
@@ -1030,8 +1029,8 @@ _comac_bo_sweep_line_init (comac_bo_sweep_line_t *sweep_line)
 }
 
 static comac_status_t
-_comac_bo_sweep_line_insert (comac_bo_sweep_line_t	*sweep_line,
-			     comac_bo_edge_t		*edge)
+_comac_bo_sweep_line_insert (comac_bo_sweep_line_t *sweep_line,
+			     comac_bo_edge_t *edge)
 {
     if (sweep_line->current_edge != NULL) {
 	comac_bo_edge_t *prev, *next;
@@ -1044,9 +1043,8 @@ _comac_bo_sweep_line_insert (comac_bo_sweep_line_t	*sweep_line,
 	    prev = sweep_line->current_edge;
 	    next = prev->next;
 	    while (next != NULL &&
-		   _comac_bo_sweep_line_compare_edges (sweep_line,
-						       next, edge) < 0)
-	    {
+		   _comac_bo_sweep_line_compare_edges (sweep_line, next, edge) <
+		       0) {
 		prev = next, next = prev->next;
 	    }
 
@@ -1059,9 +1057,8 @@ _comac_bo_sweep_line_insert (comac_bo_sweep_line_t	*sweep_line,
 	    next = sweep_line->current_edge;
 	    prev = next->prev;
 	    while (prev != NULL &&
-		   _comac_bo_sweep_line_compare_edges (sweep_line,
-						       prev, edge) > 0)
-	    {
+		   _comac_bo_sweep_line_compare_edges (sweep_line, prev, edge) >
+		       0) {
 		next = prev, prev = next->prev;
 	    }
 
@@ -1090,8 +1087,8 @@ _comac_bo_sweep_line_insert (comac_bo_sweep_line_t	*sweep_line,
 }
 
 static void
-_comac_bo_sweep_line_delete (comac_bo_sweep_line_t	*sweep_line,
-			     comac_bo_edge_t	*edge)
+_comac_bo_sweep_line_delete (comac_bo_sweep_line_t *sweep_line,
+			     comac_bo_edge_t *edge)
 {
     if (edge->prev != NULL)
 	edge->prev->next = edge->next;
@@ -1106,9 +1103,9 @@ _comac_bo_sweep_line_delete (comac_bo_sweep_line_t	*sweep_line,
 }
 
 static void
-_comac_bo_sweep_line_swap (comac_bo_sweep_line_t	*sweep_line,
-			   comac_bo_edge_t		*left,
-			   comac_bo_edge_t		*right)
+_comac_bo_sweep_line_swap (comac_bo_sweep_line_t *sweep_line,
+			   comac_bo_edge_t *left,
+			   comac_bo_edge_t *right)
 {
     if (left->prev != NULL)
 	left->prev->next = right;
@@ -1153,39 +1150,35 @@ edges_colinear (const comac_bo_edge_t *a, const comac_bo_edge_t *b)
 }
 
 static void
-_comac_bo_edge_end (comac_bo_edge_t	*left,
-		    int32_t		 bot,
-		    comac_polygon_t	*polygon)
+_comac_bo_edge_end (comac_bo_edge_t *left,
+		    int32_t bot,
+		    comac_polygon_t *polygon)
 {
     comac_bo_deferred_t *d = &left->deferred;
 
     if (likely (d->top < bot)) {
-	_comac_polygon_add_line (polygon,
-				 &left->edge.line,
-				 d->top, bot,
-				 1);
+	_comac_polygon_add_line (polygon, &left->edge.line, d->top, bot, 1);
 	_comac_polygon_add_line (polygon,
 				 &d->right->edge.line,
-				 d->top, bot,
+				 d->top,
+				 bot,
 				 -1);
     }
 
     d->right = NULL;
 }
 
-
 static inline void
-_comac_bo_edge_start_or_continue (comac_bo_edge_t	*left,
-				  comac_bo_edge_t	*right,
-				  int			 top,
-				  comac_polygon_t	*polygon)
+_comac_bo_edge_start_or_continue (comac_bo_edge_t *left,
+				  comac_bo_edge_t *right,
+				  int top,
+				  comac_polygon_t *polygon)
 {
     if (left->deferred.right == right)
 	return;
 
     if (left->deferred.right != NULL) {
-	if (right != NULL && edges_colinear (left->deferred.right, right))
-	{
+	if (right != NULL && edges_colinear (left->deferred.right, right)) {
 	    /* continuation on right, so just swap edges */
 	    left->deferred.right = right;
 	    return;
@@ -1201,10 +1194,10 @@ _comac_bo_edge_start_or_continue (comac_bo_edge_t	*left,
 }
 
 static inline void
-_active_edges_to_polygon (comac_bo_edge_t		*left,
-			  int32_t			 top,
-			  comac_fill_rule_t		 fill_rule,
-			  comac_polygon_t	        *polygon)
+_active_edges_to_polygon (comac_bo_edge_t *left,
+			  int32_t top,
+			  comac_fill_rule_t fill_rule,
+			  comac_polygon_t *polygon)
 {
     comac_bo_edge_t *right;
     unsigned int mask;
@@ -1237,7 +1230,8 @@ _active_edges_to_polygon (comac_bo_edge_t		*left,
 	    in_out += right->edge.dir;
 	    if ((in_out & mask) == 0) {
 		/* skip co-linear edges */
-		if (right->next == NULL || !edges_colinear (right, right->next))
+		if (right->next == NULL ||
+		    ! edges_colinear (right, right->next))
 		    break;
 	    }
 
@@ -1252,12 +1246,11 @@ _active_edges_to_polygon (comac_bo_edge_t		*left,
     }
 }
 
-
 static comac_status_t
-_comac_bentley_ottmann_tessellate_bo_edges (comac_bo_event_t   **start_events,
-					    int			 num_events,
-					    comac_fill_rule_t	 fill_rule,
-					    comac_polygon_t	*polygon)
+_comac_bentley_ottmann_tessellate_bo_edges (comac_bo_event_t **start_events,
+					    int num_events,
+					    comac_fill_rule_t fill_rule,
+					    comac_polygon_t *polygon)
 {
     comac_status_t status = COMAC_STATUS_SUCCESS; /* silence compiler */
     comac_bo_event_queue_t event_queue;
@@ -1273,7 +1266,8 @@ _comac_bentley_ottmann_tessellate_bo_edges (comac_bo_event_t   **start_events,
 	if (event->point.y != sweep_line.current_y) {
 	    _active_edges_to_polygon (sweep_line.head,
 				      sweep_line.current_y,
-				      fill_rule, polygon);
+				      fill_rule,
+				      polygon);
 
 	    sweep_line.current_y = event->point.y;
 	}
@@ -1294,13 +1288,21 @@ _comac_bentley_ottmann_tessellate_bo_edges (comac_bo_event_t   **start_events,
 	    right = e1->next;
 
 	    if (left != NULL) {
-		status = _comac_bo_event_queue_insert_if_intersect_below_current_y (&event_queue, left, e1);
+		status =
+		    _comac_bo_event_queue_insert_if_intersect_below_current_y (
+			&event_queue,
+			left,
+			e1);
 		if (unlikely (status))
 		    goto unwind;
 	    }
 
 	    if (right != NULL) {
-		status = _comac_bo_event_queue_insert_if_intersect_below_current_y (&event_queue, e1, right);
+		status =
+		    _comac_bo_event_queue_insert_if_intersect_below_current_y (
+			&event_queue,
+			e1,
+			right);
 		if (unlikely (status))
 		    goto unwind;
 	    }
@@ -1320,7 +1322,11 @@ _comac_bentley_ottmann_tessellate_bo_edges (comac_bo_event_t   **start_events,
 		_comac_bo_edge_end (e1, e1->edge.bottom, polygon);
 
 	    if (left != NULL && right != NULL) {
-		status = _comac_bo_event_queue_insert_if_intersect_below_current_y (&event_queue, left, right);
+		status =
+		    _comac_bo_event_queue_insert_if_intersect_below_current_y (
+			&event_queue,
+			left,
+			right);
 		if (unlikely (status))
 		    goto unwind;
 	    }
@@ -1344,13 +1350,21 @@ _comac_bentley_ottmann_tessellate_bo_edges (comac_bo_event_t   **start_events,
 	    /* after the swap e2 is left of e1 */
 
 	    if (left != NULL) {
-		status = _comac_bo_event_queue_insert_if_intersect_below_current_y (&event_queue, left, e2);
+		status =
+		    _comac_bo_event_queue_insert_if_intersect_below_current_y (
+			&event_queue,
+			left,
+			e2);
 		if (unlikely (status))
 		    goto unwind;
 	    }
 
 	    if (right != NULL) {
-		status = _comac_bo_event_queue_insert_if_intersect_below_current_y (&event_queue, e1, right);
+		status =
+		    _comac_bo_event_queue_insert_if_intersect_below_current_y (
+			&event_queue,
+			e1,
+			right);
 		if (unlikely (status))
 		    goto unwind;
 	    }
@@ -1359,18 +1373,18 @@ _comac_bentley_ottmann_tessellate_bo_edges (comac_bo_event_t   **start_events,
 	}
     }
 
- unwind:
+unwind:
     _comac_bo_event_queue_fini (&event_queue);
 
     return status;
 }
 
 comac_status_t
-_comac_polygon_reduce (comac_polygon_t *polygon,
-		       comac_fill_rule_t fill_rule)
+_comac_polygon_reduce (comac_polygon_t *polygon, comac_fill_rule_t fill_rule)
 {
     comac_status_t status;
-    comac_bo_start_event_t stack_events[COMAC_STACK_ARRAY_LENGTH (comac_bo_start_event_t)];
+    comac_bo_start_event_t
+	stack_events[COMAC_STACK_ARRAY_LENGTH (comac_bo_start_event_t)];
     comac_bo_start_event_t *events;
     comac_bo_event_t *stack_event_ptrs[ARRAY_LENGTH (stack_events) + 1];
     comac_bo_event_t **event_ptrs;
@@ -1393,7 +1407,7 @@ _comac_polygon_reduce (comac_polygon_t *polygon,
     if (num_events > ARRAY_LENGTH (stack_events)) {
 	events = _comac_malloc_ab_plus_c (num_events,
 					  sizeof (comac_bo_start_event_t) +
-					  sizeof (comac_bo_event_t *),
+					      sizeof (comac_bo_event_t *),
 					  sizeof (comac_bo_event_t *));
 	if (unlikely (events == NULL))
 	    return _comac_error (COMAC_STATUS_NO_MEMORY);
@@ -1416,7 +1430,8 @@ _comac_polygon_reduce (comac_polygon_t *polygon,
 	events[i].edge.next = NULL;
     }
 
-    num_limits = polygon->num_limits; polygon->num_limits = 0;
+    num_limits = polygon->num_limits;
+    polygon->num_limits = 0;
     polygon->num_edges = 0;
 
     status = _comac_bentley_ottmann_tessellate_bo_edges (event_ptrs,

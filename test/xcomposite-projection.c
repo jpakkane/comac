@@ -40,8 +40,7 @@
 static const char png_filename[] = "romedalen.png";
 
 static comac_pattern_t *
-get_source (const comac_test_context_t *ctx,
-	    int *width, int *height)
+get_source (const comac_test_context_t *ctx, int *width, int *height)
 {
     comac_surface_t *surface;
     comac_pattern_t *pattern;
@@ -75,8 +74,7 @@ draw (comac_t *cr, int width, int height)
     comac_pattern_t *image;
     int img_width, img_height;
 
-    image = get_source (comac_test_get_context (cr),
-			&img_width, &img_height);
+    image = get_source (comac_test_get_context (cr), &img_width, &img_height);
 
     /* we don't want to debug antialiasing artifacts */
     comac_set_antialias (cr, ANTIALIAS);
@@ -102,8 +100,11 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (xcomposite_projection,
-	    "Test a bug with XRenderComposite reference computation when projecting the first trapezoid onto 16.16 space",
-	    "xlib", /* keywords */
+	    "Test a bug with XRenderComposite reference computation when "
+	    "projecting the first trapezoid onto 16.16 space",
+	    "xlib",	     /* keywords */
 	    "target=raster", /* requirements */
-	    300, 150,
-	    NULL, draw)
+	    300,
+	    150,
+	    NULL,
+	    draw)

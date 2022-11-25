@@ -44,9 +44,7 @@
 #include "comac-slope-private.h"
 
 static int
-line_compare_for_y_against_x (const comac_line_t *a,
-			      int32_t y,
-			      int32_t x)
+line_compare_for_y_against_x (const comac_line_t *a, int32_t y, int32_t x)
 {
     int32_t adx, ady;
     int32_t dx, dy;
@@ -114,14 +112,14 @@ lines_compare_x_for_y_general (const comac_line_t *a,
     int32_t adx = 0, ady = 0;
     int32_t bdx = 0, bdy = 0;
     enum {
-       HAVE_NONE    = 0x0,
-       HAVE_DX      = 0x1,
-       HAVE_ADX     = 0x2,
-       HAVE_DX_ADX  = HAVE_DX | HAVE_ADX,
-       HAVE_BDX     = 0x4,
-       HAVE_DX_BDX  = HAVE_DX | HAVE_BDX,
-       HAVE_ADX_BDX = HAVE_ADX | HAVE_BDX,
-       HAVE_ALL     = HAVE_DX | HAVE_ADX | HAVE_BDX
+	HAVE_NONE = 0x0,
+	HAVE_DX = 0x1,
+	HAVE_ADX = 0x2,
+	HAVE_DX_ADX = HAVE_DX | HAVE_ADX,
+	HAVE_BDX = 0x4,
+	HAVE_DX_BDX = HAVE_DX | HAVE_BDX,
+	HAVE_ADX_BDX = HAVE_ADX | HAVE_BDX,
+	HAVE_ALL = HAVE_DX | HAVE_ADX | HAVE_BDX
     } have_dx_adx_bdx = HAVE_ALL;
 
     ady = a->p2.y - a->p1.y;
@@ -139,8 +137,10 @@ lines_compare_x_for_y_general (const comac_line_t *a,
 	have_dx_adx_bdx &= ~HAVE_DX;
 
 #define L _comac_int64x32_128_mul (_comac_int32x32_64_mul (ady, bdy), dx)
-#define A _comac_int64x32_128_mul (_comac_int32x32_64_mul (adx, bdy), y - a->p1.y)
-#define B _comac_int64x32_128_mul (_comac_int32x32_64_mul (bdx, ady), y - b->p1.y)
+#define A                                                                      \
+    _comac_int64x32_128_mul (_comac_int32x32_64_mul (adx, bdy), y - a->p1.y)
+#define B                                                                      \
+    _comac_int64x32_128_mul (_comac_int32x32_64_mul (bdx, ady), y - b->p1.y)
     switch (have_dx_adx_bdx) {
     default:
     case HAVE_NONE:
@@ -203,9 +203,7 @@ lines_compare_x_for_y_general (const comac_line_t *a,
 }
 
 static int
-lines_compare_x_for_y (const comac_line_t *a,
-		       const comac_line_t *b,
-		       int32_t y)
+lines_compare_x_for_y (const comac_line_t *a, const comac_line_t *b, int32_t y)
 {
     /* If the sweep-line is currently on an end-point of a line,
      * then we know its precise x value (and considering that we often need to
@@ -213,10 +211,10 @@ lines_compare_x_for_y (const comac_line_t *a,
      * special casing).
      */
     enum {
-       HAVE_NEITHER = 0x0,
-       HAVE_AX      = 0x1,
-       HAVE_BX      = 0x2,
-       HAVE_BOTH    = HAVE_AX | HAVE_BX
+	HAVE_NEITHER = 0x0,
+	HAVE_AX = 0x1,
+	HAVE_BX = 0x2,
+	HAVE_BOTH = HAVE_AX | HAVE_BX
     } have_ax_bx = HAVE_BOTH;
     int32_t ax = 0, bx = 0;
 
@@ -247,8 +245,8 @@ lines_compare_x_for_y (const comac_line_t *a,
     }
 }
 
-static int bbox_compare (const comac_line_t *a,
-			 const comac_line_t *b)
+static int
+bbox_compare (const comac_line_t *a, const comac_line_t *b)
 {
     int32_t amin, amax;
     int32_t bmin, bmax;
@@ -279,9 +277,7 @@ static int bbox_compare (const comac_line_t *a,
 }
 
 int
-_comac_lines_compare_at_y (const comac_line_t *a,
-			      const comac_line_t *b,
-			      int y)
+_comac_lines_compare_at_y (const comac_line_t *a, const comac_line_t *b, int y)
 {
     comac_slope_t sa, sb;
     int ret;

@@ -50,7 +50,9 @@ draw (comac_t *cr, int width, int height)
 
 COMAC_TEST (inverted_clip,
 	    "Clip + InvertedClip should be opaque",
-	    "clip, paint", /* keywords */
+	    "clip, paint",   /* keywords */
 	    "target=raster", /* requirements */
-	    100, 100,
-	    NULL, draw)
+	    100,
+	    100,
+	    NULL,
+	    draw)

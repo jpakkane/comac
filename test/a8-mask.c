@@ -30,14 +30,11 @@
 #define MASK_HEIGHT 8
 
 static unsigned char mask[MASK_WIDTH * MASK_HEIGHT] = {
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
-    0x0, 0x0, 0xff, 0x0, 0xff, 0x0, 0x0, 0x0,
+    0x0,  0x0, 0xff, 0x0,  0xff, 0x0,  0x0,  0x0,  0x0,	 0x0, 0xff, 0x0,  0xff,
+    0x0,  0x0, 0x0,  0x0,  0x0,	 0xff, 0x0,  0xff, 0x0,	 0x0, 0x0,  0x0,  0x0,
+    0xff, 0x0, 0xff, 0x0,  0x0,	 0x0,  0x0,  0x0,  0xff, 0x0, 0xff, 0x0,  0x0,
+    0x0,  0x0, 0x0,  0xff, 0x0,	 0xff, 0x0,  0x0,  0x0,	 0x0, 0x0,  0xff, 0x0,
+    0xff, 0x0, 0x0,  0x0,  0x0,	 0x0,  0xff, 0x0,  0xff, 0x0, 0x0,  0x0,
 };
 
 static comac_test_status_t
@@ -59,7 +56,8 @@ check_status (const comac_test_context_t *ctx,
 
 static comac_test_status_t
 test_surface_with_width_and_stride (const comac_test_context_t *ctx,
-				    int width, int stride,
+				    int width,
+				    int stride,
 				    comac_status_t expected)
 {
     comac_test_status_t status;
@@ -70,15 +68,19 @@ test_surface_with_width_and_stride (const comac_test_context_t *ctx,
 
     comac_test_log (ctx,
 		    "Creating surface with width %d and stride %d\n",
-		    width, stride);
+		    width,
+		    stride);
 
     len = stride;
     if (len < 0)
 	len = -len;
     data = xmalloc (len);
 
-    surface = comac_image_surface_create_for_data (data, COMAC_FORMAT_A8,
-						   width, 1, stride);
+    surface = comac_image_surface_create_for_data (data,
+						   COMAC_FORMAT_A8,
+						   width,
+						   1,
+						   stride);
     cr = comac_create (surface);
 
     comac_paint (cr);
@@ -91,7 +93,7 @@ test_surface_with_width_and_stride (const comac_test_context_t *ctx,
     if (status)
 	goto BAIL;
 
-  BAIL:
+BAIL:
     comac_destroy (cr);
     comac_surface_destroy (surface);
     free (data);
@@ -107,8 +109,7 @@ draw (comac_t *cr, int dst_width, int dst_height)
 
     /* Now test actually drawing through our mask data, allocating and
      * copying with the proper stride. */
-    stride = comac_format_stride_for_width (COMAC_FORMAT_A8,
-					    MASK_WIDTH);
+    stride = comac_format_stride_for_width (COMAC_FORMAT_A8, MASK_WIDTH);
 
     mask_aligned = xmalloc (stride * MASK_HEIGHT);
 
@@ -147,15 +148,15 @@ preamble (comac_test_context_t *ctx)
     int test_width;
 
     for (test_width = 0; test_width < 40; test_width++) {
-	int stride = comac_format_stride_for_width (COMAC_FORMAT_A8,
-						test_width);
+	int stride =
+	    comac_format_stride_for_width (COMAC_FORMAT_A8, test_width);
 	comac_status_t expected;
 
 	/* First create a surface using the width as the stride,
 	 * (most of these should fail).
 	 */
-	expected = (stride == test_width) ?
-	    COMAC_STATUS_SUCCESS : COMAC_STATUS_INVALID_STRIDE;
+	expected = (stride == test_width) ? COMAC_STATUS_SUCCESS
+					  : COMAC_STATUS_INVALID_STRIDE;
 
 	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
@@ -170,7 +171,6 @@ preamble (comac_test_context_t *ctx)
 						     expected);
 	if (status)
 	    return status;
-
 
 	/* Then create a surface using the correct stride,
 	 * (should always succeed).
@@ -196,6 +196,8 @@ preamble (comac_test_context_t *ctx)
 COMAC_TEST (a8_mask,
 	    "test masks of COMAC_FORMAT_A8",
 	    "alpha, mask", /* keywords */
-	    NULL, /* requirements */
-	    8, 8,
-	    preamble, draw)
+	    NULL,	   /* requirements */
+	    8,
+	    8,
+	    preamble,
+	    draw)

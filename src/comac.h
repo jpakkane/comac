@@ -42,50 +42,46 @@
 #include "comac-features.h"
 #include "comac-deprecated.h"
 
-#ifdef  __cplusplus
-# define COMAC_BEGIN_DECLS  extern "C" {
-# define COMAC_END_DECLS    }
+#ifdef __cplusplus
+#define COMAC_BEGIN_DECLS extern "C" {
+#define COMAC_END_DECLS }
 #else
-# define COMAC_BEGIN_DECLS
-# define COMAC_END_DECLS
+#define COMAC_BEGIN_DECLS
+#define COMAC_END_DECLS
 #endif
 
 #ifndef comac_public
-# if defined (_MSC_VER) && ! defined (COMAC_WIN32_STATIC_BUILD)
-#  define comac_public __declspec(dllimport)
-# else
-#  define comac_public
-# endif
+#if defined(_MSC_VER) && ! defined(COMAC_WIN32_STATIC_BUILD)
+#define comac_public __declspec (dllimport)
+#else
+#define comac_public
+#endif
 #endif
 
 COMAC_BEGIN_DECLS
 
-#define COMAC_VERSION_ENCODE(major, minor, micro) (	\
-	  ((major) * 10000)				\
-	+ ((minor) *   100)				\
-	+ ((micro) *     1))
+#define COMAC_VERSION_ENCODE(major, minor, micro)                              \
+    (((major) *10000) + ((minor) *100) + ((micro) *1))
 
-#define COMAC_VERSION COMAC_VERSION_ENCODE(	\
-	COMAC_VERSION_MAJOR,			\
-	COMAC_VERSION_MINOR,			\
-	COMAC_VERSION_MICRO)
+#define COMAC_VERSION                                                          \
+    COMAC_VERSION_ENCODE (COMAC_VERSION_MAJOR,                                 \
+			  COMAC_VERSION_MINOR,                                 \
+			  COMAC_VERSION_MICRO)
 
+#define COMAC_VERSION_STRINGIZE_(major, minor, micro)                          \
+#major "." #minor "." #micro
+#define COMAC_VERSION_STRINGIZE(major, minor, micro)                           \
+    COMAC_VERSION_STRINGIZE_ (major, minor, micro)
 
-#define COMAC_VERSION_STRINGIZE_(major, minor, micro)	\
-	#major"."#minor"."#micro
-#define COMAC_VERSION_STRINGIZE(major, minor, micro)	\
-	COMAC_VERSION_STRINGIZE_(major, minor, micro)
-
-#define COMAC_VERSION_STRING COMAC_VERSION_STRINGIZE(	\
-	COMAC_VERSION_MAJOR,				\
-	COMAC_VERSION_MINOR,				\
-	COMAC_VERSION_MICRO)
-
+#define COMAC_VERSION_STRING                                                   \
+    COMAC_VERSION_STRINGIZE (COMAC_VERSION_MAJOR,                              \
+			     COMAC_VERSION_MINOR,                              \
+			     COMAC_VERSION_MICRO)
 
 comac_public int
 comac_version (void);
 
-comac_public const char*
+comac_public const char *
 comac_version_string (void);
 
 /**
@@ -190,9 +186,12 @@ typedef struct _comac_device comac_device_t;
  * Since: 1.0
  **/
 typedef struct _comac_matrix {
-    double xx; double yx;
-    double xy; double yy;
-    double x0; double y0;
+    double xx;
+    double yx;
+    double xy;
+    double yy;
+    double x0;
+    double y0;
 } comac_matrix_t;
 
 /**
@@ -379,9 +378,9 @@ typedef enum _comac_status {
  * Since: 1.0
  **/
 typedef enum _comac_content {
-    COMAC_CONTENT_COLOR		= 0x1000,
-    COMAC_CONTENT_ALPHA		= 0x2000,
-    COMAC_CONTENT_COLOR_ALPHA	= 0x3000
+    COMAC_CONTENT_COLOR = 0x1000,
+    COMAC_CONTENT_ALPHA = 0x2000,
+    COMAC_CONTENT_COLOR_ALPHA = 0x3000
 } comac_content_t;
 
 /**
@@ -418,17 +417,16 @@ typedef enum _comac_content {
  * Since: 1.0
  **/
 typedef enum _comac_format {
-    COMAC_FORMAT_INVALID   = -1,
-    COMAC_FORMAT_ARGB32    = 0,
-    COMAC_FORMAT_RGB24     = 1,
-    COMAC_FORMAT_A8        = 2,
-    COMAC_FORMAT_A1        = 3,
+    COMAC_FORMAT_INVALID = -1,
+    COMAC_FORMAT_ARGB32 = 0,
+    COMAC_FORMAT_RGB24 = 1,
+    COMAC_FORMAT_A8 = 2,
+    COMAC_FORMAT_A1 = 3,
     COMAC_FORMAT_RGB16_565 = 4,
-    COMAC_FORMAT_RGB30     = 5,
-    COMAC_FORMAT_RGB96F    = 6,
-    COMAC_FORMAT_RGBA128F  = 7
+    COMAC_FORMAT_RGB30 = 5,
+    COMAC_FORMAT_RGB96F = 6,
+    COMAC_FORMAT_RGBA128F = 7
 } comac_format_t;
-
 
 /**
  * comac_write_func_t:
@@ -448,9 +446,9 @@ typedef enum _comac_format {
  *
  * Since: 1.0
  **/
-typedef comac_status_t (*comac_write_func_t) (void		  *closure,
+typedef comac_status_t (*comac_write_func_t) (void *closure,
 					      const unsigned char *data,
-					      unsigned int	   length);
+					      unsigned int length);
 
 /**
  * comac_read_func_t:
@@ -470,9 +468,9 @@ typedef comac_status_t (*comac_write_func_t) (void		  *closure,
  *
  * Since: 1.0
  **/
-typedef comac_status_t (*comac_read_func_t) (void		*closure,
-					     unsigned char	*data,
-					     unsigned int	length);
+typedef comac_status_t (*comac_read_func_t) (void *closure,
+					     unsigned char *data,
+					     unsigned int length);
 
 /**
  * comac_rectangle_int_t:
@@ -491,7 +489,6 @@ typedef struct _comac_rectangle_int {
     int width, height;
 } comac_rectangle_int_t;
 
-
 /* Functions for manipulating state objects */
 comac_public comac_t *
 comac_create (comac_surface_t *target);
@@ -506,14 +503,13 @@ comac_public unsigned int
 comac_get_reference_count (comac_t *cr);
 
 comac_public void *
-comac_get_user_data (comac_t			 *cr,
-		     const comac_user_data_key_t *key);
+comac_get_user_data (comac_t *cr, const comac_user_data_key_t *key);
 
 comac_public comac_status_t
-comac_set_user_data (comac_t			 *cr,
+comac_set_user_data (comac_t *cr,
 		     const comac_user_data_key_t *key,
-		     void			 *user_data,
-		     comac_destroy_func_t	  destroy);
+		     void *user_data,
+		     comac_destroy_func_t destroy);
 
 comac_public void
 comac_save (comac_t *cr);
@@ -662,15 +658,14 @@ comac_public void
 comac_set_source_rgb (comac_t *cr, double red, double green, double blue);
 
 comac_public void
-comac_set_source_rgba (comac_t *cr,
-		       double red, double green, double blue,
-		       double alpha);
+comac_set_source_rgba (
+    comac_t *cr, double red, double green, double blue, double alpha);
 
 comac_public void
-comac_set_source_surface (comac_t	  *cr,
+comac_set_source_surface (comac_t *cr,
 			  comac_surface_t *surface,
-			  double	   x,
-			  double	   y);
+			  double x,
+			  double y);
 
 comac_public void
 comac_set_tolerance (comac_t *cr, double tolerance);
@@ -816,10 +811,10 @@ comac_public void
 comac_set_line_join (comac_t *cr, comac_line_join_t line_join);
 
 comac_public void
-comac_set_dash (comac_t      *cr,
+comac_set_dash (comac_t *cr,
 		const double *dashes,
-		int	      num_dashes,
-		double	      offset);
+		int num_dashes,
+		double offset);
 
 comac_public void
 comac_set_miter_limit (comac_t *cr, double limit);
@@ -834,12 +829,10 @@ comac_public void
 comac_rotate (comac_t *cr, double angle);
 
 comac_public void
-comac_transform (comac_t	      *cr,
-		 const comac_matrix_t *matrix);
+comac_transform (comac_t *cr, const comac_matrix_t *matrix);
 
 comac_public void
-comac_set_matrix (comac_t	       *cr,
-		  const comac_matrix_t *matrix);
+comac_set_matrix (comac_t *cr, const comac_matrix_t *matrix);
 
 comac_public void
 comac_identity_matrix (comac_t *cr);
@@ -871,21 +864,28 @@ comac_line_to (comac_t *cr, double x, double y);
 
 comac_public void
 comac_curve_to (comac_t *cr,
-		double x1, double y1,
-		double x2, double y2,
-		double x3, double y3);
+		double x1,
+		double y1,
+		double x2,
+		double y2,
+		double x3,
+		double y3);
 
 comac_public void
 comac_arc (comac_t *cr,
-	   double xc, double yc,
+	   double xc,
+	   double yc,
 	   double radius,
-	   double angle1, double angle2);
+	   double angle1,
+	   double angle2);
 
 comac_public void
 comac_arc_negative (comac_t *cr,
-		    double xc, double yc,
+		    double xc,
+		    double yc,
 		    double radius,
-		    double angle1, double angle2);
+		    double angle1,
+		    double angle2);
 
 /* XXX: NYI
 comac_public void
@@ -903,14 +903,15 @@ comac_rel_line_to (comac_t *cr, double dx, double dy);
 
 comac_public void
 comac_rel_curve_to (comac_t *cr,
-		    double dx1, double dy1,
-		    double dx2, double dy2,
-		    double dx3, double dy3);
+		    double dx1,
+		    double dy1,
+		    double dx2,
+		    double dy2,
+		    double dx3,
+		    double dy3);
 
 comac_public void
-comac_rectangle (comac_t *cr,
-		 double x, double y,
-		 double width, double height);
+comac_rectangle (comac_t *cr, double x, double y, double width, double height);
 
 /* XXX: NYI
 comac_public void
@@ -921,27 +922,24 @@ comac_public void
 comac_close_path (comac_t *cr);
 
 comac_public void
-comac_path_extents (comac_t *cr,
-		    double *x1, double *y1,
-		    double *x2, double *y2);
+comac_path_extents (
+    comac_t *cr, double *x1, double *y1, double *x2, double *y2);
 
 /* Painting functions */
 comac_public void
 comac_paint (comac_t *cr);
 
 comac_public void
-comac_paint_with_alpha (comac_t *cr,
-			double   alpha);
+comac_paint_with_alpha (comac_t *cr, double alpha);
 
 comac_public void
-comac_mask (comac_t         *cr,
-	    comac_pattern_t *pattern);
+comac_mask (comac_t *cr, comac_pattern_t *pattern);
 
 comac_public void
-comac_mask_surface (comac_t         *cr,
+comac_mask_surface (comac_t *cr,
 		    comac_surface_t *surface,
-		    double           surface_x,
-		    double           surface_y);
+		    double surface_x,
+		    double surface_y);
 
 comac_public void
 comac_stroke (comac_t *cr);
@@ -973,14 +971,12 @@ comac_in_clip (comac_t *cr, double x, double y);
 
 /* Rectangular extents */
 comac_public void
-comac_stroke_extents (comac_t *cr,
-		      double *x1, double *y1,
-		      double *x2, double *y2);
+comac_stroke_extents (
+    comac_t *cr, double *x1, double *y1, double *x2, double *y2);
 
 comac_public void
-comac_fill_extents (comac_t *cr,
-		    double *x1, double *y1,
-		    double *x2, double *y2);
+comac_fill_extents (
+    comac_t *cr, double *x1, double *y1, double *x2, double *y2);
 
 /* Clipping */
 comac_public void
@@ -993,9 +989,8 @@ comac_public void
 comac_clip_preserve (comac_t *cr);
 
 comac_public void
-comac_clip_extents (comac_t *cr,
-		    double *x1, double *y1,
-		    double *x2, double *y2);
+comac_clip_extents (
+    comac_t *cr, double *x1, double *y1, double *x2, double *y2);
 
 /**
  * comac_rectangle_t:
@@ -1024,9 +1019,9 @@ typedef struct _comac_rectangle {
  * Since: 1.4
  **/
 typedef struct _comac_rectangle_list {
-    comac_status_t     status;
+    comac_status_t status;
     comac_rectangle_t *rectangles;
-    int                num_rectangles;
+    int num_rectangles;
 } comac_rectangle_list_t;
 
 comac_public comac_rectangle_list_t *
@@ -1115,9 +1110,9 @@ typedef struct _comac_font_face comac_font_face_t;
  * Since: 1.0
  **/
 typedef struct {
-    unsigned long        index;
-    double               x;
-    double               y;
+    unsigned long index;
+    double x;
+    double y;
 } comac_glyph_t;
 
 comac_public comac_glyph_t *
@@ -1147,8 +1142,8 @@ comac_glyph_free (comac_glyph_t *glyphs);
  * Since: 1.8
  **/
 typedef struct {
-    int        num_bytes;
-    int        num_glyphs;
+    int num_bytes;
+    int num_glyphs;
 } comac_text_cluster_t;
 
 comac_public comac_text_cluster_t *
@@ -1429,7 +1424,7 @@ comac_public comac_status_t
 comac_font_options_status (comac_font_options_t *options);
 
 comac_public void
-comac_font_options_merge (comac_font_options_t       *options,
+comac_font_options_merge (comac_font_options_t *options,
 			  const comac_font_options_t *other);
 comac_public comac_bool_t
 comac_font_options_equal (const comac_font_options_t *options,
@@ -1440,25 +1435,25 @@ comac_font_options_hash (const comac_font_options_t *options);
 
 comac_public void
 comac_font_options_set_antialias (comac_font_options_t *options,
-				  comac_antialias_t     antialias);
+				  comac_antialias_t antialias);
 comac_public comac_antialias_t
 comac_font_options_get_antialias (const comac_font_options_t *options);
 
 comac_public void
-comac_font_options_set_subpixel_order (comac_font_options_t   *options,
-				       comac_subpixel_order_t  subpixel_order);
+comac_font_options_set_subpixel_order (comac_font_options_t *options,
+				       comac_subpixel_order_t subpixel_order);
 comac_public comac_subpixel_order_t
 comac_font_options_get_subpixel_order (const comac_font_options_t *options);
 
 comac_public void
 comac_font_options_set_hint_style (comac_font_options_t *options,
-				   comac_hint_style_t     hint_style);
+				   comac_hint_style_t hint_style);
 comac_public comac_hint_style_t
 comac_font_options_get_hint_style (const comac_font_options_t *options);
 
 comac_public void
 comac_font_options_set_hint_metrics (comac_font_options_t *options,
-				     comac_hint_metrics_t  hint_metrics);
+				     comac_hint_metrics_t hint_metrics);
 comac_public comac_hint_metrics_t
 comac_font_options_get_hint_metrics (const comac_font_options_t *options);
 
@@ -1467,13 +1462,13 @@ comac_font_options_get_variations (comac_font_options_t *options);
 
 comac_public void
 comac_font_options_set_variations (comac_font_options_t *options,
-                                   const char           *variations);
+				   const char *variations);
 
 #define COMAC_COLOR_PALETTE_DEFAULT 0
 
 comac_public void
 comac_font_options_set_color_mode (comac_font_options_t *options,
-                                   comac_color_mode_t    color_mode);
+				   comac_color_mode_t color_mode);
 
 comac_public comac_color_mode_t
 comac_font_options_get_color_mode (const comac_font_options_t *options);
@@ -1483,35 +1478,31 @@ comac_font_options_get_color_palette (const comac_font_options_t *options);
 
 comac_public void
 comac_font_options_set_color_palette (comac_font_options_t *options,
-                                      unsigned int          palette_index);
+				      unsigned int palette_index);
 
 /* This interface is for dealing with text as text, not caring about the
    font object inside the the comac_t. */
 
 comac_public void
-comac_select_font_face (comac_t              *cr,
-			const char           *family,
-			comac_font_slant_t   slant,
-			comac_font_weight_t  weight);
+comac_select_font_face (comac_t *cr,
+			const char *family,
+			comac_font_slant_t slant,
+			comac_font_weight_t weight);
 
 comac_public void
 comac_set_font_size (comac_t *cr, double size);
 
 comac_public void
-comac_set_font_matrix (comac_t		    *cr,
-		       const comac_matrix_t *matrix);
+comac_set_font_matrix (comac_t *cr, const comac_matrix_t *matrix);
 
 comac_public void
-comac_get_font_matrix (comac_t *cr,
-		       comac_matrix_t *matrix);
+comac_get_font_matrix (comac_t *cr, comac_matrix_t *matrix);
 
 comac_public void
-comac_set_font_options (comac_t                    *cr,
-			const comac_font_options_t *options);
+comac_set_font_options (comac_t *cr, const comac_font_options_t *options);
 
 comac_public void
-comac_get_font_options (comac_t              *cr,
-			comac_font_options_t *options);
+comac_get_font_options (comac_t *cr, comac_font_options_t *options);
 
 comac_public void
 comac_set_font_face (comac_t *cr, comac_font_face_t *font_face);
@@ -1520,8 +1511,7 @@ comac_public comac_font_face_t *
 comac_get_font_face (comac_t *cr);
 
 comac_public void
-comac_set_scaled_font (comac_t                   *cr,
-		       const comac_scaled_font_t *scaled_font);
+comac_set_scaled_font (comac_t *cr, const comac_scaled_font_t *scaled_font);
 
 comac_public comac_scaled_font_t *
 comac_get_scaled_font (comac_t *cr);
@@ -1533,35 +1523,34 @@ comac_public void
 comac_show_glyphs (comac_t *cr, const comac_glyph_t *glyphs, int num_glyphs);
 
 comac_public void
-comac_show_text_glyphs (comac_t			   *cr,
-			const char		   *utf8,
-			int			    utf8_len,
-			const comac_glyph_t	   *glyphs,
-			int			    num_glyphs,
+comac_show_text_glyphs (comac_t *cr,
+			const char *utf8,
+			int utf8_len,
+			const comac_glyph_t *glyphs,
+			int num_glyphs,
 			const comac_text_cluster_t *clusters,
-			int			    num_clusters,
-			comac_text_cluster_flags_t  cluster_flags);
+			int num_clusters,
+			comac_text_cluster_flags_t cluster_flags);
 
 comac_public void
-comac_text_path  (comac_t *cr, const char *utf8);
+comac_text_path (comac_t *cr, const char *utf8);
 
 comac_public void
 comac_glyph_path (comac_t *cr, const comac_glyph_t *glyphs, int num_glyphs);
 
 comac_public void
-comac_text_extents (comac_t              *cr,
-		    const char    	 *utf8,
+comac_text_extents (comac_t *cr,
+		    const char *utf8,
 		    comac_text_extents_t *extents);
 
 comac_public void
-comac_glyph_extents (comac_t               *cr,
-		     const comac_glyph_t   *glyphs,
-		     int                   num_glyphs,
-		     comac_text_extents_t  *extents);
+comac_glyph_extents (comac_t *cr,
+		     const comac_glyph_t *glyphs,
+		     int num_glyphs,
+		     comac_text_extents_t *extents);
 
 comac_public void
-comac_font_extents (comac_t              *cr,
-		    comac_font_extents_t *extents);
+comac_font_extents (comac_t *cr, comac_font_extents_t *extents);
 
 /* Generic identifier for a font style */
 
@@ -1576,7 +1565,6 @@ comac_font_face_get_reference_count (comac_font_face_t *font_face);
 
 comac_public comac_status_t
 comac_font_face_status (comac_font_face_t *font_face);
-
 
 /**
  * comac_font_type_t:
@@ -1631,21 +1619,21 @@ comac_public comac_font_type_t
 comac_font_face_get_type (comac_font_face_t *font_face);
 
 comac_public void *
-comac_font_face_get_user_data (comac_font_face_t	   *font_face,
+comac_font_face_get_user_data (comac_font_face_t *font_face,
 			       const comac_user_data_key_t *key);
 
 comac_public comac_status_t
-comac_font_face_set_user_data (comac_font_face_t	   *font_face,
+comac_font_face_set_user_data (comac_font_face_t *font_face,
 			       const comac_user_data_key_t *key,
-			       void			   *user_data,
-			       comac_destroy_func_t	    destroy);
+			       void *user_data,
+			       comac_destroy_func_t destroy);
 
 /* Portable interface to general font features. */
 
 comac_public comac_scaled_font_t *
-comac_scaled_font_create (comac_font_face_t          *font_face,
-			  const comac_matrix_t       *font_matrix,
-			  const comac_matrix_t       *ctm,
+comac_scaled_font_create (comac_font_face_t *font_face,
+			  const comac_matrix_t *font_matrix,
+			  const comac_matrix_t *ctm,
 			  const comac_font_options_t *options);
 
 comac_public comac_scaled_font_t *
@@ -1664,68 +1652,67 @@ comac_public comac_font_type_t
 comac_scaled_font_get_type (comac_scaled_font_t *scaled_font);
 
 comac_public void *
-comac_scaled_font_get_user_data (comac_scaled_font_t         *scaled_font,
+comac_scaled_font_get_user_data (comac_scaled_font_t *scaled_font,
 				 const comac_user_data_key_t *key);
 
 comac_public comac_status_t
-comac_scaled_font_set_user_data (comac_scaled_font_t         *scaled_font,
+comac_scaled_font_set_user_data (comac_scaled_font_t *scaled_font,
 				 const comac_user_data_key_t *key,
-				 void                        *user_data,
-				 comac_destroy_func_t	      destroy);
+				 void *user_data,
+				 comac_destroy_func_t destroy);
 
 comac_public void
-comac_scaled_font_extents (comac_scaled_font_t  *scaled_font,
+comac_scaled_font_extents (comac_scaled_font_t *scaled_font,
 			   comac_font_extents_t *extents);
 
 comac_public void
-comac_scaled_font_text_extents (comac_scaled_font_t  *scaled_font,
-				const char  	     *utf8,
+comac_scaled_font_text_extents (comac_scaled_font_t *scaled_font,
+				const char *utf8,
 				comac_text_extents_t *extents);
 
 comac_public void
-comac_scaled_font_glyph_extents (comac_scaled_font_t   *scaled_font,
-				 const comac_glyph_t   *glyphs,
-				 int                   num_glyphs,
-				 comac_text_extents_t  *extents);
+comac_scaled_font_glyph_extents (comac_scaled_font_t *scaled_font,
+				 const comac_glyph_t *glyphs,
+				 int num_glyphs,
+				 comac_text_extents_t *extents);
 
 comac_public comac_status_t
-comac_scaled_font_text_to_glyphs (comac_scaled_font_t        *scaled_font,
-				  double		      x,
-				  double		      y,
-				  const char	             *utf8,
-				  int		              utf8_len,
-				  comac_glyph_t	            **glyphs,
-				  int		             *num_glyphs,
-				  comac_text_cluster_t      **clusters,
-				  int		             *num_clusters,
+comac_scaled_font_text_to_glyphs (comac_scaled_font_t *scaled_font,
+				  double x,
+				  double y,
+				  const char *utf8,
+				  int utf8_len,
+				  comac_glyph_t **glyphs,
+				  int *num_glyphs,
+				  comac_text_cluster_t **clusters,
+				  int *num_clusters,
 				  comac_text_cluster_flags_t *cluster_flags);
 
 comac_public comac_font_face_t *
 comac_scaled_font_get_font_face (comac_scaled_font_t *scaled_font);
 
 comac_public void
-comac_scaled_font_get_font_matrix (comac_scaled_font_t	*scaled_font,
-				   comac_matrix_t	*font_matrix);
+comac_scaled_font_get_font_matrix (comac_scaled_font_t *scaled_font,
+				   comac_matrix_t *font_matrix);
 
 comac_public void
-comac_scaled_font_get_ctm (comac_scaled_font_t	*scaled_font,
-			   comac_matrix_t	*ctm);
+comac_scaled_font_get_ctm (comac_scaled_font_t *scaled_font,
+			   comac_matrix_t *ctm);
 
 comac_public void
-comac_scaled_font_get_scale_matrix (comac_scaled_font_t	*scaled_font,
-				    comac_matrix_t	*scale_matrix);
+comac_scaled_font_get_scale_matrix (comac_scaled_font_t *scaled_font,
+				    comac_matrix_t *scale_matrix);
 
 comac_public void
-comac_scaled_font_get_font_options (comac_scaled_font_t		*scaled_font,
-				    comac_font_options_t	*options);
-
+comac_scaled_font_get_font_options (comac_scaled_font_t *scaled_font,
+				    comac_font_options_t *options);
 
 /* Toy fonts */
 
 comac_public comac_font_face_t *
-comac_toy_font_face_create (const char           *family,
-			    comac_font_slant_t    slant,
-			    comac_font_weight_t   weight);
+comac_toy_font_face_create (const char *family,
+			    comac_font_slant_t slant,
+			    comac_font_weight_t weight);
 
 comac_public const char *
 comac_toy_font_face_get_family (comac_font_face_t *font_face);
@@ -1735,7 +1722,6 @@ comac_toy_font_face_get_slant (comac_font_face_t *font_face);
 
 comac_public comac_font_weight_t
 comac_toy_font_face_get_weight (comac_font_face_t *font_face);
-
 
 /* User fonts */
 
@@ -1776,9 +1762,10 @@ comac_user_font_face_create (void);
  *
  * Since: 1.8
  **/
-typedef comac_status_t (*comac_user_scaled_font_init_func_t) (comac_scaled_font_t  *scaled_font,
-							      comac_t              *cr,
-							      comac_font_extents_t *extents);
+typedef comac_status_t (*comac_user_scaled_font_init_func_t) (
+    comac_scaled_font_t *scaled_font,
+    comac_t *cr,
+    comac_font_extents_t *extents);
 
 /**
  * comac_user_scaled_font_render_glyph_func_t:
@@ -1854,10 +1841,11 @@ typedef comac_status_t (*comac_user_scaled_font_init_func_t) (comac_scaled_font_
  *
  * Since: 1.8
  **/
-typedef comac_status_t (*comac_user_scaled_font_render_glyph_func_t) (comac_scaled_font_t  *scaled_font,
-								      unsigned long         glyph,
-								      comac_t              *cr,
-								      comac_text_extents_t *extents);
+typedef comac_status_t (*comac_user_scaled_font_render_glyph_func_t) (
+    comac_scaled_font_t *scaled_font,
+    unsigned long glyph,
+    comac_t *cr,
+    comac_text_extents_t *extents);
 
 /**
  * comac_user_scaled_font_text_to_glyphs_func_t:
@@ -1924,14 +1912,15 @@ typedef comac_status_t (*comac_user_scaled_font_render_glyph_func_t) (comac_scal
  *
  * Since: 1.8
  **/
-typedef comac_status_t (*comac_user_scaled_font_text_to_glyphs_func_t) (comac_scaled_font_t        *scaled_font,
-									const char	           *utf8,
-									int		            utf8_len,
-									comac_glyph_t	          **glyphs,
-									int		           *num_glyphs,
-									comac_text_cluster_t      **clusters,
-									int		           *num_clusters,
-									comac_text_cluster_flags_t *cluster_flags);
+typedef comac_status_t (*comac_user_scaled_font_text_to_glyphs_func_t) (
+    comac_scaled_font_t *scaled_font,
+    const char *utf8,
+    int utf8_len,
+    comac_glyph_t **glyphs,
+    int *num_glyphs,
+    comac_text_cluster_t **clusters,
+    int *num_clusters,
+    comac_text_cluster_flags_t *cluster_flags);
 
 /**
  * comac_user_scaled_font_unicode_to_glyph_func_t:
@@ -1971,31 +1960,36 @@ typedef comac_status_t (*comac_user_scaled_font_text_to_glyphs_func_t) (comac_sc
  *
  * Since: 1.8
  **/
-typedef comac_status_t (*comac_user_scaled_font_unicode_to_glyph_func_t) (comac_scaled_font_t *scaled_font,
-									  unsigned long        unicode,
-									  unsigned long       *glyph_index);
+typedef comac_status_t (*comac_user_scaled_font_unicode_to_glyph_func_t) (
+    comac_scaled_font_t *scaled_font,
+    unsigned long unicode,
+    unsigned long *glyph_index);
 
 /* User-font method setters */
 
 comac_public void
-comac_user_font_face_set_init_func (comac_font_face_t                  *font_face,
-				    comac_user_scaled_font_init_func_t  init_func);
+comac_user_font_face_set_init_func (
+    comac_font_face_t *font_face, comac_user_scaled_font_init_func_t init_func);
 
 comac_public void
-comac_user_font_face_set_render_glyph_func (comac_font_face_t                          *font_face,
-					    comac_user_scaled_font_render_glyph_func_t  render_glyph_func);
+comac_user_font_face_set_render_glyph_func (
+    comac_font_face_t *font_face,
+    comac_user_scaled_font_render_glyph_func_t render_glyph_func);
 
 comac_public void
-comac_user_font_face_set_render_color_glyph_func (comac_font_face_t                          *font_face,
-                                                  comac_user_scaled_font_render_glyph_func_t  render_glyph_func);
+comac_user_font_face_set_render_color_glyph_func (
+    comac_font_face_t *font_face,
+    comac_user_scaled_font_render_glyph_func_t render_glyph_func);
 
 comac_public void
-comac_user_font_face_set_text_to_glyphs_func (comac_font_face_t                            *font_face,
-					      comac_user_scaled_font_text_to_glyphs_func_t  text_to_glyphs_func);
+comac_user_font_face_set_text_to_glyphs_func (
+    comac_font_face_t *font_face,
+    comac_user_scaled_font_text_to_glyphs_func_t text_to_glyphs_func);
 
 comac_public void
-comac_user_font_face_set_unicode_to_glyph_func (comac_font_face_t                              *font_face,
-					        comac_user_scaled_font_unicode_to_glyph_func_t  unicode_to_glyph_func);
+comac_user_font_face_set_unicode_to_glyph_func (
+    comac_font_face_t *font_face,
+    comac_user_scaled_font_unicode_to_glyph_func_t unicode_to_glyph_func);
 
 /* User-font method getters */
 
@@ -2013,7 +2007,6 @@ comac_user_font_face_get_text_to_glyphs_func (comac_font_face_t *font_face);
 
 comac_public comac_user_scaled_font_unicode_to_glyph_func_t
 comac_user_font_face_get_unicode_to_glyph_func (comac_font_face_t *font_face);
-
 
 /* Query functions */
 
@@ -2201,8 +2194,7 @@ comac_public comac_path_t *
 comac_copy_path_flat (comac_t *cr);
 
 comac_public void
-comac_append_path (comac_t		*cr,
-		   const comac_path_t	*path);
+comac_append_path (comac_t *cr, const comac_path_t *path);
 
 comac_public void
 comac_path_destroy (comac_path_t *path);
@@ -2289,44 +2281,39 @@ comac_public unsigned int
 comac_device_get_reference_count (comac_device_t *device);
 
 comac_public void *
-comac_device_get_user_data (comac_device_t		 *device,
+comac_device_get_user_data (comac_device_t *device,
 			    const comac_user_data_key_t *key);
 
 comac_public comac_status_t
-comac_device_set_user_data (comac_device_t		 *device,
+comac_device_set_user_data (comac_device_t *device,
 			    const comac_user_data_key_t *key,
-			    void			 *user_data,
-			    comac_destroy_func_t	  destroy);
-
+			    void *user_data,
+			    comac_destroy_func_t destroy);
 
 /* Surface manipulation */
 
 comac_public comac_surface_t *
-comac_surface_create_similar (comac_surface_t  *other,
-			      comac_content_t	content,
-			      int		width,
-			      int		height);
+comac_surface_create_similar (comac_surface_t *other,
+			      comac_content_t content,
+			      int width,
+			      int height);
 
 comac_public comac_surface_t *
-comac_surface_create_similar_image (comac_surface_t  *other,
-				    comac_format_t    format,
-				    int		width,
-				    int		height);
+comac_surface_create_similar_image (comac_surface_t *other,
+				    comac_format_t format,
+				    int width,
+				    int height);
 
 comac_public comac_surface_t *
-comac_surface_map_to_image (comac_surface_t  *surface,
+comac_surface_map_to_image (comac_surface_t *surface,
 			    const comac_rectangle_int_t *extents);
 
 comac_public void
-comac_surface_unmap_image (comac_surface_t *surface,
-			   comac_surface_t *image);
+comac_surface_unmap_image (comac_surface_t *surface, comac_surface_t *image);
 
 comac_public comac_surface_t *
-comac_surface_create_for_rectangle (comac_surface_t	*target,
-                                    double		 x,
-                                    double		 y,
-                                    double		 width,
-                                    double		 height);
+comac_surface_create_for_rectangle (
+    comac_surface_t *target, double x, double y, double width, double height);
 
 /**
  * comac_surface_observer_mode_t:
@@ -2338,8 +2325,8 @@ comac_surface_create_for_rectangle (comac_surface_t	*target,
  * Since: 1.12
  **/
 typedef enum {
-	COMAC_SURFACE_OBSERVER_NORMAL = 0,
-	COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS = 0x1
+    COMAC_SURFACE_OBSERVER_NORMAL = 0,
+    COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS = 0x1
 } comac_surface_observer_mode_t;
 
 comac_public comac_surface_t *
@@ -2351,39 +2338,46 @@ typedef void (*comac_surface_observer_callback_t) (comac_surface_t *observer,
 						   void *data);
 
 comac_public comac_status_t
-comac_surface_observer_add_paint_callback (comac_surface_t *abstract_surface,
-					   comac_surface_observer_callback_t func,
-					   void *data);
+comac_surface_observer_add_paint_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data);
 
 comac_public comac_status_t
-comac_surface_observer_add_mask_callback (comac_surface_t *abstract_surface,
-					  comac_surface_observer_callback_t func,
-					  void *data);
+comac_surface_observer_add_mask_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data);
 
 comac_public comac_status_t
-comac_surface_observer_add_fill_callback (comac_surface_t *abstract_surface,
-					  comac_surface_observer_callback_t func,
-					  void *data);
+comac_surface_observer_add_fill_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data);
 
 comac_public comac_status_t
-comac_surface_observer_add_stroke_callback (comac_surface_t *abstract_surface,
-					    comac_surface_observer_callback_t func,
-					    void *data);
+comac_surface_observer_add_stroke_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data);
 
 comac_public comac_status_t
-comac_surface_observer_add_glyphs_callback (comac_surface_t *abstract_surface,
-					    comac_surface_observer_callback_t func,
-					    void *data);
+comac_surface_observer_add_glyphs_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data);
 
 comac_public comac_status_t
-comac_surface_observer_add_flush_callback (comac_surface_t *abstract_surface,
-					   comac_surface_observer_callback_t func,
-					   void *data);
+comac_surface_observer_add_flush_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data);
 
 comac_public comac_status_t
-comac_surface_observer_add_finish_callback (comac_surface_t *abstract_surface,
-					    comac_surface_observer_callback_t func,
-					    void *data);
+comac_surface_observer_add_finish_callback (
+    comac_surface_t *abstract_surface,
+    comac_surface_observer_callback_t func,
+    void *data);
 
 comac_public comac_status_t
 comac_surface_observer_print (comac_surface_t *surface,
@@ -2522,25 +2516,24 @@ comac_surface_get_content (comac_surface_t *surface);
 #if COMAC_HAS_PNG_FUNCTIONS
 
 comac_public comac_status_t
-comac_surface_write_to_png (comac_surface_t	*surface,
-			    const char		*filename);
+comac_surface_write_to_png (comac_surface_t *surface, const char *filename);
 
 comac_public comac_status_t
-comac_surface_write_to_png_stream (comac_surface_t	*surface,
-				   comac_write_func_t	write_func,
-				   void			*closure);
+comac_surface_write_to_png_stream (comac_surface_t *surface,
+				   comac_write_func_t write_func,
+				   void *closure);
 
 #endif
 
 comac_public void *
-comac_surface_get_user_data (comac_surface_t		 *surface,
+comac_surface_get_user_data (comac_surface_t *surface,
 			     const comac_user_data_key_t *key);
 
 comac_public comac_status_t
-comac_surface_set_user_data (comac_surface_t		 *surface,
+comac_surface_set_user_data (comac_surface_t *surface,
 			     const comac_user_data_key_t *key,
-			     void			 *user_data,
-			     comac_destroy_func_t	 destroy);
+			     void *user_data,
+			     comac_destroy_func_t destroy);
 
 #define COMAC_MIME_TYPE_JPEG "image/jpeg"
 #define COMAC_MIME_TYPE_PNG "image/png"
@@ -2556,25 +2549,25 @@ comac_surface_set_user_data (comac_surface_t		 *surface,
 #define COMAC_MIME_TYPE_EPS_PARAMS "application/x-comac.eps.params"
 
 comac_public void
-comac_surface_get_mime_data (comac_surface_t		*surface,
-                             const char			*mime_type,
-                             const unsigned char       **data,
-                             unsigned long		*length);
+comac_surface_get_mime_data (comac_surface_t *surface,
+			     const char *mime_type,
+			     const unsigned char **data,
+			     unsigned long *length);
 
 comac_public comac_status_t
-comac_surface_set_mime_data (comac_surface_t		*surface,
-                             const char			*mime_type,
-                             const unsigned char	*data,
-                             unsigned long		 length,
-			     comac_destroy_func_t	 destroy,
-			     void			*closure);
+comac_surface_set_mime_data (comac_surface_t *surface,
+			     const char *mime_type,
+			     const unsigned char *data,
+			     unsigned long length,
+			     comac_destroy_func_t destroy,
+			     void *closure);
 
 comac_public comac_bool_t
-comac_surface_supports_mime_type (comac_surface_t		*surface,
-				  const char		        *mime_type);
+comac_surface_supports_mime_type (comac_surface_t *surface,
+				  const char *mime_type);
 
 comac_public void
-comac_surface_get_font_options (comac_surface_t      *surface,
+comac_surface_get_font_options (comac_surface_t *surface,
 				comac_font_options_t *options);
 
 comac_public void
@@ -2584,41 +2577,38 @@ comac_public void
 comac_surface_mark_dirty (comac_surface_t *surface);
 
 comac_public void
-comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
-				    int              x,
-				    int              y,
-				    int              width,
-				    int              height);
+comac_surface_mark_dirty_rectangle (
+    comac_surface_t *surface, int x, int y, int width, int height);
 
 comac_public void
 comac_surface_set_device_scale (comac_surface_t *surface,
-				double           x_scale,
-				double           y_scale);
+				double x_scale,
+				double y_scale);
 
 comac_public void
 comac_surface_get_device_scale (comac_surface_t *surface,
-				double          *x_scale,
-				double          *y_scale);
+				double *x_scale,
+				double *y_scale);
 
 comac_public void
 comac_surface_set_device_offset (comac_surface_t *surface,
-				 double           x_offset,
-				 double           y_offset);
+				 double x_offset,
+				 double y_offset);
 
 comac_public void
 comac_surface_get_device_offset (comac_surface_t *surface,
-				 double          *x_offset,
-				 double          *y_offset);
+				 double *x_offset,
+				 double *y_offset);
 
 comac_public void
-comac_surface_set_fallback_resolution (comac_surface_t	*surface,
-				       double		 x_pixels_per_inch,
-				       double		 y_pixels_per_inch);
+comac_surface_set_fallback_resolution (comac_surface_t *surface,
+				       double x_pixels_per_inch,
+				       double y_pixels_per_inch);
 
 comac_public void
-comac_surface_get_fallback_resolution (comac_surface_t	*surface,
-				       double		*x_pixels_per_inch,
-				       double		*y_pixels_per_inch);
+comac_surface_get_fallback_resolution (comac_surface_t *surface,
+				       double *x_pixels_per_inch,
+				       double *y_pixels_per_inch);
 
 comac_public void
 comac_surface_copy_page (comac_surface_t *surface);
@@ -2632,20 +2622,17 @@ comac_surface_has_show_text_glyphs (comac_surface_t *surface);
 /* Image-surface functions */
 
 comac_public comac_surface_t *
-comac_image_surface_create (comac_format_t	format,
-			    int			width,
-			    int			height);
+comac_image_surface_create (comac_format_t format, int width, int height);
 
 comac_public int
-comac_format_stride_for_width (comac_format_t	format,
-			       int		width);
+comac_format_stride_for_width (comac_format_t format, int width);
 
 comac_public comac_surface_t *
-comac_image_surface_create_for_data (unsigned char	       *data,
-				     comac_format_t		format,
-				     int			width,
-				     int			height,
-				     int			stride);
+comac_image_surface_create_for_data (unsigned char *data,
+				     comac_format_t format,
+				     int width,
+				     int height,
+				     int stride);
 
 comac_public unsigned char *
 comac_image_surface_get_data (comac_surface_t *surface);
@@ -2665,26 +2652,26 @@ comac_image_surface_get_stride (comac_surface_t *surface);
 #if COMAC_HAS_PNG_FUNCTIONS
 
 comac_public comac_surface_t *
-comac_image_surface_create_from_png (const char	*filename);
+comac_image_surface_create_from_png (const char *filename);
 
 comac_public comac_surface_t *
-comac_image_surface_create_from_png_stream (comac_read_func_t	read_func,
-					    void		*closure);
+comac_image_surface_create_from_png_stream (comac_read_func_t read_func,
+					    void *closure);
 
 #endif
 
 /* Recording-surface functions */
 
 comac_public comac_surface_t *
-comac_recording_surface_create (comac_content_t		 content,
-                                const comac_rectangle_t *extents);
+comac_recording_surface_create (comac_content_t content,
+				const comac_rectangle_t *extents);
 
 comac_public void
 comac_recording_surface_ink_extents (comac_surface_t *surface,
-                                     double *x0,
-                                     double *y0,
-                                     double *width,
-                                     double *height);
+				     double *x0,
+				     double *y0,
+				     double *width,
+				     double *height);
 
 comac_public comac_bool_t
 comac_recording_surface_get_extents (comac_surface_t *surface,
@@ -2716,11 +2703,11 @@ comac_recording_surface_get_extents (comac_surface_t *surface,
  *
  * Since: 1.12
  **/
-typedef comac_surface_t *
-(*comac_raster_source_acquire_func_t) (comac_pattern_t *pattern,
-				       void *callback_data,
-				       comac_surface_t *target,
-				       const comac_rectangle_int_t *extents);
+typedef comac_surface_t *(*comac_raster_source_acquire_func_t) (
+    comac_pattern_t *pattern,
+    void *callback_data,
+    comac_surface_t *target,
+    const comac_rectangle_int_t *extents);
 
 /**
  * comac_raster_source_release_func_t:
@@ -2735,10 +2722,9 @@ typedef comac_surface_t *
  *
  * Since: 1.12
  **/
-typedef void
-(*comac_raster_source_release_func_t) (comac_pattern_t *pattern,
-				       void *callback_data,
-				       comac_surface_t *surface);
+typedef void (*comac_raster_source_release_func_t) (comac_pattern_t *pattern,
+						    void *callback_data,
+						    comac_surface_t *surface);
 
 /**
  * comac_raster_source_snapshot_func_t:
@@ -2756,9 +2742,8 @@ typedef void
  *
  * Since: 1.12
  **/
-typedef comac_status_t
-(*comac_raster_source_snapshot_func_t) (comac_pattern_t *pattern,
-					void *callback_data);
+typedef comac_status_t (*comac_raster_source_snapshot_func_t) (
+    comac_pattern_t *pattern, void *callback_data);
 
 /**
  * comac_raster_source_copy_func_t:
@@ -2774,10 +2759,10 @@ typedef comac_status_t
  *
  * Since: 1.12
  **/
-typedef comac_status_t
-(*comac_raster_source_copy_func_t) (comac_pattern_t *pattern,
-				    void *callback_data,
-				    const comac_pattern_t *other);
+typedef comac_status_t (*comac_raster_source_copy_func_t) (
+    comac_pattern_t *pattern,
+    void *callback_data,
+    const comac_pattern_t *other);
 
 /**
  * comac_raster_source_finish_func_t:
@@ -2789,14 +2774,14 @@ typedef comac_status_t
  *
  * Since: 1.12
  **/
-typedef void
-(*comac_raster_source_finish_func_t) (comac_pattern_t *pattern,
-				      void *callback_data);
+typedef void (*comac_raster_source_finish_func_t) (comac_pattern_t *pattern,
+						   void *callback_data);
 
 comac_public comac_pattern_t *
 comac_pattern_create_raster_source (void *user_data,
 				    comac_content_t content,
-				    int width, int height);
+				    int width,
+				    int height);
 
 comac_public void
 comac_raster_source_pattern_set_callback_data (comac_pattern_t *pattern,
@@ -2806,17 +2791,19 @@ comac_public void *
 comac_raster_source_pattern_get_callback_data (comac_pattern_t *pattern);
 
 comac_public void
-comac_raster_source_pattern_set_acquire (comac_pattern_t *pattern,
-					 comac_raster_source_acquire_func_t acquire,
-					 comac_raster_source_release_func_t release);
+comac_raster_source_pattern_set_acquire (
+    comac_pattern_t *pattern,
+    comac_raster_source_acquire_func_t acquire,
+    comac_raster_source_release_func_t release);
 
 comac_public void
-comac_raster_source_pattern_get_acquire (comac_pattern_t *pattern,
-					 comac_raster_source_acquire_func_t *acquire,
-					 comac_raster_source_release_func_t *release);
+comac_raster_source_pattern_get_acquire (
+    comac_pattern_t *pattern,
+    comac_raster_source_acquire_func_t *acquire,
+    comac_raster_source_release_func_t *release);
 comac_public void
-comac_raster_source_pattern_set_snapshot (comac_pattern_t *pattern,
-					  comac_raster_source_snapshot_func_t snapshot);
+comac_raster_source_pattern_set_snapshot (
+    comac_pattern_t *pattern, comac_raster_source_snapshot_func_t snapshot);
 
 comac_public comac_raster_source_snapshot_func_t
 comac_raster_source_pattern_get_snapshot (comac_pattern_t *pattern);
@@ -2829,8 +2816,8 @@ comac_public comac_raster_source_copy_func_t
 comac_raster_source_pattern_get_copy (comac_pattern_t *pattern);
 
 comac_public void
-comac_raster_source_pattern_set_finish (comac_pattern_t *pattern,
-					comac_raster_source_finish_func_t finish);
+comac_raster_source_pattern_set_finish (
+    comac_pattern_t *pattern, comac_raster_source_finish_func_t finish);
 
 comac_public comac_raster_source_finish_func_t
 comac_raster_source_pattern_get_finish (comac_pattern_t *pattern);
@@ -2841,19 +2828,21 @@ comac_public comac_pattern_t *
 comac_pattern_create_rgb (double red, double green, double blue);
 
 comac_public comac_pattern_t *
-comac_pattern_create_rgba (double red, double green, double blue,
-			   double alpha);
+comac_pattern_create_rgba (double red, double green, double blue, double alpha);
 
 comac_public comac_pattern_t *
 comac_pattern_create_for_surface (comac_surface_t *surface);
 
 comac_public comac_pattern_t *
-comac_pattern_create_linear (double x0, double y0,
-			     double x1, double y1);
+comac_pattern_create_linear (double x0, double y0, double x1, double y1);
 
 comac_public comac_pattern_t *
-comac_pattern_create_radial (double cx0, double cy0, double radius0,
-			     double cx1, double cy1, double radius1);
+comac_pattern_create_radial (double cx0,
+			     double cy0,
+			     double radius0,
+			     double cx1,
+			     double cy1,
+			     double radius1);
 
 comac_public comac_pattern_t *
 comac_pattern_create_mesh (void);
@@ -2871,14 +2860,14 @@ comac_public comac_status_t
 comac_pattern_status (comac_pattern_t *pattern);
 
 comac_public void *
-comac_pattern_get_user_data (comac_pattern_t		 *pattern,
+comac_pattern_get_user_data (comac_pattern_t *pattern,
 			     const comac_user_data_key_t *key);
 
 comac_public comac_status_t
-comac_pattern_set_user_data (comac_pattern_t		 *pattern,
+comac_pattern_set_user_data (comac_pattern_t *pattern,
 			     const comac_user_data_key_t *key,
-			     void			 *user_data,
-			     comac_destroy_func_t	  destroy);
+			     void *user_data,
+			     comac_destroy_func_t destroy);
 
 /**
  * comac_pattern_type_t:
@@ -2927,12 +2916,16 @@ comac_pattern_get_type (comac_pattern_t *pattern);
 comac_public void
 comac_pattern_add_color_stop_rgb (comac_pattern_t *pattern,
 				  double offset,
-				  double red, double green, double blue);
+				  double red,
+				  double green,
+				  double blue);
 
 comac_public void
 comac_pattern_add_color_stop_rgba (comac_pattern_t *pattern,
 				   double offset,
-				   double red, double green, double blue,
+				   double red,
+				   double green,
+				   double blue,
 				   double alpha);
 
 comac_public void
@@ -2943,41 +2936,46 @@ comac_mesh_pattern_end_patch (comac_pattern_t *pattern);
 
 comac_public void
 comac_mesh_pattern_curve_to (comac_pattern_t *pattern,
-			     double x1, double y1,
-			     double x2, double y2,
-			     double x3, double y3);
+			     double x1,
+			     double y1,
+			     double x2,
+			     double y2,
+			     double x3,
+			     double y3);
 
 comac_public void
-comac_mesh_pattern_line_to (comac_pattern_t *pattern,
-			    double x, double y);
+comac_mesh_pattern_line_to (comac_pattern_t *pattern, double x, double y);
 
 comac_public void
-comac_mesh_pattern_move_to (comac_pattern_t *pattern,
-			    double x, double y);
+comac_mesh_pattern_move_to (comac_pattern_t *pattern, double x, double y);
 
 comac_public void
 comac_mesh_pattern_set_control_point (comac_pattern_t *pattern,
 				      unsigned int point_num,
-				      double x, double y);
+				      double x,
+				      double y);
 
 comac_public void
 comac_mesh_pattern_set_corner_color_rgb (comac_pattern_t *pattern,
 					 unsigned int corner_num,
-					 double red, double green, double blue);
+					 double red,
+					 double green,
+					 double blue);
 
 comac_public void
 comac_mesh_pattern_set_corner_color_rgba (comac_pattern_t *pattern,
 					  unsigned int corner_num,
-					  double red, double green, double blue,
+					  double red,
+					  double green,
+					  double blue,
 					  double alpha);
 
 comac_public void
-comac_pattern_set_matrix (comac_pattern_t      *pattern,
+comac_pattern_set_matrix (comac_pattern_t *pattern,
 			  const comac_matrix_t *matrix);
 
 comac_public void
-comac_pattern_get_matrix (comac_pattern_t *pattern,
-			  comac_matrix_t  *matrix);
+comac_pattern_get_matrix (comac_pattern_t *pattern, comac_matrix_t *matrix);
 
 /**
  * comac_extend_t:
@@ -3054,77 +3052,84 @@ comac_pattern_get_filter (comac_pattern_t *pattern);
 
 comac_public comac_status_t
 comac_pattern_get_rgba (comac_pattern_t *pattern,
-			double *red, double *green,
-			double *blue, double *alpha);
+			double *red,
+			double *green,
+			double *blue,
+			double *alpha);
 
 comac_public comac_status_t
-comac_pattern_get_surface (comac_pattern_t *pattern,
-			   comac_surface_t **surface);
-
+comac_pattern_get_surface (comac_pattern_t *pattern, comac_surface_t **surface);
 
 comac_public comac_status_t
 comac_pattern_get_color_stop_rgba (comac_pattern_t *pattern,
-				   int index, double *offset,
-				   double *red, double *green,
-				   double *blue, double *alpha);
+				   int index,
+				   double *offset,
+				   double *red,
+				   double *green,
+				   double *blue,
+				   double *alpha);
 
 comac_public comac_status_t
-comac_pattern_get_color_stop_count (comac_pattern_t *pattern,
-				    int *count);
+comac_pattern_get_color_stop_count (comac_pattern_t *pattern, int *count);
 
 comac_public comac_status_t
-comac_pattern_get_linear_points (comac_pattern_t *pattern,
-				 double *x0, double *y0,
-				 double *x1, double *y1);
+comac_pattern_get_linear_points (
+    comac_pattern_t *pattern, double *x0, double *y0, double *x1, double *y1);
 
 comac_public comac_status_t
 comac_pattern_get_radial_circles (comac_pattern_t *pattern,
-				  double *x0, double *y0, double *r0,
-				  double *x1, double *y1, double *r1);
+				  double *x0,
+				  double *y0,
+				  double *r0,
+				  double *x1,
+				  double *y1,
+				  double *r1);
 
 comac_public comac_status_t
 comac_mesh_pattern_get_patch_count (comac_pattern_t *pattern,
 				    unsigned int *count);
 
 comac_public comac_path_t *
-comac_mesh_pattern_get_path (comac_pattern_t *pattern,
-			     unsigned int patch_num);
+comac_mesh_pattern_get_path (comac_pattern_t *pattern, unsigned int patch_num);
 
 comac_public comac_status_t
 comac_mesh_pattern_get_corner_color_rgba (comac_pattern_t *pattern,
 					  unsigned int patch_num,
 					  unsigned int corner_num,
-					  double *red, double *green,
-					  double *blue, double *alpha);
+					  double *red,
+					  double *green,
+					  double *blue,
+					  double *alpha);
 
 comac_public comac_status_t
 comac_mesh_pattern_get_control_point (comac_pattern_t *pattern,
 				      unsigned int patch_num,
 				      unsigned int point_num,
-				      double *x, double *y);
+				      double *x,
+				      double *y);
 
 /* Matrix functions */
 
 comac_public void
 comac_matrix_init (comac_matrix_t *matrix,
-		   double  xx, double  yx,
-		   double  xy, double  yy,
-		   double  x0, double  y0);
+		   double xx,
+		   double yx,
+		   double xy,
+		   double yy,
+		   double x0,
+		   double y0);
 
 comac_public void
 comac_matrix_init_identity (comac_matrix_t *matrix);
 
 comac_public void
-comac_matrix_init_translate (comac_matrix_t *matrix,
-			     double tx, double ty);
+comac_matrix_init_translate (comac_matrix_t *matrix, double tx, double ty);
 
 comac_public void
-comac_matrix_init_scale (comac_matrix_t *matrix,
-			 double sx, double sy);
+comac_matrix_init_scale (comac_matrix_t *matrix, double sx, double sy);
 
 comac_public void
-comac_matrix_init_rotate (comac_matrix_t *matrix,
-			  double radians);
+comac_matrix_init_rotate (comac_matrix_t *matrix, double radians);
 
 comac_public void
 comac_matrix_translate (comac_matrix_t *matrix, double tx, double ty);
@@ -3139,17 +3144,19 @@ comac_public comac_status_t
 comac_matrix_invert (comac_matrix_t *matrix);
 
 comac_public void
-comac_matrix_multiply (comac_matrix_t	    *result,
+comac_matrix_multiply (comac_matrix_t *result,
 		       const comac_matrix_t *a,
 		       const comac_matrix_t *b);
 
 comac_public void
 comac_matrix_transform_distance (const comac_matrix_t *matrix,
-				 double *dx, double *dy);
+				 double *dx,
+				 double *dy);
 
 comac_public void
 comac_matrix_transform_point (const comac_matrix_t *matrix,
-			      double *x, double *y);
+			      double *x,
+			      double *y);
 
 /* Region functions */
 
@@ -3180,9 +3187,9 @@ typedef struct _comac_region comac_region_t;
  * Since: 1.10
  **/
 typedef enum _comac_region_overlap {
-    COMAC_REGION_OVERLAP_IN,		/* completely inside region */
-    COMAC_REGION_OVERLAP_OUT,		/* completely outside region */
-    COMAC_REGION_OVERLAP_PART		/* partly inside region */
+    COMAC_REGION_OVERLAP_IN,  /* completely inside region */
+    COMAC_REGION_OVERLAP_OUT, /* completely outside region */
+    COMAC_REGION_OVERLAP_PART /* partly inside region */
 } comac_region_overlap_t;
 
 comac_public comac_region_t *
@@ -3192,8 +3199,7 @@ comac_public comac_region_t *
 comac_region_create_rectangle (const comac_rectangle_int_t *rectangle);
 
 comac_public comac_region_t *
-comac_region_create_rectangles (const comac_rectangle_int_t *rects,
-				int count);
+comac_region_create_rectangles (const comac_rectangle_int_t *rects, int count);
 
 comac_public comac_region_t *
 comac_region_copy (const comac_region_t *original);
@@ -3211,15 +3217,15 @@ comac_public comac_status_t
 comac_region_status (const comac_region_t *region);
 
 comac_public void
-comac_region_get_extents (const comac_region_t        *region,
+comac_region_get_extents (const comac_region_t *region,
 			  comac_rectangle_int_t *extents);
 
 comac_public int
 comac_region_num_rectangles (const comac_region_t *region);
 
 comac_public void
-comac_region_get_rectangle (const comac_region_t  *region,
-			    int                    nth,
+comac_region_get_rectangle (const comac_region_t *region,
+			    int nth,
 			    comac_rectangle_int_t *rectangle);
 
 comac_public comac_bool_t
@@ -3266,7 +3272,6 @@ comac_region_xor_rectangle (comac_region_t *dst,
 /* Functions to be used while debugging (not intended for use in production code) */
 comac_public void
 comac_debug_reset_static_data (void);
-
 
 COMAC_END_DECLS
 
