@@ -567,11 +567,6 @@ if not get_option('tests').disabled() and feature_conf.get('CAIRO_HAS_PNG_FUNCTI
   subdir('perf')
 endif
 
-if get_option('gtk_doc')
-  doc_srcdir = include_directories('src')
-  subdir('doc/public')
-endif
-
 configure_file(output: 'config.h', configuration: conf)
 
 foreach feature: built_features
