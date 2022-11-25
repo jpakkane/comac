@@ -567,4 +567,5 @@ summary({
 summary({
         'comac-trace:': conf.get('COMAC_HAS_TRACE', 0) == 1,
         'comac-script-interpreter': conf.get('COMAC_HAS_INTERPRETER', 0) == 1,
+        'API reference': get_option('gtk_doc'),
         }, section: 'Features and Utilities', bool_yn: true)
