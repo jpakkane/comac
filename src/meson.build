@@ -1,3 +1,9 @@
+configure_file(input: 'comac-version.h.in',
+  output: 'comac-version.h',
+  configuration: cver,
+  install: true,
+  install_dir: 'comac')
+
 cairo_sources = [
   'comac-analysis-surface.c',
   'comac-arc.c',
@@ -120,7 +126,6 @@ cairo_sources = [
 
 cairo_headers = [
   'comac.h',
-  'comac-version.h',
   'comac-deprecated.h',
 ]
 
@@ -200,6 +205,6 @@ pkgmod.generate(libcairo,
   subdirs: [meson.project_name()],
 )
 
-meson.override_dependency('cairo', libcairo_dep)
+meson.override_dependency('comac', libcairo_dep)
 
-install_headers(cairo_headers, subdir: 'cairo')
+install_headers(cairo_headers, subdir: 'comac')

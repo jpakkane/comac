@@ -1,6 +1,6 @@
 project('comac', 'c', 'cpp',
-  meson_version: '>= 0.56.0',
-  version: run_command(find_program('version.py'), check: true).stdout().strip(),
+  meson_version: '>= 0.64.0',
+  version: '0.0.1',
   default_options: ['warning_level=2'],
 )
 
@@ -15,22 +15,14 @@ glib_required_version = '>= 2.14'
 
 # library versioning
 version_arr = meson.project_version().split('.')
-cairo_version_major = version_arr[0].to_int()
-cairo_version_minor = version_arr[1].to_int()
-cairo_version_micro = version_arr[2].to_int()
+comac_version_major = version_arr[0]
+comac_version_minor = version_arr[1]
+comac_version_micro = version_arr[2]
 
-# The libtool shared library version stuff.
-# Try and maintain compatibility with the previous library versioning.
-cairo_version_sonum = cairo_version_major + 1
-cairo_version =  cairo_version_major * 10000 + cairo_version_minor * 100 + cairo_version_micro
-
-if cairo_version_minor % 2 == 1
-  # unstable release
-  cairo_libversion = '@0@.@1@.0'.format(cairo_version_sonum, cairo_version)
-else
-  # stable release
-  cairo_libversion = '@0@.@1@.@2@'.format(cairo_version_sonum, cairo_version, cairo_version_micro)
-endif
+cver = configuration_data()
+cver.set('COMAC_VERSION_MAJOR', comac_version_major)
+cver.set('COMAC_VERSION_MINOR', comac_version_minor)
+cver.set('COMAC_VERSION_MICRO', comac_version_micro)
 
 conf = configuration_data()
 

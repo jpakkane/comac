@@ -1,8 +1,0 @@
-#ifndef COMAC_VERSION_H
-#define COMAC_VERSION_H
-
-#define COMAC_VERSION_MAJOR 1
-#define COMAC_VERSION_MINOR 17
-#define COMAC_VERSION_MICRO 7
-
-#endif

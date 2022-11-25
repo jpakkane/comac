@@ -24,12 +24,10 @@ csi_trace_sources = [
   'csi-trace.c',
 ]
 
-libcairoscript = library('comac-script-interpreter',
+libcairoscript = static_library('comac-script-interpreter',
   cairoscript_interpreter_sources,
   include_directories: [incbase],
   dependencies: deps + [libcairo_dep, lzo_dep],
-  soversion: cairo_version_sonum,
-  version: cairo_libversion,
   install: true,
 )
 
