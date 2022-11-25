@@ -25,6 +25,7 @@ comac_sources = [
   'comac-clip-tor-scan-converter.c',
   'comac-clip.c',
   'comac-color.c',
+  'comac-colormanagement.c',
   'comac-composite-rectangles.c',
   'comac-compositor.c',
   'comac-contour.c',

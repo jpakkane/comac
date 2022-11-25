@@ -104,6 +104,7 @@ struct _comac_surface {
      * comac_surface_create_similar().
      */
     comac_font_options_t font_options;
+    comac_colorspace_t colorspace;
 };
 
 comac_private comac_surface_t *

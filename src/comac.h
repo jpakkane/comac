@@ -41,6 +41,7 @@
 #include "comac-version.h"
 #include "comac-features.h"
 #include "comac-deprecated.h"
+#include "comac-colormanagement.h"
 
 #ifdef __cplusplus
 #define COMAC_BEGIN_DECLS extern "C" {
@@ -656,6 +657,9 @@ comac_set_source (comac_t *cr, comac_pattern_t *source);
 
 comac_public void
 comac_set_source_rgb (comac_t *cr, double red, double green, double blue);
+
+comac_public void
+comac_set_source_gray (comac_t *cr, double graylevel);
 
 comac_public void
 comac_set_source_rgba (
@@ -2426,6 +2430,12 @@ comac_surface_get_reference_count (comac_surface_t *surface);
 
 comac_public comac_status_t
 comac_surface_status (comac_surface_t *surface);
+
+comac_public comac_colorspace_t
+comac_surface_get_colorspace (comac_surface_t *surface);
+
+comac_public void
+cairo_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs);
 
 /**
  * comac_surface_type_t:

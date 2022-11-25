@@ -928,6 +928,12 @@ comac_set_source_rgba (
 	_comac_set_error (cr, status);
 }
 
+comac_public void
+comac_set_source_gray (comac_t *cr, double graylevel)
+{
+    comac_set_source_rgb (cr, graylevel, graylevel, graylevel);
+}
+
 /**
  * comac_set_source_surface:
  * @cr: a comac context

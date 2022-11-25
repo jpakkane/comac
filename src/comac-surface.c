@@ -145,7 +145,8 @@
 	    COMAC_HINT_STYLE_DEFAULT,	  /* hint_style */                     \
 	    COMAC_HINT_METRICS_DEFAULT,	  /* hint_metrics */                   \
 	    COMAC_ROUND_GLYPH_POS_DEFAULT /* round_glyph_positions */          \
-	}				  /* font_options */                   \
+	},				  /* font_options */                   \
+	COMAC_COLORSPACE_RGB,                                                  \
     }
 
 /* XXX error object! */
@@ -310,6 +311,19 @@ _comac_surface_allocate_unique_id (void)
 #endif
 }
 
+comac_public comac_colorspace_t
+comac_surface_get_colorspace (comac_surface_t *surface)
+{
+    return surface->colorspace;
+}
+
+// FIXME, maybe this should only be settable on surface creation.
+comac_public void
+cairo_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs)
+{
+    surface->colorspace = cs;
+}
+
 /**
  * comac_surface_get_device:
  * @surface: a #comac_surface_t
@@ -469,6 +483,8 @@ _comac_surface_init (comac_surface_t *surface,
     surface->snapshot_of = NULL;
 
     surface->has_font_options = FALSE;
+
+    surface->colorspace = COMAC_COLORSPACE_RGB;
 }
 
 static void
