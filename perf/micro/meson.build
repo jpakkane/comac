@@ -50,11 +50,11 @@ perf_micro_headers = [
   'zrusin-another.h',
 ]
 
-libcairoperfmicro = static_library('comac-perf-micro',
+libcomacperfmicro = static_library('comac-perf-micro',
   perf_micro_sources + perf_micro_headers,
   include_directories: [incbase, incsrc, incmicro],
-  dependencies: [pixman_dep, cairoboilerplate_dep],
+  dependencies: [pixman_dep, comacboilerplate_dep],
 )
-libcairoperfmicro_dep = declare_dependency(
-  link_with: libcairoperfmicro,
+libcomacperfmicro_dep = declare_dependency(
+  link_with: libcomacperfmicro,
 )

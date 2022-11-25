@@ -436,13 +436,13 @@ test_fallback_resolution_sources = [
   'fallback-resolution.c',
 ]
 
-cairo_test_suite_sources = [
+comac_test_suite_sources = [
   'buffer-diff.c',
   'comac-test.c',
   'comac-test-runner.c',
 ]
 
-cairo_test_trace_sources = [
+comac_test_trace_sources = [
   'comac-test-trace.c',
   'buffer-diff.c',
 ]
@@ -464,15 +464,15 @@ build_any2ppm = false
 has_multipage_surfaces = false
 add_fallback_resolution = false
 
-if conf.get('CAIRO_HAS_REAL_PTHREAD', 0) == 1
+if conf.get('COMAC_HAS_REAL_PTHREAD', 0) == 1
   test_sources += test_pthread_sources
 endif
 
-if feature_conf.get('CAIRO_HAS_FT_FONT', 0) == 1 and feature_conf.get('CAIRO_HAS_FC_FONT', 0) == 1
+if feature_conf.get('COMAC_HAS_FT_FONT', 0) == 1 and feature_conf.get('COMAC_HAS_FC_FONT', 0) == 1
   test_sources += test_ft_font_sources
 endif
 
-if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
+if feature_conf.get('COMAC_HAS_PDF_SURFACE', 0) == 1
   test_sources += test_pdf_sources
   has_multipage_surfaces = true
   add_fallback_resolution = true
@@ -487,27 +487,27 @@ if add_fallback_resolution
   test_sources += test_fallback_resolution_sources
 endif
 
-if feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1
+if feature_conf.get('COMAC_HAS_SCRIPT_SURFACE', 0) == 1
   build_any2ppm = true
 endif
 
-cairo_test_constructors = custom_target('comac-test-constructors.c',
+comac_test_constructors = custom_target('comac-test-constructors.c',
   input: files(test_sources),
   output: 'comac-test-constructors.c',
-  command: [python3, files('make-cairo-test-constructors.py')[0], '@OUTPUT@', '@INPUT@'])
+  command: [find_program('make-comac-test-constructors.py'), '@OUTPUT@', '@INPUT@'])
 
 test_depends = []
 
 subdir('pdiff')
 
-if conf.get('CAIRO_CAN_TEST_PDF_SURFACE', 0) == 1
+if conf.get('COMAC_CAN_TEST_PDF_SURFACE', 0) == 1
   exe = executable('pdf2png', pdf2png_sources,
     dependencies: deps + test_deps,
   )
 endif
 
 
-if conf.get('CAIRO_HAS_SPECTRE', 0) == 1
+if conf.get('COMAC_HAS_SPECTRE', 0) == 1
   exe = executable('ps2png', ps2png_sources,
     dependencies: deps + test_deps,
   )
@@ -516,34 +516,29 @@ endif
 if build_any2ppm
   any2ppm_exe = executable('any2ppm', 'any2ppm.c',
     include_directories: [incbase],
-    dependencies: deps + test_deps + [libcairo_dep, libcairoscript_dep],
+    dependencies: deps + test_deps + [libcomac_dep, libcomacscript_dep],
   )
   test_depends += [any2ppm_exe]
 endif
 
-if have_shm and conf.get('CAIRO_HAS_INTERPRETER', 0) == 1
-  cairo_test_trace_exe = executable('comac-test-trace', cairo_test_trace_sources,
+if have_shm and conf.get('COMAC_HAS_INTERPRETER', 0) == 1
+  comac_test_trace_exe = executable('comac-test-trace', comac_test_trace_sources,
   include_directories: [incbase],
   link_args: extra_link_args,
-  dependencies: deps + test_deps + [rt_dep, libcairo_dep, cairoboilerplate_dep, libpdiff_dep, libcairomissing_dep, libcairoscript_dep])
+  dependencies: deps + test_deps + [rt_dep, libcomac_dep, comacboilerplate_dep, libpdiff_dep, libcomacmissing_dep, libcomacscript_dep])
 endif
 
-exe = executable('comac-test-suite', [cairo_test_suite_sources, test_sources, cairo_test_constructors],
+exe = executable('comac-test-suite', [comac_test_suite_sources, test_sources, comac_test_constructors],
   include_directories: [incbase],
   link_args: extra_link_args,
-  dependencies: deps + test_deps + [libcairo_dep, cairoboilerplate_dep,
+  dependencies: deps + test_deps + [libcomac_dep, comacboilerplate_dep,
     libpdiff_dep],
 )
-
-html_files = ['index.html', 'testtable.js', 'view-test-results.py']
-foreach file : html_files
-  configure_file(input: file, output : file, copy: true)
-endforeach
 
 if build_machine.system() != 'windows'
   run_command('ln', '-sf',
               meson.current_source_dir(),
-              join_paths(meson.current_build_dir(), 'srcdir'),
+              meson.current_build_dir() / 'srcdir',
               check: true)
 endif
 
@@ -551,7 +546,7 @@ env = environment()
 
 env.set('srcdir', meson.current_source_dir())
 
-test('cairo', exe,
+test('comac', exe,
   timeout: 60 * 60,
   env: env,
   suite: 'slow',

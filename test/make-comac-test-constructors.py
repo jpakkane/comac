@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # IMPORTANT: Keep in sync with boilerplate/make-cairo-boilerplate-constructors.py!
 import argparse
 import sys

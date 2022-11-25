@@ -1,32 +1,32 @@
-cairo_boilerplate_sources = [
+comac_boilerplate_sources = [
   'comac-boilerplate-getopt.c',
   'comac-boilerplate-system.c',
   'comac-boilerplate.c',
 ]
 
-cairo_boilerplate_feature_sources = {
+comac_boilerplate_feature_sources = {
   'comac-pdf': ['comac-boilerplate-pdf.c'],
   'comac-script': ['comac-boilerplate-script.c'],
 }
 
 foreach feature: built_features
   source_key = feature.get('source-key', feature.get('name'))
-  cairo_boilerplate_sources += cairo_boilerplate_feature_sources.get(source_key, [])
+  comac_boilerplate_sources += comac_boilerplate_feature_sources.get(source_key, [])
 endforeach
 
-cairo_boilerplate_constructors = custom_target('comac-boilerplate-constructors.c',
-  input: files(cairo_boilerplate_sources),
+comac_boilerplate_constructors = custom_target('comac-boilerplate-constructors.c',
+  input: files(comac_boilerplate_sources),
   output: 'comac-boilerplate-constructors.c',
-  command: [python3, files('make-cairo-boilerplate-constructors.py')[0], '@OUTPUT@', '@INPUT@'])
+  command: [find_program('make-comac-boilerplate-constructors.py'), '@OUTPUT@', '@INPUT@'])
 
-libcairoboilerplate = static_library('cairoboilerplate', cairo_boilerplate_sources + [cairo_boilerplate_constructors],
+libcomacboilerplate = static_library('comacboilerplate', comac_boilerplate_sources + [comac_boilerplate_constructors],
   include_directories: [incbase],
-  dependencies: deps + [libcairo_dep],
+  dependencies: deps + [libcomac_dep],
   install: false,
   build_by_default: false,
 )
 
-cairoboilerplate_dep = declare_dependency(
-  link_with: [libcairoboilerplate],
+comacboilerplate_dep = declare_dependency(
+  link_with: [libcomacboilerplate],
   include_directories: include_directories('.'),
 )

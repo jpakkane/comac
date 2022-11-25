@@ -4,7 +4,7 @@ configure_file(input: 'comac-version.h.in',
   install: true,
   install_dir: 'comac')
 
-cairo_sources = [
+comac_sources = [
   'comac-analysis-surface.c',
   'comac-arc.c',
   'comac-array.c',
@@ -124,12 +124,12 @@ cairo_sources = [
   'comac-deflate-stream.c',
 ]
 
-cairo_headers = [
+comac_headers = [
   'comac.h',
   'comac-deprecated.h',
 ]
 
-cairo_feature_sources = {
+comac_feature_sources = {
   'comac-png': [
     'comac-png.c',
   ],
@@ -151,7 +151,7 @@ cairo_feature_sources = {
   ],
 }
 
-cairo_feature_headers = {
+comac_feature_headers = {
   'comac-pdf': ['comac-pdf.h'],
   'comac-ft': ['comac-ft.h'],
   'comac-script': ['comac-script.h'],
@@ -159,7 +159,7 @@ cairo_feature_headers = {
   'comac-xml': ['comac-xml.h'],
 }
 
-cairo_no_warn_c_args = cc.get_supported_arguments([
+comac_no_warn_c_args = cc.get_supported_arguments([
   '-Wno-attributes',
   '-Wno-unused-but-set-variable',
   '-Wno-missing-field-initializers',
@@ -169,42 +169,42 @@ cairo_no_warn_c_args = cc.get_supported_arguments([
 
 foreach feature: built_features
   source_key = feature.get('source-key', feature.get('name'))
-  cairo_sources += cairo_feature_sources.get(source_key, [])
-  cairo_headers += cairo_feature_headers.get(source_key, [])
+  comac_sources += comac_feature_sources.get(source_key, [])
+  comac_headers += comac_feature_headers.get(source_key, [])
 endforeach
 
 incsrc = include_directories('.')
 
-cairo_static_args = []
+comac_static_args = []
 if get_option('default_library') == 'static' and host_machine.system() == 'windows'
-  cairo_static_args += ['-DCAIRO_WIN32_STATIC_BUILD']
+  comac_static_args += ['-DCAIRO_WIN32_STATIC_BUILD']
   add_project_arguments('-DCAIRO_WIN32_STATIC_BUILD', language: 'c')
 endif
 
 # Since this library is not meant for public consumption yet,
 # only build a static library.
-libcairo = static_library('cairo', cairo_sources,
+libcomac = static_library('comac', comac_sources,
   dependencies: deps,
-  c_args: cairo_no_warn_c_args,
-  cpp_args: cairo_no_warn_c_args,
+  c_args: comac_no_warn_c_args,
+  cpp_args: comac_no_warn_c_args,
   link_args: extra_link_args,
   install: true,
   include_directories: incbase,
 )
 
-cairo_headers += [configure_file(output: 'comac-features.h', configuration: feature_conf)]
+comac_headers += [configure_file(output: 'comac-features.h', configuration: feature_conf)]
 
-libcairo_dep = declare_dependency(link_with: libcairo,
+libcomac_dep = declare_dependency(link_with: libcomac,
   dependencies: deps,
   include_directories: incsrc,
-  compile_args: cairo_static_args,
+  compile_args: comac_static_args,
 )
 
-pkgmod.generate(libcairo,
+pkgmod.generate(libcomac,
   description: 'Multi-platform 2D graphics library',
   subdirs: [meson.project_name()],
 )
 
-meson.override_dependency('comac', libcairo_dep)
+meson.override_dependency('comac', libcomac_dep)
 
-install_headers(cairo_headers, subdir: 'comac')
+install_headers(comac_headers, subdir: 'comac')

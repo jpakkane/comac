@@ -80,7 +80,7 @@ if cc.get_id() != 'msvc'
 endif
 
 if cc.get_id() == 'msvc'
-  # Basic usage in the cairo type system that causes spammy and useless warnings
+  # Basic usage in the comac type system that causes spammy and useless warnings
   add_project_arguments('/wd4244', '/wd4146',
                         # Don't warn about double -> float truncation
                         '/wd4305',
@@ -103,7 +103,6 @@ if fs.exists('config.h') or fs.exists('src/comac-features.h') or fs.exists('src/
 endif
 
 pkgmod = import('pkgconfig')
-python3 = import('python').find_installation()
 
 check_sizeofs = [
   ['void *', {'conf-name': 'SIZEOF_VOID_P'}],
@@ -510,7 +509,7 @@ subdir('src')
 if feature_conf.get('COMAC_HAS_PNG_FUNCTIONS', 0) == 1
   subdir('boilerplate')
 else
-  cairoboilerplate_dep = dependency('', required: false)
+  comacboilerplate_dep = dependency('', required: false)
 endif
 
 subdir('util')
@@ -526,12 +525,12 @@ foreach feature: built_features
   feature_deps = feature.get('deps', [])
   feature_libs = feature.get('libs', [])
   feature_compile_deps = feature.get('compile-deps', [])
-  pkgmod.generate(libraries: [libcairo, feature_deps, feature_libs],
+  pkgmod.generate(libraries: [libcomac, feature_deps, feature_libs],
     name: feature['name'],
-    description: feature['description'] + ' for cairo graphics library',
+    description: feature['description'] + ' for comac graphics library',
   )
   meson.override_dependency(feature['name'],
-    declare_dependency(dependencies: [libcairo_dep, feature_deps, feature_compile_deps],
+    declare_dependency(dependencies: [libcomac_dep, feature_deps, feature_compile_deps],
       link_args: feature_libs,
     )
   )

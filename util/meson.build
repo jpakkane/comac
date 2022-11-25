@@ -1,11 +1,11 @@
 subdir('comac-missing')
 
-cairo_utils = []
+comac_utils = []
 
 if conf.get('COMAC_HAS_INTERPRETER', 0) == 1
-  subdir('cairo-script')
+  subdir('comac-script')
 else
-  libcairoscript_dep = dependency('', required: false)
+  libcomacscript_dep = dependency('', required: false)
 endif
 
 if conf.get('COMAC_HAS_TRACE', 0) == 1
@@ -20,18 +20,18 @@ endif
 
 if feature_conf.get('COMAC_HAS_XML_SURFACE', 0) == 1
   expat_dep = dependency('expat')
-  cairo_utils += [
+  comac_utils += [
     ['trace-to-xml.c', {'deps': [expat_dep]}],
     ['xml-to-trace.c', {'deps': [expat_dep]}],
   ]
 endif
 
-foreach util : cairo_utils
+foreach util : comac_utils
   exe_name = util[0].split('.')[0]
   util_deps = util.get(1, {}).get('deps', [])
   executable(exe_name, util[0],
     include_directories: [incbase],
-    dependencies: deps + util_deps + [libcairo_dep, libcairoscript_dep],
+    dependencies: deps + util_deps + [libcomac_dep, libcomacscript_dep],
   )
 endforeach
 

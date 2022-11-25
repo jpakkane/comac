@@ -1,15 +1,15 @@
-cairo_missing_sources = [
+comac_missing_sources = [
   'strndup.c',
   'getline.c',
 ]
 
-libcairomissing = static_library('comac-missing', cairo_missing_sources,
+libcomacmissing = static_library('comac-missing', comac_missing_sources,
   include_directories: [incbase, incsrc],
   install: false,
   build_by_default: false,
 )
 
-libcairomissing_dep = declare_dependency(
-  link_with: libcairomissing,
+libcomacmissing_dep = declare_dependency(
+  link_with: libcomacmissing,
   include_directories: include_directories('.'),
 )

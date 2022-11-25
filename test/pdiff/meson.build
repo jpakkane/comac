@@ -10,7 +10,7 @@ perceptualdiff_sources = [
 
 libpdiff = static_library('pdiff', libpdiff_sources,
   include_directories: [incbase],
-  dependencies: deps + [libcairo_dep],
+  dependencies: deps + [libcomac_dep],
 )
 
 libpdiff_dep = declare_dependency(
@@ -20,5 +20,5 @@ libpdiff_dep = declare_dependency(
 
 perceptualdiff = executable('perceptualdiff', perceptualdiff_sources,
   include_directories: [incbase],
-  dependencies: [libcairo_dep, libpdiff_dep],
+  dependencies: [libcomac_dep, libpdiff_dep],
 )
