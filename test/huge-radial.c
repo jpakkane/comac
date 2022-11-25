@@ -26,7 +26,7 @@
  *         Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* set this to 0.1 to make this test work */
 #define FACTOR 1.e6

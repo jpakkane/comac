@@ -24,7 +24,7 @@
  * Author: Uli Schlachter <psychon@znc.in>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static void
 mime_data_destroy_func (void *data)

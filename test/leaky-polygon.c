@@ -51,7 +51,7 @@
  *
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 21
 #define HEIGHT 21

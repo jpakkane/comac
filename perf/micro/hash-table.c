@@ -23,7 +23,7 @@
  * Author: Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 #define ITER 1000
 #define HOLDOVERS 256

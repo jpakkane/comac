@@ -24,8 +24,8 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
-#include <cairo-ft.h>
+#include "comac-test.h"
+#include <comac-ft.h>
 
 #define TEXT_SIZE 12
 

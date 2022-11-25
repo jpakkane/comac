@@ -44,20 +44,20 @@
  * with the expected size.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <errno.h>
 
-#include <cairo.h>
+#include <comac.h>
 
 #if CAIRO_HAS_PS_SURFACE
-#include <cairo-ps.h>
+#include <comac-ps.h>
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
-#include <cairo-pdf.h>
+#include <comac-pdf.h>
 #endif
 
 #define NUM_PAGES 4

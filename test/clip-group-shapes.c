@@ -23,7 +23,7 @@
  *
  * Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
  */
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Tests specific clipping fast paths and their interaction with
  * groups:  It shouldn't matter if the clip is set before or after

@@ -24,7 +24,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 /* This test case is designed to illustrate a performance bug in
  * drawing very long lines, where most of the line is out of bounds of

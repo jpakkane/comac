@@ -30,7 +30,7 @@
  *   https://bugs.freedesktop.org/show_bug.cgi?id=4263.
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 #define RECTANGLE_COUNT (1000)
 

@@ -23,7 +23,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Test case for bug #4205:
 

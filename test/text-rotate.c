@@ -83,7 +83,7 @@
  *   XFAIL now.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH  150
 #define HEIGHT 150

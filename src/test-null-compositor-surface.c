@@ -34,17 +34,17 @@
  */
 
 
-#include "cairoint.h"
+#include "comacint.h"
 
 #include "test-null-compositor-surface.h"
 
-#include "cairo-compositor-private.h"
-#include "cairo-default-context-private.h"
-#include "cairo-error-private.h"
-#include "cairo-image-surface-private.h"
-#include "cairo-surface-backend-private.h"
-#include "cairo-spans-compositor-private.h"
-#include "cairo-spans-private.h"
+#include "comac-compositor-private.h"
+#include "comac-default-context-private.h"
+#include "comac-error-private.h"
+#include "comac-image-surface-private.h"
+#include "comac-surface-backend-private.h"
+#include "comac-spans-compositor-private.h"
+#include "comac-spans-private.h"
 
 typedef struct _test_compositor_surface {
     cairo_image_surface_t base;

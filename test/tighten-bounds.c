@@ -24,7 +24,7 @@
  * Author: Uli Schlachter <psychon@znc.in>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static void path_none (cairo_t *cr, int size)
 {

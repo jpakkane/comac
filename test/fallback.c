@@ -24,7 +24,7 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SIZE 40
 #define WIDTH (7*SIZE)

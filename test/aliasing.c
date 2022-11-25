@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* A fun little test to explore color fringing in various experimental
  * subpixel rasterisation techniques.

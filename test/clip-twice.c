@@ -23,7 +23,7 @@
  * Author: Kristian Høgsberg <krh@redhat.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 64
 #define HEIGHT 64

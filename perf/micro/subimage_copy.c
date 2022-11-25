@@ -23,7 +23,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 /* This case exposes a performance bug found by Christopher "Monty"
  * Montgomery in that copying a tiny portion of an image surface to an

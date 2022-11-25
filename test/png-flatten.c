@@ -25,7 +25,7 @@
 
 #include <stdio.h>
 
-#include <cairo.h>
+#include <comac.h>
 
 int
 main (int argc, char *argv[])

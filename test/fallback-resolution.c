@@ -29,10 +29,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <cairo.h>
+#include <comac.h>
 
 #if CAIRO_HAS_PDF_SURFACE
-#include <cairo-pdf.h>
+#include <comac-pdf.h>
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -43,7 +43,7 @@
 #include <sys/stat.h>
 #endif
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include "buffer-diff.h"
 
 /* This test exists to test cairo_surface_set_fallback_resolution

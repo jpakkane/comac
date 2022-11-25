@@ -24,7 +24,7 @@
  * Author: Benjamin Otte <otte@gnome.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /*
  * Exercise a bug in the projection of a rotated trapezoid mask.

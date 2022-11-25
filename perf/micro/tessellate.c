@@ -23,7 +23,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 typedef struct {
     double x;

@@ -23,8 +23,8 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
-#include <cairo-pdf.h>
+#include "comac-test.h"
+#include <comac-pdf.h>
 
 #include "surface-source.c"
 

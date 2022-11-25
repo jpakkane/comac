@@ -1,7 +1,7 @@
 #include "config.h"
 
-#include <cairo-xml.h>
-#include <cairo-script-interpreter.h>
+#include <comac-xml.h>
+#include <comac-script-interpreter.h>
 
 #include <stdio.h>
 #include <string.h>

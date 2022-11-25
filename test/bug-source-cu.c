@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static cairo_pattern_t *
 create_pattern (cairo_surface_t *target)

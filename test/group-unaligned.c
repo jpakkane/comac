@@ -24,7 +24,7 @@
  *          Stefan Röllin <stefan.roellin@gmx.ch>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static void
 circle (cairo_t* cr, double xc, double yc, double radius)

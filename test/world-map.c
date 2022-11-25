@@ -24,7 +24,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

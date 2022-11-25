@@ -8,7 +8,7 @@ endif
 
 shared_lib_ext = libcairo.full_path().split('.')[-1]
 
-libcairotrace = library('cairo-trace', cairo_trace_sources,
+libcairotrace = library('comac-trace', cairo_trace_sources,
   include_directories: [incbase, incsrc],
   dependencies: deps,
   link_args: extra_link_args,
@@ -27,7 +27,7 @@ trace_conf.set('CAIRO_VERSION_MICRO', meson.project_version().split('.')[2])
 trace_conf.set('SHLIB_EXT', shared_lib_ext)
 
 configure_file(input: 'cairo-trace.in',
-  output: 'cairo-trace',
+  output: 'comac-trace',
   configuration: trace_conf,
   install: true,
   install_dir: join_paths(get_option('prefix'), get_option('bindir')),

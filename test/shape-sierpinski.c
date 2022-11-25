@@ -26,7 +26,7 @@
 
 /* I thought I spied a bug... */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH		(1024)
 #define HEIGHT		(600)

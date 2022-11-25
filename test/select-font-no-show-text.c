@@ -38,7 +38,7 @@
  *  Fixed... just a stray free().
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <math.h>
 
 static cairo_test_status_t

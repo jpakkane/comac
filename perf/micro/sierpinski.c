@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 static const double m_1_sqrt_3 = 0.577359269;
 

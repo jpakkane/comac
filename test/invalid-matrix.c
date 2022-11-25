@@ -27,7 +27,7 @@
 #define _ISOC99_SOURCE	/* for INFINITY */
 
 #include "config.h"
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #if !defined(INFINITY)
 #define INFINITY HUGE_VAL

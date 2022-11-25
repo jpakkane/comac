@@ -23,7 +23,7 @@
  * Author: Tim Rowley
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define IMAGE_WIDTH 128
 #define IMAGE_HEIGHT 64

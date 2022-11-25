@@ -23,7 +23,7 @@
  * Author: Vladimir Vukicevic <vladimir@pobox.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SRC_WIDTH 2048
 #define SRC_HEIGHT 32

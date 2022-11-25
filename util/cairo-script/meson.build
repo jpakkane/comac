@@ -1,15 +1,15 @@
 cairoscript_interpreter_sources = [
-  'cairo-script-file.c',
-  'cairo-script-hash.c',
-  'cairo-script-interpreter.c',
-  'cairo-script-objects.c',
-  'cairo-script-operators.c',
-  'cairo-script-scanner.c',
-  'cairo-script-stack.c',
+  'comac-script-file.c',
+  'comac-script-hash.c',
+  'comac-script-interpreter.c',
+  'comac-script-objects.c',
+  'comac-script-operators.c',
+  'comac-script-scanner.c',
+  'comac-script-stack.c',
 ]
 
 cairoscript_interpreter_headers = [
-  'cairo-script-interpreter.h',
+  'comac-script-interpreter.h',
 ]
 
 csi_replay_sources = [
@@ -24,7 +24,7 @@ csi_trace_sources = [
   'csi-trace.c',
 ]
 
-libcairoscript = library('cairo-script-interpreter',
+libcairoscript = library('comac-script-interpreter',
   cairoscript_interpreter_sources,
   include_directories: [incbase],
   dependencies: deps + [libcairo_dep, lzo_dep],
@@ -43,7 +43,7 @@ pkgmod.generate(libcairoscript,
   subdirs: [meson.project_name()],
 )
 
-meson.override_dependency('cairo-script-interpreter', libcairoscript_dep)
+meson.override_dependency('comac-script-interpreter', libcairoscript_dep)
 
 csi_replay_exe = executable('csi-replay', csi_replay_sources,
   include_directories: [incbase],

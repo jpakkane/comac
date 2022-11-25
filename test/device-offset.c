@@ -23,7 +23,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <stddef.h>
 
 #define SIZE 10

@@ -34,7 +34,7 @@
  *   degenerate edges.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Derived from zrusin's "another" polygon in the performance suite. */
 static cairo_test_status_t

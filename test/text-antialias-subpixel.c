@@ -27,7 +27,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH  31
 #define HEIGHT 22

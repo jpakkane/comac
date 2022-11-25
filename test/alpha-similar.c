@@ -23,7 +23,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static cairo_surface_t *
 create_source (cairo_surface_t *target, int width, int height)

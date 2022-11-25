@@ -24,7 +24,7 @@
  * Author: Benjamin Otte <otte@gnome.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define CLIP_OFFSET 15
 #define CLIP_SIZE 20

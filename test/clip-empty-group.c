@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Test the handling of cairo_push_group() with everything clipped. */
 static cairo_test_status_t

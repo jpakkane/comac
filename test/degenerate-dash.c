@@ -25,7 +25,7 @@
  * Based on an original test case by M Joonas Pihlaja.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define PAD 5
 

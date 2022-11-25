@@ -36,7 +36,7 @@
 #ifndef TEST_COMPOSITOR_SURFACE_H
 #define TEST_COMPOSITOR_SURFACE_H
 
-#include "cairo.h"
+#include "comac.h"
 
 CAIRO_BEGIN_DECLS
 

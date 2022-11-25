@@ -26,7 +26,7 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <stdlib.h>
 #include <stdio.h>

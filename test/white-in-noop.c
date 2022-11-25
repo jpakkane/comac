@@ -25,7 +25,7 @@
  * Author: Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define HEIGHT 4
 #define WIDTH 4

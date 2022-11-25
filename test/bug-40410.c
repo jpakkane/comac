@@ -24,7 +24,7 @@
  * Author: Krzysztof Kosiński <tweenk.pl@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH	300
 #define HEIGHT	100

@@ -27,7 +27,7 @@
  *      Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* This test case is designed to exercise the opaque test for
  * gradients with no stop.

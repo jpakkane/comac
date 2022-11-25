@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDE_LINE_WIDTH 160
 #define NARROW_LINE_WIDTH 2

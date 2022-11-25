@@ -29,8 +29,8 @@
  *
  */
 
-#include "cairo-test.h"
-#include <cairo-gl.h>
+#include "comac-test.h"
+#include <comac-gl.h>
 #include <assert.h>
 #include <limits.h>
 

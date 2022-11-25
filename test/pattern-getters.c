@@ -24,7 +24,7 @@
  * Author: Vladimir Vukicevic <vladimir@pobox.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <stdlib.h>
 
 #define CHECK_SUCCESS do { \

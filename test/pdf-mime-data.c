@@ -24,12 +24,12 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <stdio.h>
 #include <errno.h>
-#include <cairo.h>
-#include <cairo-pdf.h>
+#include <comac.h>
+#include <comac-pdf.h>
 
 /* This test checks that the mime data is correctly used by the PDF
  * surface when embedding images..

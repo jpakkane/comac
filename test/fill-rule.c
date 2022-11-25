@@ -61,7 +61,7 @@
  *
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define LITTLE_STAR_SIZE 20
 #define BIG_STAR_SIZE    80

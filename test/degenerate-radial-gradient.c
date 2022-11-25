@@ -25,7 +25,7 @@
  * Author: Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define NUM_EXTEND 4
 #define HEIGHT 32

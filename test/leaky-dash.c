@@ -29,7 +29,7 @@
  *	https://bugs.freedesktop.org/show_bug.cgi?id=4863
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 71
 #define HEIGHT 28

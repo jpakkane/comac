@@ -23,7 +23,7 @@
  * Author: Owen Taylor <otaylor@redhat.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define IMAGE_WIDTH 19
 #define IMAGE_HEIGHT 19

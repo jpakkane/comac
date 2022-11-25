@@ -23,7 +23,7 @@
  * Author: Vladimir Vukicevic <vladimir@pobox.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define PAD 10
 #define SIZE 100

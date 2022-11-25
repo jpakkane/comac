@@ -23,7 +23,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static cairo_scaled_font_t *
 create_twin (cairo_t *cr, cairo_antialias_t antialias)

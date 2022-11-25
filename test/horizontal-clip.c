@@ -27,7 +27,7 @@
  * code was hopeless broken with horizontal edges.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 16
 #define HEIGHT 26

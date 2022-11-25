@@ -26,7 +26,7 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #ifndef M_SQRT2
 #define M_SQRT2 1.41421345623730951

@@ -28,7 +28,7 @@
  * Based on the test case in https://lists.cairographics.org/archives/cairo/2016-April/027334.html
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH  100
 #define HEIGHT 100

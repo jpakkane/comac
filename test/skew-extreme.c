@@ -24,7 +24,7 @@
  * Author: Carl Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* This test case is designed to exercise the following bug:
  *

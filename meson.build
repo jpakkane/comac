@@ -102,7 +102,7 @@ add_project_arguments('-DHAVE_CONFIG_H', language: 'c')
 
 # Make sure source directory hasn't been configured with autotools
 fs = import('fs')
-if fs.exists('config.h') or fs.exists('src/cairo-features.h') or fs.exists('src/cairo-supported-features.h')
+if fs.exists('config.h') or fs.exists('src/comac-features.h') or fs.exists('src/comac-supported-features.h')
   error('''
         The source directory '@0@' appears to contain
         autotools configuration artifacts. This can cause difficult to
@@ -242,12 +242,12 @@ if png_dep.found()
   feature_conf.set('CAIRO_HAS_PNG_FUNCTIONS', 1)
   built_features += [
     {
-      'name': 'cairo-png',
+      'name': 'comac-png',
       'description': 'PNG functions',
       'deps': [png_dep],
     },
     {
-      'name': 'cairo-svg',
+      'name': 'comac-svg',
       'description': 'SVG surface backend',
       'deps': [png_dep],
     }
@@ -290,7 +290,7 @@ if fontconfig_dep.found()
 
   feature_conf.set('CAIRO_HAS_FC_FONT', 1)
   built_features += [{
-    'name': 'cairo-fc',
+    'name': 'comac-fc',
     'description': 'Fontconfig font backend',
     'deps': [fontconfig_dep],
   }]
@@ -304,10 +304,10 @@ freetype_dep = dependency('freetype2',
 if freetype_dep.found()
   feature_conf.set('CAIRO_HAS_FT_FONT', 1)
   built_features += [{
-    'name': 'cairo-ft',
+    'name': 'comac-ft',
     'description': 'Freetype font backend',
     'deps': [freetype_dep],
-    # cairo-ft.h includes fontconfig.h so it needs its cflags
+    # comac-ft.h includes fontconfig.h so it needs its cflags
     'compile-deps': [fontconfig_dep.partial_dependency(compile_args: true, includes: true)],
   }]
 
@@ -339,7 +339,7 @@ endif
 if zlib_dep.found()
   feature_conf.set('CAIRO_HAS_SCRIPT_SURFACE', 1)
   built_features += [{
-    'name': 'cairo-script',
+    'name': 'comac-script',
     'description': 'script surface backend',
     'deps': [zlib_dep],
   }]
@@ -348,7 +348,7 @@ endif
 if zlib_dep.found()
   feature_conf.set('CAIRO_HAS_PDF_SURFACE', 1)
   built_features += [{
-    'name': 'cairo-pdf',
+    'name': 'comac-pdf',
     'description': 'PDF surface backend',
     'deps': [zlib_dep],
   }]
@@ -361,7 +361,7 @@ endif
 if zlib_dep.found() and png_dep.found() and get_option('xml').enabled()
   feature_conf.set('CAIRO_HAS_XML_SURFACE', 1)
   built_features += [{
-    'name': 'cairo-xml',
+    'name': 'comac-xml',
     'description': 'XML surface backend',
     'deps': [zlib_dep],
   }]
@@ -428,7 +428,7 @@ feature_conf.set('CAIRO_HAS_OBSERVER_SURFACE', 1)
 if not get_option('tee').disabled()
   feature_conf.set('CAIRO_HAS_TEE_SURFACE', 1)
   built_features += [{
-    'name': 'cairo-tee',
+    'name': 'comac-tee',
     'description': 'Tee surface backend',
   }]
 endif
@@ -592,7 +592,7 @@ summary({
         }, section: 'Functions', bool_yn: true)
 
 summary({
-        'cairo-trace:': conf.get('CAIRO_HAS_TRACE', 0) == 1,
-        'cairo-script-interpreter': conf.get('CAIRO_HAS_INTERPRETER', 0) == 1,
+        'comac-trace:': conf.get('CAIRO_HAS_TRACE', 0) == 1,
+        'comac-script-interpreter': conf.get('CAIRO_HAS_INTERPRETER', 0) == 1,
         'API reference': get_option('gtk_doc'),
         }, section: 'Features and Utilities', bool_yn: true)

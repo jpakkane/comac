@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* This is basically gears.shape.arrow */
 static void

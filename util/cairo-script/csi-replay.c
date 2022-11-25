@@ -34,8 +34,8 @@
 
 #include "config.h"
 
-#include "cairo.h"
-#include "cairo-script-interpreter.h"
+#include "comac.h"
+#include "comac-script-interpreter.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,7 +99,7 @@ _context_destroy (void *closure, void *ptr)
 #endif
 
 #if CAIRO_HAS_XLIB_SURFACE
-#include <cairo-xlib.h>
+#include <comac-xlib.h>
 static Display *
 _get_display (void)
 {
@@ -156,7 +156,7 @@ _xlib_surface_create (void *closure,
 }
 
 #if CAIRO_HAS_XLIB_XRENDER_SURFACE
-#include <cairo-xlib-xrender.h>
+#include <comac-xlib-xrender.h>
 
 static void
 _destroy_pixmap (void *closure)
@@ -207,7 +207,7 @@ _xrender_surface_create (void *closure,
 #endif
 
 #if CAIRO_HAS_GL_GLX_SURFACE
-#include <cairo-gl.h>
+#include <comac-gl.h>
 static cairo_gl_context_t *
 _glx_get_context (cairo_content_t content)
 {
@@ -265,7 +265,7 @@ _glx_surface_create (void *closure,
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
-#include <cairo-pdf.h>
+#include <comac-pdf.h>
 static cairo_surface_t *
 _pdf_surface_create (void *closure,
 		     cairo_content_t content,
@@ -277,7 +277,7 @@ _pdf_surface_create (void *closure,
 #endif
 
 #if CAIRO_HAS_PS_SURFACE
-#include <cairo-ps.h>
+#include <comac-ps.h>
 static cairo_surface_t *
 _ps_surface_create (void *closure,
 		    cairo_content_t content,
@@ -289,7 +289,7 @@ _ps_surface_create (void *closure,
 #endif
 
 #if CAIRO_HAS_SVG_SURFACE
-#include <cairo-svg.h>
+#include <comac-svg.h>
 static cairo_surface_t *
 _svg_surface_create (void *closure,
 		     cairo_content_t content,

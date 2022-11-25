@@ -25,9 +25,9 @@
  */
 
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
-#include <cairo.h>
+#include <comac.h>
 
 /* Uncomment to enable faulty test data in order to force a
  * failure. This allows the error logging path to be tested.

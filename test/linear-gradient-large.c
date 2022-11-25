@@ -25,7 +25,7 @@
  * Author: Krzysztof Kosiński <tweenk.pl@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* originally reported in https://bugs.freedesktop.org/show_bug.cgi?id=29470 */
 

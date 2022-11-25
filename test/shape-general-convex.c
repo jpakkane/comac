@@ -26,7 +26,7 @@
 
 /* A general convex shape with a twist. */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SIZE		(100)
 #define PAD 4

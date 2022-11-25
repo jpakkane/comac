@@ -23,8 +23,8 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
-#include <cairo-ft.h>
+#include "comac-test.h"
+#include <comac-ft.h>
 
 static void
 _stress_font_cache (FT_Face ft_face, cairo_t *cr, int lvl);

@@ -24,7 +24,7 @@
  * Author: Tim Rowley
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include "stdio.h"
 
 #define WIDTH  50

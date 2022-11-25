@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* An error in xlib pattern transformation discovered by Albertas Vyšniauskas */
 

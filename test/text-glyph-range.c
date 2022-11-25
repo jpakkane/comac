@@ -40,7 +40,7 @@
  * act as if they were zero-width.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH  100
 #define HEIGHT 75

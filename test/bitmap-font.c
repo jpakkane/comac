@@ -23,7 +23,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -31,7 +31,7 @@
 #include <unistd.h>
 #endif
 
-#include <cairo-ft.h>
+#include <comac-ft.h>
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
 

@@ -2,7 +2,7 @@
 #
 # cairo version.py
 #
-# Extracts the version from cairo-version.h for the meson build files.
+# Extracts the version from comac-version.h for the meson build files.
 #
 import os
 import sys
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     version_minor = None
     version_micro = None
 
-    f = open(os.path.join(srcroot, 'src', 'cairo-version.h'), 'r', encoding='utf-8')
+    f = open(os.path.join(srcroot, 'src', 'comac-version.h'), 'r', encoding='utf-8')
     for line in f:
         if line.startswith('#define CAIRO_VERSION_MAJOR '):
             version_major = line[28:].strip()
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     f.close()
 
     if not (version_major and version_minor and version_micro):
-       print('ERROR: Could not extract cairo version from cairo-version.h in', srcroot, file=sys.stderr)
+       print('ERROR: Could not extract cairo version from comac-version.h in', srcroot, file=sys.stderr)
        sys.exit(-1)
 
     print('{0}.{1}.{2}'.format(version_major, version_minor, version_micro))

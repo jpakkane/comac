@@ -27,7 +27,7 @@
  * firefox http://people.mozilla.com/~jmuizelaar/BerlinDistricts-check.svg
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 205
 #define HEIGHT 260

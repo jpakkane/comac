@@ -17,7 +17,7 @@
 #ifndef _PDIFF_H
 #define _PDIFF_H
 
-#include <cairo.h>
+#include <comac.h>
 
 typedef int bool;
 #ifndef true

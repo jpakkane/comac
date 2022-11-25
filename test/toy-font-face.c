@@ -26,9 +26,9 @@
 
 #include "config.h"
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
-#include <cairo.h>
+#include <comac.h>
 #include <assert.h>
 #include <string.h>
 

@@ -26,7 +26,7 @@
 
 /* Measure the overhead in setting a single pixel */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 #include <pixman.h>
 

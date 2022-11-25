@@ -25,7 +25,7 @@
 
 #include "config.h"
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <stdlib.h> /* drand48() */
 
 #define LOOPS 10

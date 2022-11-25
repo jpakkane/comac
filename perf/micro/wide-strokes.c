@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 static uint32_t state;
 

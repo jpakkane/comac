@@ -26,7 +26,7 @@
  *         Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 100
 #define HEIGHT 200

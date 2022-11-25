@@ -21,7 +21,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <assert.h>
 

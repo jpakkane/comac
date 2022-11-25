@@ -1,9 +1,9 @@
-subdir('cairo-missing')
+subdir('comac-missing')
 
 cairo_utils = []
 
 if feature_conf.get('CAIRO_HAS_GOBJECT_FUNCTIONS', 0) == 1
-  subdir('cairo-gobject')
+  subdir('comac-gobject')
 endif
 
 if conf.get('CAIRO_HAS_INTERPRETER', 0) == 1
@@ -18,7 +18,7 @@ if conf.get('CAIRO_HAS_TRACE', 0) == 1
   if (conf.get('CAIRO_HAS_DLSYM', 0) == 1 and
       feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1 and
       feature_conf.get('CAIRO_HAS_TEE_SURFACE', 0) == 1)
-    subdir('cairo-fdr')
+    subdir('comac-fdr')
   endif
 endif
 

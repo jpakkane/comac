@@ -24,7 +24,7 @@
  * Author: Benjamin Otte <otte@gnome.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define TARGET_SIZE 10
 

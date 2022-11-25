@@ -30,7 +30,7 @@
 // A recording surface with a non-zero origin gets cut off when passed to
 // cairo_surface_write_to_png().
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <assert.h>
 

@@ -24,7 +24,7 @@
  * Author: Uli Schlachter <psychon@znc.in>
  * Author: Heiko Lewin <hlewin@gmx.de>
  */
-#include "cairo-test.h"
+#include "comac-test.h"
 
 
 /* This test reproduces an overflow of a mask-buffer in cairo-image-compositor.c */

@@ -23,7 +23,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define RGBx 0xffff0000, 0xff00ff00, 0xff0000ff, 0x00000000
 

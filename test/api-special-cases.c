@@ -61,34 +61,34 @@
 #include <assert.h>
 #include <limits.h>
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #if CAIRO_HAS_GL_SURFACE
-#include <cairo-gl.h>
+#include <comac-gl.h>
 #endif
 #if CAIRO_HAS_PDF_SURFACE
-#include <cairo-pdf.h>
+#include <comac-pdf.h>
 #endif
 #if CAIRO_HAS_PS_SURFACE
-#include <cairo-ps.h>
+#include <comac-ps.h>
 #endif
 #if CAIRO_HAS_QUARTZ_SURFACE
 #define Cursor QuartzCursor
-#include <cairo-quartz.h>
+#include <comac-quartz.h>
 #undef Cursor
 #endif
 #if CAIRO_HAS_SVG_SURFACE
-#include <cairo-svg.h>
+#include <comac-svg.h>
 #endif
 #if CAIRO_HAS_TEE_SURFACE
-#include <cairo-tee.h>
+#include <comac-tee.h>
 #endif
 #if CAIRO_HAS_XCB_SURFACE
-#include <cairo-xcb.h>
+#include <comac-xcb.h>
 #endif
 #if CAIRO_HAS_XLIB_SURFACE
 #define Cursor XCursor
-#include <cairo-xlib.h>
+#include <comac-xlib.h>
 #undef Cursor
 #endif
 

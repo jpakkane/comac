@@ -25,7 +25,7 @@
  *         Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define UNIT_SIZE 100
 #define PAD 5

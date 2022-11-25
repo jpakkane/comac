@@ -24,7 +24,7 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define PAT_WIDTH  170
 #define PAT_HEIGHT 170

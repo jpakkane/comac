@@ -35,7 +35,7 @@
 #include <string.h>
 #include <pixman.h>
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include "pdiff.h"
 #include "buffer-diff.h"

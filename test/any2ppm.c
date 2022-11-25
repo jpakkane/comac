@@ -59,10 +59,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <cairo.h>
+#include <comac.h>
 
 #if CAIRO_HAS_INTERPRETER
-#include <cairo-script-interpreter.h>
+#include <comac-script-interpreter.h>
 #endif
 
 #if CAIRO_CAN_TEST_PDF_SURFACE
@@ -73,7 +73,7 @@
 #define RSVG_DISABLE_DEPRECATION_WARNINGS
 #include <librsvg/rsvg.h>
 #ifndef RSVG_CAIRO_H
-#include <librsvg/rsvg-cairo.h>
+#include <librsvg/rsvg-comac.h>
 #endif
 #endif
 

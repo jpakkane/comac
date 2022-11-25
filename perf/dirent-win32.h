@@ -24,7 +24,7 @@
  * Authors: Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-compiler-private.h"
+#include "comac-compiler-private.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

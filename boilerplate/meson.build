@@ -1,22 +1,22 @@
 cairo_boilerplate_sources = [
-  'cairo-boilerplate-getopt.c',
-  'cairo-boilerplate-system.c',
-  'cairo-boilerplate.c',
+  'comac-boilerplate-getopt.c',
+  'comac-boilerplate-system.c',
+  'comac-boilerplate.c',
 ]
 
 cairo_boilerplate_feature_sources = {
-  'cairo-xlib': ['cairo-boilerplate-xlib.c'],
-  'cairo-quartz': ['cairo-boilerplate-quartz.c'],
-  'cairo-xcb': ['cairo-boilerplate-xcb.c'],
-  'cairo-win32': ['cairo-boilerplate-win32.c', 'cairo-boilerplate-win32-printing.c'],
-  'cairo-pdf': ['cairo-boilerplate-pdf.c'],
-  'cairo-ps': ['cairo-boilerplate-ps.c'],
-  'cairo-svg': ['cairo-boilerplate-svg.c'],
-  'cairo-script': ['cairo-boilerplate-script.c'],
+  'comac-xlib': ['comac-boilerplate-xlib.c'],
+  'comac-quartz': ['comac-boilerplate-quartz.c'],
+  'comac-xcb': ['comac-boilerplate-xcb.c'],
+  'comac-win32': ['comac-boilerplate-win32.c', 'comac-boilerplate-win32-printing.c'],
+  'comac-pdf': ['comac-boilerplate-pdf.c'],
+  'comac-ps': ['comac-boilerplate-ps.c'],
+  'comac-svg': ['comac-boilerplate-svg.c'],
+  'comac-script': ['comac-boilerplate-script.c'],
   # All tests crash with FPE
-  # 'cairo-egl': ['cairo-boilerplate-egl.c'],
-  # cairo-glx: ['cairo-boilerplate-glx.c'],
-  'cairo-wgl': ['cairo-boilerplate-wgl.c'],
+  # 'comac-egl': ['comac-boilerplate-egl.c'],
+  # comac-glx: ['comac-boilerplate-glx.c'],
+  'comac-wgl': ['comac-boilerplate-wgl.c'],
 }
 
 foreach feature: built_features
@@ -24,9 +24,9 @@ foreach feature: built_features
   cairo_boilerplate_sources += cairo_boilerplate_feature_sources.get(source_key, [])
 endforeach
 
-cairo_boilerplate_constructors = custom_target('cairo-boilerplate-constructors.c',
+cairo_boilerplate_constructors = custom_target('comac-boilerplate-constructors.c',
   input: files(cairo_boilerplate_sources),
-  output: 'cairo-boilerplate-constructors.c',
+  output: 'comac-boilerplate-constructors.c',
   command: [python3, files('make-cairo-boilerplate-constructors.py')[0], '@OUTPUT@', '@INPUT@'])
 
 libcairoboilerplate = static_library('cairoboilerplate', cairo_boilerplate_sources + [cairo_boilerplate_constructors],

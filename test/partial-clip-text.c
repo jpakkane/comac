@@ -24,7 +24,7 @@
  * Author: Igor Nikitin <igor_nikitin@valentina-db.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define HEIGHT 15
 #define WIDTH 40

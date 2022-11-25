@@ -1,5 +1,5 @@
 perf_micro_sources = [
-  'cairo-perf-cover.c',
+  'comac-perf-cover.c',
   'box-outline.c',
   'composite-checker.c',
   'disjoint.c',
@@ -50,7 +50,7 @@ perf_micro_headers = [
   'zrusin-another.h',
 ]
 
-libcairoperfmicro = static_library('cairo-perf-micro',
+libcairoperfmicro = static_library('comac-perf-micro',
   perf_micro_sources + perf_micro_headers,
   include_directories: [incbase, incsrc, incmicro],
   dependencies: [pixman_dep, cairoboilerplate_dep],

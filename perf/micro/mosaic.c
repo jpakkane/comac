@@ -23,7 +23,7 @@
  *
  * Author: Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
  */
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 /* Options passed in flags to mosaic_perform(): */
 #define MOSAIC_FILL 1		/* do rasterise */

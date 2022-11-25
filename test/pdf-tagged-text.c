@@ -24,7 +24,7 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -41,8 +41,8 @@
 #include <sys/mman.h>
 #endif
 
-#include <cairo.h>
-#include <cairo-pdf.h>
+#include <comac.h>
+#include <comac-pdf.h>
 
 /* This test checks PDF with
  * - tagged text

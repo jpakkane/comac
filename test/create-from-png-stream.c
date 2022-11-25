@@ -23,7 +23,7 @@
  * Author: Carl Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <stdlib.h>
 #include <stdio.h>

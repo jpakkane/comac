@@ -25,7 +25,7 @@
  * Author: Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define N_OPERATORS (CAIRO_OPERATOR_SATURATE + 1)
 #define HEIGHT 16

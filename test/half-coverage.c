@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Test the fidelity of the rasterisation, because Cairo is my favourite
  * driver test suite.

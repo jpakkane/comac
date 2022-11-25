@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.o.uk>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

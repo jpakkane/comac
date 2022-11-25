@@ -24,7 +24,7 @@
  * Author: Benjamin Otte <otte@gnome.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define RECT 10
 #define SPACE 5

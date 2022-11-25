@@ -23,7 +23,7 @@
  * Author: Billy Biggs <vektor@dumbterm.net>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* The star shape from the SVG test suite, from the fill rule test */
 static void

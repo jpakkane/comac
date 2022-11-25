@@ -31,7 +31,7 @@
  * LayoutTests/canvas/philip/tests/2d.path.rect.selfintersect.html
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <math.h>
 

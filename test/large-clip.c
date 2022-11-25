@@ -23,7 +23,7 @@
  * Author: Soren Sandmann <sandmann@redhat.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SIZE 100
 

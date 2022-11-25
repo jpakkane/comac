@@ -33,15 +33,15 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairoint.h"
+#include "comacint.h"
 
 #include "test-compositor-surface-private.h"
 
-#include "cairo-compositor-private.h"
-#include "cairo-default-context-private.h"
-#include "cairo-error-private.h"
-#include "cairo-image-surface-private.h"
-#include "cairo-surface-backend-private.h"
+#include "comac-compositor-private.h"
+#include "comac-default-context-private.h"
+#include "comac-error-private.h"
+#include "comac-image-surface-private.h"
+#include "comac-surface-backend-private.h"
 
 typedef struct _test_compositor_surface {
     cairo_image_surface_t base;

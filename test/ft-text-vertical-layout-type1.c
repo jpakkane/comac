@@ -26,8 +26,8 @@
  *  ft-font-create-for-ft-face.c.
  * Original Author: Carl D. Worth <cworth@cworth.org>
  */
-#include "cairo-test.h"
-#include <cairo-ft.h>
+#include "comac-test.h"
+#include <comac-ft.h>
 
 #define WIDTH  80
 #define HEIGHT 240

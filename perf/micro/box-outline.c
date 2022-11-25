@@ -25,7 +25,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 /* This test case is designed to illustrate a performance bug that
  * exists in cairo in which using cairo_stroke is much slower than

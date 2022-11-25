@@ -23,7 +23,7 @@
  * Author: Radek Doulík <rodo@novell.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SIZE 10
 #define CLIP_SIZE 2

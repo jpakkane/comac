@@ -39,7 +39,7 @@
  *             exercise the bug.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH  800
 #define HEIGHT 800

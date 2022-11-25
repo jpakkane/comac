@@ -23,7 +23,7 @@
  * Author: Vladimir Vukicevic <vladimir@pobox.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* This test was originally written to exercise a bug in pixman in
  * which it would scribble all over memory when given a particular

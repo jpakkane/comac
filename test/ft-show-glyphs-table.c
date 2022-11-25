@@ -26,8 +26,8 @@
  *	    Carl Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
-#include <cairo-ft.h>
+#include "comac-test.h"
+#include <comac-ft.h>
 
 #define TEXT_SIZE	20
 #define PAD		10

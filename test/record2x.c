@@ -26,7 +26,7 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define TEXT_SIZE 12
 #define SIZE 60 /* needs to be big to check large area effects (dithering) */

@@ -23,7 +23,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* This test exercises the various interactions between
  * cairo_set_line_width and cairo_scale. Specifically it shows how

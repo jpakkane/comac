@@ -23,7 +23,7 @@
  * Authors: Benjamin Otte <otte@gnome.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 50
 #define HEIGHT 50

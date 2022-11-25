@@ -24,7 +24,7 @@
  * Author: Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static const char *png_filename = "romedalen.png";
 

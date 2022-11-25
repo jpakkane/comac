@@ -23,7 +23,7 @@
  * Author: Robert O'Callahan <rocallahan@novell.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <stddef.h>
 
 static cairo_bool_t

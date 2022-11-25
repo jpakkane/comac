@@ -27,7 +27,7 @@
 /* Test that user-fonts can subpixel positioning.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 
 #define BORDER 10

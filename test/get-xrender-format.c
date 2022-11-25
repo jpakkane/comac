@@ -24,12 +24,12 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
-#include "cairo-xlib.h"
-#include "cairo-xlib-xrender.h"
+#include "comac-xlib.h"
+#include "comac-xlib-xrender.h"
 
-#include "cairo-boilerplate-xlib.h"
+#include "comac-boilerplate-xlib.h"
 
 static cairo_test_status_t
 preamble (cairo_test_context_t *ctx)

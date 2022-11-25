@@ -21,7 +21,7 @@
  * OF THIS SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <stdlib.h>
 
 static cairo_test_status_t

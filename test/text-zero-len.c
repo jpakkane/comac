@@ -38,7 +38,7 @@
  * By just bailing out on zero-sized text, we fix both issues.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define NUM_TEXT 20
 #define TEXT_SIZE 12

@@ -23,8 +23,8 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
-#include "cairo-boilerplate-scaled-font.h"
+#include "comac-test.h"
+#include "comac-boilerplate-scaled-font.h"
 
 #define TEXT_SIZE 12
 

@@ -25,7 +25,7 @@
  *	Behdad Esfahbod <behdad@behdad.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <stdlib.h>
 #include <stdio.h>

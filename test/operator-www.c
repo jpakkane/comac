@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define OPERATORS_COUNT 29
 #define WIDTH 160

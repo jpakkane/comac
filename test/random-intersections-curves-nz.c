@@ -23,7 +23,7 @@
  *
  * Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
  */
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SIZE 512
 #define NUM_SEGMENTS 128

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include "tiger.inc"
 

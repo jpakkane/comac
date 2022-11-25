@@ -27,7 +27,7 @@
  *          Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <math.h>
 #include <stdio.h>
 

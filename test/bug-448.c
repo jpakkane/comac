@@ -26,7 +26,7 @@
  *   Uli Schlachter <psychon@znc.in>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static cairo_surface_t*
 draw_recording ()

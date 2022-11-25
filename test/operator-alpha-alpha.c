@@ -43,7 +43,7 @@
  *      Andrea Canciani <ranma42@gmail.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define STEPS 16
 #define START_OPERATOR	CAIRO_OPERATOR_CLEAR

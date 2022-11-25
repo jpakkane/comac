@@ -23,7 +23,7 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define CELL_WIDTH 20
 #define CELL_HEIGHT 20

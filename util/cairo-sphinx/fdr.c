@@ -18,9 +18,9 @@
 
 #include "config.h"
 
-#include <cairo.h>
-#include <cairo-script.h>
-#include <cairo-tee.h>
+#include <comac.h>
+#include <comac-script.h>
+#include <comac-tee.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>

@@ -1,4 +1,4 @@
-#include <cairo-boilerplate.h>
+#include <comac-boilerplate.h>
 #include <stdio.h>
 
 int

@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Test the sampling stratagems of the rasterisers by creating pixels
  * containing minute holes and seeing how close to the expected
@@ -33,7 +33,7 @@
 
 #define SIZE 64
 
-#include "../src/cairo-fixed-type-private.h"
+#include "../src/comac-fixed-type-private.h"
 #define SAMPLE (1 << CAIRO_FIXED_FRAC_BITS)
 
 static uint32_t state;

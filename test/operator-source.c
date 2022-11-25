@@ -25,7 +25,7 @@
  *          Uli Schlachter <psychon@znc.in>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <math.h>
 #include <stdio.h>
 

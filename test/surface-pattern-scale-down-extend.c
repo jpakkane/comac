@@ -23,7 +23,7 @@
  *
  * Author: M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
  */
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Test that we can simultaneously downscale and extend a surface
  * pattern.  Reported by Franz Schmid to the cairo mailing list as a

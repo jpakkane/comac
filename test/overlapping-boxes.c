@@ -29,7 +29,7 @@
  * tempted to write.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH		(20)
 #define HEIGHT		(20)

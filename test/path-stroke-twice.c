@@ -23,7 +23,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Exercises a bug found by alois@astro.ch:
  *   https://bugs.freedesktop.org/show_bug.cgi?id=26010

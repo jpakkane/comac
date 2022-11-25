@@ -42,7 +42,7 @@
  *   turn, (since the subsequent trapezoids along the path intersect).
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)

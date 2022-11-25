@@ -30,7 +30,7 @@
  * enclosing the text.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH  10000
 #define HEIGHT 60

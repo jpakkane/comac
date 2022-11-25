@@ -23,7 +23,7 @@
  * Author: Jeff Muizelaar
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define WIDTH 60
 #define HEIGHT 70

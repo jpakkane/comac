@@ -22,7 +22,7 @@
  *
  * Authors: Dan Amelang <dan@amelang.net>
  */
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 #if 0
 #define MODE cairo_perf_run

@@ -23,7 +23,7 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-perf.h"
+#include "comac-perf.h"
 
 static cairo_time_t
 do_fill (cairo_t *cr, int width, int height, int loops)

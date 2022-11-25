@@ -42,12 +42,12 @@
 #include <limits.h>
 #include <stdarg.h>
 
-#include <cairo.h>
+#include <comac.h>
 #if CAIRO_HAS_FT_FONT
-# include <cairo-ft.h>
+# include <comac-ft.h>
 #endif
 
-#include "cairo-ctype-inline.h"
+#include "comac-ctype-inline.h"
 
 #ifndef TRUE
 #define TRUE 1
@@ -4591,7 +4591,7 @@ _surface_object_set_size_from_surface (cairo_surface_t *surface)
 }
 
 #if CAIRO_HAS_PS_SURFACE
-#include<cairo-ps.h>
+#include<comac-ps.h>
 
 cairo_surface_t *
 cairo_ps_surface_create (const char *filename, double width_in_points, double height_in_points)
@@ -4672,7 +4672,7 @@ cairo_ps_surface_set_size (cairo_surface_t *surface, double width_in_points, dou
 #endif
 
 #if CAIRO_HAS_PDF_SURFACE
-#include <cairo-pdf.h>
+#include <comac-pdf.h>
 
 cairo_surface_t *
 cairo_pdf_surface_create (const char *filename, double width_in_points, double height_in_points)
@@ -4751,7 +4751,7 @@ cairo_pdf_surface_set_size (cairo_surface_t *surface, double width_in_points, do
 #endif
 
 #if CAIRO_HAS_SVG_SURFACE
-#include <cairo-svg.h>
+#include <comac-svg.h>
 
 cairo_surface_t *
 cairo_svg_surface_create (const char *filename, double width, double height)
@@ -4888,7 +4888,7 @@ _content_from_surface (cairo_surface_t *surface)
 }
 
 #if CAIRO_HAS_TEE_SURFACE
-#include <cairo-tee.h>
+#include <comac-tee.h>
 
 cairo_surface_t *
 cairo_tee_surface_create (cairo_surface_t *master)
@@ -4922,7 +4922,7 @@ cairo_tee_surface_create (cairo_surface_t *master)
 #endif
 
 #if CAIRO_HAS_XLIB_SURFACE
-#include <cairo-xlib.h>
+#include <comac-xlib.h>
 
 cairo_surface_t *
 cairo_xlib_surface_create (Display *dpy,
@@ -5008,7 +5008,7 @@ cairo_xlib_surface_create_for_bitmap (Display *dpy,
 }
 
 #if CAIRO_HAS_XLIB_XRENDER_SURFACE
-#include <cairo-xlib-xrender.h>
+#include <comac-xlib-xrender.h>
 cairo_surface_t *
 cairo_xlib_surface_create_with_xrender_format (Display *dpy,
 					       Drawable drawable,
@@ -5056,7 +5056,7 @@ cairo_xlib_surface_create_with_xrender_format (Display *dpy,
 #endif
 
 #if CAIRO_HAS_SCRIPT_SURFACE
-#include <cairo-script.h>
+#include <comac-script.h>
 cairo_surface_t *
 cairo_script_surface_create (cairo_device_t *device,
 			     cairo_content_t content,
@@ -5324,7 +5324,7 @@ cairo_recording_surface_create (cairo_content_t content,
 }
 
 #if CAIRO_HAS_GL_SURFACE || CAIRO_HAS_GLESV2_SURFACE
-#include <cairo-gl.h>
+#include <comac-gl.h>
 cairo_surface_t *
 cairo_gl_surface_create (cairo_device_t		*abstract_device,
 			 cairo_content_t	 content,

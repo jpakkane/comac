@@ -438,12 +438,12 @@ test_fallback_resolution_sources = [
 
 cairo_test_suite_sources = [
   'buffer-diff.c',
-  'cairo-test.c',
-  'cairo-test-runner.c',
+  'comac-test.c',
+  'comac-test-runner.c',
 ]
 
 cairo_test_trace_sources = [
-  'cairo-test-trace.c',
+  'comac-test-trace.c',
   'buffer-diff.c',
 ]
 
@@ -491,9 +491,9 @@ if feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1
   build_any2ppm = true
 endif
 
-cairo_test_constructors = custom_target('cairo-test-constructors.c',
+cairo_test_constructors = custom_target('comac-test-constructors.c',
   input: files(test_sources),
-  output: 'cairo-test-constructors.c',
+  output: 'comac-test-constructors.c',
   command: [python3, files('make-cairo-test-constructors.py')[0], '@OUTPUT@', '@INPUT@'])
 
 test_depends = []
@@ -522,13 +522,13 @@ if build_any2ppm
 endif
 
 if have_shm and conf.get('CAIRO_HAS_INTERPRETER', 0) == 1
-  cairo_test_trace_exe = executable('cairo-test-trace', cairo_test_trace_sources,
+  cairo_test_trace_exe = executable('comac-test-trace', cairo_test_trace_sources,
   include_directories: [incbase],
   link_args: extra_link_args,
   dependencies: deps + test_deps + [rt_dep, libcairo_dep, cairoboilerplate_dep, libpdiff_dep, libcairomissing_dep, libcairoscript_dep])
 endif
 
-exe = executable('cairo-test-suite', [cairo_test_suite_sources, test_sources, cairo_test_constructors],
+exe = executable('comac-test-suite', [cairo_test_suite_sources, test_sources, cairo_test_constructors],
   include_directories: [incbase],
   link_args: extra_link_args,
   dependencies: deps + test_deps + [libcairo_dep, cairoboilerplate_dep,
@@ -554,6 +554,6 @@ env.set('srcdir', meson.current_source_dir())
 test('cairo', exe,
   timeout: 60 * 60,
   env: env,
-  suite: ['cairo-test-suite', 'slow'],
+  suite: ['comac-test-suite', 'slow'],
   workdir: meson.current_build_dir(),
   depends: test_depends)

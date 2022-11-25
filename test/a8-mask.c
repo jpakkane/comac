@@ -24,7 +24,7 @@
  *	    Carl Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define MASK_WIDTH 8
 #define MASK_HEIGHT 8

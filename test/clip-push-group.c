@@ -31,7 +31,7 @@
  * surface-based clip and then calling cairo_push_group.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SIZE 10
 #define PAD 2

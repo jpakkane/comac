@@ -24,7 +24,7 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define LINE_WIDTH	10.
 #define SIZE		(5 * LINE_WIDTH)

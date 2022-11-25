@@ -23,7 +23,7 @@
  * Author: Jeff Muizelaar <jeff@infidigm.net>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define PAD 3.0
 #define LINE_WIDTH 6.0

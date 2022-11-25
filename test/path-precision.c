@@ -28,8 +28,8 @@
  /*  Copyright (C) 2021 Heiko Lewin <hlewin@gmx.de> 
   *  Added error margin for point comparisons */
 
-#include "cairo-test.h"
-#include "cairo-fixed-type-private.h"
+#include "comac-test.h"
+#include "comac-fixed-type-private.h"
 
 /* we know that this is an inherent limitation in cairo */
 #define FAIL CAIRO_TEST_XFAILURE

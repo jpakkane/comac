@@ -31,7 +31,7 @@
  * https://bugs.webkit.org/show_bug.cgi?id=54471
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <math.h>
 

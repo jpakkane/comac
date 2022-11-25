@@ -29,10 +29,10 @@
 #error No poll.h equivalent found
 #endif
 
-#include <cairo.h>
-#include <cairo-script.h>
-#include <cairo-script-interpreter.h>
-#include <cairo-boilerplate.h>
+#include <comac.h>
+#include <comac-script.h>
+#include <comac-script-interpreter.h>
+#include <comac-boilerplate.h>
 
 #include <glib.h> /* for checksumming */
 

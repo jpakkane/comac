@@ -27,7 +27,7 @@
 /* Exhibits nasty behaviour with GS due as their /Interpolate implementation
  * does not function for rotated images. */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 #include <math.h>
 #include <stdio.h>
 

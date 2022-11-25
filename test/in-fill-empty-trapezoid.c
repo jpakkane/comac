@@ -33,7 +33,7 @@
  *  and the query point lands exactly on a trapezoid edge.
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static cairo_test_status_t
 preamble (cairo_test_context_t *ctx)

@@ -23,7 +23,7 @@
  * Author: Nis Martensen <nis.martensen@web.de>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define SIZE 20
 

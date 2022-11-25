@@ -23,7 +23,7 @@
  * Author: MAtthias Clasen <mclasen@redhat.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <assert.h>
 
@@ -36,7 +36,7 @@
 #include <fontconfig/fontconfig.h>
 #endif
 
-#include "cairo-ft.h"
+#include "comac-ft.h"
 
 #define FloatToFixed(f) ((FT_Fixed)((f)*65536))
 

@@ -23,11 +23,11 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <stdio.h>
-#include <cairo.h>
-#include <cairo-pdf.h>
+#include <comac.h>
+#include <comac-pdf.h>
 
 /* This test exists to test the various features of cairo-pdf.h.
  *

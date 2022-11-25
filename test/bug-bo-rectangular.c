@@ -23,7 +23,7 @@
  * Author: Benjamin Otte <otte@gnome.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static void
 rect (cairo_t *cr, int x1, int y1, int x2, int y2)

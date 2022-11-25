@@ -25,7 +25,7 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 /* Check cairo_recording_surface_ink_extents() returns correct extents. */
 

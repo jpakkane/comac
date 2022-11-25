@@ -25,7 +25,7 @@
  * Author: Simon Kellner <kellner@kit.edu>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static cairo_test_status_t
 draw (cairo_t *cr, int width, int height)

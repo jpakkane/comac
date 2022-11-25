@@ -25,7 +25,7 @@
  *	    Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define MASK_WIDTH 10
 #define MASK_HEIGHT 8

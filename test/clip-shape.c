@@ -26,7 +26,7 @@
 
 /* Adapted from a bug report by <cairouser@yahoo.com> */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 static const struct xy {
    double x;

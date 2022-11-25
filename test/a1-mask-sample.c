@@ -26,7 +26,7 @@
  *         Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #define POINTS	10
 #define STEP	(1.0 / POINTS)

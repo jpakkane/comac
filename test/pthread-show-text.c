@@ -29,7 +29,7 @@
    https://bugs.freedesktop.org/show_bug.cgi?id=4299
 */
 
-#include "cairo-test.h"
+#include "comac-test.h"
 
 #include <string.h>
 #include <stdlib.h>

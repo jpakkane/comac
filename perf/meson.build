@@ -6,12 +6,12 @@ gtk2_dep = dependency('gtk+-2.0', required: false)
 
 libcairoperf = static_library('cairoperf',
   [
-    'cairo-perf.c',
-    'cairo-perf-report.c',
-    'cairo-stats.c',
-    '../src/cairo-time.c',
-    'cairo-perf.h',
-    'cairo-stats.h',
+    'comac-perf.c',
+    'comac-perf-report.c',
+    'comac-stats.c',
+    '../src/comac-time.c',
+    'comac-perf.h',
+    'comac-stats.h',
   ],
   include_directories: [incbase, incsrc],
   dependencies: [pixman_dep, libcairomissing_dep, cairoboilerplate_dep],
@@ -21,72 +21,72 @@ libcairoperf_dep = declare_dependency(
 )
 
 
-analyse_trace = executable('cairo-analyse-trace',
+analyse_trace = executable('comac-analyse-trace',
   [
-    'cairo-analyse-trace.c',
-    '../src/cairo-error.c',
+    'comac-analyse-trace.c',
+    '../src/comac-error.c',
   ],
   include_directories: [incbase],
   dependencies: [pixman_dep, fontconfig_dep, libcairo_dep, cairoboilerplate_dep,
     libcairoscript_dep, libcairomissing_dep],
 )
 
-perf_trace = executable('cairo-perf-trace',
+perf_trace = executable('comac-perf-trace',
   [
-    'cairo-perf-trace.c',
-    '../src/cairo-error.c',
-    '../src/cairo-hash.c',
+    'comac-perf-trace.c',
+    '../src/comac-error.c',
+    '../src/comac-hash.c',
   ],
   include_directories: [incbase, incsrc],
   dependencies: [pixman_dep, fontconfig_dep, libcairoperf_dep, libcairoscript_dep,
     cairoboilerplate_dep, libcairomissing_dep],
 )
 
-micro = executable('cairo-perf-micro',
-  [ 'cairo-perf-micro.c', ],
+micro = executable('comac-perf-micro',
+  [ 'comac-perf-micro.c', ],
   include_directories: [incbase, incsrc],
   dependencies: [fontconfig_dep, libcairoperf_dep, libcairoperfmicro_dep,
     cairoboilerplate_dep, libcairomissing_dep],
 )
 
-diff_files = executable('cairo-perf-diff-files',
+diff_files = executable('comac-perf-diff-files',
   [
-    'cairo-perf-diff-files.c',
+    'comac-perf-diff-files.c',
   ],
   include_directories: [incbase, incsrc],
   dependencies: [libcairoperf_dep, cairoboilerplate_dep],
 )
 
-print = executable('cairo-perf-print',
+print = executable('comac-perf-print',
   [
-    'cairo-perf-print.c',
+    'comac-perf-print.c',
   ],
   include_directories: [incbase, incsrc],
   dependencies: [libcairoperf_dep, cairoboilerplate_dep],
 )
 
-chart = executable('cairo-perf-chart',
+chart = executable('comac-perf-chart',
   [
-    'cairo-perf-chart.c',
+    'comac-perf-chart.c',
   ],
   include_directories: [incbase, incsrc],
   dependencies: [libcairoperf_dep, cairoboilerplate_dep],
 )
 
-compare_backends = executable('cairo-perf-compare-backends',
+compare_backends = executable('comac-perf-compare-backends',
   [
-    'cairo-perf-compare-backends.c',
+    'comac-perf-compare-backends.c',
   ],
   include_directories: [incbase, incsrc],
   dependencies: [libcairoperf_dep, cairoboilerplate_dep],
 )
 
 if gtk2_dep.found()
-  graph_files = executable('cairo-perf-graph',
+  graph_files = executable('comac-perf-graph',
     [
-      'cairo-perf-graph-files.c',
-      'cairo-perf-graph-widget.c',
-      'cairo-perf-graph.h',
+      'comac-perf-graph-files.c',
+      'comac-perf-graph-widget.c',
+      'comac-perf-graph.h',
     ],
     include_directories: [incbase, incsrc],
     dependencies: [gtk2_dep, libcairo_dep, cairoboilerplate_dep, libcairoperf_dep],
