@@ -26,7 +26,7 @@
 
 #include "comac-test.h"
 
-/* Test the fidelity of the rasterisation, because Cairo is my favourite
+/* Test the fidelity of the rasterisation, because Comac is my favourite
  * driver test suite.
  */
 
@@ -34,23 +34,23 @@
 #define WIDTH 2
 #define HEIGHT 10
 
-static cairo_test_status_t
-rectangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+rectangles (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
 
     for (i = 1; i <= SIZE; i++) {
 	int x, y;
 
-	cairo_save (cr);
-	cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-	cairo_clip (cr);
+	comac_save (cr);
+	comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+	comac_clip (cr);
 
-	cairo_scale (cr, 1./SIZE, 1./SIZE);
+	comac_scale (cr, 1./SIZE, 1./SIZE);
 	for (x = -i; x < SIZE*WIDTH; x += 2*i) {
 	    for (y = -i; y < SIZE*HEIGHT; y += 2*i) {
 		/* Add a little tile composed of two non-overlapping squares
@@ -61,36 +61,36 @@ rectangles (cairo_t *cr, int width, int height)
 		 *      |  |
 		 *      +--+
 		 */
-		cairo_rectangle (cr, x, y, i, i);
-		cairo_rectangle (cr, x+i, y+i, i, i);
+		comac_rectangle (cr, x, y, i, i);
+		comac_rectangle (cr, x+i, y+i, i, i);
 	    }
 	}
-	cairo_fill (cr);
-	cairo_restore (cr);
+	comac_fill (cr);
+	comac_restore (cr);
 
-	cairo_translate (cr, WIDTH, 0);
+	comac_translate (cr, WIDTH, 0);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-triangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+triangles (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
 
     for (i = 1; i <= SIZE; i++) {
 	int x, y;
 
-	cairo_save (cr);
-	cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-	cairo_clip (cr);
+	comac_save (cr);
+	comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+	comac_clip (cr);
 
-	cairo_scale (cr, 1./SIZE, 1./SIZE);
+	comac_scale (cr, 1./SIZE, 1./SIZE);
 	for (x = -i; x < SIZE*WIDTH; x += 2*i) {
 	    for (y = -i; y < SIZE*HEIGHT; y += 2*i) {
 		/* Add a tile composed of four non-overlapping
@@ -107,47 +107,47 @@ triangles (cairo_t *cr, int width, int height)
 		 */
 
 		/* top left triangle */
-		cairo_move_to (cr, x, y);
-		cairo_line_to (cr, x+i, y+i);
-		cairo_line_to (cr, x+i, y);
-		cairo_close_path (cr);
+		comac_move_to (cr, x, y);
+		comac_line_to (cr, x+i, y+i);
+		comac_line_to (cr, x+i, y);
+		comac_close_path (cr);
 
 		/* top right triangle */
-		cairo_move_to (cr, x+i, y);
-		cairo_line_to (cr, x+2*i, y);
-		cairo_line_to (cr, x+i, y+i);
-		cairo_close_path (cr);
+		comac_move_to (cr, x+i, y);
+		comac_line_to (cr, x+2*i, y);
+		comac_line_to (cr, x+i, y+i);
+		comac_close_path (cr);
 
 		/* bottom left triangle */
-		cairo_move_to (cr, x+i, y+i);
-		cairo_line_to (cr, x, y+2*i);
-		cairo_line_to (cr, x+i, y+2*i);
-		cairo_close_path (cr);
+		comac_move_to (cr, x+i, y+i);
+		comac_line_to (cr, x, y+2*i);
+		comac_line_to (cr, x+i, y+2*i);
+		comac_close_path (cr);
 
 		/* bottom right triangle */
-		cairo_move_to (cr, x+i, y+i);
-		cairo_line_to (cr, x+i, y+2*i);
-		cairo_line_to (cr, x+2*i, y+2*i);
-		cairo_close_path (cr);
+		comac_move_to (cr, x+i, y+i);
+		comac_line_to (cr, x+i, y+2*i);
+		comac_line_to (cr, x+2*i, y+2*i);
+		comac_close_path (cr);
 	    }
 	}
-	cairo_fill (cr);
-	cairo_restore (cr);
+	comac_fill (cr);
+	comac_restore (cr);
 
-	cairo_translate (cr, WIDTH, 0);
+	comac_translate (cr, WIDTH, 0);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (half_coverage_rectangles,
+COMAC_TEST (half_coverage_rectangles,
 	    "Check the fidelity of the rasterisation.",
 	    NULL, /* keywords */
 	    "target=raster slow", /* requirements */
 	    WIDTH * SIZE, HEIGHT,
 	    NULL, rectangles)
 
-CAIRO_TEST (half_coverage_triangles,
+COMAC_TEST (half_coverage_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    NULL, /* keywords */
 	    "target=raster slow", /* requirements */

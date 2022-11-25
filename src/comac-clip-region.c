@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -28,7 +28,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -50,57 +50,57 @@
 #include "comac-region-private.h"
 
 static void
-_cairo_clip_extract_region (cairo_clip_t *clip)
+_comac_clip_extract_region (comac_clip_t *clip)
 {
-    cairo_rectangle_int_t stack_rects[CAIRO_STACK_ARRAY_LENGTH (cairo_rectangle_int_t)];
-    cairo_rectangle_int_t *r = stack_rects;
-    cairo_bool_t is_region;
+    comac_rectangle_int_t stack_rects[COMAC_STACK_ARRAY_LENGTH (comac_rectangle_int_t)];
+    comac_rectangle_int_t *r = stack_rects;
+    comac_bool_t is_region;
     int i;
 
     if (clip->num_boxes == 0)
 	return;
 
     if (clip->num_boxes > ARRAY_LENGTH (stack_rects)) {
-	r = _cairo_malloc_ab (clip->num_boxes, sizeof (cairo_rectangle_int_t));
+	r = _comac_malloc_ab (clip->num_boxes, sizeof (comac_rectangle_int_t));
 	if (r == NULL){
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
+	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	    return;
 	}
     }
 
     is_region = clip->path == NULL;
     for (i = 0; i < clip->num_boxes; i++) {
-	cairo_box_t *b = &clip->boxes[i];
+	comac_box_t *b = &clip->boxes[i];
 	if (is_region)
 	    is_region =
-		_cairo_fixed_is_integer (b->p1.x | b->p1.y |  b->p2.x | b->p2.y);
-	r[i].x = _cairo_fixed_integer_floor (b->p1.x);
-	r[i].y = _cairo_fixed_integer_floor (b->p1.y);
-	r[i].width  = _cairo_fixed_integer_ceil (b->p2.x) - r[i].x;
-	r[i].height = _cairo_fixed_integer_ceil (b->p2.y) - r[i].y;
+		_comac_fixed_is_integer (b->p1.x | b->p1.y |  b->p2.x | b->p2.y);
+	r[i].x = _comac_fixed_integer_floor (b->p1.x);
+	r[i].y = _comac_fixed_integer_floor (b->p1.y);
+	r[i].width  = _comac_fixed_integer_ceil (b->p2.x) - r[i].x;
+	r[i].height = _comac_fixed_integer_ceil (b->p2.y) - r[i].y;
     }
     clip->is_region = is_region;
 
-    clip->region = cairo_region_create_rectangles (r, i);
+    clip->region = comac_region_create_rectangles (r, i);
 
     if (r != stack_rects)
 	free (r);
 }
 
-cairo_region_t *
-_cairo_clip_get_region (const cairo_clip_t *clip)
+comac_region_t *
+_comac_clip_get_region (const comac_clip_t *clip)
 {
     if (clip == NULL)
 	return NULL;
 
     if (clip->region == NULL)
-	_cairo_clip_extract_region ((cairo_clip_t *) clip);
+	_comac_clip_extract_region ((comac_clip_t *) clip);
 
     return clip->region;
 }
 
-cairo_bool_t
-_cairo_clip_is_region (const cairo_clip_t *clip)
+comac_bool_t
+_comac_clip_is_region (const comac_clip_t *clip)
 {
     if (clip == NULL)
 	return TRUE;
@@ -117,7 +117,7 @@ _cairo_clip_is_region (const cairo_clip_t *clip)
 	return TRUE;
 
     if (clip->region == NULL)
-	_cairo_clip_extract_region ((cairo_clip_t *) clip);
+	_comac_clip_extract_region ((comac_clip_t *) clip);
 
     return clip->is_region;
 }

@@ -28,27 +28,27 @@
 
 /* An assertion failure found by Rico Tzschichholz */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_set_source_rgb (cr, 0, 1, 0);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_set_source_rgb (cr, 0, 1, 0);
 
-    cairo_arc (cr, 50, 50, 40, 0, 2 * M_PI);
-    cairo_clip_preserve (cr);
+    comac_arc (cr, 50, 50, 40, 0, 2 * M_PI);
+    comac_clip_preserve (cr);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    cairo_rectangle (cr, 0, 0, 100, 100);
-    cairo_reset_clip (cr);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, 100, 100);
+    comac_reset_clip (cr);
+    comac_clip (cr);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (inverted_clip,
+COMAC_TEST (inverted_clip,
 	    "Clip + InvertedClip should be opaque",
 	    "clip, paint", /* keywords */
 	    "target=raster", /* requirements */

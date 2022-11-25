@@ -24,56 +24,56 @@
 #include "comac-test.h"
 #include <stdlib.h>
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_matrix_t m;
+    comac_matrix_t m;
     int xoffset = 50;
     int yoffset = 50;
 
-    cairo_surface_t *shadow;
-    cairo_t *shadow_cr;
-    cairo_path_t *path;
+    comac_surface_t *shadow;
+    comac_t *shadow_cr;
+    comac_path_t *path;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 130, 130);
-    cairo_rotate (cr, .5);//2*M_PI*angle/360);
-    cairo_rectangle (cr, 0, 0, 50, 100);
-    cairo_get_matrix (cr, &m);
+    comac_translate (cr, 130, 130);
+    comac_rotate (cr, .5);//2*M_PI*angle/360);
+    comac_rectangle (cr, 0, 0, 50, 100);
+    comac_get_matrix (cr, &m);
 
-    shadow = cairo_surface_create_similar (cairo_get_target (cr),
-					   CAIRO_CONTENT_COLOR_ALPHA,
+    shadow = comac_surface_create_similar (comac_get_target (cr),
+					   COMAC_CONTENT_COLOR_ALPHA,
 					   600 - xoffset,
 					   600 - yoffset);
-    cairo_surface_set_device_offset (shadow, xoffset, yoffset);
-    shadow_cr = cairo_create (shadow);
-    cairo_surface_destroy (shadow);
+    comac_surface_set_device_offset (shadow, xoffset, yoffset);
+    shadow_cr = comac_create (shadow);
+    comac_surface_destroy (shadow);
 
-    cairo_set_source_rgb (shadow_cr, 0, 1, 0);
-    cairo_set_matrix (shadow_cr, &m);
+    comac_set_source_rgb (shadow_cr, 0, 1, 0);
+    comac_set_matrix (shadow_cr, &m);
 
-    path = cairo_copy_path (cr);
-    cairo_new_path (shadow_cr);
-    cairo_append_path (shadow_cr, path);
-    cairo_fill (shadow_cr);
-    cairo_path_destroy (path);
+    path = comac_copy_path (cr);
+    comac_new_path (shadow_cr);
+    comac_append_path (shadow_cr, path);
+    comac_fill (shadow_cr);
+    comac_path_destroy (path);
 
-    cairo_identity_matrix (cr);
-    cairo_translate (cr, 10, 50);
-    cairo_set_source_surface (cr, cairo_get_target (shadow_cr), 0, 0);
-    cairo_paint (cr);
-    cairo_set_matrix (cr, &m);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill (cr);
+    comac_identity_matrix (cr);
+    comac_translate (cr, 10, 50);
+    comac_set_source_surface (cr, comac_get_target (shadow_cr), 0, 0);
+    comac_paint (cr);
+    comac_set_matrix (cr, &m);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill (cr);
 
-    cairo_destroy (shadow_cr);
+    comac_destroy (shadow_cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (path_append,
+COMAC_TEST (path_append,
 	    "Test appending path to a context, in particular to exercise a regression in 005436",
 	    "path", /* keywords */
 	    NULL, /* requirements */

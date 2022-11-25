@@ -27,78 +27,78 @@
 #include "comac-test.h"
 
 static void
-rounded_rectangle(cairo_t *cr,
+rounded_rectangle(comac_t *cr,
 		  double x, double y,
 		  double width, double height,
 		  double radius)
 {
-    cairo_move_to   (cr, x, y + radius);
-    cairo_line_to   (cr, x, y + height - radius);
-    cairo_curve_to  (cr, x, y + height - radius/2.0,
+    comac_move_to   (cr, x, y + radius);
+    comac_line_to   (cr, x, y + height - radius);
+    comac_curve_to  (cr, x, y + height - radius/2.0,
 			  x + radius/2.0, y + height,
 			  x + radius, y + height);
-    cairo_line_to   (cr, x + width - radius, y + height);
-    cairo_curve_to  (cr, x + width - radius/2.0, y + height,
+    comac_line_to   (cr, x + width - radius, y + height);
+    comac_curve_to  (cr, x + width - radius/2.0, y + height,
 		          x + width, y + height - radius/2.0,
 			  x + width, y + height - radius);
-    cairo_line_to   (cr, x + width, y + radius);
-    cairo_curve_to  (cr, x + width, y + radius/2.0,
+    comac_line_to   (cr, x + width, y + radius);
+    comac_curve_to  (cr, x + width, y + radius/2.0,
 		          x + width - radius/2.0, y,
 			  x + width - radius, y);
-    cairo_line_to   (cr, x + radius, y);
-    cairo_curve_to  (cr, x + radius/2.0, y, x, y + radius/2.0, x, y + radius);
-    cairo_close_path(cr);
+    comac_line_to   (cr, x + radius, y);
+    comac_curve_to  (cr, x + radius/2.0, y, x, y + radius/2.0, x, y + radius);
+    comac_close_path(cr);
 }
 
-static cairo_test_status_t
-draw_mono (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_mono (comac_t *cr, int width, int height)
 {
-    cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
-    cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
-    cairo_paint(cr);
+    comac_set_antialias(cr, COMAC_ANTIALIAS_NONE);
+    comac_set_operator(cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
+    comac_paint(cr);
 
-    cairo_rectangle(cr, 20, 20, 60, 60);
-    cairo_clip(cr);
+    comac_rectangle(cr, 20, 20, 60, 60);
+    comac_clip(cr);
 
     rounded_rectangle(cr, 0, 0, 100, 100, 10);
-    cairo_clip(cr);
+    comac_clip(cr);
 
-    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 1.0);
-    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
-    cairo_paint(cr);
+    comac_set_source_rgba(cr, 1.0, 0.0, 0.0, 1.0);
+    comac_set_operator(cr, COMAC_OPERATOR_OVER);
+    comac_paint(cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-draw_aa (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_aa (comac_t *cr, int width, int height)
 {
-    cairo_set_antialias(cr, CAIRO_ANTIALIAS_DEFAULT);
-    cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
-    cairo_paint(cr);
+    comac_set_antialias(cr, COMAC_ANTIALIAS_DEFAULT);
+    comac_set_operator(cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
+    comac_paint(cr);
 
-    cairo_rectangle(cr, 20, 20, 60, 60);
-    cairo_clip(cr);
+    comac_rectangle(cr, 20, 20, 60, 60);
+    comac_clip(cr);
 
     rounded_rectangle(cr, 0, 0, 100, 100, 10);
-    cairo_clip(cr);
+    comac_clip(cr);
 
-    cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 1.0);
-    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
-    cairo_paint(cr);
+    comac_set_source_rgba(cr, 1.0, 0.0, 0.0, 1.0);
+    comac_set_operator(cr, COMAC_OPERATOR_OVER);
+    comac_paint(cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (paint_clip_fill_mono,
+COMAC_TEST (paint_clip_fill_mono,
 	    "Test reduction of a paint with a clip",
 	    "paint, clip", /* keywords */
 	    NULL, /* requirements */
 	    100, 100,
 	    NULL, draw_mono)
-CAIRO_TEST (paint_clip_fill_aa,
+COMAC_TEST (paint_clip_fill_aa,
 	    "Test reduction of a paint with a clip",
 	    "paint, clip", /* keywords */
 	    NULL, /* requirements */

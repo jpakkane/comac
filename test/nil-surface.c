@@ -33,137 +33,137 @@
  *	https://bugs.freedesktop.org/show_bug.cgi?id=9906
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_surface_t *surface;
-    cairo_pattern_t *pattern;
-    cairo_t *cr2;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_surface_t *surface;
+    comac_pattern_t *pattern;
+    comac_t *cr2;
 
     /*
-     * 1. Test file-not-found from surface->pattern->cairo_t
+     * 1. Test file-not-found from surface->pattern->comac_t
      */
 
     /* Make a custom context to not interfere with the one passed in. */
-    cr2 = cairo_create (cairo_get_target (cr));
+    cr2 = comac_create (comac_get_target (cr));
 
     /* First, let's make a nil surface. */
-    surface = cairo_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
+    surface = comac_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
 
     /* Let the error propagate into a nil pattern. */
-    pattern = cairo_pattern_create_for_surface (surface);
+    pattern = comac_pattern_create_for_surface (surface);
 
-    /* Then let it propagate into the cairo_t. */
-    cairo_set_source (cr2, pattern);
-    cairo_paint (cr2);
+    /* Then let it propagate into the comac_t. */
+    comac_set_source (cr2, pattern);
+    comac_paint (cr2);
 
-    cairo_pattern_destroy (pattern);
-    cairo_surface_destroy (surface);
+    comac_pattern_destroy (pattern);
+    comac_surface_destroy (surface);
 
     /* Check that the error made it all that way. */
-    if (cairo_status (cr2) != CAIRO_STATUS_FILE_NOT_FOUND) {
-	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			cairo_status_to_string (cairo_status (cr2)),
-			cairo_status_to_string (CAIRO_STATUS_FILE_NOT_FOUND));
-	cairo_destroy (cr2);
-	return CAIRO_TEST_FAILURE;
+    if (comac_status (cr2) != COMAC_STATUS_FILE_NOT_FOUND) {
+	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+			comac_status_to_string (comac_status (cr2)),
+			comac_status_to_string (COMAC_STATUS_FILE_NOT_FOUND));
+	comac_destroy (cr2);
+	return COMAC_TEST_FAILURE;
     }
 
-    cairo_destroy (cr2);
+    comac_destroy (cr2);
 
     /*
-     * 2. Test NULL pointer pattern->cairo_t
+     * 2. Test NULL pointer pattern->comac_t
      */
-    cr2 = cairo_create (cairo_get_target (cr));
+    cr2 = comac_create (comac_get_target (cr));
 
     /* First, trigger the NULL pointer status. */
-    pattern = cairo_pattern_create_for_surface (NULL);
+    pattern = comac_pattern_create_for_surface (NULL);
 
-    /* Then let it propagate into the cairo_t. */
-    cairo_set_source (cr2, pattern);
-    cairo_paint (cr2);
+    /* Then let it propagate into the comac_t. */
+    comac_set_source (cr2, pattern);
+    comac_paint (cr2);
 
-    cairo_pattern_destroy (pattern);
+    comac_pattern_destroy (pattern);
 
     /* Check that the error made it all that way. */
-    if (cairo_status (cr2) != CAIRO_STATUS_NULL_POINTER) {
-	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			cairo_status_to_string (cairo_status (cr2)),
-			cairo_status_to_string (CAIRO_STATUS_NULL_POINTER));
-	cairo_destroy (cr2);
-	return CAIRO_TEST_FAILURE;
+    if (comac_status (cr2) != COMAC_STATUS_NULL_POINTER) {
+	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+			comac_status_to_string (comac_status (cr2)),
+			comac_status_to_string (COMAC_STATUS_NULL_POINTER));
+	comac_destroy (cr2);
+	return COMAC_TEST_FAILURE;
     }
 
-    cairo_destroy (cr2);
+    comac_destroy (cr2);
 
     /*
-     * 3. Test that cairo_surface_finish can accept NULL or a nil
+     * 3. Test that comac_surface_finish can accept NULL or a nil
      *    surface without crashing.
      */
 
-    cairo_surface_finish (NULL);
+    comac_surface_finish (NULL);
 
-    surface = cairo_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
-    cairo_surface_finish (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
+    comac_surface_finish (surface);
+    comac_surface_destroy (surface);
 
     /*
      * 4. OK, we're straying from the original name, but it's still a
      * similar kind of testing of error paths. Here we're making sure
-     * we can still call a cairo_get_* function after triggering an
+     * we can still call a comac_get_* function after triggering an
      * INVALID_RESTORE error.
      */
-    cr2 = cairo_create (cairo_get_target (cr));
+    cr2 = comac_create (comac_get_target (cr));
 
     /* Trigger invalid restore. */
-    cairo_restore (cr2);
-    if (cairo_status (cr2) != CAIRO_STATUS_INVALID_RESTORE) {
-	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			cairo_status_to_string (cairo_status (cr2)),
-			cairo_status_to_string (CAIRO_STATUS_INVALID_RESTORE));
-	cairo_destroy (cr2);
-	return CAIRO_TEST_FAILURE;
+    comac_restore (cr2);
+    if (comac_status (cr2) != COMAC_STATUS_INVALID_RESTORE) {
+	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+			comac_status_to_string (comac_status (cr2)),
+			comac_status_to_string (COMAC_STATUS_INVALID_RESTORE));
+	comac_destroy (cr2);
+	return COMAC_TEST_FAILURE;
     }
 
-    /* Test that we can still call cairo_get_fill_rule without crashing. */
-    cairo_get_fill_rule (cr2);
+    /* Test that we can still call comac_get_fill_rule without crashing. */
+    comac_get_fill_rule (cr2);
 
-    cairo_destroy (cr2);
+    comac_destroy (cr2);
 
     /*
-     * 5. Create a cairo_t for the NULL surface.
+     * 5. Create a comac_t for the NULL surface.
      */
-    cr2 = cairo_create (NULL);
+    cr2 = comac_create (NULL);
 
-    if (cairo_status (cr2) != CAIRO_STATUS_NULL_POINTER) {
-	cairo_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
-			cairo_status_to_string (cairo_status (cr2)),
-			cairo_status_to_string (CAIRO_STATUS_NULL_POINTER));
-	cairo_destroy (cr2);
-	return CAIRO_TEST_FAILURE;
+    if (comac_status (cr2) != COMAC_STATUS_NULL_POINTER) {
+	comac_test_log (ctx, "Error: Received status of \"%s\" rather than expected \"%s\"\n",
+			comac_status_to_string (comac_status (cr2)),
+			comac_status_to_string (COMAC_STATUS_NULL_POINTER));
+	comac_destroy (cr2);
+	return COMAC_TEST_FAILURE;
     }
 
     /* Test that get_target returns something valid */
-    if (cairo_get_target (cr2) == NULL) {
-	cairo_test_log (ctx, "Error: cairo_get_target() returned NULL\n");
-	cairo_destroy (cr2);
-	return CAIRO_TEST_FAILURE;
+    if (comac_get_target (cr2) == NULL) {
+	comac_test_log (ctx, "Error: comac_get_target() returned NULL\n");
+	comac_destroy (cr2);
+	return COMAC_TEST_FAILURE;
     }
 
     /* Test that push_group doesn't crash */
-    cairo_push_group (cr2);
-    cairo_stroke (cr2);
-    pattern = cairo_pop_group (cr2);
-    cairo_pattern_destroy (pattern);
+    comac_push_group (cr2);
+    comac_stroke (cr2);
+    pattern = comac_pop_group (cr2);
+    comac_pattern_destroy (pattern);
 
-    cairo_destroy (cr2);
+    comac_destroy (cr2);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (nil_surface,
-	    "Test that nil surfaces do not make cairo crash.",
+COMAC_TEST (nil_surface,
+	    "Test that nil surfaces do not make comac crash.",
 	    "api", /* keywords */
 	    NULL, /* requirements */
 	    1, 1,

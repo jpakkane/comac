@@ -28,34 +28,34 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *mask;
+    comac_pattern_t *mask;
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    cairo_push_group_with_content (cr, CAIRO_CONTENT_ALPHA);
+    comac_push_group_with_content (cr, COMAC_CONTENT_ALPHA);
     {
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_paint (cr);
+	comac_set_source_rgb (cr, 1, 1, 1);
+	comac_paint (cr);
 
-	cairo_move_to (cr, 0, 0);
-	cairo_line_to (cr, width, height);
-	cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-	cairo_set_line_width (cr, 10);
-	cairo_stroke (cr);
+	comac_move_to (cr, 0, 0);
+	comac_line_to (cr, width, height);
+	comac_set_operator (cr, COMAC_OPERATOR_CLEAR);
+	comac_set_line_width (cr, 10);
+	comac_stroke (cr);
     }
-    mask = cairo_pop_group (cr);
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_mask (cr, mask);
-    cairo_pattern_destroy (mask);
+    mask = comac_pop_group (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_mask (cr, mask);
+    comac_pattern_destroy (mask);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a8_clear,
+COMAC_TEST (a8_clear,
 	    "Test clear on an a8 surface",
 	    "a8, clear", /* keywords */
 	    NULL, /* requirements */

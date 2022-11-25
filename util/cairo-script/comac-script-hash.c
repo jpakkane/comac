@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -133,7 +133,7 @@ _csi_hash_table_init (csi_hash_table_t *hash_table,
     hash_table->entries = calloc (hash_table->arrangement->size,
 				  sizeof(csi_hash_entry_t *));
     if (hash_table->entries == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     hash_table->live_entries = 0;
     hash_table->used_entries = 0;
@@ -205,8 +205,8 @@ _csi_hash_table_lookup_unique_key (csi_hash_table_t *hash_table,
  * size, or control the number of dead entries by moving the entries
  * within the table.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if successful or
- * %CAIRO_STATUS_NO_MEMORY if out of memory.
+ * Return value: %COMAC_STATUS_SUCCESS if successful or
+ * %COMAC_STATUS_NO_MEMORY if out of memory.
  **/
 static csi_status_t
 _csi_hash_table_manage (csi_hash_table_t *hash_table)
@@ -252,14 +252,14 @@ _csi_hash_table_manage (csi_hash_table_t *hash_table)
     }
     else
     {
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     if (realloc) {
 	tmp.entries = calloc (tmp.arrangement->size,
 		              sizeof (csi_hash_entry_t*));
 	if (tmp.entries == NULL)
-	    return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	    return _csi_error (COMAC_STATUS_NO_MEMORY);
 
 	hash_table->used_entries = 0;
     }
@@ -285,7 +285,7 @@ _csi_hash_table_manage (csi_hash_table_t *hash_table)
 	hash_table->arrangement = tmp.arrangement;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
@@ -356,8 +356,8 @@ _csi_hash_table_lookup (csi_hash_table_t *hash_table,
  * the entry obtained with _csi_hash_table_lookup. Or if absolutely
  * necessary, use _csi_hash_table_remove first.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if successful or
- * %CAIRO_STATUS_NO_MEMORY if insufficient memory is available.
+ * Return value: %COMAC_STATUS_SUCCESS if successful or
+ * %COMAC_STATUS_NO_MEMORY if insufficient memory is available.
  **/
 csi_status_t
 _csi_hash_table_insert (csi_hash_table_t *hash_table,
@@ -380,7 +380,7 @@ _csi_hash_table_insert (csi_hash_table_t *hash_table,
 	hash_table->used_entries++;
 
     *entry = key_and_value;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static csi_hash_entry_t **
@@ -420,8 +420,8 @@ _csi_hash_table_lookup_exact_key (csi_hash_table_t *hash_table,
  *
  * Remove an entry from the hash table which points to @key.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if successful or
- * %CAIRO_STATUS_NO_MEMORY if out of memory.
+ * Return value: %COMAC_STATUS_SUCCESS if successful or
+ * %COMAC_STATUS_NO_MEMORY if out of memory.
  **/
 void
 _csi_hash_table_remove (csi_hash_table_t *hash_table,

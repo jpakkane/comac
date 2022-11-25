@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -38,11 +38,11 @@
 
 #include "comac.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_surface_t *
-_cairo_test_paginated_surface_create (cairo_surface_t *target);
+comac_surface_t *
+_comac_test_paginated_surface_create (comac_surface_t *target);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
 #endif /* TEST_PAGINATED_SURFACE_H */

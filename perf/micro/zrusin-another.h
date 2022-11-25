@@ -1,8 +1,8 @@
 /* The data in this file was created by Zack Rusin and downloaded from:
 
-   http://ktown.kde.org/~zrusin/examples/cairorender.tar.bz2
+   http://ktown.kde.org/~zrusin/examples/comacrender.tar.bz2
 
-   It is included in the cairo performance test suite by his
+   It is included in the comac performance test suite by his
    permission, (given in email to Carl Worth on 2006-10-23)
 */
 point_t zrusin_another[] = {

@@ -30,51 +30,51 @@
 
 #define SIZE 90
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr_surface;
+    comac_surface_t *surface;
+    comac_t *cr_surface;
 
     /* Create a 4-pixel image surface with my favorite four colors in each
      * quadrant. */
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 2, 2);
-    cr_surface = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, 2, 2);
+    cr_surface = comac_create (surface);
+    comac_surface_destroy (surface);
 
     /* upper-left = white */
-    cairo_set_source_rgb (cr_surface, 1, 1, 1);
-    cairo_rectangle (cr_surface, 0, 0, 1, 1);
-    cairo_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 1, 1, 1);
+    comac_rectangle (cr_surface, 0, 0, 1, 1);
+    comac_fill (cr_surface);
 
     /* upper-right = red */
-    cairo_set_source_rgb (cr_surface, 1, 0, 0);
-    cairo_rectangle (cr_surface, 1, 0, 1, 1);
-    cairo_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 1, 0, 0);
+    comac_rectangle (cr_surface, 1, 0, 1, 1);
+    comac_fill (cr_surface);
 
     /* lower-left = green */
-    cairo_set_source_rgb (cr_surface, 0, 1, 0);
-    cairo_rectangle (cr_surface, 0, 1, 1, 1);
-    cairo_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 0, 1, 0);
+    comac_rectangle (cr_surface, 0, 1, 1, 1);
+    comac_fill (cr_surface);
 
     /* lower-right = blue */
-    cairo_set_source_rgb (cr_surface, 0, 0, 1);
-    cairo_rectangle (cr_surface, 1, 1, 1, 1);
-    cairo_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 0, 0, 1);
+    comac_rectangle (cr_surface, 1, 1, 1, 1);
+    comac_fill (cr_surface);
 
     /* Now use extend pad to cover the entire surface with those 4 colors */
-    cairo_set_source_surface (cr, cairo_get_target (cr_surface),
+    comac_set_source_surface (cr, comac_get_target (cr_surface),
 			      width/2  - 1,
 			      height/2 - 1);
-    cairo_destroy (cr_surface);
-    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_PAD);
-    cairo_paint (cr);
+    comac_destroy (cr_surface);
+    comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_PAD);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (extend_pad,
-	    "Test CAIRO_EXTEND_PAD for surface patterns",
+COMAC_TEST (extend_pad,
+	    "Test COMAC_EXTEND_PAD for surface patterns",
 	    "extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,

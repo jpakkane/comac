@@ -27,7 +27,7 @@
 
 #define SIZE 30
 
-/* At one point, an optimization was proposed for cairo in which a
+/* At one point, an optimization was proposed for comac in which a
  * curve_to would be optimized as a line_to. The initial (buggy)
  * implementation verified that the slopes of several segments of the
  * spline's control polygon were identical, but left open the
@@ -43,50 +43,50 @@
  * others as above, and hence invalid to replace this spline with the
  * AD line segment.
  */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_set_line_width (cr, 1.0);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
+    comac_set_line_width (cr, 1.0);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_BEVEL);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
 
-    cairo_translate (cr, 0, 1.0);
+    comac_translate (cr, 0, 1.0);
 
     /* The CABD spline as described above. We ensure that the spline
      * folds over on itself outside the bounds of the image to avoid
      * the reference image having the curved portion of that fold,
      * (which would just be harder to match in all the backends than
      * we really want). */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		     10.5, 0.5);
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		     11.5, 0.5,
 		    -25.0, 0.5,
 		     31.0, 0.5);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 0, 2.0);
+    comac_translate (cr, 0, 2.0);
 
     /* A reflected version: DBAC */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		    19.5, 0.5);
 
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		    18.5, 0.5,
 		    55.0, 0.5,
 		    -1.0, 0.5);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (curve_to_as_line_to,
+COMAC_TEST (curve_to_as_line_to,
 	    "Test optimization treating curve_to as line_to",
 	    "path", /* keywords */
 	    NULL, /* requirements */

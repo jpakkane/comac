@@ -26,7 +26,7 @@
 
 #include "comac-perf.h"
 
-/* This test case measures how much time cairo takes to render the
+/* This test case measures how much time comac takes to render the
  * equivalent of the following gdk-pixbuf operation:
  *
  *    gdk_pixbuf_composite_color(dest,
@@ -38,17 +38,17 @@
  *                               0, 0,
  *                               8, 0x33333333, 0x88888888);
  *
- * Cairo is (at the time of writing) about 2-3 times as slow as
+ * Comac is (at the time of writing) about 2-3 times as slow as
  * gdk-pixbuf.
  */
 #define PAT_SIZE    16
 #define SRC_SIZE    64
 
-static cairo_pattern_t *checkerboard = NULL;
-static cairo_pattern_t *src_pattern = NULL;
+static comac_pattern_t *checkerboard = NULL;
+static comac_pattern_t *src_pattern = NULL;
 
-static cairo_time_t
-do_composite_checker (cairo_t *cr,
+static comac_time_t
+do_composite_checker (comac_t *cr,
                       int      width,
                       int      height,
 		      int loops)
@@ -57,61 +57,61 @@ do_composite_checker (cairo_t *cr,
     double xscale = width / (double) SRC_SIZE;
     double yscale = height / (double) SRC_SIZE;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	/* Fill the surface with our background. */
-	cairo_identity_matrix (cr);
-	cairo_set_source (cr, checkerboard);
-	cairo_paint (cr);
+	comac_identity_matrix (cr);
+	comac_set_source (cr, checkerboard);
+	comac_paint (cr);
 
 	/* Draw the scaled image on top. */
-	cairo_scale (cr, xscale, yscale);
-	cairo_set_source (cr, src_pattern);
-	cairo_paint (cr);
+	comac_scale (cr, xscale, yscale);
+	comac_set_source (cr, src_pattern);
+	comac_paint (cr);
     }
 
-    cairo_perf_timer_stop ();
-    return cairo_perf_timer_elapsed ();
+    comac_perf_timer_stop ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-composite_checker_enabled (cairo_perf_t *perf)
+comac_bool_t
+composite_checker_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "composite-checker", NULL);
+    return comac_perf_can_run (perf, "composite-checker", NULL);
 }
 
 void
-composite_checker (cairo_perf_t *perf,
-                   cairo_t      *cr,
+composite_checker (comac_perf_t *perf,
+                   comac_t      *cr,
                    int           width,
                    int           height)
 {
-    cairo_surface_t *image;
+    comac_surface_t *image;
 
     /* Create the checker pattern. We don't actually need to draw
      * anything on it since that wouldn't affect performance.
      */
-    image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+    image = comac_image_surface_create (COMAC_FORMAT_ARGB32,
                                         PAT_SIZE,
                                         PAT_SIZE);
-    checkerboard = cairo_pattern_create_for_surface (image);
-    cairo_pattern_set_filter (checkerboard, CAIRO_FILTER_NEAREST);
-    cairo_pattern_set_extend (checkerboard, CAIRO_EXTEND_REPEAT);
-    cairo_surface_destroy (image);
+    checkerboard = comac_pattern_create_for_surface (image);
+    comac_pattern_set_filter (checkerboard, COMAC_FILTER_NEAREST);
+    comac_pattern_set_extend (checkerboard, COMAC_EXTEND_REPEAT);
+    comac_surface_destroy (image);
 
     /* Create the image source pattern. Again we use the NEAREST
      * filtering which should be fastest.
     */
-    image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+    image = comac_image_surface_create (COMAC_FORMAT_ARGB32,
                                         SRC_SIZE,
                                         SRC_SIZE);
-    src_pattern = cairo_pattern_create_for_surface (image);
-    cairo_pattern_set_filter (src_pattern, CAIRO_FILTER_NEAREST);
-    cairo_surface_destroy (image);
+    src_pattern = comac_pattern_create_for_surface (image);
+    comac_pattern_set_filter (src_pattern, COMAC_FILTER_NEAREST);
+    comac_surface_destroy (image);
 
-    cairo_perf_run (perf, "composite-checker", do_composite_checker, NULL);
+    comac_perf_run (perf, "composite-checker", do_composite_checker, NULL);
 
-    cairo_pattern_destroy (checkerboard);
-    cairo_pattern_destroy (src_pattern);
+    comac_pattern_destroy (checkerboard);
+    comac_pattern_destroy (src_pattern);
 }

@@ -28,28 +28,28 @@
 #define WIDTH 20
 #define HEIGHT 20
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0.3, 0.4, 0.5);
+    comac_set_source_rgb (cr, 0.3, 0.4, 0.5);
 
     /* This should be equivalent to a simple rectangle, such as may be
      * constructed for a rounded-rectangle with corner radii of 0...
      */
-    cairo_arc (cr, 5, 5, 0, M_PI, 3*M_PI/2);
-    cairo_arc (cr, 15, 5, 0, 3*M_PI/2, 2*M_PI);
-    cairo_arc (cr, 15, 15, 0, 0, M_PI/2);
-    cairo_arc (cr, 5, 15, 0, M_PI/2, M_PI);
+    comac_arc (cr, 5, 5, 0, M_PI, 3*M_PI/2);
+    comac_arc (cr, 15, 5, 0, 3*M_PI/2, 2*M_PI);
+    comac_arc (cr, 15, 15, 0, 0, M_PI/2);
+    comac_arc (cr, 5, 15, 0, M_PI/2, M_PI);
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (degenerate_arcs,
+COMAC_TEST (degenerate_arcs,
 	    "Tests path construction using a series of degenerate (radius=0) arcs",
 	    "arc, fill", /* keywords */
 	    NULL, /* requirements */

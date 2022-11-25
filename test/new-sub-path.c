@@ -27,46 +27,46 @@
 
 #define SIZE 10
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); /* blue */
+    comac_set_source_rgb (cr, 0.0, 0.0, 1.0); /* blue */
 
-    /* Test cairo_new_sub_path followed by several different
+    /* Test comac_new_sub_path followed by several different
      * path-modification functions in turn...
      */
 
-    /* ... cairo_move_to */
-    cairo_new_sub_path (cr);
-    cairo_move_to (cr, SIZE, SIZE);
-    cairo_line_to (cr, SIZE, 2 * SIZE);
+    /* ... comac_move_to */
+    comac_new_sub_path (cr);
+    comac_move_to (cr, SIZE, SIZE);
+    comac_line_to (cr, SIZE, 2 * SIZE);
 
-    /* ... cairo_line_to */
-    cairo_new_sub_path (cr);
-    cairo_line_to (cr, 2 * SIZE, 1.5 * SIZE);
-    cairo_line_to (cr, 3 * SIZE, 1.5 * SIZE);
+    /* ... comac_line_to */
+    comac_new_sub_path (cr);
+    comac_line_to (cr, 2 * SIZE, 1.5 * SIZE);
+    comac_line_to (cr, 3 * SIZE, 1.5 * SIZE);
 
-    /* ... cairo_curve_to */
-    cairo_new_sub_path (cr);
-    cairo_curve_to (cr,
+    /* ... comac_curve_to */
+    comac_new_sub_path (cr);
+    comac_curve_to (cr,
 		    4.0 * SIZE, 1.5 * SIZE,
 		    4.5 * SIZE, 1.0 * SIZE,
 		    5.0 * SIZE, 1.5 * SIZE);
 
-    /* ... cairo_arc */
-    cairo_new_sub_path (cr);
-    cairo_arc (cr,
+    /* ... comac_arc */
+    comac_new_sub_path (cr);
+    comac_arc (cr,
 	       6.5 * SIZE, 1.5 * SIZE,
 	       0.5 * SIZE,
 	       0.0, 2.0 * M_PI);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (new_sub_path,
-	    "Test the cairo_new_sub_path call",
+COMAC_TEST (new_sub_path,
+	    "Test the comac_new_sub_path call",
 	    "path", /* keywords */
 	    NULL, /* requirements */
 	    8 * SIZE,

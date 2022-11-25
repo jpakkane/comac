@@ -55,76 +55,76 @@ static const int n_stops[] = { 2, 3 };
 #define HEIGHT N_N_STOPS * N_ROTATE_ANGLES * UNIT_SIZE + (N_N_STOPS * N_ROTATE_ANGLES + 1) * PAD
 
 static void
-draw_unit (cairo_t *cr,
+draw_unit (comac_t *cr,
 	   double   gradient_angle,
 	   double   rotate_angle,
 	   int      n_stops)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_rectangle (cr, 0, 0, 1, 1);
-    cairo_clip (cr);
-    cairo_new_path(cr);
+    comac_rectangle (cr, 0, 0, 1, 1);
+    comac_clip (cr);
+    comac_new_path(cr);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_rectangle (cr, 0, 0, 1, 1);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_rectangle (cr, 0, 0, 1, 1);
+    comac_fill (cr);
 
-    cairo_translate (cr, 0.5, 0.5);
-    cairo_scale (cr, 1 / 1.5, 1 / 1.5);
-    cairo_rotate (cr, rotate_angle);
+    comac_translate (cr, 0.5, 0.5);
+    comac_scale (cr, 1 / 1.5, 1 / 1.5);
+    comac_rotate (cr, rotate_angle);
 
-    pattern = cairo_pattern_create_linear (-0.5 * cos (gradient_angle),  -0.5 * sin (gradient_angle),
+    pattern = comac_pattern_create_linear (-0.5 * cos (gradient_angle),  -0.5 * sin (gradient_angle),
 					    0.5 * cos (gradient_angle),   0.5 * sin (gradient_angle));
 
     if (n_stops == 2) {
-	cairo_pattern_add_color_stop_rgb (pattern, 0.,
+	comac_pattern_add_color_stop_rgb (pattern, 0.,
 					  0.3, 0.3, 0.3);
-	cairo_pattern_add_color_stop_rgb (pattern, 1.,
+	comac_pattern_add_color_stop_rgb (pattern, 1.,
 					  1.0, 1.0, 1.0);
     } else {
-	cairo_pattern_add_color_stop_rgb (pattern, 0.,
+	comac_pattern_add_color_stop_rgb (pattern, 0.,
 					  1.0, 0.0, 0.0);
-	cairo_pattern_add_color_stop_rgb (pattern, 0.5,
+	comac_pattern_add_color_stop_rgb (pattern, 0.5,
 					  1.0, 1.0, 1.0);
-	cairo_pattern_add_color_stop_rgb (pattern, 1.,
+	comac_pattern_add_color_stop_rgb (pattern, 1.,
 					  0.0, 0.0, 1.0);
     }
 
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
-    cairo_rectangle (cr, -0.5, -0.5, 1, 1);
-    cairo_fill (cr);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
+    comac_rectangle (cr, -0.5, -0.5, 1, 1);
+    comac_fill (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i, j, k;
 
-    cairo_set_source_rgb (cr, 0.5, 0.5, 0.5);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.5, 0.5, 0.5);
+    comac_paint (cr);
 
     for (i = 0; i < N_GRADIENT_ANGLES; i++)
 	for (j = 0; j < N_ROTATE_ANGLES; j++)
 	  for (k = 0; k < N_N_STOPS; k++) {
-		cairo_save (cr);
-		cairo_translate (cr,
+		comac_save (cr);
+		comac_translate (cr,
 				 PAD + (PAD + UNIT_SIZE) * i,
 				 PAD + (PAD + UNIT_SIZE) * (N_ROTATE_ANGLES * k + j));
-		cairo_scale (cr, UNIT_SIZE, UNIT_SIZE);
+		comac_scale (cr, UNIT_SIZE, UNIT_SIZE);
 
 		draw_unit (cr,
 			   gradient_angles[i] * M_PI / 180.,
 			   rotate_angles[j] * M_PI / 180.,
 			   n_stops[k]);
-		cairo_restore (cr);
+		comac_restore (cr);
 	    }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (linear_gradient,
+COMAC_TEST (linear_gradient,
 	    "Tests the drawing of linear gradients",
 	    "gradient", /* keywords */
 	    NULL, /* requirements */

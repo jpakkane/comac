@@ -31,82 +31,82 @@
 
 #include "comac-boilerplate-xlib.h"
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
     Display *dpy;
     XRenderPictFormat *orig_format, *format;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     Pixmap pixmap;
     int screen;
-    cairo_test_status_t result;
+    comac_test_status_t result;
 
-    result = CAIRO_TEST_UNTESTED;
+    result = COMAC_TEST_UNTESTED;
 
-    if (! cairo_test_is_target_enabled (ctx, "xlib"))
+    if (! comac_test_is_target_enabled (ctx, "xlib"))
 	goto CLEANUP_TEST;
 
     dpy = XOpenDisplay (NULL);
     if (! dpy) {
-	cairo_test_log (ctx, "Error: Cannot open display: %s, skipping.\n",
+	comac_test_log (ctx, "Error: Cannot open display: %s, skipping.\n",
 			XDisplayName (NULL));
 	goto CLEANUP_TEST;
     }
 
-    result = CAIRO_TEST_FAILURE;
+    result = COMAC_TEST_FAILURE;
 
     screen = DefaultScreen (dpy);
 
-    cairo_test_log (ctx, "Testing with image surface.\n");
+    comac_test_log (ctx, "Testing with image surface.\n");
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
 
-    format = cairo_xlib_surface_get_xrender_format (surface);
+    format = comac_xlib_surface_get_xrender_format (surface);
     if (format != NULL) {
-	cairo_test_log (ctx, "Error: expected NULL for image surface\n");
+	comac_test_log (ctx, "Error: expected NULL for image surface\n");
 	goto CLEANUP_SURFACE;
     }
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
-    cairo_test_log (ctx, "Testing with non-xrender xlib surface.\n");
+    comac_test_log (ctx, "Testing with non-xrender xlib surface.\n");
 
     pixmap = XCreatePixmap (dpy, DefaultRootWindow (dpy),
 			    1, 1, DefaultDepth (dpy, screen));
-    surface = cairo_xlib_surface_create (dpy, pixmap,
+    surface = comac_xlib_surface_create (dpy, pixmap,
 					 DefaultVisual (dpy, screen),
 					 1, 1);
     orig_format = XRenderFindVisualFormat (dpy, DefaultVisual (dpy, screen));
-    format = cairo_xlib_surface_get_xrender_format (surface);
+    format = comac_xlib_surface_get_xrender_format (surface);
     if (format != orig_format) {
-	cairo_test_log (ctx, "Error: did not receive the same format as XRenderFindVisualFormat\n");
+	comac_test_log (ctx, "Error: did not receive the same format as XRenderFindVisualFormat\n");
 	goto CLEANUP_PIXMAP;
     }
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
     XFreePixmap (dpy, pixmap);
 
-    cairo_test_log (ctx, "Testing with xlib xrender surface.\n");
+    comac_test_log (ctx, "Testing with xlib xrender surface.\n");
 
     orig_format = XRenderFindStandardFormat (dpy, PictStandardARGB32);
     pixmap = XCreatePixmap (dpy, DefaultRootWindow (dpy),
 			    1, 1, 32);
-    surface = cairo_xlib_surface_create_with_xrender_format (dpy,
+    surface = comac_xlib_surface_create_with_xrender_format (dpy,
 							     pixmap,
 							     DefaultScreenOfDisplay (dpy),
 							     orig_format,
 							     1, 1);
-    format = cairo_xlib_surface_get_xrender_format (surface);
+    format = comac_xlib_surface_get_xrender_format (surface);
     if (format != orig_format) {
-	cairo_test_log (ctx, "Error: did not receive the same format originally set\n");
+	comac_test_log (ctx, "Error: did not receive the same format originally set\n");
 	goto CLEANUP_PIXMAP;
     }
 
-    result = CAIRO_TEST_SUCCESS;
+    result = COMAC_TEST_SUCCESS;
 
   CLEANUP_PIXMAP:
     XFreePixmap (dpy, pixmap);
   CLEANUP_SURFACE:
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     XCloseDisplay (dpy);
 
@@ -114,7 +114,7 @@ preamble (cairo_test_context_t *ctx)
     return result;
 }
 
-CAIRO_TEST (get_xrender_format,
+COMAC_TEST (get_xrender_format,
 	    "Check XRender specific API",
 	    "xrender, api", /* keywords */
 	    NULL, /* requirements */

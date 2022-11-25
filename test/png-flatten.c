@@ -30,9 +30,9 @@
 int
 main (int argc, char *argv[])
 {
-    cairo_t *cr;
-    cairo_surface_t *argb, *rgb24;
-    cairo_status_t status;
+    comac_t *cr;
+    comac_surface_t *argb, *rgb24;
+    comac_status_t status;
     const char *input, *output;
 
     if (argc != 3) {
@@ -44,32 +44,32 @@ main (int argc, char *argv[])
     input = argv[1];
     output = argv[2];
 
-    argb = cairo_image_surface_create_from_png (input);
-    status = cairo_surface_status (argb);
+    argb = comac_image_surface_create_from_png (input);
+    status = comac_surface_status (argb);
     if (status) {
 	fprintf (stderr, "%s: Error: Failed to load %s: %s\n",
-		 argv[0], input, cairo_status_to_string (status));
+		 argv[0], input, comac_status_to_string (status));
 	return 1;
     }
 
-    rgb24 = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
-					cairo_image_surface_get_width (argb),
-					cairo_image_surface_get_height (argb));
+    rgb24 = comac_image_surface_create (COMAC_FORMAT_RGB24,
+					comac_image_surface_get_width (argb),
+					comac_image_surface_get_height (argb));
 
-    cr = cairo_create (rgb24);
+    cr = comac_create (rgb24);
 
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_set_source_surface (cr, argb, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, argb, 0, 0);
+    comac_paint (cr);
 
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
-    status = cairo_surface_write_to_png (rgb24, output);
+    status = comac_surface_write_to_png (rgb24, output);
     if (status) {
 	fprintf (stderr, "%s: Error: Failed to write %s: %s\n",
-		 argv[0], output, cairo_status_to_string (status));
+		 argv[0], output, comac_status_to_string (status));
 	return 1;
     }
 

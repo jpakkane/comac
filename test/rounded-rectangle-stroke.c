@@ -31,32 +31,32 @@
 /* A very simple test to exercise the scan rasterisers with constant regions. */
 
 static void
-rounded_rectangle (cairo_t *cr, int x, int y, int w, int h, int r)
+rounded_rectangle (comac_t *cr, int x, int y, int w, int h, int r)
 {
-    cairo_new_sub_path (cr);
-    cairo_arc (cr, x + r, y + r, r, M_PI, 3 * M_PI / 2);
-    cairo_arc (cr, x + w - r, y + r, r, 3 *M_PI / 2, 2 * M_PI);
-    cairo_arc (cr, x + w - r, y + h - r, r, 0, M_PI / 2);
-    cairo_arc (cr, x + r, y + h - r, r, M_PI / 2, M_PI);
-    cairo_close_path (cr);
+    comac_new_sub_path (cr);
+    comac_arc (cr, x + r, y + r, r, M_PI, 3 * M_PI / 2);
+    comac_arc (cr, x + w - r, y + r, r, 3 *M_PI / 2, 2 * M_PI);
+    comac_arc (cr, x + w - r, y + h - r, r, 0, M_PI / 2);
+    comac_arc (cr, x + r, y + h - r, r, M_PI / 2, M_PI);
+    comac_close_path (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* Paint background white, then draw in black. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
 
-    cairo_set_line_width (cr, 10);
+    comac_set_line_width (cr, 10);
     rounded_rectangle (cr, 10, 10, width-20, height-20, 10);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (rounded_rectangle_stroke,
+COMAC_TEST (rounded_rectangle_stroke,
 	    "Tests handling of rounded rectangles, the UI designers favourite",
 	    "stroke, rounded-rectangle", /* keywords */
 	    NULL, /* requirements */

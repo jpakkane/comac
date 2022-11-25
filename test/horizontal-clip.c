@@ -35,41 +35,41 @@
 #define BUGY 1
 #define BUGX (4 * BUGY * WIDTH * 256)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_move_to (cr,       - BUGX, 6 - BUGY);
-    cairo_line_to (cr,       + BUGX, 6 + BUGY);
-    cairo_line_to (cr, WIDTH + BUGX, 2 - BUGY);
-    cairo_line_to (cr, WIDTH - BUGX, 2 + BUGY);
-    cairo_fill (cr);
+    comac_move_to (cr,       - BUGX, 6 - BUGY);
+    comac_line_to (cr,       + BUGX, 6 + BUGY);
+    comac_line_to (cr, WIDTH + BUGX, 2 - BUGY);
+    comac_line_to (cr, WIDTH - BUGX, 2 + BUGY);
+    comac_fill (cr);
 
-    cairo_move_to (cr, WIDTH + BUGX, 8  - BUGY);
-    cairo_line_to (cr, WIDTH - BUGX, 8  + BUGY);
-    cairo_line_to (cr,       - BUGX, 12 - BUGY);
-    cairo_line_to (cr,       + BUGX, 12 + BUGY);
-    cairo_fill (cr);
+    comac_move_to (cr, WIDTH + BUGX, 8  - BUGY);
+    comac_line_to (cr, WIDTH - BUGX, 8  + BUGY);
+    comac_line_to (cr,       - BUGX, 12 - BUGY);
+    comac_line_to (cr,       + BUGX, 12 + BUGY);
+    comac_fill (cr);
 
-    cairo_move_to (cr,       - BUGX, 14 - BUGY);
-    cairo_line_to (cr,       + BUGX, 14 + BUGY);
-    cairo_line_to (cr, WIDTH + BUGX, 18 - BUGY);
-    cairo_line_to (cr, WIDTH - BUGX, 18 + BUGY);
-    cairo_fill (cr);
+    comac_move_to (cr,       - BUGX, 14 - BUGY);
+    comac_line_to (cr,       + BUGX, 14 + BUGY);
+    comac_line_to (cr, WIDTH + BUGX, 18 - BUGY);
+    comac_line_to (cr, WIDTH - BUGX, 18 + BUGY);
+    comac_fill (cr);
 
-    cairo_move_to (cr, WIDTH + BUGX, 24 - BUGY);
-    cairo_line_to (cr, WIDTH - BUGX, 24 + BUGY);
-    cairo_line_to (cr,       - BUGX, 20 - BUGY);
-    cairo_line_to (cr,       + BUGX, 20 + BUGY);
-    cairo_fill (cr);
+    comac_move_to (cr, WIDTH + BUGX, 24 - BUGY);
+    comac_line_to (cr, WIDTH - BUGX, 24 + BUGY);
+    comac_line_to (cr,       - BUGX, 20 - BUGY);
+    comac_line_to (cr,       + BUGX, 20 + BUGY);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (horizontal_clip,
+COMAC_TEST (horizontal_clip,
 	    "Tests intersection of a nearly horizontal lines with a clipped polygon",
 	    "clip, fill", /* keywords */
 	    NULL, /* requirements */

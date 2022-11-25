@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * Contributor(s):
  *	Chris Wilson <chris@chris-wilson.co.uk>
@@ -43,8 +43,8 @@
 
 typedef struct _rectangle {
     struct _rectangle *next, *prev;
-    cairo_fixed_t left, right;
-    cairo_fixed_t top, bottom;
+    comac_fixed_t left, right;
+    comac_fixed_t top, bottom;
     int32_t top_y, bottom_y;
     int dir;
 } rectangle_t;
@@ -79,11 +79,11 @@ typedef struct {
 	    int x, covered, uncovered;
 	} head, tail, *cursor;
 	unsigned int count;
-	cairo_freepool_t pool;
+	comac_freepool_t pool;
     } coverage;
 
-    cairo_half_open_span_t spans_stack[CAIRO_STACK_ARRAY_LENGTH (cairo_half_open_span_t)];
-    cairo_half_open_span_t *spans;
+    comac_half_open_span_t spans_stack[COMAC_STACK_ARRAY_LENGTH (comac_half_open_span_t)];
+    comac_half_open_span_t *spans;
     unsigned int num_spans;
     unsigned int size_spans;
 
@@ -127,14 +127,14 @@ pqueue_fini (pqueue_t *pq)
 	free (pq->elements);
 }
 
-static cairo_bool_t
+static comac_bool_t
 pqueue_grow (pqueue_t *pq)
 {
     rectangle_t **new_elements;
     pq->max_size *= 2;
 
     if (pq->elements == pq->elements_embedded) {
-	new_elements = _cairo_malloc_ab (pq->max_size,
+	new_elements = _comac_malloc_ab (pq->max_size,
 					 sizeof (rectangle_t *));
 	if (unlikely (new_elements == NULL))
 	    return FALSE;
@@ -142,7 +142,7 @@ pqueue_grow (pqueue_t *pq)
 	memcpy (new_elements, pq->elements_embedded,
 		sizeof (pq->elements_embedded));
     } else {
-	new_elements = _cairo_realloc_ab (pq->elements,
+	new_elements = _comac_realloc_ab (pq->elements,
 					  pq->max_size,
 					  sizeof (rectangle_t *));
 	if (unlikely (new_elements == NULL))
@@ -162,7 +162,7 @@ pqueue_push (sweep_line_t *sweep, rectangle_t *rectangle)
     if (unlikely (sweep->stop.size + 1 == sweep->stop.max_size)) {
 	if (unlikely (! pqueue_grow (&sweep->stop)))
 	    longjmp (sweep->jmpbuf,
-		     _cairo_error (CAIRO_STATUS_NO_MEMORY));
+		     _comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     elements = sweep->stop.elements;
@@ -216,7 +216,7 @@ peek_stop (sweep_line_t *sweep)
     return sweep->stop.elements[PQ_FIRST_ENTRY];
 }
 
-CAIRO_COMBSORT_DECLARE (rectangle_sort, rectangle_t *, rectangle_compare_start)
+COMAC_COMBSORT_DECLARE (rectangle_sort, rectangle_t *, rectangle_compare_start)
 
 static void
 sweep_line_init (sweep_line_t *sweep)
@@ -227,7 +227,7 @@ sweep_line_init (sweep_line_t *sweep)
     sweep->tail.prev = &sweep->head;
     sweep->insert_cursor = &sweep->tail;
 
-    _cairo_freepool_init (&sweep->coverage.pool, sizeof (struct cell));
+    _comac_freepool_init (&sweep->coverage.pool, sizeof (struct cell));
 
     sweep->spans = sweep->spans_stack;
     sweep->size_spans = ARRAY_LENGTH (sweep->spans_stack);
@@ -243,7 +243,7 @@ sweep_line_init (sweep_line_t *sweep)
 static void
 sweep_line_fini (sweep_line_t *sweep)
 {
-    _cairo_freepool_fini (&sweep->coverage.pool);
+    _comac_freepool_fini (&sweep->coverage.pool);
     pqueue_fini (&sweep->stop);
 
     if (sweep->spans != sweep->spans_stack)
@@ -282,10 +282,10 @@ add_cell (sweep_line_t *sweep, int x, int covered, int uncovered)
 
 	sweep->coverage.count++;
 
-	c = _cairo_freepool_alloc (&sweep->coverage.pool);
+	c = _comac_freepool_alloc (&sweep->coverage.pool);
 	if (unlikely (c == NULL)) {
 	    longjmp (sweep->jmpbuf,
-		     _cairo_error (CAIRO_STATUS_NO_MEMORY));
+		     _comac_error (COMAC_STATUS_NO_MEMORY));
 	}
 
 	cell->prev->next = c;
@@ -335,25 +335,25 @@ _active_edges_to_spans (sweep_line_t	*sweep)
 	int frac, i;
 
 	if (y == rectangle->bottom_y) {
-	    height = rectangle->bottom & CAIRO_FIXED_FRAC_MASK;
+	    height = rectangle->bottom & COMAC_FIXED_FRAC_MASK;
 	    if (height == 0)
 		continue;
 	} else
-	    height = CAIRO_FIXED_ONE;
+	    height = COMAC_FIXED_ONE;
 	if (y == rectangle->top_y)
-	    height -= rectangle->top & CAIRO_FIXED_FRAC_MASK;
+	    height -= rectangle->top & COMAC_FIXED_FRAC_MASK;
 	height *= rectangle->dir;
 
-	i = _cairo_fixed_integer_part (rectangle->left),
-	frac = _cairo_fixed_fractional_part (rectangle->left);
+	i = _comac_fixed_integer_part (rectangle->left),
+	frac = _comac_fixed_fractional_part (rectangle->left);
 	add_cell (sweep, i,
-		  (CAIRO_FIXED_ONE-frac) * height,
+		  (COMAC_FIXED_ONE-frac) * height,
 		  frac * height);
 
-	i = _cairo_fixed_integer_part (rectangle->right),
-	frac = _cairo_fixed_fractional_part (rectangle->right);
+	i = _comac_fixed_integer_part (rectangle->right),
+	frac = _comac_fixed_fractional_part (rectangle->right);
 	add_cell (sweep, i,
-		  -(CAIRO_FIXED_ONE-frac) * height,
+		  -(COMAC_FIXED_ONE-frac) * height,
 		  -frac * height);
     }
 
@@ -367,9 +367,9 @@ _active_edges_to_spans (sweep_line_t	*sweep)
 	if (sweep->spans != sweep->spans_stack)
 	    free (sweep->spans);
 
-	sweep->spans = _cairo_malloc_ab (size, sizeof (cairo_half_open_span_t));
+	sweep->spans = _comac_malloc_ab (size, sizeof (comac_half_open_span_t));
 	if (unlikely (sweep->spans == NULL))
-	    longjmp (sweep->jmpbuf, _cairo_error (CAIRO_STATUS_NO_MEMORY));
+	    longjmp (sweep->jmpbuf, _comac_error (COMAC_STATUS_NO_MEMORY));
 
 	sweep->size_spans = size;
     }
@@ -379,7 +379,7 @@ _active_edges_to_spans (sweep_line_t	*sweep)
     for (cell = sweep->coverage.head.next; cell != &sweep->coverage.tail; cell = cell->next) {
 	if (cell->x != prev_x && coverage != prev_coverage) {
 	    int n = sweep->num_spans++;
-	    int c = coverage >> (CAIRO_FIXED_FRAC_BITS * 2 - 8);
+	    int c = coverage >> (COMAC_FIXED_FRAC_BITS * 2 - 8);
 	    sweep->spans[n].x = prev_x;
 	    sweep->spans[n].inverse = 0;
 	    sweep->spans[n].coverage = c - (c >> 8);
@@ -389,7 +389,7 @@ _active_edges_to_spans (sweep_line_t	*sweep)
 	coverage += cell->covered;
 	if (coverage != prev_coverage) {
 	    int n = sweep->num_spans++;
-	    int c = coverage >> (CAIRO_FIXED_FRAC_BITS * 2 - 8);
+	    int c = coverage >> (COMAC_FIXED_FRAC_BITS * 2 - 8);
 	    sweep->spans[n].x = cell->x;
 	    sweep->spans[n].inverse = 0;
 	    sweep->spans[n].coverage = c - (c >> 8);
@@ -398,12 +398,12 @@ _active_edges_to_spans (sweep_line_t	*sweep)
 	coverage += cell->uncovered;
 	prev_x = cell->x + 1;
     }
-    _cairo_freepool_reset (&sweep->coverage.pool);
+    _comac_freepool_reset (&sweep->coverage.pool);
 
     if (sweep->num_spans) {
 	if (prev_x <= sweep->xmax) {
 	    int n = sweep->num_spans++;
-	    int c = coverage >> (CAIRO_FIXED_FRAC_BITS * 2 - 8);
+	    int c = coverage >> (COMAC_FIXED_FRAC_BITS * 2 - 8);
 	    sweep->spans[n].x = prev_x;
 	    sweep->spans[n].inverse = 0;
 	    sweep->spans[n].coverage = c - (c >> 8);
@@ -469,10 +469,10 @@ sweep_line_insert (sweep_line_t	*sweep,
 
 static void
 render_rows (sweep_line_t *sweep_line,
-	     cairo_span_renderer_t *renderer,
+	     comac_span_renderer_t *renderer,
 	     int height)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     _active_edges_to_spans (sweep_line);
 
@@ -484,23 +484,23 @@ render_rows (sweep_line_t *sweep_line,
 	longjmp (sweep_line->jmpbuf, status);
 }
 
-static cairo_status_t
-generate (cairo_rectangular_scan_converter_t *self,
-	  cairo_span_renderer_t	*renderer,
+static comac_status_t
+generate (comac_rectangular_scan_converter_t *self,
+	  comac_span_renderer_t	*renderer,
 	  rectangle_t **rectangles)
 {
     sweep_line_t sweep_line;
     rectangle_t *start, *stop;
-    cairo_status_t status;
+    comac_status_t status;
 
     sweep_line_init (&sweep_line);
-    sweep_line.xmin = _cairo_fixed_integer_part (self->extents.p1.x);
-    sweep_line.xmax = _cairo_fixed_integer_part (self->extents.p2.x);
+    sweep_line.xmin = _comac_fixed_integer_part (self->extents.p1.x);
+    sweep_line.xmax = _comac_fixed_integer_part (self->extents.p2.x);
     sweep_line.start = rectangles;
     if ((status = setjmp (sweep_line.jmpbuf)))
 	goto out;
 
-    sweep_line.current_y = _cairo_fixed_integer_part (self->extents.p1.y);
+    sweep_line.current_y = _comac_fixed_integer_part (self->extents.p1.y);
     start = *sweep_line.start++;
     do {
 	if (start->top_y != sweep_line.current_y) {
@@ -559,7 +559,7 @@ generate (cairo_rectangular_scan_converter_t *self,
 	    goto out;
     }
 
-    while (++sweep_line.current_y < _cairo_fixed_integer_part (self->extents.p2.y)) {
+    while (++sweep_line.current_y < _comac_fixed_integer_part (self->extents.p2.y)) {
 	if (stop->bottom_y != sweep_line.current_y) {
 	    render_rows (&sweep_line, renderer,
 			 stop->bottom_y - sweep_line.current_y);
@@ -582,20 +582,20 @@ generate (cairo_rectangular_scan_converter_t *self,
 
     return status;
 }
-static void generate_row(cairo_span_renderer_t *renderer,
+static void generate_row(comac_span_renderer_t *renderer,
 			 const rectangle_t *r,
 			 int y, int h,
 			 uint16_t coverage)
 {
-    cairo_half_open_span_t spans[4];
+    comac_half_open_span_t spans[4];
     unsigned int num_spans = 0;
-    int x1 = _cairo_fixed_integer_part (r->left);
-    int x2 = _cairo_fixed_integer_part (r->right);
+    int x1 = _comac_fixed_integer_part (r->left);
+    int x2 = _comac_fixed_integer_part (r->right);
     if (x2 > x1) {
-	if (! _cairo_fixed_is_integer (r->left)) {
+	if (! _comac_fixed_is_integer (r->left)) {
 	    spans[num_spans].x = x1;
 	    spans[num_spans].coverage =
-		coverage * (256 - _cairo_fixed_fractional_part (r->left)) >> 8;
+		coverage * (256 - _comac_fixed_fractional_part (r->left)) >> 8;
 	    num_spans++;
 	    x1++;
 	}
@@ -606,10 +606,10 @@ static void generate_row(cairo_span_renderer_t *renderer,
 	    num_spans++;
 	}
 
-	if (! _cairo_fixed_is_integer (r->right)) {
+	if (! _comac_fixed_is_integer (r->right)) {
 	    spans[num_spans].x = x2++;
 	    spans[num_spans].coverage =
-		coverage * _cairo_fixed_fractional_part (r->right) >> 8;
+		coverage * _comac_fixed_fractional_part (r->right) >> 8;
 	    num_spans++;
 	}
     } else {
@@ -625,47 +625,47 @@ static void generate_row(cairo_span_renderer_t *renderer,
     renderer->render_rows (renderer, y, h, spans, num_spans);
 }
 
-static cairo_status_t
-generate_box (cairo_rectangular_scan_converter_t *self,
-	      cairo_span_renderer_t	*renderer)
+static comac_status_t
+generate_box (comac_rectangular_scan_converter_t *self,
+	      comac_span_renderer_t	*renderer)
 {
     const rectangle_t *r = self->chunks.base;
-    int y1 = _cairo_fixed_integer_part (r->top);
-    int y2 = _cairo_fixed_integer_part (r->bottom);
+    int y1 = _comac_fixed_integer_part (r->top);
+    int y2 = _comac_fixed_integer_part (r->bottom);
     if (y2 > y1) {
-	if (! _cairo_fixed_is_integer (r->top)) {
+	if (! _comac_fixed_is_integer (r->top)) {
 	    generate_row(renderer, r, y1, 1,
-			 256 - _cairo_fixed_fractional_part (r->top));
+			 256 - _comac_fixed_fractional_part (r->top));
 	    y1++;
 	}
 
 	if (y2 > y1)
 	    generate_row(renderer, r, y1, y2-y1, 256);
 
-	if (! _cairo_fixed_is_integer (r->bottom))
+	if (! _comac_fixed_is_integer (r->bottom))
 	    generate_row(renderer, r, y2, 1,
-			 _cairo_fixed_fractional_part (r->bottom));
+			 _comac_fixed_fractional_part (r->bottom));
     } else
 	generate_row(renderer, r, y1, 1, r->bottom - r->top);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_rectangular_scan_converter_generate (void			*converter,
-					    cairo_span_renderer_t	*renderer)
+static comac_status_t
+_comac_rectangular_scan_converter_generate (void			*converter,
+					    comac_span_renderer_t	*renderer)
 {
-    cairo_rectangular_scan_converter_t *self = converter;
-    rectangle_t *rectangles_stack[CAIRO_STACK_ARRAY_LENGTH (rectangle_t *)];
+    comac_rectangular_scan_converter_t *self = converter;
+    rectangle_t *rectangles_stack[COMAC_STACK_ARRAY_LENGTH (rectangle_t *)];
     rectangle_t **rectangles;
-    struct _cairo_rectangular_scan_converter_chunk *chunk;
-    cairo_status_t status;
+    struct _comac_rectangular_scan_converter_chunk *chunk;
+    comac_status_t status;
     int i, j;
 
     if (unlikely (self->num_rectangles == 0)) {
 	return renderer->render_rows (renderer,
-				      _cairo_fixed_integer_part (self->extents.p1.y),
-				      _cairo_fixed_integer_part (self->extents.p2.y - self->extents.p1.y),
+				      _comac_fixed_integer_part (self->extents.p1.y),
+				      _comac_fixed_integer_part (self->extents.p2.y - self->extents.p1.y),
 				      NULL, 0);
     }
 
@@ -674,10 +674,10 @@ _cairo_rectangular_scan_converter_generate (void			*converter,
 
     rectangles = rectangles_stack;
     if (unlikely (self->num_rectangles >= ARRAY_LENGTH (rectangles_stack))) {
-	rectangles = _cairo_malloc_ab (self->num_rectangles + 1,
+	rectangles = _comac_malloc_ab (self->num_rectangles + 1,
 				       sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
     j = 0;
@@ -700,19 +700,19 @@ _cairo_rectangular_scan_converter_generate (void			*converter,
 }
 
 static rectangle_t *
-_allocate_rectangle (cairo_rectangular_scan_converter_t *self)
+_allocate_rectangle (comac_rectangular_scan_converter_t *self)
 {
     rectangle_t *rectangle;
-    struct _cairo_rectangular_scan_converter_chunk *chunk;
+    struct _comac_rectangular_scan_converter_chunk *chunk;
 
     chunk = self->tail;
     if (chunk->count == chunk->size) {
 	int size;
 
 	size = chunk->size * 2;
-	chunk->next = _cairo_malloc_ab_plus_c (size,
+	chunk->next = _comac_malloc_ab_plus_c (size,
 					       sizeof (rectangle_t),
-					       sizeof (struct _cairo_rectangular_scan_converter_chunk));
+					       sizeof (struct _comac_rectangular_scan_converter_chunk));
 
 	if (unlikely (chunk->next == NULL))
 	    return NULL;
@@ -729,42 +729,42 @@ _allocate_rectangle (cairo_rectangular_scan_converter_t *self)
     return rectangle + chunk->count++;
 }
 
-cairo_status_t
-_cairo_rectangular_scan_converter_add_box (cairo_rectangular_scan_converter_t *self,
-					   const cairo_box_t *box,
+comac_status_t
+_comac_rectangular_scan_converter_add_box (comac_rectangular_scan_converter_t *self,
+					   const comac_box_t *box,
 					   int dir)
 {
     rectangle_t *rectangle;
 
     rectangle = _allocate_rectangle (self);
     if (unlikely (rectangle == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     rectangle->dir = dir;
     rectangle->left  = MAX (box->p1.x, self->extents.p1.x);
     rectangle->right = MIN (box->p2.x, self->extents.p2.x);
     if (unlikely (rectangle->right <= rectangle->left)) {
 	self->tail->count--;
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     rectangle->top = MAX (box->p1.y, self->extents.p1.y);
-    rectangle->top_y  = _cairo_fixed_integer_floor (rectangle->top);
+    rectangle->top_y  = _comac_fixed_integer_floor (rectangle->top);
     rectangle->bottom = MIN (box->p2.y, self->extents.p2.y);
-    rectangle->bottom_y = _cairo_fixed_integer_floor (rectangle->bottom);
+    rectangle->bottom_y = _comac_fixed_integer_floor (rectangle->bottom);
     if (likely (rectangle->bottom > rectangle->top))
 	self->num_rectangles++;
     else
 	self->tail->count--;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-_cairo_rectangular_scan_converter_destroy (void *converter)
+_comac_rectangular_scan_converter_destroy (void *converter)
 {
-    cairo_rectangular_scan_converter_t *self = converter;
-    struct _cairo_rectangular_scan_converter_chunk *chunk, *next;
+    comac_rectangular_scan_converter_t *self = converter;
+    struct _comac_rectangular_scan_converter_chunk *chunk, *next;
 
     for (chunk = self->chunks.next; chunk != NULL; chunk = next) {
 	next = chunk->next;
@@ -773,13 +773,13 @@ _cairo_rectangular_scan_converter_destroy (void *converter)
 }
 
 void
-_cairo_rectangular_scan_converter_init (cairo_rectangular_scan_converter_t *self,
-					const cairo_rectangle_int_t *extents)
+_comac_rectangular_scan_converter_init (comac_rectangular_scan_converter_t *self,
+					const comac_rectangle_int_t *extents)
 {
-    self->base.destroy = _cairo_rectangular_scan_converter_destroy;
-    self->base.generate = _cairo_rectangular_scan_converter_generate;
+    self->base.destroy = _comac_rectangular_scan_converter_destroy;
+    self->base.generate = _comac_rectangular_scan_converter_generate;
 
-    _cairo_box_from_rectangle (&self->extents, extents);
+    _comac_box_from_rectangle (&self->extents, extents);
 
     self->chunks.base = self->buf;
     self->chunks.next = NULL;

@@ -28,12 +28,12 @@
 #include <assert.h>
 
 void
-_cairo_stats_compute (cairo_stats_t *stats,
-		      cairo_time_t  *values,
+_comac_stats_compute (comac_stats_t *stats,
+		      comac_time_t  *values,
 		      int	     num_values)
 {
-    cairo_time_t sum, mean, q1, q3, iqr;
-    cairo_time_t outlier_min, outlier_max;
+    comac_time_t sum, mean, q1, q3, iqr;
+    comac_time_t outlier_min, outlier_max;
     int i, min_valid, num_valid;
     double s;
 
@@ -60,7 +60,7 @@ _cairo_stats_compute (cairo_stats_t *stats,
     num_valid = num_values;
     do {
 	num_values = num_valid;
-	qsort (values, num_values, sizeof (cairo_time_t), _cairo_time_cmp);
+	qsort (values, num_values, sizeof (comac_time_t), _comac_time_cmp);
 
 	q1 = values[1*num_values/4];
 	q3 = values[3*num_values/4];
@@ -88,7 +88,7 @@ _cairo_stats_compute (cairo_stats_t *stats,
 
     sum = 0;
     for (i = 0; i < num_valid; i++)
-	sum = _cairo_time_add (sum, values[i]);
+	sum = _comac_time_add (sum, values[i]);
     mean = sum / num_valid;
 
     /* Let's use a normalized std. deviation for easier comparison. */
@@ -100,8 +100,8 @@ _cairo_stats_compute (cairo_stats_t *stats,
     stats->std_dev = sqrt(s / num_valid);
 }
 
-cairo_bool_t
-_cairo_histogram_init (cairo_histogram_t *h,
+comac_bool_t
+_comac_histogram_init (comac_histogram_t *h,
 		       int width, int height)
 {
     h->width = width;
@@ -115,12 +115,12 @@ _cairo_histogram_init (cairo_histogram_t *h,
     return h->columns != NULL;
 }
 
-cairo_bool_t
-_cairo_histogram_compute (cairo_histogram_t *h,
-			  const cairo_time_t *values,
+comac_bool_t
+_comac_histogram_compute (comac_histogram_t *h,
+			  const comac_time_t *values,
 			  int num_values)
 {
-    cairo_time_t delta;
+    comac_time_t delta;
     int i;
 
     if (num_values == 0)
@@ -153,7 +153,7 @@ _cairo_histogram_compute (cairo_histogram_t *h,
 }
 
 void
-_cairo_histogram_printf (cairo_histogram_t *h,
+_comac_histogram_printf (comac_histogram_t *h,
 			 FILE *file)
 {
     int x, y, num_rows;
@@ -176,7 +176,7 @@ _cairo_histogram_printf (cairo_histogram_t *h,
 }
 
 void
-_cairo_histogram_fini (cairo_histogram_t *h)
+_comac_histogram_fini (comac_histogram_t *h)
 {
     free(h->columns);
 }

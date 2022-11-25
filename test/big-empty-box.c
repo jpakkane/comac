@@ -35,28 +35,28 @@
 
 #define SIZE 60
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 1);
+    comac_paint (cr);
 
     /* Set an unbounded operator so that we can see how accurate the bounded
      * extents were.
      */
-    cairo_set_operator (cr, CAIRO_OPERATOR_IN);
-    cairo_set_source_rgb (cr, 1, 1, 1);
+    comac_set_operator (cr, COMAC_OPERATOR_IN);
+    comac_set_source_rgb (cr, 1, 1, 1);
 
     /* Wind several boxes together that reduce to nothing */
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_fill (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (big_empty_box,
+COMAC_TEST (big_empty_box,
 	    "Tests that we tighten the bounds after tessellation.",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

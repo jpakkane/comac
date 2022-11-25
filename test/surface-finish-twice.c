@@ -42,37 +42,37 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_surface_t *surface;
-    cairo_status_t status;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_surface_t *surface;
+    comac_status_t status;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
 
-    cairo_surface_finish (surface);
-    status = cairo_surface_status (surface);
-    if (status != CAIRO_STATUS_SUCCESS)
-	return cairo_test_status_from_status (ctx, status);
+    comac_surface_finish (surface);
+    status = comac_surface_status (surface);
+    if (status != COMAC_STATUS_SUCCESS)
+	return comac_test_status_from_status (ctx, status);
 
-    cairo_surface_finish (surface);
-    status = cairo_surface_status (surface);
-    if (status != CAIRO_STATUS_SUCCESS)
-	return cairo_test_status_from_status (ctx, status);
+    comac_surface_finish (surface);
+    status = comac_surface_status (surface);
+    if (status != COMAC_STATUS_SUCCESS)
+	return comac_test_status_from_status (ctx, status);
 
-    cairo_surface_finish (surface);
-    status = cairo_surface_status (surface);
-    if (status != CAIRO_STATUS_SUCCESS)
-	return cairo_test_status_from_status (ctx, status);
+    comac_surface_finish (surface);
+    status = comac_surface_status (surface);
+    if (status != COMAC_STATUS_SUCCESS)
+	return comac_test_status_from_status (ctx, status);
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (surface_finish_twice,
-	    "Test to exercise a crash when calling cairo_surface_finish twice on the same surface.",
+COMAC_TEST (surface_finish_twice,
+	    "Test to exercise a crash when calling comac_surface_finish twice on the same surface.",
 	    "api", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

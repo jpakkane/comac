@@ -32,50 +32,50 @@
 #define HEIGHT 200
 
 static void
-draw_quad (cairo_t *cr,
+draw_quad (comac_t *cr,
 	   double x1, double y1,
 	   double x2, double y2,
 	   double x3, double y3,
 	   double x4, double y4)
 {
-    cairo_move_to (cr, x1, y1);
-    cairo_line_to (cr, x2, y2);
-    cairo_line_to (cr, x3, y3);
-    cairo_line_to (cr, x4, y4);
-    cairo_close_path (cr);
+    comac_move_to (cr, x1, y1);
+    comac_line_to (cr, x2, y2);
+    comac_line_to (cr, x3, y3);
+    comac_line_to (cr, x4, y4);
+    comac_close_path (cr);
 
-    cairo_set_source_rgb (cr, 0, 0.6, 0);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 0.6, 0);
+    comac_fill (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int position[5] = {0, HEIGHT/2-10, HEIGHT/2-5, HEIGHT/2, HEIGHT-10 };
     int i;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     for (i = 0; i < 5; i++) {
-	cairo_reset_clip (cr);
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_rectangle (cr, 0, 0, WIDTH/2, HEIGHT/2);
-	cairo_rectangle (cr, WIDTH/2, position[i], WIDTH/2, 10);
-	cairo_fill_preserve (cr);
-	cairo_clip (cr);
+	comac_reset_clip (cr);
+	comac_set_source_rgb (cr, 1, 1, 1);
+	comac_rectangle (cr, 0, 0, WIDTH/2, HEIGHT/2);
+	comac_rectangle (cr, WIDTH/2, position[i], WIDTH/2, 10);
+	comac_fill_preserve (cr);
+	comac_clip (cr);
 
-	cairo_set_source_rgb (cr, 1, 0, 1);
+	comac_set_source_rgb (cr, 1, 0, 1);
 	draw_quad (cr, 50, 50, 75, 75, 50, 150, 25, 75);
-	cairo_fill (cr);
+	comac_fill (cr);
 
-	cairo_translate(cr, WIDTH, 0);
+	comac_translate(cr, WIDTH, 0);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_disjoint_quad,
+COMAC_TEST (clip_disjoint_quad,
 	    "Tests a simple fill through two disjoint clips.",
 	    "clip, fill", /* keywords */
 	    NULL, /* requirements */

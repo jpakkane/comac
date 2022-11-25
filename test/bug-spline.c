@@ -1,4 +1,4 @@
-/* cc `pkg-config --cflags --libs cairo` cairo-spline-image.c -o cairo-spline-image */
+/* cc `pkg-config --cflags --libs comac` comac-spline-image.c -o comac-spline-image */
 
 /* Copyright © 2005 Carl Worth
  * Copyright © 2012 Intel Corporation
@@ -29,7 +29,7 @@
 #define WIDE_LINE_WIDTH 160
 #define NARROW_LINE_WIDTH 2
 
-/* A spline showing bugs in the "contour-based stroking" in cairo 1.12 */
+/* A spline showing bugs in the "contour-based stroking" in comac 1.12 */
 static const struct spline {
     struct { double x, y; } pt[5];
     double line_width;
@@ -57,37 +57,37 @@ static const struct spline {
     }
 };
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     unsigned n;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    cairo_set_line_cap(cr, CAIRO_LINE_CAP_SQUARE);
+    comac_set_line_cap(cr, COMAC_LINE_CAP_SQUARE);
 
     for (n = 0; n < ARRAY_LENGTH(splines); n++) {
-	cairo_set_line_width (cr, splines[n].line_width);
-	cairo_set_source_rgba (cr,
+	comac_set_line_width (cr, splines[n].line_width);
+	comac_set_source_rgba (cr,
 			       splines[n].rgba[0],
 			       splines[n].rgba[1],
 			       splines[n].rgba[2],
 			       splines[n].rgba[3]);
 
-	cairo_move_to (cr, splines[n].pt[0].x, splines[n].pt[0].y);
-	cairo_curve_to (cr,
+	comac_move_to (cr, splines[n].pt[0].x, splines[n].pt[0].y);
+	comac_curve_to (cr,
 			splines[n].pt[1].x, splines[n].pt[1].y,
 			splines[n].pt[2].x, splines[n].pt[2].y,
 			splines[n].pt[3].x, splines[n].pt[3].y);
 
-	cairo_stroke (cr);
+	comac_stroke (cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_spline,
+COMAC_TEST (bug_spline,
 	    "Exercises a bug in the stroking of splines",
 	    "spline, stroke", /* keywords */
 	    NULL, /* requirements */

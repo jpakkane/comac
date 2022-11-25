@@ -28,7 +28,7 @@
 #include "comac-test.h"
 
 /* This test exercises code that computes the extents of a surface
- * pattern with CAIRO_FILTER_BILINEAR, (where the filtering
+ * pattern with COMAC_FILTER_BILINEAR, (where the filtering
  * effectively increases the extents of the pattern).
  *
  * The original bug was reported by Owen Taylor here:
@@ -42,60 +42,60 @@
 #define WIDTH	(PAD + 3 * SCALE + PAD)
 #define HEIGHT	WIDTH
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *image;
-    cairo_t *cr2;
+    comac_surface_t *image;
+    comac_t *cr2;
 
-    image = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 2, 2);
+    image = comac_image_surface_create (COMAC_FORMAT_RGB24, 2, 2);
 
     /* Fill with an opaque background to avoid a separate rgb24 ref image */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     /* First check handling of pattern extents > surface extents */
-    cairo_save (cr);
-    cairo_scale (cr, width/2., height/2.);
+    comac_save (cr);
+    comac_scale (cr, width/2., height/2.);
 
     /* Create a solid black source to merge with the background */
-    cr2 = cairo_create (image);
-    cairo_set_source_rgb (cr2, 0, 0 ,0);
-    cairo_paint (cr2);
-    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
-    cairo_destroy (cr2);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_BILINEAR);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    cr2 = comac_create (image);
+    comac_set_source_rgb (cr2, 0, 0 ,0);
+    comac_paint (cr2);
+    comac_set_source_surface (cr, comac_get_target (cr2), 0, 0);
+    comac_destroy (cr2);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_BILINEAR);
+    comac_paint (cr);
+    comac_restore (cr);
 
     /* Then scale to smaller so we can see the full bilinear extents */
-    cairo_save (cr);
-    cairo_translate (cr, PAD, PAD);
-    cairo_scale (cr, SCALE, SCALE);
-    cairo_translate (cr, 0.5, 0.5);
+    comac_save (cr);
+    comac_translate (cr, PAD, PAD);
+    comac_scale (cr, SCALE, SCALE);
+    comac_translate (cr, 0.5, 0.5);
 
     /* Create a 2x2 blue+red checkerboard source */
-    cr2 = cairo_create (image);
-    cairo_set_source_rgb (cr2, 1, 0 ,0); /* red */
-    cairo_paint (cr2);
-    cairo_set_source_rgb (cr2, 0, 0, 1); /* blue */
-    cairo_rectangle (cr2, 0, 1, 1, 1);
-    cairo_rectangle (cr2, 1, 0, 1, 1);
-    cairo_fill (cr2);
-    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
-    cairo_destroy (cr2);
+    cr2 = comac_create (image);
+    comac_set_source_rgb (cr2, 1, 0 ,0); /* red */
+    comac_paint (cr2);
+    comac_set_source_rgb (cr2, 0, 0, 1); /* blue */
+    comac_rectangle (cr2, 0, 1, 1, 1);
+    comac_rectangle (cr2, 1, 0, 1, 1);
+    comac_fill (cr2);
+    comac_set_source_surface (cr, comac_get_target (cr2), 0, 0);
+    comac_destroy (cr2);
 
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_BILINEAR);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_BILINEAR);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_surface_destroy (image);
+    comac_surface_destroy (image);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (filter_bilinear_extents,
-	    "Test that pattern extents are properly computed for CAIRO_FILTER_BILINEAR",
+COMAC_TEST (filter_bilinear_extents,
+	    "Test that pattern extents are properly computed for COMAC_FILTER_BILINEAR",
 	    "extents", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,

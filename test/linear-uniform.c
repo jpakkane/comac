@@ -26,36 +26,36 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     /* with alpha */
-    pattern = cairo_pattern_create_linear (0, 0, 0, height);
-    cairo_pattern_add_color_stop_rgba (pattern, 0, 1, 1, 1, .5);
-    cairo_pattern_add_color_stop_rgba (pattern, 1, 1, 1, 1, .5);
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
-    cairo_rectangle (cr, 0, 0, width/2, height);
-    cairo_fill (cr);
+    pattern = comac_pattern_create_linear (0, 0, 0, height);
+    comac_pattern_add_color_stop_rgba (pattern, 0, 1, 1, 1, .5);
+    comac_pattern_add_color_stop_rgba (pattern, 1, 1, 1, 1, .5);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
+    comac_rectangle (cr, 0, 0, width/2, height);
+    comac_fill (cr);
 
     /* without alpha */
-    pattern = cairo_pattern_create_linear (0, 0, 0, height);
-    cairo_pattern_add_color_stop_rgb (pattern, 0, 1, 1, 1);
-    cairo_pattern_add_color_stop_rgb (pattern, 1, 1, 1, 1);
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
-    cairo_rectangle (cr, width/2, 0, width/2, height);
-    cairo_fill (cr);
+    pattern = comac_pattern_create_linear (0, 0, 0, height);
+    comac_pattern_add_color_stop_rgb (pattern, 0, 1, 1, 1);
+    comac_pattern_add_color_stop_rgb (pattern, 1, 1, 1, 1);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
+    comac_rectangle (cr, width/2, 0, width/2, height);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (linear_uniform,
+COMAC_TEST (linear_uniform,
 	    "Tests handling of \"solid\" linear gradients",
 	    "gradient, linear", /* keywords */
 	    NULL, /* requirements */

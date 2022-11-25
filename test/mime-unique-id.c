@@ -25,7 +25,7 @@
  */
 
 
-/* Check that source surfaces with same CAIRO_MIME_TYPE_UNIQUE_ID are
+/* Check that source surfaces with same COMAC_MIME_TYPE_UNIQUE_ID are
  * embedded only once in PDF/PS.
  *
  * To exercise all the surface embedding code in PS/PDF, four types of
@@ -52,11 +52,11 @@
 
 #include <comac.h>
 
-#if CAIRO_HAS_PS_SURFACE
+#if COMAC_HAS_PS_SURFACE
 #include <comac-ps.h>
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
+#if COMAC_HAS_PDF_SURFACE
 #include <comac-pdf.h>
 #endif
 
@@ -89,7 +89,7 @@ static const char *png_filename = "romedalen.png";
 static const char *jpeg_filename = "romedalen.jpg";
 
 static FILE *
-my_fopen (cairo_test_context_t *ctx, const char *pathname, const char *mode)
+my_fopen (comac_test_context_t *ctx, const char *pathname, const char *mode)
 {
     FILE *f = fopen (pathname, mode);
     if (f == NULL && errno == ENOENT && ctx->srcdir) {
@@ -101,40 +101,40 @@ my_fopen (cairo_test_context_t *ctx, const char *pathname, const char *mode)
     return f;
 }
 
-static cairo_test_status_t
-create_image_surface (cairo_test_context_t *ctx, cairo_surface_t **surface)
+static comac_test_status_t
+create_image_surface (comac_test_context_t *ctx, comac_surface_t **surface)
 {
-    cairo_status_t status;
+    comac_status_t status;
     const char *unique_id = "image";
 
-    *surface = cairo_test_create_surface_from_png (ctx, png_filename);
-    status = cairo_surface_set_mime_data (*surface, CAIRO_MIME_TYPE_UNIQUE_ID,
+    *surface = comac_test_create_surface_from_png (ctx, png_filename);
+    status = comac_surface_set_mime_data (*surface, COMAC_MIME_TYPE_UNIQUE_ID,
 					  (unsigned char *)unique_id,
 					  strlen (unique_id),
 					  NULL, NULL);
     if (status) {
-	cairo_surface_destroy (*surface);
-	return cairo_test_status_from_status (ctx, status);
+	comac_surface_destroy (*surface);
+	return comac_test_status_from_status (ctx, status);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-create_recording_surface_with_mime_jpg (cairo_test_context_t *ctx, cairo_surface_t **surface)
+static comac_test_status_t
+create_recording_surface_with_mime_jpg (comac_test_context_t *ctx, comac_surface_t **surface)
 {
-    cairo_status_t status;
+    comac_status_t status;
     FILE *f;
     unsigned char *data;
     long len;
     const char *unique_id = "jpeg";
-    cairo_rectangle_t extents = { 0, 0, 1, 1 };
+    comac_rectangle_t extents = { 0, 0, 1, 1 };
 
-    *surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
+    *surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
     f = my_fopen (ctx, jpeg_filename, "rb");
     if (f == NULL) {
-	cairo_test_log (ctx, "Unable to open file %s\n", jpeg_filename);
-	return CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "Unable to open file %s\n", jpeg_filename);
+	return COMAC_TEST_FAILURE;
     }
 
     fseek (f, 0, SEEK_END);
@@ -142,113 +142,113 @@ create_recording_surface_with_mime_jpg (cairo_test_context_t *ctx, cairo_surface
     fseek (f, 0, SEEK_SET);
     data = malloc (len);
     if (fread(data, len, 1, f) != 1) {
-	cairo_test_log (ctx, "Unable to read file %s\n", jpeg_filename);
-	return CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "Unable to read file %s\n", jpeg_filename);
+	return COMAC_TEST_FAILURE;
     }
 
     fclose(f);
-    status = cairo_surface_set_mime_data (*surface,
-					  CAIRO_MIME_TYPE_JPEG,
+    status = comac_surface_set_mime_data (*surface,
+					  COMAC_MIME_TYPE_JPEG,
 					  data, len,
 					  free, data);
     if (status) {
-	cairo_surface_destroy (*surface);
-	return cairo_test_status_from_status (ctx, status);
+	comac_surface_destroy (*surface);
+	return comac_test_status_from_status (ctx, status);
     }
 
-    status = cairo_surface_set_mime_data (*surface, CAIRO_MIME_TYPE_UNIQUE_ID,
+    status = comac_surface_set_mime_data (*surface, COMAC_MIME_TYPE_UNIQUE_ID,
 					  (unsigned char *)unique_id,
 					  strlen (unique_id),
 					  NULL, NULL);
     if (status) {
-	cairo_surface_destroy (*surface);
-	return cairo_test_status_from_status (ctx, status);
+	comac_surface_destroy (*surface);
+	return comac_test_status_from_status (ctx, status);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static void
-draw_tile (cairo_t *cr)
+draw_tile (comac_t *cr)
 {
-    cairo_move_to (cr, 10 + 5, 10);
-    cairo_arc (cr, 10, 10, 5, 0, 2*M_PI);
-    cairo_close_path (cr);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill (cr);
+    comac_move_to (cr, 10 + 5, 10);
+    comac_arc (cr, 10, 10, 5, 0, 2*M_PI);
+    comac_close_path (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill (cr);
 
-    cairo_move_to (cr, 30, 10-10*0.43);
-    cairo_line_to (cr, 25, 10+10*0.43);
-    cairo_line_to (cr, 35, 10+10*0.43);
-    cairo_close_path (cr);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_fill (cr);
+    comac_move_to (cr, 30, 10-10*0.43);
+    comac_line_to (cr, 25, 10+10*0.43);
+    comac_line_to (cr, 35, 10+10*0.43);
+    comac_close_path (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_fill (cr);
 
-    cairo_rectangle (cr, 5, 25, 10, 10);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_fill (cr);
+    comac_rectangle (cr, 5, 25, 10, 10);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_fill (cr);
 
-    cairo_save (cr);
-    cairo_translate (cr, 30, 30);
-    cairo_rotate (cr, M_PI/4.0);
-    cairo_rectangle (cr, -5, -5, 10, 10);
-    cairo_set_source_rgb (cr, 1, 0, 1);
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_translate (cr, 30, 30);
+    comac_rotate (cr, M_PI/4.0);
+    comac_rectangle (cr, -5, -5, 10, 10);
+    comac_set_source_rgb (cr, 1, 0, 1);
+    comac_fill (cr);
+    comac_restore (cr);
 }
 
 #define RECORDING_SIZE 800
 #define TILE_SIZE 40
 
-static cairo_test_status_t
-create_recording_surface (cairo_test_context_t *ctx, cairo_surface_t **surface, cairo_bool_t bounded)
+static comac_test_status_t
+create_recording_surface (comac_test_context_t *ctx, comac_surface_t **surface, comac_bool_t bounded)
 {
-    cairo_status_t status;
+    comac_status_t status;
     int x, y;
-    cairo_t *cr;
-    cairo_matrix_t ctm;
+    comac_t *cr;
+    comac_matrix_t ctm;
     int start, size;
     const char *bounded_id = "recording bounded";
     const char *unbounded_id = "recording unbounded";
-    cairo_rectangle_t extents = { 0, 0, RECORDING_SIZE, RECORDING_SIZE };
+    comac_rectangle_t extents = { 0, 0, RECORDING_SIZE, RECORDING_SIZE };
 
     if (bounded) {
-	*surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
+	*surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
 	start = 0;
 	size = RECORDING_SIZE;
     } else {
-	*surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, NULL);
+	*surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
 	start = RECORDING_SIZE / 2;
 	size = RECORDING_SIZE * 2;
     }
 
-    /* Draw each tile instead of creating a cairo pattern to make size
+    /* Draw each tile instead of creating a comac pattern to make size
      * of the emitted recording as large as possible.
      */
-    cr = cairo_create (*surface);
-    cairo_set_source_rgb (cr, 1, 1, 0);
-    cairo_paint (cr);
-    cairo_get_matrix (cr, &ctm);
+    cr = comac_create (*surface);
+    comac_set_source_rgb (cr, 1, 1, 0);
+    comac_paint (cr);
+    comac_get_matrix (cr, &ctm);
     for (y = start; y < size; y += TILE_SIZE) {
 	for (x = start; x < size; x += TILE_SIZE) {
 	    draw_tile (cr);
-	    cairo_translate (cr, TILE_SIZE, 0);
+	    comac_translate (cr, TILE_SIZE, 0);
 	}
-	cairo_matrix_translate (&ctm, 0, TILE_SIZE);
-	cairo_set_matrix (cr, &ctm);
+	comac_matrix_translate (&ctm, 0, TILE_SIZE);
+	comac_set_matrix (cr, &ctm);
     }
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
-    status = cairo_surface_set_mime_data (*surface, CAIRO_MIME_TYPE_UNIQUE_ID,
+    status = comac_surface_set_mime_data (*surface, COMAC_MIME_TYPE_UNIQUE_ID,
 					  (unsigned char *)(bounded ? bounded_id : unbounded_id),
 					  strlen (bounded ? bounded_id : unbounded_id),
 					  NULL, NULL);
     if (status) {
-	cairo_surface_destroy (*surface);
-	return cairo_test_status_from_status (ctx, status);
+	comac_surface_destroy (*surface);
+	return comac_test_status_from_status (ctx, status);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /* Draw @source scaled to fit @rect and clipped to a rectangle
@@ -256,19 +256,19 @@ create_recording_surface (cairo_test_context_t *ctx, cairo_surface_t **surface, 
  * with a solid line and the clip rect stroked with a dashed line.
  */
 static void
-draw_surface (cairo_t *cr, cairo_surface_t *source, cairo_rectangle_int_t *rect, int clip_margin)
+draw_surface (comac_t *cr, comac_surface_t *source, comac_rectangle_int_t *rect, int clip_margin)
 {
-    cairo_surface_type_t type;
+    comac_surface_type_t type;
     int width, height;
-    cairo_rectangle_t extents;
+    comac_rectangle_t extents;
     const double dashes[2] = { 2, 2 };
 
-    type = cairo_surface_get_type (source);
-    if (type == CAIRO_SURFACE_TYPE_IMAGE) {
-	width = cairo_image_surface_get_width (source);
-	height = cairo_image_surface_get_height (source);
+    type = comac_surface_get_type (source);
+    if (type == COMAC_SURFACE_TYPE_IMAGE) {
+	width = comac_image_surface_get_width (source);
+	height = comac_image_surface_get_height (source);
     } else {
-	if (cairo_recording_surface_get_extents (source, &extents)) {
+	if (comac_recording_surface_get_extents (source, &extents)) {
 	    width = extents.width;
 	    height = extents.height;
 	} else {
@@ -277,40 +277,40 @@ draw_surface (cairo_t *cr, cairo_surface_t *source, cairo_rectangle_int_t *rect,
 	}
     }
 
-    cairo_save (cr);
-    cairo_rectangle (cr, rect->x, rect->y, rect->width, rect->height);
-    cairo_stroke (cr);
-    cairo_rectangle (cr,
+    comac_save (cr);
+    comac_rectangle (cr, rect->x, rect->y, rect->width, rect->height);
+    comac_stroke (cr);
+    comac_rectangle (cr,
 		     rect->x + clip_margin,
 		     rect->y + clip_margin,
 		     rect->width - clip_margin*2,
 		     rect->height - clip_margin*2);
-    cairo_set_dash (cr, dashes, 2, 0);
-    cairo_stroke_preserve (cr);
-    cairo_clip (cr);
+    comac_set_dash (cr, dashes, 2, 0);
+    comac_stroke_preserve (cr);
+    comac_clip (cr);
 
-    cairo_translate (cr, rect->x, rect->y);
-    cairo_scale (cr, (double)rect->width/width, (double)rect->height/height);
-    cairo_set_source_surface (cr, source, 0, 0);
-    cairo_paint (cr);
+    comac_translate (cr, rect->x, rect->y);
+    comac_scale (cr, (double)rect->width/width, (double)rect->height/height);
+    comac_set_source_surface (cr, source, 0, 0);
+    comac_paint (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw_pages (cairo_test_context_t *ctx, cairo_surface_t *surface)
+static comac_test_status_t
+draw_pages (comac_test_context_t *ctx, comac_surface_t *surface)
 {
-    cairo_t *cr;
+    comac_t *cr;
     int i;
-    cairo_rectangle_int_t img_rect;
-    cairo_rectangle_int_t jpg_rect;
-    cairo_rectangle_int_t bounded_rect;
-    cairo_rectangle_int_t unbounded_rect;
+    comac_rectangle_int_t img_rect;
+    comac_rectangle_int_t jpg_rect;
+    comac_rectangle_int_t bounded_rect;
+    comac_rectangle_int_t unbounded_rect;
     int clip_margin;
-    cairo_surface_t *source;
-    cairo_test_status_t status;
+    comac_surface_t *source;
+    comac_test_status_t status;
 
-    cr = cairo_create (surface);
+    cr = comac_create (surface);
 
     /* target area to fill with the image source */
     img_rect.x = 25;
@@ -343,7 +343,7 @@ draw_pages (cairo_test_context_t *ctx, cairo_surface_t *surface)
      * page.
      *
      * The sources are created each time they are used to ensure
-     * CAIRO_MIME_TYPE_UNIQUE_ID is tested.
+     * COMAC_MIME_TYPE_UNIQUE_ID is tested.
      */
     for (i = 0; i < NUM_PAGES; i++) {
 	clip_margin = (NUM_PAGES - i - 1) * 5;
@@ -352,44 +352,44 @@ draw_pages (cairo_test_context_t *ctx, cairo_surface_t *surface)
 	if (status)
 	    return status;
 	draw_surface (cr, source, &img_rect, clip_margin);
-	cairo_surface_destroy (source);
+	comac_surface_destroy (source);
 
 	status = create_recording_surface_with_mime_jpg (ctx, &source);
 	if (status)
 	    return status;
 	draw_surface (cr, source, &jpg_rect, clip_margin);
-	cairo_surface_destroy (source);
+	comac_surface_destroy (source);
 
 	status = create_recording_surface (ctx, &source, TRUE);
 	if (status)
 	    return status;
 	draw_surface (cr, source, &bounded_rect, clip_margin);
-	cairo_surface_destroy (source);
+	comac_surface_destroy (source);
 
 	status = create_recording_surface (ctx, &source, FALSE);
 	if (status)
 	    return status;
 	draw_surface (cr, source, &unbounded_rect, clip_margin);
-	cairo_surface_destroy (source);
+	comac_surface_destroy (source);
 
-	cairo_show_page (cr);
+	comac_show_page (cr);
     }
 
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-check_file_size (cairo_test_context_t *ctx, const char *filename, long expected_size)
+static comac_test_status_t
+check_file_size (comac_test_context_t *ctx, const char *filename, long expected_size)
 {
     FILE *f;
     long size;
 
     f = my_fopen (ctx, filename, "rb");
     if (f == NULL) {
-	cairo_test_log (ctx, "Unable to open file %s\n", filename);
-	return CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "Unable to open file %s\n", filename);
+	return COMAC_TEST_FAILURE;
     }
 
     fseek (f, 0, SEEK_END);
@@ -397,117 +397,117 @@ check_file_size (cairo_test_context_t *ctx, const char *filename, long expected_
     fclose(f);
 
     if (labs(size - expected_size) > SIZE_TOLERANCE) {
-	cairo_test_log (ctx,
+	comac_test_log (ctx,
 			"mime-unique-id: File %s has size %ld. Expected size %ld +/- %ld."
 			" Check if surfaces are embedded once.\n",
 			filename, size, expected_size, (long)SIZE_TOLERANCE);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_surface_t *surface;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_status_t status;
     char *filename;
-    cairo_test_status_t result = CAIRO_TEST_UNTESTED;
-    cairo_test_status_t test_status;
-    const char *path = cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
+    comac_test_status_t result = COMAC_TEST_UNTESTED;
+    comac_test_status_t test_status;
+    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
-#if CAIRO_HAS_PS_SURFACE
-    if (cairo_test_is_target_enabled (ctx, "ps2"))
+#if COMAC_HAS_PS_SURFACE
+    if (comac_test_is_target_enabled (ctx, "ps2"))
     {
 	xasprintf (&filename, "%s/%s.ps2.out.ps", path, BASENAME);
-	surface = cairo_ps_surface_create (filename, WIDTH, HEIGHT);
-	status = cairo_surface_status (surface);
+	surface = comac_ps_surface_create (filename, WIDTH, HEIGHT);
+	status = comac_surface_status (surface);
 	if (status) {
-	    cairo_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
-			    filename, cairo_status_to_string (status));
-	    test_status = CAIRO_TEST_FAILURE;
+	    comac_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
+			    filename, comac_status_to_string (status));
+	    test_status = COMAC_TEST_FAILURE;
 	    goto ps2_finish;
 	}
 
-	cairo_ps_surface_restrict_to_level (surface, CAIRO_PS_LEVEL_2);
+	comac_ps_surface_restrict_to_level (surface, COMAC_PS_LEVEL_2);
 
 	test_status = draw_pages (ctx, surface);
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
-	if (test_status == CAIRO_TEST_SUCCESS)
+	if (test_status == COMAC_TEST_SUCCESS)
 	    test_status = check_file_size (ctx, filename, PS2_EXPECTED_SIZE);
 
       ps2_finish:
-	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name,
 			"ps2",
 			test_status ? "FAIL" : "PASS");
 
-	if (result == CAIRO_TEST_UNTESTED || test_status == CAIRO_TEST_FAILURE)
+	if (result == COMAC_TEST_UNTESTED || test_status == COMAC_TEST_FAILURE)
 	    result = test_status;
 
 	free (filename);
     }
 
-    if (cairo_test_is_target_enabled (ctx, "ps3"))
+    if (comac_test_is_target_enabled (ctx, "ps3"))
     {
 	xasprintf (&filename, "%s/%s.ps3.out.ps", path, BASENAME);
-	surface = cairo_ps_surface_create (filename, WIDTH, HEIGHT);
-	status = cairo_surface_status (surface);
+	surface = comac_ps_surface_create (filename, WIDTH, HEIGHT);
+	status = comac_surface_status (surface);
 	if (status) {
-	    cairo_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
-			    filename, cairo_status_to_string (status));
-	    test_status = CAIRO_TEST_FAILURE;
+	    comac_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
+			    filename, comac_status_to_string (status));
+	    test_status = COMAC_TEST_FAILURE;
 	    goto ps3_finish;
 	}
 
 	test_status = draw_pages (ctx, surface);
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
-	if (test_status == CAIRO_TEST_SUCCESS)
+	if (test_status == COMAC_TEST_SUCCESS)
 	    test_status = check_file_size (ctx, filename, PS3_EXPECTED_SIZE);
 
       ps3_finish:
-	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name,
 			"ps3",
 			test_status ? "FAIL" : "PASS");
 
-	if (result == CAIRO_TEST_UNTESTED || test_status == CAIRO_TEST_FAILURE)
+	if (result == COMAC_TEST_UNTESTED || test_status == COMAC_TEST_FAILURE)
 	    result = test_status;
 
 	free (filename);
     }
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
-    if (cairo_test_is_target_enabled (ctx, "pdf"))
+#if COMAC_HAS_PDF_SURFACE
+    if (comac_test_is_target_enabled (ctx, "pdf"))
     {
 	xasprintf (&filename, "%s/%s.pdf.out.pdf", path, BASENAME);
-	surface = cairo_pdf_surface_create (filename, WIDTH, HEIGHT);
-	status = cairo_surface_status (surface);
+	surface = comac_pdf_surface_create (filename, WIDTH, HEIGHT);
+	status = comac_surface_status (surface);
 	if (status) {
-	    cairo_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
-			    filename, cairo_status_to_string (status));
-	    test_status = CAIRO_TEST_FAILURE;
+	    comac_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
+			    filename, comac_status_to_string (status));
+	    test_status = COMAC_TEST_FAILURE;
 	    goto pdf_finish;
 	}
 
 	test_status = draw_pages (ctx, surface);
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
-	if (test_status == CAIRO_TEST_SUCCESS)
+	if (test_status == COMAC_TEST_SUCCESS)
 	    test_status = check_file_size (ctx, filename, PDF_EXPECTED_SIZE);
 
 
       pdf_finish:
-	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name,
 			"pdf",
 			test_status ? "FAIL" : "PASS");
 
-	if (result == CAIRO_TEST_UNTESTED || test_status == CAIRO_TEST_FAILURE)
+	if (result == COMAC_TEST_UNTESTED || test_status == COMAC_TEST_FAILURE)
 	    result = test_status;
 
 	free (filename);
@@ -517,8 +517,8 @@ preamble (cairo_test_context_t *ctx)
     return result;
 }
 
-CAIRO_TEST (mime_unique_id,
-	    "Check that paginated surfaces embed only one copy of surfaces with the same CAIRO_MIME_TYPE_UNIQUE_ID.",
+COMAC_TEST (mime_unique_id,
+	    "Check that paginated surfaces embed only one copy of surfaces with the same COMAC_MIME_TYPE_UNIQUE_ID.",
 	    "paginated", /* keywords */
 	    "target=vector", /* requirements */
 	    0, 0,

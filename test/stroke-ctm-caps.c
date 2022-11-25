@@ -34,43 +34,43 @@
 /* This test is designed to test that PDF viewers use the correct
  * alpha values in an Alpha SMasks. Some viewers use the color values
  * instead of the alpha. The test draws a triangle and rectangle in a
- * group then draws the group using cairo_mask(). The mask consists of
+ * group then draws the group using comac_mask(). The mask consists of
  * a circle with the rgba (0.4, 0.4, 0.4, 0.8) and the background rgba
  * (0.8, 0.8, 0.8, 0.4).
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     /* flip the CTM, which most clearly shows the problem */
-    cairo_translate (cr, 0, HEIGHT);
-    cairo_scale (cr, 1, -1);
+    comac_translate (cr, 0, HEIGHT);
+    comac_scale (cr, 1, -1);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_set_line_width (cr, 10);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+    comac_set_line_width (cr, 10);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
 
-    cairo_move_to (cr, 20, 20);
-    cairo_line_to (cr, 20, 70);
-    cairo_stroke (cr);
+    comac_move_to (cr, 20, 20);
+    comac_line_to (cr, 20, 70);
+    comac_stroke (cr);
 
-    cairo_move_to (cr, 40, 20);
-    cairo_line_to (cr, 70, 70);
-    cairo_stroke (cr);
+    comac_move_to (cr, 40, 20);
+    comac_line_to (cr, 70, 70);
+    comac_stroke (cr);
 
-    cairo_move_to (cr, 60, 20);
-    cairo_line_to (cr, 90, 20);
-    cairo_stroke (cr);
+    comac_move_to (cr, 60, 20);
+    comac_line_to (cr, 90, 20);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (stroke_ctm_caps,
+COMAC_TEST (stroke_ctm_caps,
 	    "Test that the stroker correctly passes the device-space vector to the stroker for endcaps",
 	    "stroke, transform", /* keywords */
 	    NULL, /* requirements */

@@ -38,36 +38,36 @@
 #define SIZE 60
 
 static void
-triangle (cairo_t *cr, double x, double y, double h)
+triangle (comac_t *cr, double x, double y, double h)
 {
-    cairo_move_to (cr, x, y);
-    cairo_line_to (cr, x+h/2, y+h);
-    cairo_line_to (cr, x+h, y);
-    cairo_close_path (cr);
+    comac_move_to (cr, x, y);
+    comac_line_to (cr, x+h/2, y+h);
+    comac_line_to (cr, x+h, y);
+    comac_close_path (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 1);
+    comac_paint (cr);
 
     /* Set an unbounded operator so that we can see how accurate the bounded
      * extents were.
      */
-    cairo_set_operator (cr, CAIRO_OPERATOR_IN);
-    cairo_set_source_rgb (cr, 1, 1, 1);
+    comac_set_operator (cr, COMAC_OPERATOR_IN);
+    comac_set_source_rgb (cr, 1, 1, 1);
 
     /* Wind several triangles together that reduce to nothing */
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
     triangle (cr, 0, 0, SIZE);
     triangle (cr, 0, 0, SIZE);
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (big_empty_triangle,
+COMAC_TEST (big_empty_triangle,
 	    "Tests that we tighten the bounds after tessellation.",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

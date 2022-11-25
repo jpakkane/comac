@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -34,38 +34,38 @@
  *	Chris Wilson <chris@chris-wilson.co.u>
  */
 
-#ifndef CAIRO_SURFACE_CLIPPER_PRIVATE_H
-#define CAIRO_SURFACE_CLIPPER_PRIVATE_H
+#ifndef COMAC_SURFACE_CLIPPER_PRIVATE_H
+#define COMAC_SURFACE_CLIPPER_PRIVATE_H
 
 #include "comac-types-private.h"
 #include "comac-clip-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-typedef struct _cairo_surface_clipper cairo_surface_clipper_t;
+typedef struct _comac_surface_clipper comac_surface_clipper_t;
 
-typedef cairo_status_t
-(*cairo_surface_clipper_intersect_clip_path_func_t) (cairo_surface_clipper_t *,
-						     cairo_path_fixed_t *,
-						     cairo_fill_rule_t,
+typedef comac_status_t
+(*comac_surface_clipper_intersect_clip_path_func_t) (comac_surface_clipper_t *,
+						     comac_path_fixed_t *,
+						     comac_fill_rule_t,
 						     double,
-						     cairo_antialias_t);
-struct _cairo_surface_clipper {
-    cairo_clip_t *clip;
-    cairo_surface_clipper_intersect_clip_path_func_t intersect_clip_path;
+						     comac_antialias_t);
+struct _comac_surface_clipper {
+    comac_clip_t *clip;
+    comac_surface_clipper_intersect_clip_path_func_t intersect_clip_path;
 };
 
-cairo_private cairo_status_t
-_cairo_surface_clipper_set_clip (cairo_surface_clipper_t *clipper,
-				 const cairo_clip_t *clip);
+comac_private comac_status_t
+_comac_surface_clipper_set_clip (comac_surface_clipper_t *clipper,
+				 const comac_clip_t *clip);
 
-cairo_private void
-_cairo_surface_clipper_init (cairo_surface_clipper_t *clipper,
-			     cairo_surface_clipper_intersect_clip_path_func_t intersect);
+comac_private void
+_comac_surface_clipper_init (comac_surface_clipper_t *clipper,
+			     comac_surface_clipper_intersect_clip_path_func_t intersect);
 
-cairo_private void
-_cairo_surface_clipper_reset (cairo_surface_clipper_t *clipper);
+comac_private void
+_comac_surface_clipper_reset (comac_surface_clipper_t *clipper);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_SURFACE_CLIPPER_PRIVATE_H */
+#endif /* COMAC_SURFACE_CLIPPER_PRIVATE_H */

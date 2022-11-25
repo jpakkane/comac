@@ -45,40 +45,40 @@ struct {
     { 100000000.0, 1.0, 0.0, 1.0 }
 };
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double pos;
     int i;
 
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_set_line_width (cr, LINE_WIDTH);
+    comac_set_line_width (cr, LINE_WIDTH);
 
     pos = SIZE + .5;
     for (i = 0; i < LINE_NBR; i++) {
-	cairo_move_to (cr, pos, -lines[i].length);
-	cairo_line_to (cr, pos, +lines[i].length);
-	cairo_set_source_rgb (cr, lines[i].red, lines[i].green, lines[i].blue);
-	cairo_stroke (cr);
+	comac_move_to (cr, pos, -lines[i].length);
+	comac_line_to (cr, pos, +lines[i].length);
+	comac_set_source_rgb (cr, lines[i].red, lines[i].green, lines[i].blue);
+	comac_stroke (cr);
 	pos += SIZE;
     }
 
     /* This should display a perfect vertically centered black line */
-    cairo_move_to (cr, -1e100, HEIGHT/2);
-    cairo_line_to (cr, 1e100, HEIGHT/2);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_stroke (cr);
+    comac_move_to (cr, -1e100, HEIGHT/2);
+    comac_line_to (cr, 1e100, HEIGHT/2);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /* XFAIL: range overflow of fixed-point */
-CAIRO_TEST (long_lines,
+COMAC_TEST (long_lines,
 	    "Test long lines"
 	    "\nLong lines are not drawn due to the limitations of the internal 16.16 fixed-point coordinates",
 	    "stroke, stress", /* keywords */

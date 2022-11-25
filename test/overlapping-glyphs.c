@@ -33,38 +33,38 @@
 
 #define MAX_GLYPHS 80
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_glyph_t glyphs_stack[MAX_GLYPHS], *glyphs;
-    const char *cairo = "Cairo";
+    comac_glyph_t glyphs_stack[MAX_GLYPHS], *glyphs;
+    const char *comac = "Comac";
     const char *giza = "Giza";
-    cairo_text_extents_t cairo_extents;
-    cairo_text_extents_t giza_extents;
+    comac_text_extents_t comac_extents;
+    comac_text_extents_t giza_extents;
     int count, num_glyphs;
     double x0, y0;
 
     /* We draw in the default black, so paint white first. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
     /* We want to overlap two strings, so compute overlapping glyphs.  */
 
-    cairo_text_extents (cr, cairo, &cairo_extents);
-    cairo_text_extents (cr, giza, &giza_extents);
+    comac_text_extents (cr, comac, &comac_extents);
+    comac_text_extents (cr, giza, &giza_extents);
 
-    x0 = WIDTH/2. - (cairo_extents.width/2. + cairo_extents.x_bearing);
-    y0 = HEIGHT/2. - (cairo_extents.height/2. + cairo_extents.y_bearing);
+    x0 = WIDTH/2. - (comac_extents.width/2. + comac_extents.x_bearing);
+    y0 = HEIGHT/2. - (comac_extents.height/2. + comac_extents.y_bearing);
     glyphs = glyphs_stack;
     count = MAX_GLYPHS;
-    cairo_scaled_font_text_to_glyphs (cairo_get_scaled_font (cr),
+    comac_scaled_font_text_to_glyphs (comac_get_scaled_font (cr),
 				      x0, y0,
-				      cairo, strlen (cairo),
+				      comac, strlen (comac),
 				      &glyphs, &count,
 				      NULL, NULL,
 				      NULL);
@@ -75,7 +75,7 @@ draw (cairo_t *cr, int width, int height)
     y0 = HEIGHT/2. - (giza_extents.height/2. + giza_extents.y_bearing);
     glyphs = glyphs_stack + count;
     count = MAX_GLYPHS - count;
-    cairo_scaled_font_text_to_glyphs (cairo_get_scaled_font (cr),
+    comac_scaled_font_text_to_glyphs (comac_get_scaled_font (cr),
 				      x0, y0,
 				      giza, strlen (giza),
 				      &glyphs, &count,
@@ -85,36 +85,36 @@ draw (cairo_t *cr, int width, int height)
     glyphs = glyphs_stack;
     num_glyphs += count;
 
-    cairo_set_source_rgba (cr, 0, 0, 0, .5); /* translucent black, gray! */
-    cairo_show_glyphs (cr, glyphs, num_glyphs);
+    comac_set_source_rgba (cr, 0, 0, 0, .5); /* translucent black, gray! */
+    comac_show_glyphs (cr, glyphs, num_glyphs);
 
     /* and compare with filling */
-    cairo_translate (cr, 0, HEIGHT);
-    cairo_glyph_path (cr, glyphs, num_glyphs);
-    cairo_fill (cr);
+    comac_translate (cr, 0, HEIGHT);
+    comac_glyph_path (cr, glyphs, num_glyphs);
+    comac_fill (cr);
 
     /* switch to using an unbounded operator for added complexity */
-    cairo_set_operator (cr, CAIRO_OPERATOR_IN);
+    comac_set_operator (cr, COMAC_OPERATOR_IN);
 
-    cairo_translate (cr, WIDTH, -HEIGHT);
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_clip (cr);
-    cairo_show_glyphs (cr, glyphs, num_glyphs);
-    cairo_restore (cr);
+    comac_translate (cr, WIDTH, -HEIGHT);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
+    comac_show_glyphs (cr, glyphs, num_glyphs);
+    comac_restore (cr);
 
-    cairo_translate (cr, 0, HEIGHT);
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_clip (cr);
-    cairo_glyph_path (cr, glyphs, num_glyphs);
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_translate (cr, 0, HEIGHT);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
+    comac_glyph_path (cr, glyphs, num_glyphs);
+    comac_fill (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (overlapping_glyphs,
+COMAC_TEST (overlapping_glyphs,
 	    "Test handing of overlapping glyphs",
 	    "text, glyphs", /* keywords */
 	    NULL, /* requirements */

@@ -101,7 +101,7 @@ do {									\
 #define parse_string(result)						\
 do {									\
     for (end = s; *end; end++)						\
-	if (_cairo_isspace (*end))					\
+	if (_comac_isspace (*end))					\
 	    break;							\
     (result) = strndup (s, end - s);					\
     if ((result) == NULL) {						\
@@ -119,7 +119,7 @@ test_report_parse (test_report_t *report,
 {
     char *end;
     char *s = line;
-    cairo_bool_t is_raw = FALSE;
+    comac_bool_t is_raw = FALSE;
     double min_time, median_time;
 
     /* The code here looks funny unless you understand that these are
@@ -168,13 +168,13 @@ test_report_parse (test_report_t *report,
 	skip_space ();
 
 	report->samples_size = 5;
-	report->samples = xmalloc (report->samples_size * sizeof (cairo_time_t));
+	report->samples = xmalloc (report->samples_size * sizeof (comac_time_t));
 	report->stats.min_ticks = 0;
 	do {
 	    if (report->samples_count == report->samples_size) {
 		report->samples_size *= 2;
 		report->samples = xrealloc (report->samples,
-					    report->samples_size * sizeof (cairo_time_t));
+					    report->samples_size * sizeof (comac_time_t));
 	    }
 	    parse_long_long (report->samples[report->samples_count]);
 	    if (report->samples_count == 0) {
@@ -328,7 +328,7 @@ test_report_cmp_name (const void *a,
 }
 
 void
-cairo_perf_report_sort_and_compute_stats (cairo_perf_report_t *report,
+comac_perf_report_sort_and_compute_stats (comac_perf_report_t *report,
 					  int (*cmp) (const void*, const void*))
 {
     test_report_t *base, *next, *last, *t;
@@ -360,23 +360,23 @@ cairo_perf_report_sort_and_compute_stats (cairo_perf_report_t *report,
 		if (new_samples_count > base->samples_size) {
 		    base->samples_size = new_samples_count;
 		    base->samples = xrealloc (base->samples,
-					      base->samples_size * sizeof (cairo_time_t));
+					      base->samples_size * sizeof (comac_time_t));
 		}
 		for (t = base + 1; t < next; t++) {
 		    memcpy (&base->samples[base->samples_count], t->samples,
-			    t->samples_count * sizeof (cairo_time_t));
+			    t->samples_count * sizeof (comac_time_t));
 		    base->samples_count += t->samples_count;
 		}
 	    }
 	}
 	if (base->samples)
-	    _cairo_stats_compute (&base->stats, base->samples, base->samples_count);
+	    _comac_stats_compute (&base->stats, base->samples, base->samples_count);
 	base = next;
     }
 }
 
 void
-cairo_perf_report_load (cairo_perf_report_t *report,
+comac_perf_report_load (comac_perf_report_t *report,
 			const char *filename, int id,
 			int (*cmp) (const void *, const void *))
 {
@@ -446,7 +446,7 @@ cairo_perf_report_load (cairo_perf_report_t *report,
     if (filename != NULL)
 	fclose (file);
 
-    cairo_perf_report_sort_and_compute_stats (report, cmp);
+    comac_perf_report_sort_and_compute_stats (report, cmp);
 
     /* Add one final report with a NULL name to terminate the list. */
     if (report->tests_count == report->tests_size) {

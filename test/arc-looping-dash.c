@@ -30,7 +30,7 @@
 #define SIZE 32
 
 /*
-  When cairo_arc is used to draw an arc of more than 2pi radians
+  When comac_arc is used to draw an arc of more than 2pi radians
   (i.e. a circle "looping over itself"), various different behaviors
   are possible:
 
@@ -45,34 +45,34 @@
   This test produces different results for each of these three cases.
 */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double dashes[] = { 0.3, 7 };
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_save (cr);
+    comac_save (cr);
 
-    cairo_translate (cr, SIZE * .5, SIZE * .5);
-    cairo_scale (cr, SIZE * 3 / 8., SIZE * 3 / 8.);
+    comac_translate (cr, SIZE * .5, SIZE * .5);
+    comac_scale (cr, SIZE * 3 / 8., SIZE * 3 / 8.);
 
-    cairo_arc (cr, 0, 0, 1, 0, 11 * M_PI);
+    comac_arc (cr, 0, 0, 1, 0, 11 * M_PI);
 
-    cairo_set_line_width (cr, 8. / SIZE);
+    comac_set_line_width (cr, 8. / SIZE);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_set_dash (cr, dashes, 2, 0);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_dash (cr, dashes, 2, 0);
+    comac_stroke (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (arc_looping_dash,
-	    "Test cairo_arc for angles describing more than a complete circle",
+COMAC_TEST (arc_looping_dash,
+	    "Test comac_arc for angles describing more than a complete circle",
 	    "arc", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,

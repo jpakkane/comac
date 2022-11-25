@@ -38,7 +38,7 @@
 /* Test replaying a recording surface pattern for each type of extend. */
 
 static void
-transform_extents(cairo_rectangle_t *extents, cairo_matrix_t *mat)
+transform_extents(comac_rectangle_t *extents, comac_matrix_t *mat)
 {
     double x1, y1, x2, y2, x, y;
 
@@ -50,23 +50,23 @@ transform_extents(cairo_rectangle_t *extents, cairo_matrix_t *mat)
 
     x = extents->x;
     y = extents->y;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     x1 = x2 = x;
     y1 = y2 = y;
 
     x = extents->x + extents->width;
     y = extents->y;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     UPDATE_BBOX;
 
     x = extents->x;
     y = extents->y + extents->height;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     UPDATE_BBOX;
 
     x = extents->x + extents->width;
     y = extents->y + extents->height;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     UPDATE_BBOX;
 
     extents->x = x1;
@@ -77,150 +77,150 @@ transform_extents(cairo_rectangle_t *extents, cairo_matrix_t *mat)
 #undef UPDATE_BBOX
 }
 
-static cairo_pattern_t *
-create_pattern (cairo_matrix_t *mat, cairo_extend_t extend)
+static comac_pattern_t *
+create_pattern (comac_matrix_t *mat, comac_extend_t extend)
 {
-    cairo_surface_t *surf;
-    cairo_pattern_t *pat;
-    cairo_t *cr;
-    cairo_rectangle_t extents = { 0, 0, PAT_SIZE, PAT_SIZE };
+    comac_surface_t *surf;
+    comac_pattern_t *pat;
+    comac_t *cr;
+    comac_rectangle_t extents = { 0, 0, PAT_SIZE, PAT_SIZE };
 
     transform_extents (&extents, mat);
-    surf = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
+    surf = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
 
-    cr = cairo_create (surf);
-    cairo_transform (cr, mat);
+    cr = comac_create (surf);
+    comac_transform (cr, mat);
 
-    cairo_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill (cr);
+    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill (cr);
 
-    cairo_translate (cr, PAT_SIZE/2, 0);
-    cairo_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_fill (cr);
+    comac_translate (cr, PAT_SIZE/2, 0);
+    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_fill (cr);
 
-    cairo_translate (cr, 0, PAT_SIZE/2);
-    cairo_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_fill (cr);
+    comac_translate (cr, 0, PAT_SIZE/2);
+    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_fill (cr);
 
-    cairo_translate (cr, -PAT_SIZE/2, 0);
-    cairo_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
-    cairo_set_source_rgb (cr, 1, 1, 0);
-    cairo_fill (cr);
+    comac_translate (cr, -PAT_SIZE/2, 0);
+    comac_rectangle (cr, 0, 0, PAT_SIZE/2, PAT_SIZE/2);
+    comac_set_source_rgb (cr, 1, 1, 0);
+    comac_fill (cr);
 
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
-    pat = cairo_pattern_create_for_surface (surf);
-    cairo_surface_destroy (surf);
-    cairo_pattern_set_matrix (pat, mat);
-    cairo_pattern_set_extend (pat, extend);
-    cairo_pattern_set_filter (pat, CAIRO_FILTER_NEAREST);
+    pat = comac_pattern_create_for_surface (surf);
+    comac_surface_destroy (surf);
+    comac_pattern_set_matrix (pat, mat);
+    comac_pattern_set_extend (pat, extend);
+    comac_pattern_set_filter (pat, COMAC_FILTER_NEAREST);
 
     return pat;
 }
 
-static cairo_test_status_t
-record_replay_extend (cairo_t *cr, int width, int height, cairo_extend_t extend)
+static comac_test_status_t
+record_replay_extend (comac_t *cr, int width, int height, comac_extend_t extend)
 {
-    cairo_pattern_t *pat;
-    cairo_matrix_t mat;
+    comac_pattern_t *pat;
+    comac_matrix_t mat;
 
     /* record surface extents (-PAT_SIZE/2, -PAT_SIZE/2) to (PAT_SIZE/2, PAT_SIZE/2) */
-    cairo_translate (cr, PAD, PAD);
-    cairo_matrix_init_translate (&mat, -PAT_SIZE/2, -PAT_SIZE/2);
+    comac_translate (cr, PAD, PAD);
+    comac_matrix_init_translate (&mat, -PAT_SIZE/2, -PAT_SIZE/2);
     pat = create_pattern (&mat, extend);
 
     /* test repeating patterns when the source is outside of the target clip */
-    if (extend == CAIRO_EXTEND_REPEAT || extend == CAIRO_EXTEND_REFLECT) {
-	cairo_matrix_init_translate (&mat, 3*PAT_SIZE/2, 3*PAT_SIZE/2);
-	cairo_pattern_set_matrix (pat, &mat);
+    if (extend == COMAC_EXTEND_REPEAT || extend == COMAC_EXTEND_REFLECT) {
+	comac_matrix_init_translate (&mat, 3*PAT_SIZE/2, 3*PAT_SIZE/2);
+	comac_pattern_set_matrix (pat, &mat);
     }
 
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
-    cairo_fill (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
+    comac_fill (cr);
 
     /* record surface extents (-2*PAT_SIZE/2, -2*PAT_SIZE/2) to (2*PAT_SIZE/2, 2*PAT_SIZE/2) */
-    cairo_translate (cr, REPLAY_SIZE + PAD, 0);
-    cairo_matrix_init_translate (&mat, -2.0*PAT_SIZE/2, -2.0*PAT_SIZE/2);
-    cairo_matrix_scale (&mat, 2, 2);
+    comac_translate (cr, REPLAY_SIZE + PAD, 0);
+    comac_matrix_init_translate (&mat, -2.0*PAT_SIZE/2, -2.0*PAT_SIZE/2);
+    comac_matrix_scale (&mat, 2, 2);
     pat = create_pattern (&mat, extend);
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
-    cairo_fill (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
+    comac_fill (cr);
 
     /* record surface extents (-0.5*PAT_SIZE/2, -0.5*PAT_SIZE/2) to (0.5*PAT_SIZE/2, 0.5*PAT_SIZE/2) */
-    cairo_translate (cr, REPLAY_SIZE + PAD, 0);
-    cairo_matrix_init_translate (&mat, -0.5*PAT_SIZE/2, -0.5*PAT_SIZE/2);
-    cairo_matrix_scale (&mat, 0.5, 0.5);
+    comac_translate (cr, REPLAY_SIZE + PAD, 0);
+    comac_matrix_init_translate (&mat, -0.5*PAT_SIZE/2, -0.5*PAT_SIZE/2);
+    comac_matrix_scale (&mat, 0.5, 0.5);
     pat = create_pattern (&mat, extend);
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
-    cairo_fill (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
+    comac_fill (cr);
 
     /* record surface centered on (0,0) and rotated 45 deg */
-    cairo_translate (cr, REPLAY_SIZE + PAD, 0);
-    cairo_matrix_init_translate (&mat, -PAT_SIZE/sqrt(2), -PAT_SIZE/sqrt(2));
-    cairo_matrix_rotate (&mat, M_PI/4.0);
-    cairo_matrix_translate (&mat, PAT_SIZE/2, -PAT_SIZE/2);
+    comac_translate (cr, REPLAY_SIZE + PAD, 0);
+    comac_matrix_init_translate (&mat, -PAT_SIZE/sqrt(2), -PAT_SIZE/sqrt(2));
+    comac_matrix_rotate (&mat, M_PI/4.0);
+    comac_matrix_translate (&mat, PAT_SIZE/2, -PAT_SIZE/2);
     pat = create_pattern (&mat, extend);
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
-    cairo_fill (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_rectangle (cr, 0, 0, REPLAY_SIZE, REPLAY_SIZE);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-record_replay_extend_none (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_replay_extend_none (comac_t *cr, int width, int height)
 {
-    return record_replay_extend (cr, width, height, CAIRO_EXTEND_NONE);
+    return record_replay_extend (cr, width, height, COMAC_EXTEND_NONE);
 }
 
-static cairo_test_status_t
-record_replay_extend_repeat (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_replay_extend_repeat (comac_t *cr, int width, int height)
 {
-    return record_replay_extend (cr, width, height, CAIRO_EXTEND_REPEAT);
+    return record_replay_extend (cr, width, height, COMAC_EXTEND_REPEAT);
 }
 
-static cairo_test_status_t
-record_replay_extend_reflect (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_replay_extend_reflect (comac_t *cr, int width, int height)
 {
-    return record_replay_extend (cr, width, height, CAIRO_EXTEND_REFLECT);
+    return record_replay_extend (cr, width, height, COMAC_EXTEND_REFLECT);
 }
 
-static cairo_test_status_t
-record_replay_extend_pad (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_replay_extend_pad (comac_t *cr, int width, int height)
 {
-    return record_replay_extend (cr, width, height, CAIRO_EXTEND_PAD);
+    return record_replay_extend (cr, width, height, COMAC_EXTEND_PAD);
 }
 
-CAIRO_TEST (record_replay_extend_none,
-	    "Paint recording pattern with CAIRO_EXTEND_NONE",
+COMAC_TEST (record_replay_extend_none,
+	    "Paint recording pattern with COMAC_EXTEND_NONE",
 	    "record,pattern,extend", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, record_replay_extend_none)
-CAIRO_TEST (record_replay_extend_repeat,
-	    "Paint recording pattern with CAIRO_EXTEND_REPEAT",
+COMAC_TEST (record_replay_extend_repeat,
+	    "Paint recording pattern with COMAC_EXTEND_REPEAT",
 	    "record,pattern,extend", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, record_replay_extend_repeat)
-CAIRO_TEST (record_replay_extend_reflect,
-	    "Paint recording pattern with CAIRO_EXTEND_REFLECT",
+COMAC_TEST (record_replay_extend_reflect,
+	    "Paint recording pattern with COMAC_EXTEND_REFLECT",
 	    "record,pattern,extend", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, record_replay_extend_reflect)
-CAIRO_TEST (record_replay_extend_pad,
-	    "Paint recording pattern with CAIRO_EXTEND_PAD",
+COMAC_TEST (record_replay_extend_pad,
+	    "Paint recording pattern with COMAC_EXTEND_PAD",
 	    "record,pattern,extend", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,

@@ -27,9 +27,9 @@
  *
  * In short:
  *
- * _cairo_atsui_font_text_to_glyph with a zero-sized string crashes.
+ * _comac_atsui_font_text_to_glyph with a zero-sized string crashes.
  *
- * Moreover, the fallback path in cairo_scaled_font_text_to_glyphs()
+ * Moreover, the fallback path in comac_scaled_font_text_to_glyphs()
  * when handling a zero-sized string, allocates a zero-sized glyph array
  * and when NULL is returned by malloc, recognizes that as an out-of-memory
  * error.  The glibc implementation of malloc() does not return NULL from
@@ -43,9 +43,9 @@
 #define NUM_TEXT 20
 #define TEXT_SIZE 12
 
-static cairo_bool_t
-text_extents_equal (const cairo_text_extents_t *A,
-	            const cairo_text_extents_t *B)
+static comac_bool_t
+text_extents_equal (const comac_text_extents_t *A,
+	            const comac_text_extents_t *B)
 {
     return A->x_bearing == B->x_bearing &&
 	   A->y_bearing == B->y_bearing &&
@@ -55,9 +55,9 @@ text_extents_equal (const cairo_text_extents_t *A,
 	   A->y_advance == B->y_advance;
 }
 
-static cairo_bool_t
-font_extents_equal (const cairo_font_extents_t *A,
-	            const cairo_font_extents_t *B)
+static comac_bool_t
+font_extents_equal (const comac_font_extents_t *A,
+	            const comac_font_extents_t *B)
 {
     return A->ascent    == B->ascent        &&
 	   A->descent   == B->descent       &&
@@ -66,136 +66,136 @@ font_extents_equal (const cairo_font_extents_t *A,
        A->max_y_advance == B->max_y_advance;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_text_extents_t extents, nil_extents;
-    cairo_font_extents_t font_extents, nil_font_extents;
-    cairo_scaled_font_t *scaled_font;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_text_extents_t extents, nil_extents;
+    comac_font_extents_t font_extents, nil_font_extents;
+    comac_scaled_font_t *scaled_font;
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, 16);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, 16);
 
-    cairo_move_to (cr, 10, 25);
-    cairo_show_text (cr, NULL);
-    cairo_show_text (cr, "");
-    cairo_show_glyphs (cr, NULL, 0);
-    cairo_show_glyphs (cr, (void*)8, 0);
+    comac_move_to (cr, 10, 25);
+    comac_show_text (cr, NULL);
+    comac_show_text (cr, "");
+    comac_show_glyphs (cr, NULL, 0);
+    comac_show_glyphs (cr, (void*)8, 0);
 
-    cairo_move_to (cr, 10, 55);
-    cairo_text_path (cr, NULL);
-    cairo_text_path (cr, "");
-    cairo_glyph_path (cr, (void*)8, 0);
-    cairo_fill (cr);
+    comac_move_to (cr, 10, 55);
+    comac_text_path (cr, NULL);
+    comac_text_path (cr, "");
+    comac_glyph_path (cr, (void*)8, 0);
+    comac_fill (cr);
 
-    memset (&nil_extents, 0, sizeof (cairo_text_extents_t));
+    memset (&nil_extents, 0, sizeof (comac_text_extents_t));
 
-    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
-    cairo_text_extents (cr, "", &extents);
+    memset (&extents, 0xff, sizeof (comac_text_extents_t));
+    comac_text_extents (cr, "", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log (ctx, "Error: cairo_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
-    cairo_text_extents (cr, NULL, &extents);
+    memset (&extents, 0xff, sizeof (comac_text_extents_t));
+    comac_text_extents (cr, NULL, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log (ctx, "Error: cairo_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
-    cairo_glyph_extents (cr, (void*)8, 0, &extents);
+    memset (&extents, 0xff, sizeof (comac_text_extents_t));
+    comac_glyph_extents (cr, (void*)8, 0, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log (ctx, "Error: cairo_glyph_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_glyph_extents(); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    scaled_font = cairo_get_scaled_font (cr);
+    scaled_font = comac_get_scaled_font (cr);
 
-    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
-    cairo_scaled_font_text_extents (scaled_font, "", &extents);
+    memset (&extents, 0xff, sizeof (comac_text_extents_t));
+    comac_scaled_font_text_extents (scaled_font, "", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log (ctx, "Error: cairo_scaled_font_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_scaled_font_text_extents(\"\"); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
-    cairo_scaled_font_text_extents (scaled_font, NULL, &extents);
+    memset (&extents, 0xff, sizeof (comac_text_extents_t));
+    comac_scaled_font_text_extents (scaled_font, NULL, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log (ctx, "Error: cairo_scaled_font_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_scaled_font_text_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
-    cairo_scaled_font_glyph_extents (scaled_font, (void*)8, 0, &extents);
+    memset (&extents, 0xff, sizeof (comac_text_extents_t));
+    comac_scaled_font_glyph_extents (scaled_font, (void*)8, 0, &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log (ctx, "Error: cairo_scaled_font_glyph_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_scaled_font_glyph_extents(NULL); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     /* Lets also try font size 0 while here */
-    cairo_set_font_size (cr, 0);
+    comac_set_font_size (cr, 0);
 
-    memset (&extents, 0xff, sizeof (cairo_text_extents_t));
-    cairo_text_extents (cr, "test", &extents);
+    memset (&extents, 0xff, sizeof (comac_text_extents_t));
+    comac_text_extents (cr, "test", &extents);
     if (! text_extents_equal (&extents, &nil_extents)) {
-	cairo_test_log (ctx, "Error: cairo_set_font_size(0); cairo_text_extents(\"test\"); extents (%g, %g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_set_font_size(0); comac_text_extents(\"test\"); extents (%g, %g, %g, %g, %g, %g)\n",
 		        extents.x_bearing, extents.y_bearing,
 			extents.width, extents.height,
 			extents.x_advance, extents.y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    memset (&nil_font_extents, 0, sizeof (cairo_font_extents_t));
+    memset (&nil_font_extents, 0, sizeof (comac_font_extents_t));
 
-    memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
-    cairo_font_extents (cr,  &font_extents);
+    memset (&font_extents, 0xff, sizeof (comac_font_extents_t));
+    comac_font_extents (cr,  &font_extents);
     if (! font_extents_equal (&font_extents, &nil_font_extents)) {
-	cairo_test_log (ctx, "Error: cairo_set_font_size(0); cairo_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_set_font_size(0); comac_font_extents(); extents (%g, %g, %g, %g, %g)\n",
 		        font_extents.ascent, font_extents.descent,
 			font_extents.height,
 			font_extents.max_x_advance, font_extents.max_y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    scaled_font = cairo_get_scaled_font (cr);
+    scaled_font = comac_get_scaled_font (cr);
 
-    memset (&font_extents, 0xff, sizeof (cairo_font_extents_t));
-    cairo_scaled_font_extents (scaled_font,  &font_extents);
+    memset (&font_extents, 0xff, sizeof (comac_font_extents_t));
+    comac_scaled_font_extents (scaled_font,  &font_extents);
     if (! font_extents_equal (&font_extents, &nil_font_extents)) {
-	cairo_test_log (ctx, "Error: cairo_set_font_size(0); cairo_scaled_font_extents(); extents (%g, %g, %g, %g, %g)\n",
+	comac_test_log (ctx, "Error: comac_set_font_size(0); comac_scaled_font_extents(); extents (%g, %g, %g, %g, %g)\n",
 		        font_extents.ascent, font_extents.descent,
 			font_extents.height,
 			font_extents.max_x_advance, font_extents.max_y_advance);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (text_zero_len,
+COMAC_TEST (text_zero_len,
 	    "Tests show_text and text_path with a zero-sized string",
 	    "text, stress, extents", /* keywords */
 	    NULL, /* requirements */

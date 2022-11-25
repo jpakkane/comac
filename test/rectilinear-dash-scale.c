@@ -33,162 +33,162 @@
 #define SIZE 50
 
 static void
-draw_dashes (cairo_t *cr)
+draw_dashes (comac_t *cr)
 {
     const double dash_square[4] = {4, 2, 2, 2};
     const double dash_butt[4] = {5, 1, 3, 1};
 
-    cairo_save (cr);
+    comac_save (cr);
 
-    cairo_set_dash (cr, dash_square, 4, 0);
+    comac_set_dash (cr, dash_square, 4, 0);
 
-    cairo_set_line_width (cr, 1.0);
-    cairo_translate (cr, 1, 1);
+    comac_set_line_width (cr, 1.0);
+    comac_translate (cr, 1, 1);
 
     /* Draw everything first with square caps. */
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_SQUARE);
 
     /* Draw horizontal and vertical segments, each in both
      * directions. */
-    cairo_move_to     (cr,  4.5,  0.5);
-    cairo_rel_line_to (cr,  2.0,  0.0);
+    comac_move_to     (cr,  4.5,  0.5);
+    comac_rel_line_to (cr,  2.0,  0.0);
 
-    cairo_move_to     (cr, 10.5,  4.5);
-    cairo_rel_line_to (cr,  0.0,  2.0);
+    comac_move_to     (cr, 10.5,  4.5);
+    comac_rel_line_to (cr,  0.0,  2.0);
 
-    cairo_move_to     (cr,  6.5, 10.5);
-    cairo_rel_line_to (cr, -2.0,  0.0);
+    comac_move_to     (cr,  6.5, 10.5);
+    comac_rel_line_to (cr, -2.0,  0.0);
 
-    cairo_move_to     (cr,  0.5,  6.5);
-    cairo_rel_line_to (cr,  0.0, -2.0);
+    comac_move_to     (cr,  0.5,  6.5);
+    comac_rel_line_to (cr,  0.0, -2.0);
 
     /* Draw right angle turns in four directions. */
-    cairo_move_to     (cr,  0.5,  2.5);
-    cairo_rel_line_to (cr,  0.0, -2.0);
-    cairo_rel_line_to (cr,  2.0,  0.0);
+    comac_move_to     (cr,  0.5,  2.5);
+    comac_rel_line_to (cr,  0.0, -2.0);
+    comac_rel_line_to (cr,  2.0,  0.0);
 
-    cairo_move_to     (cr,  8.5,  0.5);
-    cairo_rel_line_to (cr,  2.0,  0.0);
-    cairo_rel_line_to (cr,  0.0,  2.0);
+    comac_move_to     (cr,  8.5,  0.5);
+    comac_rel_line_to (cr,  2.0,  0.0);
+    comac_rel_line_to (cr,  0.0,  2.0);
 
-    cairo_move_to     (cr, 10.5,  8.5);
-    cairo_rel_line_to (cr,  0.0,  2.0);
-    cairo_rel_line_to (cr, -2.0,  0.0);
+    comac_move_to     (cr, 10.5,  8.5);
+    comac_rel_line_to (cr,  0.0,  2.0);
+    comac_rel_line_to (cr, -2.0,  0.0);
 
-    cairo_move_to     (cr,  2.5, 10.5);
-    cairo_rel_line_to (cr, -2.0,  0.0);
-    cairo_rel_line_to (cr,  0.0, -2.0);
+    comac_move_to     (cr,  2.5, 10.5);
+    comac_rel_line_to (cr, -2.0,  0.0);
+    comac_rel_line_to (cr,  0.0, -2.0);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
     /* Draw a closed-path rectangle */
-    cairo_rectangle (cr, 0.5, 12.5, 10.0, 10.0);
-    cairo_set_dash (cr, dash_square, 4, 2);
-    cairo_stroke (cr);
+    comac_rectangle (cr, 0.5, 12.5, 10.0, 10.0);
+    comac_set_dash (cr, dash_square, 4, 2);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 12, 0);
+    comac_translate (cr, 12, 0);
 
     /* Now draw the same results, but with butt caps. */
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-    cairo_set_dash (cr, dash_butt, 4, 0.0);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+    comac_set_dash (cr, dash_butt, 4, 0.0);
 
     /* Draw horizontal and vertical segments, each in both
      * directions. */
-    cairo_move_to     (cr,  4.0,  0.5);
-    cairo_rel_line_to (cr,  3.0,  0.0);
+    comac_move_to     (cr,  4.0,  0.5);
+    comac_rel_line_to (cr,  3.0,  0.0);
 
-    cairo_move_to     (cr, 10.5,  4.0);
-    cairo_rel_line_to (cr,  0.0,  3.0);
+    comac_move_to     (cr, 10.5,  4.0);
+    comac_rel_line_to (cr,  0.0,  3.0);
 
-    cairo_move_to     (cr,  7.0, 10.5);
-    cairo_rel_line_to (cr, -3.0,  0.0);
+    comac_move_to     (cr,  7.0, 10.5);
+    comac_rel_line_to (cr, -3.0,  0.0);
 
-    cairo_move_to     (cr,  0.5,  7.0);
-    cairo_rel_line_to (cr,  0.0, -3.0);
+    comac_move_to     (cr,  0.5,  7.0);
+    comac_rel_line_to (cr,  0.0, -3.0);
 
     /* Draw right angle turns in four directions. */
-    cairo_move_to     (cr,  0.5,  3.0);
-    cairo_rel_line_to (cr,  0.0, -2.5);
-    cairo_rel_line_to (cr,  2.5,  0.0);
+    comac_move_to     (cr,  0.5,  3.0);
+    comac_rel_line_to (cr,  0.0, -2.5);
+    comac_rel_line_to (cr,  2.5,  0.0);
 
-    cairo_move_to     (cr,  8.0,  0.5);
-    cairo_rel_line_to (cr,  2.5,  0.0);
-    cairo_rel_line_to (cr,  0.0,  2.5);
+    comac_move_to     (cr,  8.0,  0.5);
+    comac_rel_line_to (cr,  2.5,  0.0);
+    comac_rel_line_to (cr,  0.0,  2.5);
 
-    cairo_move_to     (cr, 10.5,  8.0);
-    cairo_rel_line_to (cr,  0.0,  2.5);
-    cairo_rel_line_to (cr, -2.5,  0.0);
+    comac_move_to     (cr, 10.5,  8.0);
+    comac_rel_line_to (cr,  0.0,  2.5);
+    comac_rel_line_to (cr, -2.5,  0.0);
 
-    cairo_move_to     (cr,  3.0, 10.5);
-    cairo_rel_line_to (cr, -2.5,  0.0);
-    cairo_rel_line_to (cr,  0.0, -2.5);
+    comac_move_to     (cr,  3.0, 10.5);
+    comac_rel_line_to (cr, -2.5,  0.0);
+    comac_rel_line_to (cr,  0.0, -2.5);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
     /* Draw a closed-path rectangle */
-    cairo_set_dash (cr, dash_butt, 4, 2.5);
-    cairo_rectangle (cr, 0.5, 12.5, 10.0, 10.0);
-    cairo_stroke (cr);
+    comac_set_dash (cr, dash_butt, 4, 2.5);
+    comac_rectangle (cr, 0.5, 12.5, 10.0, 10.0);
+    comac_stroke (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-dashes (cairo_t *cr)
+static comac_test_status_t
+dashes (comac_t *cr)
 {
     /* Paint background white, then draw in black. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
     draw_dashes (cr);
 
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
-    cairo_translate (cr, 0, SIZE);
-    cairo_scale (cr, 1, -1);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+    comac_translate (cr, 0, SIZE);
+    comac_scale (cr, 1, -1);
     draw_dashes (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
-    cairo_translate (cr, SIZE, 0);
-    cairo_scale (cr, -1, 1);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+    comac_translate (cr, SIZE, 0);
+    comac_scale (cr, -1, 1);
     draw_dashes (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
-    cairo_translate (cr, SIZE, SIZE);
-    cairo_scale (cr, -1, -1);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+    comac_translate (cr, SIZE, SIZE);
+    comac_scale (cr, -1, -1);
     draw_dashes (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-aligned (cairo_t *cr, int width, int height)
+static comac_test_status_t
+aligned (comac_t *cr, int width, int height)
 {
-    cairo_scale (cr, 4, 2);
+    comac_scale (cr, 4, 2);
     return dashes(cr);
 }
 
-static cairo_test_status_t
-unaligned (cairo_t *cr, int width, int height)
+static comac_test_status_t
+unaligned (comac_t *cr, int width, int height)
 {
-    cairo_scale (cr, 3.9, 1.9);
+    comac_scale (cr, 3.9, 1.9);
     return dashes(cr);
 }
 
-CAIRO_TEST (rectilinear_dash_scale,
+COMAC_TEST (rectilinear_dash_scale,
 	    "Test dashed rectilinear stroke operations (covering only whole pixels) after scaling",
 	    "stroke, dash", /* keywords */
 	    NULL, /* requirements */
 	    4*SIZE, 2*SIZE,
 	    NULL, aligned)
 
-CAIRO_TEST (rectilinear_dash_scale_unaligned,
+COMAC_TEST (rectilinear_dash_scale_unaligned,
 	    "Test dashed rectilinear stroke operations (covering partial pixels) after scaling",
 	    "stroke, dash", /* keywords */
 	    NULL, /* requirements */

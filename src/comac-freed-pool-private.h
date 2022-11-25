@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -34,13 +34,13 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_FREED_POOL_H
-#define CAIRO_FREED_POOL_H
+#ifndef COMAC_FREED_POOL_H
+#define COMAC_FREED_POOL_H
 
 #include "comacint.h"
 #include "comac-atomic-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 #define DISABLE_FREED_POOLS 0
 
@@ -51,28 +51,28 @@ CAIRO_BEGIN_DECLS
 #define MAX_FREED_POOL_SIZE 16
 typedef struct {
     void *pool[MAX_FREED_POOL_SIZE];
-    cairo_atomic_int_t top;
+    comac_atomic_int_t top;
 } freed_pool_t;
 
-static cairo_always_inline void *
+static comac_always_inline void *
 _atomic_fetch (void **slot)
 {
     void *ptr;
 
     do {
-        ptr = _cairo_atomic_ptr_get (slot);
-    } while (! _cairo_atomic_ptr_cmpxchg (slot, ptr, NULL));
+        ptr = _comac_atomic_ptr_get (slot);
+    } while (! _comac_atomic_ptr_cmpxchg (slot, ptr, NULL));
 
     return ptr;
 }
 
-static cairo_always_inline cairo_bool_t
+static comac_always_inline comac_bool_t
 _atomic_store (void **slot, void *ptr)
 {
-    return _cairo_atomic_ptr_cmpxchg (slot, NULL, ptr);
+    return _comac_atomic_ptr_cmpxchg (slot, NULL, ptr);
 }
 
-cairo_private void *
+comac_private void *
 _freed_pool_get_search (freed_pool_t *pool);
 
 static inline void *
@@ -81,13 +81,13 @@ _freed_pool_get (freed_pool_t *pool)
     void *ptr;
     int i;
 
-    i = _cairo_atomic_int_get_relaxed (&pool->top) - 1;
+    i = _comac_atomic_int_get_relaxed (&pool->top) - 1;
     if (i < 0)
 	i = 0;
 
     ptr = _atomic_fetch (&pool->pool[i]);
     if (likely (ptr != NULL)) {
-	_cairo_atomic_int_set_relaxed (&pool->top, i);
+	_comac_atomic_int_set_relaxed (&pool->top, i);
 	return ptr;
     }
 
@@ -95,7 +95,7 @@ _freed_pool_get (freed_pool_t *pool)
     return _freed_pool_get_search (pool);
 }
 
-cairo_private void
+comac_private void
 _freed_pool_put_search (freed_pool_t *pool, void *ptr);
 
 static inline void
@@ -103,11 +103,11 @@ _freed_pool_put (freed_pool_t *pool, void *ptr)
 {
     int i;
 
-    i = _cairo_atomic_int_get_relaxed (&pool->top);
+    i = _comac_atomic_int_get_relaxed (&pool->top);
     if (likely (i < ARRAY_LENGTH (pool->pool) &&
 		_atomic_store (&pool->pool[i], ptr)))
     {
-	_cairo_atomic_int_set_relaxed (&pool->top, i + 1);
+	_comac_atomic_int_set_relaxed (&pool->top, i + 1);
 	return;
     }
 
@@ -115,7 +115,7 @@ _freed_pool_put (freed_pool_t *pool, void *ptr)
     _freed_pool_put_search (pool, ptr);
 }
 
-cairo_private void
+comac_private void
 _freed_pool_reset (freed_pool_t *pool);
 
 #define HAS_FREED_POOL 1
@@ -134,6 +134,6 @@ typedef int freed_pool_t;
 
 #endif
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_FREED_POOL_PRIVATE_H */
+#endif /* COMAC_FREED_POOL_PRIVATE_H */

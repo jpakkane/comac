@@ -27,31 +27,31 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 0, -25);
+    comac_translate (cr, 0, -25);
 
-    cairo_move_to  (cr,   50, 200);
-    cairo_curve_to (cr,   50, 150, 100,  50, 150,  50);
-    cairo_curve_to (cr,  200,  50, 250, 250, 200, 250);
-    cairo_curve_to (cr,  150, 250, 200,  50,  50, 100);
-    cairo_curve_to (cr, -100, 150, 200, 150, 200, 200);
-    cairo_curve_to (cr,  200, 250,  50, 250,  50, 200);
+    comac_move_to  (cr,   50, 200);
+    comac_curve_to (cr,   50, 150, 100,  50, 150,  50);
+    comac_curve_to (cr,  200,  50, 250, 250, 200, 250);
+    comac_curve_to (cr,  150, 250, 200,  50,  50, 100);
+    comac_curve_to (cr, -100, 150, 200, 150, 200, 200);
+    comac_curve_to (cr,  200, 250,  50, 250,  50, 200);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_fill_preserve (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_fill_preserve (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_extents,
+COMAC_TEST (bug_extents,
 	    "Tests a bug in the computation of approximate extents",
 	    "extents", /* keywords */
 	    NULL, /* requirements */

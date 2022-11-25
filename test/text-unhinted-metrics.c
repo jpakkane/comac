@@ -23,9 +23,9 @@
  * Author: Adrian Johnson <ajohnson@redneon.com>
  */
 
-/* Test CAIRO_HINT_METRICS_OFF with a TrueType font.
+/* Test COMAC_HINT_METRICS_OFF with a TrueType font.
  *
- * Based on the test case in https://lists.cairographics.org/archives/cairo/2016-April/027334.html
+ * Based on the test case in https://lists.comacgraphics.org/archives/comac/2016-April/027334.html
  */
 
 #include "comac-test.h"
@@ -33,40 +33,40 @@
 #define WIDTH  100
 #define HEIGHT 100
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_font_options_t *font_options;
+    comac_font_options_t *font_options;
     double size, y;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY "DejaVu Sans Mono",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY "DejaVu Sans Mono",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
-    font_options = cairo_font_options_create();
-    cairo_get_font_options (cr, font_options);
-    cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_OFF);
-    cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_NONE);
-    cairo_set_font_options (cr, font_options);
-    cairo_font_options_destroy (font_options);
+    font_options = comac_font_options_create();
+    comac_get_font_options (cr, font_options);
+    comac_font_options_set_hint_metrics (font_options, COMAC_HINT_METRICS_OFF);
+    comac_font_options_set_hint_style (font_options, COMAC_HINT_STYLE_NONE);
+    comac_set_font_options (cr, font_options);
+    comac_font_options_destroy (font_options);
 
     y = 0.0;
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0);
     for (size = 8.0; size <= 10.0; size += 0.25) {
-	cairo_set_font_size (cr, size);
+	comac_set_font_size (cr, size);
 	y += 10.0;
-	cairo_move_to (cr, 5, y);
-	cairo_show_text (cr, "abcdefghijklm");
+	comac_move_to (cr, 5, y);
+	comac_show_text (cr, "abcdefghijklm");
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (text_unhinted_metrics,
-	    "Test CAIRO_HINT_METRICS_OFF",
+COMAC_TEST (text_unhinted_metrics,
+	    "Test COMAC_HINT_METRICS_OFF",
 	    "text, font", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,

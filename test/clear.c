@@ -25,59 +25,59 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
+    comac_set_operator (cr, COMAC_OPERATOR_CLEAR);
 
-    cairo_translate (cr, 2, 2);
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_clip (cr);
-    cairo_rectangle (cr, 5, 5, 10, 10);
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_translate (cr, 2, 2);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_clip (cr);
+    comac_rectangle (cr, 5, 5, 10, 10);
+    comac_fill (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 20, 0);
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_clip (cr);
-    cairo_arc (cr, 10, 10, 8, 0, 2*M_PI);
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_translate (cr, 20, 0);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_clip (cr);
+    comac_arc (cr, 10, 10, 8, 0, 2*M_PI);
+    comac_fill (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 0, 20);
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_clip (cr);
-    cairo_text_extents (cr, "Cairo", &extents);
-    cairo_move_to (cr,
+    comac_translate (cr, 0, 20);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_clip (cr);
+    comac_text_extents (cr, "Comac", &extents);
+    comac_move_to (cr,
 	           10 - (extents.width/2. + extents.x_bearing),
 	           10 - (extents.height/2. + extents.y_bearing));
-    cairo_text_path (cr, "Cairo");
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_text_path (cr, "Comac");
+    comac_fill (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, -20, 0);
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_clip (cr);
-    cairo_move_to (cr, 10, 2);
-    cairo_line_to (cr, 18, 18);
-    cairo_line_to (cr, 2, 18);
-    cairo_close_path (cr);
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_translate (cr, -20, 0);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_clip (cr);
+    comac_move_to (cr, 10, 2);
+    comac_line_to (cr, 18, 18);
+    comac_line_to (cr, 2, 18);
+    comac_close_path (cr);
+    comac_fill (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clear,
+COMAC_TEST (clear,
 	    "Test masked clears",
 	    "paint, clear", /* keywords */
 	    NULL, /* requirements */

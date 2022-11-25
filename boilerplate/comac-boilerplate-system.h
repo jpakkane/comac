@@ -28,31 +28,31 @@
 
 #include "comac-boilerplate.h"
 
-#define xmalloc cairo_boilerplate_xmalloc
+#define xmalloc comac_boilerplate_xmalloc
 void *
 xmalloc (size_t size);
 
-#define xcalloc cairo_boilerplate_xcalloc
+#define xcalloc comac_boilerplate_xcalloc
 void *
 xcalloc (size_t nmemb,
 	 size_t size);
 
-#define xrealloc cairo_boilerplate_xrealloc
+#define xrealloc comac_boilerplate_xrealloc
 void *
 xrealloc (void	 *buf,
 	  size_t  size);
 
-#define xasprintf cairo_boilerplate_xasprintf
+#define xasprintf comac_boilerplate_xasprintf
 void
 xasprintf (char       **strp,
 	   const char  *fmt,
-			...) CAIRO_BOILERPLATE_PRINTF_FORMAT(2, 3);
+			...) COMAC_BOILERPLATE_PRINTF_FORMAT(2, 3);
 
-#define xunlink cairo_boilerplate_xunlink
+#define xunlink comac_boilerplate_xunlink
 void
 xunlink (const char *path);
 
-#define xstrdup cairo_boilerplate_xstrdup
+#define xstrdup comac_boilerplate_xstrdup
 char *
 xstrdup (const char *str);
 

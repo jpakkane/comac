@@ -22,8 +22,8 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     static const struct point {
 	double x;
@@ -37,23 +37,23 @@ draw (cairo_t *cr, int width, int height)
     };
     unsigned int i;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     for (i = 0; i < ARRAY_LENGTH (xy); i++)
-	cairo_line_to (cr, xy[i].x, xy[i].y);
+	comac_line_to (cr, xy[i].x, xy[i].y);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill_preserve (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill_preserve (cr);
 
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_fill (cr);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a1_bug,
+COMAC_TEST (a1_bug,
 	    "Check the fidelity of the rasterisation.",
 	    "a1, raster", /* keywords */
 	    "target=raster", /* requirements */

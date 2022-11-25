@@ -31,7 +31,7 @@
 /* History:
  *
  * 2006-06-13 Paul Giblock reports a "Strange alpha channel problem" on
- * the cairo mailing list.
+ * the comac mailing list.
  *
  * 2006-06-13 Carl Worth writes this test in an attempt to reproduce
  * the problem. The test first fills in a 3x3 rectangle with red, then
@@ -42,52 +42,52 @@
  * 2006-06-13 Paul Giblock reports that this only happens with the
  * xlib backend, and then only on some systems.
  */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     uint32_t zero = 0;
 
     /* First paint background red. */
-    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); /* red */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 0.0, 0.0); /* red */
+    comac_paint (cr);
 
     /* Then we paint zero-alpha in several ways (always REPS times): */
 
     /* 1. fill a rectangle with a zero-alpha solid source. */
-    cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0); /* transparent */
-    cairo_rectangle (cr, 1.0, 1.0, 1.0, 1.0);
+    comac_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0); /* transparent */
+    comac_rectangle (cr, 1.0, 1.0, 1.0, 1.0);
     for (i=0; i < REPS; i++)
-	cairo_fill_preserve (cr);
-    cairo_new_path (cr);
+	comac_fill_preserve (cr);
+    comac_new_path (cr);
 
     /* 2. paint with a zero-alpha image surface source. */
-    surface = cairo_image_surface_create_for_data ((unsigned char *) &zero,
-						   CAIRO_FORMAT_ARGB32, 1, 1, 4);
-    cairo_set_source_surface (cr, surface, 1, 1);
+    surface = comac_image_surface_create_for_data ((unsigned char *) &zero,
+						   COMAC_FORMAT_ARGB32, 1, 1, 4);
+    comac_set_source_surface (cr, surface, 1, 1);
     for (i=0; i < REPS; i++)
-	cairo_paint (cr);
+	comac_paint (cr);
 
     /* 3. clip to rectangle then paint with zero-alpha solid source. */
-    cairo_rectangle (cr, 1.0, 1.0, 1.0, 1.0);
-    cairo_clip (cr);
-    cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0); /* transparent */
+    comac_rectangle (cr, 1.0, 1.0, 1.0, 1.0);
+    comac_clip (cr);
+    comac_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0); /* transparent */
     for (i=0; i < REPS; i++)
-	cairo_paint (cr);
+	comac_paint (cr);
 
     /* 4. With the clip still there, paint our image surface. */
-    cairo_set_source_surface (cr, surface, 1, 1);
+    comac_set_source_surface (cr, surface, 1, 1);
     for (i=0; i < REPS; i++)
-	cairo_paint (cr);
+	comac_paint (cr);
 
-    cairo_surface_finish (surface); /* zero will go out of scope */
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface); /* zero will go out of scope */
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (zero_alpha,
+COMAC_TEST (zero_alpha,
 	    "Testing that drawing with zero alpha has no effect",
 	    "alpha", /* keywords */
 	    NULL, /* requirements */

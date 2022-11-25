@@ -30,81 +30,81 @@
 #define PAD		(2 * LINE_WIDTH)
 
 static void
-make_path (cairo_t *cr)
+make_path (comac_t *cr)
 {
     int i;
 
-    cairo_save (cr);
+    comac_save (cr);
     for (i = 0; i <= 3; i++) {
-	cairo_new_sub_path (cr);
-	cairo_move_to (cr, -SIZE / 2, 0.);
-	cairo_line_to (cr,  SIZE / 2, 0.);
-	cairo_rotate (cr, M_PI / 4.);
+	comac_new_sub_path (cr);
+	comac_move_to (cr, -SIZE / 2, 0.);
+	comac_line_to (cr,  SIZE / 2, 0.);
+	comac_rotate (cr, M_PI / 4.);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr)
+static comac_test_status_t
+draw (comac_t *cr)
 {
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, PAD + SIZE / 2., PAD + SIZE / 2.);
+    comac_translate (cr, PAD + SIZE / 2., PAD + SIZE / 2.);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_BEVEL);
     make_path (cr);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 0, SIZE + PAD);
+    comac_translate (cr, 0, SIZE + PAD);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
     make_path (cr);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 0, SIZE + PAD);
+    comac_translate (cr, 0, SIZE + PAD);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_SQUARE);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_MITER);
     make_path (cr);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-draw_10 (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_10 (comac_t *cr, int width, int height)
 {
-    cairo_set_line_width (cr, LINE_WIDTH);
+    comac_set_line_width (cr, LINE_WIDTH);
     return draw (cr);
 }
 
-static cairo_test_status_t
-draw_2 (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_2 (comac_t *cr, int width, int height)
 {
-    cairo_set_line_width (cr, 2);
+    comac_set_line_width (cr, 2);
     return draw (cr);
 }
 
-static cairo_test_status_t
-draw_1 (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_1 (comac_t *cr, int width, int height)
 {
-    cairo_set_line_width (cr, 1);
+    comac_set_line_width (cr, 1);
     return draw (cr);
 }
 
-static cairo_test_status_t
-draw_05 (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_05 (comac_t *cr, int width, int height)
 {
-    cairo_set_line_width (cr, 0.5);
+    comac_set_line_width (cr, 0.5);
     return draw (cr);
 }
 
-CAIRO_TEST (caps,
+COMAC_TEST (caps,
 	    "Test caps",
 	    "stroke, caps", /* keywords */
 	    NULL, /* requirements */
@@ -112,7 +112,7 @@ CAIRO_TEST (caps,
 	    3 * (PAD + SIZE) + PAD,
 	    NULL, draw_10)
 
-CAIRO_TEST (caps_2,
+COMAC_TEST (caps_2,
 	    "Test normal caps",
 	    "stroke, caps", /* keywords */
 	    NULL, /* requirements */
@@ -120,7 +120,7 @@ CAIRO_TEST (caps_2,
 	    3 * (PAD + SIZE) + PAD,
 	    NULL, draw_2)
 
-CAIRO_TEST (caps_1,
+COMAC_TEST (caps_1,
 	    "Test hairline caps",
 	    "stroke, caps", /* keywords */
 	    NULL, /* requirements */
@@ -128,7 +128,7 @@ CAIRO_TEST (caps_1,
 	    3 * (PAD + SIZE) + PAD,
 	    NULL, draw_1)
 
-CAIRO_TEST (caps_05,
+COMAC_TEST (caps_05,
 	    "Test fine caps",
 	    "stroke, caps", /* keywords */
 	    NULL, /* requirements */

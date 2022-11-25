@@ -39,52 +39,52 @@
 #define IMAGE_WIDTH	(3 * WIDTH)
 #define IMAGE_HEIGHT	IMAGE_WIDTH
 
-/* Draw the word cairo at NUM_TEXT different angles */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+/* Draw the word comac at NUM_TEXT different angles */
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *stamp;
-    cairo_t *cr2;
+    comac_surface_t *stamp;
+    comac_t *cr2;
 
     /* Draw a translucent rectangle for reference where the rotated
      * image should be. */
-    cairo_new_path (cr);
-    cairo_rectangle (cr, WIDTH, HEIGHT, WIDTH, HEIGHT);
-    cairo_set_source_rgba (cr, 1, 1, 0, 0.3);
-    cairo_fill (cr);
+    comac_new_path (cr);
+    comac_rectangle (cr, WIDTH, HEIGHT, WIDTH, HEIGHT);
+    comac_set_source_rgba (cr, 1, 1, 0, 0.3);
+    comac_fill (cr);
 
 #if 1 /* Set to 0 to generate reference image */
-    cairo_translate (cr, 2 * WIDTH, 2 * HEIGHT);
-    cairo_rotate (cr, M_PI);
+    comac_translate (cr, 2 * WIDTH, 2 * HEIGHT);
+    comac_rotate (cr, M_PI);
 #else
-    cairo_translate (cr, WIDTH, HEIGHT);
+    comac_translate (cr, WIDTH, HEIGHT);
 #endif
 
-    stamp = cairo_surface_create_similar (cairo_get_group_target (cr),
-					  CAIRO_CONTENT_COLOR_ALPHA,
+    stamp = comac_surface_create_similar (comac_get_group_target (cr),
+					  COMAC_CONTENT_COLOR_ALPHA,
 					  WIDTH, HEIGHT);
-    cr2 = cairo_create (stamp);
-    cairo_surface_destroy (stamp);
+    cr2 = comac_create (stamp);
+    comac_surface_destroy (stamp);
     {
-	cairo_new_path (cr2);
-	cairo_rectangle (cr2, WIDTH / 4, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
-	cairo_set_source_rgba (cr2, 1, 0, 0, 0.8);
-	cairo_fill (cr2);
+	comac_new_path (cr2);
+	comac_rectangle (cr2, WIDTH / 4, HEIGHT / 4, WIDTH / 2, HEIGHT / 2);
+	comac_set_source_rgba (cr2, 1, 0, 0, 0.8);
+	comac_fill (cr2);
 
-	cairo_rectangle (cr2, 0, 0, WIDTH, HEIGHT);
-	cairo_set_line_width (cr2, 2);
-	cairo_set_source_rgb (cr2, 0, 0, 0);
-	cairo_stroke (cr2);
+	comac_rectangle (cr2, 0, 0, WIDTH, HEIGHT);
+	comac_set_line_width (cr2, 2);
+	comac_set_source_rgb (cr2, 0, 0, 0);
+	comac_stroke (cr2);
     }
-    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
-    cairo_destroy (cr2);
+    comac_set_source_surface (cr, comac_get_target (cr2), 0, 0);
+    comac_destroy (cr2);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (pixman_rotate,
+COMAC_TEST (pixman_rotate,
 	    "Exposes pixman off-by-one error when rotating",
 	    "image, transform", /* keywords */
 	    NULL, /* requirements */

@@ -1,4 +1,4 @@
-/* Cairo - a vector graphics library with display and print output
+/* Comac - a vector graphics library with display and print output
  *
  * Copyright © 2007 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,19 +33,19 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#ifndef CAIRO_TYPE1_PRIVATE_H
-#define CAIRO_TYPE1_PRIVATE_H
+#ifndef COMAC_TYPE1_PRIVATE_H
+#define COMAC_TYPE1_PRIVATE_H
 
 #include "comacint.h"
 
-#if CAIRO_HAS_FONT_SUBSET
+#if COMAC_HAS_FONT_SUBSET
 
 /* Magic constants for the type1 eexec encryption */
-#define CAIRO_TYPE1_ENCRYPT_C1		((unsigned short) 52845)
-#define CAIRO_TYPE1_ENCRYPT_C2		((unsigned short) 22719)
-#define CAIRO_TYPE1_PRIVATE_DICT_KEY	((unsigned short) 55665)
-#define CAIRO_TYPE1_CHARSTRING_KEY	((unsigned short) 4330)
+#define COMAC_TYPE1_ENCRYPT_C1		((unsigned short) 52845)
+#define COMAC_TYPE1_ENCRYPT_C2		((unsigned short) 22719)
+#define COMAC_TYPE1_PRIVATE_DICT_KEY	((unsigned short) 55665)
+#define COMAC_TYPE1_CHARSTRING_KEY	((unsigned short) 4330)
 
-#endif /* CAIRO_HAS_FONT_SUBSET */
+#endif /* COMAC_HAS_FONT_SUBSET */
 
-#endif /* CAIRO_TYPE1_PRIVATE_H */
+#endif /* COMAC_TYPE1_PRIVATE_H */

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2011 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation.
  *
@@ -50,11 +50,11 @@
 #include "comac-surface-subsurface-inline.h"
 #include "comac-reference-count-private.h"
 
-#if CAIRO_HAS_SCRIPT_SURFACE
+#if COMAC_HAS_SCRIPT_SURFACE
 #include "comac-script-private.h"
 #endif
 
-static const cairo_surface_backend_t _cairo_surface_observer_backend;
+static const comac_surface_backend_t _comac_surface_observer_backend;
 
 /* observation/stats */
 
@@ -119,9 +119,9 @@ static void init_glyphs (struct glyphs *g)
     init_clip (&g->clip);
 }
 
-static cairo_status_t
-log_init (cairo_observation_t *log,
-	  cairo_bool_t record)
+static comac_status_t
+log_init (comac_observation_t *log,
+	  comac_bool_t record)
 {
     memset (log, 0, sizeof(*log));
 
@@ -131,62 +131,62 @@ log_init (cairo_observation_t *log,
     init_stroke (&log->stroke);
     init_glyphs (&log->glyphs);
 
-    _cairo_array_init (&log->timings, sizeof (cairo_observation_record_t));
+    _comac_array_init (&log->timings, sizeof (comac_observation_record_t));
 
     if (record) {
-	log->record = (cairo_recording_surface_t *)
-	    cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, NULL);
+	log->record = (comac_recording_surface_t *)
+	    comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
 	if (unlikely (log->record->base.status))
 	    return log->record->base.status;
 
 	log->record->optimize_clears = FALSE;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-log_fini (cairo_observation_t *log)
+log_fini (comac_observation_t *log)
 {
-    _cairo_array_fini (&log->timings);
-    cairo_surface_destroy (&log->record->base);
+    _comac_array_fini (&log->timings);
+    comac_surface_destroy (&log->record->base);
 }
 
-static cairo_surface_t*
-get_pattern_surface (const cairo_pattern_t *pattern)
+static comac_surface_t*
+get_pattern_surface (const comac_pattern_t *pattern)
 {
-    return ((cairo_surface_pattern_t *)pattern)->surface;
+    return ((comac_surface_pattern_t *)pattern)->surface;
 }
 
 static int
-classify_pattern (const cairo_pattern_t *pattern,
-		  const cairo_surface_t *target)
+classify_pattern (const comac_pattern_t *pattern,
+		  const comac_surface_t *target)
 {
     int classify;
 
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SURFACE:
+    case COMAC_PATTERN_TYPE_SURFACE:
 	if (get_pattern_surface (pattern)->type == target->type)
 	    classify = 0;
-	else if (get_pattern_surface (pattern)->type == CAIRO_SURFACE_TYPE_RECORDING)
+	else if (get_pattern_surface (pattern)->type == COMAC_SURFACE_TYPE_RECORDING)
 	    classify = 1;
 	else
 	    classify = 2;
 	break;
     default:
-    case CAIRO_PATTERN_TYPE_SOLID:
+    case COMAC_PATTERN_TYPE_SOLID:
 	classify = 3;
 	break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_LINEAR:
 	classify = 4;
 	break;
-    case CAIRO_PATTERN_TYPE_RADIAL:
+    case COMAC_PATTERN_TYPE_RADIAL:
 	classify = 5;
 	break;
-    case CAIRO_PATTERN_TYPE_MESH:
+    case COMAC_PATTERN_TYPE_MESH:
 	classify = 6;
 	break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
 	classify = 7;
 	break;
     }
@@ -195,15 +195,15 @@ classify_pattern (const cairo_pattern_t *pattern,
 
 static void
 add_pattern (struct pattern *stats,
-	     const cairo_pattern_t *pattern,
-	     const cairo_surface_t *target)
+	     const comac_pattern_t *pattern,
+	     const comac_surface_t *target)
 {
     stats->type[classify_pattern(pattern, target)]++;
 }
 
 static int
-classify_path (const cairo_path_fixed_t *path,
-	       cairo_bool_t is_fill)
+classify_path (const comac_path_fixed_t *path,
+	       comac_bool_t is_fill)
 {
     int classify;
 
@@ -212,10 +212,10 @@ classify_path (const cairo_path_fixed_t *path,
     if (is_fill) {
 	if (path->fill_is_empty)
 	    classify = 0;
-	else if (_cairo_path_fixed_fill_is_rectilinear (path))
+	else if (_comac_path_fixed_fill_is_rectilinear (path))
 	    classify = path->fill_maybe_region ? 1 : 2;
     } else {
-	if (_cairo_path_fixed_stroke_is_rectilinear (path))
+	if (_comac_path_fixed_stroke_is_rectilinear (path))
 	    classify = 2;
     }
     if (classify == -1)
@@ -226,26 +226,26 @@ classify_path (const cairo_path_fixed_t *path,
 
 static void
 add_path (struct path *stats,
-	  const cairo_path_fixed_t *path,
-	  cairo_bool_t is_fill)
+	  const comac_path_fixed_t *path,
+	  comac_bool_t is_fill)
 {
     stats->type[classify_path(path, is_fill)]++;
 }
 
 static int
-classify_clip (const cairo_clip_t *clip)
+classify_clip (const comac_clip_t *clip)
 {
     int classify;
 
     if (clip == NULL)
 	classify = 0;
-    else if (_cairo_clip_is_region (clip))
+    else if (_comac_clip_is_region (clip))
 	classify = 1;
     else if (clip->path == NULL)
 	classify = 2;
     else if (clip->path->prev == NULL)
 	classify = 3;
-    else if (_cairo_clip_is_polygon (clip))
+    else if (_comac_clip_is_polygon (clip))
 	classify = 4;
     else
 	classify = 5;
@@ -255,7 +255,7 @@ classify_clip (const cairo_clip_t *clip)
 
 static void
 add_clip (struct clip *stats,
-	  const cairo_clip_t *clip)
+	  const comac_clip_t *clip)
 {
     stats->type[classify_clip (clip)]++;
 }
@@ -274,9 +274,9 @@ stats_add (struct stat *s, double v)
 
 static void
 add_extents (struct extents *stats,
-	     const cairo_composite_rectangles_t *extents)
+	     const comac_composite_rectangles_t *extents)
 {
-    const cairo_rectangle_int_t *r = extents->is_bounded ? &extents->bounded :&extents->unbounded;
+    const comac_rectangle_int_t *r = extents->is_bounded ? &extents->bounded :&extents->unbounded;
     stats_add (&stats->area, r->width * r->height);
     stats->bounded += extents->is_bounded != 0;
     stats->unbounded += extents->is_bounded == 0;
@@ -285,128 +285,128 @@ add_extents (struct extents *stats,
 /* device interface */
 
 static void
-_cairo_device_observer_lock (void *_device)
+_comac_device_observer_lock (void *_device)
 {
-    cairo_device_observer_t *device = (cairo_device_observer_t *) _device;
-    cairo_status_t ignored;
+    comac_device_observer_t *device = (comac_device_observer_t *) _device;
+    comac_status_t ignored;
 
-    /* cairo_device_acquire() can fail for nil and finished
+    /* comac_device_acquire() can fail for nil and finished
      * devices. We don't care about observing them. */
-    ignored = cairo_device_acquire (device->target);
+    ignored = comac_device_acquire (device->target);
 }
 
 static void
-_cairo_device_observer_unlock (void *_device)
+_comac_device_observer_unlock (void *_device)
 {
-    cairo_device_observer_t *device = (cairo_device_observer_t *) _device;
-    cairo_device_release (device->target);
+    comac_device_observer_t *device = (comac_device_observer_t *) _device;
+    comac_device_release (device->target);
 }
 
-static cairo_status_t
-_cairo_device_observer_flush (void *_device)
+static comac_status_t
+_comac_device_observer_flush (void *_device)
 {
-    cairo_device_observer_t *device = (cairo_device_observer_t *) _device;
+    comac_device_observer_t *device = (comac_device_observer_t *) _device;
 
     if (device->target == NULL)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
-    cairo_device_flush (device->target);
+    comac_device_flush (device->target);
     return device->target->status;
 }
 
 static void
-_cairo_device_observer_finish (void *_device)
+_comac_device_observer_finish (void *_device)
 {
-    cairo_device_observer_t *device = (cairo_device_observer_t *) _device;
+    comac_device_observer_t *device = (comac_device_observer_t *) _device;
     log_fini (&device->log);
-    cairo_device_finish (device->target);
+    comac_device_finish (device->target);
 }
 
 static void
-_cairo_device_observer_destroy (void *_device)
+_comac_device_observer_destroy (void *_device)
 {
-    cairo_device_observer_t *device = (cairo_device_observer_t *) _device;
-    cairo_device_destroy (device->target);
+    comac_device_observer_t *device = (comac_device_observer_t *) _device;
+    comac_device_destroy (device->target);
     free (device);
 }
 
-static const cairo_device_backend_t _cairo_device_observer_backend = {
-    CAIRO_INTERNAL_DEVICE_TYPE_OBSERVER,
+static const comac_device_backend_t _comac_device_observer_backend = {
+    COMAC_INTERNAL_DEVICE_TYPE_OBSERVER,
 
-    _cairo_device_observer_lock,
-    _cairo_device_observer_unlock,
+    _comac_device_observer_lock,
+    _comac_device_observer_unlock,
 
-    _cairo_device_observer_flush,
-    _cairo_device_observer_finish,
-    _cairo_device_observer_destroy,
+    _comac_device_observer_flush,
+    _comac_device_observer_finish,
+    _comac_device_observer_destroy,
 };
 
-static cairo_device_t *
-_cairo_device_create_observer_internal (cairo_device_t *target,
-					cairo_bool_t record)
+static comac_device_t *
+_comac_device_create_observer_internal (comac_device_t *target,
+					comac_bool_t record)
 {
-    cairo_device_observer_t *device;
-    cairo_status_t status;
+    comac_device_observer_t *device;
+    comac_status_t status;
 
-    device = _cairo_malloc (sizeof (cairo_device_observer_t));
+    device = _comac_malloc (sizeof (comac_device_observer_t));
     if (unlikely (device == NULL))
-	return _cairo_device_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_device_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
 
-    _cairo_device_init (&device->base, &_cairo_device_observer_backend);
+    _comac_device_init (&device->base, &_comac_device_observer_backend);
     status = log_init (&device->log, record);
     if (unlikely (status)) {
 	free (device);
-	return _cairo_device_create_in_error (status);
+	return _comac_device_create_in_error (status);
     }
 
-    device->target = cairo_device_reference (target);
+    device->target = comac_device_reference (target);
 
     return &device->base;
 }
 
 /* surface interface */
 
-static cairo_device_observer_t *
-to_device (cairo_surface_observer_t *suface)
+static comac_device_observer_t *
+to_device (comac_surface_observer_t *suface)
 {
-    return (cairo_device_observer_t *)suface->base.device;
+    return (comac_device_observer_t *)suface->base.device;
 }
 
-static cairo_surface_t *
-_cairo_surface_create_observer_internal (cairo_device_t *device,
-					 cairo_surface_t *target)
+static comac_surface_t *
+_comac_surface_create_observer_internal (comac_device_t *device,
+					 comac_surface_t *target)
 {
-    cairo_surface_observer_t *surface;
-    cairo_status_t status;
+    comac_surface_observer_t *surface;
+    comac_status_t status;
 
-    surface = _cairo_malloc (sizeof (cairo_surface_observer_t));
+    surface = _comac_malloc (sizeof (comac_surface_observer_t));
     if (unlikely (surface == NULL))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
 
-    _cairo_surface_init (&surface->base,
-			 &_cairo_surface_observer_backend, device,
+    _comac_surface_init (&surface->base,
+			 &_comac_surface_observer_backend, device,
 			 target->content,
 			 target->is_vector);
 
     status = log_init (&surface->log,
-		       ((cairo_device_observer_t *)device)->log.record != NULL);
+		       ((comac_device_observer_t *)device)->log.record != NULL);
     if (unlikely (status)) {
 	free (surface);
-	return _cairo_surface_create_in_error (status);
+	return _comac_surface_create_in_error (status);
     }
 
-    surface->target = cairo_surface_reference (target);
+    surface->target = comac_surface_reference (target);
     surface->base.type = surface->target->type;
     surface->base.is_clear = surface->target->is_clear;
 
-    cairo_list_init (&surface->paint_callbacks);
-    cairo_list_init (&surface->mask_callbacks);
-    cairo_list_init (&surface->fill_callbacks);
-    cairo_list_init (&surface->stroke_callbacks);
-    cairo_list_init (&surface->glyphs_callbacks);
+    comac_list_init (&surface->paint_callbacks);
+    comac_list_init (&surface->mask_callbacks);
+    comac_list_init (&surface->fill_callbacks);
+    comac_list_init (&surface->stroke_callbacks);
+    comac_list_init (&surface->glyphs_callbacks);
 
-    cairo_list_init (&surface->flush_callbacks);
-    cairo_list_init (&surface->finish_callbacks);
+    comac_list_init (&surface->flush_callbacks);
+    comac_list_init (&surface->finish_callbacks);
 
     surface->log.num_surfaces++;
     to_device (surface)->log.num_surfaces++;
@@ -415,57 +415,57 @@ _cairo_surface_create_observer_internal (cairo_device_t *device,
 }
 
 static inline void
-do_callbacks (cairo_surface_observer_t *surface, cairo_list_t *head)
+do_callbacks (comac_surface_observer_t *surface, comac_list_t *head)
 {
     struct callback_list *cb;
 
-    cairo_list_foreach_entry (cb, struct callback_list, head, link)
+    comac_list_foreach_entry (cb, struct callback_list, head, link)
 	cb->func (&surface->base, surface->target, cb->data);
 }
 
 
-static cairo_status_t
-_cairo_surface_observer_finish (void *abstract_surface)
+static comac_status_t
+_comac_surface_observer_finish (void *abstract_surface)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
+    comac_surface_observer_t *surface = abstract_surface;
 
     do_callbacks (surface, &surface->finish_callbacks);
 
-    cairo_surface_destroy (surface->target);
+    comac_surface_destroy (surface->target);
     log_fini (&surface->log);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_surface_t *
-_cairo_surface_observer_create_similar (void *abstract_other,
-					cairo_content_t content,
+static comac_surface_t *
+_comac_surface_observer_create_similar (void *abstract_other,
+					comac_content_t content,
 					int width, int height)
 {
-    cairo_surface_observer_t *other = abstract_other;
-    cairo_surface_t *target, *surface;
+    comac_surface_observer_t *other = abstract_other;
+    comac_surface_t *target, *surface;
 
     target = NULL;
     if (other->target->backend->create_similar)
 	target = other->target->backend->create_similar (other->target, content,
 							 width, height);
     if (target == NULL)
-	target = _cairo_image_surface_create_with_content (content,
+	target = _comac_image_surface_create_with_content (content,
 							   width, height);
 
-    surface = _cairo_surface_create_observer_internal (other->base.device,
+    surface = _comac_surface_create_observer_internal (other->base.device,
 						       target);
-    cairo_surface_destroy (target);
+    comac_surface_destroy (target);
 
     return surface;
 }
 
-static cairo_surface_t *
-_cairo_surface_observer_create_similar_image (void *other,
-					      cairo_format_t format,
+static comac_surface_t *
+_comac_surface_observer_create_similar_image (void *other,
+					      comac_format_t format,
 					      int width, int height)
 {
-    cairo_surface_observer_t *surface = other;
+    comac_surface_observer_t *surface = other;
 
     if (surface->target->backend->create_similar_image)
 	return surface->target->backend->create_similar_image (surface->target,
@@ -475,30 +475,30 @@ _cairo_surface_observer_create_similar_image (void *other,
     return NULL;
 }
 
-static cairo_image_surface_t *
-_cairo_surface_observer_map_to_image (void *abstract_surface,
-				      const cairo_rectangle_int_t *extents)
+static comac_image_surface_t *
+_comac_surface_observer_map_to_image (void *abstract_surface,
+				      const comac_rectangle_int_t *extents)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    return _cairo_surface_map_to_image (surface->target, extents);
+    comac_surface_observer_t *surface = abstract_surface;
+    return _comac_surface_map_to_image (surface->target, extents);
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_unmap_image (void *abstract_surface,
-				     cairo_image_surface_t *image)
+static comac_int_status_t
+_comac_surface_observer_unmap_image (void *abstract_surface,
+				     comac_image_surface_t *image)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    return _cairo_surface_unmap_image (surface->target, image);
+    comac_surface_observer_t *surface = abstract_surface;
+    return _comac_surface_unmap_image (surface->target, image);
 }
 
 static void
-record_target (cairo_observation_record_t *r,
-	       cairo_surface_t *target)
+record_target (comac_observation_record_t *r,
+	       comac_surface_t *target)
 {
-    cairo_rectangle_int_t extents;
+    comac_rectangle_int_t extents;
 
     r->target_content = target->content;
-    if (_cairo_surface_get_extents (target, &extents)) {
+    if (_comac_surface_get_extents (target, &extents)) {
 	r->target_width = extents.width;
 	r->target_height = extents.height;
     } else {
@@ -507,13 +507,13 @@ record_target (cairo_observation_record_t *r,
     }
 }
 
-static cairo_observation_record_t *
-record_paint (cairo_observation_record_t *r,
-	      cairo_surface_t *target,
-	      cairo_operator_t op,
-	      const cairo_pattern_t *source,
-	      const cairo_clip_t *clip,
-	      cairo_time_t elapsed)
+static comac_observation_record_t *
+record_paint (comac_observation_record_t *r,
+	      comac_surface_t *target,
+	      comac_operator_t op,
+	      const comac_pattern_t *source,
+	      const comac_clip_t *clip,
+	      comac_time_t elapsed)
 {
     record_target (r, target);
 
@@ -531,14 +531,14 @@ record_paint (cairo_observation_record_t *r,
     return r;
 }
 
-static cairo_observation_record_t *
-record_mask (cairo_observation_record_t *r,
-	     cairo_surface_t *target,
-	     cairo_operator_t op,
-	     const cairo_pattern_t *source,
-	     const cairo_pattern_t *mask,
-	     const cairo_clip_t *clip,
-	     cairo_time_t elapsed)
+static comac_observation_record_t *
+record_mask (comac_observation_record_t *r,
+	     comac_surface_t *target,
+	     comac_operator_t op,
+	     const comac_pattern_t *source,
+	     const comac_pattern_t *mask,
+	     const comac_clip_t *clip,
+	     comac_time_t elapsed)
 {
     record_target (r, target);
 
@@ -556,17 +556,17 @@ record_mask (cairo_observation_record_t *r,
     return r;
 }
 
-static cairo_observation_record_t *
-record_fill (cairo_observation_record_t *r,
-	     cairo_surface_t		*target,
-	     cairo_operator_t		op,
-	     const cairo_pattern_t	*source,
-	     const cairo_path_fixed_t	*path,
-	     cairo_fill_rule_t		 fill_rule,
+static comac_observation_record_t *
+record_fill (comac_observation_record_t *r,
+	     comac_surface_t		*target,
+	     comac_operator_t		op,
+	     const comac_pattern_t	*source,
+	     const comac_path_fixed_t	*path,
+	     comac_fill_rule_t		 fill_rule,
 	     double			 tolerance,
-	     cairo_antialias_t		 antialias,
-	     const cairo_clip_t		*clip,
-	     cairo_time_t elapsed)
+	     comac_antialias_t		 antialias,
+	     const comac_clip_t		*clip,
+	     comac_time_t elapsed)
 {
     record_target (r, target);
 
@@ -584,19 +584,19 @@ record_fill (cairo_observation_record_t *r,
     return r;
 }
 
-static cairo_observation_record_t *
-record_stroke (cairo_observation_record_t *r,
-	       cairo_surface_t		*target,
-	       cairo_operator_t		op,
-	       const cairo_pattern_t	*source,
-	       const cairo_path_fixed_t	*path,
-	       const cairo_stroke_style_t	*style,
-	       const cairo_matrix_t	*ctm,
-	       const cairo_matrix_t	*ctm_inverse,
+static comac_observation_record_t *
+record_stroke (comac_observation_record_t *r,
+	       comac_surface_t		*target,
+	       comac_operator_t		op,
+	       const comac_pattern_t	*source,
+	       const comac_path_fixed_t	*path,
+	       const comac_stroke_style_t	*style,
+	       const comac_matrix_t	*ctm,
+	       const comac_matrix_t	*ctm_inverse,
 	       double			 tolerance,
-	       cairo_antialias_t	 antialias,
-	       const cairo_clip_t	*clip,
-	       cairo_time_t		 elapsed)
+	       comac_antialias_t	 antialias,
+	       const comac_clip_t	*clip,
+	       comac_time_t		 elapsed)
 {
     record_target (r, target);
 
@@ -614,16 +614,16 @@ record_stroke (cairo_observation_record_t *r,
     return r;
 }
 
-static cairo_observation_record_t *
-record_glyphs (cairo_observation_record_t *r,
-	       cairo_surface_t		*target,
-	       cairo_operator_t		op,
-	       const cairo_pattern_t	*source,
-	       cairo_glyph_t		*glyphs,
+static comac_observation_record_t *
+record_glyphs (comac_observation_record_t *r,
+	       comac_surface_t		*target,
+	       comac_operator_t		op,
+	       const comac_pattern_t	*source,
+	       comac_glyph_t		*glyphs,
 	       int			 num_glyphs,
-	       cairo_scaled_font_t	*scaled_font,
-	       const cairo_clip_t	*clip,
-	       cairo_time_t		 elapsed)
+	       comac_scaled_font_t	*scaled_font,
+	       const comac_clip_t	*clip,
+	       comac_time_t		 elapsed)
 {
     record_target (r, target);
 
@@ -642,49 +642,49 @@ record_glyphs (cairo_observation_record_t *r,
 }
 
 static void
-add_record (cairo_observation_t *log,
-	    cairo_observation_record_t *r)
+add_record (comac_observation_t *log,
+	    comac_observation_record_t *r)
 {
-    cairo_int_status_t status;
+    comac_int_status_t status;
 
     r->index = log->record ? log->record->commands.num_elements : 0;
 
-    status = _cairo_array_append (&log->timings, r);
-    assert (status == CAIRO_INT_STATUS_SUCCESS);
+    status = _comac_array_append (&log->timings, r);
+    assert (status == COMAC_INT_STATUS_SUCCESS);
 }
 
 static void
-_cairo_surface_sync (cairo_surface_t *target, int x, int y)
+_comac_surface_sync (comac_surface_t *target, int x, int y)
 {
-    cairo_rectangle_int_t extents;
+    comac_rectangle_int_t extents;
 
     extents.x = x;
     extents.y = y;
     extents.width  = 1;
     extents.height = 1;
 
-    _cairo_surface_unmap_image (target,
-				_cairo_surface_map_to_image (target,
+    _comac_surface_unmap_image (target,
+				_comac_surface_map_to_image (target,
 							     &extents));
 }
 
 static void
-midpt (const cairo_composite_rectangles_t *extents, int *x, int *y)
+midpt (const comac_composite_rectangles_t *extents, int *x, int *y)
 {
     *x = extents->bounded.x + extents->bounded.width / 2;
     *y = extents->bounded.y + extents->bounded.height / 2;
 }
 
 static void
-add_record_paint (cairo_observation_t *log,
-		 cairo_surface_t *target,
-		 cairo_operator_t op,
-		 const cairo_pattern_t *source,
-		 const cairo_clip_t *clip,
-		 cairo_time_t elapsed)
+add_record_paint (comac_observation_t *log,
+		 comac_surface_t *target,
+		 comac_operator_t op,
+		 const comac_pattern_t *source,
+		 const comac_clip_t *clip,
+		 comac_time_t elapsed)
 {
-    cairo_observation_record_t record;
-    cairo_int_status_t status;
+    comac_observation_record_t record;
+    comac_int_status_t status;
 
     add_record (log,
 		record_paint (&record, target, op, source, clip, elapsed));
@@ -696,25 +696,25 @@ add_record_paint (cairo_observation_t *log,
     if (log->record) {
 	status = log->record->base.backend->paint (&log->record->base,
 						   op, source, clip);
-	assert (status == CAIRO_INT_STATUS_SUCCESS);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
-    if (_cairo_time_gt (elapsed, log->paint.slowest.elapsed))
+    if (_comac_time_gt (elapsed, log->paint.slowest.elapsed))
 	log->paint.slowest = record;
-    log->paint.elapsed = _cairo_time_add (log->paint.elapsed, elapsed);
+    log->paint.elapsed = _comac_time_add (log->paint.elapsed, elapsed);
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_paint (void *abstract_surface,
-			       cairo_operator_t op,
-			       const cairo_pattern_t *source,
-			       const cairo_clip_t *clip)
+static comac_int_status_t
+_comac_surface_observer_paint (void *abstract_surface,
+			       comac_operator_t op,
+			       const comac_pattern_t *source,
+			       const comac_clip_t *clip)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_device_observer_t *device = to_device (surface);
-    cairo_composite_rectangles_t composite;
-    cairo_int_status_t status;
-    cairo_time_t t;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_device_observer_t *device = to_device (surface);
+    comac_composite_rectangles_t composite;
+    comac_int_status_t status;
+    comac_time_t t;
     int x, y;
 
     /* XXX device locking */
@@ -729,7 +729,7 @@ _cairo_surface_observer_paint (void *abstract_surface,
     add_pattern (&device->log.paint.source, source, surface->target);
     add_clip (&device->log.paint.clip, clip);
 
-    status = _cairo_composite_rectangles_init_for_paint (&composite,
+    status = _comac_composite_rectangles_init_for_paint (&composite,
 							 surface->target,
 							 op, source,
 							 clip);
@@ -743,37 +743,37 @@ _cairo_surface_observer_paint (void *abstract_surface,
 
     add_extents (&surface->log.paint.extents, &composite);
     add_extents (&device->log.paint.extents, &composite);
-    _cairo_composite_rectangles_fini (&composite);
+    _comac_composite_rectangles_fini (&composite);
 
-    t = _cairo_time_get ();
-    status = _cairo_surface_paint (surface->target,
+    t = _comac_time_get ();
+    status = _comac_surface_paint (surface->target,
 				   op, source,
 				   clip);
     if (unlikely (status))
 	return status;
 
-    _cairo_surface_sync (surface->target, x, y);
-    t = _cairo_time_get_delta (t);
+    _comac_surface_sync (surface->target, x, y);
+    t = _comac_time_get_delta (t);
 
     add_record_paint (&surface->log, surface->target, op, source, clip, t);
     add_record_paint (&device->log, surface->target, op, source, clip, t);
 
     do_callbacks (surface, &surface->paint_callbacks);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-add_record_mask (cairo_observation_t *log,
-		 cairo_surface_t *target,
-		 cairo_operator_t op,
-		 const cairo_pattern_t *source,
-		 const cairo_pattern_t *mask,
-		 const cairo_clip_t *clip,
-		 cairo_time_t elapsed)
+add_record_mask (comac_observation_t *log,
+		 comac_surface_t *target,
+		 comac_operator_t op,
+		 const comac_pattern_t *source,
+		 const comac_pattern_t *mask,
+		 const comac_clip_t *clip,
+		 comac_time_t elapsed)
 {
-    cairo_observation_record_t record;
-    cairo_int_status_t status;
+    comac_observation_record_t record;
+    comac_int_status_t status;
 
     add_record (log,
 		record_mask (&record, target, op, source, mask, clip, elapsed));
@@ -781,26 +781,26 @@ add_record_mask (cairo_observation_t *log,
     if (log->record) {
 	status = log->record->base.backend->mask (&log->record->base,
 						  op, source, mask, clip);
-	assert (status == CAIRO_INT_STATUS_SUCCESS);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
-    if (_cairo_time_gt (elapsed, log->mask.slowest.elapsed))
+    if (_comac_time_gt (elapsed, log->mask.slowest.elapsed))
 	log->mask.slowest = record;
-    log->mask.elapsed = _cairo_time_add (log->mask.elapsed, elapsed);
+    log->mask.elapsed = _comac_time_add (log->mask.elapsed, elapsed);
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_mask (void *abstract_surface,
-			      cairo_operator_t op,
-			      const cairo_pattern_t *source,
-			      const cairo_pattern_t *mask,
-			      const cairo_clip_t *clip)
+static comac_int_status_t
+_comac_surface_observer_mask (void *abstract_surface,
+			      comac_operator_t op,
+			      const comac_pattern_t *source,
+			      const comac_pattern_t *mask,
+			      const comac_clip_t *clip)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_device_observer_t *device = to_device (surface);
-    cairo_composite_rectangles_t composite;
-    cairo_int_status_t status;
-    cairo_time_t t;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_device_observer_t *device = to_device (surface);
+    comac_composite_rectangles_t composite;
+    comac_int_status_t status;
+    comac_time_t t;
     int x, y;
 
     surface->log.mask.count++;
@@ -815,7 +815,7 @@ _cairo_surface_observer_mask (void *abstract_surface,
     add_pattern (&device->log.mask.mask, mask, surface->target);
     add_clip (&device->log.mask.clip, clip);
 
-    status = _cairo_composite_rectangles_init_for_mask (&composite,
+    status = _comac_composite_rectangles_init_for_mask (&composite,
 							surface->target,
 							op, source, mask,
 							clip);
@@ -829,17 +829,17 @@ _cairo_surface_observer_mask (void *abstract_surface,
 
     add_extents (&surface->log.mask.extents, &composite);
     add_extents (&device->log.mask.extents, &composite);
-    _cairo_composite_rectangles_fini (&composite);
+    _comac_composite_rectangles_fini (&composite);
 
-    t = _cairo_time_get ();
-    status =  _cairo_surface_mask (surface->target,
+    t = _comac_time_get ();
+    status =  _comac_surface_mask (surface->target,
 				   op, source, mask,
 				   clip);
     if (unlikely (status))
 	return status;
 
-    _cairo_surface_sync (surface->target, x, y);
-    t = _cairo_time_get_delta (t);
+    _comac_surface_sync (surface->target, x, y);
+    t = _comac_time_get_delta (t);
 
     add_record_mask (&surface->log,
 		     surface->target, op, source, mask, clip,
@@ -850,23 +850,23 @@ _cairo_surface_observer_mask (void *abstract_surface,
 
     do_callbacks (surface, &surface->mask_callbacks);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-add_record_fill (cairo_observation_t *log,
-		 cairo_surface_t *target,
-		 cairo_operator_t		op,
-		 const cairo_pattern_t		*source,
-		 const cairo_path_fixed_t	*path,
-		 cairo_fill_rule_t		 fill_rule,
+add_record_fill (comac_observation_t *log,
+		 comac_surface_t *target,
+		 comac_operator_t		op,
+		 const comac_pattern_t		*source,
+		 const comac_path_fixed_t	*path,
+		 comac_fill_rule_t		 fill_rule,
 		 double				 tolerance,
-		 cairo_antialias_t		 antialias,
-		 const cairo_clip_t		 *clip,
-		 cairo_time_t elapsed)
+		 comac_antialias_t		 antialias,
+		 const comac_clip_t		 *clip,
+		 comac_time_t elapsed)
 {
-    cairo_observation_record_t record;
-    cairo_int_status_t status;
+    comac_observation_record_t record;
+    comac_int_status_t status;
 
     add_record (log,
 		record_fill (&record,
@@ -880,29 +880,29 @@ add_record_fill (cairo_observation_t *log,
 						  path, fill_rule,
 						  tolerance, antialias,
 						  clip);
-	assert (status == CAIRO_INT_STATUS_SUCCESS);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
-    if (_cairo_time_gt (elapsed, log->fill.slowest.elapsed))
+    if (_comac_time_gt (elapsed, log->fill.slowest.elapsed))
 	log->fill.slowest = record;
-    log->fill.elapsed = _cairo_time_add (log->fill.elapsed, elapsed);
+    log->fill.elapsed = _comac_time_add (log->fill.elapsed, elapsed);
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_fill (void			*abstract_surface,
-			      cairo_operator_t		op,
-			      const cairo_pattern_t	*source,
-			      const cairo_path_fixed_t	*path,
-			      cairo_fill_rule_t		fill_rule,
+static comac_int_status_t
+_comac_surface_observer_fill (void			*abstract_surface,
+			      comac_operator_t		op,
+			      const comac_pattern_t	*source,
+			      const comac_path_fixed_t	*path,
+			      comac_fill_rule_t		fill_rule,
 			      double			 tolerance,
-			      cairo_antialias_t		antialias,
-			      const cairo_clip_t	*clip)
+			      comac_antialias_t		antialias,
+			      const comac_clip_t	*clip)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_device_observer_t *device = to_device (surface);
-    cairo_composite_rectangles_t composite;
-    cairo_int_status_t status;
-    cairo_time_t t;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_device_observer_t *device = to_device (surface);
+    comac_composite_rectangles_t composite;
+    comac_int_status_t status;
+    comac_time_t t;
     int x, y;
 
     surface->log.fill.count++;
@@ -921,7 +921,7 @@ _cairo_surface_observer_fill (void			*abstract_surface,
     add_path (&device->log.fill.path, path, TRUE);
     add_clip (&device->log.fill.clip, clip);
 
-    status = _cairo_composite_rectangles_init_for_fill (&composite,
+    status = _comac_composite_rectangles_init_for_fill (&composite,
 							surface->target,
 							op, source, path,
 							clip);
@@ -935,18 +935,18 @@ _cairo_surface_observer_fill (void			*abstract_surface,
 
     add_extents (&surface->log.fill.extents, &composite);
     add_extents (&device->log.fill.extents, &composite);
-    _cairo_composite_rectangles_fini (&composite);
+    _comac_composite_rectangles_fini (&composite);
 
-    t = _cairo_time_get ();
-    status = _cairo_surface_fill (surface->target,
+    t = _comac_time_get ();
+    status = _comac_surface_fill (surface->target,
 				  op, source, path,
 				  fill_rule, tolerance, antialias,
 				  clip);
     if (unlikely (status))
 	return status;
 
-    _cairo_surface_sync (surface->target, x, y);
-    t = _cairo_time_get_delta (t);
+    _comac_surface_sync (surface->target, x, y);
+    t = _comac_time_get_delta (t);
 
     add_record_fill (&surface->log,
 		     surface->target, op, source, path,
@@ -960,25 +960,25 @@ _cairo_surface_observer_fill (void			*abstract_surface,
 
     do_callbacks (surface, &surface->fill_callbacks);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-add_record_stroke (cairo_observation_t *log,
-		 cairo_surface_t *target,
-		 cairo_operator_t		 op,
-		 const cairo_pattern_t		*source,
-		 const cairo_path_fixed_t	*path,
-		 const cairo_stroke_style_t	*style,
-		 const cairo_matrix_t		*ctm,
-		 const cairo_matrix_t		*ctm_inverse,
+add_record_stroke (comac_observation_t *log,
+		 comac_surface_t *target,
+		 comac_operator_t		 op,
+		 const comac_pattern_t		*source,
+		 const comac_path_fixed_t	*path,
+		 const comac_stroke_style_t	*style,
+		 const comac_matrix_t		*ctm,
+		 const comac_matrix_t		*ctm_inverse,
 		 double				 tolerance,
-		 cairo_antialias_t		 antialias,
-		 const cairo_clip_t		*clip,
-		 cairo_time_t elapsed)
+		 comac_antialias_t		 antialias,
+		 const comac_clip_t		*clip,
+		 comac_time_t elapsed)
 {
-    cairo_observation_record_t record;
-    cairo_int_status_t status;
+    comac_observation_record_t record;
+    comac_int_status_t status;
 
     add_record (log,
 		record_stroke (&record,
@@ -993,31 +993,31 @@ add_record_stroke (cairo_observation_t *log,
 						    path, style, ctm,ctm_inverse,
 						    tolerance, antialias,
 						    clip);
-	assert (status == CAIRO_INT_STATUS_SUCCESS);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
-    if (_cairo_time_gt (elapsed, log->stroke.slowest.elapsed))
+    if (_comac_time_gt (elapsed, log->stroke.slowest.elapsed))
 	log->stroke.slowest = record;
-    log->stroke.elapsed = _cairo_time_add (log->stroke.elapsed, elapsed);
+    log->stroke.elapsed = _comac_time_add (log->stroke.elapsed, elapsed);
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_stroke (void				*abstract_surface,
-				cairo_operator_t		 op,
-				const cairo_pattern_t		*source,
-				const cairo_path_fixed_t	*path,
-				const cairo_stroke_style_t	*style,
-				const cairo_matrix_t		*ctm,
-				const cairo_matrix_t		*ctm_inverse,
+static comac_int_status_t
+_comac_surface_observer_stroke (void				*abstract_surface,
+				comac_operator_t		 op,
+				const comac_pattern_t		*source,
+				const comac_path_fixed_t	*path,
+				const comac_stroke_style_t	*style,
+				const comac_matrix_t		*ctm,
+				const comac_matrix_t		*ctm_inverse,
 				double				 tolerance,
-				cairo_antialias_t		 antialias,
-				const cairo_clip_t		*clip)
+				comac_antialias_t		 antialias,
+				const comac_clip_t		*clip)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_device_observer_t *device = to_device (surface);
-    cairo_composite_rectangles_t composite;
-    cairo_int_status_t status;
-    cairo_time_t t;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_device_observer_t *device = to_device (surface);
+    comac_composite_rectangles_t composite;
+    comac_int_status_t status;
+    comac_time_t t;
     int x, y;
 
     surface->log.stroke.count++;
@@ -1038,7 +1038,7 @@ _cairo_surface_observer_stroke (void				*abstract_surface,
     add_path (&device->log.stroke.path, path, FALSE);
     add_clip (&device->log.stroke.clip, clip);
 
-    status = _cairo_composite_rectangles_init_for_stroke (&composite,
+    status = _comac_composite_rectangles_init_for_stroke (&composite,
 							  surface->target,
 							  op, source,
 							  path, style, ctm,
@@ -1053,10 +1053,10 @@ _cairo_surface_observer_stroke (void				*abstract_surface,
 
     add_extents (&surface->log.stroke.extents, &composite);
     add_extents (&device->log.stroke.extents, &composite);
-    _cairo_composite_rectangles_fini (&composite);
+    _comac_composite_rectangles_fini (&composite);
 
-    t = _cairo_time_get ();
-    status = _cairo_surface_stroke (surface->target,
+    t = _comac_time_get ();
+    status = _comac_surface_stroke (surface->target,
 				  op, source, path,
 				  style, ctm, ctm_inverse,
 				  tolerance, antialias,
@@ -1064,8 +1064,8 @@ _cairo_surface_observer_stroke (void				*abstract_surface,
     if (unlikely (status))
 	return status;
 
-    _cairo_surface_sync (surface->target, x, y);
-    t = _cairo_time_get_delta (t);
+    _comac_surface_sync (surface->target, x, y);
+    t = _comac_time_get_delta (t);
 
     add_record_stroke (&surface->log,
 		       surface->target, op, source, path,
@@ -1081,22 +1081,22 @@ _cairo_surface_observer_stroke (void				*abstract_surface,
 
     do_callbacks (surface, &surface->stroke_callbacks);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-add_record_glyphs (cairo_observation_t	*log,
-		   cairo_surface_t	*target,
-		   cairo_operator_t	 op,
-		   const cairo_pattern_t*source,
-		   cairo_glyph_t	*glyphs,
+add_record_glyphs (comac_observation_t	*log,
+		   comac_surface_t	*target,
+		   comac_operator_t	 op,
+		   const comac_pattern_t*source,
+		   comac_glyph_t	*glyphs,
 		   int			 num_glyphs,
-		   cairo_scaled_font_t	*scaled_font,
-		   const cairo_clip_t	*clip,
-		   cairo_time_t elapsed)
+		   comac_scaled_font_t	*scaled_font,
+		   const comac_clip_t	*clip,
+		   comac_time_t elapsed)
 {
-    cairo_observation_record_t record;
-    cairo_int_status_t status;
+    comac_observation_record_t record;
+    comac_int_status_t status;
 
     add_record (log,
 		record_glyphs (&record,
@@ -1112,29 +1112,29 @@ add_record_glyphs (cairo_observation_t	*log,
 							      NULL, 0, 0,
 							      scaled_font,
 							      clip);
-	assert (status == CAIRO_INT_STATUS_SUCCESS);
+	assert (status == COMAC_INT_STATUS_SUCCESS);
     }
 
-    if (_cairo_time_gt (elapsed, log->glyphs.slowest.elapsed))
+    if (_comac_time_gt (elapsed, log->glyphs.slowest.elapsed))
 	log->glyphs.slowest = record;
-    log->glyphs.elapsed = _cairo_time_add (log->glyphs.elapsed, elapsed);
+    log->glyphs.elapsed = _comac_time_add (log->glyphs.elapsed, elapsed);
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_glyphs (void			*abstract_surface,
-				cairo_operator_t	 op,
-				const cairo_pattern_t	*source,
-				cairo_glyph_t		*glyphs,
+static comac_int_status_t
+_comac_surface_observer_glyphs (void			*abstract_surface,
+				comac_operator_t	 op,
+				const comac_pattern_t	*source,
+				comac_glyph_t		*glyphs,
 				int			 num_glyphs,
-				cairo_scaled_font_t	*scaled_font,
-				const cairo_clip_t		*clip)
+				comac_scaled_font_t	*scaled_font,
+				const comac_clip_t		*clip)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_device_observer_t *device = to_device (surface);
-    cairo_composite_rectangles_t composite;
-    cairo_int_status_t status;
-    cairo_glyph_t *dev_glyphs;
-    cairo_time_t t;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_device_observer_t *device = to_device (surface);
+    comac_composite_rectangles_t composite;
+    comac_int_status_t status;
+    comac_glyph_t *dev_glyphs;
+    comac_time_t t;
     int x, y;
 
     surface->log.glyphs.count++;
@@ -1147,7 +1147,7 @@ _cairo_surface_observer_glyphs (void			*abstract_surface,
     add_pattern (&device->log.glyphs.source, source, surface->target);
     add_clip (&device->log.glyphs.clip, clip);
 
-    status = _cairo_composite_rectangles_init_for_glyphs (&composite,
+    status = _comac_composite_rectangles_init_for_glyphs (&composite,
 							  surface->target,
 							  op, source,
 							  scaled_font,
@@ -1164,17 +1164,17 @@ _cairo_surface_observer_glyphs (void			*abstract_surface,
 
     add_extents (&surface->log.glyphs.extents, &composite);
     add_extents (&device->log.glyphs.extents, &composite);
-    _cairo_composite_rectangles_fini (&composite);
+    _comac_composite_rectangles_fini (&composite);
 
     /* XXX We have to copy the glyphs, because the backend is allowed to
      * modify! */
-    dev_glyphs = _cairo_malloc_ab (num_glyphs, sizeof (cairo_glyph_t));
+    dev_glyphs = _comac_malloc_ab (num_glyphs, sizeof (comac_glyph_t));
     if (unlikely (dev_glyphs == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-    memcpy (dev_glyphs, glyphs, num_glyphs * sizeof (cairo_glyph_t));
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
+    memcpy (dev_glyphs, glyphs, num_glyphs * sizeof (comac_glyph_t));
 
-    t = _cairo_time_get ();
-    status = _cairo_surface_show_text_glyphs (surface->target, op, source,
+    t = _comac_time_get ();
+    status = _comac_surface_show_text_glyphs (surface->target, op, source,
 					      NULL, 0,
 					      dev_glyphs, num_glyphs,
 					      NULL, 0, 0,
@@ -1184,8 +1184,8 @@ _cairo_surface_observer_glyphs (void			*abstract_surface,
     if (unlikely (status))
 	return status;
 
-    _cairo_surface_sync (surface->target, x, y);
-    t = _cairo_time_get_delta (t);
+    _comac_surface_sync (surface->target, x, y);
+    t = _comac_time_get_delta (t);
 
     add_record_glyphs (&surface->log,
 		       surface->target, op, source,
@@ -1199,27 +1199,27 @@ _cairo_surface_observer_glyphs (void			*abstract_surface,
 
     do_callbacks (surface, &surface->glyphs_callbacks);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_surface_observer_flush (void *abstract_surface, unsigned flags)
+static comac_status_t
+_comac_surface_observer_flush (void *abstract_surface, unsigned flags)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
+    comac_surface_observer_t *surface = abstract_surface;
 
     do_callbacks (surface, &surface->flush_callbacks);
-    return _cairo_surface_flush (surface->target, flags);
+    return _comac_surface_flush (surface->target, flags);
 }
 
-static cairo_status_t
-_cairo_surface_observer_mark_dirty (void *abstract_surface,
+static comac_status_t
+_comac_surface_observer_mark_dirty (void *abstract_surface,
 				      int x, int y,
 				      int width, int height)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_status_t status;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_status_t status;
 
-    status = CAIRO_STATUS_SUCCESS;
+    status = COMAC_STATUS_SUCCESS;
     if (surface->target->backend->mark_dirty_rectangle)
 	status = surface->target->backend->mark_dirty_rectangle (surface->target,
 						       x,y, width,height);
@@ -1227,86 +1227,86 @@ _cairo_surface_observer_mark_dirty (void *abstract_surface,
     return status;
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_copy_page (void *abstract_surface)
+static comac_int_status_t
+_comac_surface_observer_copy_page (void *abstract_surface)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_status_t status;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_status_t status;
 
-    status = CAIRO_STATUS_SUCCESS;
+    status = COMAC_STATUS_SUCCESS;
     if (surface->target->backend->copy_page)
 	status = surface->target->backend->copy_page (surface->target);
 
     return status;
 }
 
-static cairo_int_status_t
-_cairo_surface_observer_show_page (void *abstract_surface)
+static comac_int_status_t
+_comac_surface_observer_show_page (void *abstract_surface)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    cairo_status_t status;
+    comac_surface_observer_t *surface = abstract_surface;
+    comac_status_t status;
 
-    status = CAIRO_STATUS_SUCCESS;
+    status = COMAC_STATUS_SUCCESS;
     if (surface->target->backend->show_page)
 	status = surface->target->backend->show_page (surface->target);
 
     return status;
 }
 
-static cairo_bool_t
-_cairo_surface_observer_get_extents (void *abstract_surface,
-				     cairo_rectangle_int_t *extents)
+static comac_bool_t
+_comac_surface_observer_get_extents (void *abstract_surface,
+				     comac_rectangle_int_t *extents)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    return _cairo_surface_get_extents (surface->target, extents);
+    comac_surface_observer_t *surface = abstract_surface;
+    return _comac_surface_get_extents (surface->target, extents);
 }
 
 static void
-_cairo_surface_observer_get_font_options (void *abstract_surface,
-					  cairo_font_options_t *options)
+_comac_surface_observer_get_font_options (void *abstract_surface,
+					  comac_font_options_t *options)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
+    comac_surface_observer_t *surface = abstract_surface;
 
     if (surface->target->backend->get_font_options != NULL)
 	surface->target->backend->get_font_options (surface->target, options);
 }
 
-static cairo_surface_t *
-_cairo_surface_observer_source (void                    *abstract_surface,
-				cairo_rectangle_int_t	*extents)
+static comac_surface_t *
+_comac_surface_observer_source (void                    *abstract_surface,
+				comac_rectangle_int_t	*extents)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
-    return _cairo_surface_get_source (surface->target, extents);
+    comac_surface_observer_t *surface = abstract_surface;
+    return _comac_surface_get_source (surface->target, extents);
 }
 
-static cairo_status_t
-_cairo_surface_observer_acquire_source_image (void                    *abstract_surface,
-						cairo_image_surface_t  **image_out,
+static comac_status_t
+_comac_surface_observer_acquire_source_image (void                    *abstract_surface,
+						comac_image_surface_t  **image_out,
 						void                   **image_extra)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
+    comac_surface_observer_t *surface = abstract_surface;
 
     surface->log.num_sources_acquired++;
     to_device (surface)->log.num_sources_acquired++;
 
-    return _cairo_surface_acquire_source_image (surface->target,
+    return _comac_surface_acquire_source_image (surface->target,
 						image_out, image_extra);
 }
 
 static void
-_cairo_surface_observer_release_source_image (void                   *abstract_surface,
-						cairo_image_surface_t  *image,
+_comac_surface_observer_release_source_image (void                   *abstract_surface,
+						comac_image_surface_t  *image,
 						void                   *image_extra)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
+    comac_surface_observer_t *surface = abstract_surface;
 
-    _cairo_surface_release_source_image (surface->target, image, image_extra);
+    _comac_surface_release_source_image (surface->target, image, image_extra);
 }
 
-static cairo_surface_t *
-_cairo_surface_observer_snapshot (void *abstract_surface)
+static comac_surface_t *
+_comac_surface_observer_snapshot (void *abstract_surface)
 {
-    cairo_surface_observer_t *surface = abstract_surface;
+    comac_surface_observer_t *surface = abstract_surface;
 
     /* XXX hook onto the snapshot so that we measure number of reads */
 
@@ -1316,14 +1316,14 @@ _cairo_surface_observer_snapshot (void *abstract_surface)
     return NULL;
 }
 
-static cairo_t *
-_cairo_surface_observer_create_context(void *target)
+static comac_t *
+_comac_surface_observer_create_context(void *target)
 {
-    cairo_surface_observer_t *surface = target;
+    comac_surface_observer_t *surface = target;
 
-    if (_cairo_surface_is_subsurface (&surface->base))
-	surface = (cairo_surface_observer_t *)
-	    _cairo_surface_subsurface_get_target (&surface->base);
+    if (_comac_surface_is_subsurface (&surface->base))
+	surface = (comac_surface_observer_t *)
+	    _comac_surface_subsurface_get_target (&surface->base);
 
     surface->log.num_contexts++;
     to_device (surface)->log.num_contexts++;
@@ -1331,41 +1331,41 @@ _cairo_surface_observer_create_context(void *target)
     return surface->target->backend->create_context (target);
 }
 
-static const cairo_surface_backend_t _cairo_surface_observer_backend = {
-    CAIRO_INTERNAL_SURFACE_TYPE_OBSERVER,
-    _cairo_surface_observer_finish,
+static const comac_surface_backend_t _comac_surface_observer_backend = {
+    COMAC_INTERNAL_SURFACE_TYPE_OBSERVER,
+    _comac_surface_observer_finish,
 
-    _cairo_surface_observer_create_context,
+    _comac_surface_observer_create_context,
 
-    _cairo_surface_observer_create_similar,
-    _cairo_surface_observer_create_similar_image,
-    _cairo_surface_observer_map_to_image,
-    _cairo_surface_observer_unmap_image,
+    _comac_surface_observer_create_similar,
+    _comac_surface_observer_create_similar_image,
+    _comac_surface_observer_map_to_image,
+    _comac_surface_observer_unmap_image,
 
-    _cairo_surface_observer_source,
-    _cairo_surface_observer_acquire_source_image,
-    _cairo_surface_observer_release_source_image,
-    _cairo_surface_observer_snapshot,
+    _comac_surface_observer_source,
+    _comac_surface_observer_acquire_source_image,
+    _comac_surface_observer_release_source_image,
+    _comac_surface_observer_snapshot,
 
-    _cairo_surface_observer_copy_page,
-    _cairo_surface_observer_show_page,
+    _comac_surface_observer_copy_page,
+    _comac_surface_observer_show_page,
 
-    _cairo_surface_observer_get_extents,
-    _cairo_surface_observer_get_font_options,
+    _comac_surface_observer_get_extents,
+    _comac_surface_observer_get_font_options,
 
-    _cairo_surface_observer_flush,
-    _cairo_surface_observer_mark_dirty,
+    _comac_surface_observer_flush,
+    _comac_surface_observer_mark_dirty,
 
-    _cairo_surface_observer_paint,
-    _cairo_surface_observer_mask,
-    _cairo_surface_observer_stroke,
-    _cairo_surface_observer_fill,
+    _comac_surface_observer_paint,
+    _comac_surface_observer_mask,
+    _comac_surface_observer_stroke,
+    _comac_surface_observer_fill,
     NULL, /* fill-stroke */
-    _cairo_surface_observer_glyphs,
+    _comac_surface_observer_glyphs,
 };
 
 /**
- * cairo_surface_create_observer:
+ * comac_surface_create_observer:
  * @target: an existing surface for which the observer will watch
  * @mode: sets the mode of operation (normal vs. record)
  *
@@ -1373,12 +1373,12 @@ static const cairo_surface_backend_t _cairo_surface_observer_backend = {
  * the process it will log operations and times, which are fast, which are
  * slow, which are frequent, etc.
  *
- * The @mode parameter can be set to either CAIRO_SURFACE_OBSERVER_NORMAL
- * or CAIRO_SURFACE_OBSERVER_RECORD_OPERATIONS, to control whether or not
+ * The @mode parameter can be set to either COMAC_SURFACE_OBSERVER_NORMAL
+ * or COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS, to control whether or not
  * the internal observer should record operations.
  *
  * Return value: a pointer to the newly allocated surface. The caller
- * owns the surface and should call cairo_surface_destroy() when done
+ * owns the surface and should call comac_surface_destroy() when done
  * with it.
  *
  * This function always returns a valid pointer, but it will return a
@@ -1387,178 +1387,178 @@ static const cairo_surface_backend_t _cairo_surface_observer_backend = {
  *
  * Since: 1.12
  **/
-cairo_surface_t *
-cairo_surface_create_observer (cairo_surface_t *target,
-			       cairo_surface_observer_mode_t mode)
+comac_surface_t *
+comac_surface_create_observer (comac_surface_t *target,
+			       comac_surface_observer_mode_t mode)
 {
-    cairo_device_t *device;
-    cairo_surface_t *surface;
-    cairo_bool_t record;
+    comac_device_t *device;
+    comac_surface_t *surface;
+    comac_bool_t record;
 
     if (unlikely (target->status))
-	return _cairo_surface_create_in_error (target->status);
+	return _comac_surface_create_in_error (target->status);
     if (unlikely (target->finished))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_SURFACE_FINISHED));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_SURFACE_FINISHED));
 
-    record = mode & CAIRO_SURFACE_OBSERVER_RECORD_OPERATIONS;
-    device = _cairo_device_create_observer_internal (target->device, record);
+    record = mode & COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS;
+    device = _comac_device_create_observer_internal (target->device, record);
     if (unlikely (device->status))
-	return _cairo_surface_create_in_error (device->status);
+	return _comac_surface_create_in_error (device->status);
 
-    surface = _cairo_surface_create_observer_internal (device, target);
-    cairo_device_destroy (device);
+    surface = _comac_surface_create_observer_internal (device, target);
+    comac_device_destroy (device);
 
     return surface;
 }
 
-static cairo_status_t
-_cairo_surface_observer_add_callback (cairo_list_t *head,
-				      cairo_surface_observer_callback_t func,
+static comac_status_t
+_comac_surface_observer_add_callback (comac_list_t *head,
+				      comac_surface_observer_callback_t func,
 				      void *data)
 {
     struct callback_list *cb;
 
-    cb = _cairo_malloc (sizeof (*cb));
+    cb = _comac_malloc (sizeof (*cb));
     if (unlikely (cb == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    cairo_list_add (&cb->link, head);
+    comac_list_add (&cb->link, head);
     cb->func = func;
     cb->data = data;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_status_t
-cairo_surface_observer_add_paint_callback (cairo_surface_t *abstract_surface,
-					    cairo_surface_observer_callback_t func,
+comac_status_t
+comac_surface_observer_add_paint_callback (comac_surface_t *abstract_surface,
+					    comac_surface_observer_callback_t func,
 					    void *data)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_observer (abstract_surface))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *)abstract_surface;
-    return _cairo_surface_observer_add_callback (&surface->paint_callbacks,
+    surface = (comac_surface_observer_t *)abstract_surface;
+    return _comac_surface_observer_add_callback (&surface->paint_callbacks,
 						 func, data);
 }
 
-cairo_status_t
-cairo_surface_observer_add_mask_callback (cairo_surface_t *abstract_surface,
-					  cairo_surface_observer_callback_t func,
+comac_status_t
+comac_surface_observer_add_mask_callback (comac_surface_t *abstract_surface,
+					  comac_surface_observer_callback_t func,
 					  void *data)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_observer (abstract_surface))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *)abstract_surface;
-    return _cairo_surface_observer_add_callback (&surface->mask_callbacks,
+    surface = (comac_surface_observer_t *)abstract_surface;
+    return _comac_surface_observer_add_callback (&surface->mask_callbacks,
 						 func, data);
 }
 
-cairo_status_t
-cairo_surface_observer_add_fill_callback (cairo_surface_t *abstract_surface,
-					  cairo_surface_observer_callback_t func,
+comac_status_t
+comac_surface_observer_add_fill_callback (comac_surface_t *abstract_surface,
+					  comac_surface_observer_callback_t func,
 					  void *data)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_observer (abstract_surface))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *)abstract_surface;
-    return _cairo_surface_observer_add_callback (&surface->fill_callbacks,
+    surface = (comac_surface_observer_t *)abstract_surface;
+    return _comac_surface_observer_add_callback (&surface->fill_callbacks,
 						 func, data);
 }
 
-cairo_status_t
-cairo_surface_observer_add_stroke_callback (cairo_surface_t *abstract_surface,
-					    cairo_surface_observer_callback_t func,
+comac_status_t
+comac_surface_observer_add_stroke_callback (comac_surface_t *abstract_surface,
+					    comac_surface_observer_callback_t func,
 					    void *data)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_observer (abstract_surface))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *)abstract_surface;
-    return _cairo_surface_observer_add_callback (&surface->stroke_callbacks,
+    surface = (comac_surface_observer_t *)abstract_surface;
+    return _comac_surface_observer_add_callback (&surface->stroke_callbacks,
 						 func, data);
 }
 
-cairo_status_t
-cairo_surface_observer_add_glyphs_callback (cairo_surface_t *abstract_surface,
-					    cairo_surface_observer_callback_t func,
+comac_status_t
+comac_surface_observer_add_glyphs_callback (comac_surface_t *abstract_surface,
+					    comac_surface_observer_callback_t func,
 					    void *data)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_observer (abstract_surface))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *)abstract_surface;
-    return _cairo_surface_observer_add_callback (&surface->glyphs_callbacks,
+    surface = (comac_surface_observer_t *)abstract_surface;
+    return _comac_surface_observer_add_callback (&surface->glyphs_callbacks,
 						 func, data);
 }
 
-cairo_status_t
-cairo_surface_observer_add_flush_callback (cairo_surface_t *abstract_surface,
-					   cairo_surface_observer_callback_t func,
+comac_status_t
+comac_surface_observer_add_flush_callback (comac_surface_t *abstract_surface,
+					   comac_surface_observer_callback_t func,
 					   void *data)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_observer (abstract_surface))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *)abstract_surface;
-    return _cairo_surface_observer_add_callback (&surface->flush_callbacks,
+    surface = (comac_surface_observer_t *)abstract_surface;
+    return _comac_surface_observer_add_callback (&surface->flush_callbacks,
 						 func, data);
 }
 
-cairo_status_t
-cairo_surface_observer_add_finish_callback (cairo_surface_t *abstract_surface,
-					    cairo_surface_observer_callback_t func,
+comac_status_t
+comac_surface_observer_add_finish_callback (comac_surface_t *abstract_surface,
+					    comac_surface_observer_callback_t func,
 					    void *data)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return abstract_surface->status;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_observer (abstract_surface))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *)abstract_surface;
-    return _cairo_surface_observer_add_callback (&surface->finish_callbacks,
+    surface = (comac_surface_observer_t *)abstract_surface;
+    return _comac_surface_observer_add_callback (&surface->finish_callbacks,
 						 func, data);
 }
 
 static void
-print_extents (cairo_output_stream_t *stream, const struct extents *e)
+print_extents (comac_output_stream_t *stream, const struct extents *e)
 {
-    _cairo_output_stream_printf (stream,
+    _comac_output_stream_printf (stream,
 				 "  extents: total %g, avg %g [unbounded %d]\n",
 				 e->area.sum,
 				 e->area.sum / e->area.count,
@@ -1570,10 +1570,10 @@ static inline int ordercmp (int a, int b, const unsigned int *array)
     /* high to low */
     return array[b] - array[a];
 }
-CAIRO_COMBSORT_DECLARE_WITH_DATA (sort_order, int, ordercmp)
+COMAC_COMBSORT_DECLARE_WITH_DATA (sort_order, int, ordercmp)
 
 static void
-print_array (cairo_output_stream_t *stream,
+print_array (comac_output_stream_t *stream,
 	     const unsigned int *array,
 	     const char **names,
 	     int count)
@@ -1589,52 +1589,52 @@ print_array (cairo_output_stream_t *stream,
 
     sort_order (order, j, (void *)array);
     for (i = 0; i < j; i++)
-	_cairo_output_stream_printf (stream, " %d %s%s",
+	_comac_output_stream_printf (stream, " %d %s%s",
 				     array[order[i]], names[order[i]],
 				     i < j -1 ? "," : "");
 }
 
 static const char *operator_names[] = {
-    "CLEAR",	/* CAIRO_OPERATOR_CLEAR */
+    "CLEAR",	/* COMAC_OPERATOR_CLEAR */
 
-    "SOURCE",	/* CAIRO_OPERATOR_SOURCE */
-    "OVER",		/* CAIRO_OPERATOR_OVER */
-    "IN",		/* CAIRO_OPERATOR_IN */
-    "OUT",		/* CAIRO_OPERATOR_OUT */
-    "ATOP",		/* CAIRO_OPERATOR_ATOP */
+    "SOURCE",	/* COMAC_OPERATOR_SOURCE */
+    "OVER",		/* COMAC_OPERATOR_OVER */
+    "IN",		/* COMAC_OPERATOR_IN */
+    "OUT",		/* COMAC_OPERATOR_OUT */
+    "ATOP",		/* COMAC_OPERATOR_ATOP */
 
-    "DEST",		/* CAIRO_OPERATOR_DEST */
-    "DEST_OVER",	/* CAIRO_OPERATOR_DEST_OVER */
-    "DEST_IN",	/* CAIRO_OPERATOR_DEST_IN */
-    "DEST_OUT",	/* CAIRO_OPERATOR_DEST_OUT */
-    "DEST_ATOP",	/* CAIRO_OPERATOR_DEST_ATOP */
+    "DEST",		/* COMAC_OPERATOR_DEST */
+    "DEST_OVER",	/* COMAC_OPERATOR_DEST_OVER */
+    "DEST_IN",	/* COMAC_OPERATOR_DEST_IN */
+    "DEST_OUT",	/* COMAC_OPERATOR_DEST_OUT */
+    "DEST_ATOP",	/* COMAC_OPERATOR_DEST_ATOP */
 
-    "XOR",		/* CAIRO_OPERATOR_XOR */
-    "ADD",		/* CAIRO_OPERATOR_ADD */
-    "SATURATE",	/* CAIRO_OPERATOR_SATURATE */
+    "XOR",		/* COMAC_OPERATOR_XOR */
+    "ADD",		/* COMAC_OPERATOR_ADD */
+    "SATURATE",	/* COMAC_OPERATOR_SATURATE */
 
-    "MULTIPLY",	/* CAIRO_OPERATOR_MULTIPLY */
-    "SCREEN",	/* CAIRO_OPERATOR_SCREEN */
-    "OVERLAY",	/* CAIRO_OPERATOR_OVERLAY */
-    "DARKEN",	/* CAIRO_OPERATOR_DARKEN */
-    "LIGHTEN",	/* CAIRO_OPERATOR_LIGHTEN */
-    "DODGE",	/* CAIRO_OPERATOR_COLOR_DODGE */
-    "BURN",		/* CAIRO_OPERATOR_COLOR_BURN */
-    "HARD_LIGHT",	/* CAIRO_OPERATOR_HARD_LIGHT */
-    "SOFT_LIGHT",	/* CAIRO_OPERATOR_SOFT_LIGHT */
-    "DIFFERENCE",	/* CAIRO_OPERATOR_DIFFERENCE */
-    "EXCLUSION",	/* CAIRO_OPERATOR_EXCLUSION */
-    "HSL_HUE",	/* CAIRO_OPERATOR_HSL_HUE */
-    "HSL_SATURATION", /* CAIRO_OPERATOR_HSL_SATURATION */
-    "HSL_COLOR",	/* CAIRO_OPERATOR_HSL_COLOR */
-    "HSL_LUMINOSITY" /* CAIRO_OPERATOR_HSL_LUMINOSITY */
+    "MULTIPLY",	/* COMAC_OPERATOR_MULTIPLY */
+    "SCREEN",	/* COMAC_OPERATOR_SCREEN */
+    "OVERLAY",	/* COMAC_OPERATOR_OVERLAY */
+    "DARKEN",	/* COMAC_OPERATOR_DARKEN */
+    "LIGHTEN",	/* COMAC_OPERATOR_LIGHTEN */
+    "DODGE",	/* COMAC_OPERATOR_COLOR_DODGE */
+    "BURN",		/* COMAC_OPERATOR_COLOR_BURN */
+    "HARD_LIGHT",	/* COMAC_OPERATOR_HARD_LIGHT */
+    "SOFT_LIGHT",	/* COMAC_OPERATOR_SOFT_LIGHT */
+    "DIFFERENCE",	/* COMAC_OPERATOR_DIFFERENCE */
+    "EXCLUSION",	/* COMAC_OPERATOR_EXCLUSION */
+    "HSL_HUE",	/* COMAC_OPERATOR_HSL_HUE */
+    "HSL_SATURATION", /* COMAC_OPERATOR_HSL_SATURATION */
+    "HSL_COLOR",	/* COMAC_OPERATOR_HSL_COLOR */
+    "HSL_LUMINOSITY" /* COMAC_OPERATOR_HSL_LUMINOSITY */
 };
 static void
-print_operators (cairo_output_stream_t *stream, unsigned int *array)
+print_operators (comac_output_stream_t *stream, unsigned int *array)
 {
-    _cairo_output_stream_printf (stream, "  op:");
+    _comac_output_stream_printf (stream, "  op:");
     print_array (stream, array, operator_names, NUM_OPERATORS);
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *fill_rule_names[] = {
@@ -1642,37 +1642,37 @@ static const char *fill_rule_names[] = {
     "even-odd",
 };
 static void
-print_fill_rule (cairo_output_stream_t *stream, unsigned int *array)
+print_fill_rule (comac_output_stream_t *stream, unsigned int *array)
 {
-    _cairo_output_stream_printf (stream, "  fill rule:");
+    _comac_output_stream_printf (stream, "  fill rule:");
     print_array (stream, array, fill_rule_names, ARRAY_LENGTH(fill_rule_names));
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *cap_names[] = {
-    "butt",		/* CAIRO_LINE_CAP_BUTT */
-    "round",	/* CAIRO_LINE_CAP_ROUND */
-    "square"	/* CAIRO_LINE_CAP_SQUARE */
+    "butt",		/* COMAC_LINE_CAP_BUTT */
+    "round",	/* COMAC_LINE_CAP_ROUND */
+    "square"	/* COMAC_LINE_CAP_SQUARE */
 };
 static void
-print_line_caps (cairo_output_stream_t *stream, unsigned int *array)
+print_line_caps (comac_output_stream_t *stream, unsigned int *array)
 {
-    _cairo_output_stream_printf (stream, "  caps:");
+    _comac_output_stream_printf (stream, "  caps:");
     print_array (stream, array, cap_names, NUM_CAPS);
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *join_names[] = {
-    "miter",	/* CAIRO_LINE_JOIN_MITER */
-    "round",	/* CAIRO_LINE_JOIN_ROUND */
-    "bevel",	/* CAIRO_LINE_JOIN_BEVEL */
+    "miter",	/* COMAC_LINE_JOIN_MITER */
+    "round",	/* COMAC_LINE_JOIN_ROUND */
+    "bevel",	/* COMAC_LINE_JOIN_BEVEL */
 };
 static void
-print_line_joins (cairo_output_stream_t *stream, unsigned int *array)
+print_line_joins (comac_output_stream_t *stream, unsigned int *array)
 {
-    _cairo_output_stream_printf (stream, "  joins:");
+    _comac_output_stream_printf (stream, "  joins:");
     print_array (stream, array, join_names, NUM_JOINS);
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *antialias_names[] = {
@@ -1685,11 +1685,11 @@ static const char *antialias_names[] = {
     "best"
 };
 static void
-print_antialias (cairo_output_stream_t *stream, unsigned int *array)
+print_antialias (comac_output_stream_t *stream, unsigned int *array)
 {
-    _cairo_output_stream_printf (stream, "  antialias:");
+    _comac_output_stream_printf (stream, "  antialias:");
     print_array (stream, array, antialias_names, NUM_ANTIALIAS);
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *pattern_names[] = {
@@ -1703,13 +1703,13 @@ static const char *pattern_names[] = {
     "raster"
 };
 static void
-print_pattern (cairo_output_stream_t *stream,
+print_pattern (comac_output_stream_t *stream,
 	       const char *name,
 	       const struct pattern *p)
 {
-    _cairo_output_stream_printf (stream, "  %s:", name);
+    _comac_output_stream_printf (stream, "  %s:", name);
     print_array (stream, p->type, pattern_names, ARRAY_LENGTH (pattern_names));
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *path_names[] = {
@@ -1720,12 +1720,12 @@ static const char *path_names[] = {
     "curved",
 };
 static void
-print_path (cairo_output_stream_t *stream,
+print_path (comac_output_stream_t *stream,
 	    const struct path *p)
 {
-    _cairo_output_stream_printf (stream, "  path:");
+    _comac_output_stream_printf (stream, "  path:");
     print_array (stream, p->type, path_names, ARRAY_LENGTH (path_names));
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static const char *clip_names[] = {
@@ -1737,68 +1737,68 @@ static const char *clip_names[] = {
     "general",
 };
 static void
-print_clip (cairo_output_stream_t *stream, const struct clip *c)
+print_clip (comac_output_stream_t *stream, const struct clip *c)
 {
-    _cairo_output_stream_printf (stream, "  clip:");
+    _comac_output_stream_printf (stream, "  clip:");
     print_array (stream, c->type, clip_names, ARRAY_LENGTH (clip_names));
-    _cairo_output_stream_printf (stream, "\n");
+    _comac_output_stream_printf (stream, "\n");
 }
 
 static void
-print_record (cairo_output_stream_t *stream,
-	      cairo_observation_record_t *r)
+print_record (comac_output_stream_t *stream,
+	      comac_observation_record_t *r)
 {
-    _cairo_output_stream_printf (stream, "  op: %s\n", operator_names[r->op]);
-    _cairo_output_stream_printf (stream, "  source: %s\n",
+    _comac_output_stream_printf (stream, "  op: %s\n", operator_names[r->op]);
+    _comac_output_stream_printf (stream, "  source: %s\n",
 				 pattern_names[r->source]);
     if (r->mask != -1)
-	_cairo_output_stream_printf (stream, "  mask: %s\n",
+	_comac_output_stream_printf (stream, "  mask: %s\n",
 				     pattern_names[r->mask]);
     if (r->num_glyphs != -1)
-	_cairo_output_stream_printf (stream, "  num_glyphs: %d\n",
+	_comac_output_stream_printf (stream, "  num_glyphs: %d\n",
 				     r->num_glyphs);
     if (r->path != -1)
-	_cairo_output_stream_printf (stream, "  path: %s\n",
+	_comac_output_stream_printf (stream, "  path: %s\n",
 				    path_names[r->path]);
     if (r->fill_rule != -1)
-	_cairo_output_stream_printf (stream, "  fill rule: %s\n",
+	_comac_output_stream_printf (stream, "  fill rule: %s\n",
 				     fill_rule_names[r->fill_rule]);
     if (r->antialias != -1)
-	_cairo_output_stream_printf (stream, "  antialias: %s\n",
+	_comac_output_stream_printf (stream, "  antialias: %s\n",
 				     antialias_names[r->antialias]);
-    _cairo_output_stream_printf (stream, "  clip: %s\n", clip_names[r->clip]);
-    _cairo_output_stream_printf (stream, "  elapsed: %f ns\n",
-				 _cairo_time_to_ns (r->elapsed));
+    _comac_output_stream_printf (stream, "  clip: %s\n", clip_names[r->clip]);
+    _comac_output_stream_printf (stream, "  elapsed: %f ns\n",
+				 _comac_time_to_ns (r->elapsed));
 }
 
-static double percent (cairo_time_t a, cairo_time_t b)
+static double percent (comac_time_t a, comac_time_t b)
 {
     /* Fake %.1f */
-    return _cairo_round (_cairo_time_to_s (a) * 1000 /
-			 _cairo_time_to_s (b)) / 10;
+    return _comac_round (_comac_time_to_s (a) * 1000 /
+			 _comac_time_to_s (b)) / 10;
 }
 
-static cairo_bool_t
-replay_record (cairo_observation_t *log,
-	       cairo_observation_record_t *r,
-	       cairo_device_t *script)
+static comac_bool_t
+replay_record (comac_observation_t *log,
+	       comac_observation_record_t *r,
+	       comac_device_t *script)
 {
-#if CAIRO_HAS_SCRIPT_SURFACE
-    cairo_surface_t *surface;
-    cairo_int_status_t status;
+#if COMAC_HAS_SCRIPT_SURFACE
+    comac_surface_t *surface;
+    comac_int_status_t status;
 
     if (log->record == NULL || script == NULL)
 	return FALSE;
 
-    surface = cairo_script_surface_create (script,
+    surface = comac_script_surface_create (script,
 					   r->target_content,
 					   r->target_width,
 					   r->target_height);
     status =
-	_cairo_recording_surface_replay_one (log->record, r->index, surface);
-    cairo_surface_destroy (surface);
+	_comac_recording_surface_replay_one (log->record, r->index, surface);
+    comac_surface_destroy (surface);
 
-    assert (status == CAIRO_INT_STATUS_SUCCESS);
+    assert (status == COMAC_INT_STATUS_SUCCESS);
 
     return TRUE;
 #else
@@ -1806,49 +1806,49 @@ replay_record (cairo_observation_t *log,
 #endif
 }
 
-static cairo_time_t
-_cairo_observation_total_elapsed (cairo_observation_t *log)
+static comac_time_t
+_comac_observation_total_elapsed (comac_observation_t *log)
 {
-    cairo_time_t total;
+    comac_time_t total;
 
     total = log->paint.elapsed;
-    total = _cairo_time_add (total, log->mask.elapsed);
-    total = _cairo_time_add (total, log->fill.elapsed);
-    total = _cairo_time_add (total, log->stroke.elapsed);
-    total = _cairo_time_add (total, log->glyphs.elapsed);
+    total = _comac_time_add (total, log->mask.elapsed);
+    total = _comac_time_add (total, log->fill.elapsed);
+    total = _comac_time_add (total, log->stroke.elapsed);
+    total = _comac_time_add (total, log->glyphs.elapsed);
 
     return total;
 }
 
 static void
-_cairo_observation_print (cairo_output_stream_t *stream,
-			  cairo_observation_t *log)
+_comac_observation_print (comac_output_stream_t *stream,
+			  comac_observation_t *log)
 {
-    cairo_device_t *script;
-    cairo_time_t total;
+    comac_device_t *script;
+    comac_time_t total;
 
-#if CAIRO_HAS_SCRIPT_SURFACE
-    script = _cairo_script_context_create_internal (stream);
-    _cairo_script_context_attach_snapshots (script, FALSE);
+#if COMAC_HAS_SCRIPT_SURFACE
+    script = _comac_script_context_create_internal (stream);
+    _comac_script_context_attach_snapshots (script, FALSE);
 #else
     script = NULL;
 #endif
 
-    total = _cairo_observation_total_elapsed (log);
+    total = _comac_observation_total_elapsed (log);
 
-    _cairo_output_stream_printf (stream, "elapsed: %f\n",
-				 _cairo_time_to_ns (total));
-    _cairo_output_stream_printf (stream, "surfaces: %d\n",
+    _comac_output_stream_printf (stream, "elapsed: %f\n",
+				 _comac_time_to_ns (total));
+    _comac_output_stream_printf (stream, "surfaces: %d\n",
 				 log->num_surfaces);
-    _cairo_output_stream_printf (stream, "contexts: %d\n",
+    _comac_output_stream_printf (stream, "contexts: %d\n",
 				 log->num_contexts);
-    _cairo_output_stream_printf (stream, "sources acquired: %d\n",
+    _comac_output_stream_printf (stream, "sources acquired: %d\n",
 				 log->num_sources_acquired);
 
 
-    _cairo_output_stream_printf (stream, "paint: count %d [no-op %d], elapsed %f [%f%%]\n",
+    _comac_output_stream_printf (stream, "paint: count %d [no-op %d], elapsed %f [%f%%]\n",
 				 log->paint.count, log->paint.noop,
-				 _cairo_time_to_ns (log->paint.elapsed),
+				 _comac_time_to_ns (log->paint.elapsed),
 				 percent (log->paint.elapsed, total));
     if (log->paint.count) {
 	print_extents (stream, &log->paint.extents);
@@ -1856,19 +1856,19 @@ _cairo_observation_print (cairo_output_stream_t *stream,
 	print_pattern (stream, "source", &log->paint.source);
 	print_clip (stream, &log->paint.clip);
 
-	_cairo_output_stream_printf (stream, "slowest paint: %f%%\n",
+	_comac_output_stream_printf (stream, "slowest paint: %f%%\n",
 				     percent (log->paint.slowest.elapsed,
 					      log->paint.elapsed));
 	print_record (stream, &log->paint.slowest);
 
-	_cairo_output_stream_printf (stream, "\n");
+	_comac_output_stream_printf (stream, "\n");
 	if (replay_record (log, &log->paint.slowest, script))
-	    _cairo_output_stream_printf (stream, "\n\n");
+	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _cairo_output_stream_printf (stream, "mask: count %d [no-op %d], elapsed %f [%f%%]\n",
+    _comac_output_stream_printf (stream, "mask: count %d [no-op %d], elapsed %f [%f%%]\n",
 				 log->mask.count, log->mask.noop,
-				 _cairo_time_to_ns (log->mask.elapsed),
+				 _comac_time_to_ns (log->mask.elapsed),
 				 percent (log->mask.elapsed, total));
     if (log->mask.count) {
 	print_extents (stream, &log->mask.extents);
@@ -1877,19 +1877,19 @@ _cairo_observation_print (cairo_output_stream_t *stream,
 	print_pattern (stream, "mask", &log->mask.mask);
 	print_clip (stream, &log->mask.clip);
 
-	_cairo_output_stream_printf (stream, "slowest mask: %f%%\n",
+	_comac_output_stream_printf (stream, "slowest mask: %f%%\n",
 				     percent (log->mask.slowest.elapsed,
 					      log->mask.elapsed));
 	print_record (stream, &log->mask.slowest);
 
-	_cairo_output_stream_printf (stream, "\n");
+	_comac_output_stream_printf (stream, "\n");
 	if (replay_record (log, &log->mask.slowest, script))
-	    _cairo_output_stream_printf (stream, "\n\n");
+	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _cairo_output_stream_printf (stream, "fill: count %d [no-op %d], elaspsed %f [%f%%]\n",
+    _comac_output_stream_printf (stream, "fill: count %d [no-op %d], elaspsed %f [%f%%]\n",
 				 log->fill.count, log->fill.noop,
-				 _cairo_time_to_ns (log->fill.elapsed),
+				 _comac_time_to_ns (log->fill.elapsed),
 				 percent (log->fill.elapsed, total));
     if (log->fill.count) {
 	print_extents (stream, &log->fill.extents);
@@ -1900,19 +1900,19 @@ _cairo_observation_print (cairo_output_stream_t *stream,
 	print_antialias (stream, log->fill.antialias);
 	print_clip (stream, &log->fill.clip);
 
-	_cairo_output_stream_printf (stream, "slowest fill: %f%%\n",
+	_comac_output_stream_printf (stream, "slowest fill: %f%%\n",
 				     percent (log->fill.slowest.elapsed,
 					      log->fill.elapsed));
 	print_record (stream, &log->fill.slowest);
 
-	_cairo_output_stream_printf (stream, "\n");
+	_comac_output_stream_printf (stream, "\n");
 	if (replay_record (log, &log->fill.slowest, script))
-	    _cairo_output_stream_printf (stream, "\n\n");
+	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _cairo_output_stream_printf (stream, "stroke: count %d [no-op %d], elapsed %f [%f%%]\n",
+    _comac_output_stream_printf (stream, "stroke: count %d [no-op %d], elapsed %f [%f%%]\n",
 				 log->stroke.count, log->stroke.noop,
-				 _cairo_time_to_ns (log->stroke.elapsed),
+				 _comac_time_to_ns (log->stroke.elapsed),
 				 percent (log->stroke.elapsed, total));
     if (log->stroke.count) {
 	print_extents (stream, &log->stroke.extents);
@@ -1924,19 +1924,19 @@ _cairo_observation_print (cairo_output_stream_t *stream,
 	print_line_joins (stream, log->stroke.joins);
 	print_clip (stream, &log->stroke.clip);
 
-	_cairo_output_stream_printf (stream, "slowest stroke: %f%%\n",
+	_comac_output_stream_printf (stream, "slowest stroke: %f%%\n",
 				     percent (log->stroke.slowest.elapsed,
 					      log->stroke.elapsed));
 	print_record (stream, &log->stroke.slowest);
 
-	_cairo_output_stream_printf (stream, "\n");
+	_comac_output_stream_printf (stream, "\n");
 	if (replay_record (log, &log->stroke.slowest, script))
-	    _cairo_output_stream_printf (stream, "\n\n");
+	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    _cairo_output_stream_printf (stream, "glyphs: count %d [no-op %d], elasped %f [%f%%]\n",
+    _comac_output_stream_printf (stream, "glyphs: count %d [no-op %d], elasped %f [%f%%]\n",
 				 log->glyphs.count, log->glyphs.noop,
-				 _cairo_time_to_ns (log->glyphs.elapsed),
+				 _comac_time_to_ns (log->glyphs.elapsed),
 				 percent (log->glyphs.elapsed, total));
     if (log->glyphs.count) {
 	print_extents (stream, &log->glyphs.extents);
@@ -1944,162 +1944,162 @@ _cairo_observation_print (cairo_output_stream_t *stream,
 	print_pattern (stream, "source", &log->glyphs.source);
 	print_clip (stream, &log->glyphs.clip);
 
-	_cairo_output_stream_printf (stream, "slowest glyphs: %f%%\n",
+	_comac_output_stream_printf (stream, "slowest glyphs: %f%%\n",
 				     percent (log->glyphs.slowest.elapsed,
 					      log->glyphs.elapsed));
 	print_record (stream, &log->glyphs.slowest);
 
-	_cairo_output_stream_printf (stream, "\n");
+	_comac_output_stream_printf (stream, "\n");
 	if (replay_record (log, &log->glyphs.slowest, script))
-	    _cairo_output_stream_printf (stream, "\n\n");
+	    _comac_output_stream_printf (stream, "\n\n");
     }
 
-    cairo_device_destroy (script);
+    comac_device_destroy (script);
 }
 
-cairo_status_t
-cairo_surface_observer_print (cairo_surface_t *abstract_surface,
-			      cairo_write_func_t write_func,
+comac_status_t
+comac_surface_observer_print (comac_surface_t *abstract_surface,
+			      comac_write_func_t write_func,
 			      void *closure)
 {
-    cairo_output_stream_t *stream;
-    cairo_surface_observer_t *surface;
+    comac_output_stream_t *stream;
+    comac_surface_observer_t *surface;
 
     if (unlikely (abstract_surface->status))
 	return abstract_surface->status;
 
-    if (unlikely (! _cairo_surface_is_observer (abstract_surface)))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (unlikely (! _comac_surface_is_observer (abstract_surface)))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    surface = (cairo_surface_observer_t *) abstract_surface;
+    surface = (comac_surface_observer_t *) abstract_surface;
 
-    stream = _cairo_output_stream_create (write_func, NULL, closure);
-    _cairo_observation_print (stream, &surface->log);
-    return _cairo_output_stream_destroy (stream);
+    stream = _comac_output_stream_create (write_func, NULL, closure);
+    _comac_observation_print (stream, &surface->log);
+    return _comac_output_stream_destroy (stream);
 }
 
 double
-cairo_surface_observer_elapsed (cairo_surface_t *abstract_surface)
+comac_surface_observer_elapsed (comac_surface_t *abstract_surface)
 {
-    cairo_surface_observer_t *surface;
+    comac_surface_observer_t *surface;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_surface->ref_count)))
 	return -1;
 
-    if (! _cairo_surface_is_observer (abstract_surface))
+    if (! _comac_surface_is_observer (abstract_surface))
 	return -1;
 
-    surface = (cairo_surface_observer_t *) abstract_surface;
-    return _cairo_time_to_ns (_cairo_observation_total_elapsed (&surface->log));
+    surface = (comac_surface_observer_t *) abstract_surface;
+    return _comac_time_to_ns (_comac_observation_total_elapsed (&surface->log));
 }
 
-cairo_status_t
-cairo_device_observer_print (cairo_device_t *abstract_device,
-			     cairo_write_func_t write_func,
+comac_status_t
+comac_device_observer_print (comac_device_t *abstract_device,
+			     comac_write_func_t write_func,
 			     void *closure)
 {
-    cairo_output_stream_t *stream;
-    cairo_device_observer_t *device;
+    comac_output_stream_t *stream;
+    comac_device_observer_t *device;
 
     if (unlikely (abstract_device->status))
 	return abstract_device->status;
 
-    if (unlikely (! _cairo_device_is_observer (abstract_device)))
-	return _cairo_error (CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+    if (unlikely (! _comac_device_is_observer (abstract_device)))
+	return _comac_error (COMAC_STATUS_DEVICE_TYPE_MISMATCH);
 
-    device = (cairo_device_observer_t *) abstract_device;
+    device = (comac_device_observer_t *) abstract_device;
 
-    stream = _cairo_output_stream_create (write_func, NULL, closure);
-    _cairo_observation_print (stream, &device->log);
-    return _cairo_output_stream_destroy (stream);
+    stream = _comac_output_stream_create (write_func, NULL, closure);
+    _comac_observation_print (stream, &device->log);
+    return _comac_output_stream_destroy (stream);
 }
 
 double
-cairo_device_observer_elapsed (cairo_device_t *abstract_device)
+comac_device_observer_elapsed (comac_device_t *abstract_device)
 {
-    cairo_device_observer_t *device;
+    comac_device_observer_t *device;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
-    if (! _cairo_device_is_observer (abstract_device))
+    if (! _comac_device_is_observer (abstract_device))
 	return -1;
 
-    device = (cairo_device_observer_t *) abstract_device;
-    return _cairo_time_to_ns (_cairo_observation_total_elapsed (&device->log));
+    device = (comac_device_observer_t *) abstract_device;
+    return _comac_time_to_ns (_comac_observation_total_elapsed (&device->log));
 }
 
 double
-cairo_device_observer_paint_elapsed (cairo_device_t *abstract_device)
+comac_device_observer_paint_elapsed (comac_device_t *abstract_device)
 {
-    cairo_device_observer_t *device;
+    comac_device_observer_t *device;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
-    if (! _cairo_device_is_observer (abstract_device))
+    if (! _comac_device_is_observer (abstract_device))
 	return -1;
 
-    device = (cairo_device_observer_t *) abstract_device;
-    return _cairo_time_to_ns (device->log.paint.elapsed);
+    device = (comac_device_observer_t *) abstract_device;
+    return _comac_time_to_ns (device->log.paint.elapsed);
 }
 
 double
-cairo_device_observer_mask_elapsed (cairo_device_t *abstract_device)
+comac_device_observer_mask_elapsed (comac_device_t *abstract_device)
 {
-    cairo_device_observer_t *device;
+    comac_device_observer_t *device;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
-    if (! _cairo_device_is_observer (abstract_device))
+    if (! _comac_device_is_observer (abstract_device))
 	return -1;
 
-    device = (cairo_device_observer_t *) abstract_device;
-    return _cairo_time_to_ns (device->log.mask.elapsed);
+    device = (comac_device_observer_t *) abstract_device;
+    return _comac_time_to_ns (device->log.mask.elapsed);
 }
 
 double
-cairo_device_observer_fill_elapsed (cairo_device_t *abstract_device)
+comac_device_observer_fill_elapsed (comac_device_t *abstract_device)
 {
-    cairo_device_observer_t *device;
+    comac_device_observer_t *device;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
-    if (! _cairo_device_is_observer (abstract_device))
+    if (! _comac_device_is_observer (abstract_device))
 	return -1;
 
-    device = (cairo_device_observer_t *) abstract_device;
-    return _cairo_time_to_ns (device->log.fill.elapsed);
+    device = (comac_device_observer_t *) abstract_device;
+    return _comac_time_to_ns (device->log.fill.elapsed);
 }
 
 double
-cairo_device_observer_stroke_elapsed (cairo_device_t *abstract_device)
+comac_device_observer_stroke_elapsed (comac_device_t *abstract_device)
 {
-    cairo_device_observer_t *device;
+    comac_device_observer_t *device;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
-    if (! _cairo_device_is_observer (abstract_device))
+    if (! _comac_device_is_observer (abstract_device))
 	return -1;
 
-    device = (cairo_device_observer_t *) abstract_device;
-    return _cairo_time_to_ns (device->log.stroke.elapsed);
+    device = (comac_device_observer_t *) abstract_device;
+    return _comac_time_to_ns (device->log.stroke.elapsed);
 }
 
 double
-cairo_device_observer_glyphs_elapsed (cairo_device_t *abstract_device)
+comac_device_observer_glyphs_elapsed (comac_device_t *abstract_device)
 {
-    cairo_device_observer_t *device;
+    comac_device_observer_t *device;
 
-    if (unlikely (CAIRO_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
+    if (unlikely (COMAC_REFERENCE_COUNT_IS_INVALID (&abstract_device->ref_count)))
 	return -1;
 
-    if (! _cairo_device_is_observer (abstract_device))
+    if (! _comac_device_is_observer (abstract_device))
 	return -1;
 
-    device = (cairo_device_observer_t *) abstract_device;
-    return _cairo_time_to_ns (device->log.glyphs.elapsed);
+    device = (comac_device_observer_t *) abstract_device;
+    return _comac_time_to_ns (device->log.glyphs.elapsed);
 }

@@ -32,69 +32,69 @@
 /* Another attempt at avoiding unnecessary splines was made, where
  * a curve-to that ended on the same point as it began were discarded.
  */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_set_line_width (cr, 1.0);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
+    comac_set_line_width (cr, 1.0);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_BEVEL);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
 
     /* entirely degenerate */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		    2.5, 2.5);
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		    2.5, 2.5,
 		    2.5, 2.5,
 		    2.5, 2.5);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
     /* horizontal */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		     5.5, 2.5);
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		    22.0, 2.5,
 		    -0.5, 2.5,
 		     5.5, 2.5);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
     /* vertical */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		    7.5,  0.0);
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		    7.5, 11.0,
 		    7.5,  0.0,
 		    7.5,  0.0);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 15, 0);
+    comac_translate (cr, 15, 0);
 
     /* horizontal/vertical */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		     5.5,  0.5);
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		    -0.5,  0.5,
 		     5.5, 10.5,
 		     5.5,  0.5);
 
-    cairo_translate (cr, 10, 0);
+    comac_translate (cr, 10, 0);
 
     /* vertical/horizontal */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		     5.5,  0.0);
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		     5.5, 11.0,
 		    10.5,  0.0,
 		     5.5,  0.0);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (degenerate_curve_to,
+COMAC_TEST (degenerate_curve_to,
 	    "Test optimization treating degenerate curve_to as line_to",
 	    "path", /* keywords */
 	    NULL, /* requirements */

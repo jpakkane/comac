@@ -26,62 +26,62 @@
 #include <assert.h>
 
 static void
-assert_point (cairo_t *cr, double expected_x, double expected_y) {
+assert_point (comac_t *cr, double expected_x, double expected_y) {
   double x, y;
-  assert (cairo_has_current_point (cr));
-  cairo_get_current_point (cr, &x, &y);
+  assert (comac_has_current_point (cr));
+  comac_get_current_point (cr, &x, &y);
   assert (x == expected_x);
   assert (y == expected_y);
 }
 
 static void
-assert_point_maintained (cairo_t *cr, double expected_x, double expected_y) {
-  cairo_path_t *path;
+assert_point_maintained (comac_t *cr, double expected_x, double expected_y) {
+  comac_path_t *path;
 
   assert_point (cr, expected_x, expected_y);
 
-  path = cairo_copy_path (cr);
+  path = comac_copy_path (cr);
 
-  cairo_new_path (cr);
-  cairo_rectangle (cr, 5, 5, 10, 20);
-  cairo_stroke (cr);
+  comac_new_path (cr);
+  comac_rectangle (cr, 5, 5, 10, 20);
+  comac_stroke (cr);
 
-  cairo_new_path (cr);
-  cairo_append_path (cr, path);
-  cairo_path_destroy (path);
+  comac_new_path (cr);
+  comac_append_path (cr, path);
+  comac_path_destroy (path);
 
   assert_point (cr, expected_x, expected_y);
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 20, 20);
-    cr = cairo_create (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 20, 20);
+    cr = comac_create (surface);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, 1., 2.);
+    comac_new_path (cr);
+    comac_move_to (cr, 1., 2.);
     assert_point_maintained (cr, 1., 2.);
 
-    cairo_line_to (cr, 4., 5.);
-    cairo_move_to (cr, 2., 1.);
+    comac_line_to (cr, 4., 5.);
+    comac_move_to (cr, 2., 1.);
     assert_point_maintained (cr, 2., 1.);
 
-    cairo_move_to (cr, 5, 5);
-    cairo_arc (cr, 5, 5, 10, 0, M_PI / 3);
-    cairo_close_path (cr);
+    comac_move_to (cr, 5, 5);
+    comac_arc (cr, 5, 5, 10, 0, M_PI / 3);
+    comac_close_path (cr);
     assert_point_maintained (cr, 5, 5);
 
-    cairo_destroy (cr);
-    cairo_surface_destroy (surface);
+    comac_destroy (cr);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (path_currentpoint,
+COMAC_TEST (path_currentpoint,
 	    "Test save/restore path maintains current point",
 	    "api", /* keywords */
 	    NULL, /* requirements */

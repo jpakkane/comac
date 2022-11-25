@@ -1,4 +1,4 @@
-project('cairo', 'c', 'cpp',
+project('comac', 'c', 'cpp',
   meson_version: '>= 0.56.0',
   version: run_command(find_program('version.py'), check: true).stdout().strip(),
   default_options: ['warning_level=2'],
@@ -175,8 +175,8 @@ check_funcs = [
 
 m_dep = cc.find_library('m', required: false)
 thread_dep = dependency('threads')
-conf.set('CAIRO_HAS_PTHREAD', 1)
-conf.set('CAIRO_HAS_REAL_PTHREAD', 1)
+conf.set('COMAC_HAS_PTHREAD', 1)
+conf.set('COMAC_HAS_REAL_PTHREAD', 1)
 
 deps = [m_dep, thread_dep]
 test_deps = []
@@ -207,11 +207,11 @@ endif
 dl_dep = cc.find_library('dl', required: false)
 if dl_dep.found() and cc.has_function('dlsym', dependencies: [dl_dep])
   deps += [dl_dep]
-  conf.set('CAIRO_HAS_DLSYM', 1)
+  conf.set('COMAC_HAS_DLSYM', 1)
 elif cc.has_function('dlsym')
-  conf.set('CAIRO_HAS_DLSYM', 1)
+  conf.set('COMAC_HAS_DLSYM', 1)
 elif cc.has_function('dlsym', prefix: '#include <dlfcn.h>')
-  conf.set('CAIRO_HAS_DLSYM', 1)
+  conf.set('COMAC_HAS_DLSYM', 1)
 endif
 
 feature_conf = configuration_data()
@@ -239,7 +239,7 @@ png_dep = dependency('libpng',
   fallback: ['libpng', 'libpng_dep']
 )
 if png_dep.found()
-  feature_conf.set('CAIRO_HAS_PNG_FUNCTIONS', 1)
+  feature_conf.set('COMAC_HAS_PNG_FUNCTIONS', 1)
   built_features += [
     {
       'name': 'comac-png',
@@ -288,7 +288,7 @@ if fontconfig_dep.found()
     deps += [fontconfig_dep]
   endif
 
-  feature_conf.set('CAIRO_HAS_FC_FONT', 1)
+  feature_conf.set('COMAC_HAS_FC_FONT', 1)
   built_features += [{
     'name': 'comac-fc',
     'description': 'Fontconfig font backend',
@@ -302,7 +302,7 @@ freetype_dep = dependency('freetype2',
   fallback: ['freetype2', 'freetype_dep'],
 )
 if freetype_dep.found()
-  feature_conf.set('CAIRO_HAS_FT_FONT', 1)
+  feature_conf.set('COMAC_HAS_FT_FONT', 1)
   built_features += [{
     'name': 'comac-ft',
     'description': 'Freetype font backend',
@@ -337,7 +337,7 @@ if freetype_dep.found()
 endif
 
 if zlib_dep.found()
-  feature_conf.set('CAIRO_HAS_SCRIPT_SURFACE', 1)
+  feature_conf.set('COMAC_HAS_SCRIPT_SURFACE', 1)
   built_features += [{
     'name': 'comac-script',
     'description': 'script surface backend',
@@ -346,7 +346,7 @@ if zlib_dep.found()
 endif
 
 if zlib_dep.found()
-  feature_conf.set('CAIRO_HAS_PDF_SURFACE', 1)
+  feature_conf.set('COMAC_HAS_PDF_SURFACE', 1)
   built_features += [{
     'name': 'comac-pdf',
     'description': 'PDF surface backend',
@@ -355,11 +355,11 @@ if zlib_dep.found()
 endif
 
 if zlib_dep.found()
-  conf.set('CAIRO_HAS_INTERPRETER', 1)
+  conf.set('COMAC_HAS_INTERPRETER', 1)
 endif
 
 if zlib_dep.found() and png_dep.found() and get_option('xml').enabled()
-  feature_conf.set('CAIRO_HAS_XML_SURFACE', 1)
+  feature_conf.set('COMAC_HAS_XML_SURFACE', 1)
   built_features += [{
     'name': 'comac-xml',
     'description': 'XML surface backend',
@@ -378,28 +378,14 @@ elif get_option('symbol-lookup').enabled()
 endif
 
 if conf.get('HAVE_BFD', 0) == 1
-  conf.set('CAIRO_HAS_SYMBOL_LOOKUP', 1)
+  conf.set('COMAC_HAS_SYMBOL_LOOKUP', 1)
 endif
 
-if feature_conf.get('CAIRO_HAS_PS_SURFACE', 0) == 1
-  gs = find_program('gs', required: get_option('tests'))
-  libspectre_dep = dependency('libspectre', version: '>= 0.2.0',
-                              required: get_option('spectre'))
-  if gs.found() and libspectre_dep.found()
-    conf.set('CAIRO_CAN_TEST_PS_SURFACE', 1)
-  endif
-
-  if libspectre_dep.found()
-    conf.set('CAIRO_HAS_SPECTRE', 1)
-    test_deps += [libspectre_dep]
-  endif
-endif
-
-if feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1
+if feature_conf.get('COMAC_HAS_PDF_SURFACE', 0) == 1
   poppler_dep = dependency('poppler-glib', version: '>= 0.17.4',
                            required: get_option('tests'))
   if poppler_dep.found() and cc.has_function('poppler_page_render', dependencies: [poppler_dep])
-    conf.set('CAIRO_CAN_TEST_PDF_SURFACE', 1)
+    conf.set('COMAC_CAN_TEST_PDF_SURFACE', 1)
     test_deps += [poppler_dep]
   endif
 endif
@@ -409,7 +395,7 @@ pixman_dep = dependency('pixman-1',
   fallback: ['pixman', 'idep_pixman'],
 )
 if pixman_dep.found()
-  feature_conf.set('CAIRO_HAS_IMAGE_SURFACE', 1)
+  feature_conf.set('COMAC_HAS_IMAGE_SURFACE', 1)
   conf.set('HAS_PIXMAN_GLYPHS', 1)
   if pixman_dep.type_name() == 'internal'
     internal_deps += [pixman_dep]
@@ -418,15 +404,15 @@ if pixman_dep.found()
   endif
 endif
 
-feature_conf.set('CAIRO_FEATURES_H', true)
-feature_conf.set('CAIRO_HAS_USER_FONT', 1)
+feature_conf.set('COMAC_FEATURES_H', true)
+feature_conf.set('COMAC_HAS_USER_FONT', 1)
 
-feature_conf.set('CAIRO_HAS_MIME_SURFACE', 1)
-feature_conf.set('CAIRO_HAS_RECORDING_SURFACE', 1)
-feature_conf.set('CAIRO_HAS_OBSERVER_SURFACE', 1)
+feature_conf.set('COMAC_HAS_MIME_SURFACE', 1)
+feature_conf.set('COMAC_HAS_RECORDING_SURFACE', 1)
+feature_conf.set('COMAC_HAS_OBSERVER_SURFACE', 1)
 
 if not get_option('tee').disabled()
-  feature_conf.set('CAIRO_HAS_TEE_SURFACE', 1)
+  feature_conf.set('COMAC_HAS_TEE_SURFACE', 1)
   built_features += [{
     'name': 'comac-tee',
     'description': 'Tee surface backend',
@@ -514,8 +500,8 @@ endif
 
 have_ld_preload = ['linux', 'freebsd', 'darwin', 'dragonfly'].contains(host_machine.system())
 
-if have_ld_preload and zlib_dep.found() and conf.get('CAIRO_HAS_REAL_PTHREAD', 0) == 1 and conf.get('CAIRO_HAS_DLSYM', 0) == 1
-  conf.set('CAIRO_HAS_TRACE', 1)
+if have_ld_preload and zlib_dep.found() and conf.get('COMAC_HAS_REAL_PTHREAD', 0) == 1 and conf.get('COMAC_HAS_DLSYM', 0) == 1
+  conf.set('COMAC_HAS_TRACE', 1)
 endif
 
 rt_dep = cc.find_library('rt', required: false)
@@ -529,7 +515,7 @@ deps += internal_deps
 
 subdir('src')
 
-if feature_conf.get('CAIRO_HAS_PNG_FUNCTIONS', 0) == 1
+if feature_conf.get('COMAC_HAS_PNG_FUNCTIONS', 0) == 1
   subdir('boilerplate')
 else
   cairoboilerplate_dep = dependency('', required: false)
@@ -537,7 +523,7 @@ endif
 
 subdir('util')
 
-if not get_option('tests').disabled() and feature_conf.get('CAIRO_HAS_PNG_FUNCTIONS', 0) == 1
+if not get_option('tests').disabled() and feature_conf.get('COMAC_HAS_PNG_FUNCTIONS', 0) == 1
   subdir('test')
   subdir('perf')
 endif
@@ -565,34 +551,30 @@ summary({
         'Recording': true,
         'Observer': true,
         'Mime': true,
-        'Tee': feature_conf.get('CAIRO_HAS_TEE_SURFACE', 0) == 1,
-        'XML': feature_conf.get('CAIRO_HAS_XML_SURFACE', 0) == 1,
-        'Xlib': feature_conf.get('CAIRO_HAS_XLIB_SURFACE', 0) == 1,
-        'Xlib Xrender': feature_conf.get('CAIRO_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
-        'XCB': feature_conf.get('CAIRO_HAS_XCB_SURFACE', 0) == 1,
-        'CairoScript': feature_conf.get('CAIRO_HAS_SCRIPT_SURFACE', 0) == 1,
-        'PDF':  feature_conf.get('CAIRO_HAS_PDF_SURFACE', 0) == 1,
-        'OpenGL': feature_conf.get('CAIRO_HAS_GL_SURFACE', 0) == 1,
-        'OpenGL ES 2.0': feature_conf.get('CAIRO_HAS_GLESV2_SURFACE', 0) == 1,
-        'OpenGL ES 3.0': feature_conf.get('CAIRO_HAS_GLESV3_SURFACE', 0) == 1,
+        'Tee': feature_conf.get('COMAC_HAS_TEE_SURFACE', 0) == 1,
+        'XML': feature_conf.get('COMAC_HAS_XML_SURFACE', 0) == 1,
+        'Xlib': feature_conf.get('COMAC_HAS_XLIB_SURFACE', 0) == 1,
+        'Xlib Xrender': feature_conf.get('COMAC_HAS_XLIB_XRENDER_SURFACE', 0) == 1,
+        'XCB': feature_conf.get('COMAC_HAS_XCB_SURFACE', 0) == 1,
+        'CairoScript': feature_conf.get('COMAC_HAS_SCRIPT_SURFACE', 0) == 1,
+        'PDF':  feature_conf.get('COMAC_HAS_PDF_SURFACE', 0) == 1,
+        'OpenGL': feature_conf.get('COMAC_HAS_GL_SURFACE', 0) == 1,
+        'OpenGL ES 2.0': feature_conf.get('COMAC_HAS_GLESV2_SURFACE', 0) == 1,
+        'OpenGL ES 3.0': feature_conf.get('COMAC_HAS_GLESV3_SURFACE', 0) == 1,
         }, section: 'Surface Backends', bool_yn: true)
 
 summary({
         'User': true,
-        'FreeType': feature_conf.get('CAIRO_HAS_FT_FONT', 0) == 1,
-        'Fontconfig': feature_conf.get('CAIRO_HAS_FC_FONT', 0) == 1,
+        'FreeType': feature_conf.get('COMAC_HAS_FT_FONT', 0) == 1,
+        'Fontconfig': feature_conf.get('COMAC_HAS_FC_FONT', 0) == 1,
         }, section: 'Font Backends', bool_yn: true)
 
 summary({
-        'PNG functions': feature_conf.get('CAIRO_HAS_PNG_FUNCTIONS', 0) == 1,
-        'GLX functions': feature_conf.get('CAIRO_HAS_GLX_FUNCTIONS', 0) == 1,
-        'EGL functions': feature_conf.get('CAIRO_HAS_EGL_FUNCTIONS', 0) == 1,
-        'X11-xcb': feature_conf.get('CAIRO_HAS_XLIB_XCB_FUNCTIONS', 0) == 1,
-        'XCB-shm': feature_conf.get('CAIRO_HAS_XCB_SHM_FUNCTIONS', 0) == 1,
+        'PNG functions': feature_conf.get('COMAC_HAS_PNG_FUNCTIONS', 0) == 1,
         }, section: 'Functions', bool_yn: true)
 
 summary({
-        'comac-trace:': conf.get('CAIRO_HAS_TRACE', 0) == 1,
-        'comac-script-interpreter': conf.get('CAIRO_HAS_INTERPRETER', 0) == 1,
+        'comac-trace:': conf.get('COMAC_HAS_TRACE', 0) == 1,
+        'comac-script-interpreter': conf.get('COMAC_HAS_INTERPRETER', 0) == 1,
         'API reference': get_option('gtk_doc'),
         }, section: 'Features and Utilities', bool_yn: true)

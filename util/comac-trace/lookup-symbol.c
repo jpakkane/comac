@@ -1,4 +1,4 @@
-/* cairo-trace - a utility to record and replay calls to the Cairo library.
+/* comac-trace - a utility to record and replay calls to the Comac library.
  *
  * Copyright © 2008 Chris Wilson
  *
@@ -19,7 +19,7 @@
 /*
  * A less hacky utility to lookup the debug strings for a particular
  * .text address.
- * Derived from backtrace-symbols.c in cairo by Chris Wilson.
+ * Derived from backtrace-symbols.c in comac by Chris Wilson.
  */
 
 /*

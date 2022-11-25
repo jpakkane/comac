@@ -31,40 +31,40 @@
 #define PAD 4
 #define COUNT 4
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr2;
+    comac_surface_t *surface;
+    comac_t *cr2;
     int i,j;
 
     /* Fill the background */
-    cairo_set_source_rgb (cr, 1, 1, 1); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1); /* white */
+    comac_paint (cr);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, SIZE, SIZE);
-    cr2 = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, SIZE, SIZE);
+    cr2 = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr2, 0, 0, 1); /* blue */
-    cairo_paint (cr2);
+    comac_set_source_rgb (cr2, 0, 0, 1); /* blue */
+    comac_paint (cr2);
 
-    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
-    cairo_destroy (cr2);
+    comac_set_source_surface (cr, comac_get_target (cr2), 0, 0);
+    comac_destroy (cr2);
 
     for (i = 0; i < COUNT; i++) {
 	for (j = 0; j < COUNT; j++) {
-	    cairo_surface_set_device_offset (surface,
+	    comac_surface_set_device_offset (surface,
 					     -i*(SIZE+PAD+.5)-PAD,
 					     -j*(SIZE+PAD+.5)-PAD);
-	    cairo_paint (cr);
+	    comac_paint (cr);
 	}
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (device_offset_fractional,
+COMAC_TEST (device_offset_fractional,
 	    "Test using image surfaces with fractional device-offsets as sources.",
 	    "device-offset", /* keywords */
 	    NULL, /* requirements */

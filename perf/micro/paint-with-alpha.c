@@ -25,35 +25,35 @@
 
 #include "comac-perf.h"
 
-static cairo_time_t
-do_paint_with_alpha (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_paint_with_alpha (comac_t *cr, int width, int height, int loops)
 {
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_paint_with_alpha (cr, 0.5);
+	comac_paint_with_alpha (cr, 0.5);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
 static double
-count_paint_with_alpha (cairo_t *cr, int width, int height)
+count_paint_with_alpha (comac_t *cr, int width, int height)
 {
     return width * height / 1e6; /* Mpix/s */
 }
 
-cairo_bool_t
-paint_with_alpha_enabled (cairo_perf_t *perf)
+comac_bool_t
+paint_with_alpha_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "paint-with-alpha", NULL);
+    return comac_perf_can_run (perf, "paint-with-alpha", NULL);
 }
 
 void
-paint_with_alpha (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+paint_with_alpha (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_cover_sources_and_operators (perf, "paint-with-alpha",
+    comac_perf_cover_sources_and_operators (perf, "paint-with-alpha",
 					    do_paint_with_alpha,
 					    count_paint_with_alpha);
 }

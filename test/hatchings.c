@@ -30,89 +30,89 @@
 #define WIDTH	100
 #define HEIGHT	100
 
-static void hatching (cairo_t *cr)
+static void hatching (comac_t *cr)
 {
     int i;
 
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
 
     for (i = 0; i < WIDTH; i += STEP) {
-	cairo_rectangle (cr, i-1, -2, 2, HEIGHT+4);
-	cairo_rectangle (cr, -2, i-1, WIDTH+4, 2);
+	comac_rectangle (cr, i-1, -2, 2, HEIGHT+4);
+	comac_rectangle (cr, -2, i-1, WIDTH+4, 2);
     }
 }
 
-static void background (cairo_t *cr)
+static void background (comac_t *cr)
 {
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
 }
 
-static void clip_to_quadrant (cairo_t *cr)
+static void clip_to_quadrant (comac_t *cr)
 {
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
 }
 
-static void draw_hatching (cairo_t *cr, void (*func) (cairo_t *))
+static void draw_hatching (comac_t *cr, void (*func) (comac_t *))
 {
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
 	hatching (cr);
 	func (cr);
-    } cairo_restore (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
-	cairo_translate (cr, 0.25, 0.25);
+	comac_translate (cr, 0.25, 0.25);
 	hatching (cr);
 	func (cr);
-    } cairo_restore (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
-	cairo_translate (cr, WIDTH/2, HEIGHT/2);
-	cairo_rotate (cr, M_PI/4);
-	cairo_translate (cr, -WIDTH/2, -HEIGHT/2);
+	comac_translate (cr, WIDTH/2, HEIGHT/2);
+	comac_rotate (cr, M_PI/4);
+	comac_translate (cr, -WIDTH/2, -HEIGHT/2);
 	hatching (cr);
 	func (cr);
-    } cairo_restore (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 }
 
-static void do_clip (cairo_t *cr)
+static void do_clip (comac_t *cr)
 {
-    cairo_clip (cr);
-    cairo_paint (cr);
+    comac_clip (cr);
+    comac_paint (cr);
 }
 
-static void do_clip_alpha (cairo_t *cr)
+static void do_clip_alpha (comac_t *cr)
 {
-    cairo_clip (cr);
-    cairo_paint_with_alpha (cr, .5);
+    comac_clip (cr);
+    comac_paint_with_alpha (cr, .5);
 }
 
-static void hatchings (cairo_t *cr, void (*func) (cairo_t *))
+static void hatchings (comac_t *cr, void (*func) (comac_t *))
 {
-    cairo_save (cr); {
-	cairo_set_source_rgb(cr, 1, 0, 0);
-	cairo_set_antialias (cr, CAIRO_ANTIALIAS_DEFAULT);
+    comac_save (cr); {
+	comac_set_source_rgb(cr, 1, 0, 0);
+	comac_set_antialias (cr, COMAC_ANTIALIAS_DEFAULT);
 	draw_hatching (cr, func);
-	cairo_set_source_rgb(cr, 0, 0, 1);
-	cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+	comac_set_source_rgb(cr, 0, 0, 1);
+	comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 	draw_hatching (cr, func);
-    } cairo_restore (cr);
+    } comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     background (cr);
 
@@ -124,28 +124,28 @@ draw (cairo_t *cr, int width, int height)
      * repeated, for over/source
      */
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
 
-    hatchings (cr, cairo_fill);
-    cairo_translate (cr, 0, HEIGHT);
+    hatchings (cr, comac_fill);
+    comac_translate (cr, 0, HEIGHT);
     hatchings (cr, do_clip);
-    cairo_translate (cr, 0, HEIGHT);
+    comac_translate (cr, 0, HEIGHT);
     hatchings (cr, do_clip_alpha);
-    cairo_translate (cr, 0, HEIGHT);
+    comac_translate (cr, 0, HEIGHT);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
 
-    hatchings (cr, cairo_fill);
-    cairo_translate (cr, 0, HEIGHT);
+    hatchings (cr, comac_fill);
+    comac_translate (cr, 0, HEIGHT);
     hatchings (cr, do_clip);
-    cairo_translate (cr, 0, HEIGHT);
+    comac_translate (cr, 0, HEIGHT);
     hatchings (cr, do_clip_alpha);
-    cairo_translate (cr, 0, HEIGHT);
+    comac_translate (cr, 0, HEIGHT);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (hatchings,
+COMAC_TEST (hatchings,
 	    "Test drawing through various aligned/unaliged clips",
 	    "clip, alpha", /* keywords */
 	    "target=raster", /* requirements */

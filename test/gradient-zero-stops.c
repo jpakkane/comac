@@ -32,25 +32,25 @@
  *      https://bugzilla.mozilla.org/show_bug.cgi?id=407104
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pat;
+    comac_pattern_t *pat;
 
-    pat = cairo_pattern_create_linear (0., 0., 1., 1.);
-    cairo_set_source (cr, pat);
-    cairo_paint (cr);
-    cairo_pattern_destroy (pat);
+    pat = comac_pattern_create_linear (0., 0., 1., 1.);
+    comac_set_source (cr, pat);
+    comac_paint (cr);
+    comac_pattern_destroy (pat);
 
-    pat = cairo_pattern_create_radial (0., 0., 0., 1., 1., 1.);
-    cairo_set_source (cr, pat);
-    cairo_paint (cr);
-    cairo_pattern_destroy (pat);
+    pat = comac_pattern_create_radial (0., 0., 0., 1., 1., 1.);
+    comac_set_source (cr, pat);
+    comac_paint (cr);
+    comac_pattern_destroy (pat);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (gradient_zero_stops,
+COMAC_TEST (gradient_zero_stops,
 	    "Verifies that gradients with no stops don't cause problems.",
 	    "gradient", /* keywords */
 	    NULL, /* requirements */

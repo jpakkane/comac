@@ -39,70 +39,70 @@ destroy_data2 (void *p)
     *(int *) p = 2;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    static const cairo_user_data_key_t key1, key2;
-    cairo_surface_t *surface;
-    cairo_status_t status;
+    static const comac_user_data_key_t key1, key2;
+    comac_surface_t *surface;
+    comac_status_t status;
     int data1, data2;
 
     data1 = 0;
     data2 = 0;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1);
-    status = cairo_surface_set_user_data (surface, &key1, &data1, destroy_data1);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1);
+    status = comac_surface_set_user_data (surface, &key1, &data1, destroy_data1);
     if (status)
 	goto error;
 
-    status = cairo_surface_set_user_data (surface, &key2, &data2, destroy_data2);
+    status = comac_surface_set_user_data (surface, &key2, &data2, destroy_data2);
     if (status)
 	goto error;
 
-    assert (cairo_surface_get_user_data (surface, &key1) == &data1);
-    status = cairo_surface_set_user_data (surface, &key1, NULL, NULL);
+    assert (comac_surface_get_user_data (surface, &key1) == &data1);
+    status = comac_surface_set_user_data (surface, &key1, NULL, NULL);
     if (status)
 	goto error;
 
-    assert (cairo_surface_get_user_data (surface, &key1) == NULL);
+    assert (comac_surface_get_user_data (surface, &key1) == NULL);
     assert (data1 == 1);
     assert (data2 == 0);
 
-    status = cairo_surface_set_user_data (surface, &key2, NULL, NULL);
+    status = comac_surface_set_user_data (surface, &key2, NULL, NULL);
     if (status)
 	goto error;
 
     assert (data2 == 2);
 
     data1 = 0;
-    status = cairo_surface_set_user_data (surface, &key1, &data1, NULL);
+    status = comac_surface_set_user_data (surface, &key1, &data1, NULL);
     if (status)
 	goto error;
 
-    status = cairo_surface_set_user_data (surface, &key1, NULL, NULL);
+    status = comac_surface_set_user_data (surface, &key1, NULL, NULL);
     if (status)
 	goto error;
 
     assert (data1 == 0);
-    assert (cairo_surface_get_user_data (surface, &key1) == NULL);
+    assert (comac_surface_get_user_data (surface, &key1) == NULL);
 
-    status = cairo_surface_set_user_data (surface, &key1, &data1, destroy_data1);
+    status = comac_surface_set_user_data (surface, &key1, &data1, destroy_data1);
     if (status)
 	goto error;
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     assert (data1 == 1);
     assert (data2 == 2);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 
 error:
-    cairo_surface_destroy (surface);
-    return cairo_test_status_from_status (ctx, status);
+    comac_surface_destroy (surface);
+    return comac_test_status_from_status (ctx, status);
 }
 
-CAIRO_TEST (user_data,
+COMAC_TEST (user_data,
 	    "Test setting and getting random bits of user data.",
 	    "api", /* keywords */
 	    NULL, /* requirements */

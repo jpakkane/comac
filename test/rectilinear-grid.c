@@ -36,55 +36,55 @@
   correctly.
 
   In particular the corners of the boxes are drawn incorrectly by
-  cairo-image in cairo 1.10.0, because overlapping boxes are passed to
+  comac-image in comac 1.10.0, because overlapping boxes are passed to
   a span converter which assumes disjoint boxes as input.
 
   This results in corners to be drawn with the wrong shade.
 */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_set_line_width (cr, 4);
-    cairo_translate (cr, 2*OFFSET, 2*OFFSET);
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_line_width (cr, 4);
+    comac_translate (cr, 2*OFFSET, 2*OFFSET);
 
     for (i = 0; i < 4; i++) {
 	double x = i * DISTANCE;
 
-	cairo_move_to (cr, x, -OFFSET-0.75);
-	cairo_line_to (cr, x, SIZE-3*OFFSET-0.25);
+	comac_move_to (cr, x, -OFFSET-0.75);
+	comac_line_to (cr, x, SIZE-3*OFFSET-0.25);
 
-	cairo_move_to (cr, -OFFSET-0.75, x);
-	cairo_line_to (cr, SIZE-3*OFFSET-0.25, x);
+	comac_move_to (cr, -OFFSET-0.75, x);
+	comac_line_to (cr, SIZE-3*OFFSET-0.25, x);
     }
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-aligned (cairo_t *cr, int width, int height)
+static comac_test_status_t
+aligned (comac_t *cr, int width, int height)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
     return draw (cr, width, height);
 }
 
-CAIRO_TEST (rectilinear_grid,
+COMAC_TEST (rectilinear_grid,
 	    "Test rectilinear rasterizer (covering partial pixels)",
 	    "rectilinear", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, draw)
 
-CAIRO_TEST (a1_rectilinear_grid,
+COMAC_TEST (a1_rectilinear_grid,
 	    "Test rectilinear rasterizer (covering whole pixels)",
 	    "rectilinear", /* keywords */
 	    "target=raster", /* requirements */

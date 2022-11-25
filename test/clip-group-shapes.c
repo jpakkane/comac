@@ -46,70 +46,70 @@ enum {
     CLIP_INSIDE_GROUP
 };
 
-typedef void (*clipper_t)(cairo_t *cr, int w, int h);
+typedef void (*clipper_t)(comac_t *cr, int w, int h);
 
-static cairo_test_status_t
-clip_and_paint (cairo_t *cr,
+static comac_test_status_t
+clip_and_paint (comac_t *cr,
                 int w, int h,
                 clipper_t do_clip,
                 int clip_where)
 {
-    cairo_save (cr); {
+    comac_save (cr); {
         if (GENERATE_REF) {
             do_clip (cr, w, h);
-            cairo_paint (cr);
+            comac_paint (cr);
         } else {
             if (clip_where == CLIP_OUTSIDE_GROUP)
                 do_clip (cr, w, h);
-            cairo_push_group (cr); {
+            comac_push_group (cr); {
                 if (clip_where == CLIP_INSIDE_GROUP)
                     do_clip (cr, w, h);
-                cairo_paint (cr);
+                comac_paint (cr);
             }
-            cairo_pop_group_to_source (cr);
+            comac_pop_group_to_source (cr);
             if (clip_where == CLIP_OUTSIDE_GROUP)
-		cairo_reset_clip (cr);
-            cairo_paint (cr);
+		comac_reset_clip (cr);
+            comac_paint (cr);
         }
     }
-    cairo_restore (cr);
-    return CAIRO_TEST_SUCCESS;
+    comac_restore (cr);
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-run_clip_test (cairo_t *cr, int w, int h, clipper_t do_clip)
+static comac_test_status_t
+run_clip_test (comac_t *cr, int w, int h, clipper_t do_clip)
 {
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 1,0,0);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 1,0,0);
 
     /* Left. */
     clip_and_paint (cr, w/2, h, do_clip, CLIP_OUTSIDE_GROUP);
 
     /* Right */
-    cairo_translate(cr, w/2, 0);
+    comac_translate(cr, w/2, 0);
     clip_and_paint (cr, w/2, h, do_clip, CLIP_INSIDE_GROUP);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static void
-clip_aligned_rectangles (cairo_t *cr, int w, int h)
+clip_aligned_rectangles (comac_t *cr, int w, int h)
 {
     int x1 = 0.2 * w;
     int y1 = 0.2 * h;
     int x2 = 0.8 * w;
     int y2 = 0.8 * h;
 
-    cairo_rectangle (cr, x1, y1, w, h);
-    cairo_clip (cr);
+    comac_rectangle (cr, x1, y1, w, h);
+    comac_clip (cr);
 
-    cairo_rectangle (cr, x2, y2, -w, -h);
-    cairo_clip (cr);
+    comac_rectangle (cr, x2, y2, -w, -h);
+    comac_clip (cr);
 }
 
 static void
-clip_unaligned_rectangles (cairo_t *cr, int w, int h)
+clip_unaligned_rectangles (comac_t *cr, int w, int h)
 {
     /* This clip stresses the antialiased edges produced by an
      * unaligned rectangular clip. The edges should be produced by
@@ -120,18 +120,18 @@ clip_unaligned_rectangles (cairo_t *cr, int w, int h)
     int x2 = 0.8 * w;
     int y2 = 0.8 * h;
 
-    cairo_rectangle (cr, x1+0.5, y1+0.5, w, h);
-    cairo_clip (cr);
+    comac_rectangle (cr, x1+0.5, y1+0.5, w, h);
+    comac_clip (cr);
 
-    cairo_rectangle (cr, x2+0.5, y2+0.5, -w, -h);
+    comac_rectangle (cr, x2+0.5, y2+0.5, -w, -h);
     w = x2 - x1;
     h = y2 - y1;
-    cairo_rectangle (cr, x2, y1+1, -w+1, h-1);
-    cairo_clip (cr);
+    comac_rectangle (cr, x2, y1+1, -w+1, h-1);
+    comac_clip (cr);
 }
 
 static void
-clip_circles (cairo_t *cr, int w, int h)
+clip_circles (comac_t *cr, int w, int h)
 {
     int x1 = 0.5 * w;
     int y1 = 0.5 * h;
@@ -139,48 +139,48 @@ clip_circles (cairo_t *cr, int w, int h)
     int y2 = 0.75 * h;
     int r = 0.4*MIN(w,h);
 
-    cairo_arc (cr, x1, y1, r, 0, 6.28);
-    cairo_close_path (cr);
-    cairo_clip (cr);
+    comac_arc (cr, x1, y1, r, 0, 6.28);
+    comac_close_path (cr);
+    comac_clip (cr);
 
-    cairo_arc (cr, x2, y2, r, 0, 6.28);
-    cairo_close_path (cr);
-    cairo_clip (cr);
+    comac_arc (cr, x2, y2, r, 0, 6.28);
+    comac_close_path (cr);
+    comac_clip (cr);
 }
 
-static cairo_test_status_t
-draw_aligned_rectangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_aligned_rectangles (comac_t *cr, int width, int height)
 {
     return run_clip_test (cr, width, height, clip_aligned_rectangles);
 }
 
-static cairo_test_status_t
-draw_unaligned_rectangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_unaligned_rectangles (comac_t *cr, int width, int height)
 {
     return run_clip_test (cr, width, height, clip_unaligned_rectangles);
 }
 
-static cairo_test_status_t
-draw_circles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_circles (comac_t *cr, int width, int height)
 {
     return run_clip_test (cr, width, height, clip_circles);
 }
 
-CAIRO_TEST (clip_group_shapes_aligned_rectangles,
+COMAC_TEST (clip_group_shapes_aligned_rectangles,
 	    "Test clip and group interaction with aligned rectangle clips",
 	    "clip", /* keywords */
 	    NULL, /* requirements */
 	    200, 100,
 	    NULL, draw_aligned_rectangles)
 
-CAIRO_TEST (clip_group_shapes_unaligned_rectangles,
+COMAC_TEST (clip_group_shapes_unaligned_rectangles,
 	    "Test clip and group interaction with unaligned rectangle clips",
 	    "clip", /* keywords */
 	    "target=raster", /* requirements */
 	    200, 100,
 	    NULL, draw_unaligned_rectangles)
 
-CAIRO_TEST (clip_group_shapes_circles,
+COMAC_TEST (clip_group_shapes_circles,
 	    "Test clip and group interaction with circular clips",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

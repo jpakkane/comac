@@ -27,23 +27,23 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_move_to (cr, 5, 7);
-    cairo_rel_line_to (cr, 20, 0);
-    cairo_rel_line_to (cr, 0, 15);
-    cairo_rel_line_to (cr, -20, 0);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_move_to (cr, 5, 7);
+    comac_rel_line_to (cr, 20, 0);
+    comac_rel_line_to (cr, 0, 15);
+    comac_rel_line_to (cr, -20, 0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (stroke_open_box,
+COMAC_TEST (stroke_open_box,
 	    "Tests stroking of a 3-sided box",
 	    "stroke,box", /* keywords */
 	    NULL, /* requirements */

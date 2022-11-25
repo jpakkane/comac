@@ -24,60 +24,60 @@
 
 #include "tiger.inc"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
 	unsigned int i;
 
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-	cairo_set_source_rgba (cr, 0.1, 0.2, 0.3, 1.0);
-	cairo_paint (cr);
-	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+	comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+	comac_set_source_rgba (cr, 0.1, 0.2, 0.3, 1.0);
+	comac_paint (cr);
+	comac_set_operator (cr, COMAC_OPERATOR_OVER);
 
-	cairo_translate (cr, width/2, height/2);
-	cairo_scale (cr, .85, .85);
+	comac_translate (cr, width/2, height/2);
+	comac_scale (cr, .85, .85);
 
 	for (i = 0; i < ARRAY_LENGTH(tiger_commands); i++) {
 		const struct command *cmd = &tiger_commands[i];
 		switch (cmd->type) {
 		case 'm':
-			cairo_move_to (cr, cmd->x0, cmd->y0);
+			comac_move_to (cr, cmd->x0, cmd->y0);
 			break;
 		case 'l':
-			cairo_line_to (cr, cmd->x0, cmd->y0);
+			comac_line_to (cr, cmd->x0, cmd->y0);
 			break;
 		case 'c':
-			cairo_curve_to (cr,
+			comac_curve_to (cr,
 					cmd->x0, cmd->y0,
 					cmd->x1, cmd->y1,
 					cmd->x2, cmd->y2);
 			break;
 		case 'f':
-			cairo_set_source_rgba (cr,
+			comac_set_source_rgba (cr,
 					       cmd->x0, cmd->y0, cmd->x1, cmd->y1);
-			cairo_fill (cr);
+			comac_fill (cr);
 			break;
 		}
 	}
 
-	return CAIRO_TEST_SUCCESS;
+	return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-a1_draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+a1_draw (comac_t *cr, int width, int height)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
     return draw (cr, width, height);
 }
 
-CAIRO_TEST (tiger,
+COMAC_TEST (tiger,
 	    "Check the fidelity of the rasterisation.",
 	    "raster", /* keywords */
 	    NULL, /* requirements */
 	    500, 500,
 	    NULL, draw)
 
-CAIRO_TEST (a1_tiger,
+COMAC_TEST (a1_tiger,
 	    "Check the fidelity of the rasterisation.",
 	    "fill", /* keywords */
 	    "target=raster", /* requirements */

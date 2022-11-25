@@ -28,42 +28,42 @@
 
 static const char *png_filename = "romedalen.png";
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_format_t format = CAIRO_FORMAT_ARGB32;
-    cairo_t *cr_src;
-    cairo_surface_t *png, *src;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_format_t format = COMAC_FORMAT_ARGB32;
+    comac_t *cr_src;
+    comac_surface_t *png, *src;
     uint8_t *data;
     int stride;
 
-    png = cairo_test_create_surface_from_png (ctx, png_filename);
+    png = comac_test_create_surface_from_png (ctx, png_filename);
 
-    stride = cairo_format_stride_for_width (format, width) + 12;
+    stride = comac_format_stride_for_width (format, width) + 12;
     data = xcalloc (stride, height);
-    src = cairo_image_surface_create_for_data (data, format,
+    src = comac_image_surface_create_for_data (data, format,
 					       width, height, stride);
 
-    cr_src = cairo_create (src);
-    cairo_set_source_surface (cr_src, png, 0, 0);
-    cairo_paint (cr_src);
-    cairo_destroy (cr_src);
+    cr_src = comac_create (src);
+    comac_set_source_surface (cr_src, png, 0, 0);
+    comac_paint (cr_src);
+    comac_destroy (cr_src);
 
-    cairo_set_source_surface (cr, src, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, src, 0, 0);
+    comac_paint (cr);
 
-    cairo_surface_destroy (png);
+    comac_surface_destroy (png);
 
-    cairo_surface_finish (src);
-    cairo_surface_destroy (src);
+    comac_surface_finish (src);
+    comac_surface_destroy (src);
 
     free (data);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (stride_12_image,
+COMAC_TEST (stride_12_image,
 	    "Test that images with a non-default stride are handled correctly.",
 	    "stride, image", /* keywords */
 	    NULL, /* requirements */

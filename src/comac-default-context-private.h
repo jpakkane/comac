@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,36 +33,36 @@
  *	Carl D. Worth <cworth@redhat.com>
  */
 
-#ifndef CAIRO_DEFAULT_CONTEXT_PRIVATE_H
-#define CAIRO_DEFAULT_CONTEXT_PRIVATE_H
+#ifndef COMAC_DEFAULT_CONTEXT_PRIVATE_H
+#define COMAC_DEFAULT_CONTEXT_PRIVATE_H
 
 #include "comac-private.h"
 #include "comac-gstate-private.h"
 #include "comac-path-fixed-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-typedef struct _cairo_default_context cairo_default_context_t;
+typedef struct _comac_default_context comac_default_context_t;
 
-struct _cairo_default_context {
-    cairo_t base;
+struct _comac_default_context {
+    comac_t base;
 
-    cairo_gstate_t *gstate;
-    cairo_gstate_t  gstate_tail[2];
-    cairo_gstate_t *gstate_freelist;
+    comac_gstate_t *gstate;
+    comac_gstate_t  gstate_tail[2];
+    comac_gstate_t *gstate_freelist;
 
-    cairo_path_fixed_t path[1];
+    comac_path_fixed_t path[1];
 };
 
-cairo_private cairo_t *
-_cairo_default_context_create (void *target);
+comac_private comac_t *
+_comac_default_context_create (void *target);
 
-cairo_private cairo_status_t
-_cairo_default_context_init (cairo_default_context_t *cr, void *target);
+comac_private comac_status_t
+_comac_default_context_init (comac_default_context_t *cr, void *target);
 
-cairo_private void
-_cairo_default_context_fini (cairo_default_context_t *cr);
+comac_private void
+_comac_default_context_fini (comac_default_context_t *cr);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_DEFAULT_CONTEXT_PRIVATE_H */
+#endif /* COMAC_DEFAULT_CONTEXT_PRIVATE_H */

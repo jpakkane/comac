@@ -27,91 +27,91 @@
 
 #include "comac-test.h"
 
-#define N_OPERATORS (CAIRO_OPERATOR_SATURATE + 1)
+#define N_OPERATORS (COMAC_OPERATOR_SATURATE + 1)
 #define HEIGHT 16
 #define WIDTH 16
 #define PAD 3
 
-static cairo_pattern_t*
-_create_pattern (cairo_surface_t *target, cairo_content_t content, int width, int height)
+static comac_pattern_t*
+_create_pattern (comac_surface_t *target, comac_content_t content, int width, int height)
 {
-    cairo_pattern_t *pattern;
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_pattern_t *pattern;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_surface_create_similar (target, content, width, height);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_surface_create_similar (target, content, width, height);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_arc (cr, 0.5 * width, 0.5 * height, 0.45 * height, -M_PI / 4, 3 * M_PI / 4);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_arc (cr, 0.5 * width, 0.5 * height, 0.45 * height, -M_PI / 4, 3 * M_PI / 4);
+    comac_fill (cr);
 
-    pattern = cairo_pattern_create_for_surface (cairo_get_target (cr));
-    cairo_destroy (cr);
+    pattern = comac_pattern_create_for_surface (comac_get_target (cr));
+    comac_destroy (cr);
 
     return pattern;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *alpha_pattern, *color_alpha_pattern, *pattern;
+    comac_pattern_t *alpha_pattern, *color_alpha_pattern, *pattern;
     unsigned int n, i;
 
-    alpha_pattern = _create_pattern (cairo_get_target (cr),
-				     CAIRO_CONTENT_ALPHA,
+    alpha_pattern = _create_pattern (comac_get_target (cr),
+				     COMAC_CONTENT_ALPHA,
 				     0.9 * WIDTH, 0.9 * HEIGHT);
-    color_alpha_pattern = _create_pattern (cairo_get_target (cr),
-					   CAIRO_CONTENT_COLOR_ALPHA,
+    color_alpha_pattern = _create_pattern (comac_get_target (cr),
+					   COMAC_CONTENT_COLOR_ALPHA,
 					   0.9 * WIDTH, 0.9 * HEIGHT);
 
-    pattern = cairo_pattern_create_linear (WIDTH, 0, 0, HEIGHT);
-    cairo_pattern_add_color_stop_rgba (pattern, 0.2, 0, 0, 1, 1);
-    cairo_pattern_add_color_stop_rgba (pattern, 0.8, 0, 0, 1, 0);
+    pattern = comac_pattern_create_linear (WIDTH, 0, 0, HEIGHT);
+    comac_pattern_add_color_stop_rgba (pattern, 0.2, 0, 0, 1, 1);
+    comac_pattern_add_color_stop_rgba (pattern, 0.8, 0, 0, 1, 0);
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     for (n = 0; n < N_OPERATORS; n++) {
-	cairo_save (cr);
+	comac_save (cr);
 	for (i = 0; i < 4; i++) {
-	    cairo_reset_clip (cr);
-	    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-	    cairo_clip (cr);
+	    comac_reset_clip (cr);
+	    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+	    comac_clip (cr);
 
-	    cairo_set_source (cr, pattern);
-	    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+	    comac_set_source (cr, pattern);
+	    comac_set_operator (cr, COMAC_OPERATOR_OVER);
 	    if (i & 2) {
-	        cairo_paint (cr);
+	        comac_paint (cr);
 	    } else {
-	        cairo_rectangle (cr, WIDTH/2, HEIGHT/2, WIDTH, HEIGHT);
-		cairo_fill (cr);
+	        comac_rectangle (cr, WIDTH/2, HEIGHT/2, WIDTH, HEIGHT);
+		comac_fill (cr);
 	    }
 
-	    cairo_set_source (cr, i & 1 ? alpha_pattern : color_alpha_pattern);
-	    cairo_set_operator (cr, n);
+	    comac_set_source (cr, i & 1 ? alpha_pattern : color_alpha_pattern);
+	    comac_set_operator (cr, n);
 	    if (i & 2) {
-	        cairo_paint (cr);
+	        comac_paint (cr);
 	    } else {
-	        cairo_rectangle (cr, WIDTH/2, HEIGHT/2, WIDTH, HEIGHT);
-		cairo_fill (cr);
+	        comac_rectangle (cr, WIDTH/2, HEIGHT/2, WIDTH, HEIGHT);
+		comac_fill (cr);
 	    }
 
-	    cairo_translate (cr, 0, HEIGHT+PAD);
+	    comac_translate (cr, 0, HEIGHT+PAD);
 	}
-	cairo_restore (cr);
+	comac_restore (cr);
 
-	cairo_translate (cr, WIDTH+PAD, 0);
+	comac_translate (cr, WIDTH+PAD, 0);
     }
 
-    cairo_pattern_destroy (pattern);
-    cairo_pattern_destroy (alpha_pattern);
-    cairo_pattern_destroy (color_alpha_pattern);
+    comac_pattern_destroy (pattern);
+    comac_pattern_destroy (alpha_pattern);
+    comac_pattern_destroy (color_alpha_pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (surface_pattern_operator,
+COMAC_TEST (surface_pattern_operator,
 	    "Tests alpha-only and alpha-color sources with all operators",
 	    "surface, pattern, operator", /* keywords */
 	    NULL, /* requirements */

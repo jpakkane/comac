@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -39,11 +39,11 @@
 #include "comac-tristrip-private.h"
 
 void
-_cairo_tristrip_init (cairo_tristrip_t *strip)
+_comac_tristrip_init (comac_tristrip_t *strip)
 {
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (strip, sizeof (cairo_tristrip_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (strip, sizeof (comac_tristrip_t)));
 
-    strip->status = CAIRO_STATUS_SUCCESS;
+    strip->status = COMAC_STATUS_SUCCESS;
 
     strip->num_limits = 0;
     strip->num_points = 0;
@@ -53,18 +53,18 @@ _cairo_tristrip_init (cairo_tristrip_t *strip)
 }
 
 void
-_cairo_tristrip_fini (cairo_tristrip_t *strip)
+_comac_tristrip_fini (comac_tristrip_t *strip)
 {
     if (strip->points != strip->points_embedded)
 	free (strip->points);
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (strip, sizeof (cairo_tristrip_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (strip, sizeof (comac_tristrip_t)));
 }
 
 
 void
-_cairo_tristrip_limit (cairo_tristrip_t	*strip,
-		       const cairo_box_t	*limits,
+_comac_tristrip_limit (comac_tristrip_t	*strip,
+		       const comac_box_t	*limits,
 		       int			 num_limits)
 {
     strip->limits = limits;
@@ -72,37 +72,37 @@ _cairo_tristrip_limit (cairo_tristrip_t	*strip,
 }
 
 void
-_cairo_tristrip_init_with_clip (cairo_tristrip_t *strip,
-				const cairo_clip_t *clip)
+_comac_tristrip_init_with_clip (comac_tristrip_t *strip,
+				const comac_clip_t *clip)
 {
-    _cairo_tristrip_init (strip);
+    _comac_tristrip_init (strip);
     if (clip)
-	_cairo_tristrip_limit (strip, clip->boxes, clip->num_boxes);
+	_comac_tristrip_limit (strip, clip->boxes, clip->num_boxes);
 }
 
 /* make room for at least one more trap */
-static cairo_bool_t
-_cairo_tristrip_grow (cairo_tristrip_t *strip)
+static comac_bool_t
+_comac_tristrip_grow (comac_tristrip_t *strip)
 {
-    cairo_point_t *points;
+    comac_point_t *points;
     int new_size = 4 * strip->size_points;
 
-    if (CAIRO_INJECT_FAULT ()) {
-	strip->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    if (COMAC_INJECT_FAULT ()) {
+	strip->status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	return FALSE;
     }
 
     if (strip->points == strip->points_embedded) {
-	points = _cairo_malloc_ab (new_size, sizeof (cairo_point_t));
+	points = _comac_malloc_ab (new_size, sizeof (comac_point_t));
 	if (points != NULL)
 	    memcpy (points, strip->points, sizeof (strip->points_embedded));
     } else {
-	points = _cairo_realloc_ab (strip->points,
-	                               new_size, sizeof (cairo_trapezoid_t));
+	points = _comac_realloc_ab (strip->points,
+	                               new_size, sizeof (comac_trapezoid_t));
     }
 
     if (unlikely (points == NULL)) {
-	strip->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	strip->status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	return FALSE;
     }
 
@@ -112,11 +112,11 @@ _cairo_tristrip_grow (cairo_tristrip_t *strip)
 }
 
 void
-_cairo_tristrip_add_point (cairo_tristrip_t *strip,
-			   const cairo_point_t *p)
+_comac_tristrip_add_point (comac_tristrip_t *strip,
+			   const comac_point_t *p)
 {
     if (unlikely (strip->num_points == strip->size_points)) {
-	if (unlikely (! _cairo_tristrip_grow (strip)))
+	if (unlikely (! _comac_tristrip_grow (strip)))
 	    return;
     }
 
@@ -126,29 +126,29 @@ _cairo_tristrip_add_point (cairo_tristrip_t *strip,
 /* Insert degenerate triangles to advance to the given point. The
  * next point inserted must also be @p. */
 void
-_cairo_tristrip_move_to (cairo_tristrip_t *strip,
-			 const cairo_point_t *p)
+_comac_tristrip_move_to (comac_tristrip_t *strip,
+			 const comac_point_t *p)
 {
     if (strip->num_points == 0)
 	return;
 
-    _cairo_tristrip_add_point (strip, &strip->points[strip->num_points-1]);
-    _cairo_tristrip_add_point (strip, p);
+    _comac_tristrip_add_point (strip, &strip->points[strip->num_points-1]);
+    _comac_tristrip_add_point (strip, p);
 #if 0
     /* and one more for luck! (to preserve cw/ccw ordering) */
-    _cairo_tristrip_add_point (strip, p);
+    _comac_tristrip_add_point (strip, p);
 #endif
 }
 
 void
-_cairo_tristrip_translate (cairo_tristrip_t *strip, int x, int y)
+_comac_tristrip_translate (comac_tristrip_t *strip, int x, int y)
 {
-    cairo_fixed_t xoff, yoff;
-    cairo_point_t *p;
+    comac_fixed_t xoff, yoff;
+    comac_point_t *p;
     int i;
 
-    xoff = _cairo_fixed_from_int (x);
-    yoff = _cairo_fixed_from_int (y);
+    xoff = _comac_fixed_from_int (x);
+    yoff = _comac_fixed_from_int (y);
 
     for (i = 0, p = strip->points; i < strip->num_points; i++, p++) {
 	p->x += xoff;
@@ -157,8 +157,8 @@ _cairo_tristrip_translate (cairo_tristrip_t *strip, int x, int y)
 }
 
 void
-_cairo_tristrip_extents (const cairo_tristrip_t *strip,
-			 cairo_box_t *extents)
+_comac_tristrip_extents (const comac_tristrip_t *strip,
+			 comac_box_t *extents)
 {
     int i;
 
@@ -170,7 +170,7 @@ _cairo_tristrip_extents (const cairo_tristrip_t *strip,
 
     extents->p2 = extents->p1 = strip->points[0];
     for (i = 1; i < strip->num_points; i++) {
-	const cairo_point_t *p =  &strip->points[i];
+	const comac_point_t *p =  &strip->points[i];
 
 	if (p->x < extents->p1.x)
 	    extents->p1.x = p->x;

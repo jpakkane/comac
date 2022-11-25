@@ -37,39 +37,39 @@
 #include "comac-test.h"
 
 /* Derived from zrusin's "another" polygon in the performance suite. */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
     /* The polygon uses (43,103) as its "base point".  Closed
      * subpaths are simulated by going from the base point to the
      * subpath's first point, doing the subpath, and returning to the
      * base point.  The moving to and from the base point causes
      * degenerate edges which shouldn't result in anything visible. */
-    cairo_move_to (cr, 43, 103);
+    comac_move_to (cr, 43, 103);
 
     /* First subpath. */
-    cairo_line_to (cr, 91, 101);
-    cairo_line_to (cr, 0, 112);
-    cairo_line_to (cr, 60, 0);
-    cairo_line_to (cr, 91, 101);
+    comac_line_to (cr, 91, 101);
+    comac_line_to (cr, 0, 112);
+    comac_line_to (cr, 60, 0);
+    comac_line_to (cr, 91, 101);
 
-    cairo_line_to (cr, 43, 103);
+    comac_line_to (cr, 43, 103);
 
     /* Second subpath. */
-    cairo_line_to (cr, 176, 110);
-    cairo_line_to (cr, 116, 100);
-    cairo_line_to (cr, 176, 0);
-    cairo_line_to (cr, 176, 110);
+    comac_line_to (cr, 176, 110);
+    comac_line_to (cr, 116, 100);
+    comac_line_to (cr, 176, 0);
+    comac_line_to (cr, 176, 110);
 
-    cairo_close_path (cr);
-    cairo_fill (cr);
+    comac_close_path (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_degenerate_sort_order,
+COMAC_TEST (fill_degenerate_sort_order,
 	    "Tests the tessellator's event comparator with degenerate input",
 	    "degenerate, fill", /* keywords */
 	    NULL, /* requirements */

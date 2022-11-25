@@ -25,35 +25,35 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_select_font_face (cr,
-			    "@cairo:",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, 16);
+    comac_select_font_face (cr,
+			    "@comac:",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, 16);
 
-    cairo_move_to (cr, 4, 14);
-    cairo_show_text (cr, "Is cairo's twin giza?");
+    comac_move_to (cr, 4, 14);
+    comac_show_text (cr, "Is comac's twin giza?");
 
-    cairo_move_to (cr, 4, 34);
-    cairo_text_path (cr, "Is cairo's twin giza?");
-    cairo_fill (cr);
+    comac_move_to (cr, 4, 34);
+    comac_text_path (cr, "Is comac's twin giza?");
+    comac_fill (cr);
 
-    cairo_move_to (cr, 4, 54);
-    cairo_text_path (cr, "Is cairo's twin giza?");
-    cairo_set_line_width (cr, 2/16.);
-    cairo_stroke (cr);
+    comac_move_to (cr, 4, 54);
+    comac_text_path (cr, "Is comac's twin giza?");
+    comac_set_line_width (cr, 2/16.);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (twin,
+COMAC_TEST (twin,
 	    "Tests the internal font",
 	    "twin, font", /* keywords */
 	    NULL, /* requirements */

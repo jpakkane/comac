@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,8 +33,8 @@
  *	Carl D. Worth <cworth@redhat.com>
  */
 
-#ifndef CAIRO_PATH_FIXED_PRIVATE_H
-#define CAIRO_PATH_FIXED_PRIVATE_H
+#ifndef COMAC_PATH_FIXED_PRIVATE_H
+#define COMAC_PATH_FIXED_PRIVATE_H
 
 #include "comac-types-private.h"
 #include "comac-compiler-private.h"
@@ -45,51 +45,51 @@
 #include <stdio.h>
 #endif
 
-enum cairo_path_op {
-    CAIRO_PATH_OP_MOVE_TO = 0,
-    CAIRO_PATH_OP_LINE_TO = 1,
-    CAIRO_PATH_OP_CURVE_TO = 2,
-    CAIRO_PATH_OP_CLOSE_PATH = 3
+enum comac_path_op {
+    COMAC_PATH_OP_MOVE_TO = 0,
+    COMAC_PATH_OP_LINE_TO = 1,
+    COMAC_PATH_OP_CURVE_TO = 2,
+    COMAC_PATH_OP_CLOSE_PATH = 3
 };
 
 /* we want to make sure a single byte is used for the enum */
-typedef char cairo_path_op_t;
+typedef char comac_path_op_t;
 
-/* make _cairo_path_fixed fit into ~512 bytes -- about 50 items */
-#define CAIRO_PATH_BUF_SIZE ((512 - sizeof (cairo_path_buf_t)) \
-			   / (2 * sizeof (cairo_point_t) + sizeof (cairo_path_op_t)))
+/* make _comac_path_fixed fit into ~512 bytes -- about 50 items */
+#define COMAC_PATH_BUF_SIZE ((512 - sizeof (comac_path_buf_t)) \
+			   / (2 * sizeof (comac_point_t) + sizeof (comac_path_op_t)))
 
-#define cairo_path_head(path__) (&(path__)->buf.base)
-#define cairo_path_tail(path__) cairo_path_buf_prev (cairo_path_head (path__))
+#define comac_path_head(path__) (&(path__)->buf.base)
+#define comac_path_tail(path__) comac_path_buf_prev (comac_path_head (path__))
 
-#define cairo_path_buf_next(pos__) \
-    cairo_list_entry ((pos__)->link.next, cairo_path_buf_t, link)
-#define cairo_path_buf_prev(pos__) \
-    cairo_list_entry ((pos__)->link.prev, cairo_path_buf_t, link)
+#define comac_path_buf_next(pos__) \
+    comac_list_entry ((pos__)->link.next, comac_path_buf_t, link)
+#define comac_path_buf_prev(pos__) \
+    comac_list_entry ((pos__)->link.prev, comac_path_buf_t, link)
 
-#define cairo_path_foreach_buf_start(pos__, path__) \
-    pos__ = cairo_path_head (path__); do
-#define cairo_path_foreach_buf_end(pos__, path__) \
-    while ((pos__ = cairo_path_buf_next (pos__)) !=  cairo_path_head (path__))
+#define comac_path_foreach_buf_start(pos__, path__) \
+    pos__ = comac_path_head (path__); do
+#define comac_path_foreach_buf_end(pos__, path__) \
+    while ((pos__ = comac_path_buf_next (pos__)) !=  comac_path_head (path__))
 
 
-typedef struct _cairo_path_buf {
-    cairo_list_t link;
+typedef struct _comac_path_buf {
+    comac_list_t link;
     unsigned int num_ops;
     unsigned int size_ops;
     unsigned int num_points;
     unsigned int size_points;
 
-    cairo_path_op_t *op;
-    cairo_point_t *points;
-} cairo_path_buf_t;
+    comac_path_op_t *op;
+    comac_point_t *points;
+} comac_path_buf_t;
 
-typedef struct _cairo_path_buf_fixed {
-    cairo_path_buf_t base;
+typedef struct _comac_path_buf_fixed {
+    comac_path_buf_t base;
 
-    cairo_path_op_t op[CAIRO_PATH_BUF_SIZE];
-    cairo_point_t points[2 * CAIRO_PATH_BUF_SIZE];
-} cairo_path_buf_fixed_t;
+    comac_path_op_t op[COMAC_PATH_BUF_SIZE];
+    comac_point_t points[2 * COMAC_PATH_BUF_SIZE];
+} comac_path_buf_fixed_t;
 
 /*
   NOTES:
@@ -98,9 +98,9 @@ typedef struct _cairo_path_buf_fixed {
   fill_is_empty => fill_is_rectilinear
   fill_maybe_region => fill_is_rectilinear
 */
-struct _cairo_path_fixed {
-    cairo_point_t last_move_point;
-    cairo_point_t current_point;
+struct _comac_path_fixed {
+    comac_point_t last_move_point;
+    comac_point_t current_point;
     unsigned int has_current_point	: 1;
     unsigned int needs_move_to		: 1;
     unsigned int has_extents		: 1;
@@ -110,58 +110,58 @@ struct _cairo_path_fixed {
     unsigned int fill_maybe_region	: 1;
     unsigned int fill_is_empty		: 1;
 
-    cairo_box_t extents;
+    comac_box_t extents;
 
-    cairo_path_buf_fixed_t  buf;
+    comac_path_buf_fixed_t  buf;
 };
 
-cairo_private void
-_cairo_path_fixed_translate (cairo_path_fixed_t *path,
-			     cairo_fixed_t offx,
-			     cairo_fixed_t offy);
+comac_private void
+_comac_path_fixed_translate (comac_path_fixed_t *path,
+			     comac_fixed_t offx,
+			     comac_fixed_t offy);
 
-cairo_private cairo_status_t
-_cairo_path_fixed_append (cairo_path_fixed_t		    *path,
-			  const cairo_path_fixed_t	    *other,
-			  cairo_fixed_t			     tx,
-			  cairo_fixed_t			     ty);
+comac_private comac_status_t
+_comac_path_fixed_append (comac_path_fixed_t		    *path,
+			  const comac_path_fixed_t	    *other,
+			  comac_fixed_t			     tx,
+			  comac_fixed_t			     ty);
 
-cairo_private uintptr_t
-_cairo_path_fixed_hash (const cairo_path_fixed_t *path);
+comac_private uintptr_t
+_comac_path_fixed_hash (const comac_path_fixed_t *path);
 
-cairo_private unsigned long
-_cairo_path_fixed_size (const cairo_path_fixed_t *path);
+comac_private unsigned long
+_comac_path_fixed_size (const comac_path_fixed_t *path);
 
-cairo_private cairo_bool_t
-_cairo_path_fixed_equal (const cairo_path_fixed_t *a,
-			 const cairo_path_fixed_t *b);
+comac_private comac_bool_t
+_comac_path_fixed_equal (const comac_path_fixed_t *a,
+			 const comac_path_fixed_t *b);
 
-typedef struct _cairo_path_fixed_iter {
-    const cairo_path_buf_t *first;
-    const cairo_path_buf_t *buf;
+typedef struct _comac_path_fixed_iter {
+    const comac_path_buf_t *first;
+    const comac_path_buf_t *buf;
     unsigned int n_op;
     unsigned int n_point;
-} cairo_path_fixed_iter_t;
+} comac_path_fixed_iter_t;
 
-cairo_private void
-_cairo_path_fixed_iter_init (cairo_path_fixed_iter_t *iter,
-			     const cairo_path_fixed_t *path);
+comac_private void
+_comac_path_fixed_iter_init (comac_path_fixed_iter_t *iter,
+			     const comac_path_fixed_t *path);
 
-cairo_private cairo_bool_t
-_cairo_path_fixed_iter_is_fill_box (cairo_path_fixed_iter_t *_iter,
-				    cairo_box_t *box);
+comac_private comac_bool_t
+_comac_path_fixed_iter_is_fill_box (comac_path_fixed_iter_t *_iter,
+				    comac_box_t *box);
 
-cairo_private cairo_bool_t
-_cairo_path_fixed_iter_at_end (const cairo_path_fixed_iter_t *iter);
+comac_private comac_bool_t
+_comac_path_fixed_iter_at_end (const comac_path_fixed_iter_t *iter);
 
-static inline cairo_bool_t
-_cairo_path_fixed_fill_is_empty (const cairo_path_fixed_t *path)
+static inline comac_bool_t
+_comac_path_fixed_fill_is_empty (const comac_path_fixed_t *path)
 {
     return path->fill_is_empty;
 }
 
-static inline cairo_bool_t
-_cairo_path_fixed_fill_is_rectilinear (const cairo_path_fixed_t *path)
+static inline comac_bool_t
+_comac_path_fixed_fill_is_rectilinear (const comac_path_fixed_t *path)
 {
     if (! path->fill_is_rectilinear)
 	return 0;
@@ -174,14 +174,14 @@ _cairo_path_fixed_fill_is_rectilinear (const cairo_path_fixed_t *path)
 	   path->current_point.y == path->last_move_point.y;
 }
 
-static inline cairo_bool_t
-_cairo_path_fixed_stroke_is_rectilinear (const cairo_path_fixed_t *path)
+static inline comac_bool_t
+_comac_path_fixed_stroke_is_rectilinear (const comac_path_fixed_t *path)
 {
     return path->stroke_is_rectilinear;
 }
 
-static inline cairo_bool_t
-_cairo_path_fixed_fill_maybe_region (const cairo_path_fixed_t *path)
+static inline comac_bool_t
+_comac_path_fixed_fill_maybe_region (const comac_path_fixed_t *path)
 {
     if (! path->fill_maybe_region)
 	return 0;
@@ -196,11 +196,11 @@ _cairo_path_fixed_fill_maybe_region (const cairo_path_fixed_t *path)
 	   path->current_point.y == path->last_move_point.y;
 }
 
-cairo_private cairo_bool_t
-_cairo_path_fixed_is_stroke_box (const cairo_path_fixed_t *path,
-				 cairo_box_t *box);
+comac_private comac_bool_t
+_comac_path_fixed_is_stroke_box (const comac_path_fixed_t *path,
+				 comac_box_t *box);
 
-cairo_private cairo_bool_t
-_cairo_path_fixed_is_simple_quad (const cairo_path_fixed_t *path);
+comac_private comac_bool_t
+_comac_path_fixed_is_simple_quad (const comac_path_fixed_t *path);
 
-#endif /* CAIRO_PATH_FIXED_PRIVATE_H */
+#endif /* COMAC_PATH_FIXED_PRIVATE_H */

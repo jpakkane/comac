@@ -28,68 +28,68 @@
 #include <math.h>
 
 static void
-add_rectangle (cairo_t *cr, double size)
+add_rectangle (comac_t *cr, double size)
 {
     double x, y;
 
     if (size < 1)
 	return;
 
-    cairo_get_current_point (cr, &x, &y);
+    comac_get_current_point (cr, &x, &y);
 
-    cairo_rel_move_to (cr, -size/2., -size/2.);
-    cairo_rel_line_to (cr, size, 0);
-    cairo_rel_line_to (cr, 0, size);
-    cairo_rel_line_to (cr, -size, 0);
-    cairo_close_path (cr);
+    comac_rel_move_to (cr, -size/2., -size/2.);
+    comac_rel_line_to (cr, size, 0);
+    comac_rel_line_to (cr, 0, size);
+    comac_rel_line_to (cr, -size, 0);
+    comac_close_path (cr);
 
-    cairo_save (cr);
-    cairo_translate (cr, -size/2., size);
-    cairo_move_to (cr, x, y);
-    cairo_rotate (cr, M_PI/4);
+    comac_save (cr);
+    comac_translate (cr, -size/2., size);
+    comac_move_to (cr, x, y);
+    comac_rotate (cr, M_PI/4);
     add_rectangle (cr, size / M_SQRT2);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_save (cr);
-    cairo_translate (cr, size/2., size);
-    cairo_move_to (cr, x, y);
-    cairo_rotate (cr, -M_PI/4);
+    comac_save (cr);
+    comac_translate (cr, size/2., size);
+    comac_move_to (cr, x, y);
+    comac_rotate (cr, -M_PI/4);
     add_rectangle (cr, size / M_SQRT2);
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-static cairo_time_t
-do_pythagoras_tree (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_pythagoras_tree (comac_t *cr, int width, int height, int loops)
 {
     double size = 128;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	cairo_save (cr);
-	cairo_translate (cr, 0, height);
-	cairo_scale (cr, 1, -1);
+	comac_save (cr);
+	comac_translate (cr, 0, height);
+	comac_scale (cr, 1, -1);
 
-	cairo_move_to (cr, width/2, size/2);
+	comac_move_to (cr, width/2, size/2);
 	add_rectangle (cr, size);
-	cairo_set_source_rgb (cr, 0., 0., 0.);
-	cairo_fill (cr);
-	cairo_restore (cr);
+	comac_set_source_rgb (cr, 0., 0., 0.);
+	comac_fill (cr);
+	comac_restore (cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-pythagoras_tree_enabled (cairo_perf_t *perf)
+comac_bool_t
+pythagoras_tree_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "pythagoras-tree", NULL);
+    return comac_perf_can_run (perf, "pythagoras-tree", NULL);
 }
 
 void
-pythagoras_tree (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+pythagoras_tree (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "pythagoras-tree", do_pythagoras_tree, NULL);
+    comac_perf_run (perf, "pythagoras-tree", do_pythagoras_tree, NULL);
 }

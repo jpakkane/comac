@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2004 David Reveman
  * Copyright © 2005 Red Hat, Inc.
@@ -45,36 +45,36 @@
 #define PIXMAN_MAX_INT ((pixman_fixed_1 >> 1) - pixman_fixed_e) /* need to ensure deltas also fit */
 
 /**
- * SECTION:cairo-pattern
- * @Title: cairo_pattern_t
+ * SECTION:comac-pattern
+ * @Title: comac_pattern_t
  * @Short_Description: Sources for drawing
- * @See_Also: #cairo_t, #cairo_surface_t
+ * @See_Also: #comac_t, #comac_surface_t
  *
- * #cairo_pattern_t is the paint with which cairo draws.
- * The primary use of patterns is as the source for all cairo drawing
+ * #comac_pattern_t is the paint with which comac draws.
+ * The primary use of patterns is as the source for all comac drawing
  * operations, although they can also be used as masks, that is, as the
  * brush too.
  *
- * A cairo pattern is created by using one of the many constructors,
+ * A comac pattern is created by using one of the many constructors,
  * of the form
- * <function>cairo_pattern_create_<emphasis>type</emphasis>()</function>
+ * <function>comac_pattern_create_<emphasis>type</emphasis>()</function>
  * or implicitly through
- * <function>cairo_set_source_<emphasis>type</emphasis>()</function>
+ * <function>comac_set_source_<emphasis>type</emphasis>()</function>
  * functions.
  **/
 
 static freed_pool_t freed_pattern_pool[5];
 
-static const cairo_solid_pattern_t _cairo_pattern_nil = {
+static const comac_solid_pattern_t _comac_pattern_nil = {
     {
-      CAIRO_REFERENCE_COUNT_INVALID,	/* ref_count */
-      CAIRO_STATUS_NO_MEMORY,		/* status */
+      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
+      COMAC_STATUS_NO_MEMORY,		/* status */
       { 0, 0, 0, NULL },		/* user_data */
       { NULL, NULL },			/* observers */
 
-      CAIRO_PATTERN_TYPE_SOLID,		/* type */
-      CAIRO_FILTER_DEFAULT,		/* filter */
-      CAIRO_EXTEND_GRADIENT_DEFAULT,	/* extend */
+      COMAC_PATTERN_TYPE_SOLID,		/* type */
+      COMAC_FILTER_DEFAULT,		/* filter */
+      COMAC_EXTEND_GRADIENT_DEFAULT,	/* extend */
       FALSE,				/* has component alpha */
       FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
@@ -82,16 +82,16 @@ static const cairo_solid_pattern_t _cairo_pattern_nil = {
     }
 };
 
-static const cairo_solid_pattern_t _cairo_pattern_nil_null_pointer = {
+static const comac_solid_pattern_t _comac_pattern_nil_null_pointer = {
     {
-      CAIRO_REFERENCE_COUNT_INVALID,	/* ref_count */
-      CAIRO_STATUS_NULL_POINTER,	/* status */
+      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
+      COMAC_STATUS_NULL_POINTER,	/* status */
       { 0, 0, 0, NULL },		/* user_data */
       { NULL, NULL },			/* observers */
 
-      CAIRO_PATTERN_TYPE_SOLID,		/* type */
-      CAIRO_FILTER_DEFAULT,		/* filter */
-      CAIRO_EXTEND_GRADIENT_DEFAULT,	/* extend */
+      COMAC_PATTERN_TYPE_SOLID,		/* type */
+      COMAC_FILTER_DEFAULT,		/* filter */
+      COMAC_EXTEND_GRADIENT_DEFAULT,	/* extend */
       FALSE,				/* has component alpha */
       FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
@@ -99,16 +99,16 @@ static const cairo_solid_pattern_t _cairo_pattern_nil_null_pointer = {
     }
 };
 
-const cairo_solid_pattern_t _cairo_pattern_black = {
+const comac_solid_pattern_t _comac_pattern_black = {
     {
-      CAIRO_REFERENCE_COUNT_INVALID,	/* ref_count */
-      CAIRO_STATUS_SUCCESS,		/* status */
+      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
+      COMAC_STATUS_SUCCESS,		/* status */
       { 0, 0, 0, NULL },		/* user_data */
       { NULL, NULL },			/* observers */
 
-      CAIRO_PATTERN_TYPE_SOLID,		/* type */
-      CAIRO_FILTER_NEAREST,		/* filter */
-      CAIRO_EXTEND_REPEAT,		/* extend */
+      COMAC_PATTERN_TYPE_SOLID,		/* type */
+      COMAC_FILTER_NEAREST,		/* filter */
+      COMAC_EXTEND_REPEAT,		/* extend */
       FALSE,				/* has component alpha */
       FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
@@ -117,16 +117,16 @@ const cairo_solid_pattern_t _cairo_pattern_black = {
     { 0., 0., 0., 1., 0, 0, 0, 0xffff },/* color (double rgba, short rgba) */
 };
 
-const cairo_solid_pattern_t _cairo_pattern_clear = {
+const comac_solid_pattern_t _comac_pattern_clear = {
     {
-      CAIRO_REFERENCE_COUNT_INVALID,	/* ref_count */
-      CAIRO_STATUS_SUCCESS,		/* status */
+      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
+      COMAC_STATUS_SUCCESS,		/* status */
       { 0, 0, 0, NULL },		/* user_data */
       { NULL, NULL },			/* observers */
 
-      CAIRO_PATTERN_TYPE_SOLID,		/* type */
-      CAIRO_FILTER_NEAREST,		/* filter */
-      CAIRO_EXTEND_REPEAT,		/* extend */
+      COMAC_PATTERN_TYPE_SOLID,		/* type */
+      COMAC_FILTER_NEAREST,		/* filter */
+      COMAC_EXTEND_REPEAT,		/* extend */
       FALSE,				/* has component alpha */
       FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
@@ -135,16 +135,16 @@ const cairo_solid_pattern_t _cairo_pattern_clear = {
     { 0., 0., 0., 0., 0, 0, 0, 0 },/* color (double rgba, short rgba) */
 };
 
-const cairo_solid_pattern_t _cairo_pattern_white = {
+const comac_solid_pattern_t _comac_pattern_white = {
     {
-      CAIRO_REFERENCE_COUNT_INVALID,	/* ref_count */
-      CAIRO_STATUS_SUCCESS,		/* status */
+      COMAC_REFERENCE_COUNT_INVALID,	/* ref_count */
+      COMAC_STATUS_SUCCESS,		/* status */
       { 0, 0, 0, NULL },		/* user_data */
       { NULL, NULL },			/* observers */
 
-      CAIRO_PATTERN_TYPE_SOLID,		/* type */
-      CAIRO_FILTER_NEAREST,		/* filter */
-      CAIRO_EXTEND_REPEAT,		/* extend */
+      COMAC_PATTERN_TYPE_SOLID,		/* type */
+      COMAC_FILTER_NEAREST,		/* filter */
+      COMAC_EXTEND_REPEAT,		/* extend */
       FALSE,				/* has component alpha */
       FALSE,				/* is_userfont_foreground */
       { 1., 0., 0., 1., 0., 0., },	/* matrix */
@@ -154,115 +154,115 @@ const cairo_solid_pattern_t _cairo_pattern_white = {
 };
 
 static void
-_cairo_pattern_notify_observers (cairo_pattern_t *pattern,
+_comac_pattern_notify_observers (comac_pattern_t *pattern,
 				 unsigned int flags)
 {
-    cairo_pattern_observer_t *pos;
+    comac_pattern_observer_t *pos;
 
-    cairo_list_foreach_entry (pos, cairo_pattern_observer_t, &pattern->observers, link)
+    comac_list_foreach_entry (pos, comac_pattern_observer_t, &pattern->observers, link)
 	pos->notify (pos, pattern, flags);
 }
 
 /**
- * _cairo_pattern_set_error:
+ * _comac_pattern_set_error:
  * @pattern: a pattern
  * @status: a status value indicating an error
  *
- * Atomically sets pattern->status to @status and calls _cairo_error;
- * Does nothing if status is %CAIRO_STATUS_SUCCESS.
+ * Atomically sets pattern->status to @status and calls _comac_error;
+ * Does nothing if status is %COMAC_STATUS_SUCCESS.
  *
  * All assignments of an error status to pattern->status should happen
- * through _cairo_pattern_set_error(). Note that due to the nature of
+ * through _comac_pattern_set_error(). Note that due to the nature of
  * the atomic operation, it is not safe to call this function on the nil
  * objects.
  *
  * The purpose of this function is to allow the user to set a
- * breakpoint in _cairo_error() to generate a stack trace for when the
- * user causes cairo to detect an error.
+ * breakpoint in _comac_error() to generate a stack trace for when the
+ * user causes comac to detect an error.
  **/
-static cairo_status_t
-_cairo_pattern_set_error (cairo_pattern_t *pattern,
-			  cairo_status_t status)
+static comac_status_t
+_comac_pattern_set_error (comac_pattern_t *pattern,
+			  comac_status_t status)
 {
-    if (status == CAIRO_STATUS_SUCCESS)
+    if (status == COMAC_STATUS_SUCCESS)
 	return status;
 
     /* Don't overwrite an existing error. This preserves the first
      * error, which is the most significant. */
-    _cairo_status_set_error (&pattern->status, status);
+    _comac_status_set_error (&pattern->status, status);
 
-    return _cairo_error (status);
+    return _comac_error (status);
 }
 
 void
-_cairo_pattern_init (cairo_pattern_t *pattern, cairo_pattern_type_t type)
+_comac_pattern_init (comac_pattern_t *pattern, comac_pattern_type_t type)
 {
 #if HAVE_VALGRIND
     switch (type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_solid_pattern_t));
+    case COMAC_PATTERN_TYPE_SOLID:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_solid_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_surface_pattern_t));
+    case COMAC_PATTERN_TYPE_SURFACE:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_surface_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_linear_pattern_t));
+    case COMAC_PATTERN_TYPE_LINEAR:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_linear_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_radial_pattern_t));
+    case COMAC_PATTERN_TYPE_RADIAL:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_radial_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_MESH:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_mesh_pattern_t));
+    case COMAC_PATTERN_TYPE_MESH:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_mesh_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
 	break;
     }
 #endif
 
     pattern->type      = type;
-    pattern->status    = CAIRO_STATUS_SUCCESS;
+    pattern->status    = COMAC_STATUS_SUCCESS;
 
     /* Set the reference count to zero for on-stack patterns.
      * Callers needs to explicitly increment the count for heap allocations. */
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->ref_count, 0);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->ref_count, 0);
 
-    _cairo_user_data_array_init (&pattern->user_data);
+    _comac_user_data_array_init (&pattern->user_data);
 
-    if (type == CAIRO_PATTERN_TYPE_SURFACE ||
-	type == CAIRO_PATTERN_TYPE_RASTER_SOURCE)
-	pattern->extend = CAIRO_EXTEND_SURFACE_DEFAULT;
+    if (type == COMAC_PATTERN_TYPE_SURFACE ||
+	type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
+	pattern->extend = COMAC_EXTEND_SURFACE_DEFAULT;
     else
-	pattern->extend = CAIRO_EXTEND_GRADIENT_DEFAULT;
+	pattern->extend = COMAC_EXTEND_GRADIENT_DEFAULT;
 
-    pattern->filter    = CAIRO_FILTER_DEFAULT;
+    pattern->filter    = COMAC_FILTER_DEFAULT;
     pattern->opacity   = 1.0;
 
     pattern->has_component_alpha = FALSE;
     pattern->is_userfont_foreground = FALSE;
 
-    cairo_matrix_init_identity (&pattern->matrix);
+    comac_matrix_init_identity (&pattern->matrix);
 
-    cairo_list_init (&pattern->observers);
+    comac_list_init (&pattern->observers);
 }
 
-static cairo_status_t
-_cairo_gradient_pattern_init_copy (cairo_gradient_pattern_t	  *pattern,
-				   const cairo_gradient_pattern_t *other)
+static comac_status_t
+_comac_gradient_pattern_init_copy (comac_gradient_pattern_t	  *pattern,
+				   const comac_gradient_pattern_t *other)
 {
-    if (CAIRO_INJECT_FAULT ())
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    if (COMAC_INJECT_FAULT ())
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    if (other->base.type == CAIRO_PATTERN_TYPE_LINEAR)
+    if (other->base.type == COMAC_PATTERN_TYPE_LINEAR)
     {
-	cairo_linear_pattern_t *dst = (cairo_linear_pattern_t *) pattern;
-	cairo_linear_pattern_t *src = (cairo_linear_pattern_t *) other;
+	comac_linear_pattern_t *dst = (comac_linear_pattern_t *) pattern;
+	comac_linear_pattern_t *src = (comac_linear_pattern_t *) other;
 
 	*dst = *src;
     }
     else
     {
-	cairo_radial_pattern_t *dst = (cairo_radial_pattern_t *) pattern;
-	cairo_radial_pattern_t *src = (cairo_radial_pattern_t *) other;
+	comac_radial_pattern_t *dst = (comac_radial_pattern_t *) pattern;
+	comac_radial_pattern_t *src = (comac_radial_pattern_t *) other;
 
 	*dst = *src;
     }
@@ -271,303 +271,303 @@ _cairo_gradient_pattern_init_copy (cairo_gradient_pattern_t	  *pattern,
 	pattern->stops = pattern->stops_embedded;
     else if (other->stops)
     {
-	pattern->stops = _cairo_malloc_ab (other->stops_size,
-					   sizeof (cairo_gradient_stop_t));
+	pattern->stops = _comac_malloc_ab (other->stops_size,
+					   sizeof (comac_gradient_stop_t));
 	if (unlikely (pattern->stops == NULL)) {
 	    pattern->stops_size = 0;
 	    pattern->n_stops = 0;
-	    return _cairo_pattern_set_error (&pattern->base, CAIRO_STATUS_NO_MEMORY);
+	    return _comac_pattern_set_error (&pattern->base, COMAC_STATUS_NO_MEMORY);
 	}
 
 	memcpy (pattern->stops, other->stops,
-		other->n_stops * sizeof (cairo_gradient_stop_t));
+		other->n_stops * sizeof (comac_gradient_stop_t));
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_mesh_pattern_init_copy (cairo_mesh_pattern_t       *pattern,
-			       const cairo_mesh_pattern_t *other)
+static comac_status_t
+_comac_mesh_pattern_init_copy (comac_mesh_pattern_t       *pattern,
+			       const comac_mesh_pattern_t *other)
 {
     *pattern = *other;
 
-    _cairo_array_init (&pattern->patches,  sizeof (cairo_mesh_patch_t));
-    return _cairo_array_append_multiple (&pattern->patches,
-					 _cairo_array_index_const (&other->patches, 0),
-					 _cairo_array_num_elements (&other->patches));
+    _comac_array_init (&pattern->patches,  sizeof (comac_mesh_patch_t));
+    return _comac_array_append_multiple (&pattern->patches,
+					 _comac_array_index_const (&other->patches, 0),
+					 _comac_array_num_elements (&other->patches));
 }
 
-cairo_status_t
-_cairo_pattern_init_copy (cairo_pattern_t	*pattern,
-			  const cairo_pattern_t *other)
+comac_status_t
+_comac_pattern_init_copy (comac_pattern_t	*pattern,
+			  const comac_pattern_t *other)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     if (other->status)
-	return _cairo_pattern_set_error (pattern, other->status);
+	return _comac_pattern_set_error (pattern, other->status);
 
     switch (other->type) {
-    case CAIRO_PATTERN_TYPE_SOLID: {
-	cairo_solid_pattern_t *dst = (cairo_solid_pattern_t *) pattern;
-	cairo_solid_pattern_t *src = (cairo_solid_pattern_t *) other;
+    case COMAC_PATTERN_TYPE_SOLID: {
+	comac_solid_pattern_t *dst = (comac_solid_pattern_t *) pattern;
+	comac_solid_pattern_t *src = (comac_solid_pattern_t *) other;
 
-	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_solid_pattern_t)));
+	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_solid_pattern_t)));
 
 	*dst = *src;
     } break;
-    case CAIRO_PATTERN_TYPE_SURFACE: {
-	cairo_surface_pattern_t *dst = (cairo_surface_pattern_t *) pattern;
-	cairo_surface_pattern_t *src = (cairo_surface_pattern_t *) other;
+    case COMAC_PATTERN_TYPE_SURFACE: {
+	comac_surface_pattern_t *dst = (comac_surface_pattern_t *) pattern;
+	comac_surface_pattern_t *src = (comac_surface_pattern_t *) other;
 
-	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_surface_pattern_t)));
+	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_surface_pattern_t)));
 
 	*dst = *src;
-	cairo_surface_reference (dst->surface);
+	comac_surface_reference (dst->surface);
     } break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-    case CAIRO_PATTERN_TYPE_RADIAL: {
-	cairo_gradient_pattern_t *dst = (cairo_gradient_pattern_t *) pattern;
-	cairo_gradient_pattern_t *src = (cairo_gradient_pattern_t *) other;
+    case COMAC_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_RADIAL: {
+	comac_gradient_pattern_t *dst = (comac_gradient_pattern_t *) pattern;
+	comac_gradient_pattern_t *src = (comac_gradient_pattern_t *) other;
 
-	if (other->type == CAIRO_PATTERN_TYPE_LINEAR) {
-	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_linear_pattern_t)));
+	if (other->type == COMAC_PATTERN_TYPE_LINEAR) {
+	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_linear_pattern_t)));
 	} else {
-	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_radial_pattern_t)));
+	    VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_radial_pattern_t)));
 	}
 
-	status = _cairo_gradient_pattern_init_copy (dst, src);
+	status = _comac_gradient_pattern_init_copy (dst, src);
 	if (unlikely (status))
 	    return status;
 
     } break;
-    case CAIRO_PATTERN_TYPE_MESH: {
-	cairo_mesh_pattern_t *dst = (cairo_mesh_pattern_t *) pattern;
-	cairo_mesh_pattern_t *src = (cairo_mesh_pattern_t *) other;
+    case COMAC_PATTERN_TYPE_MESH: {
+	comac_mesh_pattern_t *dst = (comac_mesh_pattern_t *) pattern;
+	comac_mesh_pattern_t *src = (comac_mesh_pattern_t *) other;
 
-	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_mesh_pattern_t)));
+	VG (VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_mesh_pattern_t)));
 
-	status = _cairo_mesh_pattern_init_copy (dst, src);
+	status = _comac_mesh_pattern_init_copy (dst, src);
 	if (unlikely (status))
 	    return status;
 
     } break;
 
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE: {
-	status = _cairo_raster_source_pattern_init_copy (pattern, other);
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE: {
+	status = _comac_raster_source_pattern_init_copy (pattern, other);
 	if (unlikely (status))
 	    return status;
     } break;
     }
 
     /* The reference count and user_data array are unique to the copy. */
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->ref_count, 0);
-    _cairo_user_data_array_init (&pattern->user_data);
-    cairo_list_init (&pattern->observers);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->ref_count, 0);
+    _comac_user_data_array_init (&pattern->user_data);
+    comac_list_init (&pattern->observers);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void
-_cairo_pattern_init_static_copy (cairo_pattern_t	*pattern,
-				 const cairo_pattern_t *other)
+_comac_pattern_init_static_copy (comac_pattern_t	*pattern,
+				 const comac_pattern_t *other)
 {
     int size;
 
-    assert (other->status == CAIRO_STATUS_SUCCESS);
+    assert (other->status == COMAC_STATUS_SUCCESS);
 
     switch (other->type) {
     default:
 	ASSERT_NOT_REACHED;
-    case CAIRO_PATTERN_TYPE_SOLID:
-	size = sizeof (cairo_solid_pattern_t);
+    case COMAC_PATTERN_TYPE_SOLID:
+	size = sizeof (comac_solid_pattern_t);
 	break;
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	size = sizeof (cairo_surface_pattern_t);
+    case COMAC_PATTERN_TYPE_SURFACE:
+	size = sizeof (comac_surface_pattern_t);
 	break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	size = sizeof (cairo_linear_pattern_t);
+    case COMAC_PATTERN_TYPE_LINEAR:
+	size = sizeof (comac_linear_pattern_t);
 	break;
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	size = sizeof (cairo_radial_pattern_t);
+    case COMAC_PATTERN_TYPE_RADIAL:
+	size = sizeof (comac_radial_pattern_t);
 	break;
-    case CAIRO_PATTERN_TYPE_MESH:
-	size = sizeof (cairo_mesh_pattern_t);
+    case COMAC_PATTERN_TYPE_MESH:
+	size = sizeof (comac_mesh_pattern_t);
 	break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-	size = sizeof (cairo_raster_source_pattern_t);
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+	size = sizeof (comac_raster_source_pattern_t);
 	break;
     }
 
     memcpy (pattern, other, size);
 
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->ref_count, 0);
-    _cairo_user_data_array_init (&pattern->user_data);
-    cairo_list_init (&pattern->observers);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->ref_count, 0);
+    _comac_user_data_array_init (&pattern->user_data);
+    comac_list_init (&pattern->observers);
 }
 
-cairo_status_t
-_cairo_pattern_init_snapshot (cairo_pattern_t       *pattern,
-			      const cairo_pattern_t *other)
+comac_status_t
+_comac_pattern_init_snapshot (comac_pattern_t       *pattern,
+			      const comac_pattern_t *other)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     /* We don't bother doing any fancy copy-on-write implementation
      * for the pattern's data. It's generally quite tiny. */
-    status = _cairo_pattern_init_copy (pattern, other);
+    status = _comac_pattern_init_copy (pattern, other);
     if (unlikely (status))
 	return status;
 
     /* But we do let the surface snapshot stuff be as fancy as it
      * would like to be. */
-    if (pattern->type == CAIRO_PATTERN_TYPE_SURFACE) {
-	cairo_surface_pattern_t *surface_pattern =
-	    (cairo_surface_pattern_t *) pattern;
-	cairo_surface_t *surface = surface_pattern->surface;
+    if (pattern->type == COMAC_PATTERN_TYPE_SURFACE) {
+	comac_surface_pattern_t *surface_pattern =
+	    (comac_surface_pattern_t *) pattern;
+	comac_surface_t *surface = surface_pattern->surface;
 
-	surface_pattern->surface = _cairo_surface_snapshot (surface);
+	surface_pattern->surface = _comac_surface_snapshot (surface);
 
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
 	status = surface_pattern->surface->status;
-    } else if (pattern->type == CAIRO_PATTERN_TYPE_RASTER_SOURCE)
-	status = _cairo_raster_source_pattern_snapshot (pattern);
+    } else if (pattern->type == COMAC_PATTERN_TYPE_RASTER_SOURCE)
+	status = _comac_raster_source_pattern_snapshot (pattern);
 
     return status;
 }
 
 void
-_cairo_pattern_fini (cairo_pattern_t *pattern)
+_comac_pattern_fini (comac_pattern_t *pattern)
 {
-    _cairo_user_data_array_fini (&pattern->user_data);
+    _comac_user_data_array_fini (&pattern->user_data);
 
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
+    case COMAC_PATTERN_TYPE_SOLID:
 	break;
-    case CAIRO_PATTERN_TYPE_SURFACE: {
-	cairo_surface_pattern_t *surface_pattern =
-	    (cairo_surface_pattern_t *) pattern;
+    case COMAC_PATTERN_TYPE_SURFACE: {
+	comac_surface_pattern_t *surface_pattern =
+	    (comac_surface_pattern_t *) pattern;
 
-	cairo_surface_destroy (surface_pattern->surface);
+	comac_surface_destroy (surface_pattern->surface);
     } break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-    case CAIRO_PATTERN_TYPE_RADIAL: {
-	cairo_gradient_pattern_t *gradient =
-	    (cairo_gradient_pattern_t *) pattern;
+    case COMAC_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_RADIAL: {
+	comac_gradient_pattern_t *gradient =
+	    (comac_gradient_pattern_t *) pattern;
 
 	if (gradient->stops && gradient->stops != gradient->stops_embedded)
 	    free (gradient->stops);
     } break;
-    case CAIRO_PATTERN_TYPE_MESH: {
-	cairo_mesh_pattern_t *mesh =
-	    (cairo_mesh_pattern_t *) pattern;
+    case COMAC_PATTERN_TYPE_MESH: {
+	comac_mesh_pattern_t *mesh =
+	    (comac_mesh_pattern_t *) pattern;
 
-	_cairo_array_fini (&mesh->patches);
+	_comac_array_fini (&mesh->patches);
     } break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-	_cairo_raster_source_pattern_finish (pattern);
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+	_comac_raster_source_pattern_finish (pattern);
 	break;
     }
 
 #if HAVE_VALGRIND
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_solid_pattern_t));
+    case COMAC_PATTERN_TYPE_SOLID:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_solid_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_surface_pattern_t));
+    case COMAC_PATTERN_TYPE_SURFACE:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_surface_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_linear_pattern_t));
+    case COMAC_PATTERN_TYPE_LINEAR:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_linear_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_radial_pattern_t));
+    case COMAC_PATTERN_TYPE_RADIAL:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_radial_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_MESH:
-	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (cairo_mesh_pattern_t));
+    case COMAC_PATTERN_TYPE_MESH:
+	VALGRIND_MAKE_MEM_UNDEFINED (pattern, sizeof (comac_mesh_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
 	break;
     }
 #endif
 }
 
-cairo_status_t
-_cairo_pattern_create_copy (cairo_pattern_t	  **pattern_out,
-			    const cairo_pattern_t  *other)
+comac_status_t
+_comac_pattern_create_copy (comac_pattern_t	  **pattern_out,
+			    const comac_pattern_t  *other)
 {
-    cairo_pattern_t *pattern;
-    cairo_status_t status;
+    comac_pattern_t *pattern;
+    comac_status_t status;
 
     if (other->status)
 	return other->status;
 
     switch (other->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	pattern = _cairo_malloc (sizeof (cairo_solid_pattern_t));
+    case COMAC_PATTERN_TYPE_SOLID:
+	pattern = _comac_malloc (sizeof (comac_solid_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	pattern = _cairo_malloc (sizeof (cairo_surface_pattern_t));
+    case COMAC_PATTERN_TYPE_SURFACE:
+	pattern = _comac_malloc (sizeof (comac_surface_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	pattern = _cairo_malloc (sizeof (cairo_linear_pattern_t));
+    case COMAC_PATTERN_TYPE_LINEAR:
+	pattern = _comac_malloc (sizeof (comac_linear_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	pattern = _cairo_malloc (sizeof (cairo_radial_pattern_t));
+    case COMAC_PATTERN_TYPE_RADIAL:
+	pattern = _comac_malloc (sizeof (comac_radial_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_MESH:
-	pattern = _cairo_malloc (sizeof (cairo_mesh_pattern_t));
+    case COMAC_PATTERN_TYPE_MESH:
+	pattern = _comac_malloc (sizeof (comac_mesh_pattern_t));
 	break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-	pattern = _cairo_malloc (sizeof (cairo_raster_source_pattern_t));
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+	pattern = _comac_malloc (sizeof (comac_raster_source_pattern_t));
 	break;
     default:
 	ASSERT_NOT_REACHED;
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
     }
     if (unlikely (pattern == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = _cairo_pattern_init_copy (pattern, other);
+    status = _comac_pattern_init_copy (pattern, other);
     if (unlikely (status)) {
 	free (pattern);
 	return status;
     }
 
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->ref_count, 1);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->ref_count, 1);
     *pattern_out = pattern;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void
-_cairo_pattern_init_solid (cairo_solid_pattern_t *pattern,
-			   const cairo_color_t	 *color)
+_comac_pattern_init_solid (comac_solid_pattern_t *pattern,
+			   const comac_color_t	 *color)
 {
-    _cairo_pattern_init (&pattern->base, CAIRO_PATTERN_TYPE_SOLID);
+    _comac_pattern_init (&pattern->base, COMAC_PATTERN_TYPE_SOLID);
     pattern->color = *color;
 }
 
 void
-_cairo_pattern_init_for_surface (cairo_surface_pattern_t *pattern,
-				 cairo_surface_t	 *surface)
+_comac_pattern_init_for_surface (comac_surface_pattern_t *pattern,
+				 comac_surface_t	 *surface)
 {
     if (surface->status) {
 	/* Force to solid to simplify the pattern_fini process. */
-	_cairo_pattern_init (&pattern->base, CAIRO_PATTERN_TYPE_SOLID);
-	_cairo_pattern_set_error (&pattern->base, surface->status);
+	_comac_pattern_init (&pattern->base, COMAC_PATTERN_TYPE_SOLID);
+	_comac_pattern_set_error (&pattern->base, surface->status);
 	return;
     }
 
-    _cairo_pattern_init (&pattern->base, CAIRO_PATTERN_TYPE_SURFACE);
+    _comac_pattern_init (&pattern->base, COMAC_PATTERN_TYPE_SURFACE);
 
-    pattern->surface = cairo_surface_reference (surface);
+    pattern->surface = comac_surface_reference (surface);
 }
 
 static void
-_cairo_pattern_init_gradient (cairo_gradient_pattern_t *pattern,
-			      cairo_pattern_type_t     type)
+_comac_pattern_init_gradient (comac_gradient_pattern_t *pattern,
+			      comac_pattern_type_t     type)
 {
-    _cairo_pattern_init (&pattern->base, type);
+    _comac_pattern_init (&pattern->base, type);
 
     pattern->n_stops    = 0;
     pattern->stops_size = 0;
@@ -575,10 +575,10 @@ _cairo_pattern_init_gradient (cairo_gradient_pattern_t *pattern,
 }
 
 static void
-_cairo_pattern_init_linear (cairo_linear_pattern_t *pattern,
+_comac_pattern_init_linear (comac_linear_pattern_t *pattern,
 			    double x0, double y0, double x1, double y1)
 {
-    _cairo_pattern_init_gradient (&pattern->base, CAIRO_PATTERN_TYPE_LINEAR);
+    _comac_pattern_init_gradient (&pattern->base, COMAC_PATTERN_TYPE_LINEAR);
 
     pattern->pd1.x = x0;
     pattern->pd1.y = y0;
@@ -587,11 +587,11 @@ _cairo_pattern_init_linear (cairo_linear_pattern_t *pattern,
 }
 
 static void
-_cairo_pattern_init_radial (cairo_radial_pattern_t *pattern,
+_comac_pattern_init_radial (comac_radial_pattern_t *pattern,
 			    double cx0, double cy0, double radius0,
 			    double cx1, double cy1, double radius1)
 {
-    _cairo_pattern_init_gradient (&pattern->base, CAIRO_PATTERN_TYPE_RADIAL);
+    _comac_pattern_init_gradient (&pattern->base, COMAC_PATTERN_TYPE_RADIAL);
 
     pattern->cd1.center.x = cx0;
     pattern->cd1.center.y = cy0;
@@ -601,215 +601,215 @@ _cairo_pattern_init_radial (cairo_radial_pattern_t *pattern,
     pattern->cd2.radius   = fabs (radius1);
 }
 
-cairo_pattern_t *
-_cairo_pattern_create_solid (const cairo_color_t *color)
+comac_pattern_t *
+_comac_pattern_create_solid (const comac_color_t *color)
 {
-    cairo_solid_pattern_t *pattern;
+    comac_solid_pattern_t *pattern;
 
     pattern =
-	_freed_pool_get (&freed_pattern_pool[CAIRO_PATTERN_TYPE_SOLID]);
+	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_SOLID]);
     if (unlikely (pattern == NULL)) {
 	/* None cached, need to create a new pattern. */
-	pattern = _cairo_malloc (sizeof (cairo_solid_pattern_t));
+	pattern = _comac_malloc (sizeof (comac_solid_pattern_t));
 	if (unlikely (pattern == NULL)) {
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return (cairo_pattern_t *) &_cairo_pattern_nil;
+	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	    return (comac_pattern_t *) &_comac_pattern_nil;
 	}
     }
 
-    _cairo_pattern_init_solid (pattern, color);
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->base.ref_count, 1);
+    _comac_pattern_init_solid (pattern, color);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->base.ref_count, 1);
 
     return &pattern->base;
 }
 
-cairo_pattern_t *
-_cairo_pattern_create_in_error (cairo_status_t status)
+comac_pattern_t *
+_comac_pattern_create_in_error (comac_status_t status)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    if (status == CAIRO_STATUS_NO_MEMORY)
-	return (cairo_pattern_t *)&_cairo_pattern_nil.base;
+    if (status == COMAC_STATUS_NO_MEMORY)
+	return (comac_pattern_t *)&_comac_pattern_nil.base;
 
-    CAIRO_MUTEX_INITIALIZE ();
+    COMAC_MUTEX_INITIALIZE ();
 
-    pattern = _cairo_pattern_create_solid (CAIRO_COLOR_BLACK);
-    if (pattern->status == CAIRO_STATUS_SUCCESS)
-	status = _cairo_pattern_set_error (pattern, status);
+    pattern = _comac_pattern_create_solid (COMAC_COLOR_BLACK);
+    if (pattern->status == COMAC_STATUS_SUCCESS)
+	status = _comac_pattern_set_error (pattern, status);
 
     return pattern;
 }
 
 /**
- * cairo_pattern_create_rgb:
+ * comac_pattern_create_rgb:
  * @red: red component of the color
  * @green: green component of the color
  * @blue: blue component of the color
  *
- * Creates a new #cairo_pattern_t corresponding to an opaque color.  The
+ * Creates a new #comac_pattern_t corresponding to an opaque color.  The
  * color components are floating point numbers in the range 0 to 1.
  * If the values passed in are outside that range, they will be
  * clamped.
  *
- * Return value: the newly created #cairo_pattern_t if successful, or
+ * Return value: the newly created #comac_pattern_t if successful, or
  * an error pattern in case of no memory.  The caller owns the
- * returned object and should call cairo_pattern_destroy() when
+ * returned object and should call comac_pattern_destroy() when
  * finished with it.
  *
  * This function will always return a valid pointer, but if an error
  * occurred the pattern status will be set to an error.  To inspect
- * the status of a pattern use cairo_pattern_status().
+ * the status of a pattern use comac_pattern_status().
  *
  * Since: 1.0
  **/
-cairo_pattern_t *
-cairo_pattern_create_rgb (double red, double green, double blue)
+comac_pattern_t *
+comac_pattern_create_rgb (double red, double green, double blue)
 {
-    return cairo_pattern_create_rgba (red, green, blue, 1.0);
+    return comac_pattern_create_rgba (red, green, blue, 1.0);
 }
 
 /**
- * cairo_pattern_create_rgba:
+ * comac_pattern_create_rgba:
  * @red: red component of the color
  * @green: green component of the color
  * @blue: blue component of the color
  * @alpha: alpha component of the color
  *
- * Creates a new #cairo_pattern_t corresponding to a translucent color.
+ * Creates a new #comac_pattern_t corresponding to a translucent color.
  * The color components are floating point numbers in the range 0 to
  * 1.  If the values passed in are outside that range, they will be
  * clamped.
  *
- * Return value: the newly created #cairo_pattern_t if successful, or
+ * Return value: the newly created #comac_pattern_t if successful, or
  * an error pattern in case of no memory.  The caller owns the
- * returned object and should call cairo_pattern_destroy() when
+ * returned object and should call comac_pattern_destroy() when
  * finished with it.
  *
  * This function will always return a valid pointer, but if an error
  * occurred the pattern status will be set to an error.  To inspect
- * the status of a pattern use cairo_pattern_status().
+ * the status of a pattern use comac_pattern_status().
  *
  * Since: 1.0
  **/
-cairo_pattern_t *
-cairo_pattern_create_rgba (double red, double green, double blue,
+comac_pattern_t *
+comac_pattern_create_rgba (double red, double green, double blue,
 			   double alpha)
 {
-    cairo_color_t color;
+    comac_color_t color;
 
-    red   = _cairo_restrict_value (red,   0.0, 1.0);
-    green = _cairo_restrict_value (green, 0.0, 1.0);
-    blue  = _cairo_restrict_value (blue,  0.0, 1.0);
-    alpha = _cairo_restrict_value (alpha, 0.0, 1.0);
+    red   = _comac_restrict_value (red,   0.0, 1.0);
+    green = _comac_restrict_value (green, 0.0, 1.0);
+    blue  = _comac_restrict_value (blue,  0.0, 1.0);
+    alpha = _comac_restrict_value (alpha, 0.0, 1.0);
 
-    _cairo_color_init_rgba (&color, red, green, blue, alpha);
+    _comac_color_init_rgba (&color, red, green, blue, alpha);
 
-    CAIRO_MUTEX_INITIALIZE ();
+    COMAC_MUTEX_INITIALIZE ();
 
-    return _cairo_pattern_create_solid (&color);
+    return _comac_pattern_create_solid (&color);
 }
 
 /**
- * cairo_pattern_create_for_surface:
+ * comac_pattern_create_for_surface:
  * @surface: the surface
  *
- * Create a new #cairo_pattern_t for the given surface.
+ * Create a new #comac_pattern_t for the given surface.
  *
- * Return value: the newly created #cairo_pattern_t if successful, or
+ * Return value: the newly created #comac_pattern_t if successful, or
  * an error pattern in case of no memory.  The caller owns the
- * returned object and should call cairo_pattern_destroy() when
+ * returned object and should call comac_pattern_destroy() when
  * finished with it.
  *
  * This function will always return a valid pointer, but if an error
  * occurred the pattern status will be set to an error.  To inspect
- * the status of a pattern use cairo_pattern_status().
+ * the status of a pattern use comac_pattern_status().
  *
  * Since: 1.0
  **/
-cairo_pattern_t *
-cairo_pattern_create_for_surface (cairo_surface_t *surface)
+comac_pattern_t *
+comac_pattern_create_for_surface (comac_surface_t *surface)
 {
-    cairo_surface_pattern_t *pattern;
+    comac_surface_pattern_t *pattern;
 
     if (surface == NULL) {
-	_cairo_error_throw (CAIRO_STATUS_NULL_POINTER);
-	return (cairo_pattern_t*) &_cairo_pattern_nil_null_pointer;
+	_comac_error_throw (COMAC_STATUS_NULL_POINTER);
+	return (comac_pattern_t*) &_comac_pattern_nil_null_pointer;
     }
 
     if (surface->status)
-	return _cairo_pattern_create_in_error (surface->status);
+	return _comac_pattern_create_in_error (surface->status);
 
     pattern =
-	_freed_pool_get (&freed_pattern_pool[CAIRO_PATTERN_TYPE_SURFACE]);
+	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_SURFACE]);
     if (unlikely (pattern == NULL)) {
-	pattern = _cairo_malloc (sizeof (cairo_surface_pattern_t));
+	pattern = _comac_malloc (sizeof (comac_surface_pattern_t));
 	if (unlikely (pattern == NULL)) {
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return (cairo_pattern_t *)&_cairo_pattern_nil.base;
+	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	    return (comac_pattern_t *)&_comac_pattern_nil.base;
 	}
     }
 
-    CAIRO_MUTEX_INITIALIZE ();
+    COMAC_MUTEX_INITIALIZE ();
 
-    _cairo_pattern_init_for_surface (pattern, surface);
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->base.ref_count, 1);
+    _comac_pattern_init_for_surface (pattern, surface);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->base.ref_count, 1);
 
     return &pattern->base;
 }
 
 /**
- * cairo_pattern_create_linear:
+ * comac_pattern_create_linear:
  * @x0: x coordinate of the start point
  * @y0: y coordinate of the start point
  * @x1: x coordinate of the end point
  * @y1: y coordinate of the end point
  *
- * Create a new linear gradient #cairo_pattern_t along the line defined
+ * Create a new linear gradient #comac_pattern_t along the line defined
  * by (x0, y0) and (x1, y1).  Before using the gradient pattern, a
  * number of color stops should be defined using
- * cairo_pattern_add_color_stop_rgb() or
- * cairo_pattern_add_color_stop_rgba().
+ * comac_pattern_add_color_stop_rgb() or
+ * comac_pattern_add_color_stop_rgba().
  *
  * Note: The coordinates here are in pattern space. For a new pattern,
  * pattern space is identical to user space, but the relationship
- * between the spaces can be changed with cairo_pattern_set_matrix().
+ * between the spaces can be changed with comac_pattern_set_matrix().
  *
- * Return value: the newly created #cairo_pattern_t if successful, or
+ * Return value: the newly created #comac_pattern_t if successful, or
  * an error pattern in case of no memory.  The caller owns the
- * returned object and should call cairo_pattern_destroy() when
+ * returned object and should call comac_pattern_destroy() when
  * finished with it.
  *
  * This function will always return a valid pointer, but if an error
  * occurred the pattern status will be set to an error.  To inspect
- * the status of a pattern use cairo_pattern_status().
+ * the status of a pattern use comac_pattern_status().
  *
  * Since: 1.0
  **/
-cairo_pattern_t *
-cairo_pattern_create_linear (double x0, double y0, double x1, double y1)
+comac_pattern_t *
+comac_pattern_create_linear (double x0, double y0, double x1, double y1)
 {
-    cairo_linear_pattern_t *pattern;
+    comac_linear_pattern_t *pattern;
 
     pattern =
-	_freed_pool_get (&freed_pattern_pool[CAIRO_PATTERN_TYPE_LINEAR]);
+	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_LINEAR]);
     if (unlikely (pattern == NULL)) {
-	pattern = _cairo_malloc (sizeof (cairo_linear_pattern_t));
+	pattern = _comac_malloc (sizeof (comac_linear_pattern_t));
 	if (unlikely (pattern == NULL)) {
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return (cairo_pattern_t *) &_cairo_pattern_nil.base;
+	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	    return (comac_pattern_t *) &_comac_pattern_nil.base;
 	}
     }
 
-    CAIRO_MUTEX_INITIALIZE ();
+    COMAC_MUTEX_INITIALIZE ();
 
-    _cairo_pattern_init_linear (pattern, x0, y0, x1, y1);
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->base.base.ref_count, 1);
+    _comac_pattern_init_linear (pattern, x0, y0, x1, y1);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->base.base.ref_count, 1);
 
     return &pattern->base.base;
 }
 
 /**
- * cairo_pattern_create_radial:
+ * comac_pattern_create_radial:
  * @cx0: x coordinate for the center of the start circle
  * @cy0: y coordinate for the center of the start circle
  * @radius0: radius of the start circle
@@ -817,60 +817,60 @@ cairo_pattern_create_linear (double x0, double y0, double x1, double y1)
  * @cy1: y coordinate for the center of the end circle
  * @radius1: radius of the end circle
  *
- * Creates a new radial gradient #cairo_pattern_t between the two
+ * Creates a new radial gradient #comac_pattern_t between the two
  * circles defined by (cx0, cy0, radius0) and (cx1, cy1, radius1).  Before using the
  * gradient pattern, a number of color stops should be defined using
- * cairo_pattern_add_color_stop_rgb() or
- * cairo_pattern_add_color_stop_rgba().
+ * comac_pattern_add_color_stop_rgb() or
+ * comac_pattern_add_color_stop_rgba().
  *
  * Note: The coordinates here are in pattern space. For a new pattern,
  * pattern space is identical to user space, but the relationship
- * between the spaces can be changed with cairo_pattern_set_matrix().
+ * between the spaces can be changed with comac_pattern_set_matrix().
  *
- * Return value: the newly created #cairo_pattern_t if successful, or
+ * Return value: the newly created #comac_pattern_t if successful, or
  * an error pattern in case of no memory.  The caller owns the
- * returned object and should call cairo_pattern_destroy() when
+ * returned object and should call comac_pattern_destroy() when
  * finished with it.
  *
  * This function will always return a valid pointer, but if an error
  * occurred the pattern status will be set to an error.  To inspect
- * the status of a pattern use cairo_pattern_status().
+ * the status of a pattern use comac_pattern_status().
  *
  * Since: 1.0
  **/
-cairo_pattern_t *
-cairo_pattern_create_radial (double cx0, double cy0, double radius0,
+comac_pattern_t *
+comac_pattern_create_radial (double cx0, double cy0, double radius0,
 			     double cx1, double cy1, double radius1)
 {
-    cairo_radial_pattern_t *pattern;
+    comac_radial_pattern_t *pattern;
 
     pattern =
-	_freed_pool_get (&freed_pattern_pool[CAIRO_PATTERN_TYPE_RADIAL]);
+	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_RADIAL]);
     if (unlikely (pattern == NULL)) {
-	pattern = _cairo_malloc (sizeof (cairo_radial_pattern_t));
+	pattern = _comac_malloc (sizeof (comac_radial_pattern_t));
 	if (unlikely (pattern == NULL)) {
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return (cairo_pattern_t *) &_cairo_pattern_nil.base;
+	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	    return (comac_pattern_t *) &_comac_pattern_nil.base;
 	}
     }
 
-    CAIRO_MUTEX_INITIALIZE ();
+    COMAC_MUTEX_INITIALIZE ();
 
-    _cairo_pattern_init_radial (pattern, cx0, cy0, radius0, cx1, cy1, radius1);
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->base.base.ref_count, 1);
+    _comac_pattern_init_radial (pattern, cx0, cy0, radius0, cx1, cy1, radius1);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->base.base.ref_count, 1);
 
     return &pattern->base.base;
 }
 
 /* This order is specified in the diagram in the documentation for
- * cairo_pattern_create_mesh() */
+ * comac_pattern_create_mesh() */
 static const int mesh_path_point_i[12] = { 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1 };
 static const int mesh_path_point_j[12] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0 };
 static const int mesh_control_point_i[4] = { 1, 1, 2, 2 };
 static const int mesh_control_point_j[4] = { 1, 2, 2, 1 };
 
 /**
- * cairo_pattern_create_mesh:
+ * comac_pattern_create_mesh:
  *
  * Create a new mesh pattern.
  *
@@ -884,7 +884,7 @@ static const int mesh_control_point_j[4] = { 1, 2, 2, 1 };
  * should be defined before using the mesh pattern. Using a mesh
  * pattern with a partially defined patch as source or mask will put
  * the context in an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * A tensor-product patch is defined by 4 Bézier curves (side 0, 1, 2,
  * 3) and by 4 additional control points (P0, P1, P2, P3) that provide
@@ -911,17 +911,17 @@ static const int mesh_control_point_j[4] = { 1, 2, 2, 1 };
  * </screen></informalexample>
  *
  * Each patch is constructed by first calling
- * cairo_mesh_pattern_begin_patch(), then cairo_mesh_pattern_move_to()
+ * comac_mesh_pattern_begin_patch(), then comac_mesh_pattern_move_to()
  * to specify the first point in the patch (C0). Then the sides are
- * specified with calls to cairo_mesh_pattern_curve_to() and
- * cairo_mesh_pattern_line_to().
+ * specified with calls to comac_mesh_pattern_curve_to() and
+ * comac_mesh_pattern_line_to().
  *
  * The four additional control points (P0, P1, P2, P3) in a patch can
- * be specified with cairo_mesh_pattern_set_control_point().
+ * be specified with comac_mesh_pattern_set_control_point().
  *
  * At each corner of the patch (C0, C1, C2, C3) a color may be
- * specified with cairo_mesh_pattern_set_corner_color_rgb() or
- * cairo_mesh_pattern_set_corner_color_rgba(). Any corner whose color
+ * specified with comac_mesh_pattern_set_corner_color_rgb() or
+ * comac_mesh_pattern_set_corner_color_rgba(). Any corner whose color
  * is not explicitly specified defaults to transparent black.
  *
  * A Coons patch is a special case of the tensor-product patch where
@@ -944,7 +944,7 @@ static const int mesh_control_point_j[4] = { 1, 2, 2, 1 };
  * specifying colors, corner 0 will always be the first point, corner
  * 1 the point between side 0 and side 1 etc.
  *
- * Calling cairo_mesh_pattern_end_patch() completes the current
+ * Calling comac_mesh_pattern_end_patch() completes the current
  * patch. If less than 4 sides have been defined, the first missing
  * side is defined as a line from the current point to the first point
  * of the patch (C0) and the other sides are degenerate lines from C0
@@ -953,33 +953,33 @@ static const int mesh_control_point_j[4] = { 1, 2, 2, 1 };
  * the color of C0.
  *
  * Additional patches may be added with additional calls to
- * cairo_mesh_pattern_begin_patch()/cairo_mesh_pattern_end_patch().
+ * comac_mesh_pattern_begin_patch()/comac_mesh_pattern_end_patch().
  *
  * <informalexample><programlisting>
- * cairo_pattern_t *pattern = cairo_pattern_create_mesh ();
+ * comac_pattern_t *pattern = comac_pattern_create_mesh ();
  *
  * /&ast; Add a Coons patch &ast;/
- * cairo_mesh_pattern_begin_patch (pattern);
- * cairo_mesh_pattern_move_to (pattern, 0, 0);
- * cairo_mesh_pattern_curve_to (pattern, 30, -30,  60,  30, 100, 0);
- * cairo_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
- * cairo_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
- * cairo_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
- * cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
- * cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
- * cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
- * cairo_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 0);
- * cairo_mesh_pattern_end_patch (pattern);
+ * comac_mesh_pattern_begin_patch (pattern);
+ * comac_mesh_pattern_move_to (pattern, 0, 0);
+ * comac_mesh_pattern_curve_to (pattern, 30, -30,  60,  30, 100, 0);
+ * comac_mesh_pattern_curve_to (pattern, 60,  30, 130,  60, 100, 100);
+ * comac_mesh_pattern_curve_to (pattern, 60,  70,  30, 130,   0, 100);
+ * comac_mesh_pattern_curve_to (pattern, 30,  70, -30,  30,   0, 0);
+ * comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+ * comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
+ * comac_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
+ * comac_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 0);
+ * comac_mesh_pattern_end_patch (pattern);
  *
  * /&ast; Add a Gouraud-shaded triangle &ast;/
- * cairo_mesh_pattern_begin_patch (pattern)
- * cairo_mesh_pattern_move_to (pattern, 100, 100);
- * cairo_mesh_pattern_line_to (pattern, 130, 130);
- * cairo_mesh_pattern_line_to (pattern, 130,  70);
- * cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
- * cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
- * cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
- * cairo_mesh_pattern_end_patch (pattern)
+ * comac_mesh_pattern_begin_patch (pattern)
+ * comac_mesh_pattern_move_to (pattern, 100, 100);
+ * comac_mesh_pattern_line_to (pattern, 130, 130);
+ * comac_mesh_pattern_line_to (pattern, 130,  70);
+ * comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+ * comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 1, 0);
+ * comac_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 1);
+ * comac_mesh_pattern_end_patch (pattern)
  * </programlisting></informalexample>
  *
  * When two patches overlap, the last one that has been added is drawn
@@ -1004,135 +1004,135 @@ static const int mesh_control_point_j[4] = { 1, 2, 2, 1 };
  * Note: The coordinates are always in pattern space. For a new
  * pattern, pattern space is identical to user space, but the
  * relationship between the spaces can be changed with
- * cairo_pattern_set_matrix().
+ * comac_pattern_set_matrix().
  *
- * Return value: the newly created #cairo_pattern_t if successful, or
+ * Return value: the newly created #comac_pattern_t if successful, or
  * an error pattern in case of no memory. The caller owns the returned
- * object and should call cairo_pattern_destroy() when finished with
+ * object and should call comac_pattern_destroy() when finished with
  * it.
  *
  * This function will always return a valid pointer, but if an error
  * occurred the pattern status will be set to an error. To inspect the
- * status of a pattern use cairo_pattern_status().
+ * status of a pattern use comac_pattern_status().
  *
  * Since: 1.12
  **/
-cairo_pattern_t *
-cairo_pattern_create_mesh (void)
+comac_pattern_t *
+comac_pattern_create_mesh (void)
 {
-    cairo_mesh_pattern_t *pattern;
+    comac_mesh_pattern_t *pattern;
 
     pattern =
-	_freed_pool_get (&freed_pattern_pool[CAIRO_PATTERN_TYPE_MESH]);
+	_freed_pool_get (&freed_pattern_pool[COMAC_PATTERN_TYPE_MESH]);
     if (unlikely (pattern == NULL)) {
-	pattern = _cairo_malloc (sizeof (cairo_mesh_pattern_t));
+	pattern = _comac_malloc (sizeof (comac_mesh_pattern_t));
 	if (unlikely (pattern == NULL)) {
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return (cairo_pattern_t *) &_cairo_pattern_nil.base;
+	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	    return (comac_pattern_t *) &_comac_pattern_nil.base;
 	}
     }
 
-    CAIRO_MUTEX_INITIALIZE ();
+    COMAC_MUTEX_INITIALIZE ();
 
-    _cairo_pattern_init (&pattern->base, CAIRO_PATTERN_TYPE_MESH);
-    _cairo_array_init (&pattern->patches, sizeof (cairo_mesh_patch_t));
+    _comac_pattern_init (&pattern->base, COMAC_PATTERN_TYPE_MESH);
+    _comac_array_init (&pattern->patches, sizeof (comac_mesh_patch_t));
     pattern->current_patch = NULL;
-    CAIRO_REFERENCE_COUNT_INIT (&pattern->base.ref_count, 1);
+    COMAC_REFERENCE_COUNT_INIT (&pattern->base.ref_count, 1);
 
     return &pattern->base;
 }
 
 /**
- * cairo_pattern_reference:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_reference:
+ * @pattern: a #comac_pattern_t
  *
  * Increases the reference count on @pattern by one. This prevents
  * @pattern from being destroyed until a matching call to
- * cairo_pattern_destroy() is made.
+ * comac_pattern_destroy() is made.
  *
- * Use cairo_pattern_get_reference_count() to get the number of
- * references to a #cairo_pattern_t.
+ * Use comac_pattern_get_reference_count() to get the number of
+ * references to a #comac_pattern_t.
  *
- * Return value: the referenced #cairo_pattern_t.
+ * Return value: the referenced #comac_pattern_t.
  *
  * Since: 1.0
  **/
-cairo_pattern_t *
-cairo_pattern_reference (cairo_pattern_t *pattern)
+comac_pattern_t *
+comac_pattern_reference (comac_pattern_t *pattern)
 {
     if (pattern == NULL ||
-	    CAIRO_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return pattern;
 
-    assert (CAIRO_REFERENCE_COUNT_HAS_REFERENCE (&pattern->ref_count));
+    assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&pattern->ref_count));
 
-    _cairo_reference_count_inc (&pattern->ref_count);
+    _comac_reference_count_inc (&pattern->ref_count);
 
     return pattern;
 }
 
 /**
- * cairo_pattern_get_type:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_type:
+ * @pattern: a #comac_pattern_t
  *
- * Get the pattern's type.  See #cairo_pattern_type_t for available
+ * Get the pattern's type.  See #comac_pattern_type_t for available
  * types.
  *
  * Return value: The type of @pattern.
  *
  * Since: 1.2
  **/
-cairo_pattern_type_t
-cairo_pattern_get_type (cairo_pattern_t *pattern)
+comac_pattern_type_t
+comac_pattern_get_type (comac_pattern_t *pattern)
 {
     return pattern->type;
 }
 
 /**
- * cairo_pattern_status:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_status:
+ * @pattern: a #comac_pattern_t
  *
  * Checks whether an error has previously occurred for this
  * pattern.
  *
- * Return value: %CAIRO_STATUS_SUCCESS, %CAIRO_STATUS_NO_MEMORY,
- * %CAIRO_STATUS_INVALID_MATRIX, %CAIRO_STATUS_PATTERN_TYPE_MISMATCH,
- * or %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * Return value: %COMAC_STATUS_SUCCESS, %COMAC_STATUS_NO_MEMORY,
+ * %COMAC_STATUS_INVALID_MATRIX, %COMAC_STATUS_PATTERN_TYPE_MISMATCH,
+ * or %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.0
  **/
-cairo_status_t
-cairo_pattern_status (cairo_pattern_t *pattern)
+comac_status_t
+comac_pattern_status (comac_pattern_t *pattern)
 {
     return pattern->status;
 }
 
 /**
- * cairo_pattern_destroy:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_destroy:
+ * @pattern: a #comac_pattern_t
  *
  * Decreases the reference count on @pattern by one. If the result is
  * zero, then @pattern and all associated resources are freed.  See
- * cairo_pattern_reference().
+ * comac_pattern_reference().
  *
  * Since: 1.0
  **/
 void
-cairo_pattern_destroy (cairo_pattern_t *pattern)
+comac_pattern_destroy (comac_pattern_t *pattern)
 {
-    cairo_pattern_type_t type;
+    comac_pattern_type_t type;
 
     if (pattern == NULL ||
-	    CAIRO_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return;
 
-    assert (CAIRO_REFERENCE_COUNT_HAS_REFERENCE (&pattern->ref_count));
+    assert (COMAC_REFERENCE_COUNT_HAS_REFERENCE (&pattern->ref_count));
 
-    if (! _cairo_reference_count_dec_and_test (&pattern->ref_count))
+    if (! _comac_reference_count_dec_and_test (&pattern->ref_count))
 	return;
 
     type = pattern->type;
-    _cairo_pattern_fini (pattern);
+    _comac_pattern_fini (pattern);
 
     /* maintain a small cache of freed patterns */
     if (type < ARRAY_LENGTH (freed_pattern_pool))
@@ -1142,8 +1142,8 @@ cairo_pattern_destroy (cairo_pattern_t *pattern)
 }
 
 /**
- * cairo_pattern_get_reference_count:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_reference_count:
+ * @pattern: a #comac_pattern_t
  *
  * Returns the current reference count of @pattern.
  *
@@ -1153,19 +1153,19 @@ cairo_pattern_destroy (cairo_pattern_t *pattern)
  * Since: 1.4
  **/
 unsigned int
-cairo_pattern_get_reference_count (cairo_pattern_t *pattern)
+comac_pattern_get_reference_count (comac_pattern_t *pattern)
 {
     if (pattern == NULL ||
-	    CAIRO_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
+	    COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return 0;
 
-    return CAIRO_REFERENCE_COUNT_GET_VALUE (&pattern->ref_count);
+    return COMAC_REFERENCE_COUNT_GET_VALUE (&pattern->ref_count);
 }
 
 /**
- * cairo_pattern_get_user_data:
- * @pattern: a #cairo_pattern_t
- * @key: the address of the #cairo_user_data_key_t the user data was
+ * comac_pattern_get_user_data:
+ * @pattern: a #comac_pattern_t
+ * @key: the address of the #comac_user_data_key_t the user data was
  * attached to
  *
  * Return user data previously attached to @pattern using the
@@ -1177,90 +1177,90 @@ cairo_pattern_get_reference_count (cairo_pattern_t *pattern)
  * Since: 1.4
  **/
 void *
-cairo_pattern_get_user_data (cairo_pattern_t		 *pattern,
-			     const cairo_user_data_key_t *key)
+comac_pattern_get_user_data (comac_pattern_t		 *pattern,
+			     const comac_user_data_key_t *key)
 {
-    return _cairo_user_data_array_get_data (&pattern->user_data,
+    return _comac_user_data_array_get_data (&pattern->user_data,
 					    key);
 }
 
 /**
- * cairo_pattern_set_user_data:
- * @pattern: a #cairo_pattern_t
- * @key: the address of a #cairo_user_data_key_t to attach the user data to
- * @user_data: the user data to attach to the #cairo_pattern_t
- * @destroy: a #cairo_destroy_func_t which will be called when the
- * #cairo_t is destroyed or when new user data is attached using the
+ * comac_pattern_set_user_data:
+ * @pattern: a #comac_pattern_t
+ * @key: the address of a #comac_user_data_key_t to attach the user data to
+ * @user_data: the user data to attach to the #comac_pattern_t
+ * @destroy: a #comac_destroy_func_t which will be called when the
+ * #comac_t is destroyed or when new user data is attached using the
  * same key.
  *
  * Attach user data to @pattern.  To remove user data from a surface,
  * call this function with the key that was used to set it and %NULL
  * for @data.
  *
- * Return value: %CAIRO_STATUS_SUCCESS or %CAIRO_STATUS_NO_MEMORY if a
+ * Return value: %COMAC_STATUS_SUCCESS or %COMAC_STATUS_NO_MEMORY if a
  * slot could not be allocated for the user data.
  *
  * Since: 1.4
  **/
-cairo_status_t
-cairo_pattern_set_user_data (cairo_pattern_t		 *pattern,
-			     const cairo_user_data_key_t *key,
+comac_status_t
+comac_pattern_set_user_data (comac_pattern_t		 *pattern,
+			     const comac_user_data_key_t *key,
 			     void			 *user_data,
-			     cairo_destroy_func_t	  destroy)
+			     comac_destroy_func_t	  destroy)
 {
-    if (CAIRO_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
+    if (COMAC_REFERENCE_COUNT_IS_INVALID (&pattern->ref_count))
 	return pattern->status;
 
-    return _cairo_user_data_array_set_data (&pattern->user_data,
+    return _comac_user_data_array_set_data (&pattern->user_data,
 					    key, user_data, destroy);
 }
 
 /**
- * cairo_mesh_pattern_begin_patch:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_begin_patch:
+ * @pattern: a #comac_pattern_t
  *
  * Begin a patch in a mesh pattern.
  *
  * After calling this function, the patch shape should be defined with
- * cairo_mesh_pattern_move_to(), cairo_mesh_pattern_line_to() and
- * cairo_mesh_pattern_curve_to().
+ * comac_mesh_pattern_move_to(), comac_mesh_pattern_line_to() and
+ * comac_mesh_pattern_curve_to().
  *
- * After defining the patch, cairo_mesh_pattern_end_patch() must be
+ * After defining the patch, comac_mesh_pattern_end_patch() must be
  * called before using @pattern as a source or mask.
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @pattern already has a
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @pattern already has a
  * current patch, it will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_begin_patch (cairo_pattern_t *pattern)
+comac_mesh_pattern_begin_patch (comac_pattern_t *pattern)
 {
-    cairo_mesh_pattern_t *mesh;
-    cairo_status_t status;
-    cairo_mesh_patch_t *current_patch;
+    comac_mesh_pattern_t *mesh;
+    comac_status_t status;
+    comac_mesh_patch_t *current_patch;
     int i;
 
     if (unlikely (pattern->status))
 	return;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH)) {
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
-    mesh = (cairo_mesh_pattern_t *) pattern;
+    mesh = (comac_mesh_pattern_t *) pattern;
     if (unlikely (mesh->current_patch)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
-    status = _cairo_array_allocate (&mesh->patches, 1, (void **) &current_patch);
+    status = _comac_array_allocate (&mesh->patches, 1, (void **) &current_patch);
     if (unlikely (status)) {
-	_cairo_pattern_set_error (pattern, status);
+	_comac_pattern_set_error (pattern, status);
 	return;
     }
 
@@ -1276,7 +1276,7 @@ cairo_mesh_pattern_begin_patch (cairo_pattern_t *pattern)
 
 
 static void
-_calc_control_point (cairo_mesh_patch_t *patch, int control_point)
+_calc_control_point (comac_mesh_patch_t *patch, int control_point)
 {
     /* The Coons patch is a special case of the Tensor Product patch
      * where the four control points are:
@@ -1295,7 +1295,7 @@ _calc_control_point (cairo_mesh_patch_t *patch, int control_point)
      *
      * The equations below are defined in the ISO32000 standard.
      */
-    cairo_point_double_t *p[3][3];
+    comac_point_double_t *p[3][3];
     int cp_i, cp_j, i, j;
 
     cp_i = mesh_control_point_i[control_point];
@@ -1319,55 +1319,55 @@ _calc_control_point (cairo_mesh_patch_t *patch, int control_point)
 }
 
 /**
- * cairo_mesh_pattern_end_patch:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_end_patch:
+ * @pattern: a #comac_pattern_t
  *
  * Indicates the end of the current patch in a mesh pattern.
  *
  * If the current patch has less than 4 sides, it is closed with a
  * straight line from the current point to the first point of the
- * patch as if cairo_mesh_pattern_line_to() was used.
+ * patch as if comac_mesh_pattern_line_to() was used.
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
  * patch or the current patch has no current point, @pattern will be
  * put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_end_patch (cairo_pattern_t *pattern)
+comac_mesh_pattern_end_patch (comac_pattern_t *pattern)
 {
-    cairo_mesh_pattern_t *mesh;
-    cairo_mesh_patch_t *current_patch;
+    comac_mesh_pattern_t *mesh;
+    comac_mesh_patch_t *current_patch;
     int i;
 
     if (unlikely (pattern->status))
 	return;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH)) {
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
-    mesh = (cairo_mesh_pattern_t *) pattern;
+    mesh = (comac_mesh_pattern_t *) pattern;
     current_patch = mesh->current_patch;
     if (unlikely (!current_patch)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side == -2)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     while (mesh->current_side < 3) {
 	int corner_num;
 
-	cairo_mesh_pattern_line_to (pattern,
+	comac_mesh_pattern_line_to (pattern,
 				    current_patch->points[0][0].x,
 				    current_patch->points[0][0].y);
 
@@ -1385,15 +1385,15 @@ cairo_mesh_pattern_end_patch (cairo_pattern_t *pattern)
 
     for (i = 0; i < 4; i++) {
 	if (! mesh->has_color[i])
-	    current_patch->colors[i] = *CAIRO_COLOR_TRANSPARENT;
+	    current_patch->colors[i] = *COMAC_COLOR_TRANSPARENT;
     }
 
     mesh->current_patch = NULL;
 }
 
 /**
- * cairo_mesh_pattern_curve_to:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_curve_to:
+ * @pattern: a #comac_pattern_t
  * @x1: the X coordinate of the first control point
  * @y1: the Y coordinate of the first control point
  * @x2: the X coordinate of the second control point
@@ -1406,54 +1406,54 @@ cairo_mesh_pattern_end_patch (cairo_pattern_t *pattern)
  * (@x1, @y1) and (@x2, @y2) as the control points.
  *
  * If the current patch has no current point before the call to
- * cairo_mesh_pattern_curve_to(), this function will behave as if
- * preceded by a call to cairo_mesh_pattern_move_to(@pattern, @x1,
+ * comac_mesh_pattern_curve_to(), this function will behave as if
+ * preceded by a call to comac_mesh_pattern_move_to(@pattern, @x1,
  * @y1).
  *
  * After this call the current point will be (@x3, @y3).
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
  * patch or the current patch already has 4 sides, @pattern will be
  * put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_curve_to (cairo_pattern_t *pattern,
+comac_mesh_pattern_curve_to (comac_pattern_t *pattern,
 			     double x1, double y1,
 			     double x2, double y2,
 			     double x3, double y3)
 {
-    cairo_mesh_pattern_t *mesh;
+    comac_mesh_pattern_t *mesh;
     int current_point, i, j;
 
     if (unlikely (pattern->status))
 	return;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH)) {
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
-    mesh = (cairo_mesh_pattern_t *) pattern;
+    mesh = (comac_mesh_pattern_t *) pattern;
     if (unlikely (!mesh->current_patch)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side == 3)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (mesh->current_side == -2)
-	cairo_mesh_pattern_move_to (pattern, x1, y1);
+	comac_mesh_pattern_move_to (pattern, x1, y1);
 
     assert (mesh->current_side >= -1);
-    assert (pattern->status == CAIRO_STATUS_SUCCESS);
+    assert (pattern->status == COMAC_STATUS_SUCCESS);
 
     mesh->current_side++;
 
@@ -1481,8 +1481,8 @@ cairo_mesh_pattern_curve_to (cairo_pattern_t *pattern,
 }
 
 /**
- * cairo_mesh_pattern_line_to:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_line_to:
+ * @pattern: a #comac_pattern_t
  * @x: the X coordinate of the end of the new line
  * @y: the Y coordinate of the end of the new line
  *
@@ -1490,49 +1490,49 @@ cairo_mesh_pattern_curve_to (cairo_pattern_t *pattern,
  * (@x, @y) in pattern-space coordinates.
  *
  * If there is no current point before the call to
- * cairo_mesh_pattern_line_to() this function will behave as
- * cairo_mesh_pattern_move_to(@pattern, @x, @y).
+ * comac_mesh_pattern_line_to() this function will behave as
+ * comac_mesh_pattern_move_to(@pattern, @x, @y).
  *
  * After this call the current point will be (@x, @y).
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
  * patch or the current patch already has 4 sides, @pattern will be
  * put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_line_to (cairo_pattern_t *pattern,
+comac_mesh_pattern_line_to (comac_pattern_t *pattern,
 			    double x, double y)
 {
-    cairo_mesh_pattern_t *mesh;
-    cairo_point_double_t last_point;
+    comac_mesh_pattern_t *mesh;
+    comac_point_double_t last_point;
     int last_point_idx, i, j;
 
     if (unlikely (pattern->status))
 	return;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH)) {
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
-    mesh = (cairo_mesh_pattern_t *) pattern;
+    mesh = (comac_mesh_pattern_t *) pattern;
     if (unlikely (!mesh->current_patch)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side == 3)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (mesh->current_side == -2) {
-	cairo_mesh_pattern_move_to (pattern, x, y);
+	comac_mesh_pattern_move_to (pattern, x, y);
 	return;
     }
 
@@ -1542,7 +1542,7 @@ cairo_mesh_pattern_line_to (cairo_pattern_t *pattern,
 
     last_point = mesh->current_patch->points[i][j];
 
-    cairo_mesh_pattern_curve_to (pattern,
+    comac_mesh_pattern_curve_to (pattern,
 				 (2 * last_point.x + x) * (1. / 3),
 				 (2 * last_point.y + y) * (1. / 3),
 				 (last_point.x + 2 * x) * (1. / 3),
@@ -1551,8 +1551,8 @@ cairo_mesh_pattern_line_to (cairo_pattern_t *pattern,
 }
 
 /**
- * cairo_mesh_pattern_move_to:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_move_to:
+ * @pattern: a #comac_pattern_t
  * @x: the X coordinate of the new position
  * @y: the Y coordinate of the new position
  *
@@ -1562,35 +1562,35 @@ cairo_mesh_pattern_line_to (cairo_pattern_t *pattern,
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @pattern has no current
  * patch or the current patch already has at least one side, @pattern
  * will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_move_to (cairo_pattern_t *pattern,
+comac_mesh_pattern_move_to (comac_pattern_t *pattern,
 			    double x, double y)
 {
-    cairo_mesh_pattern_t *mesh;
+    comac_mesh_pattern_t *mesh;
 
     if (unlikely (pattern->status))
 	return;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH)) {
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
-    mesh = (cairo_mesh_pattern_t *) pattern;
+    mesh = (comac_mesh_pattern_t *) pattern;
     if (unlikely (!mesh->current_patch)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
     if (unlikely (mesh->current_side >= 0)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
@@ -1600,8 +1600,8 @@ cairo_mesh_pattern_move_to (cairo_pattern_t *pattern,
 }
 
 /**
- * cairo_mesh_pattern_set_control_point:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_set_control_point:
+ * @pattern: a #comac_pattern_t
  * @point_num: the control point to set the position for
  * @x: the X coordinate of the control point
  * @y: the Y coordinate of the control point
@@ -1609,43 +1609,43 @@ cairo_mesh_pattern_move_to (cairo_pattern_t *pattern,
  * Set an internal control point of the current patch.
  *
  * Valid values for @point_num are from 0 to 3 and identify the
- * control points as explained in cairo_pattern_create_mesh().
+ * control points as explained in comac_pattern_create_mesh().
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @point_num is not valid,
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @point_num is not valid,
  * @pattern will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_INDEX.  If @pattern has no current patch,
+ * %COMAC_STATUS_INVALID_INDEX.  If @pattern has no current patch,
  * @pattern will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_set_control_point (cairo_pattern_t *pattern,
+comac_mesh_pattern_set_control_point (comac_pattern_t *pattern,
 				      unsigned int     point_num,
 				      double           x,
 				      double           y)
 {
-    cairo_mesh_pattern_t *mesh;
+    comac_mesh_pattern_t *mesh;
     int i, j;
 
     if (unlikely (pattern->status))
 	return;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH)) {
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
     if (unlikely (point_num > 3)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_INDEX);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_INDEX);
 	return;
     }
 
-    mesh = (cairo_mesh_pattern_t *) pattern;
+    mesh = (comac_mesh_pattern_t *) pattern;
     if (unlikely (!mesh->current_patch)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
@@ -1658,10 +1658,10 @@ cairo_mesh_pattern_set_control_point (cairo_pattern_t *pattern,
 }
 
 /* make room for at least one more color stop */
-static cairo_status_t
-_cairo_pattern_gradient_grow (cairo_gradient_pattern_t *pattern)
+static comac_status_t
+_comac_pattern_gradient_grow (comac_gradient_pattern_t *pattern)
 {
-    cairo_gradient_stop_t *new_stops;
+    comac_gradient_stop_t *new_stops;
     int old_size = pattern->stops_size;
     int embedded_size = ARRAY_LENGTH (pattern->stops_embedded);
     int new_size = 2 * MAX (old_size, 4);
@@ -1671,40 +1671,40 @@ _cairo_pattern_gradient_grow (cairo_gradient_pattern_t *pattern)
     if (old_size < embedded_size) {
 	pattern->stops = pattern->stops_embedded;
 	pattern->stops_size = embedded_size;
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
-    if (CAIRO_INJECT_FAULT ())
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    if (COMAC_INJECT_FAULT ())
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     assert (pattern->n_stops <= pattern->stops_size);
 
     if (pattern->stops == pattern->stops_embedded) {
-	new_stops = _cairo_malloc_ab (new_size, sizeof (cairo_gradient_stop_t));
+	new_stops = _comac_malloc_ab (new_size, sizeof (comac_gradient_stop_t));
 	if (new_stops)
-	    memcpy (new_stops, pattern->stops, old_size * sizeof (cairo_gradient_stop_t));
+	    memcpy (new_stops, pattern->stops, old_size * sizeof (comac_gradient_stop_t));
     } else {
-	new_stops = _cairo_realloc_ab (pattern->stops,
+	new_stops = _comac_realloc_ab (pattern->stops,
 				       new_size,
-				       sizeof (cairo_gradient_stop_t));
+				       sizeof (comac_gradient_stop_t));
     }
 
     if (unlikely (new_stops == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     pattern->stops = new_stops;
     pattern->stops_size = new_size;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-_cairo_mesh_pattern_set_corner_color (cairo_mesh_pattern_t *mesh,
+_comac_mesh_pattern_set_corner_color (comac_mesh_pattern_t *mesh,
 				      unsigned int     corner_num,
 				      double red, double green, double blue,
 				      double alpha)
 {
-    cairo_color_t *color;
+    comac_color_t *color;
 
     assert (mesh->current_patch);
     assert (corner_num <= 3);
@@ -1715,17 +1715,17 @@ _cairo_mesh_pattern_set_corner_color (cairo_mesh_pattern_t *mesh,
     color->blue  = blue;
     color->alpha = alpha;
 
-    color->red_short   = _cairo_color_double_to_short (red);
-    color->green_short = _cairo_color_double_to_short (green);
-    color->blue_short  = _cairo_color_double_to_short (blue);
-    color->alpha_short = _cairo_color_double_to_short (alpha);
+    color->red_short   = _comac_color_double_to_short (red);
+    color->green_short = _comac_color_double_to_short (green);
+    color->blue_short  = _comac_color_double_to_short (blue);
+    color->alpha_short = _comac_color_double_to_short (alpha);
 
     mesh->has_color[corner_num] = TRUE;
 }
 
 /**
- * cairo_mesh_pattern_set_corner_color_rgb:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_set_corner_color_rgb:
+ * @pattern: a #comac_pattern_t
  * @corner_num: the corner to set the color for
  * @red: red component of color
  * @green: green component of color
@@ -1733,32 +1733,32 @@ _cairo_mesh_pattern_set_corner_color (cairo_mesh_pattern_t *mesh,
  *
  * Sets the color of a corner of the current patch in a mesh pattern.
  *
- * The color is specified in the same way as in cairo_set_source_rgb().
+ * The color is specified in the same way as in comac_set_source_rgb().
  *
  * Valid values for @corner_num are from 0 to 3 and identify the
- * corners as explained in cairo_pattern_create_mesh().
+ * corners as explained in comac_pattern_create_mesh().
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @corner_num is not valid,
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @corner_num is not valid,
  * @pattern will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_INDEX.  If @pattern has no current patch,
+ * %COMAC_STATUS_INVALID_INDEX.  If @pattern has no current patch,
  * @pattern will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_set_corner_color_rgb (cairo_pattern_t *pattern,
+comac_mesh_pattern_set_corner_color_rgb (comac_pattern_t *pattern,
 					 unsigned int     corner_num,
 					 double red, double green, double blue)
 {
-    cairo_mesh_pattern_set_corner_color_rgba (pattern, corner_num, red, green, blue, 1.0);
+    comac_mesh_pattern_set_corner_color_rgba (pattern, corner_num, red, green, blue, 1.0);
 }
 
 /**
- * cairo_mesh_pattern_set_corner_color_rgba:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_set_corner_color_rgba:
+ * @pattern: a #comac_pattern_t
  * @corner_num: the corner to set the color for
  * @red: red component of color
  * @green: green component of color
@@ -1767,71 +1767,71 @@ cairo_mesh_pattern_set_corner_color_rgb (cairo_pattern_t *pattern,
  *
  * Sets the color of a corner of the current patch in a mesh pattern.
  *
- * The color is specified in the same way as in cairo_set_source_rgba().
+ * The color is specified in the same way as in comac_set_source_rgba().
  *
  * Valid values for @corner_num are from 0 to 3 and identify the
- * corners as explained in cairo_pattern_create_mesh().
+ * corners as explained in comac_pattern_create_mesh().
  *
  * Note: If @pattern is not a mesh pattern then @pattern will be put
  * into an error status with a status of
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH. If @corner_num is not valid,
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH. If @corner_num is not valid,
  * @pattern will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_INDEX.  If @pattern has no current patch,
+ * %COMAC_STATUS_INVALID_INDEX.  If @pattern has no current patch,
  * @pattern will be put into an error status with a status of
- * %CAIRO_STATUS_INVALID_MESH_CONSTRUCTION.
+ * %COMAC_STATUS_INVALID_MESH_CONSTRUCTION.
  *
  * Since: 1.12
  **/
 void
-cairo_mesh_pattern_set_corner_color_rgba (cairo_pattern_t *pattern,
+comac_mesh_pattern_set_corner_color_rgba (comac_pattern_t *pattern,
 					  unsigned int     corner_num,
 					  double red, double green, double blue,
 					  double alpha)
 {
-    cairo_mesh_pattern_t *mesh;
+    comac_mesh_pattern_t *mesh;
 
     if (unlikely (pattern->status))
 	return;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH)) {
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
     if (unlikely (corner_num > 3)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_INDEX);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_INDEX);
 	return;
     }
 
-    mesh = (cairo_mesh_pattern_t *) pattern;
+    mesh = (comac_mesh_pattern_t *) pattern;
     if (unlikely (!mesh->current_patch)) {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_INVALID_MESH_CONSTRUCTION);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_INVALID_MESH_CONSTRUCTION);
 	return;
     }
 
-    red    = _cairo_restrict_value (red,    0.0, 1.0);
-    green  = _cairo_restrict_value (green,  0.0, 1.0);
-    blue   = _cairo_restrict_value (blue,   0.0, 1.0);
-    alpha  = _cairo_restrict_value (alpha,  0.0, 1.0);
+    red    = _comac_restrict_value (red,    0.0, 1.0);
+    green  = _comac_restrict_value (green,  0.0, 1.0);
+    blue   = _comac_restrict_value (blue,   0.0, 1.0);
+    alpha  = _comac_restrict_value (alpha,  0.0, 1.0);
 
-    _cairo_mesh_pattern_set_corner_color (mesh, corner_num, red, green, blue, alpha);
+    _comac_mesh_pattern_set_corner_color (mesh, corner_num, red, green, blue, alpha);
 }
 
 static void
-_cairo_pattern_add_color_stop (cairo_gradient_pattern_t	*pattern,
+_comac_pattern_add_color_stop (comac_gradient_pattern_t	*pattern,
 			       double			 offset,
 			       double			 red,
 			       double			 green,
 			       double			 blue,
 			       double			 alpha)
 {
-    cairo_gradient_stop_t *stops;
+    comac_gradient_stop_t *stops;
     unsigned int	   i;
 
     if (pattern->n_stops >= pattern->stops_size) {
-        cairo_status_t status = _cairo_pattern_gradient_grow (pattern);
+        comac_status_t status = _comac_pattern_gradient_grow (pattern);
 	if (unlikely (status)) {
-	    status = _cairo_pattern_set_error (&pattern->base, status);
+	    status = _comac_pattern_set_error (&pattern->base, status);
 	    return;
 	}
     }
@@ -1843,7 +1843,7 @@ _cairo_pattern_add_color_stop (cairo_gradient_pattern_t	*pattern,
 	if (offset < stops[i].offset)
 	{
 	    memmove (&stops[i + 1], &stops[i],
-		     sizeof (cairo_gradient_stop_t) * (pattern->n_stops - i));
+		     sizeof (comac_gradient_stop_t) * (pattern->n_stops - i));
 
 	    break;
 	}
@@ -1856,17 +1856,17 @@ _cairo_pattern_add_color_stop (cairo_gradient_pattern_t	*pattern,
     stops[i].color.blue  = blue;
     stops[i].color.alpha = alpha;
 
-    stops[i].color.red_short   = _cairo_color_double_to_short (red);
-    stops[i].color.green_short = _cairo_color_double_to_short (green);
-    stops[i].color.blue_short  = _cairo_color_double_to_short (blue);
-    stops[i].color.alpha_short = _cairo_color_double_to_short (alpha);
+    stops[i].color.red_short   = _comac_color_double_to_short (red);
+    stops[i].color.green_short = _comac_color_double_to_short (green);
+    stops[i].color.blue_short  = _comac_color_double_to_short (blue);
+    stops[i].color.alpha_short = _comac_color_double_to_short (alpha);
 
     pattern->n_stops++;
 }
 
 /**
- * cairo_pattern_add_color_stop_rgb:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_add_color_stop_rgb:
+ * @pattern: a #comac_pattern_t
  * @offset: an offset in the range [0.0 .. 1.0]
  * @red: red component of color
  * @green: green component of color
@@ -1878,7 +1878,7 @@ _cairo_pattern_add_color_stop (cairo_gradient_pattern_t	*pattern,
  * (x1,y1) while a radial gradient's control vector is from any point
  * on the start circle to the corresponding point on the end circle.
  *
- * The color is specified in the same way as in cairo_set_source_rgb().
+ * The color is specified in the same way as in comac_set_source_rgb().
  *
  * If two (or more) stops are specified with identical offset values,
  * they will be sorted according to the order in which the stops are
@@ -1889,23 +1889,23 @@ _cairo_pattern_add_color_stop (cairo_gradient_pattern_t	*pattern,
  *
  * Note: If the pattern is not a gradient pattern, (eg. a linear or
  * radial pattern), then the pattern will be put into an error status
- * with a status of %CAIRO_STATUS_PATTERN_TYPE_MISMATCH.
+ * with a status of %COMAC_STATUS_PATTERN_TYPE_MISMATCH.
  *
  * Since: 1.0
  **/
 void
-cairo_pattern_add_color_stop_rgb (cairo_pattern_t *pattern,
+comac_pattern_add_color_stop_rgb (comac_pattern_t *pattern,
 				  double	   offset,
 				  double	   red,
 				  double	   green,
 				  double	   blue)
 {
-    cairo_pattern_add_color_stop_rgba (pattern, offset, red, green, blue, 1.0);
+    comac_pattern_add_color_stop_rgba (pattern, offset, red, green, blue, 1.0);
 }
 
 /**
- * cairo_pattern_add_color_stop_rgba:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_add_color_stop_rgba:
+ * @pattern: a #comac_pattern_t
  * @offset: an offset in the range [0.0 .. 1.0]
  * @red: red component of color
  * @green: green component of color
@@ -1918,7 +1918,7 @@ cairo_pattern_add_color_stop_rgb (cairo_pattern_t *pattern,
  * (x1,y1) while a radial gradient's control vector is from any point
  * on the start circle to the corresponding point on the end circle.
  *
- * The color is specified in the same way as in cairo_set_source_rgba().
+ * The color is specified in the same way as in comac_set_source_rgba().
  *
  * If two (or more) stops are specified with identical offset values,
  * they will be sorted according to the order in which the stops are
@@ -1928,12 +1928,12 @@ cairo_pattern_add_color_stop_rgb (cairo_pattern_t *pattern,
  *
  * Note: If the pattern is not a gradient pattern, (eg. a linear or
  * radial pattern), then the pattern will be put into an error status
- * with a status of %CAIRO_STATUS_PATTERN_TYPE_MISMATCH.
+ * with a status of %COMAC_STATUS_PATTERN_TYPE_MISMATCH.
  *
  * Since: 1.0
  **/
 void
-cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern,
+comac_pattern_add_color_stop_rgba (comac_pattern_t *pattern,
 				   double	   offset,
 				   double	   red,
 				   double	   green,
@@ -1943,27 +1943,27 @@ cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern,
     if (pattern->status)
 	return;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_LINEAR &&
-	pattern->type != CAIRO_PATTERN_TYPE_RADIAL)
+    if (pattern->type != COMAC_PATTERN_TYPE_LINEAR &&
+	pattern->type != COMAC_PATTERN_TYPE_RADIAL)
     {
-	_cairo_pattern_set_error (pattern, CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+	_comac_pattern_set_error (pattern, COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 	return;
     }
 
-    offset = _cairo_restrict_value (offset, 0.0, 1.0);
-    red    = _cairo_restrict_value (red,    0.0, 1.0);
-    green  = _cairo_restrict_value (green,  0.0, 1.0);
-    blue   = _cairo_restrict_value (blue,   0.0, 1.0);
-    alpha  = _cairo_restrict_value (alpha,  0.0, 1.0);
+    offset = _comac_restrict_value (offset, 0.0, 1.0);
+    red    = _comac_restrict_value (red,    0.0, 1.0);
+    green  = _comac_restrict_value (green,  0.0, 1.0);
+    blue   = _comac_restrict_value (blue,   0.0, 1.0);
+    alpha  = _comac_restrict_value (alpha,  0.0, 1.0);
 
-    _cairo_pattern_add_color_stop ((cairo_gradient_pattern_t *) pattern,
+    _comac_pattern_add_color_stop ((comac_gradient_pattern_t *) pattern,
 				   offset, red, green, blue, alpha);
 }
 
 /**
- * cairo_pattern_set_matrix:
- * @pattern: a #cairo_pattern_t
- * @matrix: a #cairo_matrix_t
+ * comac_pattern_set_matrix:
+ * @pattern: a #comac_pattern_t
+ * @matrix: a #comac_matrix_t
  *
  * Sets the pattern's transformation matrix to @matrix. This matrix is
  * a transformation from user space to pattern space.
@@ -1982,43 +1982,43 @@ cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern,
  * it does by default the correct code to use is:
  *
  * <informalexample><programlisting>
- * cairo_matrix_init_scale (&amp;matrix, 0.5, 0.5);
- * cairo_pattern_set_matrix (pattern, &amp;matrix);
+ * comac_matrix_init_scale (&amp;matrix, 0.5, 0.5);
+ * comac_pattern_set_matrix (pattern, &amp;matrix);
  * </programlisting></informalexample>
  *
  * Meanwhile, using values of 2.0 rather than 0.5 in the code above
  * would cause the pattern to appear at half of its default size.
  *
  * Also, please note the discussion of the user-space locking
- * semantics of cairo_set_source().
+ * semantics of comac_set_source().
  *
  * Since: 1.0
  **/
 void
-cairo_pattern_set_matrix (cairo_pattern_t      *pattern,
-			  const cairo_matrix_t *matrix)
+comac_pattern_set_matrix (comac_pattern_t      *pattern,
+			  const comac_matrix_t *matrix)
 {
-    cairo_matrix_t inverse;
-    cairo_status_t status;
+    comac_matrix_t inverse;
+    comac_status_t status;
 
     if (pattern->status)
 	return;
 
-    if (memcmp (&pattern->matrix, matrix, sizeof (cairo_matrix_t)) == 0)
+    if (memcmp (&pattern->matrix, matrix, sizeof (comac_matrix_t)) == 0)
 	return;
 
     pattern->matrix = *matrix;
-    _cairo_pattern_notify_observers (pattern, CAIRO_PATTERN_NOTIFY_MATRIX);
+    _comac_pattern_notify_observers (pattern, COMAC_PATTERN_NOTIFY_MATRIX);
 
     inverse = *matrix;
-    status = cairo_matrix_invert (&inverse);
+    status = comac_matrix_invert (&inverse);
     if (unlikely (status))
-	status = _cairo_pattern_set_error (pattern, status);
+	status = _comac_pattern_set_error (pattern, status);
 }
 
 /**
- * cairo_pattern_get_matrix:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_matrix:
+ * @pattern: a #comac_pattern_t
  * @matrix: return value for the matrix
  *
  * Stores the pattern's transformation matrix into @matrix.
@@ -2026,90 +2026,90 @@ cairo_pattern_set_matrix (cairo_pattern_t      *pattern,
  * Since: 1.0
  **/
 void
-cairo_pattern_get_matrix (cairo_pattern_t *pattern, cairo_matrix_t *matrix)
+comac_pattern_get_matrix (comac_pattern_t *pattern, comac_matrix_t *matrix)
 {
     *matrix = pattern->matrix;
 }
 
 /**
- * cairo_pattern_set_filter:
- * @pattern: a #cairo_pattern_t
- * @filter: a #cairo_filter_t describing the filter to use for resizing
+ * comac_pattern_set_filter:
+ * @pattern: a #comac_pattern_t
+ * @filter: a #comac_filter_t describing the filter to use for resizing
  * the pattern
  *
  * Sets the filter to be used for resizing when using this pattern.
- * See #cairo_filter_t for details on each filter.
+ * See #comac_filter_t for details on each filter.
  *
  * * Note that you might want to control filtering even when you do not
- * have an explicit #cairo_pattern_t object, (for example when using
- * cairo_set_source_surface()). In these cases, it is convenient to
- * use cairo_get_source() to get access to the pattern that cairo
+ * have an explicit #comac_pattern_t object, (for example when using
+ * comac_set_source_surface()). In these cases, it is convenient to
+ * use comac_get_source() to get access to the pattern that comac
  * creates implicitly. For example:
  *
  * <informalexample><programlisting>
- * cairo_set_source_surface (cr, image, x, y);
- * cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
+ * comac_set_source_surface (cr, image, x, y);
+ * comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
  * </programlisting></informalexample>
  *
  * Since: 1.0
  **/
 void
-cairo_pattern_set_filter (cairo_pattern_t *pattern, cairo_filter_t filter)
+comac_pattern_set_filter (comac_pattern_t *pattern, comac_filter_t filter)
 {
     if (pattern->status)
 	return;
 
     pattern->filter = filter;
-    _cairo_pattern_notify_observers (pattern, CAIRO_PATTERN_NOTIFY_FILTER);
+    _comac_pattern_notify_observers (pattern, COMAC_PATTERN_NOTIFY_FILTER);
 }
 
 /**
- * cairo_pattern_get_filter:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_filter:
+ * @pattern: a #comac_pattern_t
  *
- * Gets the current filter for a pattern.  See #cairo_filter_t
+ * Gets the current filter for a pattern.  See #comac_filter_t
  * for details on each filter.
  *
  * Return value: the current filter used for resizing the pattern.
  *
  * Since: 1.0
  **/
-cairo_filter_t
-cairo_pattern_get_filter (cairo_pattern_t *pattern)
+comac_filter_t
+comac_pattern_get_filter (comac_pattern_t *pattern)
 {
     return pattern->filter;
 }
 
 /**
- * cairo_pattern_set_extend:
- * @pattern: a #cairo_pattern_t
- * @extend: a #cairo_extend_t describing how the area outside of the
+ * comac_pattern_set_extend:
+ * @pattern: a #comac_pattern_t
+ * @extend: a #comac_extend_t describing how the area outside of the
  * pattern will be drawn
  *
  * Sets the mode to be used for drawing outside the area of a pattern.
- * See #cairo_extend_t for details on the semantics of each extend
+ * See #comac_extend_t for details on the semantics of each extend
  * strategy.
  *
- * The default extend mode is %CAIRO_EXTEND_NONE for surface patterns
- * and %CAIRO_EXTEND_PAD for gradient patterns.
+ * The default extend mode is %COMAC_EXTEND_NONE for surface patterns
+ * and %COMAC_EXTEND_PAD for gradient patterns.
  *
  * Since: 1.0
  **/
 void
-cairo_pattern_set_extend (cairo_pattern_t *pattern, cairo_extend_t extend)
+comac_pattern_set_extend (comac_pattern_t *pattern, comac_extend_t extend)
 {
     if (pattern->status)
 	return;
 
     pattern->extend = extend;
-    _cairo_pattern_notify_observers (pattern, CAIRO_PATTERN_NOTIFY_EXTEND);
+    _comac_pattern_notify_observers (pattern, COMAC_PATTERN_NOTIFY_EXTEND);
 }
 
 /**
- * cairo_pattern_get_extend:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_extend:
+ * @pattern: a #comac_pattern_t
  *
- * Gets the current extend mode for a pattern.  See #cairo_extend_t
+ * Gets the current extend mode for a pattern.  See #comac_extend_t
  * for details on the semantics of each extend strategy.
  *
  * Return value: the current extend strategy used for drawing the
@@ -2117,41 +2117,41 @@ cairo_pattern_set_extend (cairo_pattern_t *pattern, cairo_extend_t extend)
  *
  * Since: 1.0
  **/
-cairo_extend_t
-cairo_pattern_get_extend (cairo_pattern_t *pattern)
+comac_extend_t
+comac_pattern_get_extend (comac_pattern_t *pattern)
 {
     return pattern->extend;
 }
 
 void
-_cairo_pattern_pretransform (cairo_pattern_t	*pattern,
-			     const cairo_matrix_t  *ctm)
+_comac_pattern_pretransform (comac_pattern_t	*pattern,
+			     const comac_matrix_t  *ctm)
 {
     if (pattern->status)
 	return;
 
-    cairo_matrix_multiply (&pattern->matrix, &pattern->matrix, ctm);
+    comac_matrix_multiply (&pattern->matrix, &pattern->matrix, ctm);
 }
 
 void
-_cairo_pattern_transform (cairo_pattern_t	*pattern,
-			  const cairo_matrix_t  *ctm_inverse)
+_comac_pattern_transform (comac_pattern_t	*pattern,
+			  const comac_matrix_t  *ctm_inverse)
 {
     if (pattern->status)
 	return;
 
-    cairo_matrix_multiply (&pattern->matrix, ctm_inverse, &pattern->matrix);
+    comac_matrix_multiply (&pattern->matrix, ctm_inverse, &pattern->matrix);
 }
 
-static cairo_bool_t
-_linear_pattern_is_degenerate (const cairo_linear_pattern_t *linear)
+static comac_bool_t
+_linear_pattern_is_degenerate (const comac_linear_pattern_t *linear)
 {
     return fabs (linear->pd1.x - linear->pd2.x) < DBL_EPSILON &&
 	   fabs (linear->pd1.y - linear->pd2.y) < DBL_EPSILON;
 }
 
-static cairo_bool_t
-_radial_pattern_is_degenerate (const cairo_radial_pattern_t *radial)
+static comac_bool_t
+_radial_pattern_is_degenerate (const comac_radial_pattern_t *radial)
 {
     /* A radial pattern is considered degenerate if it can be
      * represented as a solid or clear pattern.  This corresponds to
@@ -2166,7 +2166,7 @@ _radial_pattern_is_degenerate (const cairo_radial_pattern_t *radial)
      *      |dr| < DBL_EPSILON && max (|dx|, |dy|) < 2 * DBL_EPSILON
      *
      * These checks are consistent with the assumptions used in
-     * _cairo_radial_pattern_box_to_parameter ().
+     * _comac_radial_pattern_box_to_parameter ().
      */
 
     return fabs (radial->cd1.radius - radial->cd2.radius) < DBL_EPSILON &&
@@ -2176,7 +2176,7 @@ _radial_pattern_is_degenerate (const cairo_radial_pattern_t *radial)
 }
 
 static void
-_cairo_linear_pattern_box_to_parameter (const cairo_linear_pattern_t *linear,
+_comac_linear_pattern_box_to_parameter (const comac_linear_pattern_t *linear,
 					double x0, double y0,
 					double x1, double y1,
 					double range[2])
@@ -2233,8 +2233,8 @@ _cairo_linear_pattern_box_to_parameter (const cairo_linear_pattern_t *linear,
 	range[1] += tdy;
 }
 
-static cairo_bool_t
-_extend_range (double range[2], double value, cairo_bool_t valid)
+static comac_bool_t
+_extend_range (double range[2], double value, comac_bool_t valid)
 {
     if (!valid)
 	range[0] = range[1] = value;
@@ -2247,7 +2247,7 @@ _extend_range (double range[2], double value, cairo_bool_t valid)
 }
 
 /*
- * _cairo_radial_pattern_focus_is_inside:
+ * _comac_radial_pattern_focus_is_inside:
  *
  * Returns %TRUE if and only if the focus point exists and is
  * contained in one of the two extreme circles. This condition is
@@ -2260,8 +2260,8 @@ _extend_range (double range[2], double value, cairo_bool_t valid)
  * %FALSE.
  *
  */
-cairo_bool_t
-_cairo_radial_pattern_focus_is_inside (const cairo_radial_pattern_t *radial)
+comac_bool_t
+_comac_radial_pattern_focus_is_inside (const comac_radial_pattern_t *radial)
 {
     double cx, cy, cr, dx, dy, dr;
 
@@ -2276,7 +2276,7 @@ _cairo_radial_pattern_focus_is_inside (const cairo_radial_pattern_t *radial)
 }
 
 static void
-_cairo_radial_pattern_box_to_parameter (const cairo_radial_pattern_t *radial,
+_comac_radial_pattern_box_to_parameter (const comac_radial_pattern_t *radial,
 					double x0, double y0,
 					double x1, double y1,
 					double tolerance,
@@ -2285,7 +2285,7 @@ _cairo_radial_pattern_box_to_parameter (const cairo_radial_pattern_t *radial,
     double cx, cy, cr, dx, dy, dr;
     double a, x_focus, y_focus;
     double mindr, minx, miny, maxx, maxy;
-    cairo_bool_t valid;
+    comac_bool_t valid;
 
     assert (! _radial_pattern_is_degenerate (radial));
     assert (x0 < x1);
@@ -2622,61 +2622,61 @@ _cairo_radial_pattern_box_to_parameter (const cairo_radial_pattern_t *radial,
 }
 
 /**
- * _cairo_gradient_pattern_box_to_parameter:
+ * _comac_gradient_pattern_box_to_parameter:
  *
  * Compute a interpolation range sufficient to draw (within the given
  * tolerance) the gradient in the given box getting the same result as
  * using the (-inf, +inf) range.
  *
  * Assumes that the pattern is not degenerate. This can be guaranteed
- * by simplifying it to a solid clear if _cairo_pattern_is_clear or to
- * a solid color if _cairo_gradient_pattern_is_solid.
+ * by simplifying it to a solid clear if _comac_pattern_is_clear or to
+ * a solid color if _comac_gradient_pattern_is_solid.
  *
  * The range isn't guaranteed to be minimal, but it tries to.
  **/
 void
-_cairo_gradient_pattern_box_to_parameter (const cairo_gradient_pattern_t *gradient,
+_comac_gradient_pattern_box_to_parameter (const comac_gradient_pattern_t *gradient,
 					  double x0, double y0,
 					  double x1, double y1,
 					  double tolerance,
 					  double out_range[2])
 {
-    assert (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR ||
-	    gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL);
+    assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
+	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
-    if (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR) {
-	_cairo_linear_pattern_box_to_parameter ((cairo_linear_pattern_t *) gradient,
+    if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
+	_comac_linear_pattern_box_to_parameter ((comac_linear_pattern_t *) gradient,
 						x0, y0, x1, y1, out_range);
     } else {
-	_cairo_radial_pattern_box_to_parameter ((cairo_radial_pattern_t *) gradient,
+	_comac_radial_pattern_box_to_parameter ((comac_radial_pattern_t *) gradient,
 						x0, y0, x1, y1, tolerance, out_range);
     }
 }
 
 /**
- * _cairo_gradient_pattern_interpolate:
+ * _comac_gradient_pattern_interpolate:
  *
  * Interpolate between the start and end objects of linear or radial
  * gradients.  The interpolated object is stored in out_circle, with
  * the radius being zero in the linear gradient case.
  **/
 void
-_cairo_gradient_pattern_interpolate (const cairo_gradient_pattern_t *gradient,
+_comac_gradient_pattern_interpolate (const comac_gradient_pattern_t *gradient,
 				     double			     t,
-				     cairo_circle_double_t	    *out_circle)
+				     comac_circle_double_t	    *out_circle)
 {
-    assert (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR ||
-	    gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL);
+    assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
+	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
 #define lerp(a,b) (a)*(1-t) + (b)*t
 
-    if (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR) {
-	cairo_linear_pattern_t *linear = (cairo_linear_pattern_t *) gradient;
+    if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
+	comac_linear_pattern_t *linear = (comac_linear_pattern_t *) gradient;
 	out_circle->center.x = lerp (linear->pd1.x, linear->pd2.x);
 	out_circle->center.y = lerp (linear->pd1.y, linear->pd2.y);
 	out_circle->radius = 0;
     } else {
-	cairo_radial_pattern_t *radial = (cairo_radial_pattern_t *) gradient;
+	comac_radial_pattern_t *radial = (comac_radial_pattern_t *) gradient;
 	out_circle->center.x = lerp (radial->cd1.center.x, radial->cd2.center.x);
 	out_circle->center.y = lerp (radial->cd1.center.y, radial->cd2.center.y);
 	out_circle->radius   = lerp (radial->cd1.radius  , radial->cd2.radius);
@@ -2687,7 +2687,7 @@ _cairo_gradient_pattern_interpolate (const cairo_gradient_pattern_t *gradient,
 
 
 /**
- * _cairo_gradient_pattern_fit_to_range:
+ * _comac_gradient_pattern_fit_to_range:
  *
  * Scale the extremes of a gradient to guarantee that the coordinates
  * and their deltas are within the range (-max_value, max_value). The
@@ -2698,18 +2698,18 @@ _cairo_gradient_pattern_interpolate (const cairo_gradient_pattern_t *gradient,
  *
  **/
 void
-_cairo_gradient_pattern_fit_to_range (const cairo_gradient_pattern_t *gradient,
+_comac_gradient_pattern_fit_to_range (const comac_gradient_pattern_t *gradient,
 				      double			      max_value,
-				      cairo_matrix_t                 *out_matrix,
-				      cairo_circle_double_t	      out_circle[2])
+				      comac_matrix_t                 *out_matrix,
+				      comac_circle_double_t	      out_circle[2])
 {
     double dim;
 
-    assert (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR ||
-	    gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL);
+    assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
+	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
-    if (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR) {
-	cairo_linear_pattern_t *linear = (cairo_linear_pattern_t *) gradient;
+    if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
+	comac_linear_pattern_t *linear = (comac_linear_pattern_t *) gradient;
 
 	out_circle[0].center = linear->pd1;
 	out_circle[0].radius = 0;
@@ -2723,7 +2723,7 @@ _cairo_gradient_pattern_fit_to_range (const cairo_gradient_pattern_t *gradient,
 	dim = MAX (dim, fabs (linear->pd1.x - linear->pd2.x));
 	dim = MAX (dim, fabs (linear->pd1.y - linear->pd2.y));
     } else {
-	cairo_radial_pattern_t *radial = (cairo_radial_pattern_t *) gradient;
+	comac_radial_pattern_t *radial = (comac_radial_pattern_t *) gradient;
 
 	out_circle[0] = radial->cd1;
 	out_circle[1] = radial->cd2;
@@ -2740,7 +2740,7 @@ _cairo_gradient_pattern_fit_to_range (const cairo_gradient_pattern_t *gradient,
     }
 
     if (unlikely (dim > max_value)) {
-	cairo_matrix_t scale;
+	comac_matrix_t scale;
 
 	dim = max_value / dim;
 
@@ -2751,45 +2751,45 @@ _cairo_gradient_pattern_fit_to_range (const cairo_gradient_pattern_t *gradient,
 	out_circle[1].center.y *= dim;
 	out_circle[1].radius   *= dim;
 
-	cairo_matrix_init_scale (&scale, dim, dim);
-	cairo_matrix_multiply (out_matrix, &gradient->base.matrix, &scale);
+	comac_matrix_init_scale (&scale, dim, dim);
+	comac_matrix_multiply (out_matrix, &gradient->base.matrix, &scale);
     } else {
 	*out_matrix = gradient->base.matrix;
     }
 }
 
-static cairo_bool_t
-_gradient_is_clear (const cairo_gradient_pattern_t *gradient,
-		    const cairo_rectangle_int_t *extents)
+static comac_bool_t
+_gradient_is_clear (const comac_gradient_pattern_t *gradient,
+		    const comac_rectangle_int_t *extents)
 {
     unsigned int i;
 
-    assert (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR ||
-	    gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL);
+    assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
+	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
     if (gradient->n_stops == 0 ||
-	(gradient->base.extend == CAIRO_EXTEND_NONE &&
+	(gradient->base.extend == COMAC_EXTEND_NONE &&
 	 gradient->stops[0].offset == gradient->stops[gradient->n_stops - 1].offset))
 	return TRUE;
 
-    if (gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL) {
+    if (gradient->base.type == COMAC_PATTERN_TYPE_RADIAL) {
 	/* degenerate radial gradients are clear */
-	if (_radial_pattern_is_degenerate ((cairo_radial_pattern_t *) gradient))
+	if (_radial_pattern_is_degenerate ((comac_radial_pattern_t *) gradient))
 	    return TRUE;
-    } else if (gradient->base.extend == CAIRO_EXTEND_NONE) {
+    } else if (gradient->base.extend == COMAC_EXTEND_NONE) {
 	/* EXTEND_NONE degenerate linear gradients are clear */
-	if (_linear_pattern_is_degenerate ((cairo_linear_pattern_t *) gradient))
+	if (_linear_pattern_is_degenerate ((comac_linear_pattern_t *) gradient))
 	    return TRUE;
     }
 
     /* Check if the extents intersect the drawn part of the pattern. */
     if (extents != NULL &&
-	(gradient->base.extend == CAIRO_EXTEND_NONE ||
-	 gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL))
+	(gradient->base.extend == COMAC_EXTEND_NONE ||
+	 gradient->base.type == COMAC_PATTERN_TYPE_RADIAL))
     {
 	double t[2];
 
-	_cairo_gradient_pattern_box_to_parameter (gradient,
+	_comac_gradient_pattern_box_to_parameter (gradient,
 						  extents->x,
 						  extents->y,
 						  extents->x + extents->width,
@@ -2797,7 +2797,7 @@ _gradient_is_clear (const cairo_gradient_pattern_t *gradient,
 						  DBL_EPSILON,
 						  t);
 
-	if (gradient->base.extend == CAIRO_EXTEND_NONE &&
+	if (gradient->base.extend == COMAC_EXTEND_NONE &&
 	    (t[0] >= gradient->stops[gradient->n_stops - 1].offset ||
 	     t[1] <= gradient->stops[0].offset))
 	{
@@ -2809,25 +2809,25 @@ _gradient_is_clear (const cairo_gradient_pattern_t *gradient,
     }
 
     for (i = 0; i < gradient->n_stops; i++)
-	if (! CAIRO_COLOR_IS_CLEAR (&gradient->stops[i].color))
+	if (! COMAC_COLOR_IS_CLEAR (&gradient->stops[i].color))
 	    return FALSE;
 
     return TRUE;
 }
 
 static void
-_gradient_color_average (const cairo_gradient_pattern_t *gradient,
-			 cairo_color_t *color)
+_gradient_color_average (const comac_gradient_pattern_t *gradient,
+			 comac_color_t *color)
 {
     double delta0, delta1;
     double r, g, b, a;
     unsigned int i, start = 1, end;
 
     assert (gradient->n_stops > 0);
-    assert (gradient->base.extend != CAIRO_EXTEND_NONE);
+    assert (gradient->base.extend != COMAC_EXTEND_NONE);
 
     if (gradient->n_stops == 1) {
-	_cairo_color_init_rgba (color,
+	_comac_color_init_rgba (color,
 				gradient->stops[0].color.red,
 				gradient->stops[0].color.green,
 				gradient->stops[0].color.blue,
@@ -2838,7 +2838,7 @@ _gradient_color_average (const cairo_gradient_pattern_t *gradient,
     end = gradient->n_stops - 1;
 
     switch (gradient->base.extend) {
-    case CAIRO_EXTEND_REPEAT:
+    case COMAC_EXTEND_REPEAT:
       /*
        * Sa, Sb and Sy, Sz are the first two and last two stops respectively.
        * The weight of the first and last stop can be computed as the area of
@@ -2860,7 +2860,7 @@ _gradient_color_average (const cairo_gradient_pattern_t *gradient,
 	delta1 = 1.0 + gradient->stops[0].offset - gradient->stops[end-1].offset;
 	break;
 
-    case CAIRO_EXTEND_REFLECT:
+    case COMAC_EXTEND_REFLECT:
       /*
        * Sa, Sb and Sy, Sz are the first two and last two stops respectively.
        * The weight of the first and last stop can be computed as the area of
@@ -2882,7 +2882,7 @@ _gradient_color_average (const cairo_gradient_pattern_t *gradient,
 	delta1 = 2.0 - gradient->stops[end-1].offset - gradient->stops[end].offset;
 	break;
 
-    case CAIRO_EXTEND_PAD:
+    case COMAC_EXTEND_PAD:
       /* PAD is computed as the average of the first and last stop:
        *  - take both of them with weight 1 (they will be halved
        *    after the whole sum has been computed).
@@ -2892,10 +2892,10 @@ _gradient_color_average (const cairo_gradient_pattern_t *gradient,
 	start = end;
 	break;
 
-    case CAIRO_EXTEND_NONE:
+    case COMAC_EXTEND_NONE:
     default:
 	ASSERT_NOT_REACHED;
-	_cairo_color_init_rgba (color, 0, 0, 0, 0);
+	_comac_color_init_rgba (color, 0, 0, 0, 0);
 	return;
     }
 
@@ -2922,11 +2922,11 @@ _gradient_color_average (const cairo_gradient_pattern_t *gradient,
     b += delta1 * gradient->stops[end].color.blue;
     a += delta1 * gradient->stops[end].color.alpha;
 
-    _cairo_color_init_rgba (color, r * .5, g * .5, b * .5, a * .5);
+    _comac_color_init_rgba (color, r * .5, g * .5, b * .5, a * .5);
 }
 
 /**
- * _cairo_pattern_alpha_range:
+ * _comac_pattern_alpha_range:
  *
  * Convenience function to determine the minimum and maximum alpha in
  * the drawn part of a pattern (i.e. ignoring clear parts caused by
@@ -2936,22 +2936,22 @@ _gradient_color_average (const cairo_gradient_pattern_t *gradient,
  * minimum and maximum alpha value of the pattern.
  **/
 void
-_cairo_pattern_alpha_range (const cairo_pattern_t *pattern,
+_comac_pattern_alpha_range (const comac_pattern_t *pattern,
 			    double                *out_min,
 			    double                *out_max)
 {
     double alpha_min, alpha_max;
 
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID: {
-	const cairo_solid_pattern_t *solid = (cairo_solid_pattern_t *) pattern;
+    case COMAC_PATTERN_TYPE_SOLID: {
+	const comac_solid_pattern_t *solid = (comac_solid_pattern_t *) pattern;
 	alpha_min = alpha_max = solid->color.alpha;
 	break;
     }
 
-    case CAIRO_PATTERN_TYPE_LINEAR:
-    case CAIRO_PATTERN_TYPE_RADIAL: {
-	const cairo_gradient_pattern_t *gradient = (cairo_gradient_pattern_t *) pattern;
+    case COMAC_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_RADIAL: {
+	const comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t *) pattern;
 	unsigned int i;
 
 	assert (gradient->n_stops >= 1);
@@ -2967,10 +2967,10 @@ _cairo_pattern_alpha_range (const cairo_pattern_t *pattern,
 	break;
     }
 
-    case CAIRO_PATTERN_TYPE_MESH: {
-	const cairo_mesh_pattern_t *mesh = (const cairo_mesh_pattern_t *) pattern;
-	const cairo_mesh_patch_t *patch = _cairo_array_index_const (&mesh->patches, 0);
-	unsigned int i, j, n = _cairo_array_num_elements (&mesh->patches);
+    case COMAC_PATTERN_TYPE_MESH: {
+	const comac_mesh_pattern_t *mesh = (const comac_mesh_pattern_t *) pattern;
+	const comac_mesh_patch_t *patch = _comac_array_index_const (&mesh->patches, 0);
+	unsigned int i, j, n = _comac_array_num_elements (&mesh->patches);
 
 	assert (n >= 1);
 
@@ -2991,8 +2991,8 @@ _cairo_pattern_alpha_range (const cairo_pattern_t *pattern,
 	ASSERT_NOT_REACHED;
 	/* fall through */
 
-    case CAIRO_PATTERN_TYPE_SURFACE:
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_SURFACE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
 	alpha_min = 0;
 	alpha_max = 1;
 	break;
@@ -3005,7 +3005,7 @@ _cairo_pattern_alpha_range (const cairo_pattern_t *pattern,
 }
 
 /**
- * _cairo_mesh_pattern_coord_box:
+ * _comac_mesh_pattern_coord_box:
  *
  * Convenience function to determine the range of the coordinates of
  * the points used to define the patches of the mesh.
@@ -3020,25 +3020,25 @@ _cairo_pattern_alpha_range (const cairo_pattern_t *pattern,
  * the coordinate range if the mesh pattern contains at least one
  * patch, otherwise it returns FALSE.
  **/
-cairo_bool_t
-_cairo_mesh_pattern_coord_box (const cairo_mesh_pattern_t *mesh,
+comac_bool_t
+_comac_mesh_pattern_coord_box (const comac_mesh_pattern_t *mesh,
 			       double                     *out_xmin,
 			       double                     *out_ymin,
 			       double                     *out_xmax,
 			       double                     *out_ymax)
 {
-    const cairo_mesh_patch_t *patch;
+    const comac_mesh_patch_t *patch;
     unsigned int num_patches, i, j, k;
     double x0, y0, x1, y1;
 
     assert (mesh->current_patch == NULL);
 
-    num_patches = _cairo_array_num_elements (&mesh->patches);
+    num_patches = _comac_array_num_elements (&mesh->patches);
 
     if (num_patches == 0)
 	return FALSE;
 
-    patch = _cairo_array_index_const (&mesh->patches, 0);
+    patch = _comac_array_index_const (&mesh->patches, 0);
     x0 = x1 = patch->points[0][0].x;
     y0 = y1 = patch->points[0][0].y;
 
@@ -3062,36 +3062,36 @@ _cairo_mesh_pattern_coord_box (const cairo_mesh_pattern_t *mesh,
 }
 
 /**
- * _cairo_gradient_pattern_is_solid:
+ * _comac_gradient_pattern_is_solid:
  *
  * Convenience function to determine whether a gradient pattern is
  * a solid color within the given extents. In this case the color
  * argument is initialized to the color the pattern represents.
  * This functions doesn't handle completely transparent gradients,
- * thus it should be called only after _cairo_pattern_is_clear has
+ * thus it should be called only after _comac_pattern_is_clear has
  * returned FALSE.
  *
  * Return value: %TRUE if the pattern is a solid color.
  **/
-cairo_bool_t
-_cairo_gradient_pattern_is_solid (const cairo_gradient_pattern_t *gradient,
-				  const cairo_rectangle_int_t *extents,
-				  cairo_color_t *color)
+comac_bool_t
+_comac_gradient_pattern_is_solid (const comac_gradient_pattern_t *gradient,
+				  const comac_rectangle_int_t *extents,
+				  comac_color_t *color)
 {
     unsigned int i;
 
-    assert (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR ||
-	    gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL);
+    assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
+	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
     /* TODO: radial */
-    if (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR) {
-	cairo_linear_pattern_t *linear = (cairo_linear_pattern_t *) gradient;
+    if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
+	comac_linear_pattern_t *linear = (comac_linear_pattern_t *) gradient;
 	if (_linear_pattern_is_degenerate (linear)) {
 	    _gradient_color_average (gradient, color);
 	    return TRUE;
 	}
 
-	if (gradient->base.extend == CAIRO_EXTEND_NONE) {
+	if (gradient->base.extend == COMAC_EXTEND_NONE) {
 	    double t[2];
 
 	    /* We already know that the pattern is not clear, thus if some
@@ -3101,7 +3101,7 @@ _cairo_gradient_pattern_is_solid (const cairo_gradient_pattern_t *gradient,
 	    if (extents == NULL)
 		return FALSE;
 
-	    _cairo_linear_pattern_box_to_parameter (linear,
+	    _comac_linear_pattern_box_to_parameter (linear,
 						    extents->x,
 						    extents->y,
 						    extents->x + extents->width,
@@ -3115,11 +3115,11 @@ _cairo_gradient_pattern_is_solid (const cairo_gradient_pattern_t *gradient,
 	return FALSE;
 
     for (i = 1; i < gradient->n_stops; i++)
-	if (! _cairo_color_stop_equal (&gradient->stops[0].color,
+	if (! _comac_color_stop_equal (&gradient->stops[0].color,
 				       &gradient->stops[i].color))
 	    return FALSE;
 
-    _cairo_color_init_rgba (color,
+    _comac_color_init_rgba (color,
 			    gradient->stops[0].color.red,
 			    gradient->stops[0].color.green,
 			    gradient->stops[0].color.blue,
@@ -3129,7 +3129,7 @@ _cairo_gradient_pattern_is_solid (const cairo_gradient_pattern_t *gradient,
 }
 
 /**
- * _cairo_pattern_is_constant_alpha:
+ * _comac_pattern_is_constant_alpha:
  *
  * Convenience function to determine whether a pattern has constant
  * alpha within the given extents. In this case the alpha argument is
@@ -3137,33 +3137,33 @@ _cairo_gradient_pattern_is_solid (const cairo_gradient_pattern_t *gradient,
  *
  * Return value: %TRUE if the pattern has constant alpha.
  **/
-cairo_bool_t
-_cairo_pattern_is_constant_alpha (const cairo_pattern_t         *abstract_pattern,
-				  const cairo_rectangle_int_t   *extents,
+comac_bool_t
+_comac_pattern_is_constant_alpha (const comac_pattern_t         *abstract_pattern,
+				  const comac_rectangle_int_t   *extents,
 				  double                        *alpha)
 {
-    const cairo_pattern_union_t *pattern;
-    cairo_color_t color;
+    const comac_pattern_union_t *pattern;
+    comac_color_t color;
 
-    if (_cairo_pattern_is_clear (abstract_pattern)) {
+    if (_comac_pattern_is_clear (abstract_pattern)) {
 	*alpha = 0.0;
 	return TRUE;
     }
 
-    if (_cairo_pattern_is_opaque (abstract_pattern, extents)) {
+    if (_comac_pattern_is_opaque (abstract_pattern, extents)) {
 	*alpha = 1.0;
 	return TRUE;
     }
 
-    pattern = (cairo_pattern_union_t *) abstract_pattern;
+    pattern = (comac_pattern_union_t *) abstract_pattern;
     switch (pattern->base.type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
+    case COMAC_PATTERN_TYPE_SOLID:
 	*alpha = pattern->solid.color.alpha;
 	return TRUE;
 
-    case CAIRO_PATTERN_TYPE_LINEAR:
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	if (_cairo_gradient_pattern_is_solid (&pattern->gradient.base, extents, &color)) {
+    case COMAC_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_RADIAL:
+	if (_comac_gradient_pattern_is_solid (&pattern->gradient.base, extents, &color)) {
 	    *alpha = color.alpha;
 	    return TRUE;
 	} else {
@@ -3171,9 +3171,9 @@ _cairo_pattern_is_constant_alpha (const cairo_pattern_t         *abstract_patter
 	}
 
 	/* TODO: need to test these as well */
-    case CAIRO_PATTERN_TYPE_SURFACE:
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-    case CAIRO_PATTERN_TYPE_MESH:
+    case COMAC_PATTERN_TYPE_SURFACE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_MESH:
 	return FALSE;
     }
 
@@ -3181,13 +3181,13 @@ _cairo_pattern_is_constant_alpha (const cairo_pattern_t         *abstract_patter
     return FALSE;
 }
 
-static cairo_bool_t
-_mesh_is_clear (const cairo_mesh_pattern_t *mesh)
+static comac_bool_t
+_mesh_is_clear (const comac_mesh_pattern_t *mesh)
 {
     double x1, y1, x2, y2;
-    cairo_bool_t is_valid;
+    comac_bool_t is_valid;
 
-    is_valid = _cairo_mesh_pattern_coord_box (mesh, &x1, &y1, &x2, &y2);
+    is_valid = _comac_mesh_pattern_coord_box (mesh, &x1, &y1, &x2, &y2);
     if (!is_valid)
 	return TRUE;
 
@@ -3198,7 +3198,7 @@ _mesh_is_clear (const cairo_mesh_pattern_t *mesh)
 }
 
 /**
- * _cairo_pattern_is_opaque_solid:
+ * _comac_pattern_is_opaque_solid:
  *
  * Convenience function to determine whether a pattern is an opaque
  * (alpha==1.0) solid color pattern. This is done by testing whether
@@ -3208,93 +3208,93 @@ _mesh_is_clear (const cairo_mesh_pattern_t *mesh)
  *
  * Return value: %TRUE if the pattern is an opaque, solid color.
  **/
-cairo_bool_t
-_cairo_pattern_is_opaque_solid (const cairo_pattern_t *pattern)
+comac_bool_t
+_comac_pattern_is_opaque_solid (const comac_pattern_t *pattern)
 {
-    cairo_solid_pattern_t *solid;
+    comac_solid_pattern_t *solid;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_SOLID)
+    if (pattern->type != COMAC_PATTERN_TYPE_SOLID)
 	return FALSE;
 
-    solid = (cairo_solid_pattern_t *) pattern;
+    solid = (comac_solid_pattern_t *) pattern;
 
-    return CAIRO_COLOR_IS_OPAQUE (&solid->color);
+    return COMAC_COLOR_IS_OPAQUE (&solid->color);
 }
 
-static cairo_bool_t
-_surface_is_opaque (const cairo_surface_pattern_t *pattern,
-		    const cairo_rectangle_int_t *sample)
+static comac_bool_t
+_surface_is_opaque (const comac_surface_pattern_t *pattern,
+		    const comac_rectangle_int_t *sample)
 {
-    cairo_rectangle_int_t extents;
+    comac_rectangle_int_t extents;
 
-    if (pattern->surface->content & CAIRO_CONTENT_ALPHA)
+    if (pattern->surface->content & COMAC_CONTENT_ALPHA)
 	return FALSE;
 
-    if (pattern->base.extend != CAIRO_EXTEND_NONE)
+    if (pattern->base.extend != COMAC_EXTEND_NONE)
 	return TRUE;
 
-    if (! _cairo_surface_get_extents (pattern->surface, &extents))
-	return TRUE;
-
-    if (sample == NULL)
-	return FALSE;
-
-    return _cairo_rectangle_contains_rectangle (&extents, sample);
-}
-
-static cairo_bool_t
-_raster_source_is_opaque (const cairo_raster_source_pattern_t *pattern,
-			  const cairo_rectangle_int_t *sample)
-{
-    if (pattern->content & CAIRO_CONTENT_ALPHA)
-	return FALSE;
-
-    if (pattern->base.extend != CAIRO_EXTEND_NONE)
+    if (! _comac_surface_get_extents (pattern->surface, &extents))
 	return TRUE;
 
     if (sample == NULL)
 	return FALSE;
 
-    return _cairo_rectangle_contains_rectangle (&pattern->extents, sample);
+    return _comac_rectangle_contains_rectangle (&extents, sample);
 }
 
-static cairo_bool_t
-_surface_is_clear (const cairo_surface_pattern_t *pattern)
+static comac_bool_t
+_raster_source_is_opaque (const comac_raster_source_pattern_t *pattern,
+			  const comac_rectangle_int_t *sample)
 {
-    cairo_rectangle_int_t extents;
+    if (pattern->content & COMAC_CONTENT_ALPHA)
+	return FALSE;
 
-    if (_cairo_surface_get_extents (pattern->surface, &extents) &&
+    if (pattern->base.extend != COMAC_EXTEND_NONE)
+	return TRUE;
+
+    if (sample == NULL)
+	return FALSE;
+
+    return _comac_rectangle_contains_rectangle (&pattern->extents, sample);
+}
+
+static comac_bool_t
+_surface_is_clear (const comac_surface_pattern_t *pattern)
+{
+    comac_rectangle_int_t extents;
+
+    if (_comac_surface_get_extents (pattern->surface, &extents) &&
 	(extents.width == 0 || extents.height == 0))
 	return TRUE;
 
     return pattern->surface->is_clear &&
-	pattern->surface->content & CAIRO_CONTENT_ALPHA;
+	pattern->surface->content & COMAC_CONTENT_ALPHA;
 }
 
-static cairo_bool_t
-_raster_source_is_clear (const cairo_raster_source_pattern_t *pattern)
+static comac_bool_t
+_raster_source_is_clear (const comac_raster_source_pattern_t *pattern)
 {
     return pattern->extents.width == 0 || pattern->extents.height == 0;
 }
 
-static cairo_bool_t
-_gradient_is_opaque (const cairo_gradient_pattern_t *gradient,
-		     const cairo_rectangle_int_t *sample)
+static comac_bool_t
+_gradient_is_opaque (const comac_gradient_pattern_t *gradient,
+		     const comac_rectangle_int_t *sample)
 {
     unsigned int i;
 
-    assert (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR ||
-	    gradient->base.type == CAIRO_PATTERN_TYPE_RADIAL);
+    assert (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR ||
+	    gradient->base.type == COMAC_PATTERN_TYPE_RADIAL);
 
     if (gradient->n_stops == 0 ||
-	(gradient->base.extend == CAIRO_EXTEND_NONE &&
+	(gradient->base.extend == COMAC_EXTEND_NONE &&
 	 gradient->stops[0].offset == gradient->stops[gradient->n_stops - 1].offset))
 	return FALSE;
 
-    if (gradient->base.type == CAIRO_PATTERN_TYPE_LINEAR) {
-	if (gradient->base.extend == CAIRO_EXTEND_NONE) {
+    if (gradient->base.type == COMAC_PATTERN_TYPE_LINEAR) {
+	if (gradient->base.extend == COMAC_EXTEND_NONE) {
 	    double t[2];
-	    cairo_linear_pattern_t *linear = (cairo_linear_pattern_t *) gradient;
+	    comac_linear_pattern_t *linear = (comac_linear_pattern_t *) gradient;
 
 	    /* EXTEND_NONE degenerate radial gradients are clear */
 	    if (_linear_pattern_is_degenerate (linear))
@@ -3303,7 +3303,7 @@ _gradient_is_opaque (const cairo_gradient_pattern_t *gradient,
 	    if (sample == NULL)
 		return FALSE;
 
-	    _cairo_linear_pattern_box_to_parameter (linear,
+	    _comac_linear_pattern_box_to_parameter (linear,
 						    sample->x,
 						    sample->y,
 						    sample->x + sample->width,
@@ -3317,42 +3317,42 @@ _gradient_is_opaque (const cairo_gradient_pattern_t *gradient,
 	return FALSE; /* TODO: check actual intersection */
 
     for (i = 0; i < gradient->n_stops; i++)
-	if (! CAIRO_COLOR_IS_OPAQUE (&gradient->stops[i].color))
+	if (! COMAC_COLOR_IS_OPAQUE (&gradient->stops[i].color))
 	    return FALSE;
 
     return TRUE;
 }
 
 /**
- * _cairo_pattern_is_opaque:
+ * _comac_pattern_is_opaque:
  *
  * Convenience function to determine whether a pattern is an opaque
  * pattern (of any type). The same caveats that apply to
- * _cairo_pattern_is_opaque_solid apply here as well.
+ * _comac_pattern_is_opaque_solid apply here as well.
  *
  * Return value: %TRUE if the pattern is a opaque.
  **/
-cairo_bool_t
-_cairo_pattern_is_opaque (const cairo_pattern_t *abstract_pattern,
-			  const cairo_rectangle_int_t *sample)
+comac_bool_t
+_comac_pattern_is_opaque (const comac_pattern_t *abstract_pattern,
+			  const comac_rectangle_int_t *sample)
 {
-    const cairo_pattern_union_t *pattern;
+    const comac_pattern_union_t *pattern;
 
     if (abstract_pattern->has_component_alpha)
 	return FALSE;
 
-    pattern = (cairo_pattern_union_t *) abstract_pattern;
+    pattern = (comac_pattern_union_t *) abstract_pattern;
     switch (pattern->base.type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	return _cairo_pattern_is_opaque_solid (abstract_pattern);
-    case CAIRO_PATTERN_TYPE_SURFACE:
+    case COMAC_PATTERN_TYPE_SOLID:
+	return _comac_pattern_is_opaque_solid (abstract_pattern);
+    case COMAC_PATTERN_TYPE_SURFACE:
 	return _surface_is_opaque (&pattern->surface, sample);
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
 	return _raster_source_is_opaque (&pattern->raster_source, sample);
-    case CAIRO_PATTERN_TYPE_LINEAR:
-    case CAIRO_PATTERN_TYPE_RADIAL:
+    case COMAC_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_RADIAL:
 	return _gradient_is_opaque (&pattern->gradient.base, sample);
-    case CAIRO_PATTERN_TYPE_MESH:
+    case COMAC_PATTERN_TYPE_MESH:
 	return FALSE;
     }
 
@@ -3360,26 +3360,26 @@ _cairo_pattern_is_opaque (const cairo_pattern_t *abstract_pattern,
     return FALSE;
 }
 
-cairo_bool_t
-_cairo_pattern_is_clear (const cairo_pattern_t *abstract_pattern)
+comac_bool_t
+_comac_pattern_is_clear (const comac_pattern_t *abstract_pattern)
 {
-    const cairo_pattern_union_t *pattern;
+    const comac_pattern_union_t *pattern;
 
     if (abstract_pattern->has_component_alpha)
 	return FALSE;
 
-    pattern = (cairo_pattern_union_t *) abstract_pattern;
+    pattern = (comac_pattern_union_t *) abstract_pattern;
     switch (abstract_pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	return CAIRO_COLOR_IS_CLEAR (&pattern->solid.color);
-    case CAIRO_PATTERN_TYPE_SURFACE:
+    case COMAC_PATTERN_TYPE_SOLID:
+	return COMAC_COLOR_IS_CLEAR (&pattern->solid.color);
+    case COMAC_PATTERN_TYPE_SURFACE:
 	return _surface_is_clear (&pattern->surface);
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
 	return _raster_source_is_clear (&pattern->raster_source);
-    case CAIRO_PATTERN_TYPE_LINEAR:
-    case CAIRO_PATTERN_TYPE_RADIAL:
+    case COMAC_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_RADIAL:
 	return _gradient_is_clear (&pattern->gradient.base, NULL);
-    case CAIRO_PATTERN_TYPE_MESH:
+    case COMAC_PATTERN_TYPE_MESH:
 	return _mesh_is_clear (&pattern->mesh);
     }
 
@@ -3401,33 +3401,33 @@ use_bilinear(double x, double y, double t)
     if (h < 1.0 / (0.75 * 0.75))
 	return TRUE; /* scale > .75 */
     if ((h > 3.99 && h < 4.01) /* scale is 1/2 */
-	&& !_cairo_fixed_from_double(x*y) /* parallel to an axis */
-	&& _cairo_fixed_is_integer (_cairo_fixed_from_double (t)))
+	&& !_comac_fixed_from_double(x*y) /* parallel to an axis */
+	&& _comac_fixed_is_integer (_comac_fixed_from_double (t)))
 	return TRUE;
     return FALSE;
 }
 
 /**
- * _cairo_pattern_analyze_filter:
+ * _comac_pattern_analyze_filter:
  * @pattern: surface pattern
- * Returns: the optimized #cairo_filter_t to use with @pattern.
+ * Returns: the optimized #comac_filter_t to use with @pattern.
  *
  * Possibly optimize the filter to a simpler value depending on transformation
  **/
-cairo_filter_t
-_cairo_pattern_analyze_filter (const cairo_pattern_t *pattern)
+comac_filter_t
+_comac_pattern_analyze_filter (const comac_pattern_t *pattern)
 {
     switch (pattern->filter) {
-    case CAIRO_FILTER_GOOD:
-    case CAIRO_FILTER_BEST:
-    case CAIRO_FILTER_BILINEAR:
-    case CAIRO_FILTER_FAST:
+    case COMAC_FILTER_GOOD:
+    case COMAC_FILTER_BEST:
+    case COMAC_FILTER_BILINEAR:
+    case COMAC_FILTER_FAST:
 	/* If source pixels map 1:1 onto destination pixels, we do
 	 * not need to filter (and do not want to filter, since it
 	 * will cause blurriness)
 	 */
-	if (_cairo_matrix_is_pixel_exact (&pattern->matrix)) {
-	    return CAIRO_FILTER_NEAREST;
+	if (_comac_matrix_is_pixel_exact (&pattern->matrix)) {
+	    return COMAC_FILTER_NEAREST;
 	} else {
 	    /* Use BILINEAR for any scale greater than .75 instead
 	     * of GOOD. For scales of 1 and larger this is identical,
@@ -3436,17 +3436,17 @@ _cairo_pattern_analyze_filter (const cairo_pattern_t *pattern)
 	     * BILINEAR can also be used if the scale is exactly .5
 	     * and the translation in that direction is an integer.
 	     */
-	    if (pattern->filter == CAIRO_FILTER_GOOD &&
+	    if (pattern->filter == COMAC_FILTER_GOOD &&
 		use_bilinear (pattern->matrix.xx, pattern->matrix.xy,
 			      pattern->matrix.x0) &&
 		use_bilinear (pattern->matrix.yx, pattern->matrix.yy,
 			      pattern->matrix.y0))
-		return CAIRO_FILTER_BILINEAR;
+		return COMAC_FILTER_BILINEAR;
 	}
 	break;
 
-    case CAIRO_FILTER_NEAREST:
-    case CAIRO_FILTER_GAUSSIAN:
+    case COMAC_FILTER_NEAREST:
+    case COMAC_FILTER_GAUSSIAN:
     default:
 	break;
     }
@@ -3455,20 +3455,20 @@ _cairo_pattern_analyze_filter (const cairo_pattern_t *pattern)
 }
 
 /**
- * _cairo_hypot:
+ * _comac_hypot:
  * Returns: value similar to hypot(@x,@y)
  *
  * May want to replace this with Manhattan distance (abs(x)+abs(y)) if
  * hypot is too slow, as there is no need for accuracy here.
  **/
 static inline double
-_cairo_hypot(double x, double y)
+_comac_hypot(double x, double y)
 {
     return hypot(x, y);
 }
 
 /**
- * _cairo_pattern_sampled_area:
+ * _comac_pattern_sampled_area:
  *
  * Return region of @pattern that will be sampled to fill @extents,
  * based on the transformation and filter.
@@ -3483,16 +3483,16 @@ _cairo_hypot(double x, double y)
  *      backends do currently (see bug #10508)
  **/
 void
-_cairo_pattern_sampled_area (const cairo_pattern_t *pattern,
-			     const cairo_rectangle_int_t *extents,
-			     cairo_rectangle_int_t *sample)
+_comac_pattern_sampled_area (const comac_pattern_t *pattern,
+			     const comac_rectangle_int_t *extents,
+			     comac_rectangle_int_t *sample)
 {
     double x1, x2, y1, y2;
     double padx, pady;
 
     /* Assume filters are interpolating, which means identity
        cannot change the image */
-    if (_cairo_matrix_is_identity (&pattern->matrix)) {
+    if (_comac_matrix_is_identity (&pattern->matrix)) {
 	*sample = *extents;
 	return;
     }
@@ -3502,7 +3502,7 @@ _cairo_pattern_sampled_area (const cairo_pattern_t *pattern,
     y1 = extents->y + 0.5;
     x2 = x1 + (extents->width - 1);
     y2 = y1 + (extents->height - 1);
-    _cairo_matrix_transform_bounding_box (&pattern->matrix,
+    _comac_matrix_transform_bounding_box (&pattern->matrix,
 					  &x1, &y1, &x2, &y2,
 					  NULL);
 
@@ -3511,60 +3511,60 @@ _cairo_pattern_sampled_area (const cairo_pattern_t *pattern,
      * furthest sample of reasonable size.
      */
     switch (pattern->filter) {
-    case CAIRO_FILTER_NEAREST:
-    case CAIRO_FILTER_FAST:
+    case COMAC_FILTER_NEAREST:
+    case COMAC_FILTER_FAST:
 	/* Correct value is zero, but when the sample is on an integer
 	 * it is unknown if the backend will sample the pixel to the
 	 * left or right. This value makes it include both possible pixels.
 	 */
 	padx = pady = 0.004;
 	break;
-    case CAIRO_FILTER_BILINEAR:
-    case CAIRO_FILTER_GAUSSIAN:
+    case COMAC_FILTER_BILINEAR:
+    case COMAC_FILTER_GAUSSIAN:
     default:
 	/* Correct value is .5 */
 	padx = pady = 0.495;
 	break;
-    case CAIRO_FILTER_GOOD:
+    case COMAC_FILTER_GOOD:
 	/* Correct value is max(width,1)*.5 */
-	padx = _cairo_hypot (pattern->matrix.xx, pattern->matrix.xy);
+	padx = _comac_hypot (pattern->matrix.xx, pattern->matrix.xy);
 	if (padx <= 1.0) padx = 0.495;
 	else if (padx >= 16.0) padx = 7.92;
 	else padx *= 0.495;
-	pady = _cairo_hypot (pattern->matrix.yx, pattern->matrix.yy);
+	pady = _comac_hypot (pattern->matrix.yx, pattern->matrix.yy);
 	if (pady <= 1.0) pady = 0.495;
 	else if (pady >= 16.0) pady = 7.92;
 	else pady *= 0.495;
 	break;
-    case CAIRO_FILTER_BEST:
+    case COMAC_FILTER_BEST:
 	/* Correct value is width*2 */
-	padx = _cairo_hypot (pattern->matrix.xx, pattern->matrix.xy) * 1.98;
+	padx = _comac_hypot (pattern->matrix.xx, pattern->matrix.xy) * 1.98;
 	if (padx > 7.92) padx = 7.92;
-	pady = _cairo_hypot (pattern->matrix.yx, pattern->matrix.yy) * 1.98;
+	pady = _comac_hypot (pattern->matrix.yx, pattern->matrix.yy) * 1.98;
 	if (pady > 7.92) pady = 7.92;
 	break;
     }
 
     /* round furthest samples to edge of pixels */
     x1 = floor (x1 - padx);
-    if (x1 < CAIRO_RECT_INT_MIN) x1 = CAIRO_RECT_INT_MIN;
+    if (x1 < COMAC_RECT_INT_MIN) x1 = COMAC_RECT_INT_MIN;
     sample->x = x1;
 
     y1 = floor (y1 - pady);
-    if (y1 < CAIRO_RECT_INT_MIN) y1 = CAIRO_RECT_INT_MIN;
+    if (y1 < COMAC_RECT_INT_MIN) y1 = COMAC_RECT_INT_MIN;
     sample->y = y1;
 
     x2 = floor (x2 + padx) + 1.0;
-    if (x2 > CAIRO_RECT_INT_MAX) x2 = CAIRO_RECT_INT_MAX;
+    if (x2 > COMAC_RECT_INT_MAX) x2 = COMAC_RECT_INT_MAX;
     sample->width = x2 - x1;
 
     y2 = floor (y2 + pady) + 1.0;
-    if (y2 > CAIRO_RECT_INT_MAX) y2 = CAIRO_RECT_INT_MAX;
+    if (y2 > COMAC_RECT_INT_MAX) y2 = COMAC_RECT_INT_MAX;
     sample->height = y2 - y1;
 }
 
 /**
- * _cairo_pattern_get_extents:
+ * _comac_pattern_get_extents:
  *
  * Return the "target-space" extents of @pattern in @extents.
  *
@@ -3579,33 +3579,33 @@ _cairo_pattern_sampled_area (const cairo_pattern_t *pattern,
  * with a little more work.
  **/
 void
-_cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
-			    cairo_rectangle_int_t         *extents,
-			    cairo_bool_t                   is_vector)
+_comac_pattern_get_extents (const comac_pattern_t         *pattern,
+			    comac_rectangle_int_t         *extents,
+			    comac_bool_t                   is_vector)
 {
     double x1, y1, x2, y2;
     int ix1, ix2, iy1, iy2;
-    cairo_bool_t round_x = FALSE;
-    cairo_bool_t round_y = FALSE;
+    comac_bool_t round_x = FALSE;
+    comac_bool_t round_y = FALSE;
 
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
+    case COMAC_PATTERN_TYPE_SOLID:
 	goto UNBOUNDED;
 
-    case CAIRO_PATTERN_TYPE_SURFACE:
+    case COMAC_PATTERN_TYPE_SURFACE:
 	{
-	    cairo_rectangle_int_t surface_extents;
-	    const cairo_surface_pattern_t *surface_pattern =
-		(const cairo_surface_pattern_t *) pattern;
-	    cairo_surface_t *surface = surface_pattern->surface;
+	    comac_rectangle_int_t surface_extents;
+	    const comac_surface_pattern_t *surface_pattern =
+		(const comac_surface_pattern_t *) pattern;
+	    comac_surface_t *surface = surface_pattern->surface;
 
-	    if (! _cairo_surface_get_extents (surface, &surface_extents))
+	    if (! _comac_surface_get_extents (surface, &surface_extents))
 		goto UNBOUNDED;
 
 	    if (surface_extents.width == 0 || surface_extents.height == 0)
 		goto EMPTY;
 
-	    if (pattern->extend != CAIRO_EXTEND_NONE)
+	    if (pattern->extend != COMAC_EXTEND_NONE)
 		goto UNBOUNDED;
 
 	    x1 = surface_extents.x;
@@ -3617,15 +3617,15 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	}
 	break;
 
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
 	{
-	    const cairo_raster_source_pattern_t *raster =
-		(const cairo_raster_source_pattern_t *) pattern;
+	    const comac_raster_source_pattern_t *raster =
+		(const comac_raster_source_pattern_t *) pattern;
 
 	    if (raster->extents.width == 0 || raster->extents.height == 0)
 		goto EMPTY;
 
-	    if (pattern->extend != CAIRO_EXTEND_NONE)
+	    if (pattern->extend != COMAC_EXTEND_NONE)
 		goto UNBOUNDED;
 
 	    x1 = raster->extents.x;
@@ -3635,8 +3635,8 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	}
     HANDLE_FILTER:
 	switch (pattern->filter) {
-	case CAIRO_FILTER_NEAREST:
-	case CAIRO_FILTER_FAST:
+	case COMAC_FILTER_NEAREST:
+	case COMAC_FILTER_FAST:
 	    round_x = round_y = TRUE;
 	    /* We don't know which way .5 will go, so fudge it slightly. */
 	    x1 -= 0.004;
@@ -3644,20 +3644,20 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	    x2 += 0.004;
 	    y2 += 0.004;
 	    break;
-	case CAIRO_FILTER_BEST:
+	case COMAC_FILTER_BEST:
 	    /* Assume best filter will produce nice antialiased edges */
 	    break;
-	case CAIRO_FILTER_BILINEAR:
-	case CAIRO_FILTER_GAUSSIAN:
-	case CAIRO_FILTER_GOOD:
+	case COMAC_FILTER_BILINEAR:
+	case COMAC_FILTER_GAUSSIAN:
+	case COMAC_FILTER_GOOD:
 	default:
 	    /* These filters can blur the edge out 1/2 pixel when scaling up */
-	    if (_cairo_hypot (pattern->matrix.xx, pattern->matrix.yx) < 1.0) {
+	    if (_comac_hypot (pattern->matrix.xx, pattern->matrix.yx) < 1.0) {
 		x1 -= 0.5;
 		x2 += 0.5;
 		round_x = TRUE;
 	    }
-	    if (_cairo_hypot (pattern->matrix.xy, pattern->matrix.yy) < 1.0) {
+	    if (_comac_hypot (pattern->matrix.xy, pattern->matrix.yy) < 1.0) {
 		y1 -= 0.5;
 		y2 += 0.5;
 		round_y = TRUE;
@@ -3666,16 +3666,16 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	}
 	break;
 
-    case CAIRO_PATTERN_TYPE_RADIAL:
+    case COMAC_PATTERN_TYPE_RADIAL:
 	{
-	    const cairo_radial_pattern_t *radial =
-		(const cairo_radial_pattern_t *) pattern;
+	    const comac_radial_pattern_t *radial =
+		(const comac_radial_pattern_t *) pattern;
 	    double cx1, cy1;
 	    double cx2, cy2;
 	    double r1, r2;
 
 	    if (_radial_pattern_is_degenerate (radial)) {
-		/* cairo-gstate should have optimised degenerate
+		/* comac-gstate should have optimised degenerate
 		 * patterns to solid clear patterns, so we can ignore
 		 * them here. */
 		goto EMPTY;
@@ -3683,7 +3683,7 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 
 	    /* TODO: in some cases (focus outside/on the circle) it is
 	     * half-bounded. */
-	    if (pattern->extend != CAIRO_EXTEND_NONE)
+	    if (pattern->extend != COMAC_EXTEND_NONE)
 		goto UNBOUNDED;
 
 	    cx1 = radial->cd1.center.x;
@@ -3701,16 +3701,16 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	}
 	break;
 
-    case CAIRO_PATTERN_TYPE_LINEAR:
+    case COMAC_PATTERN_TYPE_LINEAR:
 	{
-	    const cairo_linear_pattern_t *linear =
-		(const cairo_linear_pattern_t *) pattern;
+	    const comac_linear_pattern_t *linear =
+		(const comac_linear_pattern_t *) pattern;
 
-	    if (pattern->extend != CAIRO_EXTEND_NONE)
+	    if (pattern->extend != COMAC_EXTEND_NONE)
 		goto UNBOUNDED;
 
 	    if (_linear_pattern_is_degenerate (linear)) {
-		/* cairo-gstate should have optimised degenerate
+		/* comac-gstate should have optimised degenerate
 		 * patterns to solid ones, so we can again ignore
 		 * them here. */
 		goto EMPTY;
@@ -3741,11 +3741,11 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	}
 	break;
 
-    case CAIRO_PATTERN_TYPE_MESH:
+    case COMAC_PATTERN_TYPE_MESH:
 	{
-	    const cairo_mesh_pattern_t *mesh =
-		(const cairo_mesh_pattern_t *) pattern;
-	    if (! _cairo_mesh_pattern_coord_box (mesh, &x1, &y1, &x2, &y2))
+	    const comac_mesh_pattern_t *mesh =
+		(const comac_mesh_pattern_t *) pattern;
+	    if (! _comac_mesh_pattern_coord_box (mesh, &x1, &y1, &x2, &y2))
 		goto EMPTY;
 	}
 	break;
@@ -3754,19 +3754,19 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	ASSERT_NOT_REACHED;
     }
 
-    if (_cairo_matrix_is_translation (&pattern->matrix)) {
+    if (_comac_matrix_is_translation (&pattern->matrix)) {
 	x1 -= pattern->matrix.x0; x2 -= pattern->matrix.x0;
 	y1 -= pattern->matrix.y0; y2 -= pattern->matrix.y0;
     } else {
-	cairo_matrix_t imatrix;
-	cairo_status_t status;
+	comac_matrix_t imatrix;
+	comac_status_t status;
 
 	imatrix = pattern->matrix;
-	status = cairo_matrix_invert (&imatrix);
-	/* cairo_pattern_set_matrix ensures the matrix is invertible */
-	assert (status == CAIRO_STATUS_SUCCESS);
+	status = comac_matrix_invert (&imatrix);
+	/* comac_pattern_set_matrix ensures the matrix is invertible */
+	assert (status == COMAC_STATUS_SUCCESS);
 
-	_cairo_matrix_transform_bounding_box (&imatrix,
+	_comac_matrix_transform_bounding_box (&imatrix,
 					      &x1, &y1, &x2, &y2,
 					      NULL);
     }
@@ -3775,14 +3775,14 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	x1 -= 0.5;
 	x2 += 0.5;
     }
-    if (x1 < CAIRO_RECT_INT_MIN)
-	ix1 = CAIRO_RECT_INT_MIN;
+    if (x1 < COMAC_RECT_INT_MIN)
+	ix1 = COMAC_RECT_INT_MIN;
     else 
-	ix1 = _cairo_lround (x1);
-    if (x2 > CAIRO_RECT_INT_MAX)
-	ix2 = CAIRO_RECT_INT_MAX;
+	ix1 = _comac_lround (x1);
+    if (x2 > COMAC_RECT_INT_MAX)
+	ix2 = COMAC_RECT_INT_MAX;
     else
-	ix2 = _cairo_lround (x2);
+	ix2 = _comac_lround (x2);
     extents->x = ix1; extents->width  = ix2 - ix1;
     if (is_vector && extents->width == 0 && x1 != x2)
 	extents->width += 1;
@@ -3791,14 +3791,14 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	y1 -= 0.5;
 	y2 += 0.5;
     }
-    if (y1 < CAIRO_RECT_INT_MIN)
-	iy1 = CAIRO_RECT_INT_MIN;
+    if (y1 < COMAC_RECT_INT_MIN)
+	iy1 = COMAC_RECT_INT_MIN;
     else
-	iy1 = _cairo_lround (y1);
-    if (y2 > CAIRO_RECT_INT_MAX)
-	iy2 = CAIRO_RECT_INT_MAX;
+	iy1 = _comac_lround (y1);
+    if (y2 > COMAC_RECT_INT_MAX)
+	iy2 = COMAC_RECT_INT_MAX;
     else
-	iy2 = _cairo_lround (y2);
+	iy2 = _comac_lround (y2);
     extents->y = iy1; extents->height = iy2 - iy1;
     if (is_vector && extents->height == 0 && y1 != y2)
 	extents->height += 1;
@@ -3807,7 +3807,7 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 
   UNBOUNDED:
     /* unbounded patterns -> 'infinite' extents */
-    _cairo_unbounded_rectangle_init (extents);
+    _comac_unbounded_rectangle_init (extents);
     return;
 
   EMPTY:
@@ -3817,114 +3817,114 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 }
 
 /**
- * _cairo_pattern_get_ink_extents:
+ * _comac_pattern_get_ink_extents:
  *
  * Return the "target-space" inked extents of @pattern in @extents.
  **/
-cairo_int_status_t
-_cairo_pattern_get_ink_extents (const cairo_pattern_t         *pattern,
-				cairo_rectangle_int_t         *extents)
+comac_int_status_t
+_comac_pattern_get_ink_extents (const comac_pattern_t         *pattern,
+				comac_rectangle_int_t         *extents)
 {
-    if (pattern->type == CAIRO_PATTERN_TYPE_SURFACE &&
-	pattern->extend == CAIRO_EXTEND_NONE)
+    if (pattern->type == COMAC_PATTERN_TYPE_SURFACE &&
+	pattern->extend == COMAC_EXTEND_NONE)
     {
-	const cairo_surface_pattern_t *surface_pattern =
-	    (const cairo_surface_pattern_t *) pattern;
-	cairo_surface_t *surface = surface_pattern->surface;
+	const comac_surface_pattern_t *surface_pattern =
+	    (const comac_surface_pattern_t *) pattern;
+	comac_surface_t *surface = surface_pattern->surface;
 
-	surface = _cairo_surface_get_source (surface, NULL);
-	if (_cairo_surface_is_recording (surface)) {
-	    cairo_matrix_t imatrix;
-	    cairo_box_t box;
-	    cairo_status_t status;
+	surface = _comac_surface_get_source (surface, NULL);
+	if (_comac_surface_is_recording (surface)) {
+	    comac_matrix_t imatrix;
+	    comac_box_t box;
+	    comac_status_t status;
 
 	    imatrix = pattern->matrix;
-	    status = cairo_matrix_invert (&imatrix);
-	    /* cairo_pattern_set_matrix ensures the matrix is invertible */
-	    assert (status == CAIRO_STATUS_SUCCESS);
+	    status = comac_matrix_invert (&imatrix);
+	    /* comac_pattern_set_matrix ensures the matrix is invertible */
+	    assert (status == COMAC_STATUS_SUCCESS);
 
-	    status = _cairo_recording_surface_get_ink_bbox ((cairo_recording_surface_t *)surface,
+	    status = _comac_recording_surface_get_ink_bbox ((comac_recording_surface_t *)surface,
 						   &box, &imatrix);
 	    if (unlikely (status))
 		return status;
 
-	    _cairo_box_round_to_rectangle (&box, extents);
-	    return CAIRO_STATUS_SUCCESS;
+	    _comac_box_round_to_rectangle (&box, extents);
+	    return COMAC_STATUS_SUCCESS;
 	}
     }
 
-    _cairo_pattern_get_extents (pattern, extents, TRUE);
-    return CAIRO_STATUS_SUCCESS;
+    _comac_pattern_get_extents (pattern, extents, TRUE);
+    return COMAC_STATUS_SUCCESS;
 }
 
 static uintptr_t
-_cairo_solid_pattern_hash (uintptr_t hash,
-			   const cairo_solid_pattern_t *solid)
+_comac_solid_pattern_hash (uintptr_t hash,
+			   const comac_solid_pattern_t *solid)
 {
-    hash = _cairo_hash_bytes (hash, &solid->color, sizeof (solid->color));
+    hash = _comac_hash_bytes (hash, &solid->color, sizeof (solid->color));
 
     return hash;
 }
 
 static uintptr_t
-_cairo_gradient_color_stops_hash (uintptr_t hash,
-				  const cairo_gradient_pattern_t *gradient)
+_comac_gradient_color_stops_hash (uintptr_t hash,
+				  const comac_gradient_pattern_t *gradient)
 {
     unsigned int n;
 
-    hash = _cairo_hash_bytes (hash,
+    hash = _comac_hash_bytes (hash,
 			      &gradient->n_stops,
 			      sizeof (gradient->n_stops));
 
     for (n = 0; n < gradient->n_stops; n++) {
-	hash = _cairo_hash_bytes (hash,
+	hash = _comac_hash_bytes (hash,
 				  &gradient->stops[n].offset,
 				  sizeof (double));
-	hash = _cairo_hash_bytes (hash,
+	hash = _comac_hash_bytes (hash,
 				  &gradient->stops[n].color,
-				  sizeof (cairo_color_stop_t));
+				  sizeof (comac_color_stop_t));
     }
 
     return hash;
 }
 
 uintptr_t
-_cairo_linear_pattern_hash (uintptr_t hash,
-			    const cairo_linear_pattern_t *linear)
+_comac_linear_pattern_hash (uintptr_t hash,
+			    const comac_linear_pattern_t *linear)
 {
-    hash = _cairo_hash_bytes (hash, &linear->pd1, sizeof (linear->pd1));
-    hash = _cairo_hash_bytes (hash, &linear->pd2, sizeof (linear->pd2));
+    hash = _comac_hash_bytes (hash, &linear->pd1, sizeof (linear->pd1));
+    hash = _comac_hash_bytes (hash, &linear->pd2, sizeof (linear->pd2));
 
-    return _cairo_gradient_color_stops_hash (hash, &linear->base);
+    return _comac_gradient_color_stops_hash (hash, &linear->base);
 }
 
 uintptr_t
-_cairo_radial_pattern_hash (uintptr_t hash,
-			    const cairo_radial_pattern_t *radial)
+_comac_radial_pattern_hash (uintptr_t hash,
+			    const comac_radial_pattern_t *radial)
 {
-    hash = _cairo_hash_bytes (hash, &radial->cd1.center, sizeof (radial->cd1.center));
-    hash = _cairo_hash_bytes (hash, &radial->cd1.radius, sizeof (radial->cd1.radius));
-    hash = _cairo_hash_bytes (hash, &radial->cd2.center, sizeof (radial->cd2.center));
-    hash = _cairo_hash_bytes (hash, &radial->cd2.radius, sizeof (radial->cd2.radius));
+    hash = _comac_hash_bytes (hash, &radial->cd1.center, sizeof (radial->cd1.center));
+    hash = _comac_hash_bytes (hash, &radial->cd1.radius, sizeof (radial->cd1.radius));
+    hash = _comac_hash_bytes (hash, &radial->cd2.center, sizeof (radial->cd2.center));
+    hash = _comac_hash_bytes (hash, &radial->cd2.radius, sizeof (radial->cd2.radius));
 
-    return _cairo_gradient_color_stops_hash (hash, &radial->base);
+    return _comac_gradient_color_stops_hash (hash, &radial->base);
 }
 
 static uintptr_t
-_cairo_mesh_pattern_hash (uintptr_t hash, const cairo_mesh_pattern_t *mesh)
+_comac_mesh_pattern_hash (uintptr_t hash, const comac_mesh_pattern_t *mesh)
 {
-    const cairo_mesh_patch_t *patch = _cairo_array_index_const (&mesh->patches, 0);
-    unsigned int i, n = _cairo_array_num_elements (&mesh->patches);
+    const comac_mesh_patch_t *patch = _comac_array_index_const (&mesh->patches, 0);
+    unsigned int i, n = _comac_array_num_elements (&mesh->patches);
 
     for (i = 0; i < n; i++)
-       hash = _cairo_hash_bytes (hash, patch + i, sizeof (cairo_mesh_patch_t));
+       hash = _comac_hash_bytes (hash, patch + i, sizeof (comac_mesh_patch_t));
 
     return hash;
 }
 
 static uintptr_t
-_cairo_surface_pattern_hash (uintptr_t hash,
-			     const cairo_surface_pattern_t *surface)
+_comac_surface_pattern_hash (uintptr_t hash,
+			     const comac_surface_pattern_t *surface)
 {
     hash ^= surface->surface->unique_id;
 
@@ -3932,8 +3932,8 @@ _cairo_surface_pattern_hash (uintptr_t hash,
 }
 
 static uintptr_t
-_cairo_raster_source_pattern_hash (uintptr_t hash,
-				   const cairo_raster_source_pattern_t *raster)
+_comac_raster_source_pattern_hash (uintptr_t hash,
+				   const comac_raster_source_pattern_t *raster)
 {
     hash ^= (uintptr_t)raster->user_data;
 
@@ -3941,55 +3941,55 @@ _cairo_raster_source_pattern_hash (uintptr_t hash,
 }
 
 uintptr_t
-_cairo_pattern_hash (const cairo_pattern_t *pattern)
+_comac_pattern_hash (const comac_pattern_t *pattern)
 {
-    uintptr_t hash = _CAIRO_HASH_INIT_VALUE;
+    uintptr_t hash = _COMAC_HASH_INIT_VALUE;
 
     if (pattern->status)
 	return 0;
 
-    hash = _cairo_hash_bytes (hash, &pattern->type, sizeof (pattern->type));
-    if (pattern->type != CAIRO_PATTERN_TYPE_SOLID) {
-	hash = _cairo_hash_bytes (hash,
+    hash = _comac_hash_bytes (hash, &pattern->type, sizeof (pattern->type));
+    if (pattern->type != COMAC_PATTERN_TYPE_SOLID) {
+	hash = _comac_hash_bytes (hash,
 				  &pattern->matrix, sizeof (pattern->matrix));
-	hash = _cairo_hash_bytes (hash,
+	hash = _comac_hash_bytes (hash,
 				  &pattern->filter, sizeof (pattern->filter));
-	hash = _cairo_hash_bytes (hash,
+	hash = _comac_hash_bytes (hash,
 				  &pattern->extend, sizeof (pattern->extend));
-	hash = _cairo_hash_bytes (hash,
+	hash = _comac_hash_bytes (hash,
 				  &pattern->has_component_alpha,
 				  sizeof (pattern->has_component_alpha));
     }
 
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	return _cairo_solid_pattern_hash (hash, (cairo_solid_pattern_t *) pattern);
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	return _cairo_linear_pattern_hash (hash, (cairo_linear_pattern_t *) pattern);
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	return _cairo_radial_pattern_hash (hash, (cairo_radial_pattern_t *) pattern);
-    case CAIRO_PATTERN_TYPE_MESH:
-	return _cairo_mesh_pattern_hash (hash, (cairo_mesh_pattern_t *) pattern);
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	return _cairo_surface_pattern_hash (hash, (cairo_surface_pattern_t *) pattern);
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-	return _cairo_raster_source_pattern_hash (hash, (cairo_raster_source_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_SOLID:
+	return _comac_solid_pattern_hash (hash, (comac_solid_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_LINEAR:
+	return _comac_linear_pattern_hash (hash, (comac_linear_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_RADIAL:
+	return _comac_radial_pattern_hash (hash, (comac_radial_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_MESH:
+	return _comac_mesh_pattern_hash (hash, (comac_mesh_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_SURFACE:
+	return _comac_surface_pattern_hash (hash, (comac_surface_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+	return _comac_raster_source_pattern_hash (hash, (comac_raster_source_pattern_t *) pattern);
     default:
 	ASSERT_NOT_REACHED;
 	return FALSE;
     }
 }
 
-static cairo_bool_t
-_cairo_solid_pattern_equal (const cairo_solid_pattern_t *a,
-			    const cairo_solid_pattern_t *b)
+static comac_bool_t
+_comac_solid_pattern_equal (const comac_solid_pattern_t *a,
+			    const comac_solid_pattern_t *b)
 {
-    return _cairo_color_equal (&a->color, &b->color);
+    return _comac_color_equal (&a->color, &b->color);
 }
 
-static cairo_bool_t
-_cairo_gradient_color_stops_equal (const cairo_gradient_pattern_t *a,
-				   const cairo_gradient_pattern_t *b)
+static comac_bool_t
+_comac_gradient_color_stops_equal (const comac_gradient_pattern_t *a,
+				   const comac_gradient_pattern_t *b)
 {
     unsigned int n;
 
@@ -3999,16 +3999,16 @@ _cairo_gradient_color_stops_equal (const cairo_gradient_pattern_t *a,
     for (n = 0; n < a->n_stops; n++) {
 	if (a->stops[n].offset != b->stops[n].offset)
 	    return FALSE;
-	if (! _cairo_color_stop_equal (&a->stops[n].color, &b->stops[n].color))
+	if (! _comac_color_stop_equal (&a->stops[n].color, &b->stops[n].color))
 	    return FALSE;
     }
 
     return TRUE;
 }
 
-cairo_bool_t
-_cairo_linear_pattern_equal (const cairo_linear_pattern_t *a,
-			     const cairo_linear_pattern_t *b)
+comac_bool_t
+_comac_linear_pattern_equal (const comac_linear_pattern_t *a,
+			     const comac_linear_pattern_t *b)
 {
     if (a->pd1.x != b->pd1.x)
 	return FALSE;
@@ -4022,12 +4022,12 @@ _cairo_linear_pattern_equal (const cairo_linear_pattern_t *a,
     if (a->pd2.y != b->pd2.y)
 	return FALSE;
 
-    return _cairo_gradient_color_stops_equal (&a->base, &b->base);
+    return _comac_gradient_color_stops_equal (&a->base, &b->base);
 }
 
-cairo_bool_t
-_cairo_radial_pattern_equal (const cairo_radial_pattern_t *a,
-			     const cairo_radial_pattern_t *b)
+comac_bool_t
+_comac_radial_pattern_equal (const comac_radial_pattern_t *a,
+			     const comac_radial_pattern_t *b)
 {
     if (a->cd1.center.x != b->cd1.center.x)
 	return FALSE;
@@ -4047,48 +4047,48 @@ _cairo_radial_pattern_equal (const cairo_radial_pattern_t *a,
     if (a->cd2.radius != b->cd2.radius)
 	return FALSE;
 
-    return _cairo_gradient_color_stops_equal (&a->base, &b->base);
+    return _comac_gradient_color_stops_equal (&a->base, &b->base);
 }
 
-static cairo_bool_t
-_cairo_mesh_pattern_equal (const cairo_mesh_pattern_t *a,
-			   const cairo_mesh_pattern_t *b)
+static comac_bool_t
+_comac_mesh_pattern_equal (const comac_mesh_pattern_t *a,
+			   const comac_mesh_pattern_t *b)
 {
-    const cairo_mesh_patch_t *patch_a, *patch_b;
+    const comac_mesh_patch_t *patch_a, *patch_b;
     unsigned int i, num_patches_a, num_patches_b;
 
-    num_patches_a = _cairo_array_num_elements (&a->patches);
-    num_patches_b = _cairo_array_num_elements (&b->patches);
+    num_patches_a = _comac_array_num_elements (&a->patches);
+    num_patches_b = _comac_array_num_elements (&b->patches);
 
     if (num_patches_a != num_patches_b)
 	return FALSE;
 
     for (i = 0; i < num_patches_a; i++) {
-	patch_a = _cairo_array_index_const (&a->patches, i);
-	patch_b = _cairo_array_index_const (&b->patches, i);
-	if (memcmp (patch_a, patch_b, sizeof(cairo_mesh_patch_t)) != 0)
+	patch_a = _comac_array_index_const (&a->patches, i);
+	patch_b = _comac_array_index_const (&b->patches, i);
+	if (memcmp (patch_a, patch_b, sizeof(comac_mesh_patch_t)) != 0)
 	    return FALSE;
     }
 
     return TRUE;
 }
 
-static cairo_bool_t
-_cairo_surface_pattern_equal (const cairo_surface_pattern_t *a,
-			      const cairo_surface_pattern_t *b)
+static comac_bool_t
+_comac_surface_pattern_equal (const comac_surface_pattern_t *a,
+			      const comac_surface_pattern_t *b)
 {
     return a->surface->unique_id == b->surface->unique_id;
 }
 
-static cairo_bool_t
-_cairo_raster_source_pattern_equal (const cairo_raster_source_pattern_t *a,
-				    const cairo_raster_source_pattern_t *b)
+static comac_bool_t
+_comac_raster_source_pattern_equal (const comac_raster_source_pattern_t *a,
+				    const comac_raster_source_pattern_t *b)
 {
     return a->user_data == b->user_data;
 }
 
-cairo_bool_t
-_cairo_pattern_equal (const cairo_pattern_t *a, const cairo_pattern_t *b)
+comac_bool_t
+_comac_pattern_equal (const comac_pattern_t *a, const comac_pattern_t *b)
 {
     if (a->status || b->status)
 	return FALSE;
@@ -4102,8 +4102,8 @@ _cairo_pattern_equal (const cairo_pattern_t *a, const cairo_pattern_t *b)
     if (a->has_component_alpha != b->has_component_alpha)
 	return FALSE;
 
-    if (a->type != CAIRO_PATTERN_TYPE_SOLID) {
-	if (memcmp (&a->matrix, &b->matrix, sizeof (cairo_matrix_t)))
+    if (a->type != COMAC_PATTERN_TYPE_SOLID) {
+	if (memcmp (&a->matrix, &b->matrix, sizeof (comac_matrix_t)))
 	    return FALSE;
 
 	if (a->filter != b->filter)
@@ -4114,24 +4114,24 @@ _cairo_pattern_equal (const cairo_pattern_t *a, const cairo_pattern_t *b)
     }
 
     switch (a->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	return _cairo_solid_pattern_equal ((cairo_solid_pattern_t *) a,
-					   (cairo_solid_pattern_t *) b);
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	return _cairo_linear_pattern_equal ((cairo_linear_pattern_t *) a,
-					    (cairo_linear_pattern_t *) b);
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	return _cairo_radial_pattern_equal ((cairo_radial_pattern_t *) a,
-					    (cairo_radial_pattern_t *) b);
-    case CAIRO_PATTERN_TYPE_MESH:
-	return _cairo_mesh_pattern_equal ((cairo_mesh_pattern_t *) a,
-					  (cairo_mesh_pattern_t *) b);
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	return _cairo_surface_pattern_equal ((cairo_surface_pattern_t *) a,
-					     (cairo_surface_pattern_t *) b);
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-	return _cairo_raster_source_pattern_equal ((cairo_raster_source_pattern_t *) a,
-						   (cairo_raster_source_pattern_t *) b);
+    case COMAC_PATTERN_TYPE_SOLID:
+	return _comac_solid_pattern_equal ((comac_solid_pattern_t *) a,
+					   (comac_solid_pattern_t *) b);
+    case COMAC_PATTERN_TYPE_LINEAR:
+	return _comac_linear_pattern_equal ((comac_linear_pattern_t *) a,
+					    (comac_linear_pattern_t *) b);
+    case COMAC_PATTERN_TYPE_RADIAL:
+	return _comac_radial_pattern_equal ((comac_radial_pattern_t *) a,
+					    (comac_radial_pattern_t *) b);
+    case COMAC_PATTERN_TYPE_MESH:
+	return _comac_mesh_pattern_equal ((comac_mesh_pattern_t *) a,
+					  (comac_mesh_pattern_t *) b);
+    case COMAC_PATTERN_TYPE_SURFACE:
+	return _comac_surface_pattern_equal ((comac_surface_pattern_t *) a,
+					     (comac_surface_pattern_t *) b);
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+	return _comac_raster_source_pattern_equal ((comac_raster_source_pattern_t *) a,
+						   (comac_raster_source_pattern_t *) b);
     default:
 	ASSERT_NOT_REACHED;
 	return FALSE;
@@ -4139,8 +4139,8 @@ _cairo_pattern_equal (const cairo_pattern_t *a, const cairo_pattern_t *b)
 }
 
 /**
- * cairo_pattern_get_rgba:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_rgba:
+ * @pattern: a #comac_pattern_t
  * @red: return value for red component of color, or %NULL
  * @green: return value for green component of color, or %NULL
  * @blue: return value for blue component of color, or %NULL
@@ -4148,27 +4148,27 @@ _cairo_pattern_equal (const cairo_pattern_t *a, const cairo_pattern_t *b)
  *
  * Gets the solid color for a solid color pattern.
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH if the pattern is not a solid
+ * Return value: %COMAC_STATUS_SUCCESS, or
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH if the pattern is not a solid
  * color pattern.
  *
  * Since: 1.4
  **/
-cairo_status_t
-cairo_pattern_get_rgba (cairo_pattern_t *pattern,
+comac_status_t
+comac_pattern_get_rgba (comac_pattern_t *pattern,
 			double *red, double *green,
 			double *blue, double *alpha)
 {
-    cairo_solid_pattern_t *solid = (cairo_solid_pattern_t*) pattern;
+    comac_solid_pattern_t *solid = (comac_solid_pattern_t*) pattern;
     double r0, g0, b0, a0;
 
     if (pattern->status)
 	return pattern->status;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_SOLID)
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (pattern->type != COMAC_PATTERN_TYPE_SOLID)
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
-    _cairo_color_get_rgba (&solid->color, &r0, &g0, &b0, &a0);
+    _comac_color_get_rgba (&solid->color, &r0, &g0, &b0, &a0);
 
     if (red)
 	*red = r0;
@@ -4179,45 +4179,45 @@ cairo_pattern_get_rgba (cairo_pattern_t *pattern,
     if (alpha)
 	*alpha = a0;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_pattern_get_surface:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_surface:
+ * @pattern: a #comac_pattern_t
  * @surface: return value for surface of pattern, or %NULL
  *
  * Gets the surface of a surface pattern.  The reference returned in
  * @surface is owned by the pattern; the caller should call
- * cairo_surface_reference() if the surface is to be retained.
+ * comac_surface_reference() if the surface is to be retained.
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH if the pattern is not a surface
+ * Return value: %COMAC_STATUS_SUCCESS, or
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH if the pattern is not a surface
  * pattern.
  *
  * Since: 1.4
  **/
-cairo_status_t
-cairo_pattern_get_surface (cairo_pattern_t *pattern,
-			   cairo_surface_t **surface)
+comac_status_t
+comac_pattern_get_surface (comac_pattern_t *pattern,
+			   comac_surface_t **surface)
 {
-    cairo_surface_pattern_t *spat = (cairo_surface_pattern_t*) pattern;
+    comac_surface_pattern_t *spat = (comac_surface_pattern_t*) pattern;
 
     if (pattern->status)
 	return pattern->status;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_SURFACE)
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (pattern->type != COMAC_PATTERN_TYPE_SURFACE)
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (surface)
 	*surface = spat->surface;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_pattern_get_color_stop_rgba:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_color_stop_rgba:
+ * @pattern: a #comac_pattern_t
  * @index: index of the stop to return data for
  * @offset: return value for the offset of the stop, or %NULL
  * @red: return value for red component of color, or %NULL
@@ -4228,32 +4228,32 @@ cairo_pattern_get_surface (cairo_pattern_t *pattern,
  * Gets the color and offset information at the given @index for a
  * gradient pattern.  Values of @index range from 0 to n-1
  * where n is the number returned
- * by cairo_pattern_get_color_stop_count().
+ * by comac_pattern_get_color_stop_count().
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or %CAIRO_STATUS_INVALID_INDEX
+ * Return value: %COMAC_STATUS_SUCCESS, or %COMAC_STATUS_INVALID_INDEX
  * if @index is not valid for the given pattern.  If the pattern is
- * not a gradient pattern, %CAIRO_STATUS_PATTERN_TYPE_MISMATCH is
+ * not a gradient pattern, %COMAC_STATUS_PATTERN_TYPE_MISMATCH is
  * returned.
  *
  * Since: 1.4
  **/
-cairo_status_t
-cairo_pattern_get_color_stop_rgba (cairo_pattern_t *pattern,
+comac_status_t
+comac_pattern_get_color_stop_rgba (comac_pattern_t *pattern,
 				   int index, double *offset,
 				   double *red, double *green,
 				   double *blue, double *alpha)
 {
-    cairo_gradient_pattern_t *gradient = (cairo_gradient_pattern_t*) pattern;
+    comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t*) pattern;
 
     if (pattern->status)
 	return pattern->status;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_LINEAR &&
-	pattern->type != CAIRO_PATTERN_TYPE_RADIAL)
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (pattern->type != COMAC_PATTERN_TYPE_LINEAR &&
+	pattern->type != COMAC_PATTERN_TYPE_RADIAL)
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (index < 0 || (unsigned int) index >= gradient->n_stops)
-	return _cairo_error (CAIRO_STATUS_INVALID_INDEX);
+	return _comac_error (COMAC_STATUS_INVALID_INDEX);
 
     if (offset)
 	*offset = gradient->stops[index].offset;
@@ -4266,45 +4266,45 @@ cairo_pattern_get_color_stop_rgba (cairo_pattern_t *pattern,
     if (alpha)
 	*alpha = gradient->stops[index].color.alpha;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_pattern_get_color_stop_count:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_color_stop_count:
+ * @pattern: a #comac_pattern_t
  * @count: return value for the number of color stops, or %NULL
  *
  * Gets the number of color stops specified in the given gradient
  * pattern.
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a gradient
+ * Return value: %COMAC_STATUS_SUCCESS, or
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a gradient
  * pattern.
  *
  * Since: 1.4
  **/
-cairo_status_t
-cairo_pattern_get_color_stop_count (cairo_pattern_t *pattern,
+comac_status_t
+comac_pattern_get_color_stop_count (comac_pattern_t *pattern,
 				    int *count)
 {
-    cairo_gradient_pattern_t *gradient = (cairo_gradient_pattern_t*) pattern;
+    comac_gradient_pattern_t *gradient = (comac_gradient_pattern_t*) pattern;
 
     if (pattern->status)
 	return pattern->status;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_LINEAR &&
-	pattern->type != CAIRO_PATTERN_TYPE_RADIAL)
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (pattern->type != COMAC_PATTERN_TYPE_LINEAR &&
+	pattern->type != COMAC_PATTERN_TYPE_RADIAL)
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (count)
 	*count = gradient->n_stops;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_pattern_get_linear_points:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_linear_points:
+ * @pattern: a #comac_pattern_t
  * @x0: return value for the x coordinate of the first point, or %NULL
  * @y0: return value for the y coordinate of the first point, or %NULL
  * @x1: return value for the x coordinate of the second point, or %NULL
@@ -4312,24 +4312,24 @@ cairo_pattern_get_color_stop_count (cairo_pattern_t *pattern,
  *
  * Gets the gradient endpoints for a linear gradient.
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a linear
+ * Return value: %COMAC_STATUS_SUCCESS, or
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a linear
  * gradient pattern.
  *
  * Since: 1.4
  **/
-cairo_status_t
-cairo_pattern_get_linear_points (cairo_pattern_t *pattern,
+comac_status_t
+comac_pattern_get_linear_points (comac_pattern_t *pattern,
 				 double *x0, double *y0,
 				 double *x1, double *y1)
 {
-    cairo_linear_pattern_t *linear = (cairo_linear_pattern_t*) pattern;
+    comac_linear_pattern_t *linear = (comac_linear_pattern_t*) pattern;
 
     if (pattern->status)
 	return pattern->status;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_LINEAR)
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (pattern->type != COMAC_PATTERN_TYPE_LINEAR)
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (x0)
 	*x0 = linear->pd1.x;
@@ -4340,12 +4340,12 @@ cairo_pattern_get_linear_points (cairo_pattern_t *pattern,
     if (y1)
 	*y1 = linear->pd2.y;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_pattern_get_radial_circles:
- * @pattern: a #cairo_pattern_t
+ * comac_pattern_get_radial_circles:
+ * @pattern: a #comac_pattern_t
  * @x0: return value for the x coordinate of the center of the first circle, or %NULL
  * @y0: return value for the y coordinate of the center of the first circle, or %NULL
  * @r0: return value for the radius of the first circle, or %NULL
@@ -4356,24 +4356,24 @@ cairo_pattern_get_linear_points (cairo_pattern_t *pattern,
  * Gets the gradient endpoint circles for a radial gradient, each
  * specified as a center coordinate and a radius.
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a radial
+ * Return value: %COMAC_STATUS_SUCCESS, or
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a radial
  * gradient pattern.
  *
  * Since: 1.4
  **/
-cairo_status_t
-cairo_pattern_get_radial_circles (cairo_pattern_t *pattern,
+comac_status_t
+comac_pattern_get_radial_circles (comac_pattern_t *pattern,
 				  double *x0, double *y0, double *r0,
 				  double *x1, double *y1, double *r1)
 {
-    cairo_radial_pattern_t *radial = (cairo_radial_pattern_t*) pattern;
+    comac_radial_pattern_t *radial = (comac_radial_pattern_t*) pattern;
 
     if (pattern->status)
 	return pattern->status;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_RADIAL)
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (pattern->type != COMAC_PATTERN_TYPE_RADIAL)
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (x0)
 	*x0 = radial->cd1.center.x;
@@ -4388,105 +4388,105 @@ cairo_pattern_get_radial_circles (cairo_pattern_t *pattern,
     if (r1)
 	*r1 = radial->cd2.radius;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_mesh_pattern_get_patch_count:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_get_patch_count:
+ * @pattern: a #comac_pattern_t
  * @count: return value for the number patches, or %NULL
  *
  * Gets the number of patches specified in the given mesh pattern.
  *
  * The number only includes patches which have been finished by
- * calling cairo_mesh_pattern_end_patch(). For example it will be 0
+ * calling comac_mesh_pattern_end_patch(). For example it will be 0
  * during the definition of the first patch.
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or
- * %CAIRO_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a mesh
+ * Return value: %COMAC_STATUS_SUCCESS, or
+ * %COMAC_STATUS_PATTERN_TYPE_MISMATCH if @pattern is not a mesh
  * pattern.
  *
  * Since: 1.12
  **/
-cairo_status_t
-cairo_mesh_pattern_get_patch_count (cairo_pattern_t *pattern,
+comac_status_t
+comac_mesh_pattern_get_patch_count (comac_pattern_t *pattern,
 				    unsigned int *count)
 {
-    cairo_mesh_pattern_t *mesh = (cairo_mesh_pattern_t *) pattern;
+    comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
 
     if (unlikely (pattern->status))
 	return pattern->status;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH))
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH))
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (count) {
-	*count = _cairo_array_num_elements (&mesh->patches);
+	*count = _comac_array_num_elements (&mesh->patches);
 	if (mesh->current_patch)
 	    *count -= 1;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_mesh_pattern_get_path:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_get_path:
+ * @pattern: a #comac_pattern_t
  * @patch_num: the patch number to return data for
  *
  * Gets path defining the patch @patch_num for a mesh
  * pattern.
  *
  * @patch_num can range from 0 to n-1 where n is the number returned by
- * cairo_mesh_pattern_get_patch_count().
+ * comac_mesh_pattern_get_patch_count().
  *
  * Return value: the path defining the patch, or a path with status
- * %CAIRO_STATUS_INVALID_INDEX if @patch_num or @point_num is not
+ * %COMAC_STATUS_INVALID_INDEX if @patch_num or @point_num is not
  * valid for @pattern. If @pattern is not a mesh pattern, a path with
- * status %CAIRO_STATUS_PATTERN_TYPE_MISMATCH is returned.
+ * status %COMAC_STATUS_PATTERN_TYPE_MISMATCH is returned.
  *
  * Since: 1.12
  **/
-cairo_path_t *
-cairo_mesh_pattern_get_path (cairo_pattern_t *pattern,
+comac_path_t *
+comac_mesh_pattern_get_path (comac_pattern_t *pattern,
 			     unsigned int patch_num)
 {
-    cairo_mesh_pattern_t *mesh = (cairo_mesh_pattern_t *) pattern;
-    const cairo_mesh_patch_t *patch;
-    cairo_path_t *path;
-    cairo_path_data_t *data;
+    comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
+    const comac_mesh_patch_t *patch;
+    comac_path_t *path;
+    comac_path_data_t *data;
     unsigned int patch_count;
     int l, current_point;
 
     if (unlikely (pattern->status))
-	return _cairo_path_create_in_error (pattern->status);
+	return _comac_path_create_in_error (pattern->status);
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH))
-	return _cairo_path_create_in_error (_cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH));
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH))
+	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH));
 
-    patch_count = _cairo_array_num_elements (&mesh->patches);
+    patch_count = _comac_array_num_elements (&mesh->patches);
     if (mesh->current_patch)
 	patch_count--;
 
     if (unlikely (patch_num >= patch_count))
-	return _cairo_path_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_INDEX));
+	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_INVALID_INDEX));
 
-    patch = _cairo_array_index_const (&mesh->patches, patch_num);
+    patch = _comac_array_index_const (&mesh->patches, patch_num);
 
-    path = _cairo_malloc (sizeof (cairo_path_t));
+    path = _comac_malloc (sizeof (comac_path_t));
     if (path == NULL)
-	return _cairo_path_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
 
     path->num_data = 18;
-    path->data = _cairo_malloc_ab (path->num_data,
-				   sizeof (cairo_path_data_t));
+    path->data = _comac_malloc_ab (path->num_data,
+				   sizeof (comac_path_data_t));
     if (path->data == NULL) {
 	free (path);
-	return _cairo_path_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_path_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
     data = path->data;
-    data[0].header.type = CAIRO_PATH_MOVE_TO;
+    data[0].header.type = COMAC_PATH_MOVE_TO;
     data[0].header.length = 2;
     data[1].point.x = patch->points[0][0].x;
     data[1].point.y = patch->points[0][0].y;
@@ -4497,7 +4497,7 @@ cairo_mesh_pattern_get_path (cairo_pattern_t *pattern,
     for (l = 0; l < 4; l++) {
 	int i, j, k;
 
-	data[0].header.type = CAIRO_PATH_CURVE_TO;
+	data[0].header.type = COMAC_PATH_CURVE_TO;
 	data[0].header.length = 4;
 
 	for (k = 1; k < 4; k++) {
@@ -4511,14 +4511,14 @@ cairo_mesh_pattern_get_path (cairo_pattern_t *pattern,
 	data += data[0].header.length;
     }
 
-    path->status = CAIRO_STATUS_SUCCESS;
+    path->status = COMAC_STATUS_SUCCESS;
 
     return path;
 }
 
 /**
- * cairo_mesh_pattern_get_corner_color_rgba:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_get_corner_color_rgba:
+ * @pattern: a #comac_pattern_t
  * @patch_num: the patch number to return data for
  * @corner_num: the corner number to return data for
  * @red: return value for red component of color, or %NULL
@@ -4530,46 +4530,46 @@ cairo_mesh_pattern_get_path (cairo_pattern_t *pattern,
  * @patch_num for a mesh pattern.
  *
  * @patch_num can range from 0 to n-1 where n is the number returned by
- * cairo_mesh_pattern_get_patch_count().
+ * comac_mesh_pattern_get_patch_count().
  *
  * Valid values for @corner_num are from 0 to 3 and identify the
- * corners as explained in cairo_pattern_create_mesh().
+ * corners as explained in comac_pattern_create_mesh().
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or %CAIRO_STATUS_INVALID_INDEX
+ * Return value: %COMAC_STATUS_SUCCESS, or %COMAC_STATUS_INVALID_INDEX
  * if @patch_num or @corner_num is not valid for @pattern. If
- * @pattern is not a mesh pattern, %CAIRO_STATUS_PATTERN_TYPE_MISMATCH
+ * @pattern is not a mesh pattern, %COMAC_STATUS_PATTERN_TYPE_MISMATCH
  * is returned.
  *
  * Since: 1.12
  **/
-cairo_status_t
-cairo_mesh_pattern_get_corner_color_rgba (cairo_pattern_t *pattern,
+comac_status_t
+comac_mesh_pattern_get_corner_color_rgba (comac_pattern_t *pattern,
 					  unsigned int patch_num,
 					  unsigned int corner_num,
 					  double *red, double *green,
 					  double *blue, double *alpha)
 {
-    cairo_mesh_pattern_t *mesh = (cairo_mesh_pattern_t *) pattern;
+    comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
     unsigned int patch_count;
-    const cairo_mesh_patch_t *patch;
+    const comac_mesh_patch_t *patch;
 
     if (unlikely (pattern->status))
 	return pattern->status;
 
-    if (unlikely (pattern->type != CAIRO_PATTERN_TYPE_MESH))
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (unlikely (pattern->type != COMAC_PATTERN_TYPE_MESH))
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (unlikely (corner_num > 3))
-	return _cairo_error (CAIRO_STATUS_INVALID_INDEX);
+	return _comac_error (COMAC_STATUS_INVALID_INDEX);
 
-    patch_count = _cairo_array_num_elements (&mesh->patches);
+    patch_count = _comac_array_num_elements (&mesh->patches);
     if (mesh->current_patch)
 	patch_count--;
 
     if (unlikely (patch_num >= patch_count))
-	return _cairo_error (CAIRO_STATUS_INVALID_INDEX);
+	return _comac_error (COMAC_STATUS_INVALID_INDEX);
 
-    patch = _cairo_array_index_const (&mesh->patches, patch_num);
+    patch = _comac_array_index_const (&mesh->patches, patch_num);
 
     if (red)
 	*red = patch->colors[corner_num].red;
@@ -4580,12 +4580,12 @@ cairo_mesh_pattern_get_corner_color_rgba (cairo_pattern_t *pattern,
     if (alpha)
 	*alpha = patch->colors[corner_num].alpha;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * cairo_mesh_pattern_get_control_point:
- * @pattern: a #cairo_pattern_t
+ * comac_mesh_pattern_get_control_point:
+ * @pattern: a #comac_pattern_t
  * @patch_num: the patch number to return data for
  * @point_num: the control point number to return data for
  * @x: return value for the x coordinate of the control point, or %NULL
@@ -4595,46 +4595,46 @@ cairo_mesh_pattern_get_corner_color_rgba (cairo_pattern_t *pattern,
  * pattern.
  *
  * @patch_num can range from 0 to n-1 where n is the number returned by
- * cairo_mesh_pattern_get_patch_count().
+ * comac_mesh_pattern_get_patch_count().
  *
  * Valid values for @point_num are from 0 to 3 and identify the
- * control points as explained in cairo_pattern_create_mesh().
+ * control points as explained in comac_pattern_create_mesh().
  *
- * Return value: %CAIRO_STATUS_SUCCESS, or %CAIRO_STATUS_INVALID_INDEX
+ * Return value: %COMAC_STATUS_SUCCESS, or %COMAC_STATUS_INVALID_INDEX
  * if @patch_num or @point_num is not valid for @pattern. If @pattern
- * is not a mesh pattern, %CAIRO_STATUS_PATTERN_TYPE_MISMATCH is
+ * is not a mesh pattern, %COMAC_STATUS_PATTERN_TYPE_MISMATCH is
  * returned.
  *
  * Since: 1.12
  **/
-cairo_status_t
-cairo_mesh_pattern_get_control_point (cairo_pattern_t *pattern,
+comac_status_t
+comac_mesh_pattern_get_control_point (comac_pattern_t *pattern,
 				      unsigned int patch_num,
 				      unsigned int point_num,
 				      double *x, double *y)
 {
-    cairo_mesh_pattern_t *mesh = (cairo_mesh_pattern_t *) pattern;
-    const cairo_mesh_patch_t *patch;
+    comac_mesh_pattern_t *mesh = (comac_mesh_pattern_t *) pattern;
+    const comac_mesh_patch_t *patch;
     unsigned int patch_count;
     int i, j;
 
     if (pattern->status)
 	return pattern->status;
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_MESH)
-	return _cairo_error (CAIRO_STATUS_PATTERN_TYPE_MISMATCH);
+    if (pattern->type != COMAC_PATTERN_TYPE_MESH)
+	return _comac_error (COMAC_STATUS_PATTERN_TYPE_MISMATCH);
 
     if (point_num > 3)
-	return _cairo_error (CAIRO_STATUS_INVALID_INDEX);
+	return _comac_error (COMAC_STATUS_INVALID_INDEX);
 
-    patch_count = _cairo_array_num_elements (&mesh->patches);
+    patch_count = _comac_array_num_elements (&mesh->patches);
     if (mesh->current_patch)
 	patch_count--;
 
     if (unlikely (patch_num >= patch_count))
-	return _cairo_error (CAIRO_STATUS_INVALID_INDEX);
+	return _comac_error (COMAC_STATUS_INVALID_INDEX);
 
-    patch = _cairo_array_index_const (&mesh->patches, patch_num);
+    patch = _comac_array_index_const (&mesh->patches, patch_num);
 
     i = mesh_control_point_i[point_num];
     j = mesh_control_point_j[point_num];
@@ -4644,11 +4644,11 @@ cairo_mesh_pattern_get_control_point (cairo_pattern_t *pattern,
     if (y)
 	*y = patch->points[i][j].y;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void
-_cairo_pattern_reset_static_data (void)
+_comac_pattern_reset_static_data (void)
 {
     int i;
 
@@ -4657,100 +4657,100 @@ _cairo_pattern_reset_static_data (void)
 }
 
 static void
-_cairo_debug_print_surface_pattern (FILE *file,
-				    const cairo_surface_pattern_t *pattern)
+_comac_debug_print_surface_pattern (FILE *file,
+				    const comac_surface_pattern_t *pattern)
 {
     const char *s;
     switch (pattern->surface->type) {
-    case CAIRO_SURFACE_TYPE_IMAGE: s = "image"; break;
-    case CAIRO_SURFACE_TYPE_PDF: s = "pdf"; break;
-    case CAIRO_SURFACE_TYPE_PS: s = "ps"; break;
-    case CAIRO_SURFACE_TYPE_XLIB: s = "xlib"; break;
-    case CAIRO_SURFACE_TYPE_XCB: s = "xcb"; break;
-    case CAIRO_SURFACE_TYPE_GLITZ: s = "glitz"; break;
-    case CAIRO_SURFACE_TYPE_QUARTZ: s = "quartz"; break;
-    case CAIRO_SURFACE_TYPE_WIN32: s = "win32"; break;
-    case CAIRO_SURFACE_TYPE_BEOS: s = "beos"; break;
-    case CAIRO_SURFACE_TYPE_DIRECTFB: s = "directfb"; break;
-    case CAIRO_SURFACE_TYPE_SVG: s = "svg"; break;
-    case CAIRO_SURFACE_TYPE_OS2: s = "os2"; break;
-    case CAIRO_SURFACE_TYPE_WIN32_PRINTING: s = "win32_printing"; break;
-    case CAIRO_SURFACE_TYPE_QUARTZ_IMAGE: s = "quartz_image"; break;
-    case CAIRO_SURFACE_TYPE_SCRIPT: s = "script"; break;
-    case CAIRO_SURFACE_TYPE_QT: s = "qt"; break;
-    case CAIRO_SURFACE_TYPE_RECORDING: s = "recording"; break;
-    case CAIRO_SURFACE_TYPE_VG: s = "vg"; break;
-    case CAIRO_SURFACE_TYPE_GL: s = "gl"; break;
-    case CAIRO_SURFACE_TYPE_DRM: s = "drm"; break;
-    case CAIRO_SURFACE_TYPE_TEE: s = "tee"; break;
-    case CAIRO_SURFACE_TYPE_XML: s = "xml"; break;
-    case CAIRO_SURFACE_TYPE_SKIA: s = "skia"; break; /* Deprecated */
-    case CAIRO_SURFACE_TYPE_SUBSURFACE: s = "subsurface"; break;
-    case CAIRO_SURFACE_TYPE_COGL: s = "cogl"; break;
+    case COMAC_SURFACE_TYPE_IMAGE: s = "image"; break;
+    case COMAC_SURFACE_TYPE_PDF: s = "pdf"; break;
+    case COMAC_SURFACE_TYPE_PS: s = "ps"; break;
+    case COMAC_SURFACE_TYPE_XLIB: s = "xlib"; break;
+    case COMAC_SURFACE_TYPE_XCB: s = "xcb"; break;
+    case COMAC_SURFACE_TYPE_GLITZ: s = "glitz"; break;
+    case COMAC_SURFACE_TYPE_QUARTZ: s = "quartz"; break;
+    case COMAC_SURFACE_TYPE_WIN32: s = "win32"; break;
+    case COMAC_SURFACE_TYPE_BEOS: s = "beos"; break;
+    case COMAC_SURFACE_TYPE_DIRECTFB: s = "directfb"; break;
+    case COMAC_SURFACE_TYPE_SVG: s = "svg"; break;
+    case COMAC_SURFACE_TYPE_OS2: s = "os2"; break;
+    case COMAC_SURFACE_TYPE_WIN32_PRINTING: s = "win32_printing"; break;
+    case COMAC_SURFACE_TYPE_QUARTZ_IMAGE: s = "quartz_image"; break;
+    case COMAC_SURFACE_TYPE_SCRIPT: s = "script"; break;
+    case COMAC_SURFACE_TYPE_QT: s = "qt"; break;
+    case COMAC_SURFACE_TYPE_RECORDING: s = "recording"; break;
+    case COMAC_SURFACE_TYPE_VG: s = "vg"; break;
+    case COMAC_SURFACE_TYPE_GL: s = "gl"; break;
+    case COMAC_SURFACE_TYPE_DRM: s = "drm"; break;
+    case COMAC_SURFACE_TYPE_TEE: s = "tee"; break;
+    case COMAC_SURFACE_TYPE_XML: s = "xml"; break;
+    case COMAC_SURFACE_TYPE_SKIA: s = "skia"; break; /* Deprecated */
+    case COMAC_SURFACE_TYPE_SUBSURFACE: s = "subsurface"; break;
+    case COMAC_SURFACE_TYPE_COGL: s = "cogl"; break;
     default: s = "invalid"; ASSERT_NOT_REACHED; break;
     }
     fprintf (file, "  surface type: %s\n", s);
 }
 
 static void
-_cairo_debug_print_raster_source_pattern (FILE *file,
-					  const cairo_raster_source_pattern_t *raster)
+_comac_debug_print_raster_source_pattern (FILE *file,
+					  const comac_raster_source_pattern_t *raster)
 {
     fprintf (file, "  content: %x, size %dx%d\n", raster->content, raster->extents.width, raster->extents.height);
 }
 
 static void
-_cairo_debug_print_linear_pattern (FILE *file,
-				    const cairo_linear_pattern_t *pattern)
+_comac_debug_print_linear_pattern (FILE *file,
+				    const comac_linear_pattern_t *pattern)
 {
 }
 
 static void
-_cairo_debug_print_radial_pattern (FILE *file,
-				   const cairo_radial_pattern_t *pattern)
+_comac_debug_print_radial_pattern (FILE *file,
+				   const comac_radial_pattern_t *pattern)
 {
 }
 
 static void
-_cairo_debug_print_mesh_pattern (FILE *file,
-				 const cairo_mesh_pattern_t *pattern)
+_comac_debug_print_mesh_pattern (FILE *file,
+				 const comac_mesh_pattern_t *pattern)
 {
 }
 
 void
-_cairo_debug_print_pattern (FILE *file, const cairo_pattern_t *pattern)
+_comac_debug_print_pattern (FILE *file, const comac_pattern_t *pattern)
 {
     const char *s;
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID: s = "solid"; break;
-    case CAIRO_PATTERN_TYPE_SURFACE: s = "surface"; break;
-    case CAIRO_PATTERN_TYPE_LINEAR: s = "linear"; break;
-    case CAIRO_PATTERN_TYPE_RADIAL: s = "radial"; break;
-    case CAIRO_PATTERN_TYPE_MESH: s = "mesh"; break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE: s = "raster"; break;
+    case COMAC_PATTERN_TYPE_SOLID: s = "solid"; break;
+    case COMAC_PATTERN_TYPE_SURFACE: s = "surface"; break;
+    case COMAC_PATTERN_TYPE_LINEAR: s = "linear"; break;
+    case COMAC_PATTERN_TYPE_RADIAL: s = "radial"; break;
+    case COMAC_PATTERN_TYPE_MESH: s = "mesh"; break;
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE: s = "raster"; break;
     default: s = "invalid"; ASSERT_NOT_REACHED; break;
     }
 
     fprintf (file, "pattern: %s\n", s);
-    if (pattern->type == CAIRO_PATTERN_TYPE_SOLID)
+    if (pattern->type == COMAC_PATTERN_TYPE_SOLID)
 	return;
 
     switch (pattern->extend) {
-    case CAIRO_EXTEND_NONE: s = "none"; break;
-    case CAIRO_EXTEND_REPEAT: s = "repeat"; break;
-    case CAIRO_EXTEND_REFLECT: s = "reflect"; break;
-    case CAIRO_EXTEND_PAD: s = "pad"; break;
+    case COMAC_EXTEND_NONE: s = "none"; break;
+    case COMAC_EXTEND_REPEAT: s = "repeat"; break;
+    case COMAC_EXTEND_REFLECT: s = "reflect"; break;
+    case COMAC_EXTEND_PAD: s = "pad"; break;
     default: s = "invalid"; ASSERT_NOT_REACHED; break;
     }
     fprintf (file, "  extend: %s\n", s);
 
     switch (pattern->filter) {
-    case CAIRO_FILTER_FAST: s = "fast"; break;
-    case CAIRO_FILTER_GOOD: s = "good"; break;
-    case CAIRO_FILTER_BEST: s = "best"; break;
-    case CAIRO_FILTER_NEAREST: s = "nearest"; break;
-    case CAIRO_FILTER_BILINEAR: s = "bilinear"; break;
-    case CAIRO_FILTER_GAUSSIAN: s = "gaussian"; break;
+    case COMAC_FILTER_FAST: s = "fast"; break;
+    case COMAC_FILTER_GOOD: s = "good"; break;
+    case COMAC_FILTER_BEST: s = "best"; break;
+    case COMAC_FILTER_NEAREST: s = "nearest"; break;
+    case COMAC_FILTER_BILINEAR: s = "bilinear"; break;
+    case COMAC_FILTER_GAUSSIAN: s = "gaussian"; break;
     default: s = "invalid"; ASSERT_NOT_REACHED; break;
     }
     fprintf (file, "  filter: %s\n", s);
@@ -4760,22 +4760,22 @@ _cairo_debug_print_pattern (FILE *file, const cairo_pattern_t *pattern)
 	     pattern->matrix.x0, pattern->matrix.y0);
     switch (pattern->type) {
     default:
-    case CAIRO_PATTERN_TYPE_SOLID:
+    case COMAC_PATTERN_TYPE_SOLID:
 	break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
-	_cairo_debug_print_raster_source_pattern (file, (cairo_raster_source_pattern_t *)pattern);
+    case COMAC_PATTERN_TYPE_RASTER_SOURCE:
+	_comac_debug_print_raster_source_pattern (file, (comac_raster_source_pattern_t *)pattern);
 	break;
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	_cairo_debug_print_surface_pattern (file, (cairo_surface_pattern_t *)pattern);
+    case COMAC_PATTERN_TYPE_SURFACE:
+	_comac_debug_print_surface_pattern (file, (comac_surface_pattern_t *)pattern);
 	break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	_cairo_debug_print_linear_pattern (file, (cairo_linear_pattern_t *)pattern);
+    case COMAC_PATTERN_TYPE_LINEAR:
+	_comac_debug_print_linear_pattern (file, (comac_linear_pattern_t *)pattern);
 	break;
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	_cairo_debug_print_radial_pattern (file, (cairo_radial_pattern_t *)pattern);
+    case COMAC_PATTERN_TYPE_RADIAL:
+	_comac_debug_print_radial_pattern (file, (comac_radial_pattern_t *)pattern);
 	break;
-    case CAIRO_PATTERN_TYPE_MESH:
-	_cairo_debug_print_mesh_pattern (file, (cairo_mesh_pattern_t *)pattern);
+    case COMAC_PATTERN_TYPE_MESH:
+	_comac_debug_print_mesh_pattern (file, (comac_mesh_pattern_t *)pattern);
 	break;
     }
 }

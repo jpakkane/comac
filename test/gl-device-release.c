@@ -57,7 +57,7 @@ create_test_window (Display *display,
     return window;
 }
 
-static cairo_bool_t
+static comac_bool_t
 multithread_makecurrent_available (Display *display)
 {
     const char *extensions = glXQueryExtensionsString (display,
@@ -66,15 +66,15 @@ multithread_makecurrent_available (Display *display)
 }
 
 static void
-draw_to_surface (cairo_surface_t *surface)
+draw_to_surface (comac_surface_t *surface)
 {
-    cairo_t *cr = cairo_create (surface);
-    cairo_paint (cr);
-    cairo_destroy (cr);
+    comac_t *cr = comac_create (surface);
+    comac_paint (cr);
+    comac_destroy (cr);
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *test_ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *test_ctx)
 {
     int rgba_attribs[] = {
 	GLX_RGBA,
@@ -88,33 +88,33 @@ preamble (cairo_test_context_t *test_ctx)
 
     XVisualInfo *visual_info;
     GLXContext glx_context;
-    cairo_device_t *device;
+    comac_device_t *device;
     Display *display;
     Window test_window;
-    cairo_surface_t *window_surface;
-    cairo_bool_t has_multithread_makecurrent;
+    comac_surface_t *window_surface;
+    comac_bool_t has_multithread_makecurrent;
 
     display = XOpenDisplay (NULL);
     if (display == NULL)
-	return CAIRO_TEST_UNTESTED;
+	return COMAC_TEST_UNTESTED;
 
     visual_info = glXChooseVisual (display, DefaultScreen (display), rgba_attribs);
     if (visual_info == NULL) {
 	XCloseDisplay (display);
-	return CAIRO_TEST_UNTESTED;
+	return COMAC_TEST_UNTESTED;
     }
 
     glx_context = glXCreateContext (display, visual_info, NULL, True);
     if (glx_context == NULL) {
 	XCloseDisplay (display);
-	return CAIRO_TEST_UNTESTED;
+	return COMAC_TEST_UNTESTED;
     }
 
     test_window = create_test_window (display, glx_context, visual_info);
     XFree (visual_info);
     if (test_window == None) {
 	XCloseDisplay (display);
-	return CAIRO_TEST_UNTESTED;
+	return COMAC_TEST_UNTESTED;
     }
 
     has_multithread_makecurrent = multithread_makecurrent_available (display);
@@ -123,10 +123,10 @@ preamble (cairo_test_context_t *test_ctx)
 
     /* Creating the device should actually change the GL context, because of
      * the creation/activation of a dummy window used for texture surfaces. */
-    device = cairo_glx_device_create (display, glx_context);
+    device = comac_glx_device_create (display, glx_context);
 
     /* It's important that when multithread_makecurrent isn't available the
-     * Cairo backend clears the current context, so that the dummy texture
+     * Comac backend clears the current context, so that the dummy texture
      * window is not active while the device is unlocked. */
     if (has_multithread_makecurrent) {
 	assert (None != glXGetCurrentDrawable ());
@@ -138,9 +138,9 @@ preamble (cairo_test_context_t *test_ctx)
 	assert (None == glXGetCurrentContext ());
     }
 
-    window_surface = cairo_gl_surface_create_for_window (device, test_window,
+    window_surface = comac_gl_surface_create_for_window (device, test_window,
 							 1, 1);
-    assert (cairo_surface_status (window_surface) == CAIRO_STATUS_SUCCESS);
+    assert (comac_surface_status (window_surface) == COMAC_STATUS_SUCCESS);
 
     draw_to_surface (window_surface);
     if (has_multithread_makecurrent) {
@@ -154,7 +154,7 @@ preamble (cairo_test_context_t *test_ctx)
     }
 
     /* In this case, drawing to the window surface will not change the current
-     * GL context, so Cairo setting the current surface and context to none. */
+     * GL context, so Comac setting the current surface and context to none. */
     glXMakeCurrent (display, test_window, glx_context);
     draw_to_surface (window_surface);
     assert (test_window == glXGetCurrentDrawable ());
@@ -162,7 +162,7 @@ preamble (cairo_test_context_t *test_ctx)
     assert (glx_context == glXGetCurrentContext ());
 
     /* There should be no context change when destroying the device. */
-    cairo_device_destroy (device);
+    comac_device_destroy (device);
     assert (test_window == glXGetCurrentDrawable ());
     assert (display == glXGetCurrentDisplay ());
     assert (glx_context == glXGetCurrentContext ());
@@ -171,11 +171,11 @@ preamble (cairo_test_context_t *test_ctx)
     XDestroyWindow (display, test_window);
     XCloseDisplay (display);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (gl_device_creation_changes_context,
-	    "Test that using the Cairo GL backend leaves the current GL context in the appropriate state",
+COMAC_TEST (gl_device_creation_changes_context,
+	    "Test that using the Comac GL backend leaves the current GL context in the appropriate state",
 	    "gl", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

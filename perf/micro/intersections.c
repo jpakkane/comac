@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright (c) 2008  M Joonas Pihlaja
  *
@@ -39,17 +39,17 @@ uniform_random (double minval, double maxval)
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
-static cairo_time_t
-draw_random (cairo_t *cr, cairo_fill_rule_t fill_rule,
+static comac_time_t
+draw_random (comac_t *cr, comac_fill_rule_t fill_rule,
 	     int width, int height, int loops)
 {
     double x[NUM_SEGMENTS];
     double y[NUM_SEGMENTS];
     int i;
 
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     for (i = 0; i < NUM_SEGMENTS; i++) {
          x[i] = uniform_random (0, width);
@@ -57,37 +57,37 @@ draw_random (cairo_t *cr, cairo_fill_rule_t fill_rule,
     }
 
     state = 0x12345678;
-    cairo_translate (cr, 1, 1);
-    cairo_set_fill_rule (cr, fill_rule);
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_translate (cr, 1, 1);
+    comac_set_fill_rule (cr, fill_rule);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, 0, 0);
+    comac_new_path (cr);
+    comac_move_to (cr, 0, 0);
     for (i = 0; i < NUM_SEGMENTS; i++)
-	cairo_line_to (cr, x[i], y[i]);
-    cairo_close_path (cr);
+	comac_line_to (cr, x[i], y[i]);
+    comac_close_path (cr);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
     while (loops--)
-        cairo_fill_preserve (cr);
-    cairo_perf_timer_stop ();
+        comac_fill_preserve (cr);
+    comac_perf_timer_stop ();
 
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-draw_random_curve (cairo_t *cr, cairo_fill_rule_t fill_rule,
+static comac_time_t
+draw_random_curve (comac_t *cr, comac_fill_rule_t fill_rule,
 		   int width, int height, int loops)
 {
     double x[3*NUM_SEGMENTS];
     double y[3*NUM_SEGMENTS];
     int i;
 
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     for (i = 0; i < 3*NUM_SEGMENTS; i++) {
          x[i] = uniform_random (0, width);
@@ -95,66 +95,66 @@ draw_random_curve (cairo_t *cr, cairo_fill_rule_t fill_rule,
     }
 
     state = 0x12345678;
-    cairo_translate (cr, 1, 1);
-    cairo_set_fill_rule (cr, fill_rule);
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_translate (cr, 1, 1);
+    comac_set_fill_rule (cr, fill_rule);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, 0, 0);
+    comac_new_path (cr);
+    comac_move_to (cr, 0, 0);
     for (i = 0; i < NUM_SEGMENTS; i++) {
-	cairo_curve_to (cr,
+	comac_curve_to (cr,
 			x[3*i+0], y[3*i+0],
 			x[3*i+1], y[3*i+1],
 			x[3*i+2], y[3*i+2]);
     }
-    cairo_close_path (cr);
+    comac_close_path (cr);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
     while (loops--)
-        cairo_fill_preserve (cr);
-    cairo_perf_timer_stop ();
+        comac_fill_preserve (cr);
+    comac_perf_timer_stop ();
 
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-random_eo (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+random_eo (comac_t *cr, int width, int height, int loops)
 {
-    return draw_random (cr, CAIRO_FILL_RULE_EVEN_ODD, width, height, loops);
+    return draw_random (cr, COMAC_FILL_RULE_EVEN_ODD, width, height, loops);
 }
 
-static cairo_time_t
-random_nz (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+random_nz (comac_t *cr, int width, int height, int loops)
 {
-    return draw_random (cr, CAIRO_FILL_RULE_WINDING, width, height, loops);
+    return draw_random (cr, COMAC_FILL_RULE_WINDING, width, height, loops);
 }
 
-static cairo_time_t
-random_curve_eo (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+random_curve_eo (comac_t *cr, int width, int height, int loops)
 {
-    return draw_random_curve (cr, CAIRO_FILL_RULE_EVEN_ODD, width, height, loops);
+    return draw_random_curve (cr, COMAC_FILL_RULE_EVEN_ODD, width, height, loops);
 }
 
-static cairo_time_t
-random_curve_nz (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+random_curve_nz (comac_t *cr, int width, int height, int loops)
 {
-    return draw_random_curve (cr, CAIRO_FILL_RULE_WINDING, width, height, loops);
+    return draw_random_curve (cr, COMAC_FILL_RULE_WINDING, width, height, loops);
 }
 
-cairo_bool_t
-intersections_enabled (cairo_perf_t *perf)
+comac_bool_t
+intersections_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "intersections", NULL);
+    return comac_perf_can_run (perf, "intersections", NULL);
 }
 
 void
-intersections (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+intersections (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "intersections-nz-fill", random_nz, NULL);
-    cairo_perf_run (perf, "intersections-eo-fill", random_eo, NULL);
+    comac_perf_run (perf, "intersections-nz-fill", random_nz, NULL);
+    comac_perf_run (perf, "intersections-eo-fill", random_eo, NULL);
 
-    cairo_perf_run (perf, "intersections-nz-curve-fill", random_curve_nz, NULL);
-    cairo_perf_run (perf, "intersections-eo-curve-fill", random_curve_eo, NULL);
+    comac_perf_run (perf, "intersections-nz-curve-fill", random_curve_nz, NULL);
+    comac_perf_run (perf, "intersections-eo-curve-fill", random_curve_eo, NULL);
 }

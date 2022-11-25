@@ -29,82 +29,82 @@
 #define HEIGHT 30
 
 static void
-draw_L_shape (cairo_t *cr)
+draw_L_shape (comac_t *cr)
 {
-    cairo_move_to (cr, 0, 0);
-    cairo_rel_line_to (cr, 0, 10);
-    cairo_rel_line_to (cr, 5, 0);
+    comac_move_to (cr, 0, 0);
+    comac_rel_line_to (cr, 0, 10);
+    comac_rel_line_to (cr, 5, 0);
 
-    cairo_save (cr);
-    cairo_identity_matrix (cr);
-    cairo_set_line_width (cr, 2.0);
-    cairo_stroke (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_identity_matrix (cr);
+    comac_set_line_width (cr, 2.0);
+    comac_stroke (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 5, 5);
+    comac_translate (cr, 5, 5);
 
     draw_L_shape (cr);
 
-    cairo_translate (cr, 10, 0);
+    comac_translate (cr, 10, 0);
 
-    cairo_save (cr);
+    comac_save (cr);
     {
-	cairo_scale (cr, 2, 2);
+	comac_scale (cr, 2, 2);
 	draw_L_shape (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 15, 0);
+    comac_translate (cr, 15, 0);
 
-    cairo_save (cr);
+    comac_save (cr);
     {
-	cairo_rotate (cr, M_PI / 2.0);
+	comac_rotate (cr, M_PI / 2.0);
 	draw_L_shape (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 5, 0);
+    comac_translate (cr, 5, 0);
 
-    cairo_save (cr);
+    comac_save (cr);
     {
-	cairo_matrix_t skew_y = {
+	comac_matrix_t skew_y = {
 	    1, -1,
 	    0,  1,
 	    0,  0
 	};
-	cairo_transform (cr, &skew_y);
+	comac_transform (cr, &skew_y);
 	draw_L_shape (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 5, 10);
+    comac_translate (cr, 5, 10);
 
-    cairo_save (cr);
+    comac_save (cr);
     {
-	cairo_matrix_t skew_x = {
+	comac_matrix_t skew_x = {
 	     1.0, 0.0,
 	    -0.5, 1.0,
 	     0.0, 0.0
 	};
-	cairo_transform (cr, &skew_x);
+	comac_transform (cr, &skew_x);
 	draw_L_shape (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (transforms,
+COMAC_TEST (transforms,
 	    "Test various transformations.",
 	    "transforms, api", /* keywords */
 	    NULL, /* requirements */

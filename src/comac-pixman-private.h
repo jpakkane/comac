@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright ©2013 Intel Corporation
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,8 +35,8 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_PIXMAN_PRIVATE_H
-#define CAIRO_PIXMAN_PRIVATE_H
+#ifndef COMAC_PIXMAN_PRIVATE_H
+#define COMAC_PIXMAN_PRIVATE_H
 
 #include "comac-pixman-private.h" /* keep make check happy */
 

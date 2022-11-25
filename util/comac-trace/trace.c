@@ -1,4 +1,4 @@
-/* cairo-trace - a utility to record and replay calls to the Cairo library.
+/* comac-trace - a utility to record and replay calls to the Comac library.
  *
  * Copyright © 2008 Chris Wilson
  *
@@ -43,7 +43,7 @@
 #include <stdarg.h>
 
 #include <comac.h>
-#if CAIRO_HAS_FT_FONT
+#if COMAC_HAS_FT_FONT
 # include <comac-ft.h>
 #endif
 
@@ -54,8 +54,8 @@
 #define FALSE 0
 #endif
 
-#ifndef CAIRO_TRACE_OUTDIR
-#define CAIRO_TRACE_OUTDIR "."
+#ifndef COMAC_TRACE_OUTDIR
+#define COMAC_TRACE_OUTDIR "."
 #endif
 
 #define DEBUG_STACK 0
@@ -90,7 +90,7 @@
 #define to_be32(x) bswap_32 (x)
 #endif
 
-#if CAIRO_HAS_SYMBOL_LOOKUP
+#if COMAC_HAS_SYMBOL_LOOKUP
 #include "lookup-symbol.h"
 #endif
 
@@ -98,18 +98,18 @@
  * Devised by Sean Anderson, July 13, 2001.
  * Source: http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith32Bits
  */
-#define CAIRO_BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
+#define COMAC_BITSWAP8(c) ((((c) * 0x0802LU & 0x22110LU) | ((c) * 0x8020LU & 0x88440LU)) * 0x10101LU >> 16)
 
 #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
 #ifdef __MINGW32__
-#define CAIRO_PRINTF_FORMAT(fmt_index, va_index)                        \
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                        \
 	__attribute__((__format__(__MINGW_PRINTF_FORMAT, fmt_index, va_index)))
 #else
-#define CAIRO_PRINTF_FORMAT(fmt_index, va_index)                        \
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                        \
 	__attribute__((__format__(__printf__, fmt_index, va_index)))
 #endif
 #else
-#define CAIRO_PRINTF_FORMAT(fmt_index, va_index)
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)
 #endif
 
 /* XXX implement manual vprintf so that the user can control precision of
@@ -122,7 +122,7 @@ static void *_dlhandle = RTLD_NEXT;
     if (name##_real == NULL) { \
 	name##_real = (typeof (&name))(dlsym (_dlhandle, #name));	\
 	if (name##_real == NULL && _dlhandle == RTLD_NEXT) { \
-	    _dlhandle = dlopen ("libcairo." SHARED_LIB_EXT, RTLD_LAZY); \
+	    _dlhandle = dlopen ("libcomac." SHARED_LIB_EXT, RTLD_LAZY); \
 	    name##_real = (typeof (&name))(dlsym (_dlhandle, #name));	\
 	    assert (name##_real != NULL); \
 	} \
@@ -168,9 +168,9 @@ struct _object {
     Type *type;
     unsigned long int token;
     int width, height;
-    cairo_bool_t foreign;
-    cairo_bool_t defined;
-    cairo_bool_t unknown;
+    comac_bool_t foreign;
+    comac_bool_t defined;
+    comac_bool_t unknown;
     int operand;
     void *data;
     void (*destroy)(void *);
@@ -208,11 +208,11 @@ static struct _type_table {
 } Types;
 
 static FILE *logfile;
-static cairo_bool_t _flush;
-static cairo_bool_t _error;
-static cairo_bool_t _line_info;
-static cairo_bool_t _mark_dirty;
-static const cairo_user_data_key_t destroy_key;
+static comac_bool_t _flush;
+static comac_bool_t _error;
+static comac_bool_t _line_info;
+static comac_bool_t _mark_dirty;
+static const comac_user_data_key_t destroy_key;
 static pthread_once_t once_control = PTHREAD_ONCE_INIT;
 static pthread_key_t counter_key;
 
@@ -228,11 +228,11 @@ static void _init_trace (void);
 #else
 static void _enter_trace (void);
 static void _exit_trace (void);
-static cairo_bool_t _should_trace (void);
+static comac_bool_t _should_trace (void);
 # define USE_ENTER_EXIT 1
 #endif
 
-#if HAVE_BUILTIN_RETURN_ADDRESS && CAIRO_HAS_SYMBOL_LOOKUP
+#if HAVE_BUILTIN_RETURN_ADDRESS && COMAC_HAS_SYMBOL_LOOKUP
 #define _emit_line_info() do { \
     if (_line_info && _write_lock ()) {	\
 	void *addr = __builtin_return_address(0); \
@@ -475,7 +475,7 @@ _exit_trace (void)
     _get_counter ()[0]--;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _should_trace (void)
 {
     return _get_counter ()[0] <= 1;
@@ -489,11 +489,11 @@ _init_trace (void)
     pthread_key_create (&counter_key, free);
 
     _type_create ("unclassed", NONE, "");
-    _type_create ("cairo_t", CONTEXT, "c");
-    _type_create ("cairo_font_face_t", FONT_FACE, "f");
-    _type_create ("cairo_pattern_t", PATTERN, "p");
-    _type_create ("cairo_scaled_font_t", SCALED_FONT, "sf");
-    _type_create ("cairo_surface_t", SURFACE, "s");
+    _type_create ("comac_t", CONTEXT, "c");
+    _type_create ("comac_font_face_t", FONT_FACE, "f");
+    _type_create ("comac_pattern_t", PATTERN, "p");
+    _type_create ("comac_scaled_font_t", SCALED_FONT, "sf");
+    _type_create ("comac_surface_t", SURFACE, "s");
 }
 
 static void
@@ -567,7 +567,7 @@ _trace_dtostr (char *buffer, size_t size, double d)
 	if (*p == '+' || *p == '-')
 	    p++;
 
-	while (_cairo_isdigit (*p))
+	while (_comac_isdigit (*p))
 	    p++;
 
 	if (strncmp (p, decimal_point, decimal_point_len) == 0)
@@ -587,7 +587,7 @@ _trace_dtostr (char *buffer, size_t size, double d)
     if (*p == '+' || *p == '-')
 	p++;
 
-    while (_cairo_isdigit (*p))
+    while (_comac_isdigit (*p))
 	p++;
 
     if (strncmp (p, decimal_point, decimal_point_len) == 0) {
@@ -619,7 +619,7 @@ enum {
  * formatting.  This functionality is only for internal use and we
  * only implement the formats we actually use.
  */
-static void CAIRO_PRINTF_FORMAT(1, 0)
+static void COMAC_PRINTF_FORMAT(1, 0)
 _trace_vprintf (const char *fmt, va_list ap)
 {
 #define SINGLE_FMT_BUFFER_SIZE 32
@@ -628,7 +628,7 @@ _trace_vprintf (const char *fmt, va_list ap)
     char *p;
     const char *f, *start;
     int length_modifier, width;
-    cairo_bool_t var_width;
+    comac_bool_t var_width;
     int ret_ignored;
 
     assert (_should_trace ());
@@ -653,7 +653,7 @@ _trace_vprintf (const char *fmt, va_list ap)
 	    f++;
         }
 
-	while (_cairo_isdigit (*f))
+	while (_comac_isdigit (*f))
 	    f++;
 
 	length_modifier = 0;
@@ -662,7 +662,7 @@ _trace_vprintf (const char *fmt, va_list ap)
 	    f++;
 	}
 
-	/* The only format strings exist in the cairo implementation
+	/* The only format strings exist in the comac implementation
 	 * itself. So there's an internal consistency problem if any
 	 * of them is larger than our format buffer size. */
 	single_fmt_length = f - start + 1;
@@ -732,7 +732,7 @@ _trace_vprintf (const char *fmt, va_list ap)
     (void)ret_ignored;
 }
 
-static void CAIRO_PRINTF_FORMAT(1, 2)
+static void COMAC_PRINTF_FORMAT(1, 2)
 _trace_printf (const char *fmt, ...)
 {
     va_list ap;
@@ -760,7 +760,7 @@ get_prog_name (char *buf, int length)
 	if (slash == NULL)
 	    return;
     } else {
-	char const *name = getenv ("CAIRO_TRACE_PROG_NAME");
+	char const *name = getenv ("COMAC_TRACE_PROG_NAME");
 	if (name != NULL) {
 	    strncpy (buf, name, length-1);
 	}
@@ -780,13 +780,13 @@ _emit_header (void)
 
     get_prog_name (name, sizeof (name));
 
-    _trace_printf ("%%!CairoScript - %s\n", name);
+    _trace_printf ("%%!ComacScript - %s\n", name);
 }
 
-static cairo_bool_t
+static comac_bool_t
 _init_logfile (void)
 {
-    static cairo_bool_t initialized;
+    static comac_bool_t initialized;
     char buf[4096];
     const char *filename;
     const char *env;
@@ -796,21 +796,21 @@ _init_logfile (void)
 
     initialized = TRUE;
 
-    env = getenv ("CAIRO_TRACE_FLUSH");
+    env = getenv ("COMAC_TRACE_FLUSH");
     if (env != NULL)
 	_flush = atoi (env);
 
     _line_info = TRUE;
-    env = getenv ("CAIRO_TRACE_LINE_INFO");
+    env = getenv ("COMAC_TRACE_LINE_INFO");
     if (env != NULL)
 	_line_info = atoi (env);
 
     _mark_dirty = TRUE;
-    env = getenv ("CAIRO_TRACE_MARK_DIRTY");
+    env = getenv ("COMAC_TRACE_MARK_DIRTY");
     if (env != NULL)
 	_mark_dirty = atoi (env);
 
-    filename = getenv ("CAIRO_TRACE_FD");
+    filename = getenv ("COMAC_TRACE_FD");
     if (filename != NULL) {
 	int fd = atoi (filename);
 	if (fd == -1)
@@ -823,32 +823,32 @@ _init_logfile (void)
 	    return FALSE;
 	}
 
-	setenv ("CAIRO_TRACE_FD", "-1", 1);
+	setenv ("COMAC_TRACE_FD", "-1", 1);
 	goto done;
     }
 
-    filename = getenv ("CAIRO_TRACE_OUTFILE_EXACT");
+    filename = getenv ("COMAC_TRACE_OUTFILE_EXACT");
     if (filename == NULL) {
 	char name[4096] = "";
 
-	filename = getenv ("CAIRO_TRACE_OUTDIR");
+	filename = getenv ("COMAC_TRACE_OUTDIR");
 	if (filename == NULL)
-	    filename = CAIRO_TRACE_OUTDIR;
+	    filename = COMAC_TRACE_OUTDIR;
 
 	get_prog_name (name, sizeof (name));
 	if (*name == '\0')
-	    strcpy (name, "cairo-trace.dat");
+	    strcpy (name, "comac-trace.dat");
 
 	if (snprintf (buf, sizeof (buf), "%s/%s.%d.trace",
 		      filename, name, getpid()) >= (int) sizeof (buf))
 	{
-	    fprintf (stderr, "cairo-trace: Trace file name too long\n");
+	    fprintf (stderr, "comac-trace: Trace file name too long\n");
 	    return FALSE;
 	}
 
 	filename = buf;
     } else {
-	setenv ("CAIRO_TRACE_FD", "-1", 1);
+	setenv ("COMAC_TRACE_FD", "-1", 1);
     }
 
     logfile = fopen (filename, "wb");
@@ -858,7 +858,7 @@ _init_logfile (void)
 	return FALSE;
     }
 
-    fprintf (stderr, "cairo-trace: Recording cairo trace data to %s\n",
+    fprintf (stderr, "comac-trace: Recording comac trace data to %s\n",
 	     filename);
 
 done:
@@ -867,7 +867,7 @@ done:
     return TRUE;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _write_lock (void)
 {
     if (_error)
@@ -1001,7 +1001,7 @@ _exch_operands (void)
     tmp->operand++;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _pop_operands_to_depth (int depth)
 {
     if (depth < 0)
@@ -1037,7 +1037,7 @@ _pop_operands_to_depth (int depth)
     return TRUE;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _pop_operands_to_object (Object *obj)
 {
     if (!obj)
@@ -1058,13 +1058,13 @@ _pop_operands_to_object (Object *obj)
     return _pop_operands_to_depth (obj->operand + 1);
 }
 
-static cairo_bool_t
+static comac_bool_t
 _pop_operands_to (enum operand_type t, const void *ptr)
 {
     return _pop_operands_to_object (_get_object (t, ptr));
 }
 
-static cairo_bool_t
+static comac_bool_t
 _is_current_object (Object *obj, int depth)
 {
     if (current_stack_depth <= depth)
@@ -1072,7 +1072,7 @@ _is_current_object (Object *obj, int depth)
     return current_object[current_stack_depth-depth-1] == obj;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _is_current (enum operand_type type, const void *ptr, int depth)
 {
     return _is_current_object (_get_object (type, ptr), depth);
@@ -1158,14 +1158,14 @@ _object_undef (void *ptr)
 }
 
 static long
-_create_context_id (cairo_t *cr)
+_create_context_id (comac_t *cr)
 {
     Object *obj;
 
     obj = _get_object (CONTEXT, cr);
     if (obj == NULL) {
 	obj = _type_object_create (CONTEXT, cr);
-	DLCALL (cairo_set_user_data,
+	DLCALL (comac_set_user_data,
 		cr, &destroy_key, obj, _object_undef);
     }
 
@@ -1190,21 +1190,21 @@ _get_id (enum operand_type op_type, const void *ptr)
     return obj->token;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _has_id (enum operand_type op_type, const void *ptr)
 {
     return _get_object (op_type, ptr) != NULL;
 }
 
 static long
-_create_font_face_id (cairo_font_face_t *font_face)
+_create_font_face_id (comac_font_face_t *font_face)
 {
     Object *obj;
 
     obj = _get_object (FONT_FACE, font_face);
     if (obj == NULL) {
 	obj = _type_object_create (FONT_FACE, font_face);
-	DLCALL (cairo_font_face_set_user_data,
+	DLCALL (comac_font_face_set_user_data,
 		font_face, &destroy_key, obj, _object_undef);
     }
 
@@ -1212,13 +1212,13 @@ _create_font_face_id (cairo_font_face_t *font_face)
 }
 
 static long
-_get_font_face_id (cairo_font_face_t *font_face)
+_get_font_face_id (comac_font_face_t *font_face)
 {
     return _get_id (FONT_FACE, font_face);
 }
 
 static void
-_emit_font_face_id (cairo_font_face_t *font_face)
+_emit_font_face_id (comac_font_face_t *font_face)
 {
     Object *obj = _get_object (FONT_FACE, font_face);
     if (obj == NULL) {
@@ -1232,21 +1232,21 @@ _emit_font_face_id (cairo_font_face_t *font_face)
     }
 }
 
-static cairo_bool_t
-_has_pattern_id (cairo_pattern_t *pattern)
+static comac_bool_t
+_has_pattern_id (comac_pattern_t *pattern)
 {
     return _has_id (PATTERN, pattern);
 }
 
 static long
-_create_pattern_id (cairo_pattern_t *pattern)
+_create_pattern_id (comac_pattern_t *pattern)
 {
     Object *obj;
 
     obj = _get_object (PATTERN, pattern);
     if (obj == NULL) {
 	obj = _type_object_create (PATTERN, pattern);
-	DLCALL (cairo_pattern_set_user_data,
+	DLCALL (comac_pattern_set_user_data,
 		pattern, &destroy_key, obj, _object_undef);
     }
 
@@ -1254,7 +1254,7 @@ _create_pattern_id (cairo_pattern_t *pattern)
 }
 
 static void
-_emit_pattern_id (cairo_pattern_t *pattern)
+_emit_pattern_id (comac_pattern_t *pattern)
 {
     Object *obj = _get_object (PATTERN, pattern);
     if (obj == NULL) {
@@ -1270,7 +1270,7 @@ _emit_pattern_id (cairo_pattern_t *pattern)
 }
 
 static void
-_emit_scaled_font_id (const cairo_scaled_font_t *scaled_font)
+_emit_scaled_font_id (const comac_scaled_font_t *scaled_font)
 {
     Object *obj = _get_object (SCALED_FONT, scaled_font);
     if (obj == NULL) {
@@ -1286,33 +1286,33 @@ _emit_scaled_font_id (const cairo_scaled_font_t *scaled_font)
 }
 
 static long
-_create_scaled_font_id (cairo_scaled_font_t *font)
+_create_scaled_font_id (comac_scaled_font_t *font)
 {
     Object *obj;
 
     assert(_get_object (SCALED_FONT, font) == NULL);
     obj = _type_object_create (SCALED_FONT, font);
-    DLCALL (cairo_scaled_font_set_user_data,
+    DLCALL (comac_scaled_font_set_user_data,
 	    font, &destroy_key, obj, _object_undef);
 
     return obj->token;
 }
 
-static cairo_bool_t
-_has_scaled_font_id (const cairo_scaled_font_t *font)
+static comac_bool_t
+_has_scaled_font_id (const comac_scaled_font_t *font)
 {
     return _has_id (SCALED_FONT, font);
 }
 
 static Object *
-_create_surface (cairo_surface_t *surface)
+_create_surface (comac_surface_t *surface)
 {
     Object *obj;
 
     obj = _get_object (SURFACE, surface);
     if (obj == NULL) {
 	obj = _type_object_create (SURFACE, surface);
-	DLCALL (cairo_surface_set_user_data,
+	DLCALL (comac_surface_set_user_data,
 		surface, &destroy_key, obj, _object_undef);
     }
 
@@ -1320,13 +1320,13 @@ _create_surface (cairo_surface_t *surface)
 }
 
 static long
-_get_surface_id (cairo_surface_t *surface)
+_get_surface_id (comac_surface_t *surface)
 {
     return _get_id (SURFACE, surface);
 }
 
-static cairo_bool_t
-_matrix_is_identity (const cairo_matrix_t *m)
+static comac_bool_t
+_matrix_is_identity (const comac_matrix_t *m)
 {
     return m->xx == 1. && m->yx == 0. &&
 	   m->xy == 0. && m->yy == 1. &&
@@ -1363,13 +1363,13 @@ _write_base85_data_start (struct _data_stream *stream)
     stream->base85_pending = 0;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _expand_four_tuple_to_five (unsigned char four_tuple[4],
 			    unsigned char five_tuple[5])
 {
     uint32_t value;
     int digit, i;
-    cairo_bool_t all_zero = TRUE;
+    comac_bool_t all_zero = TRUE;
 
     value = four_tuple[0] << 24 |
 	    four_tuple[1] << 16 |
@@ -1410,9 +1410,9 @@ _write_base85_data (struct _data_stream *stream,
 }
 
 static void
-_write_zlib_data (struct _data_stream *stream, cairo_bool_t flush)
+_write_zlib_data (struct _data_stream *stream, comac_bool_t flush)
 {
-    cairo_bool_t finished;
+    comac_bool_t finished;
 
     do {
 	int ret = deflate (&stream->zlib_stream, flush ? Z_FINISH : Z_NO_FLUSH);
@@ -1512,9 +1512,9 @@ _emit_data (const void *data, unsigned int length)
 }
 
 static const char *
-_format_to_string (cairo_format_t format)
+_format_to_string (comac_format_t format)
 {
-#define f(name) case CAIRO_FORMAT_ ## name: return #name
+#define f(name) case COMAC_FORMAT_ ## name: return #name
     switch (format) {
 	f(INVALID);
 	f(RGBA128F);
@@ -1531,30 +1531,30 @@ _format_to_string (cairo_format_t format)
 }
 
 static const char *
-_format_to_content_string (cairo_format_t format)
+_format_to_content_string (comac_format_t format)
 {
     switch (format) {
-    case CAIRO_FORMAT_INVALID:
+    case COMAC_FORMAT_INVALID:
 	return "INVALID";
-    case CAIRO_FORMAT_RGBA128F:
-    case CAIRO_FORMAT_ARGB32:
+    case COMAC_FORMAT_RGBA128F:
+    case COMAC_FORMAT_ARGB32:
 	return "COLOR_ALPHA";
-    case CAIRO_FORMAT_RGB96F:
-    case CAIRO_FORMAT_RGB30:
-    case CAIRO_FORMAT_RGB24:
-    case CAIRO_FORMAT_RGB16_565:
+    case COMAC_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGB30:
+    case COMAC_FORMAT_RGB24:
+    case COMAC_FORMAT_RGB16_565:
 	return "COLOR";
-    case CAIRO_FORMAT_A8:
-    case CAIRO_FORMAT_A1:
+    case COMAC_FORMAT_A8:
+    case COMAC_FORMAT_A1:
 	return "ALPHA";
     }
     return "UNKNOWN";
 }
 
 static const char *
-_status_to_string (cairo_status_t status)
+_status_to_string (comac_status_t status)
 {
-#define f(name) case CAIRO_STATUS_ ## name: return "STATUS_" #name
+#define f(name) case COMAC_STATUS_ ## name: return "STATUS_" #name
     switch (status) {
 	f(SUCCESS);
 	f(NO_MEMORY);
@@ -1600,39 +1600,39 @@ _status_to_string (cairo_status_t status)
 	f(WIN32_GDI_ERROR);
 	f(TAG_ERROR);
 	f(DWRITE_ERROR);
-    case CAIRO_STATUS_LAST_STATUS:
+    case COMAC_STATUS_LAST_STATUS:
 	break;
     }
     return "UNKNOWN_STATUS";
 #undef f
 }
 
-static void CAIRO_PRINTF_FORMAT(2, 3)
-_emit_image (cairo_surface_t *image,
+static void COMAC_PRINTF_FORMAT(2, 3)
+_emit_image (comac_surface_t *image,
 	     const char *info,
 	     ...)
 {
     int stride, row, width, height;
     uint32_t len;
-    cairo_format_t format;
+    comac_format_t format;
     uint8_t row_stack[BUFFER_SIZE];
     uint8_t *rowdata;
     uint8_t *data;
     struct _data_stream stream;
-    cairo_status_t status;
+    comac_status_t status;
 
-    status = DLCALL (cairo_surface_status, image);
+    status = DLCALL (comac_surface_status, image);
     if (status) {
 	_trace_printf ("<< /status //%s >> image",
 		       _status_to_string (status));
 	return;
     }
 
-    width = DLCALL (cairo_image_surface_get_width, image);
-    height = DLCALL (cairo_image_surface_get_height, image);
-    stride = DLCALL (cairo_image_surface_get_stride, image);
-    format = DLCALL (cairo_image_surface_get_format, image);
-    data = DLCALL (cairo_image_surface_get_data, image);
+    width = DLCALL (comac_image_surface_get_width, image);
+    height = DLCALL (comac_image_surface_get_height, image);
+    stride = DLCALL (comac_image_surface_get_stride, image);
+    format = DLCALL (comac_image_surface_get_format, image);
+    data = DLCALL (comac_image_surface_get_data, image);
 
     _trace_printf ("dict\n"
 		   "  /width %d set\n"
@@ -1648,11 +1648,11 @@ _emit_image (cairo_surface_t *image,
 	va_end (ap);
     }
 
-    if (DLCALL (cairo_version) >= CAIRO_VERSION_ENCODE (1, 9, 0)) {
+    if (DLCALL (comac_version) >= COMAC_VERSION_ENCODE (1, 9, 0)) {
 	const char *mime_types[] = {
-	    CAIRO_MIME_TYPE_JPEG,
-	    CAIRO_MIME_TYPE_JP2,
-	    CAIRO_MIME_TYPE_PNG,
+	    COMAC_MIME_TYPE_JPEG,
+	    COMAC_MIME_TYPE_JP2,
+	    COMAC_MIME_TYPE_PNG,
 	    NULL
 	}, **mime_type;
 
@@ -1660,7 +1660,7 @@ _emit_image (cairo_surface_t *image,
 	    const unsigned char *mime_data;
 	    unsigned long mime_length;
 
-	    DLCALL (cairo_surface_get_mime_data,
+	    DLCALL (comac_surface_get_mime_data,
 		    image, *mime_type, &mime_data, &mime_length);
 	    if (mime_data != NULL) {
 		_trace_printf ("  /mime-type (%s) set\n"
@@ -1677,16 +1677,16 @@ _emit_image (cairo_surface_t *image,
     }
 
     switch (format) {
-    case CAIRO_FORMAT_A1:        len = (width + 7)/8; break;
-    case CAIRO_FORMAT_A8:        len =  width; break;
-    case CAIRO_FORMAT_RGB16_565: len = 2*width; break;
-    case CAIRO_FORMAT_RGB24:     len = 3*width; break;
+    case COMAC_FORMAT_A1:        len = (width + 7)/8; break;
+    case COMAC_FORMAT_A8:        len =  width; break;
+    case COMAC_FORMAT_RGB16_565: len = 2*width; break;
+    case COMAC_FORMAT_RGB24:     len = 3*width; break;
     default:
-    case CAIRO_FORMAT_RGB30:
-    case CAIRO_FORMAT_INVALID:
-    case CAIRO_FORMAT_ARGB32: len = 4*width; break;
-    case CAIRO_FORMAT_RGB96F: len = 12*width; break;
-    case CAIRO_FORMAT_RGBA128F: len = 16*width; break;
+    case COMAC_FORMAT_RGB30:
+    case COMAC_FORMAT_INVALID:
+    case COMAC_FORMAT_ARGB32: len = 4*width; break;
+    case COMAC_FORMAT_RGB96F: len = 12*width; break;
+    case COMAC_FORMAT_RGBA128F: len = 16*width; break;
     }
 
     _trace_printf ("  /source ");
@@ -1694,7 +1694,7 @@ _emit_image (cairo_surface_t *image,
 
 #ifdef WORDS_BIGENDIAN
     switch (format) {
-    case CAIRO_FORMAT_RGB24:
+    case COMAC_FORMAT_RGB24:
 	for (row = height; row--; ) {
 	    int col;
 	    rowdata = data;
@@ -1705,19 +1705,19 @@ _emit_image (cairo_surface_t *image,
 	    data += stride;
 	}
 	break;
-    case CAIRO_FORMAT_A1:
-    case CAIRO_FORMAT_A8:
-    case CAIRO_FORMAT_RGB16_565:
-    case CAIRO_FORMAT_RGB30:
-    case CAIRO_FORMAT_ARGB32:
-    case CAIRO_FORMAT_RGB96F:
-    case CAIRO_FORMAT_RGBA128F:
+    case COMAC_FORMAT_A1:
+    case COMAC_FORMAT_A8:
+    case COMAC_FORMAT_RGB16_565:
+    case COMAC_FORMAT_RGB30:
+    case COMAC_FORMAT_ARGB32:
+    case COMAC_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGBA128F:
 	for (row = height; row--; ) {
 	    _write_data (&stream, data, len);
 	    data += stride;
 	}
 	break;
-    case CAIRO_FORMAT_INVALID:
+    case COMAC_FORMAT_INVALID:
     default:
 	break;
     }
@@ -1730,22 +1730,22 @@ _emit_image (cairo_surface_t *image,
 	rowdata = row_stack;
 
     switch (format) {
-    case CAIRO_FORMAT_A1:
+    case COMAC_FORMAT_A1:
 	for (row = height; row--; ) {
 	    int col;
 	    for (col = 0; col < (width + 7)/8; col++)
-		rowdata[col] = CAIRO_BITSWAP8 (data[col]);
+		rowdata[col] = COMAC_BITSWAP8 (data[col]);
 	    _write_data (&stream, rowdata, (width+7)/8);
 	    data += stride;
 	}
 	break;
-    case CAIRO_FORMAT_A8:
+    case COMAC_FORMAT_A8:
 	for (row = height; row--; ) {
 	    _write_data (&stream, rowdata, width);
 	    data += stride;
 	}
 	break;
-    case CAIRO_FORMAT_RGB16_565: /* XXX endianness */
+    case COMAC_FORMAT_RGB16_565: /* XXX endianness */
 	for (row = height; row--; ) {
 	    uint16_t *src = (uint16_t *) data;
 	    uint16_t *dst = (uint16_t *)rowdata;
@@ -1756,7 +1756,7 @@ _emit_image (cairo_surface_t *image,
 	    data += stride;
 	}
 	break;
-    case CAIRO_FORMAT_RGB24:
+    case COMAC_FORMAT_RGB24:
 	for (row = height; row--; ) {
 	    uint8_t *src = data;
 	    int col;
@@ -1770,10 +1770,10 @@ _emit_image (cairo_surface_t *image,
 	    data += stride;
 	}
 	break;
-    case CAIRO_FORMAT_RGB96F:
-    case CAIRO_FORMAT_RGBA128F:
-    case CAIRO_FORMAT_RGB30:
-    case CAIRO_FORMAT_ARGB32:
+    case COMAC_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGBA128F:
+    case COMAC_FORMAT_RGB30:
+    case COMAC_FORMAT_ARGB32:
 	for (row = height; row--; ) {
 	    uint32_t *src = (uint32_t *) data;
 	    uint32_t *dst = (uint32_t *) rowdata;
@@ -1784,7 +1784,7 @@ _emit_image (cairo_surface_t *image,
 	    data += stride;
 	}
 	break;
-   case CAIRO_FORMAT_INVALID:
+   case COMAC_FORMAT_INVALID:
     default:
 	break;
     }
@@ -1852,7 +1852,7 @@ _encode_string_literal (char *out, int max,
 	    max -= 2;
 	    break;
 	default:
-	    if (_cairo_isprint (c)) {
+	    if (_comac_isprint (c)) {
 		*out++ = c;
 	    } else {
 		int octal = 0;
@@ -1922,7 +1922,7 @@ ESCAPED_CHAR:
 	    _trace_printf ("\\%c", c);
 	    break;
 	default:
-	    if (_cairo_isprint (c)) {
+	    if (_comac_isprint (c)) {
 		_trace_printf ("%c", c);
 	    } else {
 		char buf[4] = { '\\' };
@@ -1966,25 +1966,25 @@ _emit_current (Object *obj)
 }
 
 static void
-_emit_context (cairo_t *cr)
+_emit_context (comac_t *cr)
 {
     _emit_current (_get_object (CONTEXT, cr));
 }
 
 static void
-_emit_pattern (cairo_pattern_t *pattern)
+_emit_pattern (comac_pattern_t *pattern)
 {
     _emit_current (_get_object (PATTERN, pattern));
 }
 
 static void
-_emit_surface (cairo_surface_t *surface)
+_emit_surface (comac_surface_t *surface)
 {
     _emit_current (_get_object (SURFACE, surface));
 }
 
-static void CAIRO_PRINTF_FORMAT(2, 3)
-_emit_cairo_op (cairo_t *cr, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT(2, 3)
+_emit_comac_op (comac_t *cr, const char *fmt, ...)
 {
     va_list ap;
 
@@ -2000,16 +2000,16 @@ _emit_cairo_op (cairo_t *cr, const char *fmt, ...)
     _write_unlock ();
 }
 
-cairo_t *
-cairo_create (cairo_surface_t *target)
+comac_t *
+comac_create (comac_surface_t *target)
 {
-    cairo_t *ret;
+    comac_t *ret;
     long surface_id;
     long context_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_create, target);
+    ret = DLCALL (comac_create, target);
     context_id = _create_context_id (ret);
 
     _emit_line_info ();
@@ -2036,67 +2036,67 @@ cairo_create (cairo_surface_t *target)
 }
 
 void
-cairo_save (cairo_t *cr)
+comac_save (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "save\n");
-    DLCALL (cairo_save, cr);
+    _emit_comac_op (cr, "save\n");
+    DLCALL (comac_save, cr);
     _exit_trace ();
 }
 
 void
-cairo_restore (cairo_t *cr)
+comac_restore (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "restore\n");
-    DLCALL (cairo_restore, cr);
+    _emit_comac_op (cr, "restore\n");
+    DLCALL (comac_restore, cr);
     _exit_trace ();
 }
 
 void
-cairo_push_group (cairo_t *cr)
+comac_push_group (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "//COLOR_ALPHA push-group\n");
-    DLCALL (cairo_push_group, cr);
+    _emit_comac_op (cr, "//COLOR_ALPHA push-group\n");
+    DLCALL (comac_push_group, cr);
     _exit_trace ();
 }
 
 static const char *
-_content_to_string (cairo_content_t content)
+_content_to_string (comac_content_t content)
 {
     switch (content) {
-    case CAIRO_CONTENT_ALPHA: return "ALPHA";
-    case CAIRO_CONTENT_COLOR: return "COLOR";
+    case COMAC_CONTENT_ALPHA: return "ALPHA";
+    case COMAC_CONTENT_COLOR: return "COLOR";
     default:
-    case CAIRO_CONTENT_COLOR_ALPHA: return "COLOR_ALPHA";
+    case COMAC_CONTENT_COLOR_ALPHA: return "COLOR_ALPHA";
     }
 }
 
 void
-cairo_push_group_with_content (cairo_t *cr, cairo_content_t content)
+comac_push_group_with_content (comac_t *cr, comac_content_t content)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "//%s push-group\n", _content_to_string (content));
-    DLCALL (cairo_push_group_with_content, cr, content);
+    _emit_comac_op (cr, "//%s push-group\n", _content_to_string (content));
+    DLCALL (comac_push_group_with_content, cr, content);
     _exit_trace ();
 }
 
-cairo_pattern_t *
-cairo_pop_group (cairo_t *cr)
+comac_pattern_t *
+comac_pop_group (comac_t *cr)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pop_group, cr);
+    ret = DLCALL (comac_pop_group, cr);
 
     _emit_line_info ();
-    _emit_cairo_op (cr, "pop-group %% p%ld\n", _create_pattern_id (ret));
+    _emit_comac_op (cr, "pop-group %% p%ld\n", _create_pattern_id (ret));
     _push_operand (PATTERN, ret);
     dump_stack(__func__);
 
@@ -2105,19 +2105,19 @@ cairo_pop_group (cairo_t *cr)
 }
 
 void
-cairo_pop_group_to_source (cairo_t *cr)
+comac_pop_group_to_source (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "pop-group set-source\n");
-    DLCALL (cairo_pop_group_to_source, cr);
+    _emit_comac_op (cr, "pop-group set-source\n");
+    DLCALL (comac_pop_group_to_source, cr);
     _exit_trace ();
 }
 
 static const char *
-_operator_to_string (cairo_operator_t op)
+_operator_to_string (comac_operator_t op)
 {
-#define f(name) case CAIRO_OPERATOR_ ## name: return #name
+#define f(name) case COMAC_OPERATOR_ ## name: return #name
     switch (op) {
 	f(OVER);
 	f(SOURCE);
@@ -2138,8 +2138,8 @@ _operator_to_string (cairo_operator_t op)
 	f(OVERLAY);
 	f(DARKEN);
 	f(LIGHTEN);
-        case CAIRO_OPERATOR_COLOR_DODGE: return "DODGE";
-        case CAIRO_OPERATOR_COLOR_BURN: return "BURN";
+        case COMAC_OPERATOR_COLOR_DODGE: return "DODGE";
+        case COMAC_OPERATOR_COLOR_BURN: return "BURN";
 	f(HARD_LIGHT);
 	f(SOFT_LIGHT);
 	f(DIFFERENCE);
@@ -2154,71 +2154,71 @@ _operator_to_string (cairo_operator_t op)
 }
 
 void
-cairo_set_operator (cairo_t *cr, cairo_operator_t op)
+comac_set_operator (comac_t *cr, comac_operator_t op)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "//%s set-operator\n", _operator_to_string (op));
-    DLCALL (cairo_set_operator, cr, op);
+    _emit_comac_op (cr, "//%s set-operator\n", _operator_to_string (op));
+    DLCALL (comac_set_operator, cr, op);
     _exit_trace ();
 }
 
 void
-cairo_set_source_rgb (cairo_t *cr, double red, double green, double blue)
+comac_set_source_rgb (comac_t *cr, double red, double green, double blue)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g %g %g set-source-rgb\n", red, green, blue);
-    DLCALL (cairo_set_source_rgb, cr, red, green, blue);
+    _emit_comac_op (cr, "%g %g %g set-source-rgb\n", red, green, blue);
+    DLCALL (comac_set_source_rgb, cr, red, green, blue);
     _exit_trace ();
 }
 
 void
-cairo_set_source_rgba (cairo_t *cr, double red, double green, double blue, double alpha)
+comac_set_source_rgba (comac_t *cr, double red, double green, double blue, double alpha)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g %g %g %g set-source-rgba\n",
+    _emit_comac_op (cr, "%g %g %g %g set-source-rgba\n",
 		    red, green, blue, alpha);
-    DLCALL (cairo_set_source_rgba, cr, red, green, blue, alpha);
+    DLCALL (comac_set_source_rgba, cr, red, green, blue, alpha);
     _exit_trace ();
 }
 
 static void
-_emit_source_image (cairo_surface_t *surface)
+_emit_source_image (comac_surface_t *surface)
 {
     Object *obj;
-    cairo_surface_t *image;
-    cairo_t *cr;
+    comac_surface_t *image;
+    comac_t *cr;
 
     obj = _get_object (SURFACE, surface);
     if (obj == NULL)
 	return;
 
-    image = DLCALL (cairo_image_surface_create,
-		    CAIRO_FORMAT_ARGB32,
+    image = DLCALL (comac_image_surface_create,
+		    COMAC_FORMAT_ARGB32,
 		    obj->width,
 		    obj->height);
-    cr = DLCALL (cairo_create, image);
-    DLCALL (cairo_set_source_surface, cr, surface, 0, 0);
-    DLCALL (cairo_paint, cr);
-    DLCALL (cairo_destroy, cr);
+    cr = DLCALL (comac_create, image);
+    DLCALL (comac_set_source_surface, cr, surface, 0, 0);
+    DLCALL (comac_paint, cr);
+    DLCALL (comac_destroy, cr);
 
     _emit_image (image, NULL);
     _trace_printf (" set-source-image ");
-    DLCALL (cairo_surface_destroy, image);
+    DLCALL (comac_surface_destroy, image);
 
     obj->foreign = FALSE;
 }
 
 static void
-_emit_source_image_rectangle (cairo_surface_t *surface,
+_emit_source_image_rectangle (comac_surface_t *surface,
 			      int x, int y,
 			      int width, int height)
 {
     Object *obj;
-    cairo_surface_t *image;
-    cairo_t *cr;
+    comac_surface_t *image;
+    comac_t *cr;
 
     obj = _get_object (SURFACE, surface);
     if (obj == NULL)
@@ -2229,23 +2229,23 @@ _emit_source_image_rectangle (cairo_surface_t *surface,
 	return;
     }
 
-    image = DLCALL (cairo_image_surface_create,
-		    CAIRO_FORMAT_ARGB32,
+    image = DLCALL (comac_image_surface_create,
+		    COMAC_FORMAT_ARGB32,
 		    width,
 		    height);
-    cr = DLCALL (cairo_create, image);
-    DLCALL (cairo_set_source_surface, cr, surface, x, y);
-    DLCALL (cairo_paint, cr);
-    DLCALL (cairo_destroy, cr);
+    cr = DLCALL (comac_create, image);
+    DLCALL (comac_set_source_surface, cr, surface, x, y);
+    DLCALL (comac_paint, cr);
+    DLCALL (comac_destroy, cr);
 
     _emit_image (image, NULL);
     _trace_printf (" %d %d set-device-offset set-source-image ",
 	     x, y);
-    DLCALL (cairo_surface_destroy, image);
+    DLCALL (comac_surface_destroy, image);
 }
 
 void
-cairo_set_source_surface (cairo_t *cr, cairo_surface_t *surface, double x, double y)
+comac_set_source_surface (comac_t *cr, comac_surface_t *surface, double x, double y)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -2284,18 +2284,18 @@ cairo_set_source_surface (cairo_t *cr, cairo_surface_t *surface, double x, doubl
 	_write_unlock ();
     }
 
-    DLCALL (cairo_set_source_surface, cr, surface, x, y);
+    DLCALL (comac_set_source_surface, cr, surface, x, y);
     _exit_trace ();
 }
 
 void
-cairo_set_source (cairo_t *cr, cairo_pattern_t *source)
+comac_set_source (comac_t *cr, comac_pattern_t *source)
 {
     _enter_trace ();
     _emit_line_info ();
     if (cr != NULL && source != NULL && _write_lock ()) {
 	Object *obj = _get_object (PATTERN, source);
-	cairo_bool_t need_context_and_pattern = TRUE;
+	comac_bool_t need_context_and_pattern = TRUE;
 
 	if (_is_current (PATTERN, source, 0) &&
 	    _is_current (CONTEXT, cr, 1))
@@ -2328,21 +2328,21 @@ cairo_set_source (cairo_t *cr, cairo_pattern_t *source)
 	_write_unlock ();
     }
 
-    DLCALL (cairo_set_source, cr, source);
+    DLCALL (comac_set_source, cr, source);
     _exit_trace ();
 }
 
-cairo_pattern_t *
-cairo_get_source (cairo_t *cr)
+comac_pattern_t *
+comac_get_source (comac_t *cr)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_get_source, cr);
+    ret = DLCALL (comac_get_source, cr);
 
     if (! _has_pattern_id (ret)) {
-	_emit_cairo_op (cr, "/source get /p%ld exch def\n",
+	_emit_comac_op (cr, "/source get /p%ld exch def\n",
 			_create_pattern_id (ret));
 	_get_object (PATTERN, ret)->defined = TRUE;
     }
@@ -2352,19 +2352,19 @@ cairo_get_source (cairo_t *cr)
 }
 
 void
-cairo_set_tolerance (cairo_t *cr, double tolerance)
+comac_set_tolerance (comac_t *cr, double tolerance)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g set-tolerance\n", tolerance);
-    DLCALL (cairo_set_tolerance, cr, tolerance);
+    _emit_comac_op (cr, "%g set-tolerance\n", tolerance);
+    DLCALL (comac_set_tolerance, cr, tolerance);
     _exit_trace ();
 }
 
 static const char *
-_antialias_to_string (cairo_antialias_t antialias)
+_antialias_to_string (comac_antialias_t antialias)
 {
-#define f(name) case CAIRO_ANTIALIAS_ ## name: return "ANTIALIAS_" #name
+#define f(name) case COMAC_ANTIALIAS_ ## name: return "ANTIALIAS_" #name
     switch (antialias) {
 	f(DEFAULT);
 
@@ -2381,20 +2381,20 @@ _antialias_to_string (cairo_antialias_t antialias)
 }
 
 void
-cairo_set_antialias (cairo_t *cr, cairo_antialias_t antialias)
+comac_set_antialias (comac_t *cr, comac_antialias_t antialias)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr,
+    _emit_comac_op (cr,
 		    "//%s set-antialias\n", _antialias_to_string (antialias));
-    DLCALL (cairo_set_antialias, cr, antialias);
+    DLCALL (comac_set_antialias, cr, antialias);
     _exit_trace ();
 }
 
 static const char *
-_fill_rule_to_string (cairo_fill_rule_t rule)
+_fill_rule_to_string (comac_fill_rule_t rule)
 {
-#define f(name) case CAIRO_FILL_RULE_ ## name: return #name
+#define f(name) case COMAC_FILL_RULE_ ## name: return #name
     switch (rule) {
 	f(WINDING);
 	f(EVEN_ODD);
@@ -2404,30 +2404,30 @@ _fill_rule_to_string (cairo_fill_rule_t rule)
 }
 
 void
-cairo_set_fill_rule (cairo_t *cr, cairo_fill_rule_t fill_rule)
+comac_set_fill_rule (comac_t *cr, comac_fill_rule_t fill_rule)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr,
+    _emit_comac_op (cr,
 		    "//%s set-fill-rule\n", _fill_rule_to_string (fill_rule));
-    DLCALL (cairo_set_fill_rule, cr, fill_rule);
+    DLCALL (comac_set_fill_rule, cr, fill_rule);
     _exit_trace ();
 }
 
 void
-cairo_set_line_width (cairo_t *cr, double width)
+comac_set_line_width (comac_t *cr, double width)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g set-line-width\n", width);
-    DLCALL (cairo_set_line_width, cr, width);
+    _emit_comac_op (cr, "%g set-line-width\n", width);
+    DLCALL (comac_set_line_width, cr, width);
     _exit_trace ();
 }
 
 static const char *
-_line_cap_to_string (cairo_line_cap_t line_cap)
+_line_cap_to_string (comac_line_cap_t line_cap)
 {
-#define f(name) case CAIRO_LINE_CAP_ ## name: return "LINE_CAP_" #name
+#define f(name) case COMAC_LINE_CAP_ ## name: return "LINE_CAP_" #name
     switch (line_cap) {
 	f(BUTT);
 	f(ROUND);
@@ -2438,19 +2438,19 @@ _line_cap_to_string (cairo_line_cap_t line_cap)
 }
 
 void
-cairo_set_line_cap (cairo_t *cr, cairo_line_cap_t line_cap)
+comac_set_line_cap (comac_t *cr, comac_line_cap_t line_cap)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "//%s set-line-cap\n", _line_cap_to_string (line_cap));
-    DLCALL (cairo_set_line_cap, cr, line_cap);
+    _emit_comac_op (cr, "//%s set-line-cap\n", _line_cap_to_string (line_cap));
+    DLCALL (comac_set_line_cap, cr, line_cap);
     _exit_trace ();
 }
 
 static const char *
-_line_join_to_string (cairo_line_join_t line_join)
+_line_join_to_string (comac_line_join_t line_join)
 {
-#define f(name) case CAIRO_LINE_JOIN_ ## name: return "LINE_JOIN_" #name
+#define f(name) case COMAC_LINE_JOIN_ ## name: return "LINE_JOIN_" #name
     switch (line_join) {
 	f(MITER);
 	f(ROUND);
@@ -2461,18 +2461,18 @@ _line_join_to_string (cairo_line_join_t line_join)
 }
 
 void
-cairo_set_line_join (cairo_t *cr, cairo_line_join_t line_join)
+comac_set_line_join (comac_t *cr, comac_line_join_t line_join)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr,
+    _emit_comac_op (cr,
 		    "//%s set-line-join\n", _line_join_to_string (line_join));
-    DLCALL (cairo_set_line_join, cr, line_join);
+    DLCALL (comac_set_line_join, cr, line_join);
     _exit_trace ();
 }
 
 void
-cairo_set_dash (cairo_t *cr, const double *dashes, int num_dashes, double offset)
+comac_set_dash (comac_t *cr, const double *dashes, int num_dashes, double offset)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -2492,93 +2492,93 @@ cairo_set_dash (cairo_t *cr, const double *dashes, int num_dashes, double offset
 	_write_unlock ();
     }
 
-    DLCALL (cairo_set_dash, cr, dashes, num_dashes, offset);
+    DLCALL (comac_set_dash, cr, dashes, num_dashes, offset);
     _exit_trace ();
 }
 
 void
-cairo_set_miter_limit (cairo_t *cr, double limit)
+comac_set_miter_limit (comac_t *cr, double limit)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g set-miter-limit\n", limit);
-    DLCALL (cairo_set_miter_limit, cr, limit);
+    _emit_comac_op (cr, "%g set-miter-limit\n", limit);
+    DLCALL (comac_set_miter_limit, cr, limit);
     _exit_trace ();
 }
 
 void
-cairo_translate (cairo_t *cr, double tx, double ty)
+comac_translate (comac_t *cr, double tx, double ty)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g %g translate\n", tx, ty);
-    DLCALL (cairo_translate, cr, tx, ty);
+    _emit_comac_op (cr, "%g %g translate\n", tx, ty);
+    DLCALL (comac_translate, cr, tx, ty);
     _exit_trace ();
 }
 
 void
-cairo_scale (cairo_t *cr, double sx, double sy)
+comac_scale (comac_t *cr, double sx, double sy)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g %g scale\n", sx, sy);
-    DLCALL (cairo_scale, cr, sx, sy);
+    _emit_comac_op (cr, "%g %g scale\n", sx, sy);
+    DLCALL (comac_scale, cr, sx, sy);
     _exit_trace ();
 }
 
 void
-cairo_rotate (cairo_t *cr, double angle)
+comac_rotate (comac_t *cr, double angle)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g rotate\n", angle);
-    DLCALL (cairo_rotate, cr, angle);
+    _emit_comac_op (cr, "%g rotate\n", angle);
+    DLCALL (comac_rotate, cr, angle);
     _exit_trace ();
 }
 
 void
-cairo_transform (cairo_t *cr, const cairo_matrix_t *matrix)
+comac_transform (comac_t *cr, const comac_matrix_t *matrix)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g %g %g %g %g %g matrix transform\n",
+    _emit_comac_op (cr, "%g %g %g %g %g %g matrix transform\n",
 		    matrix->xx, matrix->yx,
 		    matrix->xy, matrix->yy,
 		    matrix->x0, matrix->y0);
-    DLCALL (cairo_transform, cr, matrix);
+    DLCALL (comac_transform, cr, matrix);
     _exit_trace ();
 }
 
 void
-cairo_set_matrix (cairo_t *cr, const cairo_matrix_t *matrix)
+comac_set_matrix (comac_t *cr, const comac_matrix_t *matrix)
 {
     _enter_trace ();
     _emit_line_info ();
     if (_matrix_is_identity (matrix)) {
-	_emit_cairo_op (cr, "identity set-matrix\n");
+	_emit_comac_op (cr, "identity set-matrix\n");
     } else {
-	_emit_cairo_op (cr, "%g %g %g %g %g %g matrix set-matrix\n",
+	_emit_comac_op (cr, "%g %g %g %g %g %g matrix set-matrix\n",
 			matrix->xx, matrix->yx,
 			matrix->xy, matrix->yy,
 			matrix->x0, matrix->y0);
     }
-    DLCALL (cairo_set_matrix, cr, matrix);
+    DLCALL (comac_set_matrix, cr, matrix);
     _exit_trace ();
 }
 
-cairo_surface_t *
-cairo_get_target (cairo_t *cr)
+comac_surface_t *
+comac_get_target (comac_t *cr)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_get_target, cr);
+    ret = DLCALL (comac_get_target, cr);
     if (cr != NULL) {
 	Object *obj = _create_surface (ret);
 
 	if (! obj->defined) {
-	    _emit_cairo_op (cr,
+	    _emit_comac_op (cr,
 			    "/target get /s%ld exch def\n",
 			    obj->token);
 	    obj->defined = TRUE;
@@ -2589,19 +2589,19 @@ cairo_get_target (cairo_t *cr)
     return ret;
 }
 
-cairo_surface_t *
-cairo_get_group_target (cairo_t *cr)
+comac_surface_t *
+comac_get_group_target (comac_t *cr)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_get_group_target, cr);
+    ret = DLCALL (comac_get_group_target, cr);
     if (cr != NULL) {
 	Object *obj = _create_surface (ret);
 
 	if (! obj->defined) {
-	    _emit_cairo_op (cr,
+	    _emit_comac_op (cr,
 			    "/group-target get /s%ld exch def\n",
 			    obj->token);
 	    obj->defined = TRUE;
@@ -2613,154 +2613,154 @@ cairo_get_group_target (cairo_t *cr)
 }
 
 void
-cairo_identity_matrix (cairo_t *cr)
+comac_identity_matrix (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "identity set-matrix\n");
-    DLCALL (cairo_identity_matrix, cr);
+    _emit_comac_op (cr, "identity set-matrix\n");
+    DLCALL (comac_identity_matrix, cr);
     _exit_trace ();
 }
 
 void
-cairo_new_path (cairo_t *cr)
+comac_new_path (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "n ");
-    DLCALL (cairo_new_path, cr);
+    _emit_comac_op (cr, "n ");
+    DLCALL (comac_new_path, cr);
     _exit_trace ();
 }
 
 void
-cairo_move_to (cairo_t *cr, double x, double y)
+comac_move_to (comac_t *cr, double x, double y)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g m ", x, y);
-    DLCALL (cairo_move_to, cr, x, y);
+    _emit_comac_op (cr, "%g %g m ", x, y);
+    DLCALL (comac_move_to, cr, x, y);
     _exit_trace ();
 }
 
 void
-cairo_new_sub_path (cairo_t *cr)
+comac_new_sub_path (comac_t *cr)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "N ");
-    DLCALL (cairo_new_sub_path, cr);
+    _emit_comac_op (cr, "N ");
+    DLCALL (comac_new_sub_path, cr);
     _exit_trace ();
 }
 
 void
-cairo_line_to (cairo_t *cr, double x, double y)
+comac_line_to (comac_t *cr, double x, double y)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g l ", x, y);
-    DLCALL (cairo_line_to, cr, x, y);
+    _emit_comac_op (cr, "%g %g l ", x, y);
+    DLCALL (comac_line_to, cr, x, y);
     _exit_trace ();
 }
 
 void
-cairo_curve_to (cairo_t *cr, double x1, double y1, double x2, double y2, double x3, double y3)
+comac_curve_to (comac_t *cr, double x1, double y1, double x2, double y2, double x3, double y3)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g %g %g %g %g c ", x1, y1, x2, y2, x3, y3);
-    DLCALL (cairo_curve_to, cr, x1, y1, x2, y2, x3, y3);
+    _emit_comac_op (cr, "%g %g %g %g %g %g c ", x1, y1, x2, y2, x3, y3);
+    DLCALL (comac_curve_to, cr, x1, y1, x2, y2, x3, y3);
     _exit_trace ();
 }
 
 void
-cairo_arc (cairo_t *cr, double xc, double yc, double radius, double angle1, double angle2)
+comac_arc (comac_t *cr, double xc, double yc, double radius, double angle1, double angle2)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g %g %g %g arc\n", xc, yc, radius, angle1, angle2);
-    DLCALL (cairo_arc, cr, xc, yc, radius, angle1, angle2);
+    _emit_comac_op (cr, "%g %g %g %g %g arc\n", xc, yc, radius, angle1, angle2);
+    DLCALL (comac_arc, cr, xc, yc, radius, angle1, angle2);
     _exit_trace ();
 }
 
 void
-cairo_arc_negative (cairo_t *cr, double xc, double yc, double radius, double angle1, double angle2)
+comac_arc_negative (comac_t *cr, double xc, double yc, double radius, double angle1, double angle2)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g %g %g %g arc-\n",
+    _emit_comac_op (cr, "%g %g %g %g %g arc-\n",
 		    xc, yc, radius, angle1, angle2);
-    DLCALL (cairo_arc_negative, cr, xc, yc, radius, angle1, angle2);
+    DLCALL (comac_arc_negative, cr, xc, yc, radius, angle1, angle2);
     _exit_trace ();
 }
 
 void
-cairo_rel_move_to (cairo_t *cr, double dx, double dy)
+comac_rel_move_to (comac_t *cr, double dx, double dy)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g M ", dx, dy);
-    DLCALL (cairo_rel_move_to, cr, dx, dy);
+    _emit_comac_op (cr, "%g %g M ", dx, dy);
+    DLCALL (comac_rel_move_to, cr, dx, dy);
     _exit_trace ();
 }
 
 void
-cairo_rel_line_to (cairo_t *cr, double dx, double dy)
+comac_rel_line_to (comac_t *cr, double dx, double dy)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g L ", dx, dy);
-    DLCALL (cairo_rel_line_to, cr, dx, dy);
+    _emit_comac_op (cr, "%g %g L ", dx, dy);
+    DLCALL (comac_rel_line_to, cr, dx, dy);
     _exit_trace ();
 }
 
 void
-cairo_rel_curve_to (cairo_t *cr, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3)
+comac_rel_curve_to (comac_t *cr, double dx1, double dy1, double dx2, double dy2, double dx3, double dy3)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g %g %g %g %g C ",
+    _emit_comac_op (cr, "%g %g %g %g %g %g C ",
 		    dx1, dy1, dx2, dy2, dx3, dy3);
-    DLCALL (cairo_rel_curve_to, cr, dx1, dy1, dx2, dy2, dx3, dy3);
+    DLCALL (comac_rel_curve_to, cr, dx1, dy1, dx2, dy2, dx3, dy3);
     _exit_trace ();
 }
 
 void
-cairo_rectangle (cairo_t *cr, double x, double y, double width, double height)
+comac_rectangle (comac_t *cr, double x, double y, double width, double height)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "%g %g %g %g rectangle\n", x, y, width, height);
-    DLCALL (cairo_rectangle, cr, x, y, width, height);
+    _emit_comac_op (cr, "%g %g %g %g rectangle\n", x, y, width, height);
+    DLCALL (comac_rectangle, cr, x, y, width, height);
     _exit_trace ();
 }
 
 void
-cairo_close_path (cairo_t *cr)
+comac_close_path (comac_t *cr)
 {
     _enter_trace ();
-    _emit_cairo_op (cr, "h\n");
-    DLCALL (cairo_close_path, cr);
+    _emit_comac_op (cr, "h\n");
+    DLCALL (comac_close_path, cr);
     _exit_trace ();
 }
 
 void
-cairo_paint (cairo_t *cr)
-{
-    _enter_trace ();
-    _emit_line_info ();
-    _emit_cairo_op (cr, "paint\n");
-    DLCALL (cairo_paint, cr);
-    _exit_trace ();
-}
-
-void
-cairo_paint_with_alpha (cairo_t *cr, double alpha)
+comac_paint (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g paint-with-alpha\n", alpha);
-    DLCALL (cairo_paint_with_alpha, cr, alpha);
+    _emit_comac_op (cr, "paint\n");
+    DLCALL (comac_paint, cr);
     _exit_trace ();
 }
 
 void
-cairo_mask (cairo_t *cr, cairo_pattern_t *pattern)
+comac_paint_with_alpha (comac_t *cr, double alpha)
+{
+    _enter_trace ();
+    _emit_line_info ();
+    _emit_comac_op (cr, "%g paint-with-alpha\n", alpha);
+    DLCALL (comac_paint_with_alpha, cr, alpha);
+    _exit_trace ();
+}
+
+void
+comac_mask (comac_t *cr, comac_pattern_t *pattern)
 {
     _enter_trace ();
     _emit_line_info ();
     if (cr != NULL && pattern != NULL && _write_lock ()) {
 	Object *obj = _get_object (PATTERN, pattern);
-	cairo_bool_t need_context_and_pattern = TRUE;
+	comac_bool_t need_context_and_pattern = TRUE;
 
 	if (_is_current (PATTERN, pattern, 0) &&
 	    _is_current (CONTEXT, cr, 1))
@@ -2789,12 +2789,12 @@ cairo_mask (cairo_t *cr, cairo_pattern_t *pattern)
 	_trace_printf (" mask\n");
 	_write_unlock ();
     }
-    DLCALL (cairo_mask, cr, pattern);
+    DLCALL (comac_mask, cr, pattern);
     _exit_trace ();
 }
 
 void
-cairo_mask_surface (cairo_t *cr, cairo_surface_t *surface, double x, double y)
+comac_mask_surface (comac_t *cr, comac_surface_t *surface, double x, double y)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -2828,105 +2828,105 @@ cairo_mask_surface (cairo_t *cr, cairo_surface_t *surface, double x, double y)
 	_write_unlock ();
     }
 
-    DLCALL (cairo_mask_surface, cr, surface, x, y);
+    DLCALL (comac_mask_surface, cr, surface, x, y);
     _exit_trace ();
 }
 
 void
-cairo_stroke (cairo_t *cr)
+comac_stroke (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "stroke\n");
-    DLCALL (cairo_stroke, cr);
+    _emit_comac_op (cr, "stroke\n");
+    DLCALL (comac_stroke, cr);
     _exit_trace ();
 }
 
 void
-cairo_stroke_preserve (cairo_t *cr)
+comac_stroke_preserve (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "stroke+\n");
-    DLCALL (cairo_stroke_preserve, cr);
+    _emit_comac_op (cr, "stroke+\n");
+    DLCALL (comac_stroke_preserve, cr);
     _exit_trace ();
 }
 
 void
-cairo_fill (cairo_t *cr)
+comac_fill (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "fill\n");
-    DLCALL (cairo_fill, cr);
+    _emit_comac_op (cr, "fill\n");
+    DLCALL (comac_fill, cr);
     _exit_trace ();
 }
 
 void
-cairo_fill_preserve (cairo_t *cr)
+comac_fill_preserve (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "fill+\n");
-    DLCALL (cairo_fill_preserve, cr);
+    _emit_comac_op (cr, "fill+\n");
+    DLCALL (comac_fill_preserve, cr);
     _exit_trace ();
 }
 
 void
-cairo_copy_page (cairo_t *cr)
+comac_copy_page (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "copy-page\n");
-    DLCALL (cairo_copy_page, cr);
+    _emit_comac_op (cr, "copy-page\n");
+    DLCALL (comac_copy_page, cr);
     _exit_trace ();
 }
 
 void
-cairo_show_page (cairo_t *cr)
+comac_show_page (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "show-page\n");
-    DLCALL (cairo_show_page, cr);
+    _emit_comac_op (cr, "show-page\n");
+    DLCALL (comac_show_page, cr);
     _exit_trace ();
 }
 
 void
-cairo_clip (cairo_t *cr)
+comac_clip (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "clip\n");
-    DLCALL (cairo_clip, cr);
+    _emit_comac_op (cr, "clip\n");
+    DLCALL (comac_clip, cr);
     _exit_trace ();
 }
 
 void
-cairo_clip_preserve (cairo_t *cr)
+comac_clip_preserve (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "clip+\n");
-    DLCALL (cairo_clip_preserve, cr);
+    _emit_comac_op (cr, "clip+\n");
+    DLCALL (comac_clip_preserve, cr);
     _exit_trace ();
 }
 
 void
-cairo_reset_clip (cairo_t *cr)
+comac_reset_clip (comac_t *cr)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "reset-clip\n");
-    DLCALL (cairo_reset_clip, cr);
+    _emit_comac_op (cr, "reset-clip\n");
+    DLCALL (comac_reset_clip, cr);
     _exit_trace ();
 }
 
 
 static const char *
-_slant_to_string (cairo_font_slant_t font_slant)
+_slant_to_string (comac_font_slant_t font_slant)
 {
-#define f(name) case CAIRO_FONT_SLANT_ ## name: return "SLANT_" #name
+#define f(name) case COMAC_FONT_SLANT_ ## name: return "SLANT_" #name
     switch (font_slant) {
 	f(NORMAL);
 	f(ITALIC);
@@ -2937,9 +2937,9 @@ _slant_to_string (cairo_font_slant_t font_slant)
 }
 
 static const char *
-_weight_to_string (cairo_font_weight_t font_weight)
+_weight_to_string (comac_font_weight_t font_weight)
 {
-#define f(name) case CAIRO_FONT_WEIGHT_ ## name: return "WEIGHT_" #name
+#define f(name) case COMAC_FONT_WEIGHT_ ## name: return "WEIGHT_" #name
     switch (font_weight) {
 	f(NORMAL);
 	f(BOLD);
@@ -2949,7 +2949,7 @@ _weight_to_string (cairo_font_weight_t font_weight)
 }
 
 void
-cairo_select_font_face (cairo_t *cr, const char *family, cairo_font_slant_t slant, cairo_font_weight_t weight)
+comac_select_font_face (comac_t *cr, const char *family, comac_font_slant_t slant, comac_font_weight_t weight)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -2961,22 +2961,22 @@ cairo_select_font_face (cairo_t *cr, const char *family, cairo_font_slant_t slan
 		       _weight_to_string (weight));
 	_write_unlock ();
     }
-    DLCALL (cairo_select_font_face, cr, family, slant, weight);
+    DLCALL (comac_select_font_face, cr, family, slant, weight);
     _exit_trace ();
 }
 
-cairo_font_face_t *
-cairo_get_font_face (cairo_t *cr)
+comac_font_face_t *
+comac_get_font_face (comac_t *cr)
 {
-    cairo_font_face_t *ret;
+    comac_font_face_t *ret;
     long font_face_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_get_font_face, cr);
+    ret = DLCALL (comac_get_font_face, cr);
     font_face_id = _create_font_face_id (ret);
 
-    _emit_cairo_op (cr, "/font-face get %% f%ld\n", font_face_id);
+    _emit_comac_op (cr, "/font-face get %% f%ld\n", font_face_id);
     _push_operand (FONT_FACE, ret);
     dump_stack(__func__);
 
@@ -2985,7 +2985,7 @@ cairo_get_font_face (cairo_t *cr)
 }
 
 void
-cairo_set_font_face (cairo_t *cr, cairo_font_face_t *font_face)
+comac_set_font_face (comac_t *cr, comac_font_face_t *font_face)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -3012,37 +3012,37 @@ cairo_set_font_face (cairo_t *cr, cairo_font_face_t *font_face)
 	_write_unlock ();
     }
 
-    DLCALL (cairo_set_font_face, cr, font_face);
+    DLCALL (comac_set_font_face, cr, font_face);
     _exit_trace ();
 }
 
 void
-cairo_set_font_size (cairo_t *cr, double size)
+comac_set_font_size (comac_t *cr, double size)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g set-font-size\n", size);
-    DLCALL (cairo_set_font_size, cr, size);
+    _emit_comac_op (cr, "%g set-font-size\n", size);
+    DLCALL (comac_set_font_size, cr, size);
     _exit_trace ();
 }
 
 void
-cairo_set_font_matrix (cairo_t *cr, const cairo_matrix_t *matrix)
+comac_set_font_matrix (comac_t *cr, const comac_matrix_t *matrix)
 {
     _enter_trace ();
     _emit_line_info ();
-    _emit_cairo_op (cr, "%g %g %g %g %g %g matrix set-font-matrix\n",
+    _emit_comac_op (cr, "%g %g %g %g %g %g matrix set-font-matrix\n",
 		    matrix->xx, matrix->yx,
 		    matrix->xy, matrix->yy,
 		    matrix->x0, matrix->y0);
-    DLCALL (cairo_set_font_matrix, cr, matrix);
+    DLCALL (comac_set_font_matrix, cr, matrix);
     _exit_trace ();
 }
 
 static const char *
-_subpixel_order_to_string (cairo_subpixel_order_t subpixel_order)
+_subpixel_order_to_string (comac_subpixel_order_t subpixel_order)
 {
-#define f(name) case CAIRO_SUBPIXEL_ORDER_ ## name: return "SUBPIXEL_ORDER_" #name
+#define f(name) case COMAC_SUBPIXEL_ORDER_ ## name: return "SUBPIXEL_ORDER_" #name
     switch (subpixel_order) {
 	f(DEFAULT);
 	f(RGB);
@@ -3055,9 +3055,9 @@ _subpixel_order_to_string (cairo_subpixel_order_t subpixel_order)
 }
 
 static const char *
-_hint_style_to_string (cairo_hint_style_t hint_style)
+_hint_style_to_string (comac_hint_style_t hint_style)
 {
-#define f(name) case CAIRO_HINT_STYLE_ ## name: return "HINT_STYLE_" #name
+#define f(name) case COMAC_HINT_STYLE_ ## name: return "HINT_STYLE_" #name
     switch (hint_style) {
 	f(DEFAULT);
 	f(NONE);
@@ -3070,9 +3070,9 @@ _hint_style_to_string (cairo_hint_style_t hint_style)
 }
 
 static const char *
-_hint_metrics_to_string (cairo_hint_metrics_t hint_metrics)
+_hint_metrics_to_string (comac_hint_metrics_t hint_metrics)
 {
-#define f(name) case CAIRO_HINT_METRICS_ ## name: return "HINT_METRICS_" #name
+#define f(name) case COMAC_HINT_METRICS_ ## name: return "HINT_METRICS_" #name
     switch (hint_metrics) {
 	f(DEFAULT);
 	f(OFF);
@@ -3083,35 +3083,35 @@ _hint_metrics_to_string (cairo_hint_metrics_t hint_metrics)
 }
 
 static void
-_emit_font_options (const cairo_font_options_t *options)
+_emit_font_options (const comac_font_options_t *options)
 {
-    cairo_antialias_t antialias;
-    cairo_subpixel_order_t subpixel_order;
-    cairo_hint_style_t hint_style;
-    cairo_hint_metrics_t hint_metrics;
+    comac_antialias_t antialias;
+    comac_subpixel_order_t subpixel_order;
+    comac_hint_style_t hint_style;
+    comac_hint_metrics_t hint_metrics;
 
     _trace_printf ("<<");
 
-    antialias = DLCALL (cairo_font_options_get_antialias, options);
-    if (antialias != CAIRO_ANTIALIAS_DEFAULT) {
+    antialias = DLCALL (comac_font_options_get_antialias, options);
+    if (antialias != COMAC_ANTIALIAS_DEFAULT) {
 	_trace_printf (" /antialias //%s",
 		       _antialias_to_string (antialias));
     }
 
-    subpixel_order = DLCALL (cairo_font_options_get_subpixel_order, options);
-    if (subpixel_order != CAIRO_SUBPIXEL_ORDER_DEFAULT) {
+    subpixel_order = DLCALL (comac_font_options_get_subpixel_order, options);
+    if (subpixel_order != COMAC_SUBPIXEL_ORDER_DEFAULT) {
 	_trace_printf (" /subpixel-order //%s",
 		       _subpixel_order_to_string (subpixel_order));
     }
 
-    hint_style = DLCALL (cairo_font_options_get_hint_style, options);
-    if (hint_style != CAIRO_HINT_STYLE_DEFAULT) {
+    hint_style = DLCALL (comac_font_options_get_hint_style, options);
+    if (hint_style != COMAC_HINT_STYLE_DEFAULT) {
 	_trace_printf (" /hint-style //%s",
 		       _hint_style_to_string (hint_style));
     }
 
-    hint_metrics = DLCALL (cairo_font_options_get_hint_metrics, options);
-    if (hint_metrics != CAIRO_HINT_METRICS_DEFAULT) {
+    hint_metrics = DLCALL (comac_font_options_get_hint_metrics, options);
+    if (hint_metrics != COMAC_HINT_METRICS_DEFAULT) {
 	_trace_printf (" /hint-metrics //%s",
 		       _hint_metrics_to_string (hint_metrics));
     }
@@ -3120,7 +3120,7 @@ _emit_font_options (const cairo_font_options_t *options)
 }
 
 void
-cairo_set_font_options (cairo_t *cr, const cairo_font_options_t *options)
+comac_set_font_options (comac_t *cr, const comac_font_options_t *options)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -3131,21 +3131,21 @@ cairo_set_font_options (cairo_t *cr, const cairo_font_options_t *options)
 	_write_unlock ();
     }
 
-    DLCALL (cairo_set_font_options, cr, options);
+    DLCALL (comac_set_font_options, cr, options);
     _exit_trace ();
 }
 
-cairo_scaled_font_t *
-cairo_get_scaled_font (cairo_t *cr)
+comac_scaled_font_t *
+comac_get_scaled_font (comac_t *cr)
 {
-    cairo_scaled_font_t *ret;
+    comac_scaled_font_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_get_scaled_font, cr);
+    ret = DLCALL (comac_get_scaled_font, cr);
 
     if (cr != NULL && ! _has_scaled_font_id (ret)) {
-	_emit_cairo_op (cr, "/scaled-font get /sf%ld exch def\n",
+	_emit_comac_op (cr, "/scaled-font get /sf%ld exch def\n",
 			_create_scaled_font_id (ret));
 	_get_object (SCALED_FONT, ret)->defined = TRUE;
     }
@@ -3155,13 +3155,13 @@ cairo_get_scaled_font (cairo_t *cr)
 }
 
 void
-cairo_set_scaled_font (cairo_t *cr, const cairo_scaled_font_t *scaled_font)
+comac_set_scaled_font (comac_t *cr, const comac_scaled_font_t *scaled_font)
 {
     _enter_trace ();
     _emit_line_info ();
     if (cr != NULL && scaled_font != NULL && _write_lock ()) {
 	Object *obj = _get_object (SCALED_FONT, scaled_font);
-	cairo_bool_t need_context_and_font = TRUE;
+	comac_bool_t need_context_and_font = TRUE;
 
 	if (_is_current (SCALED_FONT, scaled_font, 0) &&
 	    _is_current (CONTEXT, cr, 1))
@@ -3194,12 +3194,12 @@ cairo_set_scaled_font (cairo_t *cr, const cairo_scaled_font_t *scaled_font)
 
 	_write_unlock ();
     }
-    DLCALL (cairo_set_scaled_font, cr, scaled_font);
+    DLCALL (comac_set_scaled_font, cr, scaled_font);
     _exit_trace ();
 }
 
 static void
-_emit_matrix (const cairo_matrix_t *m)
+_emit_matrix (const comac_matrix_t *m)
 {
     if (_matrix_is_identity(m))
     {
@@ -3214,17 +3214,17 @@ _emit_matrix (const cairo_matrix_t *m)
     }
 }
 
-cairo_scaled_font_t *
-cairo_scaled_font_create (cairo_font_face_t *font_face,
-			  const cairo_matrix_t *font_matrix,
-			  const cairo_matrix_t *ctm,
-			  const cairo_font_options_t *options)
+comac_scaled_font_t *
+comac_scaled_font_create (comac_font_face_t *font_face,
+			  const comac_matrix_t *font_matrix,
+			  const comac_matrix_t *ctm,
+			  const comac_font_options_t *options)
 {
-    cairo_scaled_font_t *ret;
+    comac_scaled_font_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_scaled_font_create, font_face, font_matrix, ctm, options);
+    ret = DLCALL (comac_scaled_font_create, font_face, font_matrix, ctm, options);
     if (_has_scaled_font_id (ret))
 	    goto out;
 
@@ -3238,7 +3238,7 @@ cairo_scaled_font_create (cairo_font_face_t *font_face,
 	Object *obj;
 
 	obj = _type_object_create (SCALED_FONT, ret);
-	DLCALL (cairo_scaled_font_set_user_data,
+	DLCALL (comac_scaled_font_set_user_data,
 		ret, &destroy_key, obj, _object_undef);
 
 	if (_pop_operands_to (FONT_FACE, font_face))
@@ -3267,7 +3267,7 @@ out:
 }
 
 void
-cairo_show_text (cairo_t *cr, const char *utf8)
+comac_show_text (comac_t *cr, const char *utf8)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -3277,26 +3277,26 @@ cairo_show_text (cairo_t *cr, const char *utf8)
 	_trace_printf (" show-text\n");
 	_write_unlock ();
     }
-    DLCALL (cairo_show_text, cr, utf8);
+    DLCALL (comac_show_text, cr, utf8);
     _exit_trace ();
 }
 
 static void
-_glyph_advance (cairo_scaled_font_t *font,
-		const cairo_glyph_t *glyph,
+_glyph_advance (comac_scaled_font_t *font,
+		const comac_glyph_t *glyph,
 		double *x, double *y)
 {
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
-    DLCALL (cairo_scaled_font_glyph_extents, font, glyph, 1, &extents);
+    DLCALL (comac_scaled_font_glyph_extents, font, glyph, 1, &extents);
     *x += extents.x_advance;
     *y += extents.y_advance;
 }
 
 #define TOLERANCE 1e-5
 static void
-_emit_glyphs (cairo_scaled_font_t *font,
-	      const cairo_glyph_t *glyphs,
+_emit_glyphs (comac_scaled_font_t *font,
+	      const comac_glyph_t *glyphs,
 	      int num_glyphs)
 {
     double x,y;
@@ -3315,7 +3315,7 @@ _emit_glyphs (cairo_scaled_font_t *font,
     x = glyphs->x;
     y = glyphs->y;
     if (n < num_glyphs) { /* need full glyph range */
-	cairo_bool_t first;
+	comac_bool_t first;
 
 	_trace_printf ("[%g %g [", x, y);
 	first = TRUE;
@@ -3372,27 +3372,27 @@ _emit_glyphs (cairo_scaled_font_t *font,
 }
 
 void
-cairo_show_glyphs (cairo_t *cr, const cairo_glyph_t *glyphs, int num_glyphs)
+comac_show_glyphs (comac_t *cr, const comac_glyph_t *glyphs, int num_glyphs)
 {
     _enter_trace ();
     _emit_line_info ();
     if (cr != NULL && glyphs != NULL && _write_lock ()) {
-	cairo_scaled_font_t *font;
+	comac_scaled_font_t *font;
 
 	_emit_context (cr);
-	font = DLCALL (cairo_get_scaled_font, cr);
+	font = DLCALL (comac_get_scaled_font, cr);
 
 	_emit_glyphs (font, glyphs, num_glyphs);
 	_trace_printf (" show-glyphs\n");
 	_write_unlock ();
     }
 
-    DLCALL (cairo_show_glyphs, cr, glyphs, num_glyphs);
+    DLCALL (comac_show_glyphs, cr, glyphs, num_glyphs);
     _exit_trace ();
 }
 
 static const char *
-_direction_to_string (cairo_bool_t backward)
+_direction_to_string (comac_bool_t backward)
 {
     const char *names[] = {
 	"FORWARD",
@@ -3402,20 +3402,20 @@ _direction_to_string (cairo_bool_t backward)
 }
 
 void
-cairo_show_text_glyphs (cairo_t			   *cr,
+comac_show_text_glyphs (comac_t			   *cr,
 			const char		   *utf8,
 			int			    utf8_len,
-			const cairo_glyph_t	   *glyphs,
+			const comac_glyph_t	   *glyphs,
 			int			    num_glyphs,
-			const cairo_text_cluster_t *clusters,
+			const comac_text_cluster_t *clusters,
 			int			    num_clusters,
-			cairo_text_cluster_flags_t  backward)
+			comac_text_cluster_flags_t  backward)
 {
-    cairo_scaled_font_t *font;
+    comac_scaled_font_t *font;
 
     _enter_trace ();
 
-    font = DLCALL (cairo_get_scaled_font, cr);
+    font = DLCALL (comac_get_scaled_font, cr);
 
     _emit_line_info ();
     if (cr != NULL && glyphs != NULL && clusters != NULL && _write_lock ()) {
@@ -3438,7 +3438,7 @@ cairo_show_text_glyphs (cairo_t			   *cr,
 	_write_unlock ();
     }
 
-    DLCALL (cairo_show_text_glyphs, cr,
+    DLCALL (comac_show_text_glyphs, cr,
 	                            utf8, utf8_len,
 				    glyphs, num_glyphs,
 				    clusters, num_clusters,
@@ -3447,7 +3447,7 @@ cairo_show_text_glyphs (cairo_t			   *cr,
 }
 
 void
-cairo_text_path (cairo_t *cr, const char *utf8)
+comac_text_path (comac_t *cr, const char *utf8)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -3457,18 +3457,18 @@ cairo_text_path (cairo_t *cr, const char *utf8)
 	_trace_printf (" text-path\n");
 	_write_unlock ();
     }
-    DLCALL (cairo_text_path, cr, utf8);
+    DLCALL (comac_text_path, cr, utf8);
     _exit_trace ();
 }
 
 void
-cairo_glyph_path (cairo_t *cr, const cairo_glyph_t *glyphs, int num_glyphs)
+comac_glyph_path (comac_t *cr, const comac_glyph_t *glyphs, int num_glyphs)
 {
-    cairo_scaled_font_t *font;
+    comac_scaled_font_t *font;
 
     _enter_trace ();
 
-    font = DLCALL (cairo_get_scaled_font, cr);
+    font = DLCALL (comac_get_scaled_font, cr);
 
     _emit_line_info ();
     if (cr != NULL && glyphs != NULL && _write_lock ()) {
@@ -3479,22 +3479,22 @@ cairo_glyph_path (cairo_t *cr, const cairo_glyph_t *glyphs, int num_glyphs)
 	_write_unlock ();
     }
 
-    DLCALL (cairo_glyph_path, cr, glyphs, num_glyphs);
+    DLCALL (comac_glyph_path, cr, glyphs, num_glyphs);
     _exit_trace ();
 }
 
 void
-cairo_append_path (cairo_t *cr, const cairo_path_t *path)
+comac_append_path (comac_t *cr, const comac_path_t *path)
 {
     /* XXX no support for named paths, so manually reconstruct */
     int i;
-    cairo_path_data_t *p;
+    comac_path_data_t *p;
 
     _enter_trace ();
 
     _emit_line_info ();
     if (cr == NULL || path == NULL) {
-	DLCALL (cairo_append_path, cr, path);
+	DLCALL (comac_append_path, cr, path);
 	_exit_trace ();
 	return;
     }
@@ -3502,24 +3502,24 @@ cairo_append_path (cairo_t *cr, const cairo_path_t *path)
     for (i=0; i < path->num_data; i += path->data[i].header.length) {
 	p = &path->data[i];
 	switch (p->header.type) {
-	case CAIRO_PATH_MOVE_TO:
+	case COMAC_PATH_MOVE_TO:
 	    if (p->header.length >= 2)
-		cairo_move_to (cr, p[1].point.x, p[1].point.y);
+		comac_move_to (cr, p[1].point.x, p[1].point.y);
 	    break;
-	case CAIRO_PATH_LINE_TO:
+	case COMAC_PATH_LINE_TO:
 	    if (p->header.length >= 2)
-		cairo_line_to (cr, p[1].point.x, p[1].point.y);
+		comac_line_to (cr, p[1].point.x, p[1].point.y);
 	    break;
-	case CAIRO_PATH_CURVE_TO:
+	case COMAC_PATH_CURVE_TO:
 	    if (p->header.length >= 4)
-		cairo_curve_to (cr,
+		comac_curve_to (cr,
 				p[1].point.x, p[1].point.y,
 				p[2].point.x, p[2].point.y,
 				p[3].point.x, p[3].point.y);
 	    break;
-	case CAIRO_PATH_CLOSE_PATH:
+	case COMAC_PATH_CLOSE_PATH:
 	    if (p->header.length >= 1)
-		cairo_close_path (cr);
+		comac_close_path (cr);
 	    break;
 	default:
 	    break;
@@ -3528,14 +3528,14 @@ cairo_append_path (cairo_t *cr, const cairo_path_t *path)
     _exit_trace ();
 }
 
-cairo_surface_t *
-cairo_image_surface_create (cairo_format_t format, int width, int height)
+comac_surface_t *
+comac_image_surface_create (comac_format_t format, int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_image_surface_create, format, width, height);
+    ret = DLCALL (comac_image_surface_create, format, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -3562,21 +3562,21 @@ cairo_image_surface_create (cairo_format_t format, int width, int height)
     return ret;
 }
 
-cairo_surface_t *
-cairo_image_surface_create_for_data (unsigned char *data, cairo_format_t format, int width, int height, int stride)
+comac_surface_t *
+comac_image_surface_create_for_data (unsigned char *data, comac_format_t format, int width, int height, int stride)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_image_surface_create_for_data, data, format, width, height, stride);
+    ret = DLCALL (comac_image_surface_create_for_data, data, format, width, height, stride);
 
     _emit_line_info ();
     if (_write_lock ()) {
 	Object *obj = _create_surface (ret);
 
-	/* cairo_image_surface_create_for_data() is both used to supply
-	 * foreign pixel data to cairo and in order to read pixels back.
+	/* comac_image_surface_create_for_data() is both used to supply
+	 * foreign pixel data to comac and in order to read pixels back.
 	 * Defer grabbing the pixel contents until we have to, but only for
 	 * "large" images, for small images the overhead of embedding pixels
 	 * is negligible.
@@ -3614,7 +3614,7 @@ cairo_image_surface_create_for_data (unsigned char *data, cairo_format_t format,
 }
 
 unsigned char *
-cairo_image_surface_get_data (cairo_surface_t *surface)
+comac_image_surface_get_data (comac_surface_t *surface)
 {
     unsigned char *ptr;
 
@@ -3625,47 +3625,47 @@ cairo_image_surface_get_data (cairo_surface_t *surface)
 	_trace_printf ("%% s%ld get-data\n", _get_surface_id (surface));
 	_write_unlock ();
     }
-    ptr = DLCALL (cairo_image_surface_get_data, surface);
+    ptr = DLCALL (comac_image_surface_get_data, surface);
     _exit_trace ();
 
     return ptr;
 }
 
-cairo_pattern_t *
-cairo_pattern_create_raster_source (void *data, cairo_content_t content, int width, int height)
+comac_pattern_t *
+comac_pattern_create_raster_source (void *data, comac_content_t content, int width, int height)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pattern_create_raster_source, data, content, width, height);
+    ret = DLCALL (comac_pattern_create_raster_source, data, content, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
 	long pattern_id = _create_pattern_id (ret);
-	cairo_format_t format;
-	cairo_surface_t *image;
-	cairo_t *cr;
+	comac_format_t format;
+	comac_surface_t *image;
+	comac_t *cr;
 
 	/* Impossible to accurately record the interaction with this custom
 	 * pattern so just suck all the data into an image upfront */
 	switch (content) {
-	case CAIRO_CONTENT_ALPHA: format = CAIRO_FORMAT_A8; break;
-	case CAIRO_CONTENT_COLOR: format = CAIRO_FORMAT_RGB24; break;
+	case COMAC_CONTENT_ALPHA: format = COMAC_FORMAT_A8; break;
+	case COMAC_CONTENT_COLOR: format = COMAC_FORMAT_RGB24; break;
 	default:
-	case CAIRO_CONTENT_COLOR_ALPHA: format = CAIRO_FORMAT_ARGB32; break;
+	case COMAC_CONTENT_COLOR_ALPHA: format = COMAC_FORMAT_ARGB32; break;
 	}
 
 	_trace_printf ("%% raster-source\n");
 
-	image = DLCALL (cairo_image_surface_create, format, width, height);
-	cr = DLCALL (cairo_create, image);
-	DLCALL (cairo_set_source, cr, ret);
-	DLCALL (cairo_paint, cr);
-	DLCALL (cairo_destroy, cr);
+	image = DLCALL (comac_image_surface_create, format, width, height);
+	cr = DLCALL (comac_create, image);
+	DLCALL (comac_set_source, cr, ret);
+	DLCALL (comac_paint, cr);
+	DLCALL (comac_destroy, cr);
 
 	_emit_image (image, NULL);
-	DLCALL (cairo_surface_destroy, image);
+	DLCALL (comac_surface_destroy, image);
 	_trace_printf (" pattern dup /s%ld exch def\n",
 		       pattern_id);
 
@@ -3679,16 +3679,16 @@ cairo_pattern_create_raster_source (void *data, cairo_content_t content, int wid
     return ret;
 }
 
-cairo_surface_t *
-cairo_surface_create_similar (cairo_surface_t *other,
-			      cairo_content_t content,
+comac_surface_t *
+comac_surface_create_similar (comac_surface_t *other,
+			      comac_content_t content,
 			      int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_surface_create_similar, other, content, width, height);
+    ret = DLCALL (comac_surface_create_similar, other, content, width, height);
 
     _emit_line_info ();
     if (other != NULL && _write_lock ()) {
@@ -3724,16 +3724,16 @@ cairo_surface_create_similar (cairo_surface_t *other,
     return ret;
 }
 
-cairo_surface_t *
-cairo_surface_create_similar_image (cairo_surface_t *other,
-				    cairo_format_t format,
+comac_surface_t *
+comac_surface_create_similar_image (comac_surface_t *other,
+				    comac_format_t format,
 				    int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_surface_create_similar_image,
+    ret = DLCALL (comac_surface_create_similar_image,
 		  other, format, width, height);
 
     _emit_line_info ();
@@ -3764,15 +3764,15 @@ cairo_surface_create_similar_image (cairo_surface_t *other,
     return ret;
 }
 
-cairo_surface_t *
-cairo_surface_map_to_image (cairo_surface_t *surface,
-			    const cairo_rectangle_int_t *extents)
+comac_surface_t *
+comac_surface_map_to_image (comac_surface_t *surface,
+			    const comac_rectangle_int_t *extents)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_surface_map_to_image, surface, extents);
+    ret = DLCALL (comac_surface_map_to_image, surface, extents);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -3800,8 +3800,8 @@ cairo_surface_map_to_image (cairo_surface_t *surface,
 }
 
 void
-cairo_surface_unmap_image (cairo_surface_t *surface,
-			   cairo_surface_t *image)
+comac_surface_unmap_image (comac_surface_t *surface,
+			   comac_surface_t *image)
 {
     _enter_trace ();
 
@@ -3821,21 +3821,21 @@ cairo_surface_unmap_image (cairo_surface_t *surface,
 	_write_unlock ();
     }
 
-    DLCALL (cairo_surface_unmap_image, surface, image);
+    DLCALL (comac_surface_unmap_image, surface, image);
 
     _exit_trace ();
 }
 
-cairo_surface_t *
-cairo_surface_create_for_rectangle (cairo_surface_t *target,
+comac_surface_t *
+comac_surface_create_for_rectangle (comac_surface_t *target,
                                     double x, double y,
                                     double width, double height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_surface_create_for_rectangle, target, x, y, width, height);
+    ret = DLCALL (comac_surface_create_for_rectangle, target, x, y, width, height);
 
     _emit_line_info ();
     if (target != NULL && _write_lock ()) {
@@ -3861,8 +3861,8 @@ cairo_surface_create_for_rectangle (cairo_surface_t *target,
     return ret;
 }
 
-static void CAIRO_PRINTF_FORMAT(2, 3)
-_emit_surface_op (cairo_surface_t *surface, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT(2, 3)
+_emit_surface_op (comac_surface_t *surface, const char *fmt, ...)
 {
     va_list ap;
 
@@ -3879,16 +3879,16 @@ _emit_surface_op (cairo_surface_t *surface, const char *fmt, ...)
 }
 
 void
-cairo_surface_finish (cairo_surface_t *surface)
+comac_surface_finish (comac_surface_t *surface)
 {
     _enter_trace ();
     _emit_line_info ();
-    DLCALL (cairo_surface_finish, surface);
+    DLCALL (comac_surface_finish, surface);
     _exit_trace ();
 }
 
 void
-cairo_surface_flush (cairo_surface_t *surface)
+comac_surface_flush (comac_surface_t *surface)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -3896,20 +3896,20 @@ cairo_surface_flush (cairo_surface_t *surface)
 	_trace_printf ("%% s%ld flush\n", _get_surface_id (surface));
 	_write_unlock ();
     }
-    DLCALL (cairo_surface_flush, surface);
+    DLCALL (comac_surface_flush, surface);
     _exit_trace ();
 }
 
 void
-cairo_surface_mark_dirty (cairo_surface_t *surface)
+comac_surface_mark_dirty (comac_surface_t *surface)
 {
     _enter_trace ();
     _emit_line_info ();
 
-    /* Call cairo before emitting the trace since _emit_surface() might cause
+    /* Call comac before emitting the trace since _emit_surface() might cause
      * snapshots to be creates while mark_dirty assert()s that there are none.
      */
-    DLCALL (cairo_surface_mark_dirty, surface);
+    DLCALL (comac_surface_mark_dirty, surface);
 
     if (surface != NULL && _write_lock ()) {
 	if (_mark_dirty) {
@@ -3924,15 +3924,15 @@ cairo_surface_mark_dirty (cairo_surface_t *surface)
 }
 
 void
-cairo_surface_mark_dirty_rectangle (cairo_surface_t *surface,
+comac_surface_mark_dirty_rectangle (comac_surface_t *surface,
 				    int x, int y, int width, int height)
 {
     _enter_trace ();
 
-    /* Call cairo before emitting the trace since _emit_surface() might cause
+    /* Call comac before emitting the trace since _emit_surface() might cause
      * snapshots to be creates while mark_dirty assert()s that there are none.
      */
-    DLCALL (cairo_surface_mark_dirty_rectangle, surface, x, y, width, height);
+    DLCALL (comac_surface_mark_dirty_rectangle, surface, x, y, width, height);
 
     _emit_line_info ();
     if (surface != NULL && _write_lock ()) {
@@ -3950,68 +3950,68 @@ cairo_surface_mark_dirty_rectangle (cairo_surface_t *surface,
 }
 
 void
-cairo_surface_set_device_offset (cairo_surface_t *surface, double x_offset, double y_offset)
+comac_surface_set_device_offset (comac_surface_t *surface, double x_offset, double y_offset)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_surface_op (surface, "%g %g set-device-offset\n",
 		      x_offset, y_offset);
-    DLCALL (cairo_surface_set_device_offset, surface, x_offset, y_offset);
+    DLCALL (comac_surface_set_device_offset, surface, x_offset, y_offset);
     _exit_trace ();
 }
 
 void
-cairo_surface_set_device_scale (cairo_surface_t *surface, double x_offset, double y_offset)
+comac_surface_set_device_scale (comac_surface_t *surface, double x_offset, double y_offset)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_surface_op (surface, "%g %g set-device-scale\n",
 		      x_offset, y_offset);
-    DLCALL (cairo_surface_set_device_scale, surface, x_offset, y_offset);
+    DLCALL (comac_surface_set_device_scale, surface, x_offset, y_offset);
     _exit_trace ();
 }
 
 
 void
-cairo_surface_set_fallback_resolution (cairo_surface_t *surface, double x_pixels_per_inch, double y_pixels_per_inch)
+comac_surface_set_fallback_resolution (comac_surface_t *surface, double x_pixels_per_inch, double y_pixels_per_inch)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_surface_op (surface, "%g %g set-fallback-resolution\n",
 		      x_pixels_per_inch, y_pixels_per_inch);
-    DLCALL (cairo_surface_set_fallback_resolution, surface, x_pixels_per_inch, y_pixels_per_inch);
+    DLCALL (comac_surface_set_fallback_resolution, surface, x_pixels_per_inch, y_pixels_per_inch);
     _exit_trace ();
 }
 
 void
-cairo_surface_copy_page (cairo_surface_t *surface)
+comac_surface_copy_page (comac_surface_t *surface)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_surface_op (surface, "copy-page\n");
-    DLCALL (cairo_surface_copy_page, surface);
+    DLCALL (comac_surface_copy_page, surface);
     _exit_trace ();
 }
 
 void
-cairo_surface_show_page (cairo_surface_t *surface)
+comac_surface_show_page (comac_surface_t *surface)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_surface_op (surface, "show-page\n");
-    DLCALL (cairo_surface_show_page, surface);
+    DLCALL (comac_surface_show_page, surface);
     _exit_trace ();
 }
 
-cairo_status_t
-cairo_surface_set_mime_data (cairo_surface_t		*surface,
+comac_status_t
+comac_surface_set_mime_data (comac_surface_t		*surface,
                              const char			*mime_type,
                              const unsigned char	*data,
                              unsigned long		 length,
-			     cairo_destroy_func_t	 destroy,
+			     comac_destroy_func_t	 destroy,
 			     void			*closure)
 {
-    cairo_status_t ret;
+    comac_status_t ret;
     _enter_trace ();
     _emit_line_info ();
     if (surface != NULL && _write_lock ()) {
@@ -4024,7 +4024,7 @@ cairo_surface_set_mime_data (cairo_surface_t		*surface,
 	_write_unlock ();
     }
 
-    ret = DLCALL (cairo_surface_set_mime_data,
+    ret = DLCALL (comac_surface_set_mime_data,
 		  surface,
 		  mime_type,
 		  data, length,
@@ -4034,11 +4034,11 @@ cairo_surface_set_mime_data (cairo_surface_t		*surface,
     return ret;
 }
 
-#if CAIRO_HAS_PNG_FUNCTIONS
-cairo_status_t
-cairo_surface_write_to_png (cairo_surface_t *surface, const char *filename)
+#if COMAC_HAS_PNG_FUNCTIONS
+comac_status_t
+comac_surface_write_to_png (comac_surface_t *surface, const char *filename)
 {
-    cairo_status_t ret;
+    comac_status_t ret;
     _enter_trace ();
     _emit_line_info ();
     if (surface != NULL && _write_lock ()) {
@@ -4047,24 +4047,24 @@ cairo_surface_write_to_png (cairo_surface_t *surface, const char *filename)
 	_trace_printf (" write-to-png pop\n");
 	_write_unlock ();
     }
-    ret = DLCALL (cairo_surface_write_to_png, surface, filename);
+    ret = DLCALL (comac_surface_write_to_png, surface, filename);
     _exit_trace ();
     return ret;
 }
 
-cairo_status_t
-cairo_surface_write_to_png_stream (cairo_surface_t *surface,
-				   cairo_write_func_t write_func,
+comac_status_t
+comac_surface_write_to_png_stream (comac_surface_t *surface,
+				   comac_write_func_t write_func,
 				   void *data)
 {
-    cairo_status_t ret;
+    comac_status_t ret;
     _enter_trace ();
     _emit_line_info ();
     if (surface != NULL && _write_lock ()) {
 	char symbol[1024];
 
 	_trace_printf ("%% s%ld ", _get_surface_id (surface));
-#if CAIRO_HAS_SYMBOL_LOOKUP
+#if COMAC_HAS_SYMBOL_LOOKUP
 	lookup_symbol (symbol, sizeof (symbol), write_func);
 #else
 	symbol[0] = '\0';
@@ -4073,15 +4073,15 @@ cairo_surface_write_to_png_stream (cairo_surface_t *surface,
 	_trace_printf (" write-to-png-stream pop\n");
 	_write_unlock ();
     }
-    ret = DLCALL (cairo_surface_write_to_png_stream,
+    ret = DLCALL (comac_surface_write_to_png_stream,
 		  surface, write_func, data);
     _exit_trace ();
     return ret;
 }
 #endif
 
-static void CAIRO_PRINTF_FORMAT(2, 3)
-_emit_pattern_op (cairo_pattern_t *pattern, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT(2, 3)
+_emit_pattern_op (comac_pattern_t *pattern, const char *fmt, ...)
 {
     va_list ap;
 
@@ -4097,15 +4097,15 @@ _emit_pattern_op (cairo_pattern_t *pattern, const char *fmt, ...)
     _write_unlock ();
 }
 
-cairo_pattern_t *
-cairo_pattern_create_rgb (double red, double green, double blue)
+comac_pattern_t *
+comac_pattern_create_rgb (double red, double green, double blue)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
     long pattern_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pattern_create_rgb, red, green, blue);
+    ret = DLCALL (comac_pattern_create_rgb, red, green, blue);
     pattern_id = _create_pattern_id (ret);
 
     _emit_line_info ();
@@ -4120,15 +4120,15 @@ cairo_pattern_create_rgb (double red, double green, double blue)
     return ret;
 }
 
-cairo_pattern_t *
-cairo_pattern_create_rgba (double red, double green, double blue, double alpha)
+comac_pattern_t *
+comac_pattern_create_rgba (double red, double green, double blue, double alpha)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
     long pattern_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pattern_create_rgba, red, green, blue, alpha);
+    ret = DLCALL (comac_pattern_create_rgba, red, green, blue, alpha);
     pattern_id = _create_pattern_id (ret);
 
     _emit_line_info ();
@@ -4143,16 +4143,16 @@ cairo_pattern_create_rgba (double red, double green, double blue, double alpha)
     return ret;
 }
 
-cairo_pattern_t *
-cairo_pattern_create_for_surface (cairo_surface_t *surface)
+comac_pattern_t *
+comac_pattern_create_for_surface (comac_surface_t *surface)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
     long pattern_id;
     long surface_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pattern_create_for_surface, surface);
+    ret = DLCALL (comac_pattern_create_for_surface, surface);
     pattern_id = _create_pattern_id (ret);
 
     _emit_line_info ();
@@ -4178,15 +4178,15 @@ cairo_pattern_create_for_surface (cairo_surface_t *surface)
     return ret;
 }
 
-cairo_pattern_t *
-cairo_pattern_create_linear (double x0, double y0, double x1, double y1)
+comac_pattern_t *
+comac_pattern_create_linear (double x0, double y0, double x1, double y1)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
     long pattern_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pattern_create_linear, x0, y0, x1, y1);
+    ret = DLCALL (comac_pattern_create_linear, x0, y0, x1, y1);
     pattern_id = _create_pattern_id (ret);
 
     _emit_line_info ();
@@ -4202,15 +4202,15 @@ cairo_pattern_create_linear (double x0, double y0, double x1, double y1)
     return ret;
 }
 
-cairo_pattern_t *
-cairo_pattern_create_radial (double cx0, double cy0, double radius0, double cx1, double cy1, double radius1)
+comac_pattern_t *
+comac_pattern_create_radial (double cx0, double cy0, double radius0, double cx1, double cy1, double radius1)
 {
-    cairo_pattern_t *ret;
+    comac_pattern_t *ret;
     long pattern_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pattern_create_radial,
+    ret = DLCALL (comac_pattern_create_radial,
 		  cx0, cy0, radius0,
 		  cx1, cy1, radius1);
     pattern_id = _create_pattern_id (ret);
@@ -4230,31 +4230,31 @@ cairo_pattern_create_radial (double cx0, double cy0, double radius0, double cx1,
 }
 
 void
-cairo_pattern_add_color_stop_rgb (cairo_pattern_t *pattern, double offset, double red, double green, double blue)
+comac_pattern_add_color_stop_rgb (comac_pattern_t *pattern, double offset, double red, double green, double blue)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_pattern_op (pattern,
 		      "%g %g %g %g 1 add-color-stop\n",
 		      offset, red, green, blue);
-    DLCALL (cairo_pattern_add_color_stop_rgb, pattern, offset, red, green, blue);
+    DLCALL (comac_pattern_add_color_stop_rgb, pattern, offset, red, green, blue);
     _exit_trace ();
 }
 
 void
-cairo_pattern_add_color_stop_rgba (cairo_pattern_t *pattern, double offset, double red, double green, double blue, double alpha)
+comac_pattern_add_color_stop_rgba (comac_pattern_t *pattern, double offset, double red, double green, double blue, double alpha)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_pattern_op (pattern,
 		      "%g %g %g %g %g add-color-stop\n",
 		      offset, red, green, blue, alpha);
-    DLCALL (cairo_pattern_add_color_stop_rgba, pattern, offset, red, green, blue, alpha);
+    DLCALL (comac_pattern_add_color_stop_rgba, pattern, offset, red, green, blue, alpha);
     _exit_trace ();
 }
 
 void
-cairo_pattern_set_matrix (cairo_pattern_t *pattern, const cairo_matrix_t *matrix)
+comac_pattern_set_matrix (comac_pattern_t *pattern, const comac_matrix_t *matrix)
 {
     _enter_trace ();
     _emit_line_info ();
@@ -4267,14 +4267,14 @@ cairo_pattern_set_matrix (cairo_pattern_t *pattern, const cairo_matrix_t *matrix
 			  matrix->xy, matrix->yy,
 			  matrix->x0, matrix->y0);
     }
-    DLCALL (cairo_pattern_set_matrix, pattern, matrix);
+    DLCALL (comac_pattern_set_matrix, pattern, matrix);
     _exit_trace ();
 }
 
 static const char *
-_filter_to_string (cairo_filter_t filter)
+_filter_to_string (comac_filter_t filter)
 {
-#define f(name) case CAIRO_FILTER_ ## name: return "FILTER_" #name
+#define f(name) case COMAC_FILTER_ ## name: return "FILTER_" #name
     switch (filter) {
 	f(FAST);
 	f(GOOD);
@@ -4288,19 +4288,19 @@ _filter_to_string (cairo_filter_t filter)
 }
 
 void
-cairo_pattern_set_filter (cairo_pattern_t *pattern, cairo_filter_t filter)
+comac_pattern_set_filter (comac_pattern_t *pattern, comac_filter_t filter)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_pattern_op (pattern, "//%s set-filter\n", _filter_to_string (filter));
-    DLCALL (cairo_pattern_set_filter, pattern, filter);
+    DLCALL (comac_pattern_set_filter, pattern, filter);
     _exit_trace ();
 }
 
 static const char *
-_extend_to_string (cairo_extend_t extend)
+_extend_to_string (comac_extend_t extend)
 {
-#define f(name) case CAIRO_EXTEND_ ## name: return "EXTEND_" #name
+#define f(name) case COMAC_EXTEND_ ## name: return "EXTEND_" #name
     switch (extend) {
 	f(NONE);
 	f(REPEAT);
@@ -4312,26 +4312,26 @@ _extend_to_string (cairo_extend_t extend)
 }
 
 void
-cairo_pattern_set_extend (cairo_pattern_t *pattern, cairo_extend_t extend)
+comac_pattern_set_extend (comac_pattern_t *pattern, comac_extend_t extend)
 {
     _enter_trace ();
     _emit_line_info ();
     _emit_pattern_op (pattern, "//%s set-extend\n", _extend_to_string (extend));
-    DLCALL (cairo_pattern_set_extend, pattern, extend);
+    DLCALL (comac_pattern_set_extend, pattern, extend);
     _exit_trace ();
 }
 
-#if CAIRO_HAS_FT_FONT
-#if CAIRO_HAS_FC_FONT
-cairo_font_face_t *
-cairo_ft_font_face_create_for_pattern (FcPattern *pattern)
+#if COMAC_HAS_FT_FONT
+#if COMAC_HAS_FC_FONT
+comac_font_face_t *
+comac_ft_font_face_create_for_pattern (FcPattern *pattern)
 {
-    cairo_font_face_t *ret;
+    comac_font_face_t *ret;
     long font_face_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_ft_font_face_create_for_pattern, pattern);
+    ret = DLCALL (comac_ft_font_face_create_for_pattern, pattern);
     font_face_id = _create_font_face_id (ret);
 
     _emit_line_info ();
@@ -4375,7 +4375,7 @@ cairo_ft_font_face_create_for_pattern (FcPattern *pattern)
     _exit_trace ();
     return ret;
 }
-#endif /* CAIRO_HAS_FC_FONT*/
+#endif /* COMAC_HAS_FC_FONT*/
 
 typedef struct _ft_face_data {
     unsigned long index;
@@ -4391,17 +4391,17 @@ _ft_face_data_destroy (void *arg)
     free (data);
 }
 
-cairo_font_face_t *
-cairo_ft_font_face_create_for_ft_face (FT_Face face, int load_flags)
+comac_font_face_t *
+comac_ft_font_face_create_for_ft_face (FT_Face face, int load_flags)
 {
-    cairo_font_face_t *ret;
+    comac_font_face_t *ret;
     Object *obj;
     FtFaceData *data;
     long font_face_id;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_ft_font_face_create_for_ft_face, face, load_flags);
+    ret = DLCALL (comac_ft_font_face_create_for_ft_face, face, load_flags);
     font_face_id = _create_font_face_id (ret);
 
     if (face == NULL) {
@@ -4435,7 +4435,7 @@ cairo_ft_font_face_create_for_ft_face (FT_Face face, int load_flags)
     return ret;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _ft_read_file (FtFaceData *data, const char *path)
 {
     char buf[8192];
@@ -4573,7 +4573,7 @@ FT_Done_Face (FT_Face face)
 #endif
 
 static void
-_surface_object_set_size (cairo_surface_t *surface, int width, int height)
+_surface_object_set_size (comac_surface_t *surface, int width, int height)
 {
     Object *obj;
 
@@ -4583,24 +4583,24 @@ _surface_object_set_size (cairo_surface_t *surface, int width, int height)
 }
 
 static void
-_surface_object_set_size_from_surface (cairo_surface_t *surface)
+_surface_object_set_size_from_surface (comac_surface_t *surface)
 {
     _surface_object_set_size (surface,
-			      DLCALL (cairo_image_surface_get_width, surface),
-			      DLCALL (cairo_image_surface_get_height, surface));
+			      DLCALL (comac_image_surface_get_width, surface),
+			      DLCALL (comac_image_surface_get_height, surface));
 }
 
-#if CAIRO_HAS_PS_SURFACE
+#if COMAC_HAS_PS_SURFACE
 #include<comac-ps.h>
 
-cairo_surface_t *
-cairo_ps_surface_create (const char *filename, double width_in_points, double height_in_points)
+comac_surface_t *
+comac_ps_surface_create (const char *filename, double width_in_points, double height_in_points)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_ps_surface_create, filename, width_in_points, height_in_points);
+    ret = DLCALL (comac_ps_surface_create, filename, width_in_points, height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4628,14 +4628,14 @@ cairo_ps_surface_create (const char *filename, double width_in_points, double he
     return ret;
 }
 
-cairo_surface_t *
-cairo_ps_surface_create_for_stream (cairo_write_func_t write_func, void *closure, double width_in_points, double height_in_points)
+comac_surface_t *
+comac_ps_surface_create_for_stream (comac_write_func_t write_func, void *closure, double width_in_points, double height_in_points)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_ps_surface_create_for_stream, write_func, closure, width_in_points, height_in_points);
+    ret = DLCALL (comac_ps_surface_create_for_stream, write_func, closure, width_in_points, height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4661,27 +4661,27 @@ cairo_ps_surface_create_for_stream (cairo_write_func_t write_func, void *closure
 }
 
 void
-cairo_ps_surface_set_size (cairo_surface_t *surface, double width_in_points, double height_in_points)
+comac_ps_surface_set_size (comac_surface_t *surface, double width_in_points, double height_in_points)
 {
     _enter_trace ();
     _emit_line_info ();
-    DLCALL (cairo_ps_surface_set_size, surface, width_in_points, height_in_points);
+    DLCALL (comac_ps_surface_set_size, surface, width_in_points, height_in_points);
     _exit_trace ();
 }
 
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
+#if COMAC_HAS_PDF_SURFACE
 #include <comac-pdf.h>
 
-cairo_surface_t *
-cairo_pdf_surface_create (const char *filename, double width_in_points, double height_in_points)
+comac_surface_t *
+comac_pdf_surface_create (const char *filename, double width_in_points, double height_in_points)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pdf_surface_create, filename, width_in_points, height_in_points);
+    ret = DLCALL (comac_pdf_surface_create, filename, width_in_points, height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4709,14 +4709,14 @@ cairo_pdf_surface_create (const char *filename, double width_in_points, double h
     return ret;
 }
 
-cairo_surface_t *
-cairo_pdf_surface_create_for_stream (cairo_write_func_t write_func, void *closure, double width_in_points, double height_in_points)
+comac_surface_t *
+comac_pdf_surface_create_for_stream (comac_write_func_t write_func, void *closure, double width_in_points, double height_in_points)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_pdf_surface_create_for_stream, write_func, closure, width_in_points, height_in_points);
+    ret = DLCALL (comac_pdf_surface_create_for_stream, write_func, closure, width_in_points, height_in_points);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4741,26 +4741,26 @@ cairo_pdf_surface_create_for_stream (cairo_write_func_t write_func, void *closur
 }
 
 void
-cairo_pdf_surface_set_size (cairo_surface_t *surface, double width_in_points, double height_in_points)
+comac_pdf_surface_set_size (comac_surface_t *surface, double width_in_points, double height_in_points)
 {
     _enter_trace ();
     _emit_line_info ();
-    DLCALL (cairo_pdf_surface_set_size, surface, width_in_points, height_in_points);
+    DLCALL (comac_pdf_surface_set_size, surface, width_in_points, height_in_points);
     _exit_trace ();
 }
 #endif
 
-#if CAIRO_HAS_SVG_SURFACE
+#if COMAC_HAS_SVG_SURFACE
 #include <comac-svg.h>
 
-cairo_surface_t *
-cairo_svg_surface_create (const char *filename, double width, double height)
+comac_surface_t *
+comac_svg_surface_create (const char *filename, double width, double height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_svg_surface_create, filename, width, height);
+    ret = DLCALL (comac_svg_surface_create, filename, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4788,14 +4788,14 @@ cairo_svg_surface_create (const char *filename, double width, double height)
     return ret;
 }
 
-cairo_surface_t *
-cairo_svg_surface_create_for_stream (cairo_write_func_t write_func, void *closure, double width, double height)
+comac_surface_t *
+comac_svg_surface_create_for_stream (comac_write_func_t write_func, void *closure, double width, double height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_svg_surface_create_for_stream, write_func, closure, width, height);
+    ret = DLCALL (comac_svg_surface_create_for_stream, write_func, closure, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4822,15 +4822,15 @@ cairo_svg_surface_create_for_stream (cairo_write_func_t write_func, void *closur
 
 #endif
 
-#if CAIRO_HAS_PNG_FUNCTIONS
-cairo_surface_t *
-cairo_image_surface_create_from_png (const char *filename)
+#if COMAC_HAS_PNG_FUNCTIONS
+comac_surface_t *
+comac_image_surface_create_from_png (const char *filename)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_image_surface_create_from_png, filename);
+    ret = DLCALL (comac_image_surface_create_from_png, filename);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4852,14 +4852,14 @@ cairo_image_surface_create_from_png (const char *filename)
     return ret;
 }
 
-cairo_surface_t *
-cairo_image_surface_create_from_png_stream (cairo_read_func_t read_func, void *closure)
+comac_surface_t *
+comac_image_surface_create_from_png_stream (comac_read_func_t read_func, void *closure)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_image_surface_create_from_png_stream, read_func, closure);
+    ret = DLCALL (comac_image_surface_create_from_png_stream, read_func, closure);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4882,22 +4882,22 @@ cairo_image_surface_create_from_png_stream (cairo_read_func_t read_func, void *c
 #endif
 
 static const char *
-_content_from_surface (cairo_surface_t *surface)
+_content_from_surface (comac_surface_t *surface)
 {
-    return _content_to_string (DLCALL (cairo_surface_get_content, surface));
+    return _content_to_string (DLCALL (comac_surface_get_content, surface));
 }
 
-#if CAIRO_HAS_TEE_SURFACE
+#if COMAC_HAS_TEE_SURFACE
 #include <comac-tee.h>
 
-cairo_surface_t *
-cairo_tee_surface_create (cairo_surface_t *master)
+comac_surface_t *
+comac_tee_surface_create (comac_surface_t *master)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_tee_surface_create, master);
+    ret = DLCALL (comac_tee_surface_create, master);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -4921,20 +4921,20 @@ cairo_tee_surface_create (cairo_surface_t *master)
 
 #endif
 
-#if CAIRO_HAS_XLIB_SURFACE
+#if COMAC_HAS_XLIB_SURFACE
 #include <comac-xlib.h>
 
-cairo_surface_t *
-cairo_xlib_surface_create (Display *dpy,
+comac_surface_t *
+comac_xlib_surface_create (Display *dpy,
 			   Drawable drawable,
 			   Visual *visual,
 			   int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_xlib_surface_create,
+    ret = DLCALL (comac_xlib_surface_create,
 	          dpy, drawable, visual, width, height);
 
     _emit_line_info ();
@@ -4965,17 +4965,17 @@ cairo_xlib_surface_create (Display *dpy,
     return ret;
 }
 
-cairo_surface_t *
-cairo_xlib_surface_create_for_bitmap (Display *dpy,
+comac_surface_t *
+comac_xlib_surface_create_for_bitmap (Display *dpy,
 				      Pixmap bitmap,
 				      Screen *screen,
 				      int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_xlib_surface_create_for_bitmap,
+    ret = DLCALL (comac_xlib_surface_create_for_bitmap,
 	          dpy, bitmap, screen, width, height);
 
     _emit_line_info ();
@@ -5007,20 +5007,20 @@ cairo_xlib_surface_create_for_bitmap (Display *dpy,
     return ret;
 }
 
-#if CAIRO_HAS_XLIB_XRENDER_SURFACE
+#if COMAC_HAS_XLIB_XRENDER_SURFACE
 #include <comac-xlib-xrender.h>
-cairo_surface_t *
-cairo_xlib_surface_create_with_xrender_format (Display *dpy,
+comac_surface_t *
+comac_xlib_surface_create_with_xrender_format (Display *dpy,
 					       Drawable drawable,
 					       Screen *screen,
 					       XRenderPictFormat *format,
 					       int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_xlib_surface_create_with_xrender_format,
+    ret = DLCALL (comac_xlib_surface_create_with_xrender_format,
 	          dpy, drawable, screen, format, width, height);
 
     _emit_line_info ();
@@ -5055,19 +5055,19 @@ cairo_xlib_surface_create_with_xrender_format (Display *dpy,
 #endif
 #endif
 
-#if CAIRO_HAS_SCRIPT_SURFACE
+#if COMAC_HAS_SCRIPT_SURFACE
 #include <comac-script.h>
-cairo_surface_t *
-cairo_script_surface_create (cairo_device_t *device,
-			     cairo_content_t content,
+comac_surface_t *
+comac_script_surface_create (comac_device_t *device,
+			     comac_content_t content,
 			     double width,
 			     double height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_script_surface_create, device, content, width, height);
+    ret = DLCALL (comac_script_surface_create, device, content, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5094,15 +5094,15 @@ cairo_script_surface_create (cairo_device_t *device,
     return ret;
 }
 
-cairo_surface_t *
-cairo_script_surface_create_for_target (cairo_device_t *device,
-					cairo_surface_t *target)
+comac_surface_t *
+comac_script_surface_create_for_target (comac_device_t *device,
+					comac_surface_t *target)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_script_surface_create_for_target, device, target);
+    ret = DLCALL (comac_script_surface_create_for_target, device, target);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5123,16 +5123,16 @@ cairo_script_surface_create_for_target (cairo_device_t *device,
 }
 #endif
 
-#if CAIRO_HAS_TEST_SURFACES
+#if COMAC_HAS_TEST_SURFACES
 #include <test-paginated-surface.h>
-cairo_surface_t *
-_cairo_test_paginated_surface_create (cairo_surface_t *surface)
+comac_surface_t *
+_comac_test_paginated_surface_create (comac_surface_t *surface)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_cairo_test_paginated_surface_create, surface);
+    ret = DLCALL (_comac_test_paginated_surface_create, surface);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5156,14 +5156,14 @@ _cairo_test_paginated_surface_create (cairo_surface_t *surface)
 
 #include <test-compositor-surface.h>
 
-cairo_surface_t *
-_cairo_test_fallback_compositor_surface_create (cairo_content_t content, int width, int height)
+comac_surface_t *
+_comac_test_fallback_compositor_surface_create (comac_content_t content, int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_cairo_test_fallback_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_fallback_compositor_surface_create, content, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5188,14 +5188,14 @@ _cairo_test_fallback_compositor_surface_create (cairo_content_t content, int wid
     return ret;
 }
 
-cairo_surface_t *
-_cairo_test_mask_compositor_surface_create (cairo_content_t content, int width, int height)
+comac_surface_t *
+_comac_test_mask_compositor_surface_create (comac_content_t content, int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_cairo_test_mask_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_mask_compositor_surface_create, content, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5220,14 +5220,14 @@ _cairo_test_mask_compositor_surface_create (cairo_content_t content, int width, 
     return ret;
 }
 
-cairo_surface_t *
-_cairo_test_spans_compositor_surface_create (cairo_content_t content, int width, int height)
+comac_surface_t *
+_comac_test_spans_compositor_surface_create (comac_content_t content, int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_cairo_test_spans_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_spans_compositor_surface_create, content, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5252,14 +5252,14 @@ _cairo_test_spans_compositor_surface_create (cairo_content_t content, int width,
     return ret;
 }
 
-cairo_surface_t *
-_cairo_test_traps_compositor_surface_create (cairo_content_t content, int width, int height)
+comac_surface_t *
+_comac_test_traps_compositor_surface_create (comac_content_t content, int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (_cairo_test_traps_compositor_surface_create, content, width, height);
+    ret = DLCALL (_comac_test_traps_compositor_surface_create, content, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5286,15 +5286,15 @@ _cairo_test_traps_compositor_surface_create (cairo_content_t content, int width,
 
 #endif
 
-cairo_surface_t *
-cairo_recording_surface_create (cairo_content_t content,
-				const cairo_rectangle_t *extents)
+comac_surface_t *
+comac_recording_surface_create (comac_content_t content,
+				const comac_rectangle_t *extents)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_recording_surface_create, content, extents);
+    ret = DLCALL (comac_recording_surface_create, content, extents);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5323,19 +5323,19 @@ cairo_recording_surface_create (cairo_content_t content,
     return ret;
 }
 
-#if CAIRO_HAS_GL_SURFACE || CAIRO_HAS_GLESV2_SURFACE
+#if COMAC_HAS_GL_SURFACE || COMAC_HAS_GLESV2_SURFACE
 #include <comac-gl.h>
-cairo_surface_t *
-cairo_gl_surface_create (cairo_device_t		*abstract_device,
-			 cairo_content_t	 content,
+comac_surface_t *
+comac_gl_surface_create (comac_device_t		*abstract_device,
+			 comac_content_t	 content,
 			 int			 width,
 			 int			 height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_gl_surface_create, abstract_device, content, width, height);
+    ret = DLCALL (comac_gl_surface_create, abstract_device, content, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5362,18 +5362,18 @@ cairo_gl_surface_create (cairo_device_t		*abstract_device,
     return ret;
 }
 
-cairo_surface_t *
-cairo_gl_surface_create_for_texture (cairo_device_t	*abstract_device,
-				     cairo_content_t	 content,
+comac_surface_t *
+comac_gl_surface_create_for_texture (comac_device_t	*abstract_device,
+				     comac_content_t	 content,
 				     unsigned int	 tex,
 				     int		 width,
 				     int		 height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_gl_surface_create_for_texture, abstract_device, content, tex, width, height);
+    ret = DLCALL (comac_gl_surface_create_for_texture, abstract_device, content, tex, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5400,17 +5400,17 @@ cairo_gl_surface_create_for_texture (cairo_device_t	*abstract_device,
     return ret;
 }
 
-#if CAIRO_HAS_GLX_FUNCTIONS
-cairo_surface_t *
-cairo_gl_surface_create_for_window (cairo_device_t *device,
+#if COMAC_HAS_GLX_FUNCTIONS
+comac_surface_t *
+comac_gl_surface_create_for_window (comac_device_t *device,
 				    Window win,
 				    int width, int height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_gl_surface_create_for_window, device, win, width, height);
+    ret = DLCALL (comac_gl_surface_create_for_window, device, win, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5436,18 +5436,18 @@ cairo_gl_surface_create_for_window (cairo_device_t *device,
 }
 #endif
 
-#if CAIRO_HAS_WGL_FUNCTIONS
-cairo_surface_t *
-cairo_gl_surface_create_for_dc (cairo_device_t		*device,
+#if COMAC_HAS_WGL_FUNCTIONS
+comac_surface_t *
+comac_gl_surface_create_for_dc (comac_device_t		*device,
 				HDC			 dc,
 				int			 width,
 				int			 height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_gl_surface_create_for_dc, device, dc, width, height);
+    ret = DLCALL (comac_gl_surface_create_for_dc, device, dc, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {
@@ -5473,18 +5473,18 @@ cairo_gl_surface_create_for_dc (cairo_device_t		*device,
 }
 #endif
 
-#if CAIRO_HAS_EGL_FUNCTIONS
-cairo_surface_t *
-cairo_gl_surface_create_for_egl (cairo_device_t	*device,
+#if COMAC_HAS_EGL_FUNCTIONS
+comac_surface_t *
+comac_gl_surface_create_for_egl (comac_device_t	*device,
 				 EGLSurface	 egl,
 				 int		 width,
 				 int		 height)
 {
-    cairo_surface_t *ret;
+    comac_surface_t *ret;
 
     _enter_trace ();
 
-    ret = DLCALL (cairo_gl_surface_create_for_egl, device, egl, width, height);
+    ret = DLCALL (comac_gl_surface_create_for_egl, device, egl, width, height);
 
     _emit_line_info ();
     if (_write_lock ()) {

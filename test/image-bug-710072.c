@@ -27,52 +27,52 @@
 
 /*
  * This test case aims to reproduce the misbehaviour exhibited in
- * https://bugs.launchpad.net/ubuntu/+source/cairo/+bug/710072
+ * https://bugs.launchpad.net/ubuntu/+source/comac/+bug/710072
  * i.e. out of bounds rendering with the rectangular span compositor.
  */
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw_aligned (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_aligned (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_rectangle (cr, -10, -10, 20, 20);
-    cairo_rectangle (cr, 5, 5, 20, 20);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_fill_preserve (cr);
-    cairo_set_source_rgba (cr, 1, 0, 0, .5);
-    cairo_stroke (cr);
+    comac_rectangle (cr, -10, -10, 20, 20);
+    comac_rectangle (cr, 5, 5, 20, 20);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_fill_preserve (cr);
+    comac_set_source_rgba (cr, 1, 0, 0, .5);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-draw_unaligned (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_unaligned (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_rectangle (cr, -10.5, -10.5, 20, 20);
-    cairo_rectangle (cr, 5.5, 5.5, 20, 20);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_fill_preserve (cr);
-    cairo_set_source_rgba (cr, 1, 0, 0, .5);
-    cairo_stroke (cr);
+    comac_rectangle (cr, -10.5, -10.5, 20, 20);
+    comac_rectangle (cr, 5.5, 5.5, 20, 20);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_fill_preserve (cr);
+    comac_set_source_rgba (cr, 1, 0, 0, .5);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (image_bug_710072_aligned,
+COMAC_TEST (image_bug_710072_aligned,
 	    "Tests a bug where we may compute spans greater than bounded extents",
 	    "extents, fill, stroke", /* keywords */
 	    NULL, /* requirements */
 	    15, 15,
 	    NULL, draw_aligned)
 
-CAIRO_TEST (image_bug_710072_unaligned,
+COMAC_TEST (image_bug_710072_unaligned,
 	    "Tests a bug where we may compute spans greater than bounded extents",
 	    "extents, fill, stroke", /* keywords */
 	    NULL, /* requirements */

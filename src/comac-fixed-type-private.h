@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* Cairo - a vector graphics library with display and print output
+/* Comac - a vector graphics library with display and print output
  *
  * Copyright © 2007 Mozilla Corporation
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Mozilla Foundation
  *
@@ -34,8 +34,8 @@
  *	Vladimir Vukicevic <vladimir@pobox.com>
  */
 
-#ifndef CAIRO_FIXED_TYPE_PRIVATE_H
-#define CAIRO_FIXED_TYPE_PRIVATE_H
+#ifndef COMAC_FIXED_TYPE_PRIVATE_H
+#define COMAC_FIXED_TYPE_PRIVATE_H
 
 #include "comac-wideint-type-private.h"
 
@@ -43,33 +43,33 @@
  * Fixed-point configuration
  */
 
-typedef int32_t		cairo_fixed_16_16_t;
-typedef cairo_int64_t	cairo_fixed_32_32_t;
-typedef cairo_int64_t	cairo_fixed_48_16_t;
-typedef cairo_int128_t	cairo_fixed_64_64_t;
-typedef cairo_int128_t	cairo_fixed_96_32_t;
+typedef int32_t		comac_fixed_16_16_t;
+typedef comac_int64_t	comac_fixed_32_32_t;
+typedef comac_int64_t	comac_fixed_48_16_t;
+typedef comac_int128_t	comac_fixed_64_64_t;
+typedef comac_int128_t	comac_fixed_96_32_t;
 
 /* Eventually, we should allow changing this, but I think
  * there are some assumptions in the tessellator about the
  * size of a fixed type.  For now, it must be 32.
  */
-#define CAIRO_FIXED_BITS	32
+#define COMAC_FIXED_BITS	32
 
 /* The number of fractional bits.  Changing this involves
  * making sure that you compute a double-to-fixed magic number.
  * (see below).
  */
-#define CAIRO_FIXED_FRAC_BITS	8
+#define COMAC_FIXED_FRAC_BITS	8
 
-/* A signed type %CAIRO_FIXED_BITS in size; the main fixed point type */
-typedef int32_t cairo_fixed_t;
+/* A signed type %COMAC_FIXED_BITS in size; the main fixed point type */
+typedef int32_t comac_fixed_t;
 
-/* An unsigned type of the same size as #cairo_fixed_t */
-typedef uint32_t cairo_fixed_unsigned_t;
+/* An unsigned type of the same size as #comac_fixed_t */
+typedef uint32_t comac_fixed_unsigned_t;
 
-typedef struct _cairo_point {
-    cairo_fixed_t x;
-    cairo_fixed_t y;
-} cairo_point_t;
+typedef struct _comac_point {
+    comac_fixed_t x;
+    comac_fixed_t y;
+} comac_point_t;
 
-#endif /* CAIRO_FIXED_TYPE_PRIVATE_H */
+#endif /* COMAC_FIXED_TYPE_PRIVATE_H */

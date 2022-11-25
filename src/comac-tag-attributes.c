@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2016 Adrian Johnson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -159,7 +159,7 @@ static attribute_spec_t _eps_params_spec[] =
 };
 
 typedef union {
-    cairo_bool_t b;
+    comac_bool_t b;
     int i;
     double f;
     char *s;
@@ -170,21 +170,21 @@ typedef struct _attribute {
     attribute_type_t type;
     int array_len; /* 0 = scalar */
     attrib_val_t scalar;
-    cairo_array_t array; /* array of attrib_val_t */
-    cairo_list_t link;
+    comac_array_t array; /* array of attrib_val_t */
+    comac_list_t link;
 } attribute_t;
 
 static const char *
 skip_space (const char *p)
 {
-    while (_cairo_isspace (*p))
+    while (_comac_isspace (*p))
 	p++;
 
     return p;
 }
 
 static const char *
-parse_bool (const char *p, cairo_bool_t *b)
+parse_bool (const char *p, comac_bool_t *b)
 {
     if (*p == '1') {
 	*b = TRUE;
@@ -219,10 +219,10 @@ parse_float (const char *p, double *d)
 {
     int n;
     const char *start = p;
-    cairo_bool_t has_decimal_point = FALSE;
+    comac_bool_t has_decimal_point = FALSE;
 
     while (*p) {
-	if (*p == '.' || *p == ']' || _cairo_isspace (*p))
+	if (*p == '.' || *p == ']' || _comac_isspace (*p))
 	    break;
 	p++;
     }
@@ -232,7 +232,7 @@ parse_float (const char *p, double *d)
 
     if (has_decimal_point) {
 	char *end;
-	*d = _cairo_strtod (start, &end);
+	*d = _comac_strtod (start, &end);
 	if (end && end != start)
 	    return end;
 
@@ -287,7 +287,7 @@ parse_string (const char *p, char **s)
     if (!end)
 	return NULL;
 
-    *s = _cairo_malloc (len + 1);
+    *s = _comac_malloc (len + 1);
     decode_string (p, &len, *s);
     (*s)[len] = 0;
 
@@ -311,11 +311,11 @@ parse_scalar (const char *p, attribute_type_t type, attrib_val_t *scalar)
     return NULL;
 }
 
-static cairo_int_status_t
-parse_array (const char *attributes, const char *p, attribute_type_t type, cairo_array_t *array, const char **end)
+static comac_int_status_t
+parse_array (const char *attributes, const char *p, attribute_type_t type, comac_array_t *array, const char **end)
 {
     attrib_val_t val;
-    cairo_int_status_t status;
+    comac_int_status_t status;
 
     p = skip_space (p);
     if (! *p)
@@ -331,64 +331,64 @@ parse_array (const char *attributes, const char *p, attribute_type_t type, cairo
 
 	if (*p == ']') {
 	    *end = p + 1;
-	    return CAIRO_INT_STATUS_SUCCESS;
+	    return COMAC_INT_STATUS_SUCCESS;
 	}
 
 	p = parse_scalar (p, type, &val);
 	if (!p)
 	    goto error;
 
-	status = _cairo_array_append (array, &val);
+	status = _comac_array_append (array, &val);
 	if (unlikely (status))
 	    return status;
     }
 
   error:
-    return _cairo_tag_error (
+    return _comac_tag_error (
 	"while parsing attributes: \"%s\". Error parsing array", attributes);
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 parse_name (const char *attributes, const char *p, const char **end, char **s)
 {
     const char *p2;
     char *name;
     int len;
 
-    if (! _cairo_isalpha (*p))
-	return _cairo_tag_error (
+    if (! _comac_isalpha (*p))
+	return _comac_tag_error (
 	    "while parsing attributes: \"%s\". Error parsing name."
 	    " \"%s\" does not start with an alphabetic character",
 	    attributes, p);
 
     p2 = p;
-    while (_cairo_isalpha (*p2) || _cairo_isdigit (*p2))
+    while (_comac_isalpha (*p2) || _comac_isdigit (*p2))
 	p2++;
 
     len = p2 - p;
-    name = _cairo_malloc (len + 1);
+    name = _comac_malloc (len + 1);
     if (unlikely (name == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     memcpy (name, p, len);
     name[len] = 0;
     *s = name;
     *end = p2;
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
-parse_attributes (const char *attributes, attribute_spec_t *attrib_def, cairo_list_t *list)
+static comac_int_status_t
+parse_attributes (const char *attributes, attribute_spec_t *attrib_def, comac_list_t *list)
 {
     attribute_spec_t *def;
     attribute_t *attrib;
     char *name = NULL;
-    cairo_int_status_t status;
+    comac_int_status_t status;
     const char *p = attributes;
 
     if (! p)
-	return CAIRO_INT_STATUS_SUCCESS;
+	return COMAC_INT_STATUS_SUCCESS;
 
     while (*p) {
 	p = skip_space (p);
@@ -407,7 +407,7 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, cairo_li
 	}
 
 	if (! def->name) {
-	    status = _cairo_tag_error (
+	    status = _comac_tag_error (
 		"while parsing attributes: \"%s\". Unknown attribute name \"%s\"",
 		attributes, name);
 	    goto fail1;
@@ -415,20 +415,20 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, cairo_li
 
 	attrib = calloc (1, sizeof (attribute_t));
 	if (unlikely (attrib == NULL)) {
-	    status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto fail1;
 	}
 
 	attrib->name = name;
 	attrib->type = def->type;
-	_cairo_array_init (&attrib->array, sizeof(attrib_val_t));
+	_comac_array_init (&attrib->array, sizeof(attrib_val_t));
 
 	p = skip_space (p);
 	if (def->type == ATTRIBUTE_BOOL && *p != '=') {
 	    attrib->scalar.b = TRUE;
 	} else {
 	    if (*p++ != '=') {
-		status = _cairo_tag_error (
+		status = _comac_tag_error (
 		    "while parsing attributes: \"%s\". Expected '=' after \"%s\"",
 		    attributes, name);
 		goto fail2;
@@ -438,7 +438,7 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, cairo_li
 		const char *s = p;
 		p = parse_scalar (p, def->type, &attrib->scalar);
 		if (!p) {
-		    status = _cairo_tag_error (
+		    status = _comac_tag_error (
 			"while parsing attributes: \"%s\". Error parsing \"%s\"",
 			attributes, s);
 		    goto fail2;
@@ -450,9 +450,9 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, cairo_li
 		if (unlikely (status))
 		    goto fail2;
 
-		attrib->array_len = _cairo_array_num_elements (&attrib->array);
+		attrib->array_len = _comac_array_num_elements (&attrib->array);
 		if (def->array_size > 0 && attrib->array_len != def->array_size) {
-		    status = _cairo_tag_error (
+		    status = _comac_tag_error (
 			"while parsing attributes: \"%s\". Expected %d elements in array. Found %d",
 			attributes, def->array_size, attrib->array_len);
 		    goto fail2;
@@ -460,13 +460,13 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, cairo_li
 	    }
 	}
 
-	cairo_list_add_tail (&attrib->link, list);
+	comac_list_add_tail (&attrib->link, list);
     }
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 
   fail2:
-    _cairo_array_fini (&attrib->array);
+    _comac_array_fini (&attrib->array);
     if (attrib->type == ATTRIBUTE_STRING)
 	free (attrib->scalar.s);
     free (attrib);
@@ -477,54 +477,54 @@ parse_attributes (const char *attributes, attribute_spec_t *attrib_def, cairo_li
 }
 
 static void
-free_attributes_list (cairo_list_t *list)
+free_attributes_list (comac_list_t *list)
 {
     attribute_t *attr, *next;
 
-    cairo_list_foreach_entry_safe (attr, next, attribute_t, list, link)
+    comac_list_foreach_entry_safe (attr, next, attribute_t, list, link)
     {
-	cairo_list_del (&attr->link);
+	comac_list_del (&attr->link);
 	free (attr->name);
-	_cairo_array_fini (&attr->array);
+	_comac_array_fini (&attr->array);
 	if (attr->type == ATTRIBUTE_STRING)
 	    free (attr->scalar.s);
 	free (attr);
     }
 }
 
-cairo_int_status_t
-_cairo_tag_parse_link_attributes (const char *attributes, cairo_link_attrs_t *link_attrs)
+comac_int_status_t
+_comac_tag_parse_link_attributes (const char *attributes, comac_link_attrs_t *link_attrs)
 {
-    cairo_list_t list;
-    cairo_int_status_t status;
+    comac_list_t list;
+    comac_int_status_t status;
     attribute_t *attr;
     attrib_val_t val;
-    cairo_bool_t has_rect = FALSE;
-    cairo_bool_t invalid_combination = FALSE;
+    comac_bool_t has_rect = FALSE;
+    comac_bool_t invalid_combination = FALSE;
 
-    cairo_list_init (&list);
+    comac_list_init (&list);
     status = parse_attributes (attributes, _link_attrib_spec, &list);
     if (unlikely (status))
 	return status;
 
-    memset (link_attrs, 0, sizeof (cairo_link_attrs_t));
-    _cairo_array_init (&link_attrs->rects, sizeof (cairo_rectangle_t));
+    memset (link_attrs, 0, sizeof (comac_link_attrs_t));
+    _comac_array_init (&link_attrs->rects, sizeof (comac_rectangle_t));
 
-    cairo_list_foreach_entry (attr, attribute_t, &list, link) {
+    comac_list_foreach_entry (attr, attribute_t, &list, link) {
 	if (strcmp (attr->name, "dest") == 0) {
 	    link_attrs->dest = strdup (attr->scalar.s);
 
 	} else if (strcmp (attr->name, "page") == 0) {
 	    link_attrs->page = attr->scalar.i;
 	    if (link_attrs->page < 1) {
-		status = _cairo_tag_error ("Link attributes: \"%s\" page must be >= 1", attributes);
+		status = _comac_tag_error ("Link attributes: \"%s\" page must be >= 1", attributes);
 		goto cleanup;
 	    }
 
 	} else if (strcmp (attr->name, "pos") == 0) {
-	    _cairo_array_copy_element (&attr->array, 0, &val);
+	    _comac_array_copy_element (&attr->array, 0, &val);
 	    link_attrs->pos.x = val.f;
-	    _cairo_array_copy_element (&attr->array, 1, &val);
+	    _comac_array_copy_element (&attr->array, 1, &val);
 	    link_attrs->pos.y = val.f;
 	    link_attrs->has_pos = TRUE;
 
@@ -535,25 +535,25 @@ _cairo_tag_parse_link_attributes (const char *attributes, cairo_link_attrs_t *li
 	    link_attrs->file = strdup (attr->scalar.s);
 
 	} else if (strcmp (attr->name, "rect") == 0) {
-	    cairo_rectangle_t rect;
+	    comac_rectangle_t rect;
 	    int i;
-	    int num_elem = _cairo_array_num_elements (&attr->array);
+	    int num_elem = _comac_array_num_elements (&attr->array);
 	    if (num_elem == 0 || num_elem % 4 != 0) {
-		status = _cairo_tag_error ("Link attributes: \"%s\" rect array size must be multiple of 4",
+		status = _comac_tag_error ("Link attributes: \"%s\" rect array size must be multiple of 4",
 					   attributes);
 		goto cleanup;
 	    }
 
 	    for (i = 0; i < num_elem; i += 4) {
-		_cairo_array_copy_element (&attr->array, i, &val);
+		_comac_array_copy_element (&attr->array, i, &val);
 		rect.x = val.f;
-		_cairo_array_copy_element (&attr->array, i+1, &val);
+		_comac_array_copy_element (&attr->array, i+1, &val);
 		rect.y = val.f;
-		_cairo_array_copy_element (&attr->array, i+2, &val);
+		_comac_array_copy_element (&attr->array, i+2, &val);
 		rect.width = val.f;
-		_cairo_array_copy_element (&attr->array, i+3, &val);
+		_comac_array_copy_element (&attr->array, i+3, &val);
 		rect.height = val.f;
-		status = _cairo_array_append (&link_attrs->rects, &rect);
+		status = _comac_array_append (&link_attrs->rects, &rect);
 		if (unlikely (status))
 		    goto cleanup;
 	    }
@@ -590,7 +590,7 @@ _cairo_tag_parse_link_attributes (const char *attributes, cairo_link_attrs_t *li
     }
 
     if (invalid_combination) {
-	status = _cairo_tag_error (
+	status = _comac_tag_error (
 	    "Link attributes: \"%s\" invalid combination of attributes", attributes);
     }
 
@@ -600,26 +600,26 @@ _cairo_tag_parse_link_attributes (const char *attributes, cairo_link_attrs_t *li
 	free (link_attrs->dest);
 	free (link_attrs->uri);
 	free (link_attrs->file);
-	_cairo_array_fini (&link_attrs->rects);
+	_comac_array_fini (&link_attrs->rects);
     }
 
     return status;
 }
 
-cairo_int_status_t
-_cairo_tag_parse_dest_attributes (const char *attributes, cairo_dest_attrs_t *dest_attrs)
+comac_int_status_t
+_comac_tag_parse_dest_attributes (const char *attributes, comac_dest_attrs_t *dest_attrs)
 {
-    cairo_list_t list;
-    cairo_int_status_t status;
+    comac_list_t list;
+    comac_int_status_t status;
     attribute_t *attr;
 
-    memset (dest_attrs, 0, sizeof (cairo_dest_attrs_t));
-    cairo_list_init (&list);
+    memset (dest_attrs, 0, sizeof (comac_dest_attrs_t));
+    comac_list_init (&list);
     status = parse_attributes (attributes, _dest_attrib_spec, &list);
     if (unlikely (status))
 	goto cleanup;
 
-    cairo_list_foreach_entry (attr, attribute_t, &list, link)
+    comac_list_foreach_entry (attr, attribute_t, &list, link)
     {
 	if (strcmp (attr->name, "name") == 0) {
 	    dest_attrs->name = strdup (attr->scalar.s);
@@ -635,7 +635,7 @@ _cairo_tag_parse_dest_attributes (const char *attributes, cairo_dest_attrs_t *de
     }
 
     if (! dest_attrs->name)
-	status = _cairo_tag_error ("Destination attributes: \"%s\" missing name attribute",
+	status = _comac_tag_error ("Destination attributes: \"%s\" missing name attribute",
 				   attributes);
 
   cleanup:
@@ -644,11 +644,11 @@ _cairo_tag_parse_dest_attributes (const char *attributes, cairo_dest_attrs_t *de
     return status;
 }
 
-cairo_int_status_t
-_cairo_tag_parse_ccitt_params (const char *attributes, cairo_ccitt_params_t *ccitt_params)
+comac_int_status_t
+_comac_tag_parse_ccitt_params (const char *attributes, comac_ccitt_params_t *ccitt_params)
 {
-    cairo_list_t list;
-    cairo_int_status_t status;
+    comac_list_t list;
+    comac_int_status_t status;
     attribute_t *attr;
 
     ccitt_params->columns = -1;
@@ -662,12 +662,12 @@ _cairo_tag_parse_ccitt_params (const char *attributes, cairo_ccitt_params_t *cci
     ccitt_params->black_is_1 = FALSE;
     ccitt_params->damaged_rows_before_error = 0;
 
-    cairo_list_init (&list);
+    comac_list_init (&list);
     status = parse_attributes (attributes, _ccitt_params_spec, &list);
     if (unlikely (status))
 	goto cleanup;
 
-    cairo_list_foreach_entry (attr, attribute_t, &list, link)
+    comac_list_foreach_entry (attr, attribute_t, &list, link)
     {
 	if (strcmp (attr->name, "Columns") == 0) {
 	    ccitt_params->columns = attr->scalar.i;
@@ -694,29 +694,29 @@ _cairo_tag_parse_ccitt_params (const char *attributes, cairo_ccitt_params_t *cci
     return status;
 }
 
-cairo_int_status_t
-_cairo_tag_parse_eps_params (const char *attributes, cairo_eps_params_t *eps_params)
+comac_int_status_t
+_comac_tag_parse_eps_params (const char *attributes, comac_eps_params_t *eps_params)
 {
-    cairo_list_t list;
-    cairo_int_status_t status;
+    comac_list_t list;
+    comac_int_status_t status;
     attribute_t *attr;
     attrib_val_t val;
 
-    cairo_list_init (&list);
+    comac_list_init (&list);
     status = parse_attributes (attributes, _eps_params_spec, &list);
     if (unlikely (status))
 	goto cleanup;
 
-    cairo_list_foreach_entry (attr, attribute_t, &list, link)
+    comac_list_foreach_entry (attr, attribute_t, &list, link)
     {
 	if (strcmp (attr->name, "bbox") == 0) {
-	    _cairo_array_copy_element (&attr->array, 0, &val);
+	    _comac_array_copy_element (&attr->array, 0, &val);
 	    eps_params->bbox.p1.x = val.f;
-	    _cairo_array_copy_element (&attr->array, 1, &val);
+	    _comac_array_copy_element (&attr->array, 1, &val);
 	    eps_params->bbox.p1.y = val.f;
-	    _cairo_array_copy_element (&attr->array, 2, &val);
+	    _comac_array_copy_element (&attr->array, 2, &val);
 	    eps_params->bbox.p2.x = val.f;
-	    _cairo_array_copy_element (&attr->array, 3, &val);
+	    _comac_array_copy_element (&attr->array, 3, &val);
 	    eps_params->bbox.p2.y = val.f;
 	}
     }

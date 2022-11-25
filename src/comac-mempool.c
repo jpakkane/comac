@@ -1,4 +1,4 @@
-/* Cairo - a vector graphics library with display and print output
+/* Comac - a vector graphics library with display and print output
  *
  * Copyright © 2007 Chris Wilson
  * Copyright © 2009 Intel Corporation
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -48,7 +48,7 @@
 #define BITCLEAR(p, n) ((p)->map[(n) >> 3] &= ~(128 >> ((n) & 7)))
 
 static void
-clear_bits (cairo_mempool_t *pool, size_t first, size_t last)
+clear_bits (comac_mempool_t *pool, size_t first, size_t last)
 {
     size_t i, n = last;
     size_t first_full = (first + 7) & ~7;
@@ -73,9 +73,9 @@ clear_bits (cairo_mempool_t *pool, size_t first, size_t last)
 }
 
 static void
-free_bits (cairo_mempool_t *pool, size_t start, int bits, cairo_bool_t clear)
+free_bits (comac_mempool_t *pool, size_t start, int bits, comac_bool_t clear)
 {
-    struct _cairo_memblock *block;
+    struct _comac_memblock *block;
 
     if (clear)
 	clear_bits (pool, start, start + (((size_t) 1) << bits));
@@ -83,7 +83,7 @@ free_bits (cairo_mempool_t *pool, size_t start, int bits, cairo_bool_t clear)
     block = pool->blocks + start;
     block->bits = bits;
 
-    cairo_list_add (&block->link, &pool->free[bits]);
+    comac_list_add (&block->link, &pool->free[bits]);
 
     pool->free_bytes += ((size_t) 1) << (bits + pool->min_bits);
     if (bits > pool->max_free_bits)
@@ -92,10 +92,10 @@ free_bits (cairo_mempool_t *pool, size_t start, int bits, cairo_bool_t clear)
 
 /* Add a chunk to the free list */
 static void
-free_blocks (cairo_mempool_t *pool,
+free_blocks (comac_mempool_t *pool,
 	     size_t first,
 	     size_t last,
-	     cairo_bool_t clear)
+	     comac_bool_t clear)
 {
     size_t i, len;
     int bits = 0;
@@ -152,10 +152,10 @@ free_blocks (cairo_mempool_t *pool,
     }
 }
 
-static struct _cairo_memblock *
-get_buddy (cairo_mempool_t *pool, size_t offset, int bits)
+static struct _comac_memblock *
+get_buddy (comac_mempool_t *pool, size_t offset, int bits)
 {
-    struct _cairo_memblock *block;
+    struct _comac_memblock *block;
 
     if (offset + (((size_t) 1) << bits) >= pool->num_blocks)
 	return NULL; /* invalid */
@@ -171,8 +171,8 @@ get_buddy (cairo_mempool_t *pool, size_t offset, int bits)
 }
 
 static void
-merge_buddies (cairo_mempool_t *pool,
-	       struct _cairo_memblock *block,
+merge_buddies (comac_mempool_t *pool,
+	       struct _comac_memblock *block,
 	       int max_bits)
 {
     size_t block_offset = block - pool->blocks;
@@ -186,7 +186,7 @@ merge_buddies (cairo_mempool_t *pool,
 	if (block == NULL)
 	    break;
 
-	cairo_list_del (&block->link);
+	comac_list_del (&block->link);
 
 	/* Merged block starts at buddy */
 	if (buddy_offset < block_offset)
@@ -197,7 +197,7 @@ merge_buddies (cairo_mempool_t *pool,
 
     block = pool->blocks + block_offset;
     block->bits = bits;
-    cairo_list_add (&block->link, &pool->free[bits]);
+    comac_list_add (&block->link, &pool->free[bits]);
 
     if (bits > pool->max_free_bits)
 	pool->max_free_bits = bits;
@@ -205,14 +205,14 @@ merge_buddies (cairo_mempool_t *pool,
 
 /* attempt to merge all available buddies up to a particular size */
 static int
-merge_bits (cairo_mempool_t *pool, int max_bits)
+merge_bits (comac_mempool_t *pool, int max_bits)
 {
-    struct _cairo_memblock *block, *buddy, *next;
+    struct _comac_memblock *block, *buddy, *next;
     int bits;
 
     for (bits = 0; bits < max_bits - 1; bits++) {
-	cairo_list_foreach_entry_safe (block, next,
-				       struct _cairo_memblock,
+	comac_list_foreach_entry_safe (block, next,
+				       struct _comac_memblock,
 				       &pool->free[bits],
 				       link)
 	{
@@ -223,12 +223,12 @@ merge_bits (cairo_mempool_t *pool, int max_bits)
 		continue;
 
 	    if (buddy == next) {
-		next = cairo_container_of (buddy->link.next,
-					   struct _cairo_memblock,
+		next = comac_container_of (buddy->link.next,
+					   struct _comac_memblock,
 					   link);
 	    }
 
-	    cairo_list_del (&block->link);
+	    comac_list_del (&block->link);
 	    merge_buddies (pool, block, max_bits);
 	}
     }
@@ -238,10 +238,10 @@ merge_bits (cairo_mempool_t *pool, int max_bits)
 
 /* find store for 1 << bits blocks */
 static void *
-buddy_malloc (cairo_mempool_t *pool, int bits)
+buddy_malloc (comac_mempool_t *pool, int bits)
 {
     size_t past, offset;
-    struct _cairo_memblock *block;
+    struct _comac_memblock *block;
     int b;
 
     if (bits > pool->max_free_bits && bits > merge_bits (pool, bits))
@@ -250,18 +250,18 @@ buddy_malloc (cairo_mempool_t *pool, int bits)
     /* Find a list with blocks big enough on it */
     block = NULL;
     for (b = bits; b <= pool->max_free_bits; b++) {
-	if (! cairo_list_is_empty (&pool->free[b])) {
-	    block = cairo_list_first_entry (&pool->free[b],
-					    struct _cairo_memblock,
+	if (! comac_list_is_empty (&pool->free[b])) {
+	    block = comac_list_first_entry (&pool->free[b],
+					    struct _comac_memblock,
 					    link);
 	    break;
 	}
     }
     assert (block != NULL);
 
-    cairo_list_del (&block->link);
+    comac_list_del (&block->link);
 
-    while (cairo_list_is_empty (&pool->free[pool->max_free_bits])) {
+    while (comac_list_is_empty (&pool->free[pool->max_free_bits])) {
 	if (--pool->max_free_bits == -1)
 	    break;
     }
@@ -279,8 +279,8 @@ buddy_malloc (cairo_mempool_t *pool, int bits)
     return pool->base + ((block - pool->blocks) << pool->min_bits);
 }
 
-cairo_status_t
-_cairo_mempool_init (cairo_mempool_t *pool,
+comac_status_t
+_comac_mempool_init (comac_mempool_t *pool,
 		      void *base, size_t bytes,
 		      int min_bits, int num_sizes)
 {
@@ -305,21 +305,21 @@ _cairo_mempool_init (cairo_mempool_t *pool,
     pool->max_free_bits = -1;
 
     num_blocks = bytes >> min_bits;
-    pool->blocks = calloc (num_blocks, sizeof (struct _cairo_memblock));
+    pool->blocks = calloc (num_blocks, sizeof (struct _comac_memblock));
     if (pool->blocks == NULL)
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     pool->num_blocks = num_blocks;
     pool->min_bits = min_bits;
     pool->num_sizes = num_sizes;
 
     for (i = 0; i < ARRAY_LENGTH (pool->free); i++)
-	cairo_list_init (&pool->free[i]);
+	comac_list_init (&pool->free[i]);
 
-    pool->map = _cairo_malloc ((num_blocks + 7) >> 3);
+    pool->map = _comac_malloc ((num_blocks + 7) >> 3);
     if (pool->map == NULL) {
 	free (pool->blocks);
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
     memset (pool->map, -1, (num_blocks + 7) >> 3);
@@ -328,11 +328,11 @@ _cairo_mempool_init (cairo_mempool_t *pool,
     /* Now add all blocks to the free list */
     free_blocks (pool, 0, num_blocks, 1);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void *
-_cairo_mempool_alloc (cairo_mempool_t *pool, size_t bytes)
+_comac_mempool_alloc (comac_mempool_t *pool, size_t bytes)
 {
     size_t size;
     int bits;
@@ -347,10 +347,10 @@ _cairo_mempool_alloc (cairo_mempool_t *pool, size_t bytes)
 }
 
 void
-_cairo_mempool_free (cairo_mempool_t *pool, void *storage)
+_comac_mempool_free (comac_mempool_t *pool, void *storage)
 {
     size_t block_offset;
-    struct _cairo_memblock *block;
+    struct _comac_memblock *block;
 
     block_offset = ((char *)storage - pool->base) >> pool->min_bits;
     block = pool->blocks + block_offset;
@@ -362,7 +362,7 @@ _cairo_mempool_free (cairo_mempool_t *pool, void *storage)
 }
 
 void
-_cairo_mempool_fini (cairo_mempool_t *pool)
+_comac_mempool_fini (comac_mempool_t *pool)
 {
     free (pool->map);
     free (pool->blocks);

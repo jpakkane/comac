@@ -27,7 +27,7 @@
  *
  * 2005-04-11 Carl Worth <cworth@cworth.org>
  *
- *   It appears that calling cairo_show_surface after cairo_translate
+ *   It appears that calling comac_show_surface after comac_translate
  *   somehow applies the translation twice to the surface being
  *   shown. This is pretty easy to demonstrate by bringing up xsvg on
  *   an SVG file with an <image> and panning around a bit with the
@@ -43,10 +43,10 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     uint32_t colors[4] = {
 	0xffffffff, 0xffff0000,
 	0xff00ff00, 0xff0000ff
@@ -54,25 +54,25 @@ draw (cairo_t *cr, int width, int height)
     int i;
 
     for (i=0; i < 4; i++) {
-	surface = cairo_image_surface_create_for_data ((unsigned char *) &colors[i],
-						       CAIRO_FORMAT_RGB24,
+	surface = comac_image_surface_create_for_data ((unsigned char *) &colors[i],
+						       COMAC_FORMAT_RGB24,
 						       1, 1, 4);
-	cairo_save (cr);
+	comac_save (cr);
 	{
-	    cairo_translate (cr, i % 2, i / 2);
-	    cairo_set_source_surface (cr, surface, 0, 0);
-	    cairo_paint (cr);
+	    comac_translate (cr, i % 2, i / 2);
+	    comac_set_source_surface (cr, surface, 0, 0);
+	    comac_paint (cr);
 	}
-	cairo_restore (cr);
-	cairo_surface_finish (surface); /* colors will go out of scope */
-	cairo_surface_destroy (surface);
+	comac_restore (cr);
+	comac_surface_finish (surface); /* colors will go out of scope */
+	comac_surface_destroy (surface);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (translate_show_surface,
-	    "Tests calls to cairo_show_surface after cairo_translate",
+COMAC_TEST (translate_show_surface,
+	    "Tests calls to comac_show_surface after comac_translate",
 	    "transform", /* keywords */
 	    NULL, /* requirements */
 	    2, 2,

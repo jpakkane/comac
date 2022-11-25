@@ -30,38 +30,38 @@
 #define WIDTH 2
 #define HEIGHT 2
 
-static cairo_status_t
+static comac_status_t
 no_memory_error (void *closure, unsigned char *data, unsigned int size)
 {
-    return CAIRO_STATUS_NO_MEMORY;
+    return COMAC_STATUS_NO_MEMORY;
 }
 
-static cairo_status_t
+static comac_status_t
 read_error (void *closure, unsigned char *data, unsigned int size)
 {
-    return CAIRO_STATUS_READ_ERROR;
+    return COMAC_STATUS_READ_ERROR;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
     char *filename;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
     xasprintf (&filename, "%s/reference/%s",
 	       ctx->srcdir, "create-from-png.ref.png");
 
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	cairo_test_status_t result;
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	comac_test_status_t result;
 
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
 
 	free (filename);
@@ -69,250 +69,250 @@ draw (cairo_t *cr, int width, int height)
     }
 
     /* Pretend we modify the surface data (which detaches the PNG mime data) */
-    cairo_surface_flush (surface);
-    cairo_surface_mark_dirty (surface);
+    comac_surface_flush (surface);
+    comac_surface_mark_dirty (surface);
 
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+    comac_paint (cr);
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     free (filename);
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
     char *filename;
     char *path;
-    cairo_surface_t *surface;
-    cairo_status_t status;
-    cairo_test_status_t result = CAIRO_TEST_SUCCESS;
+    comac_surface_t *surface;
+    comac_status_t status;
+    comac_test_status_t result = COMAC_TEST_SUCCESS;
 
-    surface = cairo_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
-    if (cairo_surface_status (surface) != CAIRO_STATUS_FILE_NOT_FOUND) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error: expected \"file not found\", but got: %s\n",
-			    cairo_status_to_string (cairo_surface_status (surface)));
+    surface = comac_image_surface_create_from_png ("___THIS_FILE_DOES_NOT_EXIST___");
+    if (comac_surface_status (surface) != COMAC_STATUS_FILE_NOT_FOUND) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error: expected \"file not found\", but got: %s\n",
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
     }
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
-    surface = cairo_image_surface_create_from_png_stream (no_memory_error, NULL);
-    if (cairo_surface_status (surface) != CAIRO_STATUS_NO_MEMORY) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error: expected \"out of memory\", but got: %s\n",
-			    cairo_status_to_string (cairo_surface_status (surface)));
+    surface = comac_image_surface_create_from_png_stream (no_memory_error, NULL);
+    if (comac_surface_status (surface) != COMAC_STATUS_NO_MEMORY) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error: expected \"out of memory\", but got: %s\n",
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
     }
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
-    surface = cairo_image_surface_create_from_png_stream (read_error, NULL);
-    if (cairo_surface_status (surface) != CAIRO_STATUS_READ_ERROR) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error: expected \"read error\", but got: %s\n",
-			    cairo_status_to_string (cairo_surface_status (surface)));
+    surface = comac_image_surface_create_from_png_stream (read_error, NULL);
+    if (comac_surface_status (surface) != COMAC_STATUS_READ_ERROR) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error: expected \"read error\", but got: %s\n",
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
     }
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
     /* cheekily test error propagation from the user write funcs as well ... */
     xasprintf (&path, "%s/reference", ctx->srcdir);
     xasprintf (&filename, "%s/%s", path, "create-from-png.ref.png");
 
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
     } else {
-	status = cairo_surface_write_to_png_stream (surface,
-					       (cairo_write_func_t) no_memory_error,
+	status = comac_surface_write_to_png_stream (surface,
+					       (comac_write_func_t) no_memory_error,
 					       NULL);
-	if (status != CAIRO_STATUS_NO_MEMORY) {
-	    result = cairo_test_status_from_status (ctx, status);
-	    if (result == CAIRO_TEST_FAILURE) {
-		cairo_test_log (ctx, "Error: expected \"out of memory\", but got: %s\n",
-				cairo_status_to_string (status));
+	if (status != COMAC_STATUS_NO_MEMORY) {
+	    result = comac_test_status_from_status (ctx, status);
+	    if (result == COMAC_TEST_FAILURE) {
+		comac_test_log (ctx, "Error: expected \"out of memory\", but got: %s\n",
+				comac_status_to_string (status));
 	    }
 	}
 
-	status = cairo_surface_write_to_png_stream (surface,
-						    (cairo_write_func_t) read_error,
+	status = comac_surface_write_to_png_stream (surface,
+						    (comac_write_func_t) read_error,
 						    NULL);
-	if (status != CAIRO_STATUS_READ_ERROR) {
-	    result = cairo_test_status_from_status (ctx, status);
-	    if (result == CAIRO_TEST_FAILURE) {
-		cairo_test_log (ctx, "Error: expected \"read error\", but got: %s\n",
-				cairo_status_to_string (status));
+	if (status != COMAC_STATUS_READ_ERROR) {
+	    result = comac_test_status_from_status (ctx, status);
+	    if (result == COMAC_TEST_FAILURE) {
+		comac_test_log (ctx, "Error: expected \"read error\", but got: %s\n",
+				comac_status_to_string (status));
 	    }
 	}
 
 	/* and check that error has not propagated to the surface */
-	if (cairo_surface_status (surface)) {
-	    result = cairo_test_status_from_status (ctx,
-						    cairo_surface_status (surface));
-	    if (result == CAIRO_TEST_FAILURE) {
-		cairo_test_log (ctx, "Error: user write error propagated to surface: %s",
-				cairo_status_to_string (cairo_surface_status (surface)));
+	if (comac_surface_status (surface)) {
+	    result = comac_test_status_from_status (ctx,
+						    comac_surface_status (surface));
+	    if (result == COMAC_TEST_FAILURE) {
+		comac_test_log (ctx, "Error: user write error propagated to surface: %s",
+				comac_status_to_string (comac_surface_status (surface)));
 	    }
 	}
     }
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
     free (filename);
-    if (result != CAIRO_TEST_SUCCESS)
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
     /* check that loading alpha/opaque PNGs generate the correct surfaces */
     /* TODO: Avoid using target-specific references as sample images */
     xasprintf (&filename, "%s/%s", path, "create-from-png.alpha.ref.png");
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
-    } else if (cairo_image_surface_get_format (surface) != CAIRO_FORMAT_ARGB32) {
-	cairo_test_log (ctx, "Error reading PNG image %s: did not create an ARGB32 image\n",
+    } else if (comac_image_surface_get_format (surface) != COMAC_FORMAT_ARGB32) {
+	comac_test_log (ctx, "Error reading PNG image %s: did not create an ARGB32 image\n",
 			filename);
-	result = CAIRO_TEST_FAILURE;
+	result = COMAC_TEST_FAILURE;
     }
     free (filename);
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
     xasprintf (&filename, "%s/%s", path, "create-from-png.ref.png");
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
-    } else if (cairo_image_surface_get_format (surface) != CAIRO_FORMAT_RGB24) {
-	cairo_test_log (ctx, "Error reading PNG image %s: did not create an RGB24 image\n",
+    } else if (comac_image_surface_get_format (surface) != COMAC_FORMAT_RGB24) {
+	comac_test_log (ctx, "Error reading PNG image %s: did not create an RGB24 image\n",
 			filename);
-	result = CAIRO_TEST_FAILURE;
+	result = COMAC_TEST_FAILURE;
     }
     free (filename);
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
     /* check paletted PNGs */
     /* TODO: Avoid using target-specific references as sample images */
     xasprintf (&filename, "%s/%s", path, "create-from-png.indexed-alpha.ref.png");
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
-    } else if (cairo_image_surface_get_format (surface) != CAIRO_FORMAT_ARGB32) {
-	cairo_test_log (ctx, "Error reading PNG image %s: did not create an ARGB32 image\n",
+    } else if (comac_image_surface_get_format (surface) != COMAC_FORMAT_ARGB32) {
+	comac_test_log (ctx, "Error reading PNG image %s: did not create an ARGB32 image\n",
 			filename);
-	result = CAIRO_TEST_FAILURE;
+	result = COMAC_TEST_FAILURE;
     }
     free (filename);
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
     /* TODO: Avoid using target-specific references as sample images */
     xasprintf (&filename, "%s/%s", path, "create-from-png.indexed.ref.png");
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
-    } else if (cairo_image_surface_get_format (surface) != CAIRO_FORMAT_RGB24) {
-	cairo_test_log (ctx, "Error reading PNG image %s: did not create an RGB24 image\n",
+    } else if (comac_image_surface_get_format (surface) != COMAC_FORMAT_RGB24) {
+	comac_test_log (ctx, "Error reading PNG image %s: did not create an RGB24 image\n",
 			filename);
-	result = CAIRO_TEST_FAILURE;
+	result = COMAC_TEST_FAILURE;
     }
     free (filename);
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
     /* check grayscale PNGs */
     /* TODO: Avoid using target-specific references as sample images */
     xasprintf (&filename, "%s/%s", path, "create-from-png.gray-alpha.ref.png");
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
-    } else if (cairo_image_surface_get_format (surface) != CAIRO_FORMAT_ARGB32) {
-	cairo_test_log (ctx, "Error reading PNG image %s: did not create an ARGB32 image\n",
+    } else if (comac_image_surface_get_format (surface) != COMAC_FORMAT_ARGB32) {
+	comac_test_log (ctx, "Error reading PNG image %s: did not create an ARGB32 image\n",
 			filename);
-	result = CAIRO_TEST_FAILURE;
+	result = COMAC_TEST_FAILURE;
     }
     free (filename);
-    cairo_surface_destroy (surface);
-    if (result != CAIRO_TEST_SUCCESS)
+    comac_surface_destroy (surface);
+    if (result != COMAC_TEST_SUCCESS)
 	return result;
 
     /* TODO: Avoid using target-specific references as sample images */
     xasprintf (&filename, "%s/%s", path, "create-from-png.gray.ref.png");
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface)) {
-	result = cairo_test_status_from_status (ctx,
-						cairo_surface_status (surface));
-	if (result == CAIRO_TEST_FAILURE) {
-	    cairo_test_log (ctx, "Error reading PNG image %s: %s\n",
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface)) {
+	result = comac_test_status_from_status (ctx,
+						comac_surface_status (surface));
+	if (result == COMAC_TEST_FAILURE) {
+	    comac_test_log (ctx, "Error reading PNG image %s: %s\n",
 			    filename,
-			    cairo_status_to_string (cairo_surface_status (surface)));
+			    comac_status_to_string (comac_surface_status (surface)));
 	}
-    } else if (cairo_image_surface_get_format (surface) != CAIRO_FORMAT_RGB24) {
-	cairo_test_log (ctx, "Error reading PNG image %s: did not create an RGB24 image\n",
+    } else if (comac_image_surface_get_format (surface) != COMAC_FORMAT_RGB24) {
+	comac_test_log (ctx, "Error reading PNG image %s: did not create an RGB24 image\n",
 			filename);
-	result = CAIRO_TEST_FAILURE;
+	result = COMAC_TEST_FAILURE;
     }
     free (filename);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     free (path);
 
     return result;
 }
 
-CAIRO_TEST (create_from_png,
+COMAC_TEST (create_from_png,
 	    "Tests the creation of an image surface from a PNG file",
 	    "png", /* keywords */
 	    NULL, /* requirements */

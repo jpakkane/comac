@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright (c) 2007 Netlabs
  * Copyright (c) 2006 Mozilla Corporation
@@ -36,17 +36,17 @@
 
 #if HAVE_CLOCK_GETTIME
 #if defined(CLOCK_MONOTONIC_RAW)
-#define CAIRO_CLOCK CLOCK_MONOTONIC_RAW
+#define COMAC_CLOCK CLOCK_MONOTONIC_RAW
 #elif defined(CLOCK_MONOTONIC)
-#define CAIRO_CLOCK CLOCK_MONOTONIC
+#define COMAC_CLOCK CLOCK_MONOTONIC
 #endif
 #endif
 
 #if defined(__APPLE__)
 #include <mach/mach_time.h>
 
-static cairo_always_inline double
-_cairo_time_1s (void)
+static comac_always_inline double
+_comac_time_1s (void)
 {
     mach_timebase_info_data_t freq;
 
@@ -55,8 +55,8 @@ _cairo_time_1s (void)
     return 1000000000. * freq.denom / freq.numer;
 }
 
-cairo_time_t
-_cairo_time_get (void)
+comac_time_t
+_comac_time_get (void)
 {
     return mach_absolute_time ();
 }
@@ -65,8 +65,8 @@ _cairo_time_get (void)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-static cairo_always_inline double
-_cairo_time_1s (void)
+static comac_always_inline double
+_comac_time_1s (void)
 {
     LARGE_INTEGER freq;
 
@@ -76,54 +76,54 @@ _cairo_time_1s (void)
 }
 
 #ifndef HAVE_UINT64_T
-static cairo_always_inline cairo_time_t
-_cairo_time_from_large_integer (LARGE_INTEGER t)
+static comac_always_inline comac_time_t
+_comac_time_from_large_integer (LARGE_INTEGER t)
 {
-    cairo_int64_t r;
+    comac_int64_t r;
 
-    r = _cairo_int64_lsl (_cairo_int32_to_int64 (t.HighPart), 32);
-    r = _cairo_int64_add (r, _cairo_int32_to_int64 (t.LowPart));
+    r = _comac_int64_lsl (_comac_int32_to_int64 (t.HighPart), 32);
+    r = _comac_int64_add (r, _comac_int32_to_int64 (t.LowPart));
 
     return r;
 }
 #else
-static cairo_always_inline cairo_time_t
-_cairo_time_from_large_integer (LARGE_INTEGER t)
+static comac_always_inline comac_time_t
+_comac_time_from_large_integer (LARGE_INTEGER t)
 {
     return t.QuadPart;
 }
 #endif
 
-cairo_time_t
-_cairo_time_get (void)
+comac_time_t
+_comac_time_get (void)
 {
     LARGE_INTEGER t;
 
     QueryPerformanceCounter (&t);
 
-    return _cairo_time_from_large_integer(t);
+    return _comac_time_from_large_integer(t);
 }
 
-#elif defined(CAIRO_CLOCK)
+#elif defined(COMAC_CLOCK)
 #include <time.h>
 
-static cairo_always_inline double
-_cairo_time_1s (void)
+static comac_always_inline double
+_comac_time_1s (void)
 {
     return 1000000000;
 }
 
-cairo_time_t
-_cairo_time_get (void)
+comac_time_t
+_comac_time_get (void)
 {
     struct timespec t;
-    cairo_time_t r;
+    comac_time_t r;
 
-    clock_gettime (CAIRO_CLOCK, &t);
+    clock_gettime (COMAC_CLOCK, &t);
 
-    r = _cairo_double_to_int64 (_cairo_time_1s ());
-    r = _cairo_int64_mul (r, _cairo_int32_to_int64 (t.tv_sec));
-    r = _cairo_int64_add (r, _cairo_int32_to_int64 (t.tv_nsec));
+    r = _comac_double_to_int64 (_comac_time_1s ());
+    r = _comac_int64_mul (r, _comac_int32_to_int64 (t.tv_sec));
+    r = _comac_int64_add (r, _comac_int32_to_int64 (t.tv_nsec));
 
     return r;
 }
@@ -131,23 +131,23 @@ _cairo_time_get (void)
 #else
 #include <sys/time.h>
 
-static cairo_always_inline double
-_cairo_time_1s (void)
+static comac_always_inline double
+_comac_time_1s (void)
 {
     return 1000000;
 }
 
-cairo_time_t
-_cairo_time_get (void)
+comac_time_t
+_comac_time_get (void)
 {
     struct timeval t;
-    cairo_time_t r;
+    comac_time_t r;
 
     gettimeofday (&t, NULL);
 
-    r = _cairo_double_to_int64 (_cairo_time_1s ());
-    r = _cairo_int64_mul (r, _cairo_int32_to_int64 (t.tv_sec));
-    r = _cairo_int64_add (r, _cairo_int32_to_int64 (t.tv_usec));
+    r = _comac_double_to_int64 (_comac_time_1s ());
+    r = _comac_int64_mul (r, _comac_int32_to_int64 (t.tv_sec));
+    r = _comac_int64_add (r, _comac_int32_to_int64 (t.tv_usec));
 
     return r;
 }
@@ -155,43 +155,43 @@ _cairo_time_get (void)
 #endif
 
 int
-_cairo_time_cmp (const void *a,
+_comac_time_cmp (const void *a,
 		 const void *b)
 {
-    const cairo_time_t *ta = a, *tb = b;
-    return _cairo_int64_cmp (*ta, *tb);
+    const comac_time_t *ta = a, *tb = b;
+    return _comac_int64_cmp (*ta, *tb);
 }
 
 static double
-_cairo_time_ticks_per_sec (void)
+_comac_time_ticks_per_sec (void)
 {
     static double ticks = 0;
 
     if (unlikely (ticks == 0))
-	ticks = _cairo_time_1s ();
+	ticks = _comac_time_1s ();
 
     return ticks;
 }
 
 static double
-_cairo_time_s_per_tick (void)
+_comac_time_s_per_tick (void)
 {
     static double s = 0;
 
     if (unlikely (s == 0))
-	s = 1. / _cairo_time_ticks_per_sec ();
+	s = 1. / _comac_time_ticks_per_sec ();
 
     return s;
 }
 
 double
-_cairo_time_to_s (cairo_time_t t)
+_comac_time_to_s (comac_time_t t)
 {
-    return _cairo_int64_to_double (t) * _cairo_time_s_per_tick ();
+    return _comac_int64_to_double (t) * _comac_time_s_per_tick ();
 }
 
-cairo_time_t
-_cairo_time_from_s (double t)
+comac_time_t
+_comac_time_from_s (double t)
 {
-    return _cairo_double_to_int64 (t * _cairo_time_ticks_per_sec ());
+    return _comac_double_to_int64 (t * _comac_time_ticks_per_sec ());
 }

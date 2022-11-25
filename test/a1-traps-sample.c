@@ -32,31 +32,31 @@
 #define WIDTH	(PAD + POINTS * 2 + PAD)
 #define HEIGHT	(WIDTH)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i, j;
 
     /* Fill background white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     /* Draw in black */
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_translate (cr, PAD, PAD);
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_translate (cr, PAD, PAD);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
     for (i = 0; i < POINTS; i++)
 	for (j = 0; j < POINTS; j++) {
-	    cairo_rectangle (cr, 2 * i + i * STEP, 2 * j + j * STEP, 1, 1);
-	    cairo_fill (cr);
+	    comac_rectangle (cr, 2 * i + i * STEP, 2 * j + j * STEP, 1, 1);
+	    comac_fill (cr);
 	}
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a1_traps_sample,
+COMAC_TEST (a1_traps_sample,
 	    "Test sample position when drawing trapezoids with ANTIALIAS_NONE",
 	    "alpha, traps", /* keywords */
 	    "target=raster", /* requirements */

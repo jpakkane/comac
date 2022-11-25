@@ -24,11 +24,11 @@
  * Author: Behdad Esfahbod <behdad@behdad.org>
  */
 
-#ifndef _CAIRO_BOILERPLATE_SCALED_FONT_H_
-#define _CAIRO_BOILERPLATE_SCALED_FONT_H_
+#ifndef _COMAC_BOILERPLATE_SCALED_FONT_H_
+#define _COMAC_BOILERPLATE_SCALED_FONT_H_
 
 void
-cairo_boilerplate_scaled_font_set_max_glyphs_cached (cairo_scaled_font_t *scaled_font,
+comac_boilerplate_scaled_font_set_max_glyphs_cached (comac_scaled_font_t *scaled_font,
 						     int		  max_glyphs);
 
 #endif

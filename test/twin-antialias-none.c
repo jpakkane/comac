@@ -25,45 +25,45 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_font_options_t *options;
+    comac_font_options_t *options;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
-    cairo_select_font_face (cr,
-			    "@cairo:",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr,
+			    "@comac:",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
-    options = cairo_font_options_create ();
-    cairo_font_options_set_antialias (options, CAIRO_ANTIALIAS_NONE);
-    cairo_set_font_options (cr, options);
-    cairo_font_options_destroy (options);
+    options = comac_font_options_create ();
+    comac_font_options_set_antialias (options, COMAC_ANTIALIAS_NONE);
+    comac_set_font_options (cr, options);
+    comac_font_options_destroy (options);
 
-    cairo_set_font_size (cr, 16);
+    comac_set_font_size (cr, 16);
 
-    cairo_move_to (cr, 4, 14);
-    cairo_show_text (cr, "Is cairo's twin giza?");
+    comac_move_to (cr, 4, 14);
+    comac_show_text (cr, "Is comac's twin giza?");
 
-    cairo_move_to (cr, 4, 34);
-    cairo_text_path (cr, "Is cairo's twin giza?");
-    cairo_fill (cr);
+    comac_move_to (cr, 4, 34);
+    comac_text_path (cr, "Is comac's twin giza?");
+    comac_fill (cr);
 
-    cairo_move_to (cr, 4, 54);
-    cairo_text_path (cr, "Is cairo's twin giza?");
-    cairo_set_line_width (cr, 2/16.);
-    cairo_stroke (cr);
+    comac_move_to (cr, 4, 54);
+    comac_text_path (cr, "Is comac's twin giza?");
+    comac_set_line_width (cr, 2/16.);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (twin_antialias_none,
+COMAC_TEST (twin_antialias_none,
 	    "Tests the internal font (with antialiasing disabled)",
 	    "twin, font", /* keywords */
 	    "target=raster", /* requirements */

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,54 +34,54 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_CLIP_INLINE_H
-#define CAIRO_CLIP_INLINE_H
+#ifndef COMAC_CLIP_INLINE_H
+#define COMAC_CLIP_INLINE_H
 
 #include "comac-clip-private.h"
 
-static inline cairo_bool_t _cairo_clip_is_all_clipped(const cairo_clip_t *clip)
+static inline comac_bool_t _comac_clip_is_all_clipped(const comac_clip_t *clip)
 {
-    return clip == &__cairo_clip_all;
+    return clip == &__comac_clip_all;
 }
 
-static inline cairo_clip_t *
-_cairo_clip_set_all_clipped (cairo_clip_t *clip)
+static inline comac_clip_t *
+_comac_clip_set_all_clipped (comac_clip_t *clip)
 {
-    _cairo_clip_destroy (clip);
-    return (cairo_clip_t *) &__cairo_clip_all;
+    _comac_clip_destroy (clip);
+    return (comac_clip_t *) &__comac_clip_all;
 }
 
-static inline cairo_clip_t *
-_cairo_clip_copy_intersect_rectangle (const cairo_clip_t       *clip,
-				      const cairo_rectangle_int_t *r)
+static inline comac_clip_t *
+_comac_clip_copy_intersect_rectangle (const comac_clip_t       *clip,
+				      const comac_rectangle_int_t *r)
 {
-    return _cairo_clip_intersect_rectangle (_cairo_clip_copy (clip), r);
+    return _comac_clip_intersect_rectangle (_comac_clip_copy (clip), r);
 }
 
-static inline cairo_clip_t *
-_cairo_clip_copy_intersect_clip (const cairo_clip_t *clip,
-				 const cairo_clip_t *other)
+static inline comac_clip_t *
+_comac_clip_copy_intersect_clip (const comac_clip_t *clip,
+				 const comac_clip_t *other)
 {
-    return _cairo_clip_intersect_clip (_cairo_clip_copy (clip), other);
+    return _comac_clip_intersect_clip (_comac_clip_copy (clip), other);
 }
 
 static inline void
-_cairo_clip_steal_boxes (cairo_clip_t *clip, cairo_boxes_t *boxes)
+_comac_clip_steal_boxes (comac_clip_t *clip, comac_boxes_t *boxes)
 {
-    cairo_box_t *array = clip->boxes;
+    comac_box_t *array = clip->boxes;
 
     if (array == &clip->embedded_box) {
 	assert (clip->num_boxes == 1);
 	boxes->boxes_embedded[0] = clip->embedded_box;
 	array = &boxes->boxes_embedded[0];
     }
-    _cairo_boxes_init_for_array (boxes, array, clip->num_boxes);
+    _comac_boxes_init_for_array (boxes, array, clip->num_boxes);
     clip->boxes = NULL;
     clip->num_boxes = 0;
 }
 
 static inline void
-_cairo_clip_unsteal_boxes (cairo_clip_t *clip, cairo_boxes_t *boxes)
+_comac_clip_unsteal_boxes (comac_clip_t *clip, comac_boxes_t *boxes)
 {
     if (boxes->chunks.base == &boxes->boxes_embedded[0]) {
 	assert(boxes->num_boxes == 1);
@@ -93,4 +93,4 @@ _cairo_clip_unsteal_boxes (cairo_clip_t *clip, cairo_boxes_t *boxes)
     clip->num_boxes = boxes->num_boxes;
 }
 
-#endif /* CAIRO_CLIP_INLINE_H */
+#endif /* COMAC_CLIP_INLINE_H */

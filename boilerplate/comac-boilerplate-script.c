@@ -28,7 +28,7 @@
 
 #include "comac-script.h"
 
-static cairo_user_data_key_t script_closure_key;
+static comac_user_data_key_t script_closure_key;
 
 typedef struct _script_target_closure {
     char		*filename;
@@ -36,20 +36,20 @@ typedef struct _script_target_closure {
     double		 height;
 } script_target_closure_t;
 
-static cairo_surface_t *
-_cairo_boilerplate_script_create_surface (const char		    *name,
-					  cairo_content_t	     content,
+static comac_surface_t *
+_comac_boilerplate_script_create_surface (const char		    *name,
+					  comac_content_t	     content,
 					  double		     width,
 					  double		     height,
 					  double		     max_width,
 					  double		     max_height,
-					  cairo_boilerplate_mode_t   mode,
+					  comac_boilerplate_mode_t   mode,
 					  void			   **closure)
 {
     script_target_closure_t *ptc;
-    cairo_device_t *ctx;
-    cairo_surface_t *surface;
-    cairo_status_t status;
+    comac_device_t *ctx;
+    comac_surface_t *surface;
+    comac_status_t status;
 
     *closure = ptc = xmalloc (sizeof (script_target_closure_t));
 
@@ -59,83 +59,83 @@ _cairo_boilerplate_script_create_surface (const char		    *name,
     xasprintf (&ptc->filename, "%s.out.cs", name);
     xunlink (ptc->filename);
 
-    ctx = cairo_script_create (ptc->filename);
-    surface = cairo_script_surface_create (ctx, content, width, height);
-    cairo_device_destroy (ctx);
+    ctx = comac_script_create (ptc->filename);
+    surface = comac_script_surface_create (ctx, content, width, height);
+    comac_device_destroy (ctx);
 
-    status = cairo_surface_set_user_data (surface,
+    status = comac_surface_set_user_data (surface,
 					  &script_closure_key, ptc, NULL);
-    if (status == CAIRO_STATUS_SUCCESS)
+    if (status == COMAC_STATUS_SUCCESS)
 	return surface;
 
-    cairo_surface_destroy (surface);
-    surface = cairo_boilerplate_surface_create_in_error (status);
+    comac_surface_destroy (surface);
+    surface = comac_boilerplate_surface_create_in_error (status);
 
     free (ptc->filename);
     free (ptc);
     return surface;
 }
 
-static cairo_status_t
-_cairo_boilerplate_script_finish_surface (cairo_surface_t *surface)
+static comac_status_t
+_comac_boilerplate_script_finish_surface (comac_surface_t *surface)
 {
-    cairo_surface_finish (surface);
-    return cairo_surface_status (surface);
+    comac_surface_finish (surface);
+    return comac_surface_status (surface);
 }
 
-static cairo_status_t
-_cairo_boilerplate_script_surface_write_to_png (cairo_surface_t *surface,
+static comac_status_t
+_comac_boilerplate_script_surface_write_to_png (comac_surface_t *surface,
 						const char	*filename)
 {
-    return CAIRO_STATUS_WRITE_ERROR;
+    return COMAC_STATUS_WRITE_ERROR;
 }
 
-static cairo_surface_t *
-_cairo_boilerplate_script_convert_to_image (cairo_surface_t *surface,
+static comac_surface_t *
+_comac_boilerplate_script_convert_to_image (comac_surface_t *surface,
 					    int 	     page)
 {
-    script_target_closure_t *ptc = cairo_surface_get_user_data (surface,
+    script_target_closure_t *ptc = comac_surface_get_user_data (surface,
 								&script_closure_key);
-    return cairo_boilerplate_convert_to_image (ptc->filename, page);
+    return comac_boilerplate_convert_to_image (ptc->filename, page);
 }
 
-static cairo_surface_t *
-_cairo_boilerplate_script_get_image_surface (cairo_surface_t *surface,
+static comac_surface_t *
+_comac_boilerplate_script_get_image_surface (comac_surface_t *surface,
 					     int	      page,
 					     int	      width,
 					     int	      height)
 {
-    cairo_surface_t *image;
+    comac_surface_t *image;
 
-    image = _cairo_boilerplate_script_convert_to_image (surface, page);
-    cairo_surface_set_device_offset (image,
-				     cairo_image_surface_get_width (image) - width,
-				     cairo_image_surface_get_height (image) - height);
-    surface = _cairo_boilerplate_get_image_surface (image, 0, width, height);
-    cairo_surface_destroy (image);
+    image = _comac_boilerplate_script_convert_to_image (surface, page);
+    comac_surface_set_device_offset (image,
+				     comac_image_surface_get_width (image) - width,
+				     comac_image_surface_get_height (image) - height);
+    surface = _comac_boilerplate_get_image_surface (image, 0, width, height);
+    comac_surface_destroy (image);
 
     return surface;
 }
 
 static void
-_cairo_boilerplate_script_cleanup (void *closure)
+_comac_boilerplate_script_cleanup (void *closure)
 {
     script_target_closure_t *ptc = closure;
     free (ptc->filename);
     free (ptc);
 }
 
-static const cairo_boilerplate_target_t target[] = {{
+static const comac_boilerplate_target_t target[] = {{
     "script", "script", ".cs", NULL,
-    CAIRO_SURFACE_TYPE_SCRIPT, CAIRO_CONTENT_COLOR_ALPHA, 0,
-    "cairo_script_surface_create",
-    _cairo_boilerplate_script_create_surface,
-    cairo_surface_create_similar,
+    COMAC_SURFACE_TYPE_SCRIPT, COMAC_CONTENT_COLOR_ALPHA, 0,
+    "comac_script_surface_create",
+    _comac_boilerplate_script_create_surface,
+    comac_surface_create_similar,
     NULL,
-    _cairo_boilerplate_script_finish_surface,
-    _cairo_boilerplate_script_get_image_surface,
-    _cairo_boilerplate_script_surface_write_to_png,
-    _cairo_boilerplate_script_cleanup,
+    _comac_boilerplate_script_finish_surface,
+    _comac_boilerplate_script_get_image_surface,
+    _comac_boilerplate_script_surface_write_to_png,
+    _comac_boilerplate_script_cleanup,
     NULL, NULL, FALSE, FALSE, FALSE
 }};
-CAIRO_BOILERPLATE (script, target)
+COMAC_BOILERPLATE (script, target)

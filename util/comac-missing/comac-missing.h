@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006 Red Hat, Inc.
  * Copyright © 2011 Andrea Canciani
@@ -28,8 +28,8 @@
  *	    Andrea Canciani <ranma42@gmail.com>
  */
 
-#ifndef CAIRO_MISSING_H
-#define CAIRO_MISSING_H
+#ifndef COMAC_MISSING_H
+#define COMAC_MISSING_H
 
 #include "comac-compiler-private.h"
 
@@ -47,12 +47,12 @@ typedef SSIZE_T ssize_t;
 #endif
 
 #ifndef HAVE_GETLINE
-cairo_private ssize_t
+comac_private ssize_t
 getline (char **lineptr, size_t *n, FILE *stream);
 #endif
 
 #ifndef HAVE_STRNDUP
-cairo_private char *
+comac_private char *
 strndup (const char *s, size_t n);
 #endif
 

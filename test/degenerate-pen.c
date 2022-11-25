@@ -32,15 +32,15 @@
 #define HEIGHT (PAD + SIZE + PAD)
 
 /* We're demonstrating here a bug originally reported by Benjamin Otte
- * on the cairo mailing list here, (after he ran into this problem
+ * on the comac mailing list here, (after he ran into this problem
  * with various flash animations):
  *
- *	[cairo] Assertion `i < pen->num_vertices' failed in 1.4.10
- *	https://lists.cairographics.org/archives/cairo/2007-August/011282.html
+ *	[comac] Assertion `i < pen->num_vertices' failed in 1.4.10
+ *	https://lists.comacgraphics.org/archives/comac/2007-August/011282.html
  *
  * The problem shows up with an extreme transformation matrix that
  * collapses the pen to a single line, (which means that
- * _cairo_slope_compare cannot handle adjacent vertices in the pen
+ * _comac_slope_compare cannot handle adjacent vertices in the pen
  * since they have parallel slope).
  *
  * This test case tests degenerate pens in several directions and uses
@@ -48,56 +48,56 @@
  * pen doing slope comparisons.
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     /* First compress the pen to a vertical line. */
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_curve_to (cr, SIZE / 2, 0, SIZE, SIZE / 2, SIZE, SIZE);
-    cairo_save (cr);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_curve_to (cr, SIZE / 2, 0, SIZE, SIZE / 2, SIZE, SIZE);
+    comac_save (cr);
     {
-	cairo_scale (cr, 0.000001, 1.0);
-	cairo_stroke (cr);
+	comac_scale (cr, 0.000001, 1.0);
+	comac_stroke (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, PAD + SIZE, 0);
+    comac_translate (cr, PAD + SIZE, 0);
 
     /* Then compress the pen to a horizontal line. */
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_curve_to (cr, SIZE / 2, 0, SIZE, SIZE / 2, SIZE, SIZE);
-    cairo_save (cr);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_curve_to (cr, SIZE / 2, 0, SIZE, SIZE / 2, SIZE, SIZE);
+    comac_save (cr);
     {
-	cairo_scale (cr, 1.0, 0.000001);
-	cairo_stroke (cr);
+	comac_scale (cr, 1.0, 0.000001);
+	comac_stroke (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, PAD + SIZE, 0);
+    comac_translate (cr, PAD + SIZE, 0);
 
     /* Finally a line at an angle. */
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_curve_to (cr, SIZE / 2, 0, SIZE, SIZE / 2, SIZE, SIZE);
-    cairo_save (cr);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_curve_to (cr, SIZE / 2, 0, SIZE, SIZE / 2, SIZE, SIZE);
+    comac_save (cr);
     {
-	cairo_rotate (cr, M_PI / 4.0);
-	cairo_scale (cr, 0.000001, 1.0);
-	cairo_stroke (cr);
+	comac_rotate (cr, M_PI / 4.0);
+	comac_scale (cr, 0.000001, 1.0);
+	comac_stroke (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (degenerate_pen,
+COMAC_TEST (degenerate_pen,
 	    "Test round joins with a pen that's transformed to a line",
 	    "degenerate", /* keywords */
 	    NULL, /* requirements */

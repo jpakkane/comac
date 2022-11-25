@@ -23,50 +23,50 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-/* This test case exercises a "Potential division by zero in cairo_arc"
+/* This test case exercises a "Potential division by zero in comac_arc"
  * reported by Luiz Americo Pereira Camara <luizmed@oi.com.br>,
- * https://lists.cairographics.org/archives/cairo/2008-May/014054.html.
+ * https://lists.comacgraphics.org/archives/comac/2008-May/014054.html.
  */
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int n;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
 
-    cairo_set_line_width (cr, 5);
-    cairo_set_source_rgb (cr, 0, 1, 0);
+    comac_set_line_width (cr, 5);
+    comac_set_source_rgb (cr, 0, 1, 0);
     for (n = 0; n < 8; n++) {
 	double theta = n * 2 * M_PI / 8;
-	cairo_new_sub_path (cr);
-	cairo_arc (cr, 20, 20, 15, theta, theta);
-	cairo_close_path (cr);
+	comac_new_sub_path (cr);
+	comac_arc (cr, 20, 20, 15, theta, theta);
+	comac_close_path (cr);
     }
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_set_line_width (cr, 2);
-    cairo_set_source_rgb (cr, 0, 0, 1);
+    comac_set_line_width (cr, 2);
+    comac_set_source_rgb (cr, 0, 0, 1);
     for (n = 0; n < 8; n++) {
 	double theta = n * 2 * M_PI / 8;
-	cairo_move_to (cr, 20, 20);
-	cairo_arc (cr, 20, 20, 15, theta, theta);
+	comac_move_to (cr, 20, 20);
+	comac_arc (cr, 20, 20, 15, theta, theta);
     }
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_arc (cr, 20, 20, 2, 0, 2*M_PI);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_arc (cr, 20, 20, 2, 0, 2*M_PI);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (degenerate_arc,
+COMAC_TEST (degenerate_arc,
 	    "Tests the behaviour of degenerate arcs",
 	    "degenerate", /* keywords */
 	    NULL, /* requirements */

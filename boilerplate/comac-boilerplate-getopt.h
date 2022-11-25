@@ -48,7 +48,7 @@ extern int optind;
 extern int opterr;
 extern int optopt;
 
-int _cairo_getopt(int argc, char** argv, const char* optstr);
+int _comac_getopt(int argc, char** argv, const char* optstr);
 
 
 #ifdef __cplusplus

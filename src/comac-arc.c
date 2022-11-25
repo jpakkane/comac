@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -58,7 +58,7 @@
 	abs (error) =~ 1/2 * e
 
    Of course, this error value applies only for the particular spline
-   approximation that is used in _cairo_gstate_arc_segment.
+   approximation that is used in _comac_gstate_arc_segment.
 */
 static double
 _arc_error_normalized (double angle)
@@ -109,15 +109,15 @@ _arc_max_angle_for_tolerance_normalized (double tolerance)
 static int
 _arc_segments_needed (double	      angle,
 		      double	      radius,
-		      cairo_matrix_t *ctm,
+		      comac_matrix_t *ctm,
 		      double	      tolerance)
 {
     double major_axis, max_angle;
 
     /* the error is amplified by at most the length of the
-     * major axis of the circle; see cairo-pen.c for a more detailed analysis
+     * major axis of the circle; see comac-pen.c for a more detailed analysis
      * of this. */
-    major_axis = _cairo_matrix_transformed_circle_major_axis (ctm, radius);
+    major_axis = _comac_matrix_transformed_circle_major_axis (ctm, radius);
     max_angle = _arc_max_angle_for_tolerance_normalized (tolerance / major_axis);
 
     return ceil (fabs (angle) / max_angle);
@@ -149,7 +149,7 @@ _arc_segments_needed (double	      angle,
    _arc_error_normalized).
 */
 static void
-_cairo_arc_segment (cairo_t *cr,
+_comac_arc_segment (comac_t *cr,
 		    double   xc,
 		    double   yc,
 		    double   radius,
@@ -167,7 +167,7 @@ _cairo_arc_segment (cairo_t *cr,
 
     h = 4.0/3.0 * tan ((angle_B - angle_A) / 4.0);
 
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		    xc + r_cos_A - h * r_sin_A,
 		    yc + r_sin_A + h * r_cos_A,
 		    xc + r_cos_B + h * r_sin_B,
@@ -177,15 +177,15 @@ _cairo_arc_segment (cairo_t *cr,
 }
 
 static void
-_cairo_arc_in_direction (cairo_t	  *cr,
+_comac_arc_in_direction (comac_t	  *cr,
 			 double		   xc,
 			 double		   yc,
 			 double		   radius,
 			 double		   angle_min,
 			 double		   angle_max,
-			 cairo_direction_t dir)
+			 comac_direction_t dir)
 {
-    if (cairo_status (cr))
+    if (comac_status (cr))
         return;
 
     assert (angle_max >= angle_min);
@@ -199,36 +199,36 @@ _cairo_arc_in_direction (cairo_t	  *cr,
     /* Recurse if drawing arc larger than pi */
     if (angle_max - angle_min > M_PI) {
 	double angle_mid = angle_min + (angle_max - angle_min) / 2.0;
-	if (dir == CAIRO_DIRECTION_FORWARD) {
-	    _cairo_arc_in_direction (cr, xc, yc, radius,
+	if (dir == COMAC_DIRECTION_FORWARD) {
+	    _comac_arc_in_direction (cr, xc, yc, radius,
 				     angle_min, angle_mid,
 				     dir);
 
-	    _cairo_arc_in_direction (cr, xc, yc, radius,
+	    _comac_arc_in_direction (cr, xc, yc, radius,
 				     angle_mid, angle_max,
 				     dir);
 	} else {
-	    _cairo_arc_in_direction (cr, xc, yc, radius,
+	    _comac_arc_in_direction (cr, xc, yc, radius,
 				     angle_mid, angle_max,
 				     dir);
 
-	    _cairo_arc_in_direction (cr, xc, yc, radius,
+	    _comac_arc_in_direction (cr, xc, yc, radius,
 				     angle_min, angle_mid,
 				     dir);
 	}
     } else if (angle_max != angle_min) {
-	cairo_matrix_t ctm;
+	comac_matrix_t ctm;
 	int i, segments;
 	double step;
 
-	cairo_get_matrix (cr, &ctm);
+	comac_get_matrix (cr, &ctm);
 	segments = _arc_segments_needed (angle_max - angle_min,
 					 radius, &ctm,
-					 cairo_get_tolerance (cr));
+					 comac_get_tolerance (cr));
 	step = (angle_max - angle_min) / segments;
 	segments -= 1;
 
-	if (dir == CAIRO_DIRECTION_REVERSE) {
+	if (dir == COMAC_DIRECTION_REVERSE) {
 	    double t;
 
 	    t = angle_min;
@@ -238,27 +238,27 @@ _cairo_arc_in_direction (cairo_t	  *cr,
 	    step = -step;
 	}
 
-	cairo_line_to (cr,
+	comac_line_to (cr,
 		       xc + radius * cos (angle_min),
 		       yc + radius * sin (angle_min));
 
 	for (i = 0; i < segments; i++, angle_min += step) {
-	    _cairo_arc_segment (cr, xc, yc, radius,
+	    _comac_arc_segment (cr, xc, yc, radius,
 				angle_min, angle_min + step);
 	}
 
-	_cairo_arc_segment (cr, xc, yc, radius,
+	_comac_arc_segment (cr, xc, yc, radius,
 			    angle_min, angle_max);
     } else {
-	cairo_line_to (cr,
+	comac_line_to (cr,
 		       xc + radius * cos (angle_min),
 		       yc + radius * sin (angle_min));
     }
 }
 
 /**
- * _cairo_arc_path:
- * @cr: a cairo context
+ * _comac_arc_path:
+ * @cr: a comac context
  * @xc: X position of the center of the arc
  * @yc: Y position of the center of the arc
  * @radius: the radius of the arc
@@ -270,21 +270,21 @@ _cairo_arc_in_direction (cairo_t	  *cr,
  * tolerance and given the current transformation.
  **/
 void
-_cairo_arc_path (cairo_t *cr,
+_comac_arc_path (comac_t *cr,
 		 double	  xc,
 		 double	  yc,
 		 double	  radius,
 		 double	  angle1,
 		 double	  angle2)
 {
-    _cairo_arc_in_direction (cr, xc, yc,
+    _comac_arc_in_direction (cr, xc, yc,
 			     radius,
 			     angle1, angle2,
-			     CAIRO_DIRECTION_FORWARD);
+			     COMAC_DIRECTION_FORWARD);
 }
 
 /**
- * _cairo_arc_path_negative:
+ * _comac_arc_path_negative:
  * @xc: X position of the center of the arc
  * @yc: Y position of the center of the arc
  * @radius: the radius of the arc
@@ -300,15 +300,15 @@ _cairo_arc_path (cairo_t *cr,
  * transformation.
  **/
 void
-_cairo_arc_path_negative (cairo_t *cr,
+_comac_arc_path_negative (comac_t *cr,
 			  double   xc,
 			  double   yc,
 			  double   radius,
 			  double   angle1,
 			  double   angle2)
 {
-    _cairo_arc_in_direction (cr, xc, yc,
+    _comac_arc_in_direction (cr, xc, yc,
 			     radius,
 			     angle2, angle1,
-			     CAIRO_DIRECTION_REVERSE);
+			     COMAC_DIRECTION_REVERSE);
 }

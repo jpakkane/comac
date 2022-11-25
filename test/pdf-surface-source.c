@@ -30,22 +30,22 @@
 
 #define BASENAME "pdf-surface-source.out"
 
-static cairo_surface_t *
+static comac_surface_t *
 create_source_surface (int size)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     char *filename;
-    const char *path = cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
+    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
     xasprintf (&filename, "%s/%s.pdf", path, BASENAME);
-    surface = cairo_pdf_surface_create (filename, size, size);
-    cairo_surface_set_fallback_resolution (surface, 72., 72.);
+    surface = comac_pdf_surface_create (filename, size, size);
+    comac_surface_set_fallback_resolution (surface, 72., 72.);
     free (filename);
 
     return surface;
 }
 
-CAIRO_TEST (pdf_surface_source,
+COMAC_TEST (pdf_surface_source,
 	    "Test using a PDF surface as the source",
 	    "source", /* keywords */
 	    NULL, /* requirements */

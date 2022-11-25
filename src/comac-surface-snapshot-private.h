@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation.
  *
@@ -33,19 +33,19 @@
  *      Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_SURFACE_SNAPSHOT_PRIVATE_H
-#define CAIRO_SURFACE_SNAPSHOT_PRIVATE_H
+#ifndef COMAC_SURFACE_SNAPSHOT_PRIVATE_H
+#define COMAC_SURFACE_SNAPSHOT_PRIVATE_H
 
 #include "comac-mutex-private.h"
 #include "comac-surface-private.h"
 #include "comac-surface-backend-private.h"
 
-struct _cairo_surface_snapshot {
-    cairo_surface_t base;
+struct _comac_surface_snapshot {
+    comac_surface_t base;
 
-    cairo_mutex_t mutex;
-    cairo_surface_t *target;
-    cairo_surface_t *clone;
+    comac_mutex_t mutex;
+    comac_surface_t *target;
+    comac_surface_t *clone;
 };
 
-#endif /* CAIRO_SURFACE_SNAPSHOT_PRIVATE_H */
+#endif /* COMAC_SURFACE_SNAPSHOT_PRIVATE_H */

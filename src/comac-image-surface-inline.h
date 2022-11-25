@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,62 +35,62 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_IMAGE_SURFACE_INLINE_H
-#define CAIRO_IMAGE_SURFACE_INLINE_H
+#ifndef COMAC_IMAGE_SURFACE_INLINE_H
+#define COMAC_IMAGE_SURFACE_INLINE_H
 
 #include "comac-surface-private.h"
 #include "comac-image-surface-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-static inline cairo_image_surface_t *
-_cairo_image_surface_create_in_error (cairo_status_t status)
+static inline comac_image_surface_t *
+_comac_image_surface_create_in_error (comac_status_t status)
 {
-    return (cairo_image_surface_t *) _cairo_surface_create_in_error (status);
+    return (comac_image_surface_t *) _comac_surface_create_in_error (status);
 }
 
 static inline void
-_cairo_image_surface_set_parent (cairo_image_surface_t *image,
-				 cairo_surface_t *parent)
+_comac_image_surface_set_parent (comac_image_surface_t *image,
+				 comac_surface_t *parent)
 {
     image->parent = parent;
 }
 
-static inline cairo_bool_t
-_cairo_image_surface_is_clone (cairo_image_surface_t *image)
+static inline comac_bool_t
+_comac_image_surface_is_clone (comac_image_surface_t *image)
 {
     return image->parent != NULL;
 }
 
 /**
- * _cairo_surface_is_image:
- * @surface: a #cairo_surface_t
+ * _comac_surface_is_image:
+ * @surface: a #comac_surface_t
  *
- * Checks if a surface is an #cairo_image_surface_t
+ * Checks if a surface is an #comac_image_surface_t
  *
  * Return value: %TRUE if the surface is an image surface
  **/
-static inline cairo_bool_t
-_cairo_surface_is_image (const cairo_surface_t *surface)
+static inline comac_bool_t
+_comac_surface_is_image (const comac_surface_t *surface)
 {
-    /* _cairo_surface_nil sets a NULL backend so be safe */
-    return surface->backend && surface->backend->type == CAIRO_SURFACE_TYPE_IMAGE;
+    /* _comac_surface_nil sets a NULL backend so be safe */
+    return surface->backend && surface->backend->type == COMAC_SURFACE_TYPE_IMAGE;
 }
 
 /**
- * _cairo_surface_is_image_source:
- * @surface: a #cairo_surface_t
+ * _comac_surface_is_image_source:
+ * @surface: a #comac_surface_t
  *
- * Checks if a surface is an #cairo_image_source_t
+ * Checks if a surface is an #comac_image_source_t
  *
  * Return value: %TRUE if the surface is an image source
  **/
-static inline cairo_bool_t
-_cairo_surface_is_image_source (const cairo_surface_t *surface)
+static inline comac_bool_t
+_comac_surface_is_image_source (const comac_surface_t *surface)
 {
-    return surface->backend == &_cairo_image_source_backend;
+    return surface->backend == &_comac_image_source_backend;
 }
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_IMAGE_SURFACE_INLINE_H */
+#endif /* COMAC_IMAGE_SURFACE_INLINE_H */

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,16 +34,16 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#ifndef CAIRO_RECORDING_SURFACE_INLINE_H
-#define CAIRO_RECORDING_SURFACE_INLINE_H
+#ifndef COMAC_RECORDING_SURFACE_INLINE_H
+#define COMAC_RECORDING_SURFACE_INLINE_H
 
 #include "comac-recording-surface-private.h"
 
-static inline cairo_bool_t
-_cairo_recording_surface_get_bounds (cairo_surface_t *surface,
-				     cairo_rectangle_t *extents)
+static inline comac_bool_t
+_comac_recording_surface_get_bounds (comac_surface_t *surface,
+				     comac_rectangle_t *extents)
 {
-    cairo_recording_surface_t *recording = (cairo_recording_surface_t *)surface;
+    comac_recording_surface_t *recording = (comac_recording_surface_t *)surface;
     if (recording->unbounded)
 	return FALSE;
 
@@ -52,17 +52,17 @@ _cairo_recording_surface_get_bounds (cairo_surface_t *surface,
 }
 
 /**
- * _cairo_surface_is_recording:
- * @surface: a #cairo_surface_t
+ * _comac_surface_is_recording:
+ * @surface: a #comac_surface_t
  *
- * Checks if a surface is a #cairo_recording_surface_t
+ * Checks if a surface is a #comac_recording_surface_t
  *
  * Return value: %TRUE if the surface is a recording surface
  **/
-static inline cairo_bool_t
-_cairo_surface_is_recording (const cairo_surface_t *surface)
+static inline comac_bool_t
+_comac_surface_is_recording (const comac_surface_t *surface)
 {
-    return surface->backend->type == CAIRO_SURFACE_TYPE_RECORDING;
+    return surface->backend->type == COMAC_SURFACE_TYPE_RECORDING;
 }
 
-#endif /* CAIRO_RECORDING_SURFACE_INLINE_H */
+#endif /* COMAC_RECORDING_SURFACE_INLINE_H */

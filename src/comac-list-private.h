@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -34,15 +34,15 @@
  *
  */
 
-#ifndef CAIRO_LIST_PRIVATE_H
-#define CAIRO_LIST_PRIVATE_H
+#ifndef COMAC_LIST_PRIVATE_H
+#define COMAC_LIST_PRIVATE_H
 
 #include "comac-compiler-private.h"
 
 /* Basic circular, doubly linked list implementation */
 
-typedef struct _cairo_list {
-    struct _cairo_list *next, *prev;
-} cairo_list_t;
+typedef struct _comac_list {
+    struct _comac_list *next, *prev;
+} comac_list_t;
 
-#endif /* CAIRO_LIST_PRIVATE_H */
+#endif /* COMAC_LIST_PRIVATE_H */

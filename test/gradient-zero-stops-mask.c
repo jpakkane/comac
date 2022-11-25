@@ -33,25 +33,25 @@
  * gradients with no stop.
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pat;
+    comac_pattern_t *pat;
 
-    cairo_set_source_rgb (cr, 1., 0., 0.);
+    comac_set_source_rgb (cr, 1., 0., 0.);
 
-    pat = cairo_pattern_create_linear (0., 0., 1., 1.);
-    cairo_mask (cr, pat);
-    cairo_pattern_destroy (pat);
+    pat = comac_pattern_create_linear (0., 0., 1., 1.);
+    comac_mask (cr, pat);
+    comac_pattern_destroy (pat);
 
-    pat = cairo_pattern_create_radial (0., 0., 0., 1., 1., 1.);
-    cairo_mask (cr, pat);
-    cairo_pattern_destroy (pat);
+    pat = comac_pattern_create_radial (0., 0., 0., 1., 1., 1.);
+    comac_mask (cr, pat);
+    comac_pattern_destroy (pat);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (gradient_zero_stops_mask,
+COMAC_TEST (gradient_zero_stops_mask,
 	    "Verifies that gradients with no stops are considered clear.",
 	    "gradient", /* keywords */
 	    NULL, /* requirements */

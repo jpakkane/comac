@@ -32,54 +32,54 @@
 #define WIDTH		16
 
 static void
-line (cairo_t *cr)
+line (comac_t *cr)
 {
-    cairo_move_to (cr, PAD, 0.0);
-    cairo_line_to (cr, WIDTH - PAD, 0.0);
+    comac_move_to (cr, PAD, 0.0);
+    comac_line_to (cr, WIDTH - PAD, 0.0);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double dash = 2.0;
 
     /* We draw in black, so paint white first. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
+    comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    cairo_translate (cr, 0.0, PAD + LINE_WIDTH / 2);
+    comac_translate (cr, 0.0, PAD + LINE_WIDTH / 2);
 
     /* First draw a solid line... */
     line (cr);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 0.0, LINE_WIDTH + PAD);
+    comac_translate (cr, 0.0, LINE_WIDTH + PAD);
 
     /* then a dashed line... */
-    cairo_set_dash (cr, &dash, 1, 0.0);
+    comac_set_dash (cr, &dash, 1, 0.0);
     line (cr);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 0.0, LINE_WIDTH + PAD);
+    comac_translate (cr, 0.0, LINE_WIDTH + PAD);
 
     /* back to solid... */
-    cairo_set_dash (cr, NULL, 0, 0.0);
+    comac_set_dash (cr, NULL, 0, 0.0);
     line (cr);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 0.0, LINE_WIDTH + PAD);
+    comac_translate (cr, 0.0, LINE_WIDTH + PAD);
 
     /* and finally, back to dashed. */
-    cairo_set_dash (cr, &dash, 1, 0.0);
+    comac_set_dash (cr, &dash, 1, 0.0);
     line (cr);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (dash_no_dash,
+COMAC_TEST (dash_no_dash,
 	    "Tests that we can actually turn dashing on and off again",
 	    "dash, stroke", /* keywords */
 	    NULL, /* requirements */

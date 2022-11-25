@@ -30,42 +30,42 @@
 #define WIDTH 48
 #define HEIGHT 52
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int sx, sy;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_translate(cr, 2, 2);
+    comac_translate(cr, 2, 2);
 
     for (sx = 1; sx <= 4; sx++) {
-	cairo_save (cr);
+	comac_save (cr);
 	for (sy = 1; sy <= 4; sy++) {
-	    cairo_rectangle (cr, 0, 0, sx, sy);
-	    cairo_fill (cr);
+	    comac_rectangle (cr, 0, 0, sx, sy);
+	    comac_fill (cr);
 
-	    cairo_rectangle (cr, sx + 1 + .5, 0, sx, sy);
-	    cairo_fill (cr);
+	    comac_rectangle (cr, sx + 1 + .5, 0, sx, sy);
+	    comac_fill (cr);
 
-	    cairo_rectangle (cr, 0, sy + 1 + .5, sx, sy);
-	    cairo_fill (cr);
+	    comac_rectangle (cr, 0, sy + 1 + .5, sx, sy);
+	    comac_fill (cr);
 
-	    cairo_rectangle (cr, sx + 1 + .5, sy + 1 + .5, sx-.5, sy-.5);
-	    cairo_fill (cr);
+	    comac_rectangle (cr, sx + 1 + .5, sy + 1 + .5, sx-.5, sy-.5);
+	    comac_fill (cr);
 
-	    cairo_translate (cr, 2*sx + 3, 0);
+	    comac_translate (cr, 2*sx + 3, 0);
 	}
-	cairo_restore (cr);
-	cairo_translate (cr, 0, 2*sy + 3);
+	comac_restore (cr);
+	comac_translate (cr, 0, 2*sy + 3);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (unaligned_box,
+COMAC_TEST (unaligned_box,
 	    "Tests handling of various boundary conditions for unaligned rectangles.",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

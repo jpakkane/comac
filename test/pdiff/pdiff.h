@@ -27,12 +27,12 @@ typedef int bool;
 #define false 0
 #endif
 
-/* Image comparison metric using Yee's method (and a cairo interface)
+/* Image comparison metric using Yee's method (and a comac interface)
  * References: A Perceptual Metric for Production Testing, Hector Yee, Journal of Graphics Tools 2004
  */
 int
-pdiff_compare (cairo_surface_t *surface_a,
-	       cairo_surface_t *surface_b,
+pdiff_compare (comac_surface_t *surface_a,
+	       comac_surface_t *surface_b,
 	       double gamma,
 	       double luminance,
 	       double field_of_view);

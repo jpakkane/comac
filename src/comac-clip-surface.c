@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -28,7 +28,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -49,35 +49,35 @@
 #include "comac-composite-rectangles-private.h"
 #include "comac-region-private.h"
 
-cairo_status_t
-_cairo_clip_combine_with_surface (const cairo_clip_t *clip,
-				  cairo_surface_t *dst,
+comac_status_t
+_comac_clip_combine_with_surface (const comac_clip_t *clip,
+				  comac_surface_t *dst,
 				  int dst_x, int dst_y)
 {
-    cairo_clip_path_t *copy_path;
-    cairo_clip_path_t *clip_path;
-    cairo_clip_t *copy;
-    cairo_status_t status = CAIRO_STATUS_SUCCESS;
+    comac_clip_path_t *copy_path;
+    comac_clip_path_t *clip_path;
+    comac_clip_t *copy;
+    comac_status_t status = COMAC_STATUS_SUCCESS;
 
-    copy = _cairo_clip_copy_with_translation (clip, -dst_x, -dst_y);
+    copy = _comac_clip_copy_with_translation (clip, -dst_x, -dst_y);
     copy_path = copy->path;
     copy->path = NULL;
 
     if (copy->boxes) {
-	status = _cairo_surface_paint (dst,
-				       CAIRO_OPERATOR_IN,
-				       &_cairo_pattern_white.base,
+	status = _comac_surface_paint (dst,
+				       COMAC_OPERATOR_IN,
+				       &_comac_pattern_white.base,
 				       copy);
     }
 
     clip = NULL;
-    if (_cairo_clip_is_region (copy))
+    if (_comac_clip_is_region (copy))
 	clip = copy;
     clip_path = copy_path;
-    while (status == CAIRO_STATUS_SUCCESS && clip_path) {
-	status = _cairo_surface_fill (dst,
-				      CAIRO_OPERATOR_IN,
-				      &_cairo_pattern_white.base,
+    while (status == COMAC_STATUS_SUCCESS && clip_path) {
+	status = _comac_surface_fill (dst,
+				      COMAC_OPERATOR_IN,
+				      &_comac_pattern_white.base,
 				      &clip_path->path,
 				      clip_path->fill_rule,
 				      clip_path->tolerance,
@@ -87,106 +87,106 @@ _cairo_clip_combine_with_surface (const cairo_clip_t *clip,
     }
 
     copy->path = copy_path;
-    _cairo_clip_destroy (copy);
+    _comac_clip_destroy (copy);
     return status;
 }
 
-static cairo_status_t
-_cairo_path_fixed_add_box (cairo_path_fixed_t *path,
-			   const cairo_box_t *box,
-			   cairo_fixed_t fx,
-			   cairo_fixed_t fy)
+static comac_status_t
+_comac_path_fixed_add_box (comac_path_fixed_t *path,
+			   const comac_box_t *box,
+			   comac_fixed_t fx,
+			   comac_fixed_t fy)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    status = _cairo_path_fixed_move_to (path, box->p1.x + fx, box->p1.y + fy);
+    status = _comac_path_fixed_move_to (path, box->p1.x + fx, box->p1.y + fy);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_path_fixed_line_to (path, box->p2.x + fx, box->p1.y + fy);
+    status = _comac_path_fixed_line_to (path, box->p2.x + fx, box->p1.y + fy);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_path_fixed_line_to (path, box->p2.x + fx, box->p2.y + fy);
+    status = _comac_path_fixed_line_to (path, box->p2.x + fx, box->p2.y + fy);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_path_fixed_line_to (path, box->p1.x + fx, box->p2.y + fy);
+    status = _comac_path_fixed_line_to (path, box->p1.x + fx, box->p2.y + fy);
     if (unlikely (status))
 	return status;
 
-    return _cairo_path_fixed_close_path (path);
+    return _comac_path_fixed_close_path (path);
 }
 
-cairo_surface_t *
-_cairo_clip_get_surface (const cairo_clip_t *clip,
-			 cairo_surface_t *target,
+comac_surface_t *
+_comac_clip_get_surface (const comac_clip_t *clip,
+			 comac_surface_t *target,
 			 int *tx, int *ty)
 {
-    cairo_surface_t *surface;
-    cairo_status_t status;
-    cairo_clip_t *copy, *region;
-    cairo_clip_path_t *copy_path, *clip_path;
+    comac_surface_t *surface;
+    comac_status_t status;
+    comac_clip_t *copy, *region;
+    comac_clip_path_t *copy_path, *clip_path;
 
     if (clip->num_boxes) {
-	cairo_path_fixed_t path;
+	comac_path_fixed_t path;
 	int i;
 
-	surface = _cairo_surface_create_scratch (target,
-						 CAIRO_CONTENT_ALPHA,
+	surface = _comac_surface_create_scratch (target,
+						 COMAC_CONTENT_ALPHA,
 						 clip->extents.width,
 						 clip->extents.height,
-						 CAIRO_COLOR_TRANSPARENT);
+						 COMAC_COLOR_TRANSPARENT);
 	if (unlikely (surface->status))
 	    return surface;
 
-	_cairo_path_fixed_init (&path);
-	status = CAIRO_STATUS_SUCCESS;
-	for (i = 0; status == CAIRO_STATUS_SUCCESS && i < clip->num_boxes; i++) {
-	    status = _cairo_path_fixed_add_box (&path, &clip->boxes[i],
-						-_cairo_fixed_from_int (clip->extents.x),
-						-_cairo_fixed_from_int (clip->extents.y));
+	_comac_path_fixed_init (&path);
+	status = COMAC_STATUS_SUCCESS;
+	for (i = 0; status == COMAC_STATUS_SUCCESS && i < clip->num_boxes; i++) {
+	    status = _comac_path_fixed_add_box (&path, &clip->boxes[i],
+						-_comac_fixed_from_int (clip->extents.x),
+						-_comac_fixed_from_int (clip->extents.y));
 	}
-	if (status == CAIRO_STATUS_SUCCESS)
-	    status = _cairo_surface_fill (surface,
-					  CAIRO_OPERATOR_ADD,
-					  &_cairo_pattern_white.base,
+	if (status == COMAC_STATUS_SUCCESS)
+	    status = _comac_surface_fill (surface,
+					  COMAC_OPERATOR_ADD,
+					  &_comac_pattern_white.base,
 					  &path,
-					  CAIRO_FILL_RULE_WINDING,
+					  COMAC_FILL_RULE_WINDING,
 					  1.,
-					  CAIRO_ANTIALIAS_DEFAULT,
+					  COMAC_ANTIALIAS_DEFAULT,
 					  NULL);
-	_cairo_path_fixed_fini (&path);
+	_comac_path_fixed_fini (&path);
 	if (unlikely (status)) {
-	    cairo_surface_destroy (surface);
-	    return _cairo_surface_create_in_error (status);
+	    comac_surface_destroy (surface);
+	    return _comac_surface_create_in_error (status);
 	}
     } else {
-	surface = _cairo_surface_create_scratch (target,
-						 CAIRO_CONTENT_ALPHA,
+	surface = _comac_surface_create_scratch (target,
+						 COMAC_CONTENT_ALPHA,
 						 clip->extents.width,
 						 clip->extents.height,
-						 CAIRO_COLOR_WHITE);
+						 COMAC_COLOR_WHITE);
 	if (unlikely (surface->status))
 	    return surface;
     }
 
-    copy = _cairo_clip_copy_with_translation (clip,
+    copy = _comac_clip_copy_with_translation (clip,
 					      -clip->extents.x,
 					      -clip->extents.y);
     copy_path = copy->path;
     copy->path = NULL;
 
     region = copy;
-    if (! _cairo_clip_is_region (copy))
-	region = _cairo_clip_copy_region (copy);
+    if (! _comac_clip_is_region (copy))
+	region = _comac_clip_copy_region (copy);
 
-    status = CAIRO_STATUS_SUCCESS;
+    status = COMAC_STATUS_SUCCESS;
     clip_path = copy_path;
-    while (status == CAIRO_STATUS_SUCCESS && clip_path) {
-	status = _cairo_surface_fill (surface,
-				      CAIRO_OPERATOR_IN,
-				      &_cairo_pattern_white.base,
+    while (status == COMAC_STATUS_SUCCESS && clip_path) {
+	status = _comac_surface_fill (surface,
+				      COMAC_OPERATOR_IN,
+				      &_comac_pattern_white.base,
 				      &clip_path->path,
 				      clip_path->fill_rule,
 				      clip_path->tolerance,
@@ -196,13 +196,13 @@ _cairo_clip_get_surface (const cairo_clip_t *clip,
     }
 
     copy->path = copy_path;
-    _cairo_clip_destroy (copy);
+    _comac_clip_destroy (copy);
     if (region != copy)
-	_cairo_clip_destroy (region);
+	_comac_clip_destroy (region);
 
     if (unlikely (status)) {
-	cairo_surface_destroy (surface);
-	return _cairo_surface_create_in_error (status);
+	comac_surface_destroy (surface);
+	return _comac_surface_create_in_error (status);
     }
 
     *tx = clip->extents.x;
@@ -210,30 +210,30 @@ _cairo_clip_get_surface (const cairo_clip_t *clip,
     return surface;
 }
 
-cairo_surface_t *
-_cairo_clip_get_image (const cairo_clip_t *clip,
-		       cairo_surface_t *target,
-		       const cairo_rectangle_int_t *extents)
+comac_surface_t *
+_comac_clip_get_image (const comac_clip_t *clip,
+		       comac_surface_t *target,
+		       const comac_rectangle_int_t *extents)
 {
-    cairo_surface_t *surface;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_status_t status;
 
-    surface = cairo_surface_create_similar_image (target,
-						  CAIRO_FORMAT_A8,
+    surface = comac_surface_create_similar_image (target,
+						  COMAC_FORMAT_A8,
 						  extents->width,
 						  extents->height);
     if (unlikely (surface->status))
 	return surface;
 
-    status = _cairo_surface_paint (surface, CAIRO_OPERATOR_SOURCE,
-				   &_cairo_pattern_white.base, NULL);
-    if (likely (status == CAIRO_STATUS_SUCCESS))
-	status = _cairo_clip_combine_with_surface (clip, surface,
+    status = _comac_surface_paint (surface, COMAC_OPERATOR_SOURCE,
+				   &_comac_pattern_white.base, NULL);
+    if (likely (status == COMAC_STATUS_SUCCESS))
+	status = _comac_clip_combine_with_surface (clip, surface,
 						   extents->x, extents->y);
 
     if (unlikely (status)) {
-	cairo_surface_destroy (surface);
-	surface = _cairo_surface_create_in_error (status);
+	comac_surface_destroy (surface);
+	surface = _comac_surface_create_in_error (status);
     }
 
     return surface;

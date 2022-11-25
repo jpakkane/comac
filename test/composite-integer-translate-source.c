@@ -33,30 +33,30 @@
 
 static const char *png_filename = "romedalen.png";
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_surface_t *image;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_surface_t *image;
 
-    image = cairo_test_create_surface_from_png (ctx, png_filename);
+    image = comac_test_create_surface_from_png (ctx, png_filename);
 
-    cairo_set_source_rgba (cr, 0, 0, 0, 1);
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_fill (cr);
+    comac_set_source_rgba (cr, 0, 0, 0, 1);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_fill (cr);
 
-    cairo_translate (cr, OFFSET, OFFSET);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_surface (cr, image, 0, 0);
-    cairo_rectangle (cr, 0, 0, SIZE - OFFSET, SIZE - OFFSET);
-    cairo_fill (cr);
+    comac_translate (cr, OFFSET, OFFSET);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_surface (cr, image, 0, 0);
+    comac_rectangle (cr, 0, 0, SIZE - OFFSET, SIZE - OFFSET);
+    comac_fill (cr);
 
-    cairo_surface_destroy (image);
+    comac_surface_destroy (image);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (composite_integer_translate_source,
+COMAC_TEST (composite_integer_translate_source,
 	    "Test simple compositing: integer-translation 32->32 SOURCE",
 	    "composite", /* keywords */
 	    NULL, /* requirements */

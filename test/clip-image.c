@@ -30,64 +30,64 @@
 
 static const char *png_filename = "romedalen.png";
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_surface_t *image;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_surface_t *image;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    image = cairo_test_create_surface_from_png (ctx, png_filename);
-    cairo_set_source_surface (cr, image, 0, 0);
-    cairo_surface_destroy (image);
+    image = comac_test_create_surface_from_png (ctx, png_filename);
+    comac_set_source_surface (cr, image, 0, 0);
+    comac_surface_destroy (image);
 
     /* simple clip */
-    cairo_save (cr);
-    cairo_rectangle (cr, 2, 2, 16, 16);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_rectangle (cr, 2, 2, 16, 16);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 
     /* unaligned clip */
-    cairo_save (cr);
-    cairo_rectangle (cr, 2.5, 2.5, 15, 15);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_rectangle (cr, 2.5, 2.5, 15, 15);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, -WIDTH, HEIGHT);
+    comac_translate (cr, -WIDTH, HEIGHT);
 
     /* aligned-clip */
-    cairo_save (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_rectangle (cr, 3, 3, 10, 10);
-    cairo_rectangle (cr, 7, 7, 10, 10);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_rectangle (cr, 3, 3, 10, 10);
+    comac_rectangle (cr, 7, 7, 10, 10);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 
     /* force a clip-mask */
-    cairo_save (cr);
-    cairo_arc (cr, 10, 10, 10, 0, 2 * M_PI);
-    cairo_new_sub_path (cr);
-    cairo_arc_negative (cr, 10, 10, 5, 2 * M_PI, 0);
-    cairo_new_sub_path (cr);
-    cairo_arc (cr, 10, 10, 2, 0, 2 * M_PI);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_arc (cr, 10, 10, 10, 0, 2 * M_PI);
+    comac_new_sub_path (cr);
+    comac_arc_negative (cr, 10, 10, 5, 2 * M_PI, 0);
+    comac_new_sub_path (cr);
+    comac_arc (cr, 10, 10, 2, 0, 2 * M_PI);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_image,
+COMAC_TEST (clip_image,
 	    "Tests painting an image through complex clips.",
 	    "clip, paint", /* keywords */
 	    NULL, /* requirements */

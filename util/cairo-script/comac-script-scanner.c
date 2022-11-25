@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -135,7 +135,7 @@ fprintf_obj (FILE *stream, csi_t *ctx, const csi_object_t *obj)
 		     obj->datum.string->len, obj->datum.string->deflate, obj->datum.string->method);
 	    break;
 
-	    /* cairo */
+	    /* comac */
 	case CSI_OBJECT_TYPE_CONTEXT:
 	    fprintf (stream, "context\n");
 	    break;
@@ -167,10 +167,10 @@ scan_execute (csi_t *ctx, csi_object_t *obj)
     return ctx->scanner.execute (ctx, obj);
 }
 
-static cairo_status_t
+static comac_status_t
 buffer_init (csi_t *ctx, csi_buffer_t *buffer)
 {
-    cairo_status_t status = CSI_STATUS_SUCCESS;
+    comac_status_t status = CSI_STATUS_SUCCESS;
 
     buffer->size = 16384;
     buffer->base = _csi_alloc (ctx, buffer->size);
@@ -415,7 +415,7 @@ _csi_parse_number (csi_object_t *obj, const char *s, int len)
 static void
 token_end (csi_t *ctx, csi_scanner_t *scan, csi_file_t *src)
 {
-    cairo_status_t status;
+    comac_status_t status;
     char *s;
     csi_object_t obj;
     int len;
@@ -524,7 +524,7 @@ static void
 string_end (csi_t *ctx, csi_scanner_t *scan)
 {
     csi_object_t obj;
-    cairo_status_t status;
+    comac_status_t status;
 
     status = csi_string_new (ctx,
 			     &obj,
@@ -578,7 +578,7 @@ static void
 hex_end (csi_t *ctx, csi_scanner_t *scan)
 {
     csi_object_t obj;
-    cairo_status_t status;
+    comac_status_t status;
 
     if (scan->accumulator_count)
 	hex_add (ctx, scan, '0');
@@ -630,10 +630,10 @@ base85_add (csi_t *ctx, csi_scanner_t *scan, int c)
 }
 
 static void
-base85_end (csi_t *ctx, csi_scanner_t *scan, cairo_bool_t deflate)
+base85_end (csi_t *ctx, csi_scanner_t *scan, comac_bool_t deflate)
 {
     csi_object_t obj;
-    cairo_status_t status;
+    comac_status_t status;
 
     buffer_check (ctx, scan, 4);
 
@@ -743,7 +743,7 @@ static void
 base64_end (csi_t *ctx, csi_scanner_t *scan)
 {
     csi_object_t obj;
-    cairo_status_t status;
+    comac_status_t status;
 
     switch (scan->accumulator_count) {
     case 0:
@@ -1031,7 +1031,7 @@ scan_none:
 	}
 
 	if (obj.type != CSI_OBJECT_TYPE_NULL) {
-	    cairo_status_t status;
+	    comac_status_t status;
 
 	    if (scan->build_procedure.type != CSI_OBJECT_TYPE_NULL) {
 		status = csi_array_append (ctx,
@@ -1416,7 +1416,7 @@ _csi_scan_file (csi_t *ctx, csi_file_t *src)
 
 struct _translate_closure {
     csi_dictionary_t *opcodes;
-    cairo_write_func_t write_func;
+    comac_write_func_t write_func;
     void *closure;
 };
 
@@ -1872,7 +1872,7 @@ FAIL:
 csi_status_t
 _csi_translate_file (csi_t *ctx,
 	             csi_file_t *file,
-		     cairo_write_func_t write_func,
+		     comac_write_func_t write_func,
 		     void *closure)
 {
     csi_status_t status;

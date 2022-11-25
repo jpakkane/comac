@@ -37,28 +37,28 @@
 
 #define RADIUS 50
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* fill with green so RGB and RGBA tests can share the ref image */
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_paint (cr);
 
     /* red to see eventual bugs immediately */
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
     /* stroke 3/4 of a circle where the last quarter would be this
      * reference image. Keep just a 1 pixel border. Use a huge line
      * width (twice the circle's radius to get it filled completely).
      */
-    cairo_set_line_width (cr, 2 * RADIUS);
-    cairo_arc (cr, 1, RADIUS - 1, RADIUS, 0, - M_PI / 2.0);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 2 * RADIUS);
+    comac_arc (cr, 1, RADIUS - 1, RADIUS, 0, - M_PI / 2.0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (line_width_tolerance,
+COMAC_TEST (line_width_tolerance,
 	    "Test interaction of line width and tolerance when stroking arcs",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

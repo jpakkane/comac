@@ -25,48 +25,48 @@
  *         Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef _CAIRO_TEST_PRIVATE_H_
-#define _CAIRO_TEST_PRIVATE_H_
+#ifndef _COMAC_TEST_PRIVATE_H_
+#define _COMAC_TEST_PRIVATE_H_
 
 #include "comac-test.h"
 
-/* For communication between the core components of cairo-test and not
+/* For communication between the core components of comac-test and not
  * for the tests themselves.
  */
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 typedef enum {
     DIRECT,
     SIMILAR
-} cairo_test_similar_t;
+} comac_test_similar_t;
 
-cairo_test_similar_t
-cairo_test_target_has_similar (const cairo_test_context_t *ctx,
-			       const cairo_boilerplate_target_t *target);
+comac_test_similar_t
+comac_test_target_has_similar (const comac_test_context_t *ctx,
+			       const comac_boilerplate_target_t *target);
 
-cairo_test_status_t
-_cairo_test_context_run_for_target (cairo_test_context_t *ctx,
-				    const cairo_boilerplate_target_t *target,
-				    cairo_bool_t similar,
+comac_test_status_t
+_comac_test_context_run_for_target (comac_test_context_t *ctx,
+				    const comac_boilerplate_target_t *target,
+				    comac_bool_t similar,
 				    int dev_offset, int dev_scale);
 
 void
-_cairo_test_context_init_for_test (cairo_test_context_t *ctx,
-				   const cairo_test_context_t *parent,
-				   const cairo_test_t *test);
+_comac_test_context_init_for_test (comac_test_context_t *ctx,
+				   const comac_test_context_t *parent,
+				   const comac_test_t *test);
 
 void
-cairo_test_init (cairo_test_context_t *ctx,
+comac_test_init (comac_test_context_t *ctx,
 		 const char *test_name,
 		 const char *output);
 
 void
-cairo_test_fini (cairo_test_context_t *ctx);
+comac_test_fini (comac_test_context_t *ctx);
 
 void
-_cairo_test_runner_register_tests (void);
+_comac_test_runner_register_tests (void);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* _CAIRO_TEST_PRIVATE_H_ */
+#endif /* _COMAC_TEST_PRIVATE_H_ */

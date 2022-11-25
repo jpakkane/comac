@@ -25,60 +25,60 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *similar;
-    cairo_surface_t *region;
-    cairo_t *cr_region;
+    comac_surface_t *similar;
+    comac_surface_t *region;
+    comac_t *cr_region;
 
-    cairo_set_source_rgb (cr, .5, .5, .5);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, .5, .5, .5);
+    comac_paint (cr);
 
-    similar = cairo_surface_create_similar (cairo_get_target (cr),
-					    CAIRO_CONTENT_COLOR,
+    similar = comac_surface_create_similar (comac_get_target (cr),
+					    COMAC_CONTENT_COLOR,
 					    60, 60);
-    cr_region = cairo_create (similar);
-    cairo_surface_destroy (similar);
+    cr_region = comac_create (similar);
+    comac_surface_destroy (similar);
 
-    cairo_set_source_rgb (cr_region, .5, .5, .0);
-    cairo_paint (cr_region);
-    similar = cairo_surface_reference (cairo_get_target (cr_region));
-    cairo_destroy (cr_region);
+    comac_set_source_rgb (cr_region, .5, .5, .0);
+    comac_paint (cr_region);
+    similar = comac_surface_reference (comac_get_target (cr_region));
+    comac_destroy (cr_region);
 
     /* fill the centre */
-    region = cairo_surface_create_for_rectangle (similar, 20, 20, 20, 20);
-    cairo_surface_destroy (similar);
+    region = comac_surface_create_for_rectangle (similar, 20, 20, 20, 20);
+    comac_surface_destroy (similar);
 
-    cr_region = cairo_create (region);
-    cairo_surface_destroy (region);
+    cr_region = comac_create (region);
+    comac_surface_destroy (region);
 
-    cairo_set_source_rgb (cr_region, 1, 1, 1);
-    cairo_rectangle (cr_region, 0, 0, 10, 10);
-    cairo_fill (cr_region);
+    comac_set_source_rgb (cr_region, 1, 1, 1);
+    comac_rectangle (cr_region, 0, 0, 10, 10);
+    comac_fill (cr_region);
 
-    cairo_set_source_rgb (cr_region, 1, 0, 0);
-    cairo_rectangle (cr_region, 10, 0, 10, 10);
-    cairo_fill (cr_region);
+    comac_set_source_rgb (cr_region, 1, 0, 0);
+    comac_rectangle (cr_region, 10, 0, 10, 10);
+    comac_fill (cr_region);
 
-    cairo_set_source_rgb (cr_region, 0, 1, 0);
-    cairo_rectangle (cr_region, 0, 10, 10, 10);
-    cairo_fill (cr_region);
+    comac_set_source_rgb (cr_region, 0, 1, 0);
+    comac_rectangle (cr_region, 0, 10, 10, 10);
+    comac_fill (cr_region);
 
-    cairo_set_source_rgb (cr_region, 0, 0, 1);
-    cairo_rectangle (cr_region, 10, 10, 10, 10);
-    cairo_fill (cr_region);
+    comac_set_source_rgb (cr_region, 0, 0, 1);
+    comac_rectangle (cr_region, 10, 10, 10, 10);
+    comac_fill (cr_region);
 
-    cairo_set_source_surface (cr, cairo_get_target (cr_region), 20, 20);
-    cairo_destroy (cr_region);
+    comac_set_source_surface (cr, comac_get_target (cr_region), 20, 20);
+    comac_destroy (cr_region);
 
-    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_REPEAT);
-    cairo_paint (cr);
+    comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_REPEAT);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (subsurface_similar_repeat,
+COMAC_TEST (subsurface_similar_repeat,
 	    "Tests source clipping through an intermediate with repeat",
 	    "subsurface, repeat", /* keywords */
 	    "target=raster", /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */

@@ -34,52 +34,52 @@
 #define WIDTH 300
 #define HEIGHT 300
 
-static cairo_surface_t *
-create_source (cairo_surface_t *target)
+static comac_surface_t *
+create_source (comac_surface_t *target)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_surface_create_similar (target,
-					    CAIRO_CONTENT_COLOR,
+    surface = comac_surface_create_similar (target,
+					    COMAC_CONTENT_COLOR,
 					    WIDTH, HEIGHT);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return surface;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *white;
+    comac_surface_t *white;
     int x;
 
     /* black background */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     /* white rectangles */
-    white = create_source (cairo_get_target (cr));
-    cairo_set_source_surface (cr, white, 0, 0);
-    cairo_surface_destroy (white);
+    white = create_source (comac_get_target (cr));
+    comac_set_source_surface (cr, white, 0, 0);
+    comac_surface_destroy (white);
 
     /* blit a set of rectangles that the rectangular tessellator
      * will not emit sorted. */
     for (x = 0; x < WIDTH - 10; x += 15)
-	cairo_rectangle (cr, x, x, 10, HEIGHT - 2*x);
-    cairo_fill (cr);
+	comac_rectangle (cr, x, x, 10, HEIGHT - 2*x);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (copy_disjoint,
+COMAC_TEST (copy_disjoint,
 	    "Tests copying unsorted rectangles.",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

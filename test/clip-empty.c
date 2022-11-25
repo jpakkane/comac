@@ -27,36 +27,36 @@
 
 #define SIZE 10
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_reset_clip (cr);
-    cairo_clip (cr);
+    comac_reset_clip (cr);
+    comac_clip (cr);
 
-    cairo_translate (cr, .5, .5);
+    comac_translate (cr, .5, .5);
 
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_fill_preserve (cr);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_fill_preserve (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_stroke (cr);
 
     /* https://bugs.freedesktop.org/show_bug.cgi?id=13084 */
-    cairo_select_font_face (cr,
-	                    CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr,
+	                    COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
-    cairo_move_to (cr, 0., SIZE);
-    cairo_show_text (cr, "cairo");
+    comac_move_to (cr, 0., SIZE);
+    comac_show_text (cr, "comac");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_empty,
+COMAC_TEST (clip_empty,
 	    "Test clipping with an empty clip path",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

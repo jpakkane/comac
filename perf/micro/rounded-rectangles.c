@@ -35,9 +35,9 @@
 #define RECTANGLE_COUNT (1000)
 
 #if 0
-#define MODE cairo_perf_run
+#define MODE comac_perf_run
 #else
-#define MODE cairo_perf_cover_sources_and_operators
+#define MODE comac_perf_cover_sources_and_operators
 #endif
 
 static struct
@@ -49,38 +49,38 @@ static struct
 } rects[RECTANGLE_COUNT];
 
 static void
-rounded_rectangle (cairo_t *cr,
+rounded_rectangle (comac_t *cr,
 		   double x, double y, double w, double h,
 		   double radius)
 {
-    cairo_move_to (cr, x+radius, y);
-    cairo_arc (cr, x+w-radius, y+radius,   radius, M_PI + M_PI / 2, M_PI * 2        );
-    cairo_arc (cr, x+w-radius, y+h-radius, radius, 0,               M_PI / 2        );
-    cairo_arc (cr, x+radius,   y+h-radius, radius, M_PI/2,          M_PI            );
-    cairo_arc (cr, x+radius,   y+radius,   radius, M_PI,            270 * M_PI / 180);
+    comac_move_to (cr, x+radius, y);
+    comac_arc (cr, x+w-radius, y+radius,   radius, M_PI + M_PI / 2, M_PI * 2        );
+    comac_arc (cr, x+w-radius, y+h-radius, radius, 0,               M_PI / 2        );
+    comac_arc (cr, x+radius,   y+h-radius, radius, M_PI/2,          M_PI            );
+    comac_arc (cr, x+radius,   y+radius,   radius, M_PI,            270 * M_PI / 180);
 }
 
-static cairo_time_t
-do_rectangle (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_rectangle (comac_t *cr, int width, int height, int loops)
 {
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	rounded_rectangle (cr, 0, 0, width, height, 3.0);
-	cairo_fill (cr);
+	comac_fill (cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_rectangles (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_rectangles (comac_t *cr, int width, int height, int loops)
 {
     int i;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
@@ -88,21 +88,21 @@ do_rectangles (cairo_t *cr, int width, int height, int loops)
 			       rects[i].x, rects[i].y,
 			       rects[i].width, rects[i].height,
 			       3.0);
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_rectangles_once (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_rectangles_once (comac_t *cr, int width, int height, int loops)
 {
     int i;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
@@ -111,22 +111,22 @@ do_rectangles_once (cairo_t *cr, int width, int height, int loops)
 			       rects[i].width, rects[i].height,
 			       3.0);
 	}
-	cairo_fill (cr);
+	comac_fill (cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-rounded_rectangles_enabled (cairo_perf_t *perf)
+comac_bool_t
+rounded_rectangles_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "rounded-rectangles", NULL);
+    return comac_perf_can_run (perf, "rounded-rectangles", NULL);
 }
 
 void
-rounded_rectangles (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+rounded_rectangles (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     int i;
 

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2003 University of Southern California
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -39,19 +39,19 @@
 #include "comac-error-private.h"
 #include "comac-slope-private.h"
 
-typedef struct cairo_hull {
-    cairo_point_t point;
-    cairo_slope_t slope;
+typedef struct comac_hull {
+    comac_point_t point;
+    comac_slope_t slope;
     int discard;
     int id;
-} cairo_hull_t;
+} comac_hull_t;
 
 static void
-_cairo_hull_init (cairo_hull_t			*hull,
-	          cairo_pen_vertex_t		*vertices,
+_comac_hull_init (comac_hull_t			*hull,
+	          comac_pen_vertex_t		*vertices,
 		  int				 num_vertices)
 {
-    cairo_point_t *p, *extremum, tmp;
+    comac_point_t *p, *extremum, tmp;
     int i;
 
     extremum = &vertices[0].point;
@@ -67,7 +67,7 @@ _cairo_hull_init (cairo_hull_t			*hull,
 
     for (i = 0; i < num_vertices; i++) {
 	hull[i].point = vertices[i].point;
-	_cairo_slope_init (&hull[i].slope, &hull[0].point, &hull[i].point);
+	_comac_slope_init (&hull[i].slope, &hull[0].point, &hull[i].point);
 
         /* give each point a unique id for later comparison */
         hull[i].id = i;
@@ -81,18 +81,18 @@ _cairo_hull_init (cairo_hull_t			*hull,
     }
 }
 
-static inline cairo_int64_t
-_slope_length (cairo_slope_t *slope)
+static inline comac_int64_t
+_slope_length (comac_slope_t *slope)
 {
-    return _cairo_int64_add (_cairo_int32x32_64_mul (slope->dx, slope->dx),
-			     _cairo_int32x32_64_mul (slope->dy, slope->dy));
+    return _comac_int64_add (_comac_int32x32_64_mul (slope->dx, slope->dx),
+			     _comac_int32x32_64_mul (slope->dy, slope->dy));
 }
 
 static int
-_cairo_hull_vertex_compare (const void *av, const void *bv)
+_comac_hull_vertex_compare (const void *av, const void *bv)
 {
-    cairo_hull_t *a = (cairo_hull_t *) av;
-    cairo_hull_t *b = (cairo_hull_t *) bv;
+    comac_hull_t *a = (comac_hull_t *) av;
+    comac_hull_t *b = (comac_hull_t *) bv;
     int ret;
 
     /* Some libraries are reported to actually compare identical
@@ -102,7 +102,7 @@ _cairo_hull_vertex_compare (const void *av, const void *bv)
     if (a == b)
 	return 0;
 
-    ret = _cairo_slope_compare (&a->slope, &b->slope);
+    ret = _comac_slope_compare (&a->slope, &b->slope);
 
     /*
      * In the case of two vertices with identical slope from the
@@ -111,7 +111,7 @@ _cairo_hull_vertex_compare (const void *av, const void *bv)
     if (ret == 0) {
 	int cmp;
 
-	cmp = _cairo_int64_cmp (_slope_length (&a->slope),
+	cmp = _comac_int64_cmp (_slope_length (&a->slope),
 				_slope_length (&b->slope));
 
 	/*
@@ -131,7 +131,7 @@ _cairo_hull_vertex_compare (const void *av, const void *bv)
 }
 
 static int
-_cairo_hull_prev_valid (cairo_hull_t *hull, int num_hull, int index)
+_comac_hull_prev_valid (comac_hull_t *hull, int num_hull, int index)
 {
     /* hull[0] is always valid, and we never need to wraparound, (if
      * we are passed an index of 0 here, then the calling loop is just
@@ -147,7 +147,7 @@ _cairo_hull_prev_valid (cairo_hull_t *hull, int num_hull, int index)
 }
 
 static int
-_cairo_hull_next_valid (cairo_hull_t *hull, int num_hull, int index)
+_comac_hull_next_valid (comac_hull_t *hull, int num_hull, int index)
 {
     do {
 	index = (index + 1) % num_hull;
@@ -157,36 +157,36 @@ _cairo_hull_next_valid (cairo_hull_t *hull, int num_hull, int index)
 }
 
 static void
-_cairo_hull_eliminate_concave (cairo_hull_t *hull, int num_hull)
+_comac_hull_eliminate_concave (comac_hull_t *hull, int num_hull)
 {
     int i, j, k;
-    cairo_slope_t slope_ij, slope_jk;
+    comac_slope_t slope_ij, slope_jk;
 
     i = 0;
-    j = _cairo_hull_next_valid (hull, num_hull, i);
-    k = _cairo_hull_next_valid (hull, num_hull, j);
+    j = _comac_hull_next_valid (hull, num_hull, i);
+    k = _comac_hull_next_valid (hull, num_hull, j);
 
     do {
-	_cairo_slope_init (&slope_ij, &hull[i].point, &hull[j].point);
-	_cairo_slope_init (&slope_jk, &hull[j].point, &hull[k].point);
+	_comac_slope_init (&slope_ij, &hull[i].point, &hull[j].point);
+	_comac_slope_init (&slope_jk, &hull[j].point, &hull[k].point);
 
 	/* Is the angle formed by ij and jk concave? */
-	if (_cairo_slope_compare (&slope_ij, &slope_jk) >= 0) {
+	if (_comac_slope_compare (&slope_ij, &slope_jk) >= 0) {
 	    if (i == k)
 		return;
 	    hull[j].discard = 1;
 	    j = i;
-	    i = _cairo_hull_prev_valid (hull, num_hull, j);
+	    i = _comac_hull_prev_valid (hull, num_hull, j);
 	} else {
 	    i = j;
 	    j = k;
-	    k = _cairo_hull_next_valid (hull, num_hull, j);
+	    k = _comac_hull_next_valid (hull, num_hull, j);
 	}
     } while (j != 0);
 }
 
 static void
-_cairo_hull_to_pen (cairo_hull_t *hull, cairo_pen_vertex_t *vertices, int *num_vertices)
+_comac_hull_to_pen (comac_hull_t *hull, comac_pen_vertex_t *vertices, int *num_vertices)
 {
     int i, j = 0;
 
@@ -201,35 +201,35 @@ _cairo_hull_to_pen (cairo_hull_t *hull, cairo_pen_vertex_t *vertices, int *num_v
 
 /* Given a set of vertices, compute the convex hull using the Graham
    scan algorithm. */
-cairo_status_t
-_cairo_hull_compute (cairo_pen_vertex_t *vertices, int *num_vertices)
+comac_status_t
+_comac_hull_compute (comac_pen_vertex_t *vertices, int *num_vertices)
 {
-    cairo_hull_t hull_stack[CAIRO_STACK_ARRAY_LENGTH (cairo_hull_t)];
-    cairo_hull_t *hull;
+    comac_hull_t hull_stack[COMAC_STACK_ARRAY_LENGTH (comac_hull_t)];
+    comac_hull_t *hull;
     int num_hull = *num_vertices;
 
-    if (CAIRO_INJECT_FAULT ())
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    if (COMAC_INJECT_FAULT ())
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     if (num_hull > ARRAY_LENGTH (hull_stack)) {
-	hull = _cairo_malloc_ab (num_hull, sizeof (cairo_hull_t));
+	hull = _comac_malloc_ab (num_hull, sizeof (comac_hull_t));
 	if (unlikely (hull == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     } else {
 	hull = hull_stack;
     }
 
-    _cairo_hull_init (hull, vertices, num_hull);
+    _comac_hull_init (hull, vertices, num_hull);
 
     qsort (hull + 1, num_hull - 1,
-	   sizeof (cairo_hull_t), _cairo_hull_vertex_compare);
+	   sizeof (comac_hull_t), _comac_hull_vertex_compare);
 
-    _cairo_hull_eliminate_concave (hull, num_hull);
+    _comac_hull_eliminate_concave (hull, num_hull);
 
-    _cairo_hull_to_pen (hull, vertices, num_vertices);
+    _comac_hull_to_pen (hull, vertices, num_vertices);
 
     if (hull != hull_stack)
 	free (hull);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }

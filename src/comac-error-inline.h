@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,18 +35,18 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef _CAIRO_ERROR_INLINE_H_
-#define _CAIRO_ERROR_INLINE_H_
+#ifndef _COMAC_ERROR_INLINE_H_
+#define _COMAC_ERROR_INLINE_H_
 
 #include "comac-error-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-static inline cairo_status_t
-_cairo_public_status (cairo_int_status_t status)
+static inline comac_status_t
+_comac_public_status (comac_int_status_t status)
 {
-    assert (status <= CAIRO_INT_STATUS_LAST_STATUS);
-    return (cairo_status_t) status;
+    assert (status <= COMAC_INT_STATUS_LAST_STATUS);
+    return (comac_status_t) status;
 }
 
-#endif /* _CAIRO_ERROR_INLINE_H_ */
+#endif /* _COMAC_ERROR_INLINE_H_ */

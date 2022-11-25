@@ -34,47 +34,47 @@
  * should be independent of the source and destination surface sizes.
  */
 
-static cairo_time_t
-do_subimage_copy (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_subimage_copy (comac_t *cr, int width, int height, int loops)
 {
-    cairo_rectangle (cr, 2, 2, 4, 4);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    comac_rectangle (cr, 2, 2, 4, 4);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_fill_preserve (cr);
+	comac_fill_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-subimage_copy_enabled (cairo_perf_t *perf)
+comac_bool_t
+subimage_copy_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "subimage-copy", NULL);
+    return comac_perf_can_run (perf, "subimage-copy", NULL);
 }
 
 void
-subimage_copy (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+subimage_copy (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_surface_t *image;
-    cairo_t *cr2;
+    comac_surface_t *image;
+    comac_t *cr2;
 
-    cairo_set_source_rgb (cr, 0, 0, 1); /* blue */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1); /* blue */
+    comac_paint (cr);
 
-    image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-    cr2 = cairo_create (image);
-    cairo_set_source_rgb (cr2, 1, 0, 0); /* red */
-    cairo_paint (cr2);
-    cairo_destroy (cr2);
+    image = comac_image_surface_create (COMAC_FORMAT_ARGB32, width, height);
+    cr2 = comac_create (image);
+    comac_set_source_rgb (cr2, 1, 0, 0); /* red */
+    comac_paint (cr2);
+    comac_destroy (cr2);
 
-    cairo_set_source_surface (cr, image, 0, 0);
-    cairo_surface_destroy (image);
+    comac_set_source_surface (cr, image, 0, 0);
+    comac_surface_destroy (image);
 
-    cairo_perf_run (perf, "subimage-copy", do_subimage_copy, NULL);
+    comac_perf_run (perf, "subimage-copy", do_subimage_copy, NULL);
 }

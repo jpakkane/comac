@@ -41,7 +41,7 @@ next_pot (int v)
     return v;
 }
 
-static cairo_bool_t
+static comac_bool_t
 direction (int i)
 {
     int pivot, np2;
@@ -58,7 +58,7 @@ direction (int i)
 }
 
 static void
-path (cairo_t *cr, int step, int dir, int iterations)
+path (comac_t *cr, int step, int dir, int iterations)
 {
     double dx, dy;
     int i;
@@ -72,7 +72,7 @@ path (cairo_t *cr, int step, int dir, int iterations)
     }
 
     for (i = 0; i < iterations; i++) {
-	cairo_rel_line_to (cr, dx, dy);
+	comac_rel_line_to (cr, dx, dy);
 
 	if (direction (i)) {
 	    double t = dx;
@@ -86,192 +86,192 @@ path (cairo_t *cr, int step, int dir, int iterations)
     }
 }
 
-static cairo_time_t
-do_dragon (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_dragon (comac_t *cr, int width, int height, int loops)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
     double cx, cy, r;
 
     cx = cy = .5 * MAX (width, height);
     r = .5 * MIN (width, height);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	pattern = cairo_pattern_create_radial (cx, cy, 0., cx, cy, r);
-	cairo_pattern_add_color_stop_rgb (pattern, 0., .0, .0, .0);
-	cairo_pattern_add_color_stop_rgb (pattern, 0.25, .5, .4, .4);
-	cairo_pattern_add_color_stop_rgb (pattern, .5, .8, .8, .9);
-	cairo_pattern_add_color_stop_rgb (pattern, 1., .9, .9, 1.);
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
-	cairo_paint (cr);
+	pattern = comac_pattern_create_radial (cx, cy, 0., cx, cy, r);
+	comac_pattern_add_color_stop_rgb (pattern, 0., .0, .0, .0);
+	comac_pattern_add_color_stop_rgb (pattern, 0.25, .5, .4, .4);
+	comac_pattern_add_color_stop_rgb (pattern, .5, .8, .8, .9);
+	comac_pattern_add_color_stop_rgb (pattern, 1., .9, .9, 1.);
+	comac_set_source (cr, pattern);
+	comac_pattern_destroy (pattern);
+	comac_paint (cr);
 
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-	cairo_set_line_width (cr, 4.);
+	comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+	comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
+	comac_set_line_width (cr, 4.);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 0, 2048);
-	pattern = cairo_pattern_create_radial (cx, cy, 0., cx, cy, r);
-	cairo_pattern_add_color_stop_rgb (pattern, 0., 1., 1., 1.);
-	cairo_pattern_add_color_stop_rgb (pattern, 1., 0., 0., 0.);
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
-	cairo_stroke(cr);
+	pattern = comac_pattern_create_radial (cx, cy, 0., cx, cy, r);
+	comac_pattern_add_color_stop_rgb (pattern, 0., 1., 1., 1.);
+	comac_pattern_add_color_stop_rgb (pattern, 1., 0., 0., 0.);
+	comac_set_source (cr, pattern);
+	comac_pattern_destroy (pattern);
+	comac_stroke(cr);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 1, 2048);
-	pattern = cairo_pattern_create_radial (cx, cy, 0., cx, cy, r);
-	cairo_pattern_add_color_stop_rgb (pattern, 1., 1., 1., 0.);
-	cairo_pattern_add_color_stop_rgb (pattern, 0., 1., 0., 0.);
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
-	cairo_stroke(cr);
+	pattern = comac_pattern_create_radial (cx, cy, 0., cx, cy, r);
+	comac_pattern_add_color_stop_rgb (pattern, 1., 1., 1., 0.);
+	comac_pattern_add_color_stop_rgb (pattern, 0., 1., 0., 0.);
+	comac_set_source (cr, pattern);
+	comac_pattern_destroy (pattern);
+	comac_stroke(cr);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 2, 2048);
-	pattern = cairo_pattern_create_radial (cx, cy, 0., cx, cy, r);
-	cairo_pattern_add_color_stop_rgb (pattern, 1., 0., 1., 1.);
-	cairo_pattern_add_color_stop_rgb (pattern, 0., 0., 1., 0.);
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
-	cairo_stroke(cr);
+	pattern = comac_pattern_create_radial (cx, cy, 0., cx, cy, r);
+	comac_pattern_add_color_stop_rgb (pattern, 1., 0., 1., 1.);
+	comac_pattern_add_color_stop_rgb (pattern, 0., 0., 1., 0.);
+	comac_set_source (cr, pattern);
+	comac_pattern_destroy (pattern);
+	comac_stroke(cr);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 3, 2048);
-	pattern = cairo_pattern_create_radial (cx, cy, 0., cx, cy, r);
-	cairo_pattern_add_color_stop_rgb (pattern, 1., 1., 0., 1.);
-	cairo_pattern_add_color_stop_rgb (pattern, 0., 0., 0., 1.);
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
-	cairo_stroke(cr);
+	pattern = comac_pattern_create_radial (cx, cy, 0., cx, cy, r);
+	comac_pattern_add_color_stop_rgb (pattern, 1., 1., 0., 1.);
+	comac_pattern_add_color_stop_rgb (pattern, 0., 0., 0., 1.);
+	comac_set_source (cr, pattern);
+	comac_pattern_destroy (pattern);
+	comac_stroke(cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_dragon_solid (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_dragon_solid (comac_t *cr, int width, int height, int loops)
 {
     double cx, cy;
 
     cx = cy = .5 * MAX (width, height);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	cairo_set_source_rgb (cr, 0, 0, 0);
-	cairo_paint (cr);
+	comac_set_source_rgb (cr, 0, 0, 0);
+	comac_paint (cr);
 
-	cairo_set_line_width (cr, 4.);
+	comac_set_line_width (cr, 4.);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 0, 2048);
-	cairo_set_source_rgb (cr, 1, 0, 0);
-	cairo_stroke(cr);
+	comac_set_source_rgb (cr, 1, 0, 0);
+	comac_stroke(cr);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 1, 2048);
-	cairo_set_source_rgb (cr, 0, 1, 0);
-	cairo_stroke(cr);
+	comac_set_source_rgb (cr, 0, 1, 0);
+	comac_stroke(cr);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 2, 2048);
-	cairo_set_source_rgb (cr, 0, 0, 1);
-	cairo_stroke(cr);
+	comac_set_source_rgb (cr, 0, 0, 1);
+	comac_stroke(cr);
 
-	cairo_move_to (cr, cx, cy);
+	comac_move_to (cr, cx, cy);
 	path (cr, 12, 3, 2048);
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_stroke(cr);
+	comac_set_source_rgb (cr, 1, 1, 1);
+	comac_stroke(cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_dragon_solid_unaligned (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_dragon_solid_unaligned (comac_t *cr, int width, int height, int loops)
 {
-    cairo_translate (cr, 0.01, 0.01);
+    comac_translate (cr, 0.01, 0.01);
     return do_dragon_solid (cr, width, height, loops);
 }
 
-static cairo_time_t
-do_dragon_solid_aligned_clip (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_dragon_solid_aligned_clip (comac_t *cr, int width, int height, int loops)
 {
-    cairo_reset_clip (cr);
-    cairo_rectangle (cr, 10, 10, width/2 + 10, height/2 + 10);
-    cairo_rectangle (cr, width/2-20, height/2-20, width/2 + 10, height/2 + 10);
-    cairo_clip (cr);
-
-    return do_dragon_solid (cr, width, height, loops);
-}
-
-static cairo_time_t
-do_dragon_unaligned_solid_aligned_clip (cairo_t *cr, int width, int height, int loops)
-{
-    cairo_translate (cr, 0.01, 0.01);
-    cairo_reset_clip (cr);
-    cairo_rectangle (cr, 10, 10, width/2 + 10, height/2 + 10);
-    cairo_rectangle (cr, width/2-20, height/2-20, width/2 + 10, height/2 + 10);
-    cairo_clip (cr);
+    comac_reset_clip (cr);
+    comac_rectangle (cr, 10, 10, width/2 + 10, height/2 + 10);
+    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 10, height/2 + 10);
+    comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
 }
 
-static cairo_time_t
-do_dragon_solid_unaligned_clip (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_dragon_unaligned_solid_aligned_clip (comac_t *cr, int width, int height, int loops)
 {
-    cairo_reset_clip (cr);
-    cairo_rectangle (cr, 10.5, 10.5, width/2 + 10, height/2 + 10);
-    cairo_rectangle (cr, width/2-20, height/2-20, width/2 + 9.5, height/2 + 9.5);
-    cairo_clip (cr);
+    comac_translate (cr, 0.01, 0.01);
+    comac_reset_clip (cr);
+    comac_rectangle (cr, 10, 10, width/2 + 10, height/2 + 10);
+    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 10, height/2 + 10);
+    comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
 }
 
-static cairo_time_t
-do_dragon_unaligned_solid_unaligned_clip (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_dragon_solid_unaligned_clip (comac_t *cr, int width, int height, int loops)
 {
-    cairo_translate (cr, 0.01, 0.01);
-    cairo_reset_clip (cr);
-    cairo_rectangle (cr, 10.5, 10.5, width/2 + 10, height/2 + 10);
-    cairo_rectangle (cr, width/2-20, height/2-20, width/2 + 9.5, height/2 + 9.5);
-    cairo_clip (cr);
+    comac_reset_clip (cr);
+    comac_rectangle (cr, 10.5, 10.5, width/2 + 10, height/2 + 10);
+    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 9.5, height/2 + 9.5);
+    comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
 }
 
-static cairo_time_t
-do_dragon_solid_circle_clip (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_dragon_unaligned_solid_unaligned_clip (comac_t *cr, int width, int height, int loops)
 {
-    cairo_reset_clip (cr);
-    cairo_arc (cr, width/2., height/2., MIN (width, height)/2. - 10, 0, 2 * M_PI);
-    cairo_clip (cr);
+    comac_translate (cr, 0.01, 0.01);
+    comac_reset_clip (cr);
+    comac_rectangle (cr, 10.5, 10.5, width/2 + 10, height/2 + 10);
+    comac_rectangle (cr, width/2-20, height/2-20, width/2 + 9.5, height/2 + 9.5);
+    comac_clip (cr);
 
     return do_dragon_solid (cr, width, height, loops);
 }
 
-cairo_bool_t
-dragon_enabled (cairo_perf_t *perf)
+static comac_time_t
+do_dragon_solid_circle_clip (comac_t *cr, int width, int height, int loops)
 {
-    return cairo_perf_can_run (perf, "dragon", NULL);
+    comac_reset_clip (cr);
+    comac_arc (cr, width/2., height/2., MIN (width, height)/2. - 10, 0, 2 * M_PI);
+    comac_clip (cr);
+
+    return do_dragon_solid (cr, width, height, loops);
+}
+
+comac_bool_t
+dragon_enabled (comac_perf_t *perf)
+{
+    return comac_perf_can_run (perf, "dragon", NULL);
 }
 
 void
-dragon (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+dragon (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "dragon-solid", do_dragon_solid, NULL);
-    cairo_perf_run (perf, "dragon-unaligned-solid", do_dragon_solid_unaligned, NULL);
-    cairo_perf_run (perf, "dragon-solid-aligned-clip", do_dragon_solid_aligned_clip, NULL);
-    cairo_perf_run (perf, "dragon-unaligned-solid-aligned-clip", do_dragon_unaligned_solid_aligned_clip, NULL);
-    cairo_perf_run (perf, "dragon-solid-unaligned-clip", do_dragon_solid_unaligned_clip, NULL);
-    cairo_perf_run (perf, "dragon-unaligned-solid-unaligned-clip", do_dragon_unaligned_solid_unaligned_clip, NULL);
-    cairo_perf_run (perf, "dragon-solid-circle-clip", do_dragon_solid_circle_clip, NULL);
-    cairo_perf_run (perf, "dragon", do_dragon, NULL);
+    comac_perf_run (perf, "dragon-solid", do_dragon_solid, NULL);
+    comac_perf_run (perf, "dragon-unaligned-solid", do_dragon_solid_unaligned, NULL);
+    comac_perf_run (perf, "dragon-solid-aligned-clip", do_dragon_solid_aligned_clip, NULL);
+    comac_perf_run (perf, "dragon-unaligned-solid-aligned-clip", do_dragon_unaligned_solid_aligned_clip, NULL);
+    comac_perf_run (perf, "dragon-solid-unaligned-clip", do_dragon_solid_unaligned_clip, NULL);
+    comac_perf_run (perf, "dragon-unaligned-solid-unaligned-clip", do_dragon_unaligned_solid_unaligned_clip, NULL);
+    comac_perf_run (perf, "dragon-solid-circle-clip", do_dragon_solid_circle_clip, NULL);
+    comac_perf_run (perf, "dragon", do_dragon, NULL);
 }

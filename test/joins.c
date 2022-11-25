@@ -30,7 +30,7 @@
 #define PAD		(2 * LINE_WIDTH)
 
 static void
-make_path (cairo_t *cr)
+make_path (comac_t *cr)
 {
     const struct {
 	double x, y;
@@ -43,63 +43,63 @@ make_path (cairo_t *cr)
     unsigned int i, j;
 
     for (j = 0; j < ARRAY_LENGTH (scales); j++) {
-	cairo_save (cr);
+	comac_save (cr);
 	/* include reflections to flip the orientation of the join */
-	cairo_scale (cr, scales[j].x, scales[j].y);
+	comac_scale (cr, scales[j].x, scales[j].y);
 	for (i = 0; i < 3; i++) {
-	    cairo_new_sub_path (cr);
-	    cairo_move_to (cr, 0, -9*LINE_WIDTH/4 - 2);
-	    cairo_line_to (cr,  0, -2*LINE_WIDTH - 2);
-	    cairo_line_to (cr,  LINE_WIDTH/4, -2*LINE_WIDTH - 2);
-	    cairo_rotate (cr, M_PI / 4.);
+	    comac_new_sub_path (cr);
+	    comac_move_to (cr, 0, -9*LINE_WIDTH/4 - 2);
+	    comac_line_to (cr,  0, -2*LINE_WIDTH - 2);
+	    comac_line_to (cr,  LINE_WIDTH/4, -2*LINE_WIDTH - 2);
+	    comac_rotate (cr, M_PI / 4.);
 	}
-	cairo_restore (cr);
+	comac_restore (cr);
     }
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_line_join_t join;
+    comac_line_join_t join;
 
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_set_line_width (cr, LINE_WIDTH);
-    cairo_translate (cr, PAD + SIZE / 2., PAD + SIZE / 2.);
+    comac_set_line_width (cr, LINE_WIDTH);
+    comac_translate (cr, PAD + SIZE / 2., PAD + SIZE / 2.);
 
-    for (join = CAIRO_LINE_JOIN_MITER; join <= CAIRO_LINE_JOIN_BEVEL; join++) {
-	cairo_save (cr);
+    for (join = COMAC_LINE_JOIN_MITER; join <= COMAC_LINE_JOIN_BEVEL; join++) {
+	comac_save (cr);
 
-	cairo_set_line_join (cr, join);
+	comac_set_line_join (cr, join);
 
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+	comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
 	make_path (cr);
-	cairo_stroke (cr);
+	comac_stroke (cr);
 
-	cairo_translate (cr, 0, SIZE + PAD);
+	comac_translate (cr, 0, SIZE + PAD);
 
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+	comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
 	make_path (cr);
-	cairo_stroke (cr);
+	comac_stroke (cr);
 
-	cairo_translate (cr, 0, SIZE + PAD);
+	comac_translate (cr, 0, SIZE + PAD);
 
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
+	comac_set_line_cap (cr, COMAC_LINE_CAP_SQUARE);
 	make_path (cr);
-	cairo_stroke (cr);
+	comac_stroke (cr);
 
-	cairo_restore (cr);
+	comac_restore (cr);
 
-	cairo_translate (cr, SIZE + PAD, 0);
+	comac_translate (cr, SIZE + PAD, 0);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (joins,
+COMAC_TEST (joins,
 	    "Test joins",
 	    "stroke, joins", /* keywords */
 	    NULL, /* requirements */

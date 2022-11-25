@@ -25,46 +25,46 @@
 
 #include "comac-test.h"
 
-static cairo_surface_t *
-create_source (cairo_surface_t *target, int width, int height)
+static comac_surface_t *
+create_source (comac_surface_t *target, int width, int height)
 {
-    cairo_surface_t *similar;
-    cairo_t *cr;
+    comac_surface_t *similar;
+    comac_t *cr;
 
-    similar = cairo_surface_create_similar (target,
-					    CAIRO_CONTENT_ALPHA,
+    similar = comac_surface_create_similar (target,
+					    COMAC_CONTENT_ALPHA,
 					    width, height);
-    cr = cairo_create (similar);
-    cairo_surface_destroy (similar);
+    cr = comac_create (similar);
+    comac_surface_destroy (similar);
 
-    cairo_set_source_rgba (cr, 1, 0, 0, .5);
-    cairo_paint (cr);
+    comac_set_source_rgba (cr, 1, 0, 0, .5);
+    comac_paint (cr);
 
-    similar = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    similar = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return similar;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *source;
+    comac_surface_t *source;
 
-    source = create_source (cairo_get_target (cr), width, height);
-    cairo_set_source_surface (cr, source, 0, 0);
-    cairo_surface_destroy (source);
+    source = create_source (comac_get_target (cr), width, height);
+    comac_set_source_surface (cr, source, 0, 0);
+    comac_surface_destroy (source);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /*
  * XFAIL: discrepancy between backends in applying color components of a pure
  * alpha surface
  */
-CAIRO_TEST (alpha_similar,
+COMAC_TEST (alpha_similar,
 	    "Tests creation of similar alpha surfaces"
 	    "\nApplication of a pure-alpha similar source is inconsistent across backends.",
 	    "alpha, similar", /* keywords */

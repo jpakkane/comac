@@ -37,251 +37,251 @@
  * recording surface.
  */
 
-static cairo_surface_t *
-source (cairo_surface_t *surface)
+static comac_surface_t *
+source (comac_surface_t *surface)
 {
-    cairo_t *cr;
+    comac_t *cr;
 
     /* Create a 4-pixel image surface with my favorite four colors in each
      * quadrant. */
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
     /* upper-left = white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_rectangle (cr, 0, 0, 1, 1);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_rectangle (cr, 0, 0, 1, 1);
+    comac_fill (cr);
 
     /* upper-right = red */
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_rectangle (cr, 1, 0, 1, 1);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_rectangle (cr, 1, 0, 1, 1);
+    comac_fill (cr);
 
     /* lower-left = green */
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_rectangle (cr, 0, 1, 1, 1);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_rectangle (cr, 0, 1, 1, 1);
+    comac_fill (cr);
 
     /* lower-right = blue */
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_rectangle (cr, 1, 1, 1, 1);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_rectangle (cr, 1, 1, 1, 1);
+    comac_fill (cr);
 
-    surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return surface;
 }
 
-static cairo_surface_t *
-image (cairo_t *cr)
+static comac_surface_t *
+image (comac_t *cr)
 {
-    return source (cairo_image_surface_create (CAIRO_FORMAT_RGB24, 2, 2));
+    return source (comac_image_surface_create (COMAC_FORMAT_RGB24, 2, 2));
 }
 
-static cairo_surface_t *
-similar (cairo_t *cr)
+static comac_surface_t *
+similar (comac_t *cr)
 {
-    return source (cairo_surface_create_similar (cairo_get_target (cr),
-						 CAIRO_CONTENT_COLOR, 2, 2));
+    return source (comac_surface_create_similar (comac_get_target (cr),
+						 COMAC_CONTENT_COLOR, 2, 2));
 }
 
-static cairo_t *
-extend (cairo_t *cr, cairo_surface_t *(*surface)(cairo_t *), cairo_extend_t mode)
+static comac_t *
+extend (comac_t *cr, comac_surface_t *(*surface)(comac_t *), comac_extend_t mode)
 {
-    cairo_surface_t *s;
+    comac_surface_t *s;
 
-    cairo_set_source_rgb (cr, 0, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 1, 1);
+    comac_paint (cr);
 
     /* Now use extend modes to cover most of the surface with those 4 colors */
     s = surface (cr);
-    cairo_set_source_surface (cr, s, SIZE/2 - 1, SIZE/2 - 1);
-    cairo_surface_destroy (s);
+    comac_set_source_surface (cr, s, SIZE/2 - 1, SIZE/2 - 1);
+    comac_surface_destroy (s);
 
-    cairo_pattern_set_extend (cairo_get_source (cr), mode);
+    comac_pattern_set_extend (comac_get_source (cr), mode);
 
-    cairo_rectangle (cr, 10, 10, SIZE-20, SIZE-20);
-    cairo_clip (cr);
-    cairo_paint (cr);
-
-    return cr;
-}
-
-static cairo_t *
-extend_none (cairo_t *cr,
-	     cairo_surface_t *(*pattern)(cairo_t *))
-{
-    return extend (cr, pattern, CAIRO_EXTEND_NONE);
-}
-
-static cairo_t *
-extend_pad (cairo_t *cr,
-	    cairo_surface_t *(*pattern)(cairo_t *))
-{
-    return extend (cr, pattern, CAIRO_EXTEND_PAD);
-}
-
-static cairo_t *
-extend_repeat (cairo_t *cr,
-	       cairo_surface_t *(*pattern)(cairo_t *))
-{
-    return extend (cr, pattern, CAIRO_EXTEND_REPEAT);
-}
-
-static cairo_t *
-extend_reflect (cairo_t *cr,
-	       cairo_surface_t *(*pattern)(cairo_t *))
-{
-    return extend (cr, pattern, CAIRO_EXTEND_REFLECT);
-}
-
-static cairo_t *
-record_create (cairo_t *target)
-{
-    cairo_surface_t *surface;
-    cairo_t *cr;
-
-    surface = cairo_recording_surface_create (cairo_surface_get_content (cairo_get_target (target)), NULL);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    comac_rectangle (cr, 10, 10, SIZE-20, SIZE-20);
+    comac_clip (cr);
+    comac_paint (cr);
 
     return cr;
 }
 
-static cairo_surface_t *
-record_get (cairo_t *target)
+static comac_t *
+extend_none (comac_t *cr,
+	     comac_surface_t *(*pattern)(comac_t *))
 {
-    cairo_surface_t *surface;
+    return extend (cr, pattern, COMAC_EXTEND_NONE);
+}
 
-    surface = cairo_surface_reference (cairo_get_target (target));
-    cairo_destroy (target);
+static comac_t *
+extend_pad (comac_t *cr,
+	    comac_surface_t *(*pattern)(comac_t *))
+{
+    return extend (cr, pattern, COMAC_EXTEND_PAD);
+}
+
+static comac_t *
+extend_repeat (comac_t *cr,
+	       comac_surface_t *(*pattern)(comac_t *))
+{
+    return extend (cr, pattern, COMAC_EXTEND_REPEAT);
+}
+
+static comac_t *
+extend_reflect (comac_t *cr,
+	       comac_surface_t *(*pattern)(comac_t *))
+{
+    return extend (cr, pattern, COMAC_EXTEND_REFLECT);
+}
+
+static comac_t *
+record_create (comac_t *target)
+{
+    comac_surface_t *surface;
+    comac_t *cr;
+
+    surface = comac_recording_surface_create (comac_surface_get_content (comac_get_target (target)), NULL);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
+
+    return cr;
+}
+
+static comac_surface_t *
+record_get (comac_t *target)
+{
+    comac_surface_t *surface;
+
+    surface = comac_surface_reference (comac_get_target (target));
+    comac_destroy (target);
 
     return surface;
 }
 
-static cairo_test_status_t
-record_replay (cairo_t *cr,
-	       cairo_t *(*func)(cairo_t *,
-				cairo_surface_t *(*pattern)(cairo_t *)),
-	       cairo_surface_t *(*pattern)(cairo_t *),
+static comac_test_status_t
+record_replay (comac_t *cr,
+	       comac_t *(*func)(comac_t *,
+				comac_surface_t *(*pattern)(comac_t *)),
+	       comac_surface_t *(*pattern)(comac_t *),
 	       int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     int x, y;
 
     surface = record_get (func (record_create (cr), pattern));
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_surface_destroy (surface);
-    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_NONE);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_surface_destroy (surface);
+    comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_NONE);
 
     for (y = 0; y < height; y += 2) {
 	for (x = 0; x < width; x += 2) {
-	    cairo_rectangle (cr, x, y, 2, 2);
-	    cairo_clip (cr);
-	    cairo_paint (cr);
-	    cairo_reset_clip (cr);
+	    comac_rectangle (cr, x, y, 2, 2);
+	    comac_clip (cr);
+	    comac_paint (cr);
+	    comac_reset_clip (cr);
 	}
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-record_extend_none (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_none (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_none, image, width, height);
 }
 
-static cairo_test_status_t
-record_extend_pad (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_pad (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_pad, image, width, height);
 }
 
-static cairo_test_status_t
-record_extend_repeat (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_repeat (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_repeat, image, width, height);
 }
 
-static cairo_test_status_t
-record_extend_reflect (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_reflect (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_reflect, image, width, height);
 }
 
-static cairo_test_status_t
-record_extend_none_similar (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_none_similar (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_none, similar, width, height);
 }
 
-static cairo_test_status_t
-record_extend_pad_similar (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_pad_similar (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_pad, similar, width, height);
 }
 
-static cairo_test_status_t
-record_extend_repeat_similar (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_repeat_similar (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_repeat, similar, width, height);
 }
 
-static cairo_test_status_t
-record_extend_reflect_similar (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_extend_reflect_similar (comac_t *cr, int width, int height)
 {
     return record_replay (cr, extend_reflect, similar, width, height);
 }
 
-CAIRO_TEST (record_extend_none,
-	    "Test CAIRO_EXTEND_NONE for recorded surface patterns",
+COMAC_TEST (record_extend_none,
+	    "Test COMAC_EXTEND_NONE for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, record_extend_none)
-CAIRO_TEST (record_extend_pad,
-	    "Test CAIRO_EXTEND_PAD for recorded surface patterns",
+COMAC_TEST (record_extend_pad,
+	    "Test COMAC_EXTEND_PAD for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, record_extend_pad)
-CAIRO_TEST (record_extend_repeat,
-	    "Test CAIRO_EXTEND_REPEAT for recorded surface patterns",
+COMAC_TEST (record_extend_repeat,
+	    "Test COMAC_EXTEND_REPEAT for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, record_extend_repeat)
-CAIRO_TEST (record_extend_reflect,
-	    "Test CAIRO_EXTEND_REFLECT for recorded surface patterns",
+COMAC_TEST (record_extend_reflect,
+	    "Test COMAC_EXTEND_REFLECT for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, record_extend_reflect)
 
-CAIRO_TEST (record_extend_none_similar,
-	    "Test CAIRO_EXTEND_NONE for recorded surface patterns",
+COMAC_TEST (record_extend_none_similar,
+	    "Test COMAC_EXTEND_NONE for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, record_extend_none_similar)
-CAIRO_TEST (record_extend_pad_similar,
-	    "Test CAIRO_EXTEND_PAD for recorded surface patterns",
+COMAC_TEST (record_extend_pad_similar,
+	    "Test COMAC_EXTEND_PAD for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, record_extend_pad_similar)
-CAIRO_TEST (record_extend_repeat_similar,
-	    "Test CAIRO_EXTEND_REPEAT for recorded surface patterns",
+COMAC_TEST (record_extend_repeat_similar,
+	    "Test COMAC_EXTEND_REPEAT for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, record_extend_repeat_similar)
-CAIRO_TEST (record_extend_reflect_similar,
-	    "Test CAIRO_EXTEND_REFLECT for recorded surface patterns",
+COMAC_TEST (record_extend_reflect_similar,
+	    "Test COMAC_EXTEND_REFLECT for recorded surface patterns",
 	    "record, extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,

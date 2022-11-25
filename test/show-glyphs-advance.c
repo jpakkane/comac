@@ -28,53 +28,53 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-get_glyph (const cairo_test_context_t *ctx,
-	   cairo_scaled_font_t *scaled_font,
+static comac_test_status_t
+get_glyph (const comac_test_context_t *ctx,
+	   comac_scaled_font_t *scaled_font,
 	   const char *utf8,
-	   cairo_glyph_t *glyph)
+	   comac_glyph_t *glyph)
 {
-    cairo_glyph_t *text_to_glyphs;
-    cairo_status_t status;
+    comac_glyph_t *text_to_glyphs;
+    comac_status_t status;
     int i;
 
     text_to_glyphs = glyph;
     i = 1;
-    status = cairo_scaled_font_text_to_glyphs (scaled_font,
+    status = comac_scaled_font_text_to_glyphs (scaled_font,
 					       0, 0,
 					       utf8, -1,
 					       &text_to_glyphs, &i,
 					       NULL, NULL,
 					       0);
-    if (status != CAIRO_STATUS_SUCCESS)
-	return cairo_test_status_from_status (ctx, status);
+    if (status != COMAC_STATUS_SUCCESS)
+	return comac_test_status_from_status (ctx, status);
 
     if (text_to_glyphs != glyph) {
 	*glyph = text_to_glyphs[0];
-	cairo_glyph_free (text_to_glyphs);
+	comac_glyph_free (text_to_glyphs);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static const char *characters[] = { "A", "B", "C", "D" };
 
 #define NUM_CHARS ARRAY_LENGTH (characters)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_scaled_font_t *scaled_font;
-    cairo_glyph_t *glyphs = xmalloc (NUM_CHARS  * sizeof (cairo_glyph_t));
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_scaled_font_t *scaled_font;
+    comac_glyph_t *glyphs = xmalloc (NUM_CHARS  * sizeof (comac_glyph_t));
     int i;
-    cairo_test_status_t status;
+    comac_test_status_t status;
 
     /* Paint white background. */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    scaled_font = cairo_get_scaled_font (cr);
+    scaled_font = comac_get_scaled_font (cr);
 
     for (i = 0; i < NUM_CHARS; i++) {
 	status = get_glyph (ctx, scaled_font, characters[i], &glyphs[i]);
@@ -85,13 +85,13 @@ draw (cairo_t *cr, int width, int height)
 	glyphs[i].y = 20.0 + 10.0 * (i / 2);
     }
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_show_glyphs (cr, glyphs, 4);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_show_glyphs (cr, glyphs, 4);
 
-    cairo_translate (cr, 40., 20.);
-    cairo_rotate (cr, M_PI / 4.);
+    comac_translate (cr, 40., 20.);
+    comac_rotate (cr, M_PI / 4.);
 
-    cairo_show_glyphs (cr, glyphs, NUM_CHARS);
+    comac_show_glyphs (cr, glyphs, NUM_CHARS);
 
   BAIL:
     free(glyphs);
@@ -99,7 +99,7 @@ draw (cairo_t *cr, int width, int height)
     return status;
 }
 
-CAIRO_TEST (show_glyphs_advance,
+COMAC_TEST (show_glyphs_advance,
 	    "Test that glyph advances work as expected along both axes",
 	    "text, matrix", /* keywords */
 	    NULL, /* requirements */

@@ -35,126 +35,126 @@
 
 
 /* This test is designed to test painting a recording surface pattern with
- * CAIRO_EXTEND_NONE and a non identity pattern matrix.
+ * COMAC_EXTEND_NONE and a non identity pattern matrix.
  */
-static cairo_pattern_t *create_pattern (cairo_t *target)
+static comac_pattern_t *create_pattern (comac_t *target)
 {
-    cairo_surface_t *surface;
-    cairo_pattern_t *pattern;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_pattern_t *pattern;
+    comac_t *cr;
 
-    surface = cairo_surface_create_similar (cairo_get_group_target (target),
-					    CAIRO_CONTENT_COLOR_ALPHA,
+    surface = comac_surface_create_similar (comac_get_group_target (target),
+					    COMAC_CONTENT_COLOR_ALPHA,
 					    PAT_WIDTH, PAT_HEIGHT);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgba (cr, 1, 0, 1, 0.5);
-    cairo_rectangle (cr, PAT_WIDTH/6.0, PAT_HEIGHT/6.0, PAT_WIDTH/4.0, PAT_HEIGHT/4.0);
-    cairo_fill (cr);
+    comac_set_source_rgba (cr, 1, 0, 1, 0.5);
+    comac_rectangle (cr, PAT_WIDTH/6.0, PAT_HEIGHT/6.0, PAT_WIDTH/4.0, PAT_HEIGHT/4.0);
+    comac_fill (cr);
 
-    cairo_set_source_rgba (cr, 0, 1, 1, 0.5);
-    cairo_rectangle (cr, PAT_WIDTH/2.0, PAT_HEIGHT/2.0, PAT_WIDTH/4.0, PAT_HEIGHT/4.0);
-    cairo_fill (cr);
+    comac_set_source_rgba (cr, 0, 1, 1, 0.5);
+    comac_rectangle (cr, PAT_WIDTH/2.0, PAT_HEIGHT/2.0, PAT_WIDTH/4.0, PAT_HEIGHT/4.0);
+    comac_fill (cr);
 
-    cairo_set_line_width (cr, 1);
-    cairo_move_to (cr, PAT_WIDTH/6.0, 0);
-    cairo_line_to (cr, 0, 0);
-    cairo_line_to (cr, 0, PAT_HEIGHT/6.0);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_stroke (cr);
-    cairo_move_to (cr, PAT_WIDTH/6.0, PAT_HEIGHT);
-    cairo_line_to (cr, 0, PAT_HEIGHT);
-    cairo_line_to (cr, 0, 5*PAT_HEIGHT/6.0);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_stroke (cr);
-    cairo_move_to (cr, 5*PAT_WIDTH/6.0, 0);
-    cairo_line_to (cr, PAT_WIDTH, 0);
-    cairo_line_to (cr, PAT_WIDTH, PAT_HEIGHT/6.0);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_stroke (cr);
-    cairo_move_to (cr, 5*PAT_WIDTH/6.0, PAT_HEIGHT);
-    cairo_line_to (cr, PAT_WIDTH, PAT_HEIGHT);
-    cairo_line_to (cr, PAT_WIDTH, 5*PAT_HEIGHT/6.0);
-    cairo_set_source_rgb (cr, 1, 1, 0);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 1);
+    comac_move_to (cr, PAT_WIDTH/6.0, 0);
+    comac_line_to (cr, 0, 0);
+    comac_line_to (cr, 0, PAT_HEIGHT/6.0);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_stroke (cr);
+    comac_move_to (cr, PAT_WIDTH/6.0, PAT_HEIGHT);
+    comac_line_to (cr, 0, PAT_HEIGHT);
+    comac_line_to (cr, 0, 5*PAT_HEIGHT/6.0);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_stroke (cr);
+    comac_move_to (cr, 5*PAT_WIDTH/6.0, 0);
+    comac_line_to (cr, PAT_WIDTH, 0);
+    comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT/6.0);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_stroke (cr);
+    comac_move_to (cr, 5*PAT_WIDTH/6.0, PAT_HEIGHT);
+    comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT);
+    comac_line_to (cr, PAT_WIDTH, 5*PAT_HEIGHT/6.0);
+    comac_set_source_rgb (cr, 1, 1, 0);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, 0.5, 0.5, 0.5);
-    cairo_set_line_width (cr, PAT_WIDTH/10.0);
+    comac_set_source_rgb (cr, 0.5, 0.5, 0.5);
+    comac_set_line_width (cr, PAT_WIDTH/10.0);
 
-    cairo_move_to (cr, 0,         PAT_HEIGHT/4.0);
-    cairo_line_to (cr, PAT_WIDTH, PAT_HEIGHT/4.0);
-    cairo_stroke (cr);
+    comac_move_to (cr, 0,         PAT_HEIGHT/4.0);
+    comac_line_to (cr, PAT_WIDTH, PAT_HEIGHT/4.0);
+    comac_stroke (cr);
 
-    cairo_move_to (cr, PAT_WIDTH/4.0,         0);
-    cairo_line_to (cr, PAT_WIDTH/4.0, PAT_WIDTH);
-    cairo_stroke (cr);
+    comac_move_to (cr, PAT_WIDTH/4.0,         0);
+    comac_line_to (cr, PAT_WIDTH/4.0, PAT_WIDTH);
+    comac_stroke (cr);
 
-    pattern = cairo_pattern_create_for_surface (cairo_get_target (cr));
-    cairo_destroy (cr);
+    pattern = comac_pattern_create_for_surface (comac_get_target (cr));
+    comac_destroy (cr);
 
     return pattern;
 }
 
-static cairo_test_status_t
-over (cairo_t *cr, int width, int height)
+static comac_test_status_t
+over (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
-    cairo_matrix_t   mat;
+    comac_pattern_t *pattern;
+    comac_matrix_t   mat;
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     pattern = create_pattern (cr);
 
-    cairo_matrix_init_identity (&mat);
-    cairo_matrix_scale (&mat, 2, 1.5);
-    cairo_matrix_rotate (&mat, 1);
-    cairo_matrix_translate (&mat, -PAT_WIDTH/4.0, -PAT_WIDTH/2.0);
-    cairo_pattern_set_matrix (pattern, &mat);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_NONE);
+    comac_matrix_init_identity (&mat);
+    comac_matrix_scale (&mat, 2, 1.5);
+    comac_matrix_rotate (&mat, 1);
+    comac_matrix_translate (&mat, -PAT_WIDTH/4.0, -PAT_WIDTH/2.0);
+    comac_pattern_set_matrix (pattern, &mat);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_NONE);
 
-    cairo_set_source (cr, pattern);
-    cairo_paint (cr);
+    comac_set_source (cr, pattern);
+    comac_paint (cr);
 
-    cairo_pattern_destroy (pattern);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-source (cairo_t *cr, int width, int height)
+static comac_test_status_t
+source (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
-    cairo_matrix_t   mat;
+    comac_pattern_t *pattern;
+    comac_matrix_t   mat;
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     pattern = create_pattern (cr);
 
-    cairo_matrix_init_identity (&mat);
-    cairo_matrix_scale (&mat, 2, 1.5);
-    cairo_matrix_rotate (&mat, 1);
-    cairo_matrix_translate (&mat, -PAT_WIDTH/4.0, -PAT_WIDTH/2.0);
-    cairo_pattern_set_matrix (pattern, &mat);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_NONE);
+    comac_matrix_init_identity (&mat);
+    comac_matrix_scale (&mat, 2, 1.5);
+    comac_matrix_rotate (&mat, 1);
+    comac_matrix_translate (&mat, -PAT_WIDTH/4.0, -PAT_WIDTH/2.0);
+    comac_pattern_set_matrix (pattern, &mat);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_NONE);
 
-    cairo_set_source (cr, pattern);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_paint (cr);
+    comac_set_source (cr, pattern);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_paint (cr);
 
-    cairo_pattern_destroy (pattern);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (recording_surface_over,
+COMAC_TEST (recording_surface_over,
 	    "Paint recording surface pattern with non identity pattern matrix",
 	    "recording", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, over)
 
-CAIRO_TEST (recording_surface_source,
+COMAC_TEST (recording_surface_source,
 	    "Paint recording surface pattern with non identity pattern matrix",
 	    "recording", /* keywords */
 	    NULL, /* requirements */

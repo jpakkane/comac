@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2011 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation.
  *
@@ -33,8 +33,8 @@
  *      Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_SURFACE_OBSERVER_PRIVATE_H
-#define CAIRO_SURFACE_OBSERVER_PRIVATE_H
+#ifndef COMAC_SURFACE_OBSERVER_PRIVATE_H
+#define COMAC_SURFACE_OBSERVER_PRIVATE_H
 
 #include "comacint.h"
 
@@ -50,11 +50,11 @@ struct stat {
     unsigned count;
 };
 
-#define NUM_OPERATORS (CAIRO_OPERATOR_HSL_LUMINOSITY+1)
-#define NUM_CAPS (CAIRO_LINE_CAP_SQUARE+1)
-#define NUM_JOINS (CAIRO_LINE_JOIN_BEVEL+1)
-#define NUM_ANTIALIAS (CAIRO_ANTIALIAS_BEST+1)
-#define NUM_FILL_RULE (CAIRO_FILL_RULE_EVEN_ODD+1)
+#define NUM_OPERATORS (COMAC_OPERATOR_HSL_LUMINOSITY+1)
+#define NUM_CAPS (COMAC_LINE_CAP_SQUARE+1)
+#define NUM_JOINS (COMAC_LINE_JOIN_BEVEL+1)
+#define NUM_ANTIALIAS (COMAC_ANTIALIAS_BEST+1)
+#define NUM_FILL_RULE (COMAC_FILL_RULE_EVEN_ODD+1)
 
 struct extents {
     struct stat area;
@@ -73,17 +73,17 @@ struct clip {
     unsigned int type[6]; /* none, region, boxes, single path, polygon, general */
 };
 
-typedef struct _cairo_observation cairo_observation_t;
-typedef struct _cairo_observation_record cairo_observation_record_t;
-typedef struct _cairo_device_observer cairo_device_observer_t;
+typedef struct _comac_observation comac_observation_t;
+typedef struct _comac_observation_record comac_observation_record_t;
+typedef struct _comac_device_observer comac_device_observer_t;
 
-struct _cairo_observation_record {
-    cairo_content_t target_content;
+struct _comac_observation_record {
+    comac_content_t target_content;
     int target_width;
     int target_height;
 
     int index;
-    cairo_operator_t op;
+    comac_operator_t op;
     int source;
     int mask;
     int num_glyphs;
@@ -92,10 +92,10 @@ struct _cairo_observation_record {
     double tolerance;
     int antialias;
     int clip;
-    cairo_time_t elapsed;
+    comac_time_t elapsed;
 };
 
-struct _cairo_observation {
+struct _comac_observation {
     int num_surfaces;
     int num_contexts;
     int num_sources_acquired;
@@ -103,7 +103,7 @@ struct _cairo_observation {
     /* XXX put interesting stats here! */
 
     struct paint {
-	cairo_time_t elapsed;
+	comac_time_t elapsed;
 	unsigned int count;
 	struct extents extents;
 	unsigned int operators[NUM_OPERATORS];
@@ -111,11 +111,11 @@ struct _cairo_observation {
 	struct clip clip;
 	unsigned int noop;
 
-	cairo_observation_record_t slowest;
+	comac_observation_record_t slowest;
     } paint;
 
     struct mask {
-	cairo_time_t elapsed;
+	comac_time_t elapsed;
 	unsigned int count;
 	struct extents extents;
 	unsigned int operators[NUM_OPERATORS];
@@ -124,11 +124,11 @@ struct _cairo_observation {
 	struct clip clip;
 	unsigned int noop;
 
-	cairo_observation_record_t slowest;
+	comac_observation_record_t slowest;
     } mask;
 
     struct fill {
-	cairo_time_t elapsed;
+	comac_time_t elapsed;
 	unsigned int count;
 	struct extents extents;
 	unsigned int operators[NUM_OPERATORS];
@@ -139,11 +139,11 @@ struct _cairo_observation {
 	struct clip clip;
 	unsigned int noop;
 
-	cairo_observation_record_t slowest;
+	comac_observation_record_t slowest;
     } fill;
 
     struct stroke {
-	cairo_time_t elapsed;
+	comac_time_t elapsed;
 	unsigned int count;
 	struct extents extents;
 	unsigned int operators[NUM_OPERATORS];
@@ -156,11 +156,11 @@ struct _cairo_observation {
 	struct clip clip;
 	unsigned int noop;
 
-	cairo_observation_record_t slowest;
+	comac_observation_record_t slowest;
     } stroke;
 
     struct glyphs {
-	cairo_time_t elapsed;
+	comac_time_t elapsed;
 	unsigned int count;
 	struct extents extents;
 	unsigned int operators[NUM_OPERATORS];
@@ -168,41 +168,41 @@ struct _cairo_observation {
 	struct clip clip;
 	unsigned int noop;
 
-	cairo_observation_record_t slowest;
+	comac_observation_record_t slowest;
     } glyphs;
 
-    cairo_array_t timings;
-    cairo_recording_surface_t *record;
+    comac_array_t timings;
+    comac_recording_surface_t *record;
 };
 
-struct _cairo_device_observer {
-    cairo_device_t base;
-    cairo_device_t *target;
+struct _comac_device_observer {
+    comac_device_t base;
+    comac_device_t *target;
 
-    cairo_observation_t log;
+    comac_observation_t log;
 };
 
 struct callback_list {
-    cairo_list_t link;
+    comac_list_t link;
 
-    cairo_surface_observer_callback_t func;
+    comac_surface_observer_callback_t func;
     void *data;
 };
 
-struct _cairo_surface_observer {
-    cairo_surface_t base;
-    cairo_surface_t *target;
+struct _comac_surface_observer {
+    comac_surface_t base;
+    comac_surface_t *target;
 
-    cairo_observation_t log;
+    comac_observation_t log;
 
-    cairo_list_t paint_callbacks;
-    cairo_list_t mask_callbacks;
-    cairo_list_t fill_callbacks;
-    cairo_list_t stroke_callbacks;
-    cairo_list_t glyphs_callbacks;
+    comac_list_t paint_callbacks;
+    comac_list_t mask_callbacks;
+    comac_list_t fill_callbacks;
+    comac_list_t stroke_callbacks;
+    comac_list_t glyphs_callbacks;
 
-    cairo_list_t flush_callbacks;
-    cairo_list_t finish_callbacks;
+    comac_list_t flush_callbacks;
+    comac_list_t finish_callbacks;
 };
 
-#endif /* CAIRO_SURFACE_OBSERVER_PRIVATE_H */
+#endif /* COMAC_SURFACE_OBSERVER_PRIVATE_H */

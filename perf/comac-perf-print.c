@@ -46,11 +46,11 @@
 #endif
 
 static void
-report_print (const cairo_perf_report_t *report,
+report_print (const comac_perf_report_t *report,
 	      int show_histogram)
 {
     const test_report_t *test;
-    cairo_histogram_t h;
+    comac_histogram_t h;
 
     if (show_histogram) {
 	int num_rows = 23;
@@ -68,7 +68,7 @@ report_print (const cairo_perf_report_t *report,
 	}
 #endif
 
-	if (!_cairo_histogram_init (&h, num_cols, num_rows))
+	if (!_comac_histogram_init (&h, num_cols, num_rows))
 	    show_histogram = 0;
     }
 
@@ -77,7 +77,7 @@ report_print (const cairo_perf_report_t *report,
 	    continue;
 
 	if (show_histogram) {
-	    const cairo_time_t *values;
+	    const comac_time_t *values;
 	    int num_values;
 
 	    if (show_histogram > 1) {
@@ -88,8 +88,8 @@ report_print (const cairo_perf_report_t *report,
 		num_values = test->samples_count;
 	    }
 
-	    if (_cairo_histogram_compute (&h, values, num_values))
-		_cairo_histogram_printf (&h, stdout);
+	    if (_comac_histogram_compute (&h, values, num_values))
+		_comac_histogram_printf (&h, stdout);
 	}
 
 	if (test->size) {
@@ -106,18 +106,18 @@ report_print (const cairo_perf_report_t *report,
     }
 
     if (show_histogram)
-	_cairo_histogram_fini (&h);
+	_comac_histogram_fini (&h);
 }
 
 int
 main (int	  argc,
       const char *argv[])
 {
-    cairo_bool_t show_histogram = 0;
+    comac_bool_t show_histogram = 0;
     int i;
 
     for (i = 1; i < argc; i++ ) {
-	cairo_perf_report_t report;
+	comac_perf_report_t report;
 
 	if (strcmp(argv[i], "--histogram") == 0) {
 	    show_histogram = 1;
@@ -129,7 +129,7 @@ main (int	  argc,
 	    continue;
 	}
 
-	cairo_perf_report_load (&report, argv[i], i, NULL);
+	comac_perf_report_load (&report, argv[i], i, NULL);
 	report_print (&report, show_histogram);
     }
 

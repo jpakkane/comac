@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,59 +35,59 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_ARRAY_PRIVATE_H
-#define CAIRO_ARRAY_PRIVATE_H
+#ifndef COMAC_ARRAY_PRIVATE_H
+#define COMAC_ARRAY_PRIVATE_H
 
 #include "comac-compiler-private.h"
 #include "comac-types-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-/* cairo-array.c structures and functions */
+/* comac-array.c structures and functions */
 
-cairo_private void
-_cairo_array_init (cairo_array_t *array, unsigned int element_size);
+comac_private void
+_comac_array_init (comac_array_t *array, unsigned int element_size);
 
-cairo_private void
-_cairo_array_fini (cairo_array_t *array);
+comac_private void
+_comac_array_fini (comac_array_t *array);
 
-cairo_private cairo_status_t
-_cairo_array_grow_by (cairo_array_t *array, unsigned int additional);
+comac_private comac_status_t
+_comac_array_grow_by (comac_array_t *array, unsigned int additional);
 
-cairo_private void
-_cairo_array_truncate (cairo_array_t *array, unsigned int num_elements);
+comac_private void
+_comac_array_truncate (comac_array_t *array, unsigned int num_elements);
 
-cairo_private cairo_status_t
-_cairo_array_append (cairo_array_t *array, const void *element);
+comac_private comac_status_t
+_comac_array_append (comac_array_t *array, const void *element);
 
-cairo_private cairo_status_t
-_cairo_array_append_multiple (cairo_array_t	*array,
+comac_private comac_status_t
+_comac_array_append_multiple (comac_array_t	*array,
 			      const void	*elements,
 			      unsigned int	 num_elements);
 
-cairo_private cairo_status_t
-_cairo_array_allocate (cairo_array_t	 *array,
+comac_private comac_status_t
+_comac_array_allocate (comac_array_t	 *array,
 		       unsigned int	  num_elements,
 		       void		**elements);
 
-cairo_private void *
-_cairo_array_index (cairo_array_t *array, unsigned int index);
+comac_private void *
+_comac_array_index (comac_array_t *array, unsigned int index);
 
-cairo_private const void *
-_cairo_array_index_const (const cairo_array_t *array, unsigned int index);
+comac_private const void *
+_comac_array_index_const (const comac_array_t *array, unsigned int index);
 
-cairo_private void
-_cairo_array_copy_element (const cairo_array_t *array, unsigned int index, void *dst);
+comac_private void
+_comac_array_copy_element (const comac_array_t *array, unsigned int index, void *dst);
 
-cairo_private unsigned int
-_cairo_array_num_elements (const cairo_array_t *array);
+comac_private unsigned int
+_comac_array_num_elements (const comac_array_t *array);
 
-cairo_private unsigned int
-_cairo_array_size (const cairo_array_t *array);
+comac_private unsigned int
+_comac_array_size (const comac_array_t *array);
 
-cairo_private void
-_cairo_array_sort (const cairo_array_t *array, int (*compar)(const void *, const void *));
+comac_private void
+_comac_array_sort (const comac_array_t *array, int (*compar)(const void *, const void *));
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_ARRAY_PRIVATE_H */
+#endif /* COMAC_ARRAY_PRIVATE_H */

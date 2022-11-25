@@ -33,58 +33,58 @@
 
 #define SIZE 100
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_t * cr_surface;
+    comac_surface_t *surface;
+    comac_t * cr_surface;
     int surface_size = 6;
 
     /* Fill the background with grey, so that it's easily visible when
      * things get overdrawn */
-    cairo_set_source_rgb (cr, 0.5, 0.5, 0.5);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.5, 0.5, 0.5);
+    comac_paint (cr);
 
     /* Create an image surface with my favorite four colors in each
      * quadrant. */
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24,
 					  surface_size, surface_size);
-    cr_surface = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr_surface = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr_surface, 1, 1, 1);
-    cairo_rectangle (cr_surface,
+    comac_set_source_rgb (cr_surface, 1, 1, 1);
+    comac_rectangle (cr_surface,
 		     0, 0,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 1, 0, 0);
-    cairo_rectangle (cr_surface,
+    comac_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 1, 0, 0);
+    comac_rectangle (cr_surface,
 		     surface_size / 2, 0,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 0, 1, 0);
-    cairo_rectangle (cr_surface,
+    comac_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 0, 1, 0);
+    comac_rectangle (cr_surface,
 		     0, surface_size / 2,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 0, 0, 1);
-    cairo_rectangle (cr_surface,
+    comac_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 0, 0, 1);
+    comac_rectangle (cr_surface,
 		     surface_size / 2, surface_size / 2,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
+    comac_fill (cr_surface);
 
-    cairo_scale (cr, 10, 10);
-    cairo_rotate (cr, 1.);
-    cairo_set_source_surface (cr, cairo_get_target (cr_surface), 4, -4.5);
-    cairo_destroy (cr_surface);
+    comac_scale (cr, 10, 10);
+    comac_rotate (cr, 1.);
+    comac_set_source_surface (cr, comac_get_target (cr_surface), 4, -4.5);
+    comac_destroy (cr_surface);
 
-    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_NONE);
-    cairo_paint (cr);
+    comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_NONE);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (surface_pattern_scale_up,
+COMAC_TEST (surface_pattern_scale_up,
 	    "Test scaled-up transformed not-repeated surface patterns"
 	    "\nFails xlib backend (with argb32) with inexplicable alpha in result",
 	    "transform", /* keywords */

@@ -25,39 +25,39 @@
 
 #include "comac-test.h"
 
-#define N_OPERATORS (CAIRO_OPERATOR_SATURATE + 1)
+#define N_OPERATORS (COMAC_OPERATOR_SATURATE + 1)
 #define SIZE 10
 #define PAD 3
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     unsigned int n;
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     for (n = 0; n < N_OPERATORS; n++) {
-	cairo_reset_clip (cr);
-	cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-	cairo_clip (cr);
+	comac_reset_clip (cr);
+	comac_rectangle (cr, 0, 0, SIZE, SIZE);
+	comac_clip (cr);
 
-	cairo_set_source_rgb (cr, 1, 0, 0);
-	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-	cairo_rectangle (cr, 0, 0, SIZE-PAD, SIZE-PAD);
-	cairo_fill (cr);
+	comac_set_source_rgb (cr, 1, 0, 0);
+	comac_set_operator (cr, COMAC_OPERATOR_OVER);
+	comac_rectangle (cr, 0, 0, SIZE-PAD, SIZE-PAD);
+	comac_fill (cr);
 
-	cairo_set_source_rgb (cr, 0, 0, 1);
-	cairo_set_operator (cr, n);
-	cairo_rectangle (cr, PAD, PAD, SIZE-PAD, SIZE-PAD);
-	cairo_fill (cr);
+	comac_set_source_rgb (cr, 0, 0, 1);
+	comac_set_operator (cr, n);
+	comac_rectangle (cr, PAD, PAD, SIZE-PAD, SIZE-PAD);
+	comac_fill (cr);
 
-	cairo_translate (cr, SIZE+PAD, 0);
+	comac_translate (cr, SIZE+PAD, 0);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (operator,
+COMAC_TEST (operator,
 	    "Tests using set_operator()",
 	    "operator", /* keywords */
 	    NULL, /* requirements */

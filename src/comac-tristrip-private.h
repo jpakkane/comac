@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2011 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -34,61 +34,61 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_TRISTRIP_PRIVATE_H
-#define CAIRO_TRISTRIP_PRIVATE_H
+#ifndef COMAC_TRISTRIP_PRIVATE_H
+#define COMAC_TRISTRIP_PRIVATE_H
 
 #include "comac-compiler-private.h"
 #include "comac-error-private.h"
 #include "comac-types-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-struct _cairo_tristrip {
-    cairo_status_t status;
+struct _comac_tristrip {
+    comac_status_t status;
 
     /* XXX clipping */
 
-    const cairo_box_t *limits;
+    const comac_box_t *limits;
     int num_limits;
 
     int num_points;
     int size_points;
-    cairo_point_t *points;
-    cairo_point_t  points_embedded[64];
+    comac_point_t *points;
+    comac_point_t  points_embedded[64];
 };
 
-cairo_private void
-_cairo_tristrip_init (cairo_tristrip_t *strip);
+comac_private void
+_comac_tristrip_init (comac_tristrip_t *strip);
 
-cairo_private void
-_cairo_tristrip_limit (cairo_tristrip_t	*strip,
-		       const cairo_box_t	*limits,
+comac_private void
+_comac_tristrip_limit (comac_tristrip_t	*strip,
+		       const comac_box_t	*limits,
 		       int			 num_limits);
 
-cairo_private void
-_cairo_tristrip_init_with_clip (cairo_tristrip_t *strip,
-				const cairo_clip_t *clip);
+comac_private void
+_comac_tristrip_init_with_clip (comac_tristrip_t *strip,
+				const comac_clip_t *clip);
 
-cairo_private void
-_cairo_tristrip_translate (cairo_tristrip_t *strip, int x, int y);
+comac_private void
+_comac_tristrip_translate (comac_tristrip_t *strip, int x, int y);
 
-cairo_private void
-_cairo_tristrip_move_to (cairo_tristrip_t *strip,
-			 const cairo_point_t *point);
+comac_private void
+_comac_tristrip_move_to (comac_tristrip_t *strip,
+			 const comac_point_t *point);
 
-cairo_private void
-_cairo_tristrip_add_point (cairo_tristrip_t *strip,
-			   const cairo_point_t *point);
+comac_private void
+_comac_tristrip_add_point (comac_tristrip_t *strip,
+			   const comac_point_t *point);
 
-cairo_private void
-_cairo_tristrip_extents (const cairo_tristrip_t *strip,
-			 cairo_box_t         *extents);
+comac_private void
+_comac_tristrip_extents (const comac_tristrip_t *strip,
+			 comac_box_t         *extents);
 
-cairo_private void
-_cairo_tristrip_fini (cairo_tristrip_t *strip);
+comac_private void
+_comac_tristrip_fini (comac_tristrip_t *strip);
 
-#define _cairo_tristrip_status(T) ((T)->status)
+#define _comac_tristrip_status(T) ((T)->status)
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_TRISTRIP_PRIVATE_H */
+#endif /* COMAC_TRISTRIP_PRIVATE_H */

@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -36,42 +36,42 @@
  *      Søren Sandmann <sandmann@daimi.au.dk>
  */
 
-#ifndef CAIRO_REGION_PRIVATE_H
-#define CAIRO_REGION_PRIVATE_H
+#ifndef COMAC_REGION_PRIVATE_H
+#define COMAC_REGION_PRIVATE_H
 
 #include "comac-types-private.h"
 #include "comac-reference-count-private.h"
 
 #include <pixman.h>
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-struct _cairo_region {
-    cairo_reference_count_t ref_count;
-    cairo_status_t status;
+struct _comac_region {
+    comac_reference_count_t ref_count;
+    comac_status_t status;
 
     pixman_region32_t rgn;
 };
 
-cairo_private cairo_region_t *
-_cairo_region_create_in_error (cairo_status_t status);
+comac_private comac_region_t *
+_comac_region_create_in_error (comac_status_t status);
 
-cairo_private void
-_cairo_region_init (cairo_region_t *region);
+comac_private void
+_comac_region_init (comac_region_t *region);
 
-cairo_private void
-_cairo_region_init_rectangle (cairo_region_t *region,
-			      const cairo_rectangle_int_t *rectangle);
+comac_private void
+_comac_region_init_rectangle (comac_region_t *region,
+			      const comac_rectangle_int_t *rectangle);
 
-cairo_private void
-_cairo_region_fini (cairo_region_t *region);
+comac_private void
+_comac_region_fini (comac_region_t *region);
 
-cairo_private cairo_region_t *
-_cairo_region_create_from_boxes (const cairo_box_t *boxes, int count);
+comac_private comac_region_t *
+_comac_region_create_from_boxes (const comac_box_t *boxes, int count);
 
-cairo_private cairo_box_t *
-_cairo_region_get_boxes (const cairo_region_t *region, int *nbox);
+comac_private comac_box_t *
+_comac_region_get_boxes (const comac_region_t *region, int *nbox);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_REGION_PRIVATE_H */
+#endif /* COMAC_REGION_PRIVATE_H */

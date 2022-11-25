@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2008 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -33,66 +33,66 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_SCRIPT_H
-#define CAIRO_SCRIPT_H
+#ifndef COMAC_SCRIPT_H
+#define COMAC_SCRIPT_H
 
 #include "comac.h"
 
-#if CAIRO_HAS_SCRIPT_SURFACE
+#if COMAC_HAS_SCRIPT_SURFACE
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 /**
- * cairo_script_mode_t:
- * @CAIRO_SCRIPT_MODE_ASCII: the output will be in readable text (default). (Since 1.12)
- * @CAIRO_SCRIPT_MODE_BINARY: the output will use byte codes. (Since 1.12)
+ * comac_script_mode_t:
+ * @COMAC_SCRIPT_MODE_ASCII: the output will be in readable text (default). (Since 1.12)
+ * @COMAC_SCRIPT_MODE_BINARY: the output will use byte codes. (Since 1.12)
  *
  * A set of script output variants.
  *
  * Since: 1.12
  **/
 typedef enum {
-    CAIRO_SCRIPT_MODE_ASCII,
-    CAIRO_SCRIPT_MODE_BINARY
-} cairo_script_mode_t;
+    COMAC_SCRIPT_MODE_ASCII,
+    COMAC_SCRIPT_MODE_BINARY
+} comac_script_mode_t;
 
-cairo_public cairo_device_t *
-cairo_script_create (const char *filename);
+comac_public comac_device_t *
+comac_script_create (const char *filename);
 
-cairo_public cairo_device_t *
-cairo_script_create_for_stream (cairo_write_func_t	 write_func,
+comac_public comac_device_t *
+comac_script_create_for_stream (comac_write_func_t	 write_func,
 				void			*closure);
 
-cairo_public void
-cairo_script_write_comment (cairo_device_t *script,
+comac_public void
+comac_script_write_comment (comac_device_t *script,
 			    const char *comment,
 			    int len);
 
-cairo_public void
-cairo_script_set_mode (cairo_device_t *script,
-		       cairo_script_mode_t mode);
+comac_public void
+comac_script_set_mode (comac_device_t *script,
+		       comac_script_mode_t mode);
 
-cairo_public cairo_script_mode_t
-cairo_script_get_mode (cairo_device_t *script);
+comac_public comac_script_mode_t
+comac_script_get_mode (comac_device_t *script);
 
-cairo_public cairo_surface_t *
-cairo_script_surface_create (cairo_device_t *script,
-			     cairo_content_t content,
+comac_public comac_surface_t *
+comac_script_surface_create (comac_device_t *script,
+			     comac_content_t content,
 			     double width,
 			     double height);
 
-cairo_public cairo_surface_t *
-cairo_script_surface_create_for_target (cairo_device_t *script,
-					cairo_surface_t *target);
+comac_public comac_surface_t *
+comac_script_surface_create_for_target (comac_device_t *script,
+					comac_surface_t *target);
 
-cairo_public cairo_status_t
-cairo_script_from_recording_surface (cairo_device_t	*script,
-				     cairo_surface_t	*recording_surface);
+comac_public comac_status_t
+comac_script_from_recording_surface (comac_device_t	*script,
+				     comac_surface_t	*recording_surface);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#else  /*CAIRO_HAS_SCRIPT_SURFACE*/
-# error Cairo was not compiled with support for the CairoScript backend
-#endif /*CAIRO_HAS_SCRIPT_SURFACE*/
+#else  /*COMAC_HAS_SCRIPT_SURFACE*/
+# error Comac was not compiled with support for the ComacScript backend
+#endif /*COMAC_HAS_SCRIPT_SURFACE*/
 
-#endif /*CAIRO_SCRIPT_H*/
+#endif /*COMAC_SCRIPT_H*/

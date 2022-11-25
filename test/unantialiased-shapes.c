@@ -27,70 +27,70 @@
 
 /* The star shape from the SVG test suite, from the fill rule test */
 static void
-big_star_path (cairo_t *cr)
+big_star_path (comac_t *cr)
 {
-    cairo_move_to (cr, 40, 0);
-    cairo_rel_line_to (cr, 25, 80);
-    cairo_rel_line_to (cr, -65, -50);
-    cairo_rel_line_to (cr, 80, 0);
-    cairo_rel_line_to (cr, -65, 50);
-    cairo_close_path (cr);
+    comac_move_to (cr, 40, 0);
+    comac_rel_line_to (cr, 25, 80);
+    comac_rel_line_to (cr, -65, -50);
+    comac_rel_line_to (cr, 80, 0);
+    comac_rel_line_to (cr, -65, 50);
+    comac_close_path (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
     /* Try a circle */
-    cairo_arc (cr, 40, 40, 20, 0, 2 * M_PI);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill (cr);
+    comac_arc (cr, 40, 40, 20, 0, 2 * M_PI);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill (cr);
 
     /* Try using clipping to draw a circle */
-    cairo_arc (cr, 100, 40, 20, 0, 2 * M_PI);
-    cairo_clip (cr);
-    cairo_rectangle (cr, 80, 20, 40, 40);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_fill (cr);
+    comac_arc (cr, 100, 40, 20, 0, 2 * M_PI);
+    comac_clip (cr);
+    comac_rectangle (cr, 80, 20, 40, 40);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_fill (cr);
 
     /* Reset the clipping */
-    cairo_reset_clip (cr);
+    comac_reset_clip (cr);
 
     /* Draw a bunch of lines */
-    cairo_set_line_width (cr, 1.0);
-    cairo_set_source_rgb (cr, 0, 1, 0);
+    comac_set_line_width (cr, 1.0);
+    comac_set_source_rgb (cr, 0, 1, 0);
     for (i = 0; i < 10; i++) {
-        cairo_move_to (cr, 10, 70 + (i * 4));
-        cairo_line_to (cr, 120, 70 + (i * 18));
-        cairo_stroke (cr);
+        comac_move_to (cr, 10, 70 + (i * 4));
+        comac_line_to (cr, 120, 70 + (i * 18));
+        comac_stroke (cr);
     }
 
     /* Try filling a poly */
-    cairo_translate (cr, 160, 120);
-    cairo_set_source_rgb (cr, 1, 1, 0);
+    comac_translate (cr, 160, 120);
+    comac_set_source_rgb (cr, 1, 1, 0);
     big_star_path (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_fill (cr);
-    cairo_translate (cr, -160, -120);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_fill (cr);
+    comac_translate (cr, -160, -120);
 
     /* How about some curves? */
-    cairo_set_source_rgb (cr, 1, 0, 1);
+    comac_set_source_rgb (cr, 1, 0, 1);
     for (i = 0; i < 10; i++) {
-        cairo_move_to (cr, 150, 50 + (i * 5));
-        cairo_curve_to (cr, 250, 50, 200, (i * 10), 300, 50 + (i * 10));
-        cairo_stroke (cr);
+        comac_move_to (cr, 150, 50 + (i * 5));
+        comac_curve_to (cr, 250, 50, 200, (i * 10), 300, 50 + (i * 10));
+        comac_stroke (cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (unantialiased_shapes,
+COMAC_TEST (unantialiased_shapes,
 	    "Test shape drawing without antialiasing",
 	    "fill, stroke", /* keywords */
 	    "target=raster", /* requirements */

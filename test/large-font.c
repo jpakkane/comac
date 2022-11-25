@@ -35,7 +35,7 @@
  *			corrupt glyph positions with large font
  *			https://bugzilla.redhat.com/show_bug.cgi?id=448104
  *
- * 2008-05-23: Carl Worth wrote this test for the cairo test suite to
+ * 2008-05-23: Carl Worth wrote this test for the comac test suite to
  *             exercise the bug.
  */
 
@@ -45,27 +45,27 @@
 #define HEIGHT 800
 #define TEXT_SIZE 10000
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* paint white so we don't need separate ref images for
      * RGB24 and ARGB32 */
-    cairo_set_source_rgb (cr, 1., 1., 1.);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1., 1., 1.);
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_move_to (cr, -TEXT_SIZE / 2, TEXT_SIZE / 2);
-    cairo_show_text (cr, "xW");
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_move_to (cr, -TEXT_SIZE / 2, TEXT_SIZE / 2);
+    comac_show_text (cr, "xW");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (large_font,
+COMAC_TEST (large_font,
 	    "Draws a very large font to exercise a glyph-positioning bug",
 	    "stress, font", /* keywords */
 	    NULL, /* requirements */

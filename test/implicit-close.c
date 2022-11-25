@@ -27,26 +27,26 @@
 
 #define SIZE 40
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_move_to (cr, SIZE,    0);
-    cairo_rel_line_to (cr, 0, SIZE);
-    cairo_rel_line_to (cr, -SIZE,    0);
+    comac_move_to (cr, SIZE,    0);
+    comac_rel_line_to (cr, 0, SIZE);
+    comac_rel_line_to (cr, -SIZE,    0);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_fill_preserve (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_fill_preserve (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (implicit_close,
+COMAC_TEST (implicit_close,
 	    "Test implicitly closing paths",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

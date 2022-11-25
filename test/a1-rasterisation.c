@@ -31,69 +31,69 @@
  */
 
 #include "../src/comac-fixed-type-private.h"
-#define PRECISION (int)(1 << CAIRO_FIXED_FRAC_BITS)
+#define PRECISION (int)(1 << COMAC_FIXED_FRAC_BITS)
 
 #define WIDTH ((PRECISION/2+1)*3)
 #define HEIGHT ((PRECISION/2+1)*3)
 
 #define SUBPIXEL(v) ((v)/(double)(PRECISION/2))
 
-static cairo_test_status_t
-rectangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+rectangles (comac_t *cr, int width, int height)
 {
     int x, y;
 
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
     for (x = 0; x < WIDTH; x += 3) {
 	for (y = 0; y < HEIGHT; y += 3) {
-	    cairo_rectangle (cr, x + SUBPIXEL (y/3) - .5, y + SUBPIXEL (x/3) - .5, .5, .5);
+	    comac_rectangle (cr, x + SUBPIXEL (y/3) - .5, y + SUBPIXEL (x/3) - .5, .5, .5);
 	}
     }
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-triangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+triangles (comac_t *cr, int width, int height)
 {
     int x, y;
 
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
     for (x = 0; x < WIDTH; x += 3) {
 	for (y = 0; y < HEIGHT; y += 3) {
 	    /* a rectangle with a diagonal to force tessellation */
-	    cairo_move_to (cr, x + SUBPIXEL (y/3) - .5, y + SUBPIXEL (x/3) - .5);
-	    cairo_rel_line_to (cr, .5, .5);
-	    cairo_rel_line_to (cr, 0, -.5);
-	    cairo_rel_line_to (cr, -.5, 0);
-	    cairo_rel_line_to (cr, 0, .5);
-	    cairo_rel_line_to (cr, .5, 0);
+	    comac_move_to (cr, x + SUBPIXEL (y/3) - .5, y + SUBPIXEL (x/3) - .5);
+	    comac_rel_line_to (cr, .5, .5);
+	    comac_rel_line_to (cr, 0, -.5);
+	    comac_rel_line_to (cr, -.5, 0);
+	    comac_rel_line_to (cr, 0, .5);
+	    comac_rel_line_to (cr, .5, 0);
 	}
     }
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a1_rasterisation_rectangles,
+COMAC_TEST (a1_rasterisation_rectangles,
 	    "Check the fidelity of the rasterisation.",
 	    "rasterisation", /* keywords */
 	    "target=raster", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, rectangles)
 
-CAIRO_TEST (a1_rasterisation_triangles,
+COMAC_TEST (a1_rasterisation_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    "rasterisation", /* keywords */
 	    "target=raster", /* requirements */

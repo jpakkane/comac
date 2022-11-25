@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2003 University of Southern California
  * Copyright © 2009,2010,2011 Intel Corporation
@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -38,7 +38,7 @@
  */
 
 /* The primarily reason for keeping a traps-compositor around is
- * for validating cairo-xlib (which currently also uses traps).
+ * for validating comac-xlib (which currently also uses traps).
  */
 
 #include "comacint.h"
@@ -55,55 +55,55 @@
 #include "comac-pixman-private.h"
 
 static pixman_image_t *
-to_pixman_image (cairo_surface_t *s)
+to_pixman_image (comac_surface_t *s)
 {
-    return ((cairo_image_surface_t *)s)->pixman_image;
+    return ((comac_image_surface_t *)s)->pixman_image;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 acquire (void *abstract_dst)
 {
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 release (void *abstract_dst)
 {
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 set_clip_region (void *_surface,
-		 cairo_region_t *region)
+		 comac_region_t *region)
 {
-    cairo_image_surface_t *surface = _surface;
+    comac_image_surface_t *surface = _surface;
     pixman_region32_t *rgn = region ? &region->rgn : NULL;
 
     if (! pixman_image_set_clip_region32 (surface->pixman_image, rgn))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 draw_image_boxes (void *_dst,
-		  cairo_image_surface_t *image,
-		  cairo_boxes_t *boxes,
+		  comac_image_surface_t *image,
+		  comac_boxes_t *boxes,
 		  int dx, int dy)
 {
-    cairo_image_surface_t *dst = _dst;
-    struct _cairo_boxes_chunk *chunk;
+    comac_image_surface_t *dst = _dst;
+    struct _comac_boxes_chunk *chunk;
     int i;
 
     TRACE ((stderr, "%s x %d\n", __FUNCTION__, boxes->num_boxes));
 
     for (chunk = &boxes->chunks; chunk; chunk = chunk->next) {
 	for (i = 0; i < chunk->count; i++) {
-	    cairo_box_t *b = &chunk->base[i];
-	    int x = _cairo_fixed_integer_part (b->p1.x);
-	    int y = _cairo_fixed_integer_part (b->p1.y);
-	    int w = _cairo_fixed_integer_part (b->p2.x) - x;
-	    int h = _cairo_fixed_integer_part (b->p2.y) - y;
+	    comac_box_t *b = &chunk->base[i];
+	    int x = _comac_fixed_integer_part (b->p1.x);
+	    int y = _comac_fixed_integer_part (b->p1.y);
+	    int w = _comac_fixed_integer_part (b->p2.x) - x;
+	    int h = _comac_fixed_integer_part (b->p2.y) - y;
 	    if (dst->pixman_format != image->pixman_format ||
 		! pixman_blt ((uint32_t *)image->data, (uint32_t *)dst->data,
 			      image->stride / sizeof (uint32_t),
@@ -123,11 +123,11 @@ draw_image_boxes (void *_dst,
 	    }
 	}
     }
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static inline uint32_t
-color_to_uint32 (const cairo_color_t *color)
+color_to_uint32 (const comac_color_t *color)
 {
     return
         ((uint32_t)color->alpha_short >> 8 << 24) |
@@ -136,8 +136,8 @@ color_to_uint32 (const cairo_color_t *color)
         (color->blue_short >> 8);
 }
 
-static inline cairo_bool_t
-color_to_pixel (const cairo_color_t	*color,
+static inline comac_bool_t
+color_to_pixel (const comac_color_t	*color,
                 pixman_format_code_t	 format,
                 uint32_t		*pixel)
 {
@@ -185,70 +185,70 @@ color_to_pixel (const cairo_color_t	*color,
 }
 
 static pixman_op_t
-_pixman_operator (cairo_operator_t op)
+_pixman_operator (comac_operator_t op)
 {
     switch ((int) op) {
-    case CAIRO_OPERATOR_CLEAR:
+    case COMAC_OPERATOR_CLEAR:
 	return PIXMAN_OP_CLEAR;
 
-    case CAIRO_OPERATOR_SOURCE:
+    case COMAC_OPERATOR_SOURCE:
 	return PIXMAN_OP_SRC;
-    case CAIRO_OPERATOR_OVER:
+    case COMAC_OPERATOR_OVER:
 	return PIXMAN_OP_OVER;
-    case CAIRO_OPERATOR_IN:
+    case COMAC_OPERATOR_IN:
 	return PIXMAN_OP_IN;
-    case CAIRO_OPERATOR_OUT:
+    case COMAC_OPERATOR_OUT:
 	return PIXMAN_OP_OUT;
-    case CAIRO_OPERATOR_ATOP:
+    case COMAC_OPERATOR_ATOP:
 	return PIXMAN_OP_ATOP;
 
-    case CAIRO_OPERATOR_DEST:
+    case COMAC_OPERATOR_DEST:
 	return PIXMAN_OP_DST;
-    case CAIRO_OPERATOR_DEST_OVER:
+    case COMAC_OPERATOR_DEST_OVER:
 	return PIXMAN_OP_OVER_REVERSE;
-    case CAIRO_OPERATOR_DEST_IN:
+    case COMAC_OPERATOR_DEST_IN:
 	return PIXMAN_OP_IN_REVERSE;
-    case CAIRO_OPERATOR_DEST_OUT:
+    case COMAC_OPERATOR_DEST_OUT:
 	return PIXMAN_OP_OUT_REVERSE;
-    case CAIRO_OPERATOR_DEST_ATOP:
+    case COMAC_OPERATOR_DEST_ATOP:
 	return PIXMAN_OP_ATOP_REVERSE;
 
-    case CAIRO_OPERATOR_XOR:
+    case COMAC_OPERATOR_XOR:
 	return PIXMAN_OP_XOR;
-    case CAIRO_OPERATOR_ADD:
+    case COMAC_OPERATOR_ADD:
 	return PIXMAN_OP_ADD;
-    case CAIRO_OPERATOR_SATURATE:
+    case COMAC_OPERATOR_SATURATE:
 	return PIXMAN_OP_SATURATE;
 
-    case CAIRO_OPERATOR_MULTIPLY:
+    case COMAC_OPERATOR_MULTIPLY:
 	return PIXMAN_OP_MULTIPLY;
-    case CAIRO_OPERATOR_SCREEN:
+    case COMAC_OPERATOR_SCREEN:
 	return PIXMAN_OP_SCREEN;
-    case CAIRO_OPERATOR_OVERLAY:
+    case COMAC_OPERATOR_OVERLAY:
 	return PIXMAN_OP_OVERLAY;
-    case CAIRO_OPERATOR_DARKEN:
+    case COMAC_OPERATOR_DARKEN:
 	return PIXMAN_OP_DARKEN;
-    case CAIRO_OPERATOR_LIGHTEN:
+    case COMAC_OPERATOR_LIGHTEN:
 	return PIXMAN_OP_LIGHTEN;
-    case CAIRO_OPERATOR_COLOR_DODGE:
+    case COMAC_OPERATOR_COLOR_DODGE:
 	return PIXMAN_OP_COLOR_DODGE;
-    case CAIRO_OPERATOR_COLOR_BURN:
+    case COMAC_OPERATOR_COLOR_BURN:
 	return PIXMAN_OP_COLOR_BURN;
-    case CAIRO_OPERATOR_HARD_LIGHT:
+    case COMAC_OPERATOR_HARD_LIGHT:
 	return PIXMAN_OP_HARD_LIGHT;
-    case CAIRO_OPERATOR_SOFT_LIGHT:
+    case COMAC_OPERATOR_SOFT_LIGHT:
 	return PIXMAN_OP_SOFT_LIGHT;
-    case CAIRO_OPERATOR_DIFFERENCE:
+    case COMAC_OPERATOR_DIFFERENCE:
 	return PIXMAN_OP_DIFFERENCE;
-    case CAIRO_OPERATOR_EXCLUSION:
+    case COMAC_OPERATOR_EXCLUSION:
 	return PIXMAN_OP_EXCLUSION;
-    case CAIRO_OPERATOR_HSL_HUE:
+    case COMAC_OPERATOR_HSL_HUE:
 	return PIXMAN_OP_HSL_HUE;
-    case CAIRO_OPERATOR_HSL_SATURATION:
+    case COMAC_OPERATOR_HSL_SATURATION:
 	return PIXMAN_OP_HSL_SATURATION;
-    case CAIRO_OPERATOR_HSL_COLOR:
+    case COMAC_OPERATOR_HSL_COLOR:
 	return PIXMAN_OP_HSL_COLOR;
-    case CAIRO_OPERATOR_HSL_LUMINOSITY:
+    case COMAC_OPERATOR_HSL_LUMINOSITY:
 	return PIXMAN_OP_HSL_LUMINOSITY;
 
     default:
@@ -257,25 +257,25 @@ _pixman_operator (cairo_operator_t op)
     }
 }
 
-static cairo_bool_t
-__fill_reduces_to_source (cairo_operator_t op,
-			  const cairo_color_t *color,
-			  const cairo_image_surface_t *dst)
+static comac_bool_t
+__fill_reduces_to_source (comac_operator_t op,
+			  const comac_color_t *color,
+			  const comac_image_surface_t *dst)
 {
-    if (op == CAIRO_OPERATOR_SOURCE || op == CAIRO_OPERATOR_CLEAR)
+    if (op == COMAC_OPERATOR_SOURCE || op == COMAC_OPERATOR_CLEAR)
 	return TRUE;
-    if (op == CAIRO_OPERATOR_OVER && CAIRO_COLOR_IS_OPAQUE (color))
+    if (op == COMAC_OPERATOR_OVER && COMAC_COLOR_IS_OPAQUE (color))
 	return TRUE;
     if (dst->base.is_clear)
-	return op == CAIRO_OPERATOR_OVER || op == CAIRO_OPERATOR_ADD;
+	return op == COMAC_OPERATOR_OVER || op == COMAC_OPERATOR_ADD;
 
     return FALSE;
 }
 
-static cairo_bool_t
-fill_reduces_to_source (cairo_operator_t op,
-			const cairo_color_t *color,
-			const cairo_image_surface_t *dst,
+static comac_bool_t
+fill_reduces_to_source (comac_operator_t op,
+			const comac_color_t *color,
+			const comac_image_surface_t *dst,
 			uint32_t *pixel)
 {
     if (__fill_reduces_to_source (op, color, dst)) {
@@ -285,14 +285,14 @@ fill_reduces_to_source (cairo_operator_t op,
     return FALSE;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 fill_rectangles (void			*_dst,
-		 cairo_operator_t	 op,
-		 const cairo_color_t	*color,
-		 cairo_rectangle_int_t	*rects,
+		 comac_operator_t	 op,
+		 const comac_color_t	*color,
+		 comac_rectangle_int_t	*rects,
 		 int			 num_rects)
 {
-    cairo_image_surface_t *dst = _dst;
+    comac_image_surface_t *dst = _dst;
     uint32_t pixel;
     int i;
 
@@ -309,7 +309,7 @@ fill_rectangles (void			*_dst,
     } else {
 	pixman_image_t *src = _pixman_image_for_color (color);
 	if (unlikely (src == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	op = _pixman_operator (op);
 	for (i = 0; i < num_rects; i++) {
@@ -324,17 +324,17 @@ fill_rectangles (void			*_dst,
 	pixman_image_unref (src);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 fill_boxes (void		*_dst,
-	    cairo_operator_t	 op,
-	    const cairo_color_t	*color,
-	    cairo_boxes_t	*boxes)
+	    comac_operator_t	 op,
+	    const comac_color_t	*color,
+	    comac_boxes_t	*boxes)
 {
-    cairo_image_surface_t *dst = _dst;
-    struct _cairo_boxes_chunk *chunk;
+    comac_image_surface_t *dst = _dst;
+    struct _comac_boxes_chunk *chunk;
     uint32_t pixel;
     int i;
 
@@ -343,10 +343,10 @@ fill_boxes (void		*_dst,
     if (fill_reduces_to_source (op, color, dst, &pixel)) {
 	for (chunk = &boxes->chunks; chunk; chunk = chunk->next) {
 	    for (i = 0; i < chunk->count; i++) {
-		int x = _cairo_fixed_integer_part (chunk->base[i].p1.x);
-		int y = _cairo_fixed_integer_part (chunk->base[i].p1.y);
-		int w = _cairo_fixed_integer_part (chunk->base[i].p2.x) - x;
-		int h = _cairo_fixed_integer_part (chunk->base[i].p2.y) - y;
+		int x = _comac_fixed_integer_part (chunk->base[i].p1.x);
+		int y = _comac_fixed_integer_part (chunk->base[i].p1.y);
+		int w = _comac_fixed_integer_part (chunk->base[i].p2.x) - x;
+		int h = _comac_fixed_integer_part (chunk->base[i].p2.y) - y;
 		pixman_fill ((uint32_t *) dst->data,
 			     dst->stride / sizeof (uint32_t),
 			     PIXMAN_FORMAT_BPP (dst->pixman_format),
@@ -358,15 +358,15 @@ fill_boxes (void		*_dst,
     {
 	pixman_image_t *src = _pixman_image_for_color (color);
 	if (unlikely (src == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	op = _pixman_operator (op);
 	for (chunk = &boxes->chunks; chunk; chunk = chunk->next) {
 	    for (i = 0; i < chunk->count; i++) {
-		int x1 = _cairo_fixed_integer_part (chunk->base[i].p1.x);
-		int y1 = _cairo_fixed_integer_part (chunk->base[i].p1.y);
-		int x2 = _cairo_fixed_integer_part (chunk->base[i].p2.x);
-		int y2 = _cairo_fixed_integer_part (chunk->base[i].p2.y);
+		int x1 = _comac_fixed_integer_part (chunk->base[i].p1.x);
+		int y1 = _comac_fixed_integer_part (chunk->base[i].p1.y);
+		int x2 = _comac_fixed_integer_part (chunk->base[i].p2.x);
+		int y2 = _comac_fixed_integer_part (chunk->base[i].p2.y);
 		pixman_image_composite32 (op,
 					  src, NULL, dst->pixman_image,
 					  0, 0,
@@ -379,14 +379,14 @@ fill_boxes (void		*_dst,
 	pixman_image_unref (src);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite (void			*_dst,
-	   cairo_operator_t	op,
-	   cairo_surface_t	*abstract_src,
-	   cairo_surface_t	*abstract_mask,
+	   comac_operator_t	op,
+	   comac_surface_t	*abstract_src,
+	   comac_surface_t	*abstract_mask,
 	   int			src_x,
 	   int			src_y,
 	   int			mask_x,
@@ -396,8 +396,8 @@ composite (void			*_dst,
 	   unsigned int		width,
 	   unsigned int		height)
 {
-    cairo_image_source_t *src = (cairo_image_source_t *)abstract_src;
-    cairo_image_source_t *mask = (cairo_image_source_t *)abstract_mask;
+    comac_image_source_t *src = (comac_image_source_t *)abstract_src;
+    comac_image_source_t *mask = (comac_image_source_t *)abstract_mask;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
@@ -417,13 +417,13 @@ composite (void			*_dst,
 				  width, height);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 lerp (void			*_dst,
-      cairo_surface_t		*abstract_src,
-      cairo_surface_t		*abstract_mask,
+      comac_surface_t		*abstract_src,
+      comac_surface_t		*abstract_mask,
       int			src_x,
       int			src_y,
       int			mask_x,
@@ -433,9 +433,9 @@ lerp (void			*_dst,
       unsigned int		width,
       unsigned int		height)
 {
-    cairo_image_surface_t *dst = _dst;
-    cairo_image_source_t *src = (cairo_image_source_t *)abstract_src;
-    cairo_image_source_t *mask = (cairo_image_source_t *)abstract_mask;
+    comac_image_surface_t *dst = _dst;
+    comac_image_source_t *src = (comac_image_source_t *)abstract_src;
+    comac_image_source_t *mask = (comac_image_source_t *)abstract_mask;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
@@ -473,53 +473,53 @@ lerp (void			*_dst,
 			      width,  height);
 #endif
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_boxes (void			*_dst,
-		 cairo_operator_t	op,
-		 cairo_surface_t	*abstract_src,
-		 cairo_surface_t	*abstract_mask,
+		 comac_operator_t	op,
+		 comac_surface_t	*abstract_src,
+		 comac_surface_t	*abstract_mask,
 		 int			src_x,
 		 int			src_y,
 		 int			mask_x,
 		 int			mask_y,
 		 int			dst_x,
 		 int			dst_y,
-		 cairo_boxes_t		*boxes,
-		 const cairo_rectangle_int_t  *extents)
+		 comac_boxes_t		*boxes,
+		 const comac_rectangle_int_t  *extents)
 {
     pixman_image_t *dst = to_pixman_image (_dst);
-    pixman_image_t *src = ((cairo_image_source_t *)abstract_src)->pixman_image;
-    pixman_image_t *mask = abstract_mask ? ((cairo_image_source_t *)abstract_mask)->pixman_image : NULL;
+    pixman_image_t *src = ((comac_image_source_t *)abstract_src)->pixman_image;
+    pixman_image_t *mask = abstract_mask ? ((comac_image_source_t *)abstract_mask)->pixman_image : NULL;
     pixman_image_t *free_src = NULL;
-    struct _cairo_boxes_chunk *chunk;
+    struct _comac_boxes_chunk *chunk;
     int i;
 
     /* XXX consider using a region? saves multiple prepare-composite */
     TRACE ((stderr, "%s x %d\n", __FUNCTION__, boxes->num_boxes));
 
-    if (((cairo_surface_t *)_dst)->is_clear &&
-	(op == CAIRO_OPERATOR_SOURCE ||
-	 op == CAIRO_OPERATOR_OVER ||
-	 op == CAIRO_OPERATOR_ADD)) {
+    if (((comac_surface_t *)_dst)->is_clear &&
+	(op == COMAC_OPERATOR_SOURCE ||
+	 op == COMAC_OPERATOR_OVER ||
+	 op == COMAC_OPERATOR_ADD)) {
 	op = PIXMAN_OP_SRC;
     } else if (mask) {
-	if (op == CAIRO_OPERATOR_CLEAR) {
+	if (op == COMAC_OPERATOR_CLEAR) {
 #if PIXMAN_HAS_OP_LERP
 	    op = PIXMAN_OP_LERP_CLEAR;
 #else
-	    free_src = src = _pixman_image_for_color (CAIRO_COLOR_WHITE);
+	    free_src = src = _pixman_image_for_color (COMAC_COLOR_WHITE);
 	    if (unlikely (src == NULL))
-		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	    op = PIXMAN_OP_OUT_REVERSE;
 #endif
-	} else if (op == CAIRO_OPERATOR_SOURCE) {
+	} else if (op == COMAC_OPERATOR_SOURCE) {
 #if PIXMAN_HAS_OP_LERP
 	    op = PIXMAN_OP_LERP_SRC;
 #else
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 #endif
 	} else {
 	    op = _pixman_operator (op);
@@ -530,10 +530,10 @@ composite_boxes (void			*_dst,
 
     for (chunk = &boxes->chunks; chunk; chunk = chunk->next) {
 	for (i = 0; i < chunk->count; i++) {
-	    int x1 = _cairo_fixed_integer_part (chunk->base[i].p1.x);
-	    int y1 = _cairo_fixed_integer_part (chunk->base[i].p1.y);
-	    int x2 = _cairo_fixed_integer_part (chunk->base[i].p2.x);
-	    int y2 = _cairo_fixed_integer_part (chunk->base[i].p2.y);
+	    int x1 = _comac_fixed_integer_part (chunk->base[i].p1.x);
+	    int y1 = _comac_fixed_integer_part (chunk->base[i].p1.y);
+	    int x2 = _comac_fixed_integer_part (chunk->base[i].p2.x);
+	    int y2 = _comac_fixed_integer_part (chunk->base[i].p2.y);
 
 	    pixman_image_composite32 (op, src, mask, dst,
 				      x1 + src_x, y1 + src_y,
@@ -546,63 +546,63 @@ composite_boxes (void			*_dst,
     if (free_src)
 	pixman_image_unref (free_src);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-#define CAIRO_FIXED_16_16_MIN _cairo_fixed_from_int (-32768)
-#define CAIRO_FIXED_16_16_MAX _cairo_fixed_from_int (32767)
+#define COMAC_FIXED_16_16_MIN _comac_fixed_from_int (-32768)
+#define COMAC_FIXED_16_16_MAX _comac_fixed_from_int (32767)
 
-static cairo_bool_t
-line_exceeds_16_16 (const cairo_line_t *line)
+static comac_bool_t
+line_exceeds_16_16 (const comac_line_t *line)
 {
     return
-	line->p1.x <= CAIRO_FIXED_16_16_MIN ||
-	line->p1.x >= CAIRO_FIXED_16_16_MAX ||
+	line->p1.x <= COMAC_FIXED_16_16_MIN ||
+	line->p1.x >= COMAC_FIXED_16_16_MAX ||
 
-	line->p2.x <= CAIRO_FIXED_16_16_MIN ||
-	line->p2.x >= CAIRO_FIXED_16_16_MAX ||
+	line->p2.x <= COMAC_FIXED_16_16_MIN ||
+	line->p2.x >= COMAC_FIXED_16_16_MAX ||
 
-	line->p1.y <= CAIRO_FIXED_16_16_MIN ||
-	line->p1.y >= CAIRO_FIXED_16_16_MAX ||
+	line->p1.y <= COMAC_FIXED_16_16_MIN ||
+	line->p1.y >= COMAC_FIXED_16_16_MAX ||
 
-	line->p2.y <= CAIRO_FIXED_16_16_MIN ||
-	line->p2.y >= CAIRO_FIXED_16_16_MAX;
+	line->p2.y <= COMAC_FIXED_16_16_MIN ||
+	line->p2.y >= COMAC_FIXED_16_16_MAX;
 }
 
 static void
-project_line_x_onto_16_16 (const cairo_line_t *line,
-			   cairo_fixed_t top,
-			   cairo_fixed_t bottom,
+project_line_x_onto_16_16 (const comac_line_t *line,
+			   comac_fixed_t top,
+			   comac_fixed_t bottom,
 			   pixman_line_fixed_t *out)
 {
     /* XXX use fixed-point arithmetic? */
-    cairo_point_double_t p1, p2;
+    comac_point_double_t p1, p2;
     double m;
 
-    p1.x = _cairo_fixed_to_double (line->p1.x);
-    p1.y = _cairo_fixed_to_double (line->p1.y);
+    p1.x = _comac_fixed_to_double (line->p1.x);
+    p1.y = _comac_fixed_to_double (line->p1.y);
 
-    p2.x = _cairo_fixed_to_double (line->p2.x);
-    p2.y = _cairo_fixed_to_double (line->p2.y);
+    p2.x = _comac_fixed_to_double (line->p2.x);
+    p2.y = _comac_fixed_to_double (line->p2.y);
 
     m = (p2.x - p1.x) / (p2.y - p1.y);
-    out->p1.x = _cairo_fixed_16_16_from_double (p1.x + m * _cairo_fixed_to_double (top - line->p1.y));
-    out->p2.x = _cairo_fixed_16_16_from_double (p1.x + m * _cairo_fixed_to_double (bottom - line->p1.y));
+    out->p1.x = _comac_fixed_16_16_from_double (p1.x + m * _comac_fixed_to_double (top - line->p1.y));
+    out->p2.x = _comac_fixed_16_16_from_double (p1.x + m * _comac_fixed_to_double (bottom - line->p1.y));
 }
 
 void
 _pixman_image_add_traps (pixman_image_t *image,
 			 int dst_x, int dst_y,
-			 cairo_traps_t *traps)
+			 comac_traps_t *traps)
 {
-    cairo_trapezoid_t *t = traps->traps;
+    comac_trapezoid_t *t = traps->traps;
     int num_traps = traps->num_traps;
     while (num_traps--) {
 	pixman_trapezoid_t trap;
 
 	/* top/bottom will be clamped to surface bounds */
-	trap.top = _cairo_fixed_to_16_16 (t->top);
-	trap.bottom = _cairo_fixed_to_16_16 (t->bottom);
+	trap.top = _comac_fixed_to_16_16 (t->top);
+	trap.bottom = _comac_fixed_to_16_16 (t->bottom);
 
 	/* However, all the other coordinates will have been left untouched so
 	 * as not to introduce numerical error. Recompute them if they
@@ -613,10 +613,10 @@ _pixman_image_add_traps (pixman_image_t *image,
 	    trap.left.p1.y = trap.top;
 	    trap.left.p2.y = trap.bottom;
 	} else {
-	    trap.left.p1.x = _cairo_fixed_to_16_16 (t->left.p1.x);
-	    trap.left.p1.y = _cairo_fixed_to_16_16 (t->left.p1.y);
-	    trap.left.p2.x = _cairo_fixed_to_16_16 (t->left.p2.x);
-	    trap.left.p2.y = _cairo_fixed_to_16_16 (t->left.p2.y);
+	    trap.left.p1.x = _comac_fixed_to_16_16 (t->left.p1.x);
+	    trap.left.p1.y = _comac_fixed_to_16_16 (t->left.p1.y);
+	    trap.left.p2.x = _comac_fixed_to_16_16 (t->left.p2.x);
+	    trap.left.p2.y = _comac_fixed_to_16_16 (t->left.p2.y);
 	}
 
 	if (unlikely (line_exceeds_16_16 (&t->right))) {
@@ -624,10 +624,10 @@ _pixman_image_add_traps (pixman_image_t *image,
 	    trap.right.p1.y = trap.top;
 	    trap.right.p2.y = trap.bottom;
 	} else {
-	    trap.right.p1.x = _cairo_fixed_to_16_16 (t->right.p1.x);
-	    trap.right.p1.y = _cairo_fixed_to_16_16 (t->right.p1.y);
-	    trap.right.p2.x = _cairo_fixed_to_16_16 (t->right.p2.x);
-	    trap.right.p2.y = _cairo_fixed_to_16_16 (t->right.p2.y);
+	    trap.right.p1.x = _comac_fixed_to_16_16 (t->right.p1.x);
+	    trap.right.p1.y = _comac_fixed_to_16_16 (t->right.p1.y);
+	    trap.right.p2.x = _comac_fixed_to_16_16 (t->right.p2.x);
+	    trap.right.p2.y = _comac_fixed_to_16_16 (t->right.p2.y);
 	}
 
 	pixman_rasterize_trapezoid (image, &trap, -dst_x, -dst_y);
@@ -635,30 +635,30 @@ _pixman_image_add_traps (pixman_image_t *image,
     }
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_traps (void			*_dst,
-		 cairo_operator_t	op,
-		 cairo_surface_t	*abstract_src,
+		 comac_operator_t	op,
+		 comac_surface_t	*abstract_src,
 		 int			src_x,
 		 int			src_y,
 		 int			dst_x,
 		 int			dst_y,
-		 const cairo_rectangle_int_t *extents,
-		 cairo_antialias_t	antialias,
-		 cairo_traps_t		*traps)
+		 const comac_rectangle_int_t *extents,
+		 comac_antialias_t	antialias,
+		 comac_traps_t		*traps)
 {
-    cairo_image_surface_t *dst = (cairo_image_surface_t *) _dst;
-    cairo_image_source_t *src = (cairo_image_source_t *) abstract_src;
-    cairo_int_status_t status;
+    comac_image_surface_t *dst = (comac_image_surface_t *) _dst;
+    comac_image_source_t *src = (comac_image_source_t *) abstract_src;
+    comac_int_status_t status;
     pixman_image_t *mask;
     pixman_format_code_t format;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     /* pixman doesn't eliminate self-intersecting trapezoids/edges */
-    status = _cairo_bentley_ottmann_tessellate_traps (traps,
-						      CAIRO_FILL_RULE_WINDING);
-    if (status != CAIRO_INT_STATUS_SUCCESS)
+    status = _comac_bentley_ottmann_tessellate_traps (traps,
+						      COMAC_FILL_RULE_WINDING);
+    if (status != COMAC_INT_STATUS_SUCCESS)
 	    return status;
 
     /* Special case adding trapezoids onto a mask surface; we want to avoid
@@ -666,22 +666,22 @@ composite_traps (void			*_dst,
      *
      * We make the assumption here that the portion of the trapezoids
      * contained within the surface is bounded by [dst_x,dst_y,width,height];
-     * the Cairo core code passes bounds based on the trapezoid extents.
+     * the Comac core code passes bounds based on the trapezoid extents.
      */
-    format = antialias == CAIRO_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8;
+    format = antialias == COMAC_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8;
     if (dst->pixman_format == format &&
 	(abstract_src == NULL ||
-	 (op == CAIRO_OPERATOR_ADD && src->is_opaque_solid)))
+	 (op == COMAC_OPERATOR_ADD && src->is_opaque_solid)))
     {
 	_pixman_image_add_traps (dst->pixman_image, dst_x, dst_y, traps);
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     mask = pixman_image_create_bits (format,
 				     extents->width, extents->height,
 				     NULL, 0);
     if (unlikely (mask == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     _pixman_image_add_traps (mask, extents->x, extents->y, traps);
     pixman_image_composite32 (_pixman_operator (op),
@@ -693,21 +693,21 @@ composite_traps (void			*_dst,
 
     pixman_image_unref (mask);
 
-    return  CAIRO_STATUS_SUCCESS;
+    return  COMAC_STATUS_SUCCESS;
 }
 
 #if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,22,0)
 static void
-set_point (pixman_point_fixed_t *p, cairo_point_t *c)
+set_point (pixman_point_fixed_t *p, comac_point_t *c)
 {
-    p->x = _cairo_fixed_to_16_16 (c->x);
-    p->y = _cairo_fixed_to_16_16 (c->y);
+    p->x = _comac_fixed_to_16_16 (c->x);
+    p->y = _comac_fixed_to_16_16 (c->y);
 }
 
 void
 _pixman_image_add_tristrip (pixman_image_t *image,
 			    int dst_x, int dst_y,
-			    cairo_tristrip_t *strip)
+			    comac_tristrip_t *strip)
 {
     pixman_triangle_t tri;
     pixman_point_fixed_t *p[3] = {&tri.p1, &tri.p2, &tri.p3 };
@@ -723,67 +723,67 @@ _pixman_image_add_tristrip (pixman_image_t *image,
     }
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_tristrip (void			*_dst,
-		    cairo_operator_t	op,
-		    cairo_surface_t	*abstract_src,
+		    comac_operator_t	op,
+		    comac_surface_t	*abstract_src,
 		    int			src_x,
 		    int			src_y,
 		    int			dst_x,
 		    int			dst_y,
-		    const cairo_rectangle_int_t *extents,
-		    cairo_antialias_t	antialias,
-		    cairo_tristrip_t	*strip)
+		    const comac_rectangle_int_t *extents,
+		    comac_antialias_t	antialias,
+		    comac_tristrip_t	*strip)
 {
-    cairo_image_surface_t *dst = (cairo_image_surface_t *) _dst;
-    cairo_image_source_t *src = (cairo_image_source_t *) abstract_src;
+    comac_image_surface_t *dst = (comac_image_surface_t *) _dst;
+    comac_image_source_t *src = (comac_image_source_t *) abstract_src;
     pixman_image_t *mask;
     pixman_format_code_t format;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     if (strip->num_points < 3)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (1) { /* pixman doesn't eliminate self-intersecting triangles/edges */
-	    cairo_int_status_t status;
-	    cairo_traps_t traps;
+	    comac_int_status_t status;
+	    comac_traps_t traps;
 	    int n;
 
-	    _cairo_traps_init (&traps);
+	    _comac_traps_init (&traps);
 	    for (n = 0; n < strip->num_points; n++) {
-		    cairo_point_t p[4];
+		    comac_point_t p[4];
 
 		    p[0] = strip->points[0];
 		    p[1] = strip->points[1];
 		    p[2] = strip->points[2];
 		    p[3] = strip->points[0];
 
-		    _cairo_traps_tessellate_convex_quad (&traps, p);
+		    _comac_traps_tessellate_convex_quad (&traps, p);
 	    }
 	    status = composite_traps (_dst, op, abstract_src,
 				      src_x, src_y,
 				      dst_x, dst_y,
 				      extents, antialias, &traps);
-	    _cairo_traps_fini (&traps);
+	    _comac_traps_fini (&traps);
 
 	    return status;
     }
 
-    format = antialias == CAIRO_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8;
+    format = antialias == COMAC_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8;
     if (dst->pixman_format == format &&
 	(abstract_src == NULL ||
-	 (op == CAIRO_OPERATOR_ADD && src->is_opaque_solid)))
+	 (op == COMAC_OPERATOR_ADD && src->is_opaque_solid)))
     {
 	_pixman_image_add_tristrip (dst->pixman_image, dst_x, dst_y, strip);
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     mask = pixman_image_create_bits (format,
 				     extents->width, extents->height,
 				     NULL, 0);
     if (unlikely (mask == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     _pixman_image_add_tristrip (mask, extents->x, extents->y, strip);
     pixman_image_composite32 (_pixman_operator (op),
@@ -795,17 +795,17 @@ composite_tristrip (void			*_dst,
 
     pixman_image_unref (mask);
 
-    return  CAIRO_STATUS_SUCCESS;
+    return  COMAC_STATUS_SUCCESS;
 }
 #endif
 
-static cairo_int_status_t
-check_composite_glyphs (const cairo_composite_rectangles_t *extents,
-			cairo_scaled_font_t *scaled_font,
-			cairo_glyph_t *glyphs,
+static comac_int_status_t
+check_composite_glyphs (const comac_composite_rectangles_t *extents,
+			comac_scaled_font_t *scaled_font,
+			comac_glyph_t *glyphs,
 			int *num_glyphs)
 {
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 #if HAS_PIXMAN_GLYPHS
@@ -821,22 +821,22 @@ get_glyph_cache (void)
 }
 
 void
-_cairo_image_compositor_reset_static_data (void)
+_comac_image_compositor_reset_static_data (void)
 {
-    CAIRO_MUTEX_LOCK (_cairo_glyph_cache_mutex);
+    COMAC_MUTEX_LOCK (_comac_glyph_cache_mutex);
 
     if (global_glyph_cache)
 	pixman_glyph_cache_destroy (global_glyph_cache);
     global_glyph_cache = NULL;
 
-    CAIRO_MUTEX_UNLOCK (_cairo_glyph_cache_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_glyph_cache_mutex);
 }
 
 void
-_cairo_image_scaled_glyph_fini (cairo_scaled_font_t *scaled_font,
-				cairo_scaled_glyph_t *scaled_glyph)
+_comac_image_scaled_glyph_fini (comac_scaled_font_t *scaled_font,
+				comac_scaled_glyph_t *scaled_glyph)
 {
-    CAIRO_MUTEX_LOCK (_cairo_glyph_cache_mutex);
+    COMAC_MUTEX_LOCK (_comac_glyph_cache_mutex);
 
     if (global_glyph_cache) {
 	pixman_glyph_cache_remove (
@@ -844,45 +844,45 @@ _cairo_image_scaled_glyph_fini (cairo_scaled_font_t *scaled_font,
 	    (void *)scaled_glyph->hash_entry.hash);
     }
 
-    CAIRO_MUTEX_UNLOCK (_cairo_glyph_cache_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_glyph_cache_mutex);
 }
 
 #define PHASE(x) ((int)(floor (4 * (x + 0.125)) - 4 * floor (x + 0.125)))
 #define POSITION(x) ((int) floor (x + 0.125))
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_glyphs (void				*_dst,
-		  cairo_operator_t		 op,
-		  cairo_surface_t		*_src,
+		  comac_operator_t		 op,
+		  comac_surface_t		*_src,
 		  int				 src_x,
 		  int				 src_y,
 		  int				 dst_x,
 		  int				 dst_y,
-		  cairo_composite_glyphs_info_t *info)
+		  comac_composite_glyphs_info_t *info)
 {
-    cairo_int_status_t status = CAIRO_INT_STATUS_SUCCESS;
+    comac_int_status_t status = COMAC_INT_STATUS_SUCCESS;
     pixman_glyph_cache_t *glyph_cache;
-    pixman_glyph_t pglyphs_stack[CAIRO_STACK_ARRAY_LENGTH (pixman_glyph_t)];
+    pixman_glyph_t pglyphs_stack[COMAC_STACK_ARRAY_LENGTH (pixman_glyph_t)];
     pixman_glyph_t *pglyphs = pglyphs_stack;
     pixman_glyph_t *pg;
     int i;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    CAIRO_MUTEX_LOCK (_cairo_glyph_cache_mutex);
+    COMAC_MUTEX_LOCK (_comac_glyph_cache_mutex);
 
     glyph_cache = get_glyph_cache();
     if (unlikely (glyph_cache == NULL)) {
-	status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto out_unlock;
     }
 
     pixman_glyph_cache_freeze (glyph_cache);
 
     if (info->num_glyphs > ARRAY_LENGTH (pglyphs_stack)) {
-	pglyphs = _cairo_malloc_ab (info->num_glyphs, sizeof (pixman_glyph_t));
+	pglyphs = _comac_malloc_ab (info->num_glyphs, sizeof (pixman_glyph_t));
 	if (unlikely (pglyphs == NULL)) {
-	    status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto out_thaw;
 	}
     }
@@ -900,18 +900,18 @@ composite_glyphs (void				*_dst,
 
 	glyph = pixman_glyph_cache_lookup (glyph_cache, info->font, (void *)(uintptr_t)index);
 	if (!glyph) {
-	    cairo_scaled_glyph_t *scaled_glyph;
-	    cairo_image_surface_t *glyph_surface;
+	    comac_scaled_glyph_t *scaled_glyph;
+	    comac_image_surface_t *glyph_surface;
 
 	    /* This call can actually end up recursing, so we have to
 	     * drop the mutex around it.
 	     */
-	    CAIRO_MUTEX_UNLOCK (_cairo_glyph_cache_mutex);
-	    status = _cairo_scaled_glyph_lookup (info->font, index,
-						 CAIRO_SCALED_GLYPH_INFO_SURFACE,
+	    COMAC_MUTEX_UNLOCK (_comac_glyph_cache_mutex);
+	    status = _comac_scaled_glyph_lookup (info->font, index,
+						 COMAC_SCALED_GLYPH_INFO_SURFACE,
 						 NULL, /* foreground color */
 						 &scaled_glyph);
-	    CAIRO_MUTEX_LOCK (_cairo_glyph_cache_mutex);
+	    COMAC_MUTEX_LOCK (_comac_glyph_cache_mutex);
 
 	    if (unlikely (status))
 		goto out_thaw;
@@ -922,7 +922,7 @@ composite_glyphs (void				*_dst,
 					       glyph_surface->base.device_transform.y0,
 					       glyph_surface->pixman_image);
 	    if (unlikely (!glyph)) {
-		status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+		status = _comac_error (COMAC_STATUS_NO_MEMORY);
 		goto out_thaw;
 	    }
 	}
@@ -939,7 +939,7 @@ composite_glyphs (void				*_dst,
 	mask_format = pixman_glyph_get_mask_format (glyph_cache, pg - pglyphs, pglyphs);
 
 	pixman_composite_glyphs (_pixman_operator (op),
-				 ((cairo_image_source_t *)_src)->pixman_image,
+				 ((comac_image_source_t *)_src)->pixman_image,
 				 to_pixman_image (_dst),
 				 mask_format,
 				 info->extents.x + src_x, info->extents.y + src_y,
@@ -949,7 +949,7 @@ composite_glyphs (void				*_dst,
 				 glyph_cache, pg - pglyphs, pglyphs);
     } else {
 	pixman_composite_glyphs_no_mask (_pixman_operator (op),
-					 ((cairo_image_source_t *)_src)->pixman_image,
+					 ((comac_image_source_t *)_src)->pixman_image,
 					 to_pixman_image (_dst),
 					 src_x, src_y,
 					 - dst_x, - dst_y,
@@ -963,41 +963,41 @@ out_thaw:
 	free(pglyphs);
 
 out_unlock:
-    CAIRO_MUTEX_UNLOCK (_cairo_glyph_cache_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_glyph_cache_mutex);
     return status;
 }
 #else
 void
-_cairo_image_compositor_reset_static_data (void)
+_comac_image_compositor_reset_static_data (void)
 {
 }
 
 void
-_cairo_image_scaled_glyph_fini (cairo_scaled_font_t *scaled_font,
-				cairo_scaled_glyph_t *scaled_glyph)
+_comac_image_scaled_glyph_fini (comac_scaled_font_t *scaled_font,
+				comac_scaled_glyph_t *scaled_glyph)
 {
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_one_glyph (void				*_dst,
-		     cairo_operator_t			 op,
-		     cairo_surface_t			*_src,
+		     comac_operator_t			 op,
+		     comac_surface_t			*_src,
 		     int				 src_x,
 		     int				 src_y,
 		     int				 dst_x,
 		     int				 dst_y,
-		     cairo_composite_glyphs_info_t	 *info)
+		     comac_composite_glyphs_info_t	 *info)
 {
-    cairo_image_surface_t *glyph_surface;
-    cairo_scaled_glyph_t *scaled_glyph;
-    cairo_status_t status;
+    comac_image_surface_t *glyph_surface;
+    comac_scaled_glyph_t *scaled_glyph;
+    comac_status_t status;
     int x, y;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    status = _cairo_scaled_glyph_lookup (info->font,
+    status = _comac_scaled_glyph_lookup (info->font,
 					 info->glyphs[0].index,
-					 CAIRO_SCALED_GLYPH_INFO_SURFACE,
+					 COMAC_SCALED_GLYPH_INFO_SURFACE,
 					 NULL, /* foreground color */
 					 &scaled_glyph);
 
@@ -1006,17 +1006,17 @@ composite_one_glyph (void				*_dst,
 
     glyph_surface = scaled_glyph->surface;
     if (glyph_surface->width == 0 || glyph_surface->height == 0)
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
     /* round glyph locations to the nearest pixel */
     /* XXX: FRAGILE: We're ignoring device_transform scaling here. A bug? */
-    x = _cairo_lround (info->glyphs[0].x -
+    x = _comac_lround (info->glyphs[0].x -
 		       glyph_surface->base.device_transform.x0);
-    y = _cairo_lround (info->glyphs[0].y -
+    y = _comac_lround (info->glyphs[0].y -
 		       glyph_surface->base.device_transform.y0);
 
     pixman_image_composite32 (_pixman_operator (op),
-			      ((cairo_image_source_t *)_src)->pixman_image,
+			      ((comac_image_source_t *)_src)->pixman_image,
 			      glyph_surface->pixman_image,
 			      to_pixman_image (_dst),
 			      x + src_x,  y + src_y,
@@ -1025,32 +1025,32 @@ composite_one_glyph (void				*_dst,
 			      glyph_surface->width,
 			      glyph_surface->height);
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_glyphs_via_mask (void				*_dst,
-			   cairo_operator_t		 op,
-			   cairo_surface_t		*_src,
+			   comac_operator_t		 op,
+			   comac_surface_t		*_src,
 			   int				 src_x,
 			   int				 src_y,
 			   int				 dst_x,
 			   int				 dst_y,
-			   cairo_composite_glyphs_info_t *info)
+			   comac_composite_glyphs_info_t *info)
 {
-    cairo_scaled_glyph_t *glyph_cache[64];
-    pixman_image_t *white = _pixman_image_for_color (CAIRO_COLOR_WHITE);
-    cairo_scaled_glyph_t *scaled_glyph;
+    comac_scaled_glyph_t *glyph_cache[64];
+    pixman_image_t *white = _pixman_image_for_color (COMAC_COLOR_WHITE);
+    comac_scaled_glyph_t *scaled_glyph;
     uint8_t buf[2048];
     pixman_image_t *mask;
     pixman_format_code_t format;
-    cairo_status_t status;
+    comac_status_t status;
     int i;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
     if (unlikely (white == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     /* XXX convert the glyphs to common formats a8/a8r8g8b8 to hit
      * optimised paths through pixman. Should we increase the bit
@@ -1058,9 +1058,9 @@ composite_glyphs_via_mask (void				*_dst,
      * mask formats.
      */
 
-    status = _cairo_scaled_glyph_lookup (info->font,
+    status = _comac_scaled_glyph_lookup (info->font,
 					 info->glyphs[0].index,
-					 CAIRO_SCALED_GLYPH_INFO_SURFACE,
+					 COMAC_SCALED_GLYPH_INFO_SURFACE,
 					 NULL, /* foreground color */
 					 &scaled_glyph);
     if (unlikely (status)) {
@@ -1073,7 +1073,7 @@ composite_glyphs_via_mask (void				*_dst,
 
     format = PIXMAN_a8;
     i = (info->extents.width + 3) & ~3;
-    if (scaled_glyph->surface->base.content & CAIRO_CONTENT_COLOR) {
+    if (scaled_glyph->surface->base.content & COMAC_CONTENT_COLOR) {
 	format = PIXMAN_a8r8g8b8;
 	i = info->extents.width * 4;
     }
@@ -1092,22 +1092,22 @@ composite_glyphs_via_mask (void				*_dst,
     }
     if (unlikely (mask == NULL)) {
 	pixman_image_unref (white);
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
-    status = CAIRO_STATUS_SUCCESS;
+    status = COMAC_STATUS_SUCCESS;
     for (i = 0; i < info->num_glyphs; i++) {
 	unsigned long glyph_index = info->glyphs[i].index;
 	int cache_index = glyph_index % ARRAY_LENGTH (glyph_cache);
-	cairo_image_surface_t *glyph_surface;
+	comac_image_surface_t *glyph_surface;
 	int x, y;
 
 	scaled_glyph = glyph_cache[cache_index];
 	if (scaled_glyph == NULL ||
-	    _cairo_scaled_glyph_index (scaled_glyph) != glyph_index)
+	    _comac_scaled_glyph_index (scaled_glyph) != glyph_index)
 	{
-	    status = _cairo_scaled_glyph_lookup (info->font, glyph_index,
-						 CAIRO_SCALED_GLYPH_INFO_SURFACE,
+	    status = _comac_scaled_glyph_lookup (info->font, glyph_index,
+						 COMAC_SCALED_GLYPH_INFO_SURFACE,
 						 NULL, /* foreground color */
 						 &scaled_glyph);
 
@@ -1122,7 +1122,7 @@ composite_glyphs_via_mask (void				*_dst,
 
 	glyph_surface = scaled_glyph->surface;
 	if (glyph_surface->width && glyph_surface->height) {
-	    if (glyph_surface->base.content & CAIRO_CONTENT_COLOR &&
+	    if (glyph_surface->base.content & COMAC_CONTENT_COLOR &&
 		format == PIXMAN_a8) {
 		pixman_image_t *ca_mask;
 
@@ -1134,7 +1134,7 @@ composite_glyphs_via_mask (void				*_dst,
 		if (unlikely (ca_mask == NULL)) {
 		    pixman_image_unref (mask);
 		    pixman_image_unref (white);
-		    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+		    return _comac_error (COMAC_STATUS_NO_MEMORY);
 		}
 
 		pixman_image_composite32 (PIXMAN_OP_SRC,
@@ -1150,9 +1150,9 @@ composite_glyphs_via_mask (void				*_dst,
 
 	    /* round glyph locations to the nearest pixel */
 	    /* XXX: FRAGILE: We're ignoring device_transform scaling here. A bug? */
-	    x = _cairo_lround (info->glyphs[i].x -
+	    x = _comac_lround (info->glyphs[i].x -
 			       glyph_surface->base.device_transform.x0);
-	    y = _cairo_lround (info->glyphs[i].y -
+	    y = _comac_lround (info->glyphs[i].y -
 			       glyph_surface->base.device_transform.y0);
 
 	    if (glyph_surface->pixman_format == format) {
@@ -1179,7 +1179,7 @@ composite_glyphs_via_mask (void				*_dst,
 	pixman_image_set_component_alpha (mask, TRUE);
 
     pixman_image_composite32 (_pixman_operator (op),
-			      ((cairo_image_source_t *)_src)->pixman_image,
+			      ((comac_image_source_t *)_src)->pixman_image,
 			      mask,
 			      to_pixman_image (_dst),
 			      info->extents.x + src_x, info->extents.y + src_y,
@@ -1189,22 +1189,22 @@ composite_glyphs_via_mask (void				*_dst,
     pixman_image_unref (mask);
     pixman_image_unref (white);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_glyphs (void				*_dst,
-		  cairo_operator_t		 op,
-		  cairo_surface_t		*_src,
+		  comac_operator_t		 op,
+		  comac_surface_t		*_src,
 		  int				 src_x,
 		  int				 src_y,
 		  int				 dst_x,
 		  int				 dst_y,
-		  cairo_composite_glyphs_info_t *info)
+		  comac_composite_glyphs_info_t *info)
 {
-    cairo_scaled_glyph_t *glyph_cache[64];
+    comac_scaled_glyph_t *glyph_cache[64];
     pixman_image_t *dst, *src;
-    cairo_status_t status;
+    comac_status_t status;
     int i;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
@@ -1217,24 +1217,24 @@ composite_glyphs (void				*_dst,
 
     op = _pixman_operator (op);
     dst = to_pixman_image (_dst);
-    src = ((cairo_image_source_t *)_src)->pixman_image;
+    src = ((comac_image_source_t *)_src)->pixman_image;
 
     memset (glyph_cache, 0, sizeof (glyph_cache));
-    status = CAIRO_STATUS_SUCCESS;
+    status = COMAC_STATUS_SUCCESS;
 
     for (i = 0; i < info->num_glyphs; i++) {
 	int x, y;
-	cairo_image_surface_t *glyph_surface;
-	cairo_scaled_glyph_t *scaled_glyph;
+	comac_image_surface_t *glyph_surface;
+	comac_scaled_glyph_t *scaled_glyph;
 	unsigned long glyph_index = info->glyphs[i].index;
 	int cache_index = glyph_index % ARRAY_LENGTH (glyph_cache);
 
 	scaled_glyph = glyph_cache[cache_index];
 	if (scaled_glyph == NULL ||
-	    _cairo_scaled_glyph_index (scaled_glyph) != glyph_index)
+	    _comac_scaled_glyph_index (scaled_glyph) != glyph_index)
 	{
-	    status = _cairo_scaled_glyph_lookup (info->font, glyph_index,
-						 CAIRO_SCALED_GLYPH_INFO_SURFACE,
+	    status = _comac_scaled_glyph_lookup (info->font, glyph_index,
+						 COMAC_SCALED_GLYPH_INFO_SURFACE,
 						 NULL, /* foreground color */
 						 &scaled_glyph);
 
@@ -1248,9 +1248,9 @@ composite_glyphs (void				*_dst,
 	if (glyph_surface->width && glyph_surface->height) {
 	    /* round glyph locations to the nearest pixel */
 	    /* XXX: FRAGILE: We're ignoring device_transform scaling here. A bug? */
-	    x = _cairo_lround (info->glyphs[i].x -
+	    x = _comac_lround (info->glyphs[i].x -
 			       glyph_surface->base.device_transform.x0);
-	    y = _cairo_lround (info->glyphs[i].y -
+	    y = _comac_lround (info->glyphs[i].y -
 			       glyph_surface->base.device_transform.y0);
 
 	    pixman_image_composite32 (op, src, glyph_surface->pixman_image, dst,
@@ -1266,25 +1266,25 @@ composite_glyphs (void				*_dst,
 }
 #endif
 
-static cairo_int_status_t
-check_composite (const cairo_composite_rectangles_t *extents)
+static comac_int_status_t
+check_composite (const comac_composite_rectangles_t *extents)
 {
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-const cairo_compositor_t *
-_cairo_image_traps_compositor_get (void)
+const comac_compositor_t *
+_comac_image_traps_compositor_get (void)
 {
-    static cairo_atomic_once_t once = CAIRO_ATOMIC_ONCE_INIT;
-    static cairo_traps_compositor_t compositor;
+    static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
+    static comac_traps_compositor_t compositor;
 
-    if (_cairo_atomic_init_once_enter(&once)) {
-	_cairo_traps_compositor_init(&compositor,
-				     &__cairo_no_compositor);
+    if (_comac_atomic_init_once_enter(&once)) {
+	_comac_traps_compositor_init(&compositor,
+				     &__comac_no_compositor);
 	compositor.acquire = acquire;
 	compositor.release = release;
 	compositor.set_clip_region = set_clip_region;
-	compositor.pattern_to_surface = _cairo_image_source_create_for_pattern;
+	compositor.pattern_to_surface = _comac_image_source_create_for_pattern;
 	compositor.draw_image_boxes = draw_image_boxes;
 	//compositor.copy_boxes = copy_boxes;
 	compositor.fill_boxes = fill_boxes;
@@ -1302,25 +1302,25 @@ _cairo_image_traps_compositor_get (void)
 	compositor.check_composite_glyphs = check_composite_glyphs;
 	compositor.composite_glyphs = composite_glyphs;
 
-	_cairo_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave(&once);
     }
 
     return &compositor.base;
 }
 
-const cairo_compositor_t *
-_cairo_image_mask_compositor_get (void)
+const comac_compositor_t *
+_comac_image_mask_compositor_get (void)
 {
-    static cairo_atomic_once_t once = CAIRO_ATOMIC_ONCE_INIT;
-    static cairo_mask_compositor_t compositor;
+    static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
+    static comac_mask_compositor_t compositor;
 
-    if (_cairo_atomic_init_once_enter(&once)) {
-	_cairo_mask_compositor_init (&compositor,
-				     _cairo_image_traps_compositor_get ());
+    if (_comac_atomic_init_once_enter(&once)) {
+	_comac_mask_compositor_init (&compositor,
+				     _comac_image_traps_compositor_get ());
 	compositor.acquire = acquire;
 	compositor.release = release;
 	compositor.set_clip_region = set_clip_region;
-	compositor.pattern_to_surface = _cairo_image_source_create_for_pattern;
+	compositor.pattern_to_surface = _comac_image_source_create_for_pattern;
 	compositor.draw_image_boxes = draw_image_boxes;
 	compositor.fill_rectangles = fill_rectangles;
 	compositor.fill_boxes = fill_boxes;
@@ -1332,33 +1332,33 @@ _cairo_image_mask_compositor_get (void)
 	compositor.check_composite_glyphs = check_composite_glyphs;
 	compositor.composite_glyphs = composite_glyphs;
 
-	_cairo_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave(&once);
     }
 
     return &compositor.base;
 }
 
 #if PIXMAN_HAS_COMPOSITOR
-typedef struct _cairo_image_span_renderer {
-    cairo_span_renderer_t base;
+typedef struct _comac_image_span_renderer {
+    comac_span_renderer_t base;
 
     pixman_image_compositor_t *compositor;
     pixman_image_t *src, *mask;
     float opacity;
-    cairo_rectangle_int_t extents;
-} cairo_image_span_renderer_t;
-COMPILE_TIME_ASSERT (sizeof (cairo_image_span_renderer_t) <= sizeof (cairo_abstract_span_renderer_t));
+    comac_rectangle_int_t extents;
+} comac_image_span_renderer_t;
+COMPILE_TIME_ASSERT (sizeof (comac_image_span_renderer_t) <= sizeof (comac_abstract_span_renderer_t));
 
-static cairo_status_t
-_cairo_image_bounded_opaque_spans (void *abstract_renderer,
+static comac_status_t
+_comac_image_bounded_opaque_spans (void *abstract_renderer,
 				   int y, int height,
-				   const cairo_half_open_span_t *spans,
+				   const comac_half_open_span_t *spans,
 				   unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     do {
 	if (spans[0].coverage)
@@ -1369,19 +1369,19 @@ _cairo_image_bounded_opaque_spans (void *abstract_renderer,
 	spans++;
     } while (--num_spans > 1);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_image_bounded_spans (void *abstract_renderer,
+static comac_status_t
+_comac_image_bounded_spans (void *abstract_renderer,
 			    int y, int height,
-			    const cairo_half_open_span_t *spans,
+			    const comac_half_open_span_t *spans,
 			    unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     do {
 	if (spans[0].coverage) {
@@ -1393,16 +1393,16 @@ _cairo_image_bounded_spans (void *abstract_renderer,
 	spans++;
     } while (--num_spans > 1);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_image_unbounded_spans (void *abstract_renderer,
+static comac_status_t
+_comac_image_unbounded_spans (void *abstract_renderer,
 			      int y, int height,
-			      const cairo_half_open_span_t *spans,
+			      const comac_half_open_span_t *spans,
 			      unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     assert (y + height <= r->extents.height);
     if (y > r->extents.y) {
@@ -1445,16 +1445,16 @@ _cairo_image_unbounded_spans (void *abstract_renderer,
     }
 
     r->extents.y = y + height;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_image_clipped_spans (void *abstract_renderer,
+static comac_status_t
+_comac_image_clipped_spans (void *abstract_renderer,
 			    int y, int height,
-			    const cairo_half_open_span_t *spans,
+			    const comac_half_open_span_t *spans,
 			    unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     assert (num_spans);
 
@@ -1468,13 +1468,13 @@ _cairo_image_clipped_spans (void *abstract_renderer,
     } while (--num_spans > 1);
 
     r->extents.y = y + height;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_image_finish_unbounded_spans (void *abstract_renderer)
+static comac_status_t
+_comac_image_finish_unbounded_spans (void *abstract_renderer)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (r->extents.y < r->extents.height) {
 	pixman_image_compositor_blt (r->compositor,
@@ -1484,31 +1484,31 @@ _cairo_image_finish_unbounded_spans (void *abstract_renderer)
 				     0);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
-span_renderer_init (cairo_abstract_span_renderer_t	*_r,
-		    const cairo_composite_rectangles_t *composite,
-		    cairo_bool_t			 needs_clip)
+static comac_int_status_t
+span_renderer_init (comac_abstract_span_renderer_t	*_r,
+		    const comac_composite_rectangles_t *composite,
+		    comac_bool_t			 needs_clip)
 {
-    cairo_image_span_renderer_t *r = (cairo_image_span_renderer_t *)_r;
-    cairo_image_surface_t *dst = (cairo_image_surface_t *)composite->surface;
-    const cairo_pattern_t *source = &composite->source_pattern.base;
-    cairo_operator_t op = composite->op;
+    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *)_r;
+    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
+    const comac_pattern_t *source = &composite->source_pattern.base;
+    comac_operator_t op = composite->op;
     int src_x, src_y;
     int mask_x, mask_y;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    if (op == CAIRO_OPERATOR_CLEAR) {
+    if (op == COMAC_OPERATOR_CLEAR) {
 	op = PIXMAN_OP_LERP_CLEAR;
     } else if (dst->base.is_clear &&
-	       (op == CAIRO_OPERATOR_SOURCE ||
-		op == CAIRO_OPERATOR_OVER ||
-		op == CAIRO_OPERATOR_ADD)) {
+	       (op == COMAC_OPERATOR_SOURCE ||
+		op == COMAC_OPERATOR_OVER ||
+		op == COMAC_OPERATOR_ADD)) {
 	op = PIXMAN_OP_SRC;
-    } else if (op == CAIRO_OPERATOR_SOURCE) {
+    } else if (op == COMAC_OPERATOR_SOURCE) {
 	op = PIXMAN_OP_LERP_SRC;
     } else {
 	op = _pixman_operator (op);
@@ -1521,10 +1521,10 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 					&composite->source_sample_area,
 					&src_x, &src_y);
     if (unlikely (r->src == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     r->opacity = 1.0;
-    if (composite->mask_pattern.base.type == CAIRO_PATTERN_TYPE_SOLID) {
+    if (composite->mask_pattern.base.type == COMAC_PATTERN_TYPE_SOLID) {
 	r->opacity = composite->mask_pattern.solid.color.alpha;
     } else {
 	r->mask = _pixman_image_for_pattern (dst,
@@ -1534,11 +1534,11 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 					     &composite->mask_sample_area,
 					     &mask_x, &mask_y);
 	if (unlikely (r->mask == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	/* XXX Component-alpha? */
-	if ((dst->base.content & CAIRO_CONTENT_COLOR) == 0 &&
-	    _cairo_pattern_is_opaque (source, &composite->source_sample_area))
+	if ((dst->base.content & COMAC_CONTENT_COLOR) == 0 &&
+	    _comac_pattern_is_opaque (source, &composite->source_sample_area))
 	{
 	    pixman_image_unref (r->src);
 	    r->src = r->mask;
@@ -1550,16 +1550,16 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 
     if (composite->is_bounded) {
 	if (r->opacity == 1.)
-	    r->base.render_rows = _cairo_image_bounded_opaque_spans;
+	    r->base.render_rows = _comac_image_bounded_opaque_spans;
 	else
-	    r->base.render_rows = _cairo_image_bounded_spans;
+	    r->base.render_rows = _comac_image_bounded_spans;
 	r->base.finish = NULL;
     } else {
 	if (needs_clip)
-	    r->base.render_rows = _cairo_image_clipped_spans;
+	    r->base.render_rows = _comac_image_clipped_spans;
 	else
-	    r->base.render_rows = _cairo_image_unbounded_spans;
-        r->base.finish = _cairo_image_finish_unbounded_spans;
+	    r->base.render_rows = _comac_image_unbounded_spans;
+        r->base.finish = _comac_image_finish_unbounded_spans;
 	r->extents = composite->unbounded;
 	r->extents.height += r->extents.y;
     }
@@ -1575,20 +1575,20 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 					composite->unbounded.width,
 					composite->unbounded.height);
     if (unlikely (r->compositor == NULL))
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-span_renderer_fini (cairo_abstract_span_renderer_t *_r,
-		    cairo_int_status_t status)
+span_renderer_fini (comac_abstract_span_renderer_t *_r,
+		    comac_int_status_t status)
 {
-    cairo_image_span_renderer_t *r = (cairo_image_span_renderer_t *) _r;
+    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *) _r;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    if (status == CAIRO_INT_STATUS_SUCCESS && r->base.finish)
+    if (status == COMAC_INT_STATUS_SUCCESS && r->base.finish)
 	r->base.finish (r);
 
     if (r->compositor)
@@ -1600,10 +1600,10 @@ span_renderer_fini (cairo_abstract_span_renderer_t *_r,
 	pixman_image_unref (r->mask);
 }
 #else
-typedef struct _cairo_image_span_renderer {
-    cairo_span_renderer_t base;
+typedef struct _comac_image_span_renderer {
+    comac_span_renderer_t base;
 
-    const cairo_composite_rectangles_t *composite;
+    const comac_composite_rectangles_t *composite;
 
     float opacity;
     uint8_t op;
@@ -1629,29 +1629,29 @@ typedef struct _cairo_image_span_renderer {
 	    int run_length;
 	} composite;
 	struct finish {
-	    cairo_rectangle_int_t extents;
+	    comac_rectangle_int_t extents;
 	    int src_x, src_y;
 	    ptrdiff_t stride;
 	    uint8_t *data;
 	} mask;
     } u;
     uint8_t _buf[0];
-#define SZ_BUF (int)(sizeof (cairo_abstract_span_renderer_t) - sizeof (cairo_image_span_renderer_t))
-} cairo_image_span_renderer_t;
-COMPILE_TIME_ASSERT (sizeof (cairo_image_span_renderer_t) <= sizeof (cairo_abstract_span_renderer_t));
+#define SZ_BUF (int)(sizeof (comac_abstract_span_renderer_t) - sizeof (comac_image_span_renderer_t))
+} comac_image_span_renderer_t;
+COMPILE_TIME_ASSERT (sizeof (comac_image_span_renderer_t) <= sizeof (comac_abstract_span_renderer_t));
 
-static cairo_status_t
-_cairo_image_spans (void *abstract_renderer,
+static comac_status_t
+_comac_image_spans (void *abstract_renderer,
 		    int y, int height,
-		    const cairo_half_open_span_t *spans,
+		    const comac_half_open_span_t *spans,
 		    unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
     uint8_t *mask, *row;
     int len;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     mask = r->u.mask.data + (y - r->u.mask.extents.y) * r->u.mask.stride;
     mask += spans[0].x - r->u.mask.extents.x;
@@ -1675,16 +1675,16 @@ _cairo_image_spans (void *abstract_renderer,
 	memcpy (mask, row, len);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_image_spans_and_zero (void *abstract_renderer,
+static comac_status_t
+_comac_image_spans_and_zero (void *abstract_renderer,
 			     int y, int height,
-			     const cairo_half_open_span_t *spans,
+			     const comac_half_open_span_t *spans,
 			     unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
     uint8_t *mask;
     int len;
 
@@ -1730,28 +1730,28 @@ _cairo_image_spans_and_zero (void *abstract_renderer,
 	}
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_image_finish_spans_and_zero (void *abstract_renderer)
+static comac_status_t
+_comac_image_finish_spans_and_zero (void *abstract_renderer)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (r->u.mask.extents.y < r->u.mask.extents.height)
 	memset (r->u.mask.data, 0, (r->u.mask.extents.height - r->u.mask.extents.y) * r->u.mask.stride);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _fill8_spans (void *abstract_renderer, int y, int h,
-	       const cairo_half_open_span_t *spans, unsigned num_spans)
+	       const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	do {
@@ -1783,17 +1783,17 @@ _fill8_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _fill16_spans (void *abstract_renderer, int y, int h,
-	       const cairo_half_open_span_t *spans, unsigned num_spans)
+	       const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	do {
@@ -1821,17 +1821,17 @@ _fill16_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _fill32_spans (void *abstract_renderer, int y, int h,
-	       const cairo_half_open_span_t *spans, unsigned num_spans)
+	       const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	do {
@@ -1870,18 +1870,18 @@ _fill32_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 #if 0
-static cairo_status_t
+static comac_status_t
 _fill_spans (void *abstract_renderer, int y, int h,
-	     const cairo_half_open_span_t *spans, unsigned num_spans)
+	     const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     do {
 	if (spans[0].coverage) {
@@ -1893,19 +1893,19 @@ _fill_spans (void *abstract_renderer, int y, int h,
 	spans++;
     } while (--num_spans > 1);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 #endif
 
-static cairo_status_t
+static comac_status_t
 _blit_spans (void *abstract_renderer, int y, int h,
-	     const cairo_half_open_span_t *spans, unsigned num_spans)
+	     const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
     int cpp;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     cpp = r->bpp/8;
     if (likely (h == 1)) {
@@ -1972,17 +1972,17 @@ _blit_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _mono_spans (void *abstract_renderer, int y, int h,
-	     const cairo_half_open_span_t *spans, unsigned num_spans)
+	     const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     do {
 	if (spans[0].coverage) {
@@ -1996,14 +1996,14 @@ _mono_spans (void *abstract_renderer, int y, int h,
 	spans++;
     } while (--num_spans > 1);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _mono_unbounded_spans (void *abstract_renderer, int y, int h,
-		       const cairo_half_open_span_t *spans, unsigned num_spans)
+		       const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0) {
 	pixman_image_composite32 (PIXMAN_OP_CLEAR,
@@ -2013,7 +2013,7 @@ _mono_unbounded_spans (void *abstract_renderer, int y, int h,
 				  r->composite->unbounded.x, y,
 				  r->composite->unbounded.width, h);
 	r->u.composite.mask_y = y + h;
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     if (y != r->u.composite.mask_y) {
@@ -2055,13 +2055,13 @@ _mono_unbounded_spans (void *abstract_renderer, int y, int h,
     }
 
     r->u.composite.mask_y = y + h;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _mono_finish_unbounded_spans (void *abstract_renderer)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (r->u.composite.mask_y < r->composite->unbounded.y + r->composite->unbounded.height) {
 	pixman_image_composite32 (PIXMAN_OP_CLEAR,
@@ -2073,30 +2073,30 @@ _mono_finish_unbounded_spans (void *abstract_renderer)
 				  r->composite->unbounded.y + r->composite->unbounded.height - r->u.composite.mask_y);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
-mono_renderer_init (cairo_image_span_renderer_t	*r,
-		    const cairo_composite_rectangles_t *composite,
-		    cairo_antialias_t			 antialias,
-		    cairo_bool_t			 needs_clip)
+static comac_int_status_t
+mono_renderer_init (comac_image_span_renderer_t	*r,
+		    const comac_composite_rectangles_t *composite,
+		    comac_antialias_t			 antialias,
+		    comac_bool_t			 needs_clip)
 {
-    cairo_image_surface_t *dst = (cairo_image_surface_t *)composite->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
 
-    if (antialias != CAIRO_ANTIALIAS_NONE)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+    if (antialias != COMAC_ANTIALIAS_NONE)
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
-    if (!_cairo_pattern_is_opaque_solid (&composite->mask_pattern.base))
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+    if (!_comac_pattern_is_opaque_solid (&composite->mask_pattern.base))
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     r->base.render_rows = NULL;
-    if (composite->source_pattern.base.type == CAIRO_PATTERN_TYPE_SOLID) {
-	const cairo_color_t *color;
+    if (composite->source_pattern.base.type == COMAC_PATTERN_TYPE_SOLID) {
+	const comac_color_t *color;
 
 	color = &composite->source_pattern.solid.color;
-	if (composite->op == CAIRO_OPERATOR_CLEAR)
-	    color = CAIRO_COLOR_TRANSPARENT;
+	if (composite->op == COMAC_OPERATOR_CLEAR)
+	    color = COMAC_COLOR_TRANSPARENT;
 
 	if (fill_reduces_to_source (composite->op, color, dst, &r->u.fill.pixel)) {
 	    /* Use plain C for the fill operations as the span length is
@@ -2112,18 +2112,18 @@ mono_renderer_init (cairo_image_span_renderer_t	*r,
 	    r->u.fill.data = dst->data;
 	    r->u.fill.stride = dst->stride;
 	}
-    } else if ((composite->op == CAIRO_OPERATOR_SOURCE ||
-		(composite->op == CAIRO_OPERATOR_OVER &&
-		 (dst->base.is_clear || (dst->base.content & CAIRO_CONTENT_ALPHA) == 0))) &&
-	       composite->source_pattern.base.type == CAIRO_PATTERN_TYPE_SURFACE &&
-	       composite->source_pattern.surface.surface->backend->type == CAIRO_SURFACE_TYPE_IMAGE &&
+    } else if ((composite->op == COMAC_OPERATOR_SOURCE ||
+		(composite->op == COMAC_OPERATOR_OVER &&
+		 (dst->base.is_clear || (dst->base.content & COMAC_CONTENT_ALPHA) == 0))) &&
+	       composite->source_pattern.base.type == COMAC_PATTERN_TYPE_SURFACE &&
+	       composite->source_pattern.surface.surface->backend->type == COMAC_SURFACE_TYPE_IMAGE &&
 	       to_image_surface(composite->source_pattern.surface.surface)->format == dst->format)
     {
-       cairo_image_surface_t *src =
+       comac_image_surface_t *src =
 	   to_image_surface(composite->source_pattern.surface.surface);
        int tx, ty;
 
-	if (_cairo_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
+	if (_comac_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
 						 &tx, &ty) &&
 	    composite->bounded.x + tx >= 0 &&
 	    composite->bounded.y + ty >= 0 &&
@@ -2144,7 +2144,7 @@ mono_renderer_init (cairo_image_span_renderer_t	*r,
 					    &composite->source_sample_area,
 					    &r->u.composite.src_x, &r->u.composite.src_y);
 	if (unlikely (r->src == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	r->u.composite.dst = to_pixman_image (composite->surface);
 	r->op = _pixman_operator (composite->op);
@@ -2157,7 +2157,7 @@ mono_renderer_init (cairo_image_span_renderer_t	*r,
     }
     r->bpp = PIXMAN_FORMAT_BPP(dst->pixman_format);
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
 #define ONE_HALF 0x7f
@@ -2196,14 +2196,14 @@ lerp8x4 (uint32_t src, uint8_t a, uint32_t dst)
 			mul8x2_8 (dst >> G_SHIFT, ~a)) << G_SHIFT);
 }
 
-static cairo_status_t
+static comac_status_t
 _fill_a8_lerp_opaque_spans (void *abstract_renderer, int y, int h,
-			    const cairo_half_open_span_t *spans, unsigned num_spans)
+			    const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	uint8_t *d = r->u.fill.data + r->u.fill.stride*y;
@@ -2255,17 +2255,17 @@ _fill_a8_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _fill_xrgb32_lerp_opaque_spans (void *abstract_renderer, int y, int h,
-				const cairo_half_open_span_t *spans, unsigned num_spans)
+				const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	do {
@@ -2325,17 +2325,17 @@ _fill_xrgb32_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _fill_a8_lerp_spans (void *abstract_renderer, int y, int h,
-		     const cairo_half_open_span_t *spans, unsigned num_spans)
+		     const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	do {
@@ -2373,17 +2373,17 @@ _fill_a8_lerp_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _fill_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
-			 const cairo_half_open_span_t *spans, unsigned num_spans)
+			 const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	do {
@@ -2417,17 +2417,17 @@ _fill_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _blit_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
-			 const cairo_half_open_span_t *spans, unsigned num_spans)
+			 const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (likely(h == 1)) {
 	uint8_t *src = r->u.blit.src_data + y*r->u.blit.src_stride;
@@ -2479,21 +2479,21 @@ _blit_xrgb32_lerp_spans (void *abstract_renderer, int y, int h,
 	} while (--num_spans > 1);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _inplace_spans (void *abstract_renderer,
 		int y, int h,
-		const cairo_half_open_span_t *spans,
+		const comac_half_open_span_t *spans,
 		unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
     uint8_t *mask;
     int x0, x1;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (num_spans == 2 && spans[0].coverage == 0xff) {
 	pixman_image_composite32 (r->op, r->src, NULL, r->u.composite.dst,
@@ -2502,7 +2502,7 @@ _inplace_spans (void *abstract_renderer,
 				  0, 0,
 				  spans[0].x, y,
 				  spans[1].x - spans[0].x, h);
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     mask = (uint8_t *)pixman_image_get_data (r->mask);
@@ -2556,20 +2556,20 @@ _inplace_spans (void *abstract_renderer,
 				  x1 - x0, h);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _inplace_opacity_spans (void *abstract_renderer, int y, int h,
-			const cairo_half_open_span_t *spans,
+			const comac_half_open_span_t *spans,
 			unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
     uint8_t *mask;
     int x0, x1;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     mask = (uint8_t *)pixman_image_get_data (r->mask);
     x1 = x0 = spans[0].x;
@@ -2606,20 +2606,20 @@ _inplace_opacity_spans (void *abstract_renderer, int y, int h,
 				  x1 - x0, h);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _inplace_src_spans (void *abstract_renderer, int y, int h,
-		    const cairo_half_open_span_t *spans,
+		    const comac_half_open_span_t *spans,
 		    unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
     uint8_t *m, *base = (uint8_t*)pixman_image_get_data(r->mask);
     int x0;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     x0 = spans[0].x;
     m = base;
@@ -2727,20 +2727,20 @@ _inplace_src_spans (void *abstract_renderer, int y, int h,
 #endif
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _inplace_src_opacity_spans (void *abstract_renderer, int y, int h,
-			    const cairo_half_open_span_t *spans,
+			    const comac_half_open_span_t *spans,
 			    unsigned num_spans)
 {
-    cairo_image_span_renderer_t *r = abstract_renderer;
+    comac_image_span_renderer_t *r = abstract_renderer;
     uint8_t *mask;
     int x0;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     x0 = spans[0].x;
     mask = (uint8_t *)pixman_image_get_data (r->mask);
@@ -2812,7 +2812,7 @@ _inplace_src_opacity_spans (void *abstract_renderer, int y, int h,
 #endif
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void free_pixels (pixman_image_t *image, void *data)
@@ -2820,27 +2820,27 @@ static void free_pixels (pixman_image_t *image, void *data)
 	free (data);
 }
 
-static cairo_int_status_t
-inplace_renderer_init (cairo_image_span_renderer_t	*r,
-		       const cairo_composite_rectangles_t *composite,
-		       cairo_antialias_t		 antialias,
-		       cairo_bool_t			 needs_clip)
+static comac_int_status_t
+inplace_renderer_init (comac_image_span_renderer_t	*r,
+		       const comac_composite_rectangles_t *composite,
+		       comac_antialias_t		 antialias,
+		       comac_bool_t			 needs_clip)
 {
-    cairo_image_surface_t *dst = (cairo_image_surface_t *)composite->surface;
+    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
     uint8_t *buf;
 
-    if (composite->mask_pattern.base.type != CAIRO_PATTERN_TYPE_SOLID)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+    if (composite->mask_pattern.base.type != COMAC_PATTERN_TYPE_SOLID)
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     r->base.render_rows = NULL;
     r->bpp = composite->mask_pattern.solid.color.alpha_short >> 8;
 
-    if (composite->source_pattern.base.type == CAIRO_PATTERN_TYPE_SOLID) {
-	const cairo_color_t *color;
+    if (composite->source_pattern.base.type == COMAC_PATTERN_TYPE_SOLID) {
+	const comac_color_t *color;
 
 	color = &composite->source_pattern.solid.color;
-	if (composite->op == CAIRO_OPERATOR_CLEAR)
-	    color = CAIRO_COLOR_TRANSPARENT;
+	if (composite->op == COMAC_OPERATOR_CLEAR)
+	    color = COMAC_COLOR_TRANSPARENT;
 
 	if (fill_reduces_to_source (composite->op, color, dst, &r->u.fill.pixel)) {
 	    /* Use plain C for the fill operations as the span length is
@@ -2849,55 +2849,55 @@ inplace_renderer_init (cairo_image_span_renderer_t	*r,
 	     */
 	    if (r->bpp == 0xff) {
 		switch (dst->format) {
-		case CAIRO_FORMAT_A8:
+		case COMAC_FORMAT_A8:
 		    r->base.render_rows = _fill_a8_lerp_opaque_spans;
 		    break;
-		case CAIRO_FORMAT_RGB24:
-		case CAIRO_FORMAT_ARGB32:
+		case COMAC_FORMAT_RGB24:
+		case COMAC_FORMAT_ARGB32:
 		    r->base.render_rows = _fill_xrgb32_lerp_opaque_spans;
 		    break;
-		case CAIRO_FORMAT_A1:
-		case CAIRO_FORMAT_RGB16_565:
-		case CAIRO_FORMAT_RGB30:
-		case CAIRO_FORMAT_RGB96F:
-		case CAIRO_FORMAT_RGBA128F:
-		case CAIRO_FORMAT_INVALID:
+		case COMAC_FORMAT_A1:
+		case COMAC_FORMAT_RGB16_565:
+		case COMAC_FORMAT_RGB30:
+		case COMAC_FORMAT_RGB96F:
+		case COMAC_FORMAT_RGBA128F:
+		case COMAC_FORMAT_INVALID:
 		default: break;
 		}
 	    } else {
 		switch (dst->format) {
-		case CAIRO_FORMAT_A8:
+		case COMAC_FORMAT_A8:
 		    r->base.render_rows = _fill_a8_lerp_spans;
 		    break;
-		case CAIRO_FORMAT_RGB24:
-		case CAIRO_FORMAT_ARGB32:
+		case COMAC_FORMAT_RGB24:
+		case COMAC_FORMAT_ARGB32:
 		    r->base.render_rows = _fill_xrgb32_lerp_spans;
 		    break;
-		case CAIRO_FORMAT_A1:
-		case CAIRO_FORMAT_RGB16_565:
-		case CAIRO_FORMAT_RGB30:
-		case CAIRO_FORMAT_RGB96F:
-		case CAIRO_FORMAT_RGBA128F:
-		case CAIRO_FORMAT_INVALID:
+		case COMAC_FORMAT_A1:
+		case COMAC_FORMAT_RGB16_565:
+		case COMAC_FORMAT_RGB30:
+		case COMAC_FORMAT_RGB96F:
+		case COMAC_FORMAT_RGBA128F:
+		case COMAC_FORMAT_INVALID:
 		default: break;
 		}
 	    }
 	    r->u.fill.data = dst->data;
 	    r->u.fill.stride = dst->stride;
 	}
-    } else if ((dst->format == CAIRO_FORMAT_ARGB32 || dst->format == CAIRO_FORMAT_RGB24) &&
-	       (composite->op == CAIRO_OPERATOR_SOURCE ||
-		(composite->op == CAIRO_OPERATOR_OVER &&
-		 (dst->base.is_clear || (dst->base.content & CAIRO_CONTENT_ALPHA) == 0))) &&
-	       composite->source_pattern.base.type == CAIRO_PATTERN_TYPE_SURFACE &&
-	       composite->source_pattern.surface.surface->backend->type == CAIRO_SURFACE_TYPE_IMAGE &&
+    } else if ((dst->format == COMAC_FORMAT_ARGB32 || dst->format == COMAC_FORMAT_RGB24) &&
+	       (composite->op == COMAC_OPERATOR_SOURCE ||
+		(composite->op == COMAC_OPERATOR_OVER &&
+		 (dst->base.is_clear || (dst->base.content & COMAC_CONTENT_ALPHA) == 0))) &&
+	       composite->source_pattern.base.type == COMAC_PATTERN_TYPE_SURFACE &&
+	       composite->source_pattern.surface.surface->backend->type == COMAC_SURFACE_TYPE_IMAGE &&
 	       to_image_surface(composite->source_pattern.surface.surface)->format == dst->format)
     {
-       cairo_image_surface_t *src =
+       comac_image_surface_t *src =
 	   to_image_surface(composite->source_pattern.surface.surface);
        int tx, ty;
 
-	if (_cairo_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
+	if (_comac_matrix_is_integer_translation(&composite->source_pattern.base.matrix,
 						 &tx, &ty) &&
 	    composite->bounded.x + tx >= 0 &&
 	    composite->bounded.y + ty >= 0 &&
@@ -2913,29 +2913,29 @@ inplace_renderer_init (cairo_image_span_renderer_t	*r,
 	}
     }
     if (r->base.render_rows == NULL) {
-	const cairo_pattern_t *src = &composite->source_pattern.base;
+	const comac_pattern_t *src = &composite->source_pattern.base;
 	unsigned int width;
 
 	if (composite->is_bounded == 0)
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 
 	r->base.render_rows = r->bpp == 0xff ? _inplace_spans : _inplace_opacity_spans;
 	width = (composite->bounded.width + 3) & ~3;
 
 	r->u.composite.run_length = 8;
-	if (src->type == CAIRO_PATTERN_TYPE_LINEAR ||
-	    src->type == CAIRO_PATTERN_TYPE_RADIAL)
+	if (src->type == COMAC_PATTERN_TYPE_LINEAR ||
+	    src->type == COMAC_PATTERN_TYPE_RADIAL)
 		r->u.composite.run_length = 256;
 	if (dst->base.is_clear &&
-	    (composite->op == CAIRO_OPERATOR_SOURCE ||
-	     composite->op == CAIRO_OPERATOR_OVER ||
-	     composite->op == CAIRO_OPERATOR_ADD)) {
+	    (composite->op == COMAC_OPERATOR_SOURCE ||
+	     composite->op == COMAC_OPERATOR_OVER ||
+	     composite->op == COMAC_OPERATOR_ADD)) {
 	    r->op = PIXMAN_OP_SRC;
-	} else if (composite->op == CAIRO_OPERATOR_SOURCE) {
+	} else if (composite->op == COMAC_OPERATOR_SOURCE) {
 	    r->base.render_rows = r->bpp == 0xff ? _inplace_src_spans : _inplace_src_opacity_spans;
 	    r->u.composite.mask_y = r->composite->unbounded.y;
 	    width = (composite->unbounded.width + 3) & ~3;
-	} else if (composite->op == CAIRO_OPERATOR_CLEAR) {
+	} else if (composite->op == COMAC_OPERATOR_CLEAR) {
 	    r->op = PIXMAN_OP_OUT_REVERSE;
 	    src = NULL;
 	} else {
@@ -2947,15 +2947,15 @@ inplace_renderer_init (cairo_image_span_renderer_t	*r,
 					    &composite->source_sample_area,
 					    &r->u.composite.src_x, &r->u.composite.src_y);
 	if (unlikely (r->src == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	/* Create an effectively unbounded mask by repeating the single line */
 	buf = r->_buf;
 	if (width > SZ_BUF) {
-	    buf = _cairo_malloc (width);
+	    buf = _comac_malloc (width);
 	    if (unlikely (buf == NULL)) {
 		pixman_image_unref (r->src);
-		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	    }
 	}
 	r->mask = pixman_image_create_bits (PIXMAN_a8,
@@ -2965,7 +2965,7 @@ inplace_renderer_init (cairo_image_span_renderer_t	*r,
 	    pixman_image_unref (r->src);
 	    if (buf != r->_buf)
 		free (buf);
-	    return _cairo_error(CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error(COMAC_STATUS_NO_MEMORY);
 	}
 
 	if (buf != r->_buf)
@@ -2974,26 +2974,26 @@ inplace_renderer_init (cairo_image_span_renderer_t	*r,
 	r->u.composite.dst = dst->pixman_image;
     }
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
-span_renderer_init (cairo_abstract_span_renderer_t	*_r,
-		    const cairo_composite_rectangles_t *composite,
-		    cairo_antialias_t			 antialias,
-		    cairo_bool_t			 needs_clip)
+static comac_int_status_t
+span_renderer_init (comac_abstract_span_renderer_t	*_r,
+		    const comac_composite_rectangles_t *composite,
+		    comac_antialias_t			 antialias,
+		    comac_bool_t			 needs_clip)
 {
-    cairo_image_span_renderer_t *r = (cairo_image_span_renderer_t *)_r;
-    cairo_image_surface_t *dst = (cairo_image_surface_t *)composite->surface;
-    const cairo_pattern_t *source = &composite->source_pattern.base;
-    cairo_operator_t op = composite->op;
-    cairo_int_status_t status;
+    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *)_r;
+    comac_image_surface_t *dst = (comac_image_surface_t *)composite->surface;
+    const comac_pattern_t *source = &composite->source_pattern.base;
+    comac_operator_t op = composite->op;
+    comac_int_status_t status;
 
     TRACE ((stderr, "%s: antialias=%d, needs_clip=%d\n", __FUNCTION__,
 	    antialias, needs_clip));
 
     if (needs_clip)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     r->composite = composite;
     r->mask = NULL;
@@ -3001,29 +3001,29 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
     r->base.finish = NULL;
 
     status = mono_renderer_init (r, composite, antialias, needs_clip);
-    if (status != CAIRO_INT_STATUS_UNSUPPORTED)
+    if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	return status;
 
     status = inplace_renderer_init (r, composite, antialias, needs_clip);
-    if (status != CAIRO_INT_STATUS_UNSUPPORTED)
+    if (status != COMAC_INT_STATUS_UNSUPPORTED)
 	return status;
 
     r->bpp = 0;
 
-    if (op == CAIRO_OPERATOR_CLEAR) {
+    if (op == COMAC_OPERATOR_CLEAR) {
 #if PIXMAN_HAS_OP_LERP
 	op = PIXMAN_OP_LERP_CLEAR;
 #else
-	source = &_cairo_pattern_white.base;
+	source = &_comac_pattern_white.base;
 	op = PIXMAN_OP_OUT_REVERSE;
 #endif
     } else if (dst->base.is_clear &&
-	       (op == CAIRO_OPERATOR_SOURCE ||
-		op == CAIRO_OPERATOR_OVER ||
-		op == CAIRO_OPERATOR_ADD)) {
+	       (op == COMAC_OPERATOR_SOURCE ||
+		op == COMAC_OPERATOR_OVER ||
+		op == COMAC_OPERATOR_ADD)) {
 	op = PIXMAN_OP_SRC;
-    } else if (op == CAIRO_OPERATOR_SOURCE) {
-	if (_cairo_pattern_is_opaque (&composite->source_pattern.base,
+    } else if (op == COMAC_OPERATOR_SOURCE) {
+	if (_comac_pattern_is_opaque (&composite->source_pattern.base,
 				      &composite->source_sample_area))
 	{
 	    op = PIXMAN_OP_OVER;
@@ -3033,7 +3033,7 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 #if PIXMAN_HAS_OP_LERP
 	    op = PIXMAN_OP_LERP_SRC;
 #else
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 #endif
 	}
     } else {
@@ -3046,10 +3046,10 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 					&composite->source_sample_area,
 					&r->u.mask.src_x, &r->u.mask.src_y);
     if (unlikely (r->src == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     r->opacity = 1.0;
-    if (composite->mask_pattern.base.type == CAIRO_PATTERN_TYPE_SOLID) {
+    if (composite->mask_pattern.base.type == COMAC_PATTERN_TYPE_SOLID) {
 	r->opacity = composite->mask_pattern.solid.color.alpha;
     } else {
 	pixman_image_t *mask;
@@ -3062,11 +3062,11 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 					  &composite->mask_sample_area,
 					  &mask_x, &mask_y);
 	if (unlikely (mask == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	/* XXX Component-alpha? */
-	if ((dst->base.content & CAIRO_CONTENT_COLOR) == 0 &&
-	    _cairo_pattern_is_opaque (source, &composite->source_sample_area))
+	if ((dst->base.content & COMAC_CONTENT_COLOR) == 0 &&
+	    _comac_pattern_is_opaque (source, &composite->source_sample_area))
 	{
 	    pixman_image_unref (r->src);
 	    r->src = mask;
@@ -3077,7 +3077,7 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 
 	if (mask) {
 	    pixman_image_unref (mask);
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 	}
     }
 
@@ -3089,7 +3089,7 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 					    r->u.mask.extents.height,
 					    NULL, 0);
 
-	r->base.render_rows = _cairo_image_spans;
+	r->base.render_rows = _comac_image_spans;
 	r->base.finish = NULL;
     } else {
 	r->mask = pixman_image_create_bits (PIXMAN_a8,
@@ -3097,33 +3097,33 @@ span_renderer_init (cairo_abstract_span_renderer_t	*_r,
 					    r->u.mask.extents.height,
 					    (uint32_t *)r->_buf, r->u.mask.stride);
 
-	r->base.render_rows = _cairo_image_spans_and_zero;
-	r->base.finish = _cairo_image_finish_spans_and_zero;
+	r->base.render_rows = _comac_image_spans_and_zero;
+	r->base.finish = _comac_image_finish_spans_and_zero;
     }
     if (unlikely (r->mask == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     r->u.mask.data = (uint8_t *) pixman_image_get_data (r->mask);
     r->u.mask.stride = pixman_image_get_stride (r->mask);
 
     r->u.mask.extents.height += r->u.mask.extents.y;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-span_renderer_fini (cairo_abstract_span_renderer_t *_r,
-		    cairo_int_status_t status)
+span_renderer_fini (comac_abstract_span_renderer_t *_r,
+		    comac_int_status_t status)
 {
-    cairo_image_span_renderer_t *r = (cairo_image_span_renderer_t *) _r;
+    comac_image_span_renderer_t *r = (comac_image_span_renderer_t *) _r;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    if (likely (status == CAIRO_INT_STATUS_SUCCESS)) {
+    if (likely (status == COMAC_INT_STATUS_SUCCESS)) {
 	if (r->base.finish)
 	    r->base.finish (r);
     }
-    if (likely (status == CAIRO_INT_STATUS_SUCCESS && r->bpp == 0)) {
-	const cairo_composite_rectangles_t *composite = r->composite;
+    if (likely (status == COMAC_INT_STATUS_SUCCESS && r->bpp == 0)) {
+	const comac_composite_rectangles_t *composite = r->composite;
 
 	pixman_image_composite32 (r->op, r->src, r->mask,
 				  to_pixman_image (composite->surface),
@@ -3143,23 +3143,23 @@ span_renderer_fini (cairo_abstract_span_renderer_t *_r,
 }
 #endif
 
-const cairo_compositor_t *
-_cairo_image_spans_compositor_get (void)
+const comac_compositor_t *
+_comac_image_spans_compositor_get (void)
 {
-    static cairo_atomic_once_t once = CAIRO_ATOMIC_ONCE_INIT;
-    static cairo_spans_compositor_t spans;
-    static cairo_compositor_t shape;
+    static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
+    static comac_spans_compositor_t spans;
+    static comac_compositor_t shape;
 
-    if (_cairo_atomic_init_once_enter(&once)) {
-	_cairo_shape_mask_compositor_init (&shape,
-					   _cairo_image_traps_compositor_get());
+    if (_comac_atomic_init_once_enter(&once)) {
+	_comac_shape_mask_compositor_init (&shape,
+					   _comac_image_traps_compositor_get());
 	shape.glyphs = NULL;
 
-	_cairo_spans_compositor_init (&spans, &shape);
+	_comac_spans_compositor_init (&spans, &shape);
 
 	spans.flags = 0;
 #if PIXMAN_HAS_OP_LERP
-	spans.flags |= CAIRO_SPANS_COMPOSITOR_HAS_LERP;
+	spans.flags |= COMAC_SPANS_COMPOSITOR_HAS_LERP;
 #endif
 
 	//spans.acquire = acquire;
@@ -3167,14 +3167,14 @@ _cairo_image_spans_compositor_get (void)
 	spans.fill_boxes = fill_boxes;
 	spans.draw_image_boxes = draw_image_boxes;
 	//spans.copy_boxes = copy_boxes;
-	spans.pattern_to_surface = _cairo_image_source_create_for_pattern;
+	spans.pattern_to_surface = _comac_image_source_create_for_pattern;
 	//spans.check_composite_boxes = check_composite_boxes;
 	spans.composite_boxes = composite_boxes;
 	//spans.check_span_renderer = check_span_renderer;
 	spans.renderer_init = span_renderer_init;
 	spans.renderer_fini = span_renderer_fini;
 
-	_cairo_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave(&once);
     }
 
     return &spans.base;

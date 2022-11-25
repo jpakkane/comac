@@ -34,38 +34,38 @@
 /* PDF transparency groups can be isolated or non-isolated. This test
  * checks that the PDF output is using isolated groups. If the group
  * is non-isolated the bottom half of the inner rectangle will be
- * red. Note poppler-cairo currently ignores the isolated flag and
+ * red. Note poppler-comac currently ignores the isolated flag and
  * treats the group as isolated.
  *
  * Refer to http://www.pdfvt.com/PDFVT_TransparencyGuide.html for an
  * explanation isolated vs non-isolated.
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1, 0.5, 0);
-    cairo_rectangle (cr, 0, SIZE/2, SIZE, SIZE/2);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 0.5, 0);
+    comac_rectangle (cr, 0, SIZE/2, SIZE, SIZE/2);
+    comac_fill (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_MULTIPLY);
+    comac_set_operator (cr, COMAC_OPERATOR_MULTIPLY);
 
-    cairo_push_group (cr);
+    comac_push_group (cr);
 
-    cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
-    cairo_rectangle (cr, SIZE/4, SIZE/4, SIZE/2, SIZE/2);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0.7, 0.7, 0.7);
+    comac_rectangle (cr, SIZE/4, SIZE/4, SIZE/2, SIZE/2);
+    comac_fill (cr);
 
-    cairo_pop_group_to_source (cr);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (pdf_isolated_group,
+COMAC_TEST (pdf_isolated_group,
 	    "Check that transparency groups in PDF output are isolated",
 	    "group, operator", /* keywords */
 	    NULL, /* requirements */

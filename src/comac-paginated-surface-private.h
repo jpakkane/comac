@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,30 +33,30 @@
  *	Carl Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_PAGINATED_SURFACE_H
-#define CAIRO_PAGINATED_SURFACE_H
+#ifndef COMAC_PAGINATED_SURFACE_H
+#define COMAC_PAGINATED_SURFACE_H
 
 #include "comac.h"
 
 #include "comac-surface-private.h"
 
-typedef struct _cairo_paginated_surface {
-    cairo_surface_t base;
+typedef struct _comac_paginated_surface {
+    comac_surface_t base;
 
     /* The target surface to hold the final result. */
-    cairo_surface_t *target;
+    comac_surface_t *target;
 
-    cairo_content_t content;
+    comac_content_t content;
 
     /* Paginated-surface specific functions for the target */
-    const cairo_paginated_surface_backend_t *backend;
+    const comac_paginated_surface_backend_t *backend;
 
-    /* A cairo_recording_surface to record all operations. To be replayed
+    /* A comac_recording_surface to record all operations. To be replayed
      * against target, and also against image surface as necessary for
      * fallbacks. */
-    cairo_surface_t *recording_surface;
+    comac_surface_t *recording_surface;
 
     int page_num;
-} cairo_paginated_surface_t;
+} comac_paginated_surface_t;
 
-#endif /* CAIRO_PAGINATED_SURFACE_H */
+#endif /* COMAC_PAGINATED_SURFACE_H */

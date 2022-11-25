@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2008 Adrian Johnson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -34,56 +34,56 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#ifndef CAIRO_TYPE3_GLYPH_SURFACE_PRIVATE_H
-#define CAIRO_TYPE3_GLYPH_SURFACE_PRIVATE_H
+#ifndef COMAC_TYPE3_GLYPH_SURFACE_PRIVATE_H
+#define COMAC_TYPE3_GLYPH_SURFACE_PRIVATE_H
 
 #include "comacint.h"
 
-#if CAIRO_HAS_FONT_SUBSET
+#if COMAC_HAS_FONT_SUBSET
 
 #include "comac-surface-private.h"
 #include "comac-surface-clipper-private.h"
 #include "comac-pdf-operators-private.h"
 
-typedef cairo_int_status_t
-(*cairo_type3_glyph_surface_emit_image_t) (cairo_image_surface_t *image,
-					   cairo_output_stream_t	*stream);
+typedef comac_int_status_t
+(*comac_type3_glyph_surface_emit_image_t) (comac_image_surface_t *image,
+					   comac_output_stream_t	*stream);
 
-typedef struct cairo_type3_glyph_surface {
-    cairo_surface_t base;
+typedef struct comac_type3_glyph_surface {
+    comac_surface_t base;
 
-    cairo_scaled_font_t *scaled_font;
-    cairo_output_stream_t *stream;
-    cairo_pdf_operators_t pdf_operators;
-    cairo_matrix_t cairo_to_pdf;
-    cairo_type3_glyph_surface_emit_image_t emit_image;
+    comac_scaled_font_t *scaled_font;
+    comac_output_stream_t *stream;
+    comac_pdf_operators_t pdf_operators;
+    comac_matrix_t comac_to_pdf;
+    comac_type3_glyph_surface_emit_image_t emit_image;
 
-    cairo_surface_clipper_t clipper;
-} cairo_type3_glyph_surface_t;
+    comac_surface_clipper_t clipper;
+} comac_type3_glyph_surface_t;
 
-cairo_private cairo_surface_t *
-_cairo_type3_glyph_surface_create (cairo_scaled_font_t			 *scaled_font,
-				   cairo_output_stream_t		 *stream,
-				   cairo_type3_glyph_surface_emit_image_t emit_image,
-				   cairo_scaled_font_subsets_t		 *font_subsets,
-				   cairo_bool_t                           ps_output);
+comac_private comac_surface_t *
+_comac_type3_glyph_surface_create (comac_scaled_font_t			 *scaled_font,
+				   comac_output_stream_t		 *stream,
+				   comac_type3_glyph_surface_emit_image_t emit_image,
+				   comac_scaled_font_subsets_t		 *font_subsets,
+				   comac_bool_t                           ps_output);
 
-cairo_private void
-_cairo_type3_glyph_surface_set_font_subsets_callback (void				    *abstract_surface,
-						      cairo_pdf_operators_use_font_subset_t  use_font_subset,
+comac_private void
+_comac_type3_glyph_surface_set_font_subsets_callback (void				    *abstract_surface,
+						      comac_pdf_operators_use_font_subset_t  use_font_subset,
 						      void				    *closure);
 
-cairo_private cairo_status_t
-_cairo_type3_glyph_surface_analyze_glyph (void		     *abstract_surface,
+comac_private comac_status_t
+_comac_type3_glyph_surface_analyze_glyph (void		     *abstract_surface,
 					  unsigned long	      glyph_index);
 
-cairo_private cairo_status_t
-_cairo_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
-				       cairo_output_stream_t *stream,
+comac_private comac_status_t
+_comac_type3_glyph_surface_emit_glyph (void		     *abstract_surface,
+				       comac_output_stream_t *stream,
 				       unsigned long	      glyph_index,
-				       cairo_box_t           *bbox,
+				       comac_box_t           *bbox,
 				       double                *width);
 
-#endif /* CAIRO_HAS_FONT_SUBSET */
+#endif /* COMAC_HAS_FONT_SUBSET */
 
-#endif /* CAIRO_TYPE3_GLYPH_SURFACE_PRIVATE_H */
+#endif /* COMAC_TYPE3_GLYPH_SURFACE_PRIVATE_H */

@@ -38,31 +38,31 @@
  * show the O(n) behavior.
  */
 
-static cairo_time_t
-do_hash_table (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_hash_table (comac_t *cr, int width, int height, int loops)
 {
     /*
      * Microsoft C Compiler complains that:
      * error C2466: cannot allocate an array of constant size 0
      * so we add an unused element to make it happy
      */
-    cairo_scaled_font_t *active_fonts[ACTIVE_FONTS + 1];
-    cairo_matrix_t m;
+    comac_scaled_font_t *active_fonts[ACTIVE_FONTS + 1];
+    comac_matrix_t m;
     int i;
 
-    cairo_matrix_init_identity (&m);
+    comac_matrix_init_identity (&m);
 
     /* Touch HOLDOVERS scaled fonts to fill up the holdover list. */
     for (i = 0; i < HOLDOVERS; i++) {
 	m.yy = m.xx * (i + 1);
-	cairo_set_font_matrix (cr, &m);
-	cairo_get_scaled_font (cr);
+	comac_set_font_matrix (cr, &m);
+	comac_get_scaled_font (cr);
     }
 
     /*
      * Reference some scaled fonts so that they will be kept in the
      * scaled fonts map. We want LIVE_ENTRIES elements in the font
-     * map, but cairo keeps HOLDOVERS recently used fonts in it and we
+     * map, but comac keeps HOLDOVERS recently used fonts in it and we
      * will be activating a new font in the cr context, so we just
      * keep references to ACTIVE_FONTS fonts.
      *
@@ -71,16 +71,16 @@ do_hash_table (cairo_t *cr, int width, int height, int loops)
      * fonts only.
      */
     for (i = 0; i < ACTIVE_FONTS; i++) {
-	cairo_scaled_font_t *scaled_font;
+	comac_scaled_font_t *scaled_font;
 
 	m.yy = m.xx * (i + 1);
-	cairo_set_font_matrix (cr, &m);
+	comac_set_font_matrix (cr, &m);
 
-	scaled_font = cairo_get_scaled_font (cr);
-	active_fonts[i] = cairo_scaled_font_reference (scaled_font);
+	scaled_font = comac_get_scaled_font (cr);
+	active_fonts[i] = comac_scaled_font_reference (scaled_font);
     }
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	m.xx += 1.0;
@@ -88,28 +88,28 @@ do_hash_table (cairo_t *cr, int width, int height, int loops)
 	/* Generate ITER new scaled fonts per loop */
 	for (i = 0; i < ITER; i++) {
 	    m.yy = m.xx * (i + 1);
-	    cairo_set_font_matrix (cr, &m);
-	    cairo_get_scaled_font (cr);
+	    comac_set_font_matrix (cr, &m);
+	    comac_get_scaled_font (cr);
 	}
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
     for (i = 0; i < ACTIVE_FONTS; i++)
-	cairo_scaled_font_destroy (active_fonts[i]);
+	comac_scaled_font_destroy (active_fonts[i]);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-hash_table_enabled (cairo_perf_t *perf)
+comac_bool_t
+hash_table_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "hash-table", NULL);
+    return comac_perf_can_run (perf, "hash-table", NULL);
 }
 
 void
-hash_table (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+hash_table (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_cover_sources_and_operators (perf, "hash-table",
+    comac_perf_cover_sources_and_operators (perf, "hash-table",
 					    do_hash_table, NULL);
 }

@@ -25,53 +25,53 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *Ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *Ctx)
 {
-    cairo_surface_t *surface;
-    cairo_pattern_t *solid_rgb, *solid_rgba, *surface_pattern, *linear, *radial, *mesh;
-    cairo_test_status_t result = CAIRO_TEST_SUCCESS;
+    comac_surface_t *surface;
+    comac_pattern_t *solid_rgb, *solid_rgba, *surface_pattern, *linear, *radial, *mesh;
+    comac_test_status_t result = COMAC_TEST_SUCCESS;
 
-    solid_rgb = cairo_pattern_create_rgb (0.0, 0.1, 0.2);
-    solid_rgba = cairo_pattern_create_rgba (0.3, 0.4, 0.5, 0.6);
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+    solid_rgb = comac_pattern_create_rgb (0.0, 0.1, 0.2);
+    solid_rgba = comac_pattern_create_rgba (0.3, 0.4, 0.5, 0.6);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32,
 					  1, 1);
-    surface_pattern = cairo_pattern_create_for_surface (surface);
-    linear = cairo_pattern_create_linear (0.0, 0.0, 10.0, 10.0);
-    radial = cairo_pattern_create_radial (10.0, 10.0, 0.1,
+    surface_pattern = comac_pattern_create_for_surface (surface);
+    linear = comac_pattern_create_linear (0.0, 0.0, 10.0, 10.0);
+    radial = comac_pattern_create_radial (10.0, 10.0, 0.1,
 					  10.0, 10.0, 1.0);
-    mesh = cairo_pattern_create_mesh ();
+    mesh = comac_pattern_create_mesh ();
 
-    if (cairo_pattern_get_type (solid_rgb) != CAIRO_PATTERN_TYPE_SOLID)
-	result = CAIRO_TEST_FAILURE;
+    if (comac_pattern_get_type (solid_rgb) != COMAC_PATTERN_TYPE_SOLID)
+	result = COMAC_TEST_FAILURE;
 
-    if (cairo_pattern_get_type (solid_rgba) != CAIRO_PATTERN_TYPE_SOLID)
-	result = CAIRO_TEST_FAILURE;
+    if (comac_pattern_get_type (solid_rgba) != COMAC_PATTERN_TYPE_SOLID)
+	result = COMAC_TEST_FAILURE;
 
-    if (cairo_pattern_get_type (surface_pattern) != CAIRO_PATTERN_TYPE_SURFACE)
-	result = CAIRO_TEST_FAILURE;
+    if (comac_pattern_get_type (surface_pattern) != COMAC_PATTERN_TYPE_SURFACE)
+	result = COMAC_TEST_FAILURE;
 
-    if (cairo_pattern_get_type (linear) != CAIRO_PATTERN_TYPE_LINEAR)
-	result = CAIRO_TEST_FAILURE;
+    if (comac_pattern_get_type (linear) != COMAC_PATTERN_TYPE_LINEAR)
+	result = COMAC_TEST_FAILURE;
 
-    if (cairo_pattern_get_type (radial) != CAIRO_PATTERN_TYPE_RADIAL)
-	result = CAIRO_TEST_FAILURE;
+    if (comac_pattern_get_type (radial) != COMAC_PATTERN_TYPE_RADIAL)
+	result = COMAC_TEST_FAILURE;
 
-    if (cairo_pattern_get_type (mesh) != CAIRO_PATTERN_TYPE_MESH)
-	result = CAIRO_TEST_FAILURE;
+    if (comac_pattern_get_type (mesh) != COMAC_PATTERN_TYPE_MESH)
+	result = COMAC_TEST_FAILURE;
 
-    cairo_pattern_destroy (solid_rgb);
-    cairo_pattern_destroy (solid_rgba);
-    cairo_pattern_destroy (surface_pattern);
-    cairo_surface_destroy (surface);
-    cairo_pattern_destroy (linear);
-    cairo_pattern_destroy (radial);
-    cairo_pattern_destroy (mesh);
+    comac_pattern_destroy (solid_rgb);
+    comac_pattern_destroy (solid_rgba);
+    comac_pattern_destroy (surface_pattern);
+    comac_surface_destroy (surface);
+    comac_pattern_destroy (linear);
+    comac_pattern_destroy (radial);
+    comac_pattern_destroy (mesh);
 
     return result;
 }
 
-CAIRO_TEST (pattern_get_type,
+COMAC_TEST (pattern_get_type,
 	    "Creating patterns of all types",
 	    "pattern, api", /* keywords */
 	    NULL, /* requirements */

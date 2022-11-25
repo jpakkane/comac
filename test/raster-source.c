@@ -39,51 +39,51 @@ static char *png_filename = NULL;
 /* Lazy way of determining PNG dimensions... */
 static void
 png_dimensions (const char *filename,
-		cairo_content_t *content, int *width, int *height)
+		comac_content_t *content, int *width, int *height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_image_surface_create_from_png (filename);
-    *content = cairo_surface_get_content (surface);
-    *width = cairo_image_surface_get_width (surface);
-    *height = cairo_image_surface_get_height (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create_from_png (filename);
+    *content = comac_surface_get_content (surface);
+    *width = comac_image_surface_get_width (surface);
+    *height = comac_image_surface_get_height (surface);
+    comac_surface_destroy (surface);
 }
 
-static cairo_surface_t *
-png_acquire (cairo_pattern_t *pattern, void *closure,
-	     cairo_surface_t *target,
-	     const cairo_rectangle_int_t *extents)
+static comac_surface_t *
+png_acquire (comac_pattern_t *pattern, void *closure,
+	     comac_surface_t *target,
+	     const comac_rectangle_int_t *extents)
 {
-    return cairo_image_surface_create_from_png (closure);
+    return comac_image_surface_create_from_png (closure);
 }
 
-static cairo_surface_t *
-red_acquire (cairo_pattern_t *pattern, void *closure,
-	     cairo_surface_t *target,
-	     const cairo_rectangle_int_t *extents)
+static comac_surface_t *
+red_acquire (comac_pattern_t *pattern, void *closure,
+	     comac_surface_t *target,
+	     const comac_rectangle_int_t *extents)
 {
-    cairo_surface_t *image;
-    cairo_t *cr;
+    comac_surface_t *image;
+    comac_t *cr;
 
-    image = cairo_surface_create_similar_image (target,
-						CAIRO_FORMAT_RGB24,
+    image = comac_surface_create_similar_image (target,
+						COMAC_FORMAT_RGB24,
 						extents->width,
 						extents->height);
-    cairo_surface_set_device_offset (image, extents->x, extents->y);
+    comac_surface_set_device_offset (image, extents->x, extents->y);
 
-    cr = cairo_create (image);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
-    cairo_destroy (cr);
+    cr = comac_create (image);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
+    comac_destroy (cr);
 
     return image;
 }
 
 static void
-release (cairo_pattern_t *pattern, void *closure, cairo_surface_t *image)
+release (comac_pattern_t *pattern, void *closure, comac_surface_t *image)
 {
-    cairo_surface_destroy (image);
+    comac_surface_destroy (image);
 }
 
 static void
@@ -92,54 +92,54 @@ free_filename(void)
     free (png_filename);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *png, *red;
-    cairo_content_t content;
+    comac_pattern_t *png, *red;
+    comac_content_t content;
     int png_width, png_height;
     int i, j;
 
     if (png_filename == NULL) {
-      const cairo_test_context_t *ctx = cairo_test_get_context (cr);
+      const comac_test_context_t *ctx = comac_test_get_context (cr);
       xasprintf (&png_filename, "%s/png.png", ctx->srcdir);
       atexit (free_filename);
     }
 
     png_dimensions (png_filename, &content, &png_width, &png_height);
 
-    png = cairo_pattern_create_raster_source ((void*)png_filename,
+    png = comac_pattern_create_raster_source ((void*)png_filename,
 					      content, png_width, png_height);
-    cairo_raster_source_pattern_set_acquire (png, png_acquire, release);
+    comac_raster_source_pattern_set_acquire (png, png_acquire, release);
 
-    red = cairo_pattern_create_raster_source (NULL,
-					      CAIRO_CONTENT_COLOR, WIDTH, HEIGHT);
-    cairo_raster_source_pattern_set_acquire (red, red_acquire, release);
+    red = comac_pattern_create_raster_source (NULL,
+					      COMAC_CONTENT_COLOR, WIDTH, HEIGHT);
+    comac_raster_source_pattern_set_acquire (red, red_acquire, release);
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 0, (HEIGHT-png_height)/2);
+    comac_translate (cr, 0, (HEIGHT-png_height)/2);
     for (i = 0; i < 4; i++) {
 	for (j = 0; j < 4; j++) {
-	    cairo_pattern_t *source;
+	    comac_pattern_t *source;
 	    if ((i ^ j) & 1)
 		source = red;
 	    else
 		source = png;
-	    cairo_set_source (cr, source);
-	    cairo_rectangle (cr, i * WIDTH/4, j * png_height/4, WIDTH/4, png_height/4);
-	    cairo_fill (cr);
+	    comac_set_source (cr, source);
+	    comac_rectangle (cr, i * WIDTH/4, j * png_height/4, WIDTH/4, png_height/4);
+	    comac_fill (cr);
 	}
     }
 
-    cairo_pattern_destroy (red);
-    cairo_pattern_destroy (png);
+    comac_pattern_destroy (red);
+    comac_pattern_destroy (png);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (raster_source,
+COMAC_TEST (raster_source,
 	    "Check that the mime-surface embedding works",
 	    "api", /* keywords */
 	    NULL, /* requirements */

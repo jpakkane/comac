@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -41,10 +41,10 @@
 #include "comac-stroke-dash-private.h"
 
 void
-_cairo_stroker_dash_start (cairo_stroker_dash_t *dash)
+_comac_stroker_dash_start (comac_stroker_dash_t *dash)
 {
     double offset;
-    cairo_bool_t on = TRUE;
+    comac_bool_t on = TRUE;
     unsigned int i = 0;
 
     if (! dash->dashed)
@@ -68,10 +68,10 @@ _cairo_stroker_dash_start (cairo_stroker_dash_t *dash)
 }
 
 void
-_cairo_stroker_dash_step (cairo_stroker_dash_t *dash, double step)
+_comac_stroker_dash_step (comac_stroker_dash_t *dash, double step)
 {
     dash->dash_remain -= step;
-    if (dash->dash_remain < CAIRO_FIXED_ERROR_DOUBLE) {
+    if (dash->dash_remain < COMAC_FIXED_ERROR_DOUBLE) {
 	if (++dash->dash_index == dash->num_dashes)
 	    dash->dash_index = 0;
 
@@ -81,8 +81,8 @@ _cairo_stroker_dash_step (cairo_stroker_dash_t *dash, double step)
 }
 
 void
-_cairo_stroker_dash_init (cairo_stroker_dash_t *dash,
-			  const cairo_stroke_style_t *style)
+_comac_stroker_dash_init (comac_stroker_dash_t *dash,
+			  const comac_stroke_style_t *style)
 {
     dash->dashed = style->dash != NULL;
     if (! dash->dashed)
@@ -92,5 +92,5 @@ _cairo_stroker_dash_init (cairo_stroker_dash_t *dash,
     dash->num_dashes = style->num_dashes;
     dash->dash_offset = style->dash_offset;
 
-    _cairo_stroker_dash_start (dash);
+    _comac_stroker_dash_start (dash);
 }

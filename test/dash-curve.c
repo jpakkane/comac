@@ -25,40 +25,40 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double dashes[2] = {20, 20};
     int a=0, b=0, c=0;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     for (a=0; a<4; a++)
     for (b=0; b<5; b++)
     for (c=0; c<5; c++) {
-	cairo_move_to (cr, ((b*5)+c)*60+10, a*60+10);
-	cairo_rel_curve_to (cr,
+	comac_move_to (cr, ((b*5)+c)*60+10, a*60+10);
+	comac_rel_curve_to (cr,
 		            0,	    b*10,
 			    0,	    b*10,
 			    c*10,   b*10);
 
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_set_line_width (cr, 8);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-	cairo_set_dash (cr, dashes, 2, a*10);
-	cairo_stroke_preserve (cr);
+	comac_set_source_rgb (cr, 1, 1, 1);
+	comac_set_line_width (cr, 8);
+	comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+	comac_set_dash (cr, dashes, 2, a*10);
+	comac_stroke_preserve (cr);
 
-	cairo_set_source_rgb (cr, 0, 0.5, 1);
-	cairo_set_line_width (cr, 2);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-	cairo_set_dash (cr, 0, 0, 0);
-	cairo_stroke (cr);
+	comac_set_source_rgb (cr, 0, 0.5, 1);
+	comac_set_line_width (cr, 2);
+	comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+	comac_set_dash (cr, 0, 0, 0);
+	comac_stroke (cr);
     }
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (dash_curve,
+COMAC_TEST (dash_curve,
 	    "Tries to explore the state space of the dashing code along curves",
 	    "dash, stroke", /* keywords */
 	    NULL, /* requirements */

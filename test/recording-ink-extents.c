@@ -27,145 +27,145 @@
 
 #include "comac-test.h"
 
-/* Check cairo_recording_surface_ink_extents() returns correct extents. */
+/* Check comac_recording_surface_ink_extents() returns correct extents. */
 
 
-static cairo_test_status_t
-check_extents (cairo_test_context_t *cr,
-	       cairo_surface_t *recording_surface,
+static comac_test_status_t
+check_extents (comac_test_context_t *cr,
+	       comac_surface_t *recording_surface,
 	       const char * func_name,
 	       double expected_x, double expected_y, double expected_w, double expected_h)
 {
     double x, y, w, h;
-    cairo_recording_surface_ink_extents (recording_surface, &x, &y, &w, &h);
+    comac_recording_surface_ink_extents (recording_surface, &x, &y, &w, &h);
     if (x != expected_x ||
 	y != expected_y ||
 	w != expected_w ||
 	h != expected_h)
     {
-	cairo_test_log (cr,
+	comac_test_log (cr,
 			"%s: x: %f, y: %f, w: %f, h: %f\n"
 			"    expected: x: %f, y: %f, w: %f, h: %f\n",
 			func_name,
 			x, y, w, h,
 			expected_x, expected_y,
 			expected_w, expected_h);
-       return CAIRO_TEST_ERROR;
+       return COMAC_TEST_ERROR;
     }
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-unbounded_fill (cairo_test_context_t *test_cr)
+static comac_test_status_t
+unbounded_fill (comac_test_context_t *test_cr)
 {
-    cairo_test_status_t status;
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_test_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, NULL);
-    cr = cairo_create (surface);
+    surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
+    cr = comac_create (surface);
 
-    cairo_rectangle (cr, -300, -150, 900, 600);
-    cairo_fill (cr);
+    comac_rectangle (cr, -300, -150, 900, 600);
+    comac_fill (cr);
 
-    cairo_destroy(cr);
+    comac_destroy(cr);
 
     status = check_extents (test_cr, surface,  __func__,
 			    -300, -150, 900, 600);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
     return status;
 }
 
-static cairo_test_status_t
-bounded_fill (cairo_test_context_t *test_cr)
+static comac_test_status_t
+bounded_fill (comac_test_context_t *test_cr)
 {
-    cairo_test_status_t status;
-    cairo_surface_t *surface;
-    cairo_t *cr;
-    cairo_rectangle_t extents = { -150, -100, 300, 200 };
+    comac_test_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
+    comac_rectangle_t extents = { -150, -100, 300, 200 };
 
-    surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
-    cr = cairo_create (surface);
+    surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+    cr = comac_create (surface);
 
-    cairo_rectangle (cr, -300, -300, 650, 600);
-    cairo_fill (cr);
+    comac_rectangle (cr, -300, -300, 650, 600);
+    comac_fill (cr);
 
-    cairo_destroy(cr);
+    comac_destroy(cr);
 
     status = check_extents (test_cr, surface,  __func__,
 			    -150, -100, 300, 200);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
     return status;
 }
 
-static cairo_test_status_t
-unbounded_paint (cairo_test_context_t *test_cr)
+static comac_test_status_t
+unbounded_paint (comac_test_context_t *test_cr)
 {
-    cairo_test_status_t status;
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_test_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, NULL);
-    cr = cairo_create (surface);
+    surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
+    cr = comac_create (surface);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    cairo_destroy(cr);
+    comac_destroy(cr);
 
     status = check_extents (test_cr, surface,  __func__,
 			    -(1 << 23), -(1 << 23), -1, -1);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
     return status;
 }
 
-static cairo_test_status_t
-bounded_paint (cairo_test_context_t *test_cr)
+static comac_test_status_t
+bounded_paint (comac_test_context_t *test_cr)
 {
-    cairo_test_status_t status;
-    cairo_surface_t *surface;
-    cairo_t *cr;
-    cairo_rectangle_t extents = { -150, -100, 300, 200 };
+    comac_test_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
+    comac_rectangle_t extents = { -150, -100, 300, 200 };
 
-    surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
-    cr = cairo_create (surface);
+    surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
+    cr = comac_create (surface);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    cairo_destroy(cr);
+    comac_destroy(cr);
 
     status = check_extents (test_cr, surface,  __func__,
 			    -150, -100, 300, 200);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
     return status;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *cr)
+static comac_test_status_t
+preamble (comac_test_context_t *cr)
 {
-    cairo_test_status_t status;
+    comac_test_status_t status;
 
     status = unbounded_fill (cr);
-    if (status != CAIRO_TEST_SUCCESS)
+    if (status != COMAC_TEST_SUCCESS)
 	return status;
 
     status = bounded_fill (cr);
-    if (status != CAIRO_TEST_SUCCESS)
+    if (status != COMAC_TEST_SUCCESS)
 	return status;
 
     status = unbounded_paint (cr);
-    if (status != CAIRO_TEST_SUCCESS)
+    if (status != COMAC_TEST_SUCCESS)
 	return status;
 
     status = bounded_paint (cr);
-    if (status != CAIRO_TEST_SUCCESS)
+    if (status != COMAC_TEST_SUCCESS)
 	return status;
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 
-CAIRO_TEST (recording_ink_extents,
-	    "Test cairo_recording_surface_ink_extents()",
+COMAC_TEST (recording_ink_extents,
+	    "Test comac_recording_surface_ink_extents()",
 	    "api,recording,extents", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

@@ -37,7 +37,7 @@
  *	Some characters aren't displayed when using xlib (cache usage missing freeze/thaw)
  *	https://bugs.freedesktop.org/show_bug.cgi?id=6955
  *
- *   We replicate this bug by using the cairo_scaled_font_set_max_glyphs_per_font
+ *   We replicate this bug by using the comac_scaled_font_set_max_glyphs_per_font
  *   function to artificially induce cache pressure. (This function was added
  *   for this very purpose.)
  *
@@ -45,35 +45,35 @@
  *
  *   Bug was simple enough to solve by just adding a freeze/thaw pair
  *   around the scaled_font's glyph cache in
- *   _cairo_xlib_surface_show_glyphs, (I went ahead and added
- *   _cairo_sacled_font_freeze/thaw_cache functions for this).
+ *   _comac_xlib_surface_show_glyphs, (I went ahead and added
+ *   _comac_sacled_font_freeze/thaw_cache functions for this).
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
+    comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    cairo_boilerplate_scaled_font_set_max_glyphs_cached (cairo_get_scaled_font (cr), 1);
+    comac_boilerplate_scaled_font_set_max_glyphs_cached (comac_get_scaled_font (cr), 1);
 
-    cairo_move_to (cr, 1, TEXT_SIZE);
-    cairo_show_text (cr, "the five boxing wizards jump quickly");
+    comac_move_to (cr, 1, TEXT_SIZE);
+    comac_show_text (cr, "the five boxing wizards jump quickly");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (glyph_cache_pressure,
+COMAC_TEST (glyph_cache_pressure,
 	    "Ensure that all backends behave well under artificial glyph cache pressure",
 	    "stress", /* keywords */
 	    NULL, /* requirements */

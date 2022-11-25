@@ -25,59 +25,59 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *region[5];
-    const char *text = "Cairo";
+    comac_surface_t *region[5];
+    const char *text = "Comac";
     int i;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
     for (i = 0; i < 5; i++) {
-	cairo_t *cr_region;
-	cairo_text_extents_t extents;
+	comac_t *cr_region;
+	comac_text_extents_t extents;
 	char buf[2] = { text[i], '\0' };
 
-        region[i] = cairo_surface_create_for_rectangle (cairo_get_target (cr),
+        region[i] = comac_surface_create_for_rectangle (comac_get_target (cr),
                                                         20 * i, 0, 20, 20);
 
-	cr_region = cairo_create (region[i]);
-	cairo_surface_destroy (region[i]);
+	cr_region = comac_create (region[i]);
+	comac_surface_destroy (region[i]);
 
-	cairo_select_font_face (cr_region, "@cairo:",
-				CAIRO_FONT_SLANT_NORMAL,
-                                CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_set_font_size (cr_region, 20);
-	cairo_text_extents (cr_region, buf, &extents);
-	cairo_move_to (cr_region,
+	comac_select_font_face (cr_region, "@comac:",
+				COMAC_FONT_SLANT_NORMAL,
+                                COMAC_FONT_WEIGHT_NORMAL);
+	comac_set_font_size (cr_region, 20);
+	comac_text_extents (cr_region, buf, &extents);
+	comac_move_to (cr_region,
 		       10 - (extents.width/2 + extents.x_bearing),
 		       10 - (extents.height/2 + extents.y_bearing));
-	cairo_show_text (cr_region, buf);
+	comac_show_text (cr_region, buf);
 
-	region[i] = cairo_surface_reference (cairo_get_target (cr_region));
-	cairo_destroy (cr_region);
+	region[i] = comac_surface_reference (comac_get_target (cr_region));
+	comac_destroy (cr_region);
     }
 
     for (i = 0; i < 5; i++) {
-	cairo_set_source_surface (cr, region[5-i-1], 20 * i, 20);
-	cairo_paint (cr);
+	comac_set_source_surface (cr, region[5-i-1], 20 * i, 20);
+	comac_paint (cr);
     }
 
     for (i = 0; i < 5; i++) {
-	cairo_set_source_surface (cr, region[5-i-1], 20 * i, 40);
-	cairo_paint_with_alpha (cr, .5);
+	comac_set_source_surface (cr, region[5-i-1], 20 * i, 40);
+	comac_paint_with_alpha (cr, .5);
     }
 
     for (i = 0; i < 5; i++)
-	cairo_surface_destroy (region[i]);
+	comac_surface_destroy (region[i]);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (subsurface,
+COMAC_TEST (subsurface,
 	    "Tests clipping of both source and destination using subsurfaces",
 	    "subsurface", /* keywords */
 	    "target=raster", /* FIXME! recursion bug in subsurface/snapshot (with pdf backend) */ /* requirements */

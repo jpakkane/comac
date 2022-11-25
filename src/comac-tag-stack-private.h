@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2016 Adrian Johnson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -34,8 +34,8 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#ifndef CAIRO_TAG_STACK_PRIVATE_H
-#define CAIRO_TAG_STACK_PRIVATE_H
+#ifndef COMAC_TAG_STACK_PRIVATE_H
+#define COMAC_TAG_STACK_PRIVATE_H
 
 #include "comac-error-private.h"
 #include "comac-list-inline.h"
@@ -46,65 +46,65 @@ typedef enum {
     TAG_TYPE_STRUCTURE = 1,
     TAG_TYPE_LINK = 2,
     TAG_TYPE_DEST = 4,
-} cairo_tag_type_t;
+} comac_tag_type_t;
 
 /* The type of the structure tree. */
-typedef enum _cairo_tag_stack_structure_type {
+typedef enum _comac_tag_stack_structure_type {
     TAG_TREE_TYPE_TAGGED, /* compliant with Tagged PDF */
     TAG_TREE_TYPE_STRUCTURE, /* valid structure but not 'Tagged PDF' compliant */
     TAG_TREE_TYPE_LINK_ONLY, /* contains Link tags only */
     TAG_TREE_TYPE_NO_TAGS, /* no tags used */
     TAG_TREE_TYPE_INVALID, /* invalid tag structure */
-} cairo_tag_stack_structure_type_t;
+} comac_tag_stack_structure_type_t;
 
-typedef struct _cairo_tag_stack_elem {
+typedef struct _comac_tag_stack_elem {
     char *name;
     char *attributes;
     void *data;
-    cairo_list_t link;
+    comac_list_t link;
 
-} cairo_tag_stack_elem_t;
+} comac_tag_stack_elem_t;
 
-typedef struct _cairo_tag_stack {
-    cairo_list_t list;
-    cairo_tag_stack_structure_type_t type;
+typedef struct _comac_tag_stack {
+    comac_list_t list;
+    comac_tag_stack_structure_type_t type;
     int size;
 
-} cairo_tag_stack_t;
+} comac_tag_stack_t;
 
-cairo_private void
-_cairo_tag_stack_init (cairo_tag_stack_t *stack);
+comac_private void
+_comac_tag_stack_init (comac_tag_stack_t *stack);
 
-cairo_private void
-_cairo_tag_stack_fini (cairo_tag_stack_t *stack);
+comac_private void
+_comac_tag_stack_fini (comac_tag_stack_t *stack);
 
-cairo_private cairo_tag_stack_structure_type_t
-_cairo_tag_stack_get_structure_type (cairo_tag_stack_t *stack);
+comac_private comac_tag_stack_structure_type_t
+_comac_tag_stack_get_structure_type (comac_tag_stack_t *stack);
 
-cairo_private cairo_int_status_t
-_cairo_tag_stack_push (cairo_tag_stack_t *stack,
+comac_private comac_int_status_t
+_comac_tag_stack_push (comac_tag_stack_t *stack,
 		       const char        *name,
 		       const char        *attributes);
 
-cairo_private void
-_cairo_tag_stack_set_top_data (cairo_tag_stack_t *stack,
+comac_private void
+_comac_tag_stack_set_top_data (comac_tag_stack_t *stack,
 			       void              *data);
 
-cairo_private cairo_int_status_t
-_cairo_tag_stack_pop (cairo_tag_stack_t *stack,
+comac_private comac_int_status_t
+_comac_tag_stack_pop (comac_tag_stack_t *stack,
 		      const char *name,
-		      cairo_tag_stack_elem_t **elem);
+		      comac_tag_stack_elem_t **elem);
 
-cairo_private cairo_tag_stack_elem_t *
-_cairo_tag_stack_top_elem (cairo_tag_stack_t *stack);
+comac_private comac_tag_stack_elem_t *
+_comac_tag_stack_top_elem (comac_tag_stack_t *stack);
 
-cairo_private void
-_cairo_tag_stack_free_elem (cairo_tag_stack_elem_t *elem);
+comac_private void
+_comac_tag_stack_free_elem (comac_tag_stack_elem_t *elem);
 
-cairo_private cairo_tag_type_t
-_cairo_tag_get_type (const char *name);
+comac_private comac_tag_type_t
+_comac_tag_get_type (const char *name);
 
-cairo_private cairo_status_t
-_cairo_tag_error (const char *fmt, ...) CAIRO_PRINTF_FORMAT (1, 2);
+comac_private comac_status_t
+_comac_tag_error (const char *fmt, ...) COMAC_PRINTF_FORMAT (1, 2);
 
-#endif /* CAIRO_TAG_STACK_PRIVATE_H */
+#endif /* COMAC_TAG_STACK_PRIVATE_H */

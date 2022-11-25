@@ -25,36 +25,36 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1, 1, 0);
-    cairo_move_to (cr, 50, 50);
-    cairo_rel_line_to (cr, 50000, 50000);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 1, 1, 0);
+    comac_move_to (cr, 50, 50);
+    comac_rel_line_to (cr, 50000, 50000);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_move_to (cr, 50, 50);
-    cairo_rel_line_to (cr, -50000, 50000);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_move_to (cr, 50, 50);
+    comac_rel_line_to (cr, -50000, 50000);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_move_to (cr, 50, 50);
-    cairo_rel_line_to (cr, 50000, -50000);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_move_to (cr, 50, 50);
+    comac_rel_line_to (cr, 50000, -50000);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_move_to (cr, 50, 50);
-    cairo_rel_line_to (cr, -50000, -50000);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_move_to (cr, 50, 50);
+    comac_rel_line_to (cr, -50000, -50000);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (big_line,
+COMAC_TEST (big_line,
 	    "Test drawing of simple lines with positive and negative coordinates > 2^16",
 	    "stroke, line", /* keywords */
 	    NULL, /* requirements */

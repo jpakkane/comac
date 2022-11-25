@@ -39,12 +39,12 @@
 
 #define SIZE 50
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_translate (cr, 1, 1);
+    comac_translate (cr, 1, 1);
 
     /* What it should look like, with # marking the filled areas:
      *
@@ -64,18 +64,18 @@ draw (cairo_t *cr, int width, int height)
      *      \####|
      */
 
-    cairo_move_to (cr, 0, 0);
-    cairo_line_to (cr, SIZE/2, SIZE);
-    cairo_line_to (cr, SIZE/2, 0);
-    cairo_line_to (cr, SIZE, SIZE/2);
-    cairo_line_to (cr, 0, SIZE/2);
-    cairo_close_path (cr);
-    cairo_fill (cr);
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, SIZE/2, SIZE);
+    comac_line_to (cr, SIZE/2, 0);
+    comac_line_to (cr, SIZE, SIZE/2);
+    comac_line_to (cr, 0, SIZE/2);
+    comac_close_path (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_missed_stop,
+COMAC_TEST (fill_missed_stop,
 	    "Tests that the tessellator doesn't miss stop events when generating trapezoids",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

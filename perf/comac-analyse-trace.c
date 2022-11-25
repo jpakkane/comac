@@ -96,19 +96,19 @@ basename_no_ext (char *path)
 #endif
 
 struct trace {
-    const cairo_boilerplate_target_t *target;
+    const comac_boilerplate_target_t *target;
     void            *closure;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 };
 
-cairo_bool_t
-cairo_perf_can_run (cairo_perf_t *perf,
+comac_bool_t
+comac_perf_can_run (comac_perf_t *perf,
 		    const char	 *name,
-		    cairo_bool_t *is_explicit)
+		    comac_bool_t *is_explicit)
 {
     unsigned int i;
     char *copy, *dot;
-    cairo_bool_t ret;
+    comac_bool_t ret;
 
     if (is_explicit)
 	*is_explicit = FALSE;
@@ -160,15 +160,15 @@ done:
     return ret;
 }
 
-static cairo_surface_t *
+static comac_surface_t *
 surface_create (void		 *closure,
-		cairo_content_t  content,
+		comac_content_t  content,
 		double		  width,
 		double		  height,
 		long		  uid)
 {
     struct trace *args = closure;
-    return cairo_surface_create_similar (args->surface, content, width, height);
+    return comac_surface_create_similar (args->surface, content, width, height);
 }
 
 static int user_interrupt;
@@ -185,7 +185,7 @@ interrupt (int sig)
 }
 
 static void
-describe (cairo_perf_t *perf,
+describe (comac_perf_t *perf,
           void *closure)
 {
     char *description = NULL;
@@ -204,12 +204,12 @@ describe (cairo_perf_t *perf,
 }
 
 static void
-execute (cairo_perf_t	 *perf,
+execute (comac_perf_t	 *perf,
 	 struct trace	 *args,
 	 const char	 *trace)
 {
     char *trace_cpy, *name;
-    const cairo_script_interpreter_hooks_t hooks = {
+    const comac_script_interpreter_hooks_t hooks = {
 	.closure = args,
 	.surface_create = surface_create,
     };
@@ -226,23 +226,23 @@ execute (cairo_perf_t	 *perf,
     describe (perf, args->closure);
 
     {
-	cairo_script_interpreter_t *csi;
-	cairo_status_t status;
+	comac_script_interpreter_t *csi;
+	comac_status_t status;
 	unsigned int line_no;
 
-	csi = cairo_script_interpreter_create ();
-	cairo_script_interpreter_install_hooks (csi, &hooks);
+	csi = comac_script_interpreter_create ();
+	comac_script_interpreter_install_hooks (csi, &hooks);
 
-	cairo_script_interpreter_run (csi, trace);
+	comac_script_interpreter_run (csi, trace);
 
-	cairo_script_interpreter_finish (csi);
+	comac_script_interpreter_finish (csi);
 
-	line_no = cairo_script_interpreter_get_line_number (csi);
-	status = cairo_script_interpreter_destroy (csi);
+	line_no = comac_script_interpreter_get_line_number (csi);
+	status = comac_script_interpreter_destroy (csi);
 	if (status) {
-	    /* XXXX cairo_status_to_string is just wrong! */
+	    /* XXXX comac_status_to_string is just wrong! */
 	    fprintf (stderr, "Error during replay, line %d: %s\n",
-		     line_no, cairo_status_to_string (status));
+		     line_no, comac_status_to_string (status));
 	}
     }
     user_interrupt = 0;
@@ -256,7 +256,7 @@ usage (const char *argv0)
     fprintf (stderr,
 "Usage: %s [-l] [-i iterations] [-x exclude-file] [test-names ... | traces ...]\n"
 "\n"
-"Run the cairo trace analysis suite over the given tests (all by default)\n"
+"Run the comac trace analysis suite over the given tests (all by default)\n"
 "The command-line arguments are interpreted as follows:\n"
 "\n"
 "  -i	iterations; specify the number of iterations per test case\n"
@@ -269,8 +269,8 @@ usage (const char *argv0)
 	     argv0, argv0);
 }
 
-static cairo_bool_t
-read_excludes (cairo_perf_t *perf,
+static comac_bool_t
+read_excludes (comac_perf_t *perf,
 	       const char   *filename)
 {
     FILE *file;
@@ -313,7 +313,7 @@ read_excludes (cairo_perf_t *perf,
 }
 
 static void
-parse_options (cairo_perf_t *perf,
+parse_options (comac_perf_t *perf,
 	       int	     argc,
 	       char	    *argv[])
 {
@@ -327,7 +327,7 @@ parse_options (cairo_perf_t *perf,
     perf->num_exclude_names = 0;
 
     while (1) {
-	c = _cairo_getopt (argc, argv, "i:lx:");
+	c = _comac_getopt (argc, argv, "i:lx:");
 	if (c == -1)
 	    break;
 
@@ -367,19 +367,19 @@ parse_options (cairo_perf_t *perf,
 }
 
 static void
-cairo_perf_fini (cairo_perf_t *perf)
+comac_perf_fini (comac_perf_t *perf)
 {
-    cairo_boilerplate_free_targets (perf->targets);
-    cairo_boilerplate_fini ();
+    comac_boilerplate_free_targets (perf->targets);
+    comac_boilerplate_fini ();
 
-    cairo_debug_reset_static_data ();
+    comac_debug_reset_static_data ();
 #if HAVE_FCFINI
     FcFini ();
 #endif
 }
 
-static cairo_bool_t
-have_trace_filenames (cairo_perf_t *perf)
+static comac_bool_t
+have_trace_filenames (comac_perf_t *perf)
 {
     unsigned int i;
 
@@ -395,33 +395,33 @@ have_trace_filenames (cairo_perf_t *perf)
     return FALSE;
 }
 
-static cairo_status_t
+static comac_status_t
 print (void *closure, const unsigned char *data, unsigned int length)
 {
     fwrite (data, length, 1, closure);
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-cairo_perf_trace (cairo_perf_t			   *perf,
-		  const cairo_boilerplate_target_t *target,
+comac_perf_trace (comac_perf_t			   *perf,
+		  const comac_boilerplate_target_t *target,
 		  const char			   *trace)
 {
     struct trace args;
-    cairo_surface_t *real;
+    comac_surface_t *real;
 
     args.target = target;
     real = target->create_surface (NULL,
-				   CAIRO_CONTENT_COLOR_ALPHA,
+				   COMAC_CONTENT_COLOR_ALPHA,
 				   1, 1,
 				   1, 1,
-				   CAIRO_BOILERPLATE_MODE_PERF,
+				   COMAC_BOILERPLATE_MODE_PERF,
 				   &args.closure);
     args.surface =
-	    cairo_surface_create_observer (real,
-					   CAIRO_SURFACE_OBSERVER_RECORD_OPERATIONS);
-    cairo_surface_destroy (real);
-    if (cairo_surface_status (args.surface)) {
+	    comac_surface_create_observer (real,
+					   COMAC_SURFACE_OBSERVER_RECORD_OPERATIONS);
+    comac_surface_destroy (real);
+    if (comac_surface_status (args.surface)) {
 	fprintf (stderr,
 		 "Error: Failed to create target surface: %s\n",
 		 target->name);
@@ -434,11 +434,11 @@ cairo_perf_trace (cairo_perf_t			   *perf,
     execute (perf, &args, trace);
 
     printf ("\n");
-    cairo_device_observer_print (cairo_surface_get_device (args.surface),
+    comac_device_observer_print (comac_surface_get_device (args.surface),
 				 print, stdout);
     fflush (stdout);
 
-    cairo_surface_destroy (args.surface);
+    comac_surface_destroy (args.surface);
 
     if (target->cleanup)
 	target->cleanup (args.closure);
@@ -450,30 +450,30 @@ warn_no_traces (const char *message,
 {
     fprintf (stderr,
 "Error: %s '%s'.\n"
-"Have you cloned the cairo-traces repository and uncompressed the traces?\n"
-"  git clone git://anongit.freedesktop.org/cairo-traces\n"
-"  cd cairo-traces && make\n"
-"Or set the env.var CAIRO_TRACE_DIR to point to your traces?\n",
+"Have you cloned the comac-traces repository and uncompressed the traces?\n"
+"  git clone git://anongit.freedesktop.org/comac-traces\n"
+"  cd comac-traces && make\n"
+"Or set the env.var COMAC_TRACE_DIR to point to your traces?\n",
 	    message, trace_dir);
 }
 
 static int
-cairo_perf_trace_dir (cairo_perf_t		       *perf,
-		      const cairo_boilerplate_target_t *target,
+comac_perf_trace_dir (comac_perf_t		       *perf,
+		      const comac_boilerplate_target_t *target,
 		      const char		       *dirname)
 {
     DIR *dir;
     struct dirent *de;
     int num_traces = 0;
-    cairo_bool_t force;
-    cairo_bool_t is_explicit;
+    comac_bool_t force;
+    comac_bool_t is_explicit;
 
     dir = opendir (dirname);
     if (dir == NULL)
 	return 0;
 
     force = FALSE;
-    if (cairo_perf_can_run (perf, dirname, &is_explicit))
+    if (comac_perf_can_run (perf, dirname, &is_explicit))
 	force = is_explicit;
 
     while ((de = readdir (dir)) != NULL) {
@@ -488,7 +488,7 @@ cairo_perf_trace_dir (cairo_perf_t		       *perf,
 	    goto next;
 
 	if (S_ISDIR(st.st_mode)) {
-	    num_traces += cairo_perf_trace_dir (perf, target, trace);
+	    num_traces += comac_perf_trace_dir (perf, target, trace);
 	} else {
 	    const char *dot;
 
@@ -499,10 +499,10 @@ cairo_perf_trace_dir (cairo_perf_t		       *perf,
 		goto next;
 
 	    num_traces++;
-	    if (!force && ! cairo_perf_can_run (perf, de->d_name, NULL))
+	    if (!force && ! comac_perf_can_run (perf, de->d_name, NULL))
 		goto next;
 
-	    cairo_perf_trace (perf, target, trace);
+	    comac_perf_trace (perf, target, trace);
 	}
 next:
 	free (trace);
@@ -517,8 +517,8 @@ int
 main (int   argc,
       char *argv[])
 {
-    cairo_perf_t perf;
-    const char *trace_dir = "cairo-traces:/usr/src/cairo-traces:/usr/share/cairo-traces";
+    comac_perf_t perf;
+    const char *trace_dir = "comac-traces:/usr/src/comac-traces:/usr/share/comac-traces";
     unsigned int n;
     int i;
 
@@ -526,16 +526,16 @@ main (int   argc,
 
     signal (SIGINT, interrupt);
 
-    if (getenv ("CAIRO_TRACE_DIR") != NULL)
-	trace_dir = getenv ("CAIRO_TRACE_DIR");
+    if (getenv ("COMAC_TRACE_DIR") != NULL)
+	trace_dir = getenv ("COMAC_TRACE_DIR");
 
-    perf.targets = cairo_boilerplate_get_targets (&perf.num_targets, NULL);
+    perf.targets = comac_boilerplate_get_targets (&perf.num_targets, NULL);
 
     /* do we have a list of filenames? */
     perf.exact_names = have_trace_filenames (&perf);
 
     for (i = 0; i < perf.num_targets; i++) {
-	const cairo_boilerplate_target_t *target = perf.targets[i];
+	const comac_boilerplate_target_t *target = perf.targets[i];
 
 	if (! perf.list_only && ! target->is_measurable)
 	    continue;
@@ -549,9 +549,9 @@ main (int   argc,
 
 		if (stat (perf.names[n], &st) == 0) {
 		    if (S_ISDIR (st.st_mode)) {
-			cairo_perf_trace_dir (&perf, target, perf.names[n]);
+			comac_perf_trace_dir (&perf, target, perf.names[n]);
 		    } else
-			cairo_perf_trace (&perf, target, perf.names[n]);
+			comac_perf_trace (&perf, target, perf.names[n]);
 		}
 	    }
 	} else {
@@ -570,7 +570,7 @@ main (int   argc,
 		    dir = buf;
 		}
 
-		num_traces += cairo_perf_trace_dir (&perf, target, dir);
+		num_traces += comac_perf_trace_dir (&perf, target, dir);
 		dir = end;
 	    } while (dir != NULL);
 
@@ -584,7 +584,7 @@ main (int   argc,
 	    break;
     }
 
-    cairo_perf_fini (&perf);
+    comac_perf_fini (&perf);
 
     return 0;
 }

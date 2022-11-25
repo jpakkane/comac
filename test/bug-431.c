@@ -24,39 +24,39 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_matrix_t test_matrix;
+    comac_matrix_t test_matrix;
     test_matrix.xx = 614;
     test_matrix.yx = 0;
     test_matrix.xy = 0;
     test_matrix.yy = -794;
     test_matrix.x0 = -1.3831;
     test_matrix.y0 = 793;
-    cairo_set_matrix(cr, &test_matrix);
+    comac_set_matrix(cr, &test_matrix);
 
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_surface_t *png_surface = cairo_test_create_surface_from_png (ctx, "romedalen.png");
-    cairo_pattern_t *png_pattern = cairo_pattern_create_for_surface(png_surface);
-    cairo_matrix_t matrix;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_surface_t *png_surface = comac_test_create_surface_from_png (ctx, "romedalen.png");
+    comac_pattern_t *png_pattern = comac_pattern_create_for_surface(png_surface);
+    comac_matrix_t matrix;
     matrix.xx = 1228;
     matrix.yx = 0;
     matrix.xy = 0;
     matrix.yy = -1590;
     matrix.x0 = 0;
     matrix.y0 = 1590;
-    cairo_pattern_set_matrix (png_pattern, &matrix);
-    cairo_pattern_t *mask_pattern = cairo_pattern_create_rgba (1.0, 1.0, 1.0, 0.15);
-    cairo_save(cr);
-    cairo_set_source(cr, png_pattern);
-    cairo_mask(cr, mask_pattern);
-    cairo_restore(cr);
+    comac_pattern_set_matrix (png_pattern, &matrix);
+    comac_pattern_t *mask_pattern = comac_pattern_create_rgba (1.0, 1.0, 1.0, 0.15);
+    comac_save(cr);
+    comac_set_source(cr, png_pattern);
+    comac_mask(cr, mask_pattern);
+    comac_restore(cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_431,
+COMAC_TEST (bug_431,
 	    "Bug 431 (Different result on SVG surface)",
 	    "", /* keywords */
 	    NULL, /* requirements */

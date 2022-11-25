@@ -36,8 +36,8 @@
 
 #include <glib.h> /* for checksumming */
 
-#ifndef CAIRO_HAS_REAL_PTHREAD
-# error "cairo-sphinx needs real pthreads"
+#ifndef COMAC_HAS_REAL_PTHREAD
+# error "comac-sphinx needs real pthreads"
 #endif
 
 #ifndef MAP_NORESERVE
@@ -45,21 +45,21 @@
 #endif
 
 #define DATA_SIZE (256 << 20)
-#define SHM_PATH_XXX "/shmem-cairo-sphinx"
+#define SHM_PATH_XXX "/shmem-comac-sphinx"
 
 struct client {
     int sk;
-    const cairo_boilerplate_target_t *target;
-    cairo_surface_t *surface;
+    const comac_boilerplate_target_t *target;
+    comac_surface_t *surface;
     void *base;
 
-    cairo_script_interpreter_t *csi;
+    comac_script_interpreter_t *csi;
     struct context_closure {
 	struct context_closure *next;
 	unsigned long id;
-	cairo_t *context;
-	cairo_surface_t *surface;
-	cairo_surface_t *original;
+	comac_t *context;
+	comac_surface_t *surface;
+	comac_surface_t *original;
     } *contexts;
 
     unsigned long context_id;
@@ -68,7 +68,7 @@ struct client {
 struct surface_tag {
     long width, height;
 };
-static const cairo_user_data_key_t surface_tag;
+static const comac_user_data_key_t surface_tag;
 
 static int
 client_socket (const char *socket_path);
@@ -236,14 +236,14 @@ struct clients {
     int count, size;
     int complete;
 
-    cairo_surface_t *recording;
+    comac_surface_t *recording;
     unsigned long serial;
 
     struct client_info {
 	int sk;
 	int trace;
 	unsigned long image_serial;
-	cairo_surface_t *image;
+	comac_surface_t *image;
 	char *name;
 	char *target;
 	char *reference;
@@ -425,7 +425,7 @@ clients_image (struct clients *clients, int fd, char *info)
     assert (clients->offset + size <= DATA_SIZE);
 
     c->image =
-	cairo_image_surface_create_for_data (clients->base + clients->offset,
+	comac_image_surface_create_for_data (clients->base + clients->offset,
 					     format, width, height, stride);
 
     if (! writen (fd, &clients->offset, sizeof (clients->offset)))
@@ -516,41 +516,41 @@ get_median_8 (int x, int y, const uint8_t *data, int width, int height, int stri
     return median (neighbourhood, cnt);
 }
 
-static cairo_bool_t
-compare_images (cairo_surface_t *a,
-		cairo_surface_t *b)
+static comac_bool_t
+compare_images (comac_surface_t *a,
+		comac_surface_t *b)
 {
     int width, height, stride;
     const uint8_t *aa, *bb;
     int x, y;
 
-    if (cairo_surface_status (a) || cairo_surface_status (b))
+    if (comac_surface_status (a) || comac_surface_status (b))
 	return FALSE;
 
-    if (cairo_surface_get_type (a) != cairo_surface_get_type (b))
+    if (comac_surface_get_type (a) != comac_surface_get_type (b))
 	return FALSE;
 
-    if (cairo_image_surface_get_format (a) != cairo_image_surface_get_format (b))
+    if (comac_image_surface_get_format (a) != comac_image_surface_get_format (b))
 	return FALSE;
 
-    if (cairo_image_surface_get_width (a) != cairo_image_surface_get_width (b))
+    if (comac_image_surface_get_width (a) != comac_image_surface_get_width (b))
 	return FALSE;
 
-    if (cairo_image_surface_get_height (a) != cairo_image_surface_get_height (b))
+    if (comac_image_surface_get_height (a) != comac_image_surface_get_height (b))
 	return FALSE;
 
-    if (cairo_image_surface_get_stride (a) != cairo_image_surface_get_stride (b))
+    if (comac_image_surface_get_stride (a) != comac_image_surface_get_stride (b))
 	return FALSE;
 
 
-    width = cairo_image_surface_get_width (a);
-    height = cairo_image_surface_get_height (a);
-    stride = cairo_image_surface_get_stride (a);
+    width = comac_image_surface_get_width (a);
+    height = comac_image_surface_get_height (a);
+    stride = comac_image_surface_get_stride (a);
 
-    aa = cairo_image_surface_get_data (a);
-    bb = cairo_image_surface_get_data (b);
-    switch (cairo_image_surface_get_format (a)) {
-    case CAIRO_FORMAT_ARGB32:
+    aa = comac_image_surface_get_data (a);
+    bb = comac_image_surface_get_data (b);
+    switch (comac_image_surface_get_format (a)) {
+    case COMAC_FORMAT_ARGB32:
 	for (y = 0; y < height; y++) {
 	    const uint32_t *ua = (uint32_t *) aa;
 	    const uint32_t *ub = (uint32_t *) bb;
@@ -579,7 +579,7 @@ compare_images (cairo_surface_t *a,
 	}
 	break;
 
-    case CAIRO_FORMAT_RGB24:
+    case COMAC_FORMAT_RGB24:
 	for (y = 0; y < height; y++) {
 	    const uint32_t *ua = (uint32_t *) aa;
 	    const uint32_t *ub = (uint32_t *) bb;
@@ -608,7 +608,7 @@ compare_images (cairo_surface_t *a,
 	}
 	break;
 
-    case CAIRO_FORMAT_A8:
+    case COMAC_FORMAT_A8:
 	for (y = 0; y < height; y++) {
 	    for (x = 0; x < width; x++) {
 		if (aa[x] != bb[x]) {
@@ -630,7 +630,7 @@ compare_images (cairo_surface_t *a,
 	}
 	break;
 
-    case CAIRO_FORMAT_A1:
+    case COMAC_FORMAT_A1:
 	width /= 8;
 	for (y = 0; y < height; y++) {
 	    if (memcmp (aa, bb, width))
@@ -640,8 +640,8 @@ compare_images (cairo_surface_t *a,
 	}
 	break;
 
-    case CAIRO_FORMAT_INVALID:
-    case CAIRO_FORMAT_RGB16_565: /* XXX */
+    case COMAC_FORMAT_INVALID:
+    case COMAC_FORMAT_RGB16_565: /* XXX */
 	break;
     }
 
@@ -691,31 +691,31 @@ checksum (const char *filename)
 static void
 write_trace (struct clients *clients)
 {
-    cairo_device_t *ctx;
+    comac_device_t *ctx;
     gchar *csum;
     char buf[4096];
     int i;
 
     mkdir ("output", 0777);
 
-    ctx = cairo_script_create ("output/cairo-sphinx.trace");
-    cairo_script_from_recording_surface (ctx, clients->recording);
-    cairo_device_destroy (ctx);
+    ctx = comac_script_create ("output/comac-sphinx.trace");
+    comac_script_from_recording_surface (ctx, clients->recording);
+    comac_device_destroy (ctx);
 
-    csum = checksum ("output/cairo-sphinx.trace");
+    csum = checksum ("output/comac-sphinx.trace");
 
     sprintf (buf, "output/%s.trace", csum);
     if (! g_file_test (buf, G_FILE_TEST_EXISTS)) {
-	rename ("output/cairo-sphinx.trace", buf);
+	rename ("output/comac-sphinx.trace", buf);
 
 	sprintf (buf, "output/%s.recording.png", csum);
-	cairo_surface_write_to_png (clients->recording, buf);
+	comac_surface_write_to_png (clients->recording, buf);
 
 	for (i = 0; i < clients->count; i++) {
 	    struct client_info *c = &clients->clients[i];
 	    if (c->image != NULL) {
 		sprintf (buf, "output/%s.%s.png", csum, c->name);
-		cairo_surface_write_to_png (c->image, buf);
+		comac_surface_write_to_png (c->image, buf);
 	    }
 	}
     }
@@ -747,7 +747,7 @@ clients_complete (struct clients *clients, int fd)
     for (i = 0; i < clients->count; i++) {
 	struct client_info *c = &clients->clients[i];
 
-	cairo_surface_destroy (c->image);
+	comac_surface_destroy (c->image);
 	c->image = NULL;
 
 	if (! writen (c->sk, &clients->serial, sizeof (clients->serial)))
@@ -849,14 +849,14 @@ nonblocking (int fd)
 static void *
 request_image (struct client *c,
 	       struct context_closure *closure,
-	       cairo_format_t format,
+	       comac_format_t format,
 	       int width, int height, int stride)
 {
     char buf[1024];
     unsigned long offset = -1;
     int len;
 
-    assert (format != CAIRO_FORMAT_INVALID);
+    assert (format != COMAC_FORMAT_INVALID);
 
     len = sprintf (buf, ".image %lu %d %d %d %d\n",
 		   closure->id, format, width, height, stride);
@@ -869,50 +869,50 @@ request_image (struct client *c,
     return (uint8_t *) c->base + offset;
 }
 
-static cairo_format_t
-format_for_content (cairo_content_t content)
+static comac_format_t
+format_for_content (comac_content_t content)
 {
     switch (content) {
-    case CAIRO_CONTENT_ALPHA:
-	return CAIRO_FORMAT_A8;
-    case CAIRO_CONTENT_COLOR:
-	return CAIRO_FORMAT_RGB24;
+    case COMAC_CONTENT_ALPHA:
+	return COMAC_FORMAT_A8;
+    case COMAC_CONTENT_COLOR:
+	return COMAC_FORMAT_RGB24;
     default:
-    case CAIRO_CONTENT_COLOR_ALPHA:
-	return CAIRO_FORMAT_ARGB32;
+    case COMAC_CONTENT_COLOR_ALPHA:
+	return COMAC_FORMAT_ARGB32;
     }
 }
 
 static void
-get_surface_size (cairo_surface_t *surface,
+get_surface_size (comac_surface_t *surface,
 		  int *width, int *height,
-		  cairo_format_t *format)
+		  comac_format_t *format)
 {
-    if (cairo_surface_get_type (surface) == CAIRO_SURFACE_TYPE_IMAGE) {
-	*width = cairo_image_surface_get_width (surface);
-	*height = cairo_image_surface_get_height (surface);
-	*format = cairo_image_surface_get_format (surface);
+    if (comac_surface_get_type (surface) == COMAC_SURFACE_TYPE_IMAGE) {
+	*width = comac_image_surface_get_width (surface);
+	*height = comac_image_surface_get_height (surface);
+	*format = comac_image_surface_get_format (surface);
     } else {
 	struct surface_tag *tag;
 
-	tag = cairo_surface_get_user_data (surface, &surface_tag);
+	tag = comac_surface_get_user_data (surface, &surface_tag);
 	if (tag != NULL) {
 	    *width = tag->width;
 	    *height = tag->height;
 	} else {
 	    double x0, x1, y0, y1;
-	    cairo_t *cr;
+	    comac_t *cr;
 
-	    /* presumably created using cairo_surface_create_similar() */
-	    cr = cairo_create (surface);
-	    cairo_clip_extents (cr, &x0, &y0, &x1, &y1);
-	    cairo_destroy (cr);
+	    /* presumably created using comac_surface_create_similar() */
+	    cr = comac_create (surface);
+	    comac_clip_extents (cr, &x0, &y0, &x1, &y1);
+	    comac_destroy (cr);
 
 	    tag = xmalloc (sizeof (*tag));
 	    *width = tag->width = ceil (x1 - x0);
 	    *height = tag->height = ceil (y1 - y0);
 
-	    if (cairo_surface_set_user_data (surface, &surface_tag, tag, free))
+	    if (comac_surface_set_user_data (surface, &surface_tag, tag, free))
 		exit (-1);
 	}
     }
@@ -923,35 +923,35 @@ static void
 send_surface (struct client *c,
 	      struct context_closure *closure)
 {
-    cairo_surface_t *source = closure->surface;
-    cairo_surface_t *image;
-    cairo_format_t format = CAIRO_FORMAT_INVALID;
-    cairo_t *cr;
+    comac_surface_t *source = closure->surface;
+    comac_surface_t *image;
+    comac_format_t format = COMAC_FORMAT_INVALID;
+    comac_t *cr;
     int width, height, stride;
     void *data;
     unsigned long serial;
 
     get_surface_size (source, &width, &height, &format);
-    if (format == CAIRO_FORMAT_INVALID)
-	format = format_for_content (cairo_surface_get_content (source));
+    if (format == COMAC_FORMAT_INVALID)
+	format = format_for_content (comac_surface_get_content (source));
 
-    stride = cairo_format_stride_for_width (format, width);
+    stride = comac_format_stride_for_width (format, width);
 
     data = request_image (c, closure, format, width, height, stride);
     if (data == NULL)
 	exit (-1);
 
-    image = cairo_image_surface_create_for_data (data,
+    image = comac_image_surface_create_for_data (data,
 						 format,
 						 width, height,
 						 stride);
-    cr = cairo_create (image);
-    cairo_surface_destroy (image);
+    cr = comac_create (image);
+    comac_surface_destroy (image);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_surface (cr, source, 0, 0);
-    cairo_paint (cr);
-    cairo_destroy (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_surface (cr, source, 0, 0);
+    comac_paint (cr);
+    comac_destroy (cr);
 
     /* signal completion */
     writen (c->sk, ".complete\n", strlen (".complete\n"));
@@ -967,12 +967,12 @@ static void
 send_recording (struct client *c,
 		struct context_closure *closure)
 {
-    cairo_surface_t *source = closure->surface;
+    comac_surface_t *source = closure->surface;
     char buf[1024];
     int len;
     unsigned long serial;
 
-    assert (cairo_surface_get_type (source) == CAIRO_SURFACE_TYPE_RECORDING);
+    assert (comac_surface_get_type (source) == COMAC_SURFACE_TYPE_RECORDING);
     len = sprintf (buf, ".recording %p %lu\n", source, closure->id);
     writen (c->sk, buf, len);
 
@@ -984,41 +984,41 @@ send_recording (struct client *c,
 	exit (-1);
 }
 
-static cairo_surface_t *
+static comac_surface_t *
 _surface_create (void *closure,
-		 cairo_content_t content,
+		 comac_content_t content,
 		 double width, double height,
 		 long uid)
 {
     struct client *c = closure;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_surface_create_similar (c->surface,
+    surface = comac_surface_create_similar (c->surface,
 					    content, width, height);
-    if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE) {
+    if (comac_surface_get_type (surface) != COMAC_SURFACE_TYPE_IMAGE) {
 	struct surface_tag *tag;
 
 	tag = xmalloc (sizeof (*tag));
 	tag->width = width;
 	tag->height = height;
-	if (cairo_surface_set_user_data (surface, &surface_tag, tag, free))
+	if (comac_surface_set_user_data (surface, &surface_tag, tag, free))
 	    exit (-1);
     }
 
     return surface;
 }
 
-static cairo_t *
-_context_create (void *closure, cairo_surface_t *surface)
+static comac_t *
+_context_create (void *closure, comac_surface_t *surface)
 {
     struct client *c = closure;
     struct context_closure *l;
-    cairo_bool_t foreign = FALSE;
+    comac_bool_t foreign = FALSE;
 
     l = xmalloc (sizeof (*l));
     l->next = c->contexts;
     l->surface = surface;
-    l->original = cairo_surface_reference (surface);
+    l->original = comac_surface_reference (surface);
     l->id = ++c->context_id;
     if (l->id == 0)
 	l->id = ++c->context_id;
@@ -1026,22 +1026,22 @@ _context_create (void *closure, cairo_surface_t *surface)
 
     /* record everything, including writes to images */
     if (c->target == NULL) {
-	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_RECORDING) {
-	    cairo_format_t format;
+	if (comac_surface_get_type (surface) != COMAC_SURFACE_TYPE_RECORDING) {
+	    comac_format_t format;
 	    int width, height;
 
 	    get_surface_size (surface, &width, &height, &format);
-	    l->surface = cairo_surface_create_similar (c->surface,
-						       cairo_surface_get_content (surface),
+	    l->surface = comac_surface_create_similar (c->surface,
+						       comac_surface_get_content (surface),
 						       width, height);
 	    foreign = TRUE;
 	}
     }
 
-    l->context = cairo_create (l->surface);
+    l->context = comac_create (l->surface);
     if (foreign) {
-	cairo_set_source_surface (l->context, surface, 0, 0);
-	cairo_paint (l->context);
+	comac_set_source_surface (l->context, surface, 0, 0);
+	comac_paint (l->context);
     }
 
     return l->context;
@@ -1055,7 +1055,7 @@ _context_destroy (void *closure, void *ptr)
 
     while ((l = *prev) != NULL) {
 	if (l->context == ptr) {
-	    if (cairo_surface_status (l->surface) == CAIRO_STATUS_SUCCESS) {
+	    if (comac_surface_status (l->surface) == COMAC_STATUS_SUCCESS) {
 		if (c->target == NULL)
 		    send_recording (c, l);
 		else
@@ -1064,7 +1064,7 @@ _context_destroy (void *closure, void *ptr)
 		exit (-1);
 	    }
 
-            cairo_surface_destroy (l->original);
+            comac_surface_destroy (l->original);
             *prev = l->next;
             free (l);
             return;
@@ -1077,7 +1077,7 @@ static void *
 recorder (void *arg)
 {
     struct client client;
-    const cairo_script_interpreter_hooks_t hooks = {
+    const comac_script_interpreter_hooks_t hooks = {
 	.closure = &client,
 	.surface_create = _surface_create,
 	.context_create = _context_create,
@@ -1089,7 +1089,7 @@ recorder (void *arg)
     struct pollfd pfd;
 
     client.target = NULL;
-    client.sk = client_socket ("/tmp/cairo-sphinx");
+    client.sk = client_socket ("/tmp/comac-sphinx");
     if (client.sk < 0)
 	return NULL;
 
@@ -1103,7 +1103,7 @@ recorder (void *arg)
     /* drain the shm_path */
     len = readline (client.sk, buf, buf_size);
 
-    pfd.fd = client_socket ("/tmp/cairo-sphinx");
+    pfd.fd = client_socket ("/tmp/comac-sphinx");
     if (pfd.fd < 0)
 	return NULL;
 
@@ -1111,12 +1111,12 @@ recorder (void *arg)
     if (! writen (pfd.fd, buf, len))
 	return NULL;
 
-    client.surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA,
+    client.surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA,
 						     NULL);
 
     client.context_id = 0;
-    client.csi = cairo_script_interpreter_create ();
-    cairo_script_interpreter_install_hooks (client.csi, &hooks);
+    client.csi = comac_script_interpreter_create ();
+    comac_script_interpreter_install_hooks (client.csi, &hooks);
 
     nonblocking (pfd.fd);
     pfd.events = POLLIN;
@@ -1135,7 +1135,7 @@ recorder (void *arg)
 		;
 	    if (end > 0) {
 		buf[end] = '\0';
-		cairo_script_interpreter_feed_string (client.csi, buf, end);
+		comac_script_interpreter_feed_string (client.csi, buf, end);
 
 		len -= end + 1;
 		if (len)
@@ -1148,10 +1148,10 @@ recorder (void *arg)
 	    break;
     }
 
-    cairo_script_interpreter_finish (client.csi);
-    cairo_script_interpreter_destroy (client.csi);
+    comac_script_interpreter_finish (client.csi);
+    comac_script_interpreter_destroy (client.csi);
 
-    cairo_surface_destroy (client.surface);
+    comac_surface_destroy (client.surface);
     return NULL;
 }
 
@@ -1374,10 +1374,10 @@ do_client (int fd,
 	   const char *target,
 	   const char *name,
 	   const char *reference,
-	   cairo_content_t content)
+	   comac_content_t content)
 {
     struct client client;
-    const cairo_script_interpreter_hooks_t hooks = {
+    const comac_script_interpreter_hooks_t hooks = {
 	.closure = &client,
 	.surface_create = _surface_create,
 	.context_create = _context_create,
@@ -1390,11 +1390,11 @@ do_client (int fd,
     struct pollfd pfd;
 
     client.sk = fd;
-    client.target = cairo_boilerplate_get_target_by_name (target, content);
+    client.target = comac_boilerplate_get_target_by_name (target, content);
     client.context_id = 0;
 
     client.surface = client.target->create_surface (NULL, content, 1, 1, 1, 1,
-						    CAIRO_BOILERPLATE_MODE_TEST,
+						    COMAC_BOILERPLATE_MODE_TEST,
 						    &closure);
     if (client.surface == NULL) {
 	fprintf (stderr, "Failed to create target surface: %s.\n",
@@ -1427,7 +1427,7 @@ do_client (int fd,
     if (daemonize () < 0)
 	return 1;
 
-    pfd.fd = client_socket ("/tmp/cairo-sphinx");
+    pfd.fd = client_socket ("/tmp/comac-sphinx");
     if (pfd.fd < 0)
 	return 1;
 
@@ -1435,8 +1435,8 @@ do_client (int fd,
     if (! writen (pfd.fd, buf, len))
 	return 1;
 
-    client.csi = cairo_script_interpreter_create ();
-    cairo_script_interpreter_install_hooks (client.csi, &hooks);
+    client.csi = comac_script_interpreter_create ();
+    comac_script_interpreter_install_hooks (client.csi, &hooks);
 
     nonblocking (pfd.fd);
     pfd.events = POLLIN;
@@ -1455,7 +1455,7 @@ do_client (int fd,
 		;
 	    if (end > 0) {
 		buf[end] = '\0';
-		cairo_script_interpreter_feed_string (client.csi, buf, end);
+		comac_script_interpreter_feed_string (client.csi, buf, end);
 
 		len -= end + 1;
 		if (len)
@@ -1468,10 +1468,10 @@ do_client (int fd,
 	    break;
     }
 
-    cairo_script_interpreter_finish (client.csi);
-    cairo_script_interpreter_destroy (client.csi);
+    comac_script_interpreter_finish (client.csi);
+    comac_script_interpreter_destroy (client.csi);
 
-    cairo_surface_destroy (client.surface);
+    comac_surface_destroy (client.surface);
     close (fd);
 
     return 0;
@@ -1485,14 +1485,14 @@ do_exec (int fd, char **argv)
     if (*argv == NULL)
 	return 0;
 
-    snprintf (buf, sizeof (buf), "%s/cairo-trace.so", LIBDIR);
+    snprintf (buf, sizeof (buf), "%s/comac-trace.so", LIBDIR);
     setenv ("LD_PRELOAD", buf, 1);
 
     snprintf (buf, sizeof (buf), "0");
-    setenv ("CAIRO_TRACE_LINE_INFO", buf, 1);
+    setenv ("COMAC_TRACE_LINE_INFO", buf, 1);
 
     snprintf (buf, sizeof (buf), "%d", fd);
-    setenv ("CAIRO_TRACE_FD", buf, 1);
+    setenv ("COMAC_TRACE_FD", buf, 1);
     putenv (buf);
 
     return execvp (argv[0], argv);
@@ -1514,15 +1514,15 @@ main (int argc, char **argv)
     int fd;
 
     if (argc == 1)
-	return do_server ("/tmp/cairo-sphinx");
+	return do_server ("/tmp/comac-sphinx");
 
-    fd = client_socket ("/tmp/cairo-sphinx");
+    fd = client_socket ("/tmp/comac-sphinx");
     if (fd < 0)
 	return 1;
 
     if (strcmp (argv[1], "client") == 0) {
 	return do_client (fd, argv[2], argv[3], argv[4],
-			  CAIRO_CONTENT_COLOR_ALPHA);
+			  COMAC_CONTENT_COLOR_ALPHA);
     }
 
     if (strcmp (argv[1], "wait") == 0) {

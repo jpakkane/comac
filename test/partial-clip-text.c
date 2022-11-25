@@ -29,90 +29,90 @@
 #define HEIGHT 15
 #define WIDTH 40
 
-static void background (cairo_t *cr)
+static void background (comac_t *cr)
 {
-     cairo_set_source_rgb( cr, 0, 0, 0 );
-     cairo_paint (cr);
+     comac_set_source_rgb( cr, 0, 0, 0 );
+     comac_paint (cr);
 }
 
-static void text (cairo_t *cr)
+static void text (comac_t *cr)
 {
-     cairo_move_to (cr, 0, 12);
-     cairo_set_source_rgb (cr, 1, 1, 1);
-     cairo_show_text (cr, "CAIRO");
+     comac_move_to (cr, 0, 12);
+     comac_set_source_rgb (cr, 1, 1, 1);
+     comac_show_text (cr, "COMAC");
 }
 
-static cairo_test_status_t
-top (cairo_t *cr, int width, int height)
-{
-     background (cr);
-
-     cairo_rectangle (cr, 0, 0, WIDTH, 5);
-     cairo_clip (cr);
-
-     text (cr);
-
-     return CAIRO_TEST_SUCCESS;
-}
-
-static cairo_test_status_t
-bottom (cairo_t *cr, int width, int height)
+static comac_test_status_t
+top (comac_t *cr, int width, int height)
 {
      background (cr);
 
-     cairo_rectangle (cr, 0, HEIGHT-5, WIDTH, 5);
-     cairo_clip (cr);
+     comac_rectangle (cr, 0, 0, WIDTH, 5);
+     comac_clip (cr);
 
      text (cr);
 
-     return CAIRO_TEST_SUCCESS;
+     return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-left (cairo_t *cr, int width, int height)
+static comac_test_status_t
+bottom (comac_t *cr, int width, int height)
 {
      background (cr);
 
-     cairo_rectangle (cr, 0, 0, 10, HEIGHT);
-     cairo_clip (cr);
+     comac_rectangle (cr, 0, HEIGHT-5, WIDTH, 5);
+     comac_clip (cr);
 
      text (cr);
 
-     return CAIRO_TEST_SUCCESS;
+     return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-right (cairo_t *cr, int width, int height)
+static comac_test_status_t
+left (comac_t *cr, int width, int height)
 {
      background (cr);
 
-     cairo_rectangle (cr, WIDTH-10, 0, 10, HEIGHT);
-     cairo_clip (cr);
+     comac_rectangle (cr, 0, 0, 10, HEIGHT);
+     comac_clip (cr);
 
      text (cr);
 
-     return CAIRO_TEST_SUCCESS;
+     return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (partial_clip_text_top,
+static comac_test_status_t
+right (comac_t *cr, int width, int height)
+{
+     background (cr);
+
+     comac_rectangle (cr, WIDTH-10, 0, 10, HEIGHT);
+     comac_clip (cr);
+
+     text (cr);
+
+     return COMAC_TEST_SUCCESS;
+}
+
+COMAC_TEST (partial_clip_text_top,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, top)
-CAIRO_TEST (partial_clip_text_bottom,
+COMAC_TEST (partial_clip_text_bottom,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, bottom)
-CAIRO_TEST (partial_clip_text_left,
+COMAC_TEST (partial_clip_text_left,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, left)
-CAIRO_TEST (partial_clip_text_right,
+COMAC_TEST (partial_clip_text_right,
 	    "Tests drawing text through a single, partial clip.",
 	    "clip, text", /* keywords */
 	    NULL, /* requirements */

@@ -26,30 +26,30 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_rectangle (cr, 25, 25, width, height);
-    cairo_clip_preserve (cr);
-    cairo_push_group (cr);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_fill (cr);
-    cairo_rectangle (cr, 0, 0, width, height);
-    cairo_pop_group_to_source (cr);
-    cairo_paint (cr);
+    comac_rectangle (cr, 25, 25, width, height);
+    comac_clip_preserve (cr);
+    comac_push_group (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_fill (cr);
+    comac_rectangle (cr, 0, 0, width, height);
+    comac_pop_group_to_source (cr);
+    comac_paint (cr);
 
-    cairo_reset_clip (cr);
-    cairo_clip_preserve (cr);
-    cairo_set_source_rgba (cr, 1, 0, 0, .5);
-    cairo_paint (cr);
+    comac_reset_clip (cr);
+    comac_clip_preserve (cr);
+    comac_set_source_rgba (cr, 1, 0, 0, .5);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (group_clip,
+COMAC_TEST (group_clip,
 	    "test preserving paths across groups",
 	    "group", /* keywords */
 	    NULL, /* requirements */

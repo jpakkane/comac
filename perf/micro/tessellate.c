@@ -98,61 +98,61 @@ point_t points[300] = {
  {46.6169,94.982}, {96.7277,88.4318}, {45.8039,18.3765}, {76.6448,78.0224}, {25.7585,90.4782}
 };
 
-static cairo_time_t
-do_tessellate (cairo_t *cr, int num_points, int loops)
+static comac_time_t
+do_tessellate (comac_t *cr, int num_points, int loops)
 {
     int i;
 
     for (i=0; i < num_points; i++)
-	cairo_line_to (cr, points[i].x, points[i].y);
+	comac_line_to (cr, points[i].x, points[i].y);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     /* We'd like to measure just tessellation without
-     * rasterization. For now, we can do that with cairo_in_fill. But
-     * we'll have to be careful since cairo_in_fill might eventually
+     * rasterization. For now, we can do that with comac_in_fill. But
+     * we'll have to be careful since comac_in_fill might eventually
      * be optimized to have an implementation that doesn't necessarily
      * include tessellation. */
     while (loops--)
-	cairo_in_fill (cr, 50, 50);
+	comac_in_fill (cr, 50, 50);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-tessellate_16 (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+tessellate_16 (comac_t *cr, int width, int height, int loops)
 {
     return do_tessellate (cr, 16, loops);
 }
 
-static cairo_time_t
-tessellate_64 (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+tessellate_64 (comac_t *cr, int width, int height, int loops)
 {
     return do_tessellate (cr, 64, loops);
 }
 
-static cairo_time_t
-tessellate_256 (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+tessellate_256 (comac_t *cr, int width, int height, int loops)
 {
     return do_tessellate (cr, 256, loops);
 }
 
-cairo_bool_t
-tessellate_enabled (cairo_perf_t *perf)
+comac_bool_t
+tessellate_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "tessellate", NULL);
+    return comac_perf_can_run (perf, "tessellate", NULL);
 }
 
 void
-tessellate (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+tessellate (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "tessellate-16", tessellate_16, NULL);
-    cairo_perf_run (perf, "tessellate-64", tessellate_64, NULL);
-    cairo_perf_run (perf, "tessellate-256", tessellate_256, NULL);
+    comac_perf_run (perf, "tessellate-16", tessellate_16, NULL);
+    comac_perf_run (perf, "tessellate-64", tessellate_64, NULL);
+    comac_perf_run (perf, "tessellate-256", tessellate_256, NULL);
 }
 
 #if 0

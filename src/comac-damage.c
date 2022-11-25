@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -37,27 +37,27 @@
 #include "comac-damage-private.h"
 #include "comac-region-private.h"
 
-static const cairo_damage_t __cairo_damage__nil = { CAIRO_STATUS_NO_MEMORY };
+static const comac_damage_t __comac_damage__nil = { COMAC_STATUS_NO_MEMORY };
 
-cairo_damage_t *
-_cairo_damage_create_in_error (cairo_status_t status)
+comac_damage_t *
+_comac_damage_create_in_error (comac_status_t status)
 {
-    _cairo_error_throw (status);
-    return (cairo_damage_t *) &__cairo_damage__nil;
+    _comac_error_throw (status);
+    return (comac_damage_t *) &__comac_damage__nil;
 }
 
-cairo_damage_t *
-_cairo_damage_create (void)
+comac_damage_t *
+_comac_damage_create (void)
 {
-    cairo_damage_t *damage;
+    comac_damage_t *damage;
 
-    damage = _cairo_malloc (sizeof (*damage));
+    damage = _comac_malloc (sizeof (*damage));
     if (unlikely (damage == NULL)) {
-	_cairo_error_throw(CAIRO_STATUS_NO_MEMORY);
-	return (cairo_damage_t *) &__cairo_damage__nil;
+	_comac_error_throw(COMAC_STATUS_NO_MEMORY);
+	return (comac_damage_t *) &__comac_damage__nil;
     }
 
-    damage->status = CAIRO_STATUS_SUCCESS;
+    damage->status = COMAC_STATUS_SUCCESS;
     damage->region = NULL;
     damage->dirty = 0;
     damage->tail = &damage->chunks;
@@ -72,33 +72,33 @@ _cairo_damage_create (void)
 }
 
 void
-_cairo_damage_destroy (cairo_damage_t *damage)
+_comac_damage_destroy (comac_damage_t *damage)
 {
-    struct _cairo_damage_chunk *chunk, *next;
+    struct _comac_damage_chunk *chunk, *next;
 
-    if (damage == (cairo_damage_t *) &__cairo_damage__nil)
+    if (damage == (comac_damage_t *) &__comac_damage__nil)
 	return;
 
     for (chunk = damage->chunks.next; chunk != NULL; chunk = next) {
 	next = chunk->next;
 	free (chunk);
     }
-    cairo_region_destroy (damage->region);
+    comac_region_destroy (damage->region);
     free (damage);
 }
 
-static cairo_damage_t *
-_cairo_damage_add_boxes(cairo_damage_t *damage,
-			const cairo_box_t *boxes,
+static comac_damage_t *
+_comac_damage_add_boxes(comac_damage_t *damage,
+			const comac_box_t *boxes,
 			int count)
 {
-    struct _cairo_damage_chunk *chunk;
+    struct _comac_damage_chunk *chunk;
     int n, size;
 
     TRACE ((stderr, "%s x%d\n", __FUNCTION__, count));
 
     if (damage == NULL)
-	damage = _cairo_damage_create ();
+	damage = _comac_damage_create ();
     if (damage->status)
 	return damage;
 
@@ -109,7 +109,7 @@ _cairo_damage_add_boxes(cairo_damage_t *damage,
 	n = damage->remain;
 
     memcpy (damage->tail->base + damage->tail->count, boxes,
-	    n * sizeof (cairo_box_t));
+	    n * sizeof (comac_box_t));
 
     count -= n;
     damage->tail->count += n;
@@ -122,14 +122,14 @@ _cairo_damage_add_boxes(cairo_damage_t *damage,
     if (size < count)
 	size = (count + 64) & ~63;
 
-    chunk = _cairo_malloc (sizeof (*chunk) + sizeof (cairo_box_t) * size);
+    chunk = _comac_malloc (sizeof (*chunk) + sizeof (comac_box_t) * size);
     if (unlikely (chunk == NULL)) {
-	_cairo_damage_destroy (damage);
-	return (cairo_damage_t *) &__cairo_damage__nil;
+	_comac_damage_destroy (damage);
+	return (comac_damage_t *) &__comac_damage__nil;
     }
 
     chunk->next = NULL;
-    chunk->base = (cairo_box_t *) (chunk + 1);
+    chunk->base = (comac_box_t *) (chunk + 1);
     chunk->size = size;
     chunk->count = count;
 
@@ -137,27 +137,27 @@ _cairo_damage_add_boxes(cairo_damage_t *damage,
     damage->tail = chunk;
 
     memcpy (damage->tail->base, boxes + n,
-	    count * sizeof (cairo_box_t));
+	    count * sizeof (comac_box_t));
     damage->remain = size - count;
 
     return damage;
 }
 
-cairo_damage_t *
-_cairo_damage_add_box(cairo_damage_t *damage,
-		      const cairo_box_t *box)
+comac_damage_t *
+_comac_damage_add_box(comac_damage_t *damage,
+		      const comac_box_t *box)
 {
     TRACE ((stderr, "%s: (%d, %d),(%d, %d)\n", __FUNCTION__,
 	    box->p1.x, box->p1.y, box->p2.x, box->p2.y));
 
-    return _cairo_damage_add_boxes(damage, box, 1);
+    return _comac_damage_add_boxes(damage, box, 1);
 }
 
-cairo_damage_t *
-_cairo_damage_add_rectangle(cairo_damage_t *damage,
-			    const cairo_rectangle_int_t *r)
+comac_damage_t *
+_comac_damage_add_rectangle(comac_damage_t *damage,
+			    const comac_rectangle_int_t *r)
 {
-    cairo_box_t box;
+    comac_box_t box;
 
     TRACE ((stderr, "%s: (%d, %d)x(%d, %d)\n", __FUNCTION__,
 	    r->x, r->y, r->width, r->height));
@@ -167,28 +167,28 @@ _cairo_damage_add_rectangle(cairo_damage_t *damage,
     box.p2.x = r->x + r->width;
     box.p2.y = r->y + r->height;
 
-    return _cairo_damage_add_boxes(damage, &box, 1);
+    return _comac_damage_add_boxes(damage, &box, 1);
 }
 
-cairo_damage_t *
-_cairo_damage_add_region (cairo_damage_t *damage,
-			  const cairo_region_t *region)
+comac_damage_t *
+_comac_damage_add_region (comac_damage_t *damage,
+			  const comac_region_t *region)
 {
-    cairo_box_t *boxes;
+    comac_box_t *boxes;
     int nbox;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    boxes = _cairo_region_get_boxes (region, &nbox);
-    return _cairo_damage_add_boxes(damage, boxes, nbox);
+    boxes = _comac_region_get_boxes (region, &nbox);
+    return _comac_damage_add_boxes(damage, boxes, nbox);
 }
 
-cairo_damage_t *
-_cairo_damage_reduce (cairo_damage_t *damage)
+comac_damage_t *
+_comac_damage_reduce (comac_damage_t *damage)
 {
-    cairo_box_t *free_boxes = NULL;
-    cairo_box_t *boxes, *b;
-    struct _cairo_damage_chunk *chunk, *last;
+    comac_box_t *free_boxes = NULL;
+    comac_box_t *boxes, *b;
+    struct _comac_damage_chunk *chunk, *last;
 
     TRACE ((stderr, "%s: dirty=%d\n", __FUNCTION__,
 	    damage ? damage->dirty : -1));
@@ -196,13 +196,13 @@ _cairo_damage_reduce (cairo_damage_t *damage)
 	return damage;
 
     if (damage->region) {
-	cairo_region_t *region;
+	comac_region_t *region;
 
 	region = damage->region;
 	damage->region = NULL;
 
-	damage = _cairo_damage_add_region (damage, region);
-	cairo_region_destroy (region);
+	damage = _comac_damage_add_region (damage, region);
+	comac_region_destroy (region);
 
 	if (unlikely (damage->status))
 	    return damage;
@@ -210,10 +210,10 @@ _cairo_damage_reduce (cairo_damage_t *damage)
 
     boxes = damage->tail->base;
     if (damage->dirty > damage->tail->size) {
-	boxes = free_boxes = _cairo_malloc (damage->dirty * sizeof (cairo_box_t));
+	boxes = free_boxes = _comac_malloc (damage->dirty * sizeof (comac_box_t));
 	if (unlikely (boxes == NULL)) {
-	    _cairo_damage_destroy (damage);
-	    return (cairo_damage_t *) &__cairo_damage__nil;
+	    _comac_damage_destroy (damage);
+	    return (comac_damage_t *) &__comac_damage__nil;
 	}
 
 	b = boxes;
@@ -224,16 +224,16 @@ _cairo_damage_reduce (cairo_damage_t *damage)
     }
 
     for (chunk = &damage->chunks; chunk != last; chunk = chunk->next) {
-	memcpy (b, chunk->base, chunk->count * sizeof (cairo_box_t));
+	memcpy (b, chunk->base, chunk->count * sizeof (comac_box_t));
 	b += chunk->count;
     }
 
-    damage->region = _cairo_region_create_from_boxes (boxes, damage->dirty);
+    damage->region = _comac_region_create_from_boxes (boxes, damage->dirty);
     free (free_boxes);
 
     if (unlikely (damage->region->status)) {
-	_cairo_damage_destroy (damage);
-	return (cairo_damage_t *) &__cairo_damage__nil;
+	_comac_damage_destroy (damage);
+	return (comac_damage_t *) &__comac_damage__nil;
     }
 
     damage->dirty = 0;

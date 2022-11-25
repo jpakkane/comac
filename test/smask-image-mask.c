@@ -25,59 +25,59 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     uint32_t data[] = {
 	0xaa000000, 0x55000000,
 	0x55000000, 0xaa000000,
     };
 
-    cairo_surface_t *mask, *mask2;
-    cairo_pattern_t *pattern;
-    cairo_t *cr2;
+    comac_surface_t *mask, *mask2;
+    comac_pattern_t *pattern;
+    comac_t *cr2;
 
-    cairo_set_source_rgb (cr, 0, 0, 1.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1.0);
+    comac_paint (cr);
 
-    mask = cairo_surface_create_similar (cairo_get_group_target (cr),
-				         CAIRO_CONTENT_ALPHA,
+    mask = comac_surface_create_similar (comac_get_group_target (cr),
+				         COMAC_CONTENT_ALPHA,
 					 width, height);
-    cr2 = cairo_create (mask);
-    cairo_surface_destroy (mask);
+    cr2 = comac_create (mask);
+    comac_surface_destroy (mask);
 
-    cairo_save (cr2); {
-	cairo_set_operator (cr2, CAIRO_OPERATOR_CLEAR);
-	cairo_paint (cr2);
-    } cairo_restore (cr2);
+    comac_save (cr2); {
+	comac_set_operator (cr2, COMAC_OPERATOR_CLEAR);
+	comac_paint (cr2);
+    } comac_restore (cr2);
 
-    pattern = cairo_pattern_create_linear (0, 0, width, height);
-    cairo_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.);
-    cairo_pattern_add_color_stop_rgba (pattern, 0.25, 1., 1., 1., 1.);
-    cairo_pattern_add_color_stop_rgba (pattern, 0.50, 1., 1., 1., .5);
-    cairo_pattern_add_color_stop_rgba (pattern, 0.75, 1., 1., 1., 1.);
-    cairo_pattern_add_color_stop_rgba (pattern, 1.00, 0., 0., 0., 0.);
-    cairo_set_source (cr2, pattern);
-    cairo_pattern_destroy (pattern);
+    pattern = comac_pattern_create_linear (0, 0, width, height);
+    comac_pattern_add_color_stop_rgba (pattern, 0.00, 0., 0., 0., 0.);
+    comac_pattern_add_color_stop_rgba (pattern, 0.25, 1., 1., 1., 1.);
+    comac_pattern_add_color_stop_rgba (pattern, 0.50, 1., 1., 1., .5);
+    comac_pattern_add_color_stop_rgba (pattern, 0.75, 1., 1., 1., 1.);
+    comac_pattern_add_color_stop_rgba (pattern, 1.00, 0., 0., 0., 0.);
+    comac_set_source (cr2, pattern);
+    comac_pattern_destroy (pattern);
 
-    mask2 = cairo_image_surface_create_for_data ((unsigned char *) data,
-						CAIRO_FORMAT_ARGB32, 2, 2, 8);
-    pattern = cairo_pattern_create_for_surface (mask2);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
-    cairo_mask (cr2, pattern);
-    cairo_pattern_destroy (pattern);
+    mask2 = comac_image_surface_create_for_data ((unsigned char *) data,
+						COMAC_FORMAT_ARGB32, 2, 2, 8);
+    pattern = comac_pattern_create_for_surface (mask2);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
+    comac_mask (cr2, pattern);
+    comac_pattern_destroy (pattern);
 
-    cairo_set_source_rgb (cr, 1.0, 0, 0);
-    cairo_mask_surface (cr, cairo_get_target (cr2), 0, 0);
-    cairo_destroy (cr2);
+    comac_set_source_rgb (cr, 1.0, 0, 0);
+    comac_mask_surface (cr, comac_get_target (cr2), 0, 0);
+    comac_destroy (cr2);
 
-    cairo_surface_finish (mask2); /* data will go out of scope */
-    cairo_surface_destroy (mask2);
+    comac_surface_finish (mask2); /* data will go out of scope */
+    comac_surface_destroy (mask2);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (smask_image_mask,
+COMAC_TEST (smask_image_mask,
 	    "Test the support of \"soft\" masks with a secondary image mask",
 	    "smask, image", /* keywords */
 	    NULL, /* requirements */

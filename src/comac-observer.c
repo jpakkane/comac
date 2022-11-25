@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2010 Intel Corporation
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation
  *
@@ -39,12 +39,12 @@
 #include "comac-list-inline.h"
 
 void
-_cairo_observers_notify (cairo_list_t *observers, void *arg)
+_comac_observers_notify (comac_list_t *observers, void *arg)
 {
-    cairo_observer_t *obs, *next;
+    comac_observer_t *obs, *next;
 
-    cairo_list_foreach_entry_safe (obs, next,
-				   cairo_observer_t,
+    comac_list_foreach_entry_safe (obs, next,
+				   comac_observer_t,
 				   observers, link)
     {
 	obs->callback (obs, arg);

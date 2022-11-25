@@ -54,7 +54,7 @@ mosaic_region_iter_init (struct mosaic_region_iter *iter, int do_curves)
 
 /* Create the next closed region as a path. */
 static int
-mosaic_next_path (cairo_t *cr, struct mosaic_region_iter *iter)
+mosaic_next_path (comac_t *cr, struct mosaic_region_iter *iter)
 {
     double const *points = iter->points;
     unsigned i;
@@ -63,28 +63,28 @@ mosaic_next_path (cairo_t *cr, struct mosaic_region_iter *iter)
 	return 0;
     }
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, points[0], points[1]);
+    comac_new_path (cr);
+    comac_move_to (cr, points[0], points[1]);
     points += 2;
     for (i=0; i < ncurves; i++, points += 6) {
 	if (iter->do_curves) {
-	    cairo_curve_to (cr,
+	    comac_curve_to (cr,
 			    points[0], points[1],
 			    points[2], points[3],
 			    points[4], points[5]);
 	}
 	else {
-	    cairo_line_to (cr,
+	    comac_line_to (cr,
 			    points[4], points[5]);
 	}
     }
-    cairo_close_path (cr);
+    comac_close_path (cr);
     {
 	unsigned rgb = iter->region->rgb;
 	double r = ((rgb >> 16) & 255) / 255.0;
 	double g = ((rgb >>  8) & 255) / 255.0;
 	double b = ((rgb >>  0) & 255) / 255.0;
-	cairo_set_source_rgb (cr, r, g, b);
+	comac_set_source_rgb (cr, r, g, b);
     }
 
     iter->points = iter->points + 2*(1 + 3*iter->region->ncurves);
@@ -92,8 +92,8 @@ mosaic_next_path (cairo_t *cr, struct mosaic_region_iter *iter)
     return 1;
 }
 
-static cairo_time_t
-mosaic_perform(cairo_t *cr, unsigned flags, int width, int height, int loops)
+static comac_time_t
+mosaic_perform(comac_t *cr, unsigned flags, int width, int height, int loops)
 {
     struct mosaic_region_iter iter;
 
@@ -103,74 +103,74 @@ mosaic_perform(cairo_t *cr, unsigned flags, int width, int height, int loops)
     double miny = -88.4;
     double maxy = 884.5;
 
-    cairo_identity_matrix (cr);
+    comac_identity_matrix (cr);
 
     if (flags & MOSAIC_FILL) {
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_rectangle (cr, 0, 0, width, height);
-	cairo_fill (cr);
+	comac_set_source_rgb (cr, 1, 1, 1);
+	comac_rectangle (cr, 0, 0, width, height);
+	comac_fill (cr);
     }
 
-    cairo_scale (cr, width / (maxx - minx) , height / (maxy - miny));
-    cairo_translate (cr, -minx, -miny);
+    comac_scale (cr, width / (maxx - minx) , height / (maxy - miny));
+    comac_translate (cr, -minx, -miny);
 
     /* Iterate over all closed regions in the mosaic filling or
      * tessellating them as dictated by the flags.  */
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
     while (loops--) {
 	mosaic_region_iter_init (&iter, flags & MOSAIC_CURVE_TO);
 	while (mosaic_next_path (cr, &iter)) {
 	    if (flags & MOSAIC_FILL) {
-		cairo_fill (cr);
+		comac_fill (cr);
 	    }
 	    else {
 		double x, y;
-		cairo_get_current_point (cr, &x, &y);
-		cairo_in_fill (cr, x, y);
+		comac_get_current_point (cr, &x, &y);
+		comac_in_fill (cr, x, y);
 	    }
 	}
     }
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-mosaic_fill_curves (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+mosaic_fill_curves (comac_t *cr, int width, int height, int loops)
 {
     return mosaic_perform (cr, MOSAIC_FILL | MOSAIC_CURVE_TO, width, height, loops);
 }
 
-static cairo_time_t
-mosaic_fill_lines (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+mosaic_fill_lines (comac_t *cr, int width, int height, int loops)
 {
     return mosaic_perform (cr, MOSAIC_FILL | MOSAIC_LINE_TO, width, height, loops);
 }
 
-static cairo_time_t
-mosaic_tessellate_lines (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+mosaic_tessellate_lines (comac_t *cr, int width, int height, int loops)
 {
     return mosaic_perform (cr, MOSAIC_TESSELLATE | MOSAIC_LINE_TO, width, height, loops);
 }
 
-static cairo_time_t
-mosaic_tessellate_curves (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+mosaic_tessellate_curves (comac_t *cr, int width, int height, int loops)
 {
     return mosaic_perform (cr, MOSAIC_TESSELLATE | MOSAIC_CURVE_TO, width, height, loops);
 }
 
-cairo_bool_t
-mosaic_enabled (cairo_perf_t *perf)
+comac_bool_t
+mosaic_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "mosaic", NULL);
+    return comac_perf_can_run (perf, "mosaic", NULL);
 }
 
 void
-mosaic (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+mosaic (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "mosaic-fill-curves", mosaic_fill_curves, NULL);
-    cairo_perf_run (perf, "mosaic-fill-lines", mosaic_fill_lines, NULL);
-    cairo_perf_run (perf, "mosaic-tessellate-curves", mosaic_tessellate_curves, NULL);
-    cairo_perf_run (perf, "mosaic-tessellate-lines", mosaic_tessellate_lines, NULL);
+    comac_perf_run (perf, "mosaic-fill-curves", mosaic_fill_curves, NULL);
+    comac_perf_run (perf, "mosaic-fill-lines", mosaic_fill_lines, NULL);
+    comac_perf_run (perf, "mosaic-tessellate-curves", mosaic_tessellate_curves, NULL);
+    comac_perf_run (perf, "mosaic-tessellate-lines", mosaic_tessellate_lines, NULL);
 }

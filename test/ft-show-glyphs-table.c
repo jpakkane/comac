@@ -45,7 +45,7 @@
  *
  * The original assertion failure was fairly boring, but the later
  * glyph mispositiing was quite interesting. And it turns out that the
- * _cairo_pdf_operators_show_glyphs code is fairly convoluted with a
+ * _comac_pdf_operators_show_glyphs code is fairly convoluted with a
  * code path that wasn't being exercised at all by the test suite.
  *
  * So this is an attempt to exercise that code path. Apparently laying
@@ -54,54 +54,54 @@
  * the code well.
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_font_options_t *font_options;
-    cairo_scaled_font_t *scaled_font;
+    comac_font_options_t *font_options;
+    comac_scaled_font_t *scaled_font;
     FT_Face face;
     FT_ULong charcode;
     FT_UInt idx;
     int i = 0;
-    cairo_glyph_t glyphs[NUM_GLYPHS];
+    comac_glyph_t glyphs[NUM_GLYPHS];
 
     /* paint white so we don't need separate ref images for
      * RGB24 and ARGB32 */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    font_options = cairo_font_options_create ();
-    cairo_get_font_options (cr, font_options);
-    cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_OFF);
-    cairo_set_font_options (cr, font_options);
-    cairo_font_options_destroy (font_options);
+    font_options = comac_font_options_create ();
+    comac_get_font_options (cr, font_options);
+    comac_font_options_set_hint_metrics (font_options, COMAC_HINT_METRICS_OFF);
+    comac_set_font_options (cr, font_options);
+    comac_font_options_destroy (font_options);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
 
-    scaled_font = cairo_get_scaled_font (cr);
-    face = cairo_ft_scaled_font_lock_face (scaled_font);
+    scaled_font = comac_get_scaled_font (cr);
+    face = comac_ft_scaled_font_lock_face (scaled_font);
     {
 	charcode = FT_Get_First_Char(face, &idx);
 	while (idx && (i < NUM_GLYPHS)) {
-	    glyphs[i] = (cairo_glyph_t) {idx, PAD + GRID_SIZE * (i/GRID_ROWS), PAD + TEXT_SIZE + GRID_SIZE * (i%GRID_ROWS)};
+	    glyphs[i] = (comac_glyph_t) {idx, PAD + GRID_SIZE * (i/GRID_ROWS), PAD + TEXT_SIZE + GRID_SIZE * (i%GRID_ROWS)};
 	    i++;
 	    charcode = FT_Get_Next_Char(face, charcode, &idx);
 	}
     }
-    cairo_ft_scaled_font_unlock_face (scaled_font);
+    comac_ft_scaled_font_unlock_face (scaled_font);
 
-    cairo_show_glyphs(cr, glyphs, i);
+    comac_show_glyphs(cr, glyphs, i);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (ft_show_glyphs_table,
-	    "Test cairo_show_glyphs with cairo-ft backend and glyphs laid out in a table",
+COMAC_TEST (ft_show_glyphs_table,
+	    "Test comac_show_glyphs with comac-ft backend and glyphs laid out in a table",
 	    "ft, text", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,

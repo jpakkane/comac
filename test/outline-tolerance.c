@@ -28,23 +28,23 @@
 
 /* An assertion failure found by Rico Tzschichholz */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
-    cairo_set_line_width (cr, 200);
-    cairo_set_miter_limit (cr, 1.5);
-    cairo_rectangle (cr, 100, 25, 1000, 0);
-    cairo_stroke (cr);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_MITER);
+    comac_set_line_width (cr, 200);
+    comac_set_miter_limit (cr, 1.5);
+    comac_rectangle (cr, 100, 25, 1000, 0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (outline_tolerance,
+COMAC_TEST (outline_tolerance,
 	    "Rectangle drawn incorrectly when it has zero height and miter limit greater than 1.414",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

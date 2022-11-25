@@ -22,58 +22,58 @@
 
 #include "comac-test.h"
 
-static cairo_pattern_t *
-create_pattern (cairo_surface_t *target)
+static comac_pattern_t *
+create_pattern (comac_surface_t *target)
 {
-    cairo_surface_t *surface;
-    cairo_pattern_t *pattern;
-    cairo_t *cr;
-    cairo_matrix_t m;
+    comac_surface_t *surface;
+    comac_pattern_t *pattern;
+    comac_t *cr;
+    comac_matrix_t m;
 
-    surface = cairo_surface_create_similar(target,
-					   cairo_surface_get_content (target),
+    surface = comac_surface_create_similar(target,
+					   comac_surface_get_content (target),
 					   1000, 600);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_paint(cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_paint(cr);
 
-    pattern = cairo_pattern_create_for_surface (cairo_get_target (cr));
-    cairo_destroy(cr);
+    pattern = comac_pattern_create_for_surface (comac_get_target (cr));
+    comac_destroy(cr);
 
-    cairo_matrix_init_translate (&m, 0, 0.1); // y offset must be non-integer
-    cairo_pattern_set_matrix (pattern, &m);
+    comac_matrix_init_translate (&m, 0, 0.1); // y offset must be non-integer
+    comac_pattern_set_matrix (pattern, &m);
     return pattern;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, 10, 400.1);
-    cairo_line_to (cr, 990, 400.1);
-    cairo_line_to (cr, 990, 600);
-    cairo_line_to (cr, 10,  600);
-    cairo_close_path (cr);
+    comac_new_path (cr);
+    comac_move_to (cr, 10, 400.1);
+    comac_line_to (cr, 990, 400.1);
+    comac_line_to (cr, 990, 600);
+    comac_line_to (cr, 10,  600);
+    comac_close_path (cr);
 
-    pattern = create_pattern (cairo_get_target (cr));
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
+    pattern = create_pattern (comac_get_target (cr));
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
 
-    cairo_fill(cr);
+    comac_fill(cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_source_cu,
+COMAC_TEST (bug_source_cu,
 	    "Exercises a bug discovered in the tracking of unbounded source extents",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

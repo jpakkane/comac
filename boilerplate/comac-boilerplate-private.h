@@ -23,31 +23,31 @@
  * Author: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef _CAIRO_BOILERPLATE_PRIVATE_H_
-#define _CAIRO_BOILERPLATE_PRIVATE_H_
+#ifndef _COMAC_BOILERPLATE_PRIVATE_H_
+#define _COMAC_BOILERPLATE_PRIVATE_H_
 
 #include "comac-boilerplate.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 void
-_cairo_boilerplate_register_all (void);
+_comac_boilerplate_register_all (void);
 
 void
-_cairo_boilerplate_register_backend (const cairo_boilerplate_target_t *targets,
+_comac_boilerplate_register_backend (const comac_boilerplate_target_t *targets,
 				     unsigned int		       count);
 
-#define CAIRO_BOILERPLATE(name__, targets__) \
+#define COMAC_BOILERPLATE(name__, targets__) \
 void _register_##name__ (void); \
 void _register_##name__ (void) { \
-    _cairo_boilerplate_register_backend (targets__, \
+    _comac_boilerplate_register_backend (targets__, \
 					 ARRAY_LENGTH(targets__)); \
 }
 
-#define CAIRO_NO_BOILERPLATE(name__) \
+#define COMAC_NO_BOILERPLATE(name__) \
 void _register_##name__ (void); \
 void _register_##name__ (void) { }
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* _CAIRO_BOILERPLATE_PRIVATE_H_ */
+#endif /* _COMAC_BOILERPLATE_PRIVATE_H_ */

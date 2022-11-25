@@ -26,18 +26,18 @@
 #include "comac-freelist-private.h"
 
 void
-_cairo_freelist_init (cairo_freelist_t *freelist, unsigned nodesize)
+_comac_freelist_init (comac_freelist_t *freelist, unsigned nodesize)
 {
-    memset (freelist, 0, sizeof (cairo_freelist_t));
+    memset (freelist, 0, sizeof (comac_freelist_t));
     freelist->nodesize = nodesize;
 }
 
 void
-_cairo_freelist_fini (cairo_freelist_t *freelist)
+_comac_freelist_fini (comac_freelist_t *freelist)
 {
-    cairo_freelist_node_t *node = freelist->first_free_node;
+    comac_freelist_node_t *node = freelist->first_free_node;
     while (node) {
-	cairo_freelist_node_t *next;
+	comac_freelist_node_t *next;
 
 	VG (VALGRIND_MAKE_MEM_DEFINED (node, sizeof (node->next)));
 	next = node->next;
@@ -48,10 +48,10 @@ _cairo_freelist_fini (cairo_freelist_t *freelist)
 }
 
 void *
-_cairo_freelist_alloc (cairo_freelist_t *freelist)
+_comac_freelist_alloc (comac_freelist_t *freelist)
 {
     if (freelist->first_free_node) {
-	cairo_freelist_node_t *node;
+	comac_freelist_node_t *node;
 
 	node = freelist->first_free_node;
 	VG (VALGRIND_MAKE_MEM_DEFINED (node, sizeof (node->next)));
@@ -61,22 +61,22 @@ _cairo_freelist_alloc (cairo_freelist_t *freelist)
 	return node;
     }
 
-    return _cairo_malloc (freelist->nodesize);
+    return _comac_malloc (freelist->nodesize);
 }
 
 void *
-_cairo_freelist_calloc (cairo_freelist_t *freelist)
+_comac_freelist_calloc (comac_freelist_t *freelist)
 {
-    void *node = _cairo_freelist_alloc (freelist);
+    void *node = _comac_freelist_alloc (freelist);
     if (node)
 	memset (node, 0, freelist->nodesize);
     return node;
 }
 
 void
-_cairo_freelist_free (cairo_freelist_t *freelist, void *voidnode)
+_comac_freelist_free (comac_freelist_t *freelist, void *voidnode)
 {
-    cairo_freelist_node_t *node = voidnode;
+    comac_freelist_node_t *node = voidnode;
     if (node) {
 	node->next = freelist->first_free_node;
 	freelist->first_free_node = node;
@@ -85,7 +85,7 @@ _cairo_freelist_free (cairo_freelist_t *freelist, void *voidnode)
 }
 
 void
-_cairo_freepool_init (cairo_freepool_t *freepool, unsigned nodesize)
+_comac_freepool_init (comac_freepool_t *freepool, unsigned nodesize)
 {
     freepool->first_free_node = NULL;
     freepool->pools = &freepool->embedded_pool;
@@ -101,20 +101,20 @@ _cairo_freepool_init (cairo_freepool_t *freepool, unsigned nodesize)
 }
 
 void
-_cairo_freepool_fini (cairo_freepool_t *freepool)
+_comac_freepool_fini (comac_freepool_t *freepool)
 {
-    cairo_freelist_pool_t *pool;
+    comac_freelist_pool_t *pool;
 
     pool = freepool->pools;
     while (pool != &freepool->embedded_pool) {
-	cairo_freelist_pool_t *next = pool->next;
+	comac_freelist_pool_t *next = pool->next;
 	free (pool);
 	pool = next;
     }
 
     pool = freepool->freepools;
     while (pool != NULL) {
-	cairo_freelist_pool_t *next = pool->next;
+	comac_freelist_pool_t *next = pool->next;
 	free (pool);
 	pool = next;
     }
@@ -123,9 +123,9 @@ _cairo_freepool_fini (cairo_freepool_t *freepool)
 }
 
 void *
-_cairo_freepool_alloc_from_new_pool (cairo_freepool_t *freepool)
+_comac_freepool_alloc_from_new_pool (comac_freepool_t *freepool)
 {
-    cairo_freelist_pool_t *pool;
+    comac_freelist_pool_t *pool;
     int poolsize;
 
     if (freepool->freepools != NULL) {
@@ -139,7 +139,7 @@ _cairo_freepool_alloc_from_new_pool (cairo_freepool_t *freepool)
 	else
 	    poolsize = (128 * freepool->nodesize + 8191) & -8192;
 
-	pool = _cairo_malloc (sizeof (cairo_freelist_pool_t) + poolsize);
+	pool = _comac_malloc (sizeof (comac_freelist_pool_t) + poolsize);
 	if (unlikely (pool == NULL))
 	    return pool;
 
@@ -157,15 +157,15 @@ _cairo_freepool_alloc_from_new_pool (cairo_freepool_t *freepool)
     return pool + 1;
 }
 
-cairo_status_t
-_cairo_freepool_alloc_array (cairo_freepool_t *freepool,
+comac_status_t
+_comac_freepool_alloc_array (comac_freepool_t *freepool,
 			     int count,
 			     void **array)
 {
     int i;
 
     for (i = 0; i < count; i++) {
-	cairo_freelist_node_t *node;
+	comac_freelist_node_t *node;
 
 	node = freepool->first_free_node;
 	if (likely (node != NULL)) {
@@ -173,7 +173,7 @@ _cairo_freepool_alloc_array (cairo_freepool_t *freepool,
 	    freepool->first_free_node = node->next;
 	    VG (VALGRIND_MAKE_MEM_UNDEFINED (node, freepool->nodesize));
 	} else {
-	    node = _cairo_freepool_alloc_from_pool (freepool);
+	    node = _comac_freepool_alloc_from_pool (freepool);
 	    if (unlikely (node == NULL))
 		goto CLEANUP;
 	}
@@ -181,11 +181,11 @@ _cairo_freepool_alloc_array (cairo_freepool_t *freepool,
 	array[i] = node;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 
   CLEANUP:
     while (i--)
-	_cairo_freepool_free (freepool, array[i]);
+	_comac_freepool_free (freepool, array[i]);
 
-    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    return _comac_error (COMAC_STATUS_NO_MEMORY);
 }

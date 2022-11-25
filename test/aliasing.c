@@ -50,49 +50,49 @@ static const  struct color {
 #define NUM_COLORS ARRAY_LENGTH (color)
 
 static void
-object (cairo_t *cr, const struct color *fg, const struct color *bg)
+object (comac_t *cr, const struct color *fg, const struct color *bg)
 {
-    cairo_set_source_rgb (cr, bg->red, bg->green, bg->blue);
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, bg->red, bg->green, bg->blue);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_fill (cr);
 
-    cairo_set_source_rgb (cr, fg->red, fg->green, fg->blue);
-    cairo_save (cr);
-    cairo_scale (cr, WIDTH, HEIGHT);
-    cairo_arc (cr, .5, .5, .5 - 4. / MAX (WIDTH, HEIGHT), 0, 2 * M_PI);
-    cairo_fill (cr);
-    cairo_arc (cr, .5, .5, .5 - 2. / MAX (WIDTH, HEIGHT), 0, 2 * M_PI);
-    cairo_restore (cr);
-    cairo_set_line_width (cr, 1.);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, fg->red, fg->green, fg->blue);
+    comac_save (cr);
+    comac_scale (cr, WIDTH, HEIGHT);
+    comac_arc (cr, .5, .5, .5 - 4. / MAX (WIDTH, HEIGHT), 0, 2 * M_PI);
+    comac_fill (cr);
+    comac_arc (cr, .5, .5, .5 - 2. / MAX (WIDTH, HEIGHT), 0, 2 * M_PI);
+    comac_restore (cr);
+    comac_set_line_width (cr, 1.);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, bg->red, bg->green, bg->blue);
-    cairo_set_line_width (cr, 4.);
-    cairo_move_to (cr, 4, HEIGHT-4);
-    cairo_line_to (cr, WIDTH-12, 4);
-    cairo_move_to (cr, 12, HEIGHT-4);
-    cairo_line_to (cr, WIDTH-4, 4);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, bg->red, bg->green, bg->blue);
+    comac_set_line_width (cr, 4.);
+    comac_move_to (cr, 4, HEIGHT-4);
+    comac_line_to (cr, WIDTH-12, 4);
+    comac_move_to (cr, 12, HEIGHT-4);
+    comac_line_to (cr, WIDTH-4, 4);
+    comac_stroke (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     unsigned int i, j;
 
     for (i = 0; i < NUM_COLORS; i++) {
 	for (j = 0; j < NUM_COLORS; j++) {
-	    cairo_save (cr);
-	    cairo_translate (cr, i * WIDTH, j * HEIGHT);
+	    comac_save (cr);
+	    comac_translate (cr, i * WIDTH, j * HEIGHT);
 	    object (cr, &color[i], &color[j]);
-	    cairo_restore (cr);
+	    comac_restore (cr);
 	}
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (aliasing,
+COMAC_TEST (aliasing,
 	    "Check for subpixel aliasing and color fringing",
 	    "rasterisation", /* keywords */
 	    "target=raster", /* requirements */

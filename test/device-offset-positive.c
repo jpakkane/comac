@@ -30,51 +30,51 @@
 #define PAD 2
 
 static void
-draw_square (cairo_t *cr)
+draw_square (comac_t *cr)
 {
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
 		     PAD, PAD,
 		     SIZE - 2 * PAD,
 		     SIZE - 2 * PAD);
-    cairo_fill (cr);
+    comac_fill (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface, *target;
-    cairo_t *cr2;
+    comac_surface_t *surface, *target;
+    comac_t *cr2;
 
     /* First draw a shape in blue on the original destination. */
-    cairo_set_source_rgb (cr, 0, 0, 1); /* blue */
+    comac_set_source_rgb (cr, 0, 0, 1); /* blue */
     draw_square (cr);
 
     /* Then, create an offset surface and repeat the drawing in red. */
-    target = cairo_get_group_target (cr);
-    surface = cairo_surface_create_similar (target,
-					    cairo_surface_get_content (target),
+    target = comac_get_group_target (cr);
+    surface = comac_surface_create_similar (target,
+					    comac_surface_get_content (target),
 					    SIZE / 2, SIZE / 2);
-    cr2 = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr2 = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr2, 1, 0, 0); /* red */
+    comac_set_source_rgb (cr2, 1, 0, 0); /* red */
     draw_square (cr2);
 
     /* Finally, copy the offset surface to the original destination.
      * The final result should be a blue square with the upper-left
      * quarter red. */
-    surface = cairo_surface_reference (cairo_get_target (cr2));
-    cairo_destroy (cr2);
-    cairo_surface_set_device_offset (surface, + SIZE / 2, + SIZE / 2);
-    cairo_set_source_surface (cr, surface, SIZE / 2, SIZE / 2);
-    cairo_surface_destroy (surface);
+    surface = comac_surface_reference (comac_get_target (cr2));
+    comac_destroy (cr2);
+    comac_surface_set_device_offset (surface, + SIZE / 2, + SIZE / 2);
+    comac_set_source_surface (cr, surface, SIZE / 2, SIZE / 2);
+    comac_surface_destroy (surface);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (device_offset_positive,
+COMAC_TEST (device_offset_positive,
 	    "Simple test using a surface with a positive device-offset as a source.",
 	    "device-offset", /* keywords */
 	    NULL, /* requirements */

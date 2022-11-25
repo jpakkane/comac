@@ -32,30 +32,30 @@
 
 static const char png_filename[] = "romedalen.png";
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_surface_t *image;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_surface_t *image;
 
-    image = cairo_test_create_surface_from_png (ctx, png_filename);
+    image = comac_test_create_surface_from_png (ctx, png_filename);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    cairo_rectangle (cr, 20, 20, 10, 10);
-    cairo_clip (cr);
+    comac_rectangle (cr, 20, 20, 10, 10);
+    comac_clip (cr);
 
-    cairo_set_source_surface (cr, image, 10, 10);
-    cairo_surface_destroy (image);
+    comac_set_source_surface (cr, image, 10, 10);
+    comac_surface_destroy (image);
 
-    cairo_rectangle (cr, 10, 10, 20, 20);
-    cairo_fill (cr);
+    comac_rectangle (cr, 10, 10, 20, 20);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clipped_surface,
+COMAC_TEST (clipped_surface,
 	    "Tests application of a clip to a source surface",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

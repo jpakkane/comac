@@ -26,19 +26,19 @@
 
 #include "comac-perf.h"
 
-static cairo_surface_t *
-generate_random_waveform(cairo_t *target, int width, int height)
+static comac_surface_t *
+generate_random_waveform(comac_t *target, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
     int i, r;
 
     srand (0xdeadbeef);
 
-    surface = cairo_surface_create_similar (cairo_get_target (target),
-					    CAIRO_CONTENT_ALPHA,
+    surface = comac_surface_create_similar (comac_get_target (target),
+					    COMAC_CONTENT_ALPHA,
 					    width, height);
-    cr = cairo_create (surface);
+    cr = comac_create (surface);
 
     r = height / 2;
 
@@ -49,67 +49,67 @@ generate_random_waveform(cairo_t *target, int width, int height)
 	    r = 0;
 	else if (r > height)
 	    r = height;
-	cairo_rectangle (cr, i, (height - r) / 2, 1, r);
+	comac_rectangle (cr, i, (height - r) / 2, 1, r);
     }
-    cairo_fill (cr);
-    cairo_destroy (cr);
+    comac_fill (cr);
+    comac_destroy (cr);
 
     return surface;
 }
 
-static cairo_time_t
-do_wave (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_wave (comac_t *cr, int width, int height, int loops)
 {
-    cairo_surface_t *wave;
-    cairo_pattern_t *mask;
+    comac_surface_t *wave;
+    comac_pattern_t *mask;
 
     wave = generate_random_waveform (cr, width, height);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	/* paint outline (and contents) */
-	cairo_set_source_rgb (cr, 1, 0, 0);
-	cairo_mask_surface (cr, wave, 0, 0);
+	comac_set_source_rgb (cr, 1, 0, 0);
+	comac_mask_surface (cr, wave, 0, 0);
 
 	/* overdraw inline */
 	/* first, create a mask */
-	cairo_push_group_with_content (cr, CAIRO_CONTENT_ALPHA);
-	cairo_set_source_surface (cr, wave, 0, 0);
-	cairo_paint (cr);
-	cairo_set_operator (cr, CAIRO_OPERATOR_IN);
-	cairo_set_source_surface (cr, wave, 1, 0);
-	cairo_paint (cr);
-	cairo_set_source_surface (cr, wave, -1, 0);
-	cairo_paint (cr);
-	cairo_set_source_surface (cr, wave, 0, 1);
-	cairo_paint (cr);
-	cairo_set_source_surface (cr, wave, 0, -1);
-	cairo_paint (cr);
-	mask = cairo_pop_group (cr);
+	comac_push_group_with_content (cr, COMAC_CONTENT_ALPHA);
+	comac_set_source_surface (cr, wave, 0, 0);
+	comac_paint (cr);
+	comac_set_operator (cr, COMAC_OPERATOR_IN);
+	comac_set_source_surface (cr, wave, 1, 0);
+	comac_paint (cr);
+	comac_set_source_surface (cr, wave, -1, 0);
+	comac_paint (cr);
+	comac_set_source_surface (cr, wave, 0, 1);
+	comac_paint (cr);
+	comac_set_source_surface (cr, wave, 0, -1);
+	comac_paint (cr);
+	mask = comac_pop_group (cr);
 
 	/* second, paint the mask */
-	cairo_set_source_rgb (cr, 0, 1, 0);
-	cairo_mask (cr, mask);
+	comac_set_source_rgb (cr, 0, 1, 0);
+	comac_mask (cr, mask);
 
-	cairo_pattern_destroy (mask);
+	comac_pattern_destroy (mask);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_surface_destroy (wave);
+    comac_surface_destroy (wave);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-wave_enabled (cairo_perf_t *perf)
+comac_bool_t
+wave_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "wave", NULL);
+    return comac_perf_can_run (perf, "wave", NULL);
 }
 
 void
-wave (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+wave (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "wave", do_wave, NULL);
+    comac_perf_run (perf, "wave", do_wave, NULL);
 }

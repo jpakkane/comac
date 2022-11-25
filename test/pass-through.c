@@ -25,65 +25,65 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int n;
 
     for (n = 0; n < 256; n++) {
-	cairo_set_source_rgba (cr, 1, 1, 1, n / 255.);
-	cairo_rectangle (cr, 0, n, 2, 1);
-	cairo_fill (cr);
+	comac_set_source_rgba (cr, 1, 1, 1, n / 255.);
+	comac_rectangle (cr, 0, n, 2, 1);
+	comac_fill (cr);
     }
     for (n = 0; n < 256; n++) {
-	cairo_set_source_rgb (cr, n / 255., n / 255., n / 255.);
-	cairo_rectangle (cr, 2, n, 2, 1);
-	cairo_fill (cr);
+	comac_set_source_rgb (cr, n / 255., n / 255., n / 255.);
+	comac_rectangle (cr, 2, n, 2, 1);
+	comac_fill (cr);
     }
 
-    cairo_translate (cr, 4, 0);
-
-    for (n = 0; n < 256; n++) {
-	cairo_set_source_rgba (cr, 1, 0, 0, n / 255.);
-	cairo_rectangle (cr, 0, n, 2, 1);
-	cairo_fill (cr);
-    }
-    for (n = 0; n < 256; n++) {
-	cairo_set_source_rgb (cr, n / 255., 0, 0);
-	cairo_rectangle (cr, 2, n, 2, 1);
-	cairo_fill (cr);
-    }
-
-    cairo_translate (cr, 4, 0);
+    comac_translate (cr, 4, 0);
 
     for (n = 0; n < 256; n++) {
-	cairo_set_source_rgba (cr, 0, 1, 0, n / 255.);
-	cairo_rectangle (cr, 0, n, 2, 1);
-	cairo_fill (cr);
+	comac_set_source_rgba (cr, 1, 0, 0, n / 255.);
+	comac_rectangle (cr, 0, n, 2, 1);
+	comac_fill (cr);
     }
     for (n = 0; n < 256; n++) {
-	cairo_set_source_rgb (cr, 0, n / 255., 0);
-	cairo_rectangle (cr, 2, n, 2, 1);
-	cairo_fill (cr);
+	comac_set_source_rgb (cr, n / 255., 0, 0);
+	comac_rectangle (cr, 2, n, 2, 1);
+	comac_fill (cr);
     }
 
-    cairo_translate (cr, 4, 0);
+    comac_translate (cr, 4, 0);
 
     for (n = 0; n < 256; n++) {
-	cairo_set_source_rgba (cr, 0, 0, 1, n / 255.);
-	cairo_rectangle (cr, 0, n, 2, 1);
-	cairo_fill (cr);
+	comac_set_source_rgba (cr, 0, 1, 0, n / 255.);
+	comac_rectangle (cr, 0, n, 2, 1);
+	comac_fill (cr);
     }
     for (n = 0; n < 256; n++) {
-	cairo_set_source_rgb (cr, 0, 0, n / 255.);
-	cairo_rectangle (cr, 2, n, 2, 1);
-	cairo_fill (cr);
+	comac_set_source_rgb (cr, 0, n / 255., 0);
+	comac_rectangle (cr, 2, n, 2, 1);
+	comac_fill (cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    comac_translate (cr, 4, 0);
+
+    for (n = 0; n < 256; n++) {
+	comac_set_source_rgba (cr, 0, 0, 1, n / 255.);
+	comac_rectangle (cr, 0, n, 2, 1);
+	comac_fill (cr);
+    }
+    for (n = 0; n < 256; n++) {
+	comac_set_source_rgb (cr, 0, 0, n / 255.);
+	comac_rectangle (cr, 2, n, 2, 1);
+	comac_fill (cr);
+    }
+
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (pass_through,
+COMAC_TEST (pass_through,
 	    "tests pixel values",
 	    "color", /* keywords */
 	    NULL, /* requirements */

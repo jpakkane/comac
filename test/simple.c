@@ -26,7 +26,7 @@
 
 #include "comac-test.h"
 
-/* Test the fidelity of the rasterisation, because Cairo is my favourite
+/* Test the fidelity of the rasterisation, because Comac is my favourite
  * driver test suite.
  */
 
@@ -46,12 +46,12 @@ struct coverage {
 
 static int pfloor (int v)
 {
-    return v >> CAIRO_FIXED_FRAC_BITS;
+    return v >> COMAC_FIXED_FRAC_BITS;
 }
 
 static int pfrac (int v)
 {
-    return v & ((1 << CAIRO_FIXED_FRAC_BITS) - 1);
+    return v & ((1 << COMAC_FIXED_FRAC_BITS) - 1);
 }
 
 static void add_edge (struct coverage *coverage,
@@ -136,19 +136,19 @@ coverage_create (int width, int height)
     return c;
 }
 
-static cairo_surface_t *
+static comac_surface_t *
 coverage_to_alpha (struct coverage *c)
 {
-    cairo_surface_t *image;
+    comac_surface_t *image;
     uint8_t *data;
     int x, y, stride;
 
-    image = cairo_image_surface_create (CAIRO_FORMAT_A8, c->width, c->height);
+    image = comac_image_surface_create (COMAC_FORMAT_A8, c->width, c->height);
 
-    data = cairo_image_surface_get_data (image);
-    stride = cairo_image_surface_get_stride (image);
+    data = comac_image_surface_get_data (image);
+    stride = comac_image_surface_get_stride (image);
 
-    cairo_surface_flush (image);
+    comac_surface_flush (image);
     for (y = 0; y < c->height; y++) {
 	uint8_t *row = data + y *stride;
 	int cover = 0;
@@ -164,27 +164,27 @@ coverage_to_alpha (struct coverage *c)
 	    row[x] = v - (v >> 8);
 	}
     }
-    cairo_surface_mark_dirty (image);
+    comac_surface_mark_dirty (image);
 
     free (c);
     return image;
 }
 #endif
 
-static cairo_test_status_t
-edge (cairo_t *cr, int width, int height)
+static comac_test_status_t
+edge (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
 
 #if GENERATE_REFERENCE
     {
 	struct coverage *c;
-	cairo_surface_t *mask;
+	comac_surface_t *mask;
 
-	cairo_set_source_rgb (cr, 1, 0, 0);
+	comac_set_source_rgb (cr, 1, 0, 0);
 
 	c = coverage_create (width, height);
 	add_edge (c, 128*256, 129*256, 129*256,   1*256, 1);
@@ -194,8 +194,8 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c, 130*256, 129*256, 130*256, 131*256, 1);
 	add_edge (c, 130*256, 131*256, 129*256, 259*256, 1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
 	add_edge (c, 128*256/2, 129*256/2, 129*256/2,   1*256/2, 1);
@@ -205,8 +205,8 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c, 130*256/2, 129*256/2, 130*256/2, 131*256/2, 1);
 	add_edge (c, 130*256/2, 131*256/2, 129*256/2, 259*256/2, 1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
 	add_edge (c, (192-2)*256, 129*256, 192*256,   1*256, 1);
@@ -216,8 +216,8 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c, (192+2)*256, 129*256, (192+2)*256, 131*256, 1);
 	add_edge (c, (192+2)*256, 131*256, 192*256, 259*256, 1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
 	add_edge (c, (256-4)*256, 129*256, 256*256,   1*256, 1);
@@ -227,10 +227,10 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c, (256+4)*256, 129*256, (256+4)*256, 131*256, 1);
 	add_edge (c, (256+4)*256, 131*256, 256*256, 259*256, 1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
 
-	cairo_set_source_rgb (cr, 0, 1, 0);
+	comac_set_source_rgb (cr, 0, 1, 0);
 
 	c = coverage_create (width, height);
 	add_edge (c,   1*256, 129*256, 129*256, 128*256, 1);
@@ -238,8 +238,8 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c,   1*256, 129*256, 129*256, 130*256, -1);
 	add_edge (c, 131*256, 130*256, 259*256, 129*256, -1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
 	add_edge (c,   1*256/2, 129*256/2, 129*256/2, 128*256/2, 1);
@@ -247,8 +247,8 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c,   1*256/2, 129*256/2, 129*256/2, 130*256/2, -1);
 	add_edge (c, 131*256/2, 130*256/2, 259*256/2, 129*256/2, -1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
 	add_edge (c,   1*256, (192-0)*256, 129*256, (192-2)*256, 1);
@@ -256,8 +256,8 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c,   1*256, (192+0)*256, 129*256, (192+2)*256, -1);
 	add_edge (c, 131*256, (192+2)*256, 259*256, (192+0)*256, -1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
 
 	c = coverage_create (width, height);
 	add_edge (c,   1*256, (256-0)*256, 129*256, (256-4)*256, 1);
@@ -265,81 +265,81 @@ edge (cairo_t *cr, int width, int height)
 	add_edge (c,   1*256, (256+0)*256, 129*256, (256+4)*256, -1);
 	add_edge (c, 131*256, (256+4)*256, 259*256, (256+0)*256, -1);
 	mask = coverage_to_alpha (c);
-	cairo_mask_surface (cr, mask, 0, 0);
-	cairo_surface_destroy (mask);
+	comac_mask_surface (cr, mask, 0, 0);
+	comac_surface_destroy (mask);
     }
 #else
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_move_to (cr, 129,   1);
-    cairo_line_to (cr, 128, 129);
-    cairo_line_to (cr, 128, 131);
-    cairo_line_to (cr, 129, 259);
-    cairo_line_to (cr, 130, 131);
-    cairo_line_to (cr, 130, 129);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_move_to (cr, 129,   1);
+    comac_line_to (cr, 128, 129);
+    comac_line_to (cr, 128, 131);
+    comac_line_to (cr, 129, 259);
+    comac_line_to (cr, 130, 131);
+    comac_line_to (cr, 130, 129);
+    comac_fill (cr);
 
-    cairo_move_to (cr, 129/2.,   1/2.);
-    cairo_line_to (cr, 128/2., 129/2.);
-    cairo_line_to (cr, 128/2., 131/2.);
-    cairo_line_to (cr, 129/2., 259/2.);
-    cairo_line_to (cr, 130/2., 131/2.);
-    cairo_line_to (cr, 130/2., 129/2.);
-    cairo_fill (cr);
+    comac_move_to (cr, 129/2.,   1/2.);
+    comac_line_to (cr, 128/2., 129/2.);
+    comac_line_to (cr, 128/2., 131/2.);
+    comac_line_to (cr, 129/2., 259/2.);
+    comac_line_to (cr, 130/2., 131/2.);
+    comac_line_to (cr, 130/2., 129/2.);
+    comac_fill (cr);
 
-    cairo_move_to (cr, 192,   1);
-    cairo_line_to (cr, 192-2, 129);
-    cairo_line_to (cr, 192-2, 131);
-    cairo_line_to (cr, 192, 259);
-    cairo_line_to (cr, 192+2, 131);
-    cairo_line_to (cr, 192+2, 129);
-    cairo_fill (cr);
+    comac_move_to (cr, 192,   1);
+    comac_line_to (cr, 192-2, 129);
+    comac_line_to (cr, 192-2, 131);
+    comac_line_to (cr, 192, 259);
+    comac_line_to (cr, 192+2, 131);
+    comac_line_to (cr, 192+2, 129);
+    comac_fill (cr);
 
-    cairo_move_to (cr, 256,   1);
-    cairo_line_to (cr, 256-4, 129);
-    cairo_line_to (cr, 256-4, 131);
-    cairo_line_to (cr, 256, 259);
-    cairo_line_to (cr, 256+4, 131);
-    cairo_line_to (cr, 256+4, 129);
-    cairo_fill (cr);
+    comac_move_to (cr, 256,   1);
+    comac_line_to (cr, 256-4, 129);
+    comac_line_to (cr, 256-4, 131);
+    comac_line_to (cr, 256, 259);
+    comac_line_to (cr, 256+4, 131);
+    comac_line_to (cr, 256+4, 129);
+    comac_fill (cr);
 
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_move_to (cr,   1, 129);
-    cairo_line_to (cr, 129, 128);
-    cairo_line_to (cr, 131, 128);
-    cairo_line_to (cr, 259, 129);
-    cairo_line_to (cr, 131, 130);
-    cairo_line_to (cr, 129, 130);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_move_to (cr,   1, 129);
+    comac_line_to (cr, 129, 128);
+    comac_line_to (cr, 131, 128);
+    comac_line_to (cr, 259, 129);
+    comac_line_to (cr, 131, 130);
+    comac_line_to (cr, 129, 130);
+    comac_fill (cr);
 
-    cairo_move_to (cr,   1/2., 129/2.);
-    cairo_line_to (cr, 129/2., 128/2.);
-    cairo_line_to (cr, 131/2., 128/2.);
-    cairo_line_to (cr, 259/2., 129/2.);
-    cairo_line_to (cr, 131/2., 130/2.);
-    cairo_line_to (cr, 129/2., 130/2.);
-    cairo_fill (cr);
+    comac_move_to (cr,   1/2., 129/2.);
+    comac_line_to (cr, 129/2., 128/2.);
+    comac_line_to (cr, 131/2., 128/2.);
+    comac_line_to (cr, 259/2., 129/2.);
+    comac_line_to (cr, 131/2., 130/2.);
+    comac_line_to (cr, 129/2., 130/2.);
+    comac_fill (cr);
 
-    cairo_move_to (cr,   1, 192);
-    cairo_line_to (cr, 129, 192-2);
-    cairo_line_to (cr, 131, 192-2);
-    cairo_line_to (cr, 259, 192);
-    cairo_line_to (cr, 131, 192+2);
-    cairo_line_to (cr, 129, 192+2);
-    cairo_fill (cr);
+    comac_move_to (cr,   1, 192);
+    comac_line_to (cr, 129, 192-2);
+    comac_line_to (cr, 131, 192-2);
+    comac_line_to (cr, 259, 192);
+    comac_line_to (cr, 131, 192+2);
+    comac_line_to (cr, 129, 192+2);
+    comac_fill (cr);
 
-    cairo_move_to (cr,   1, 256);
-    cairo_line_to (cr, 129, 256-4);
-    cairo_line_to (cr, 131, 256-4);
-    cairo_line_to (cr, 259, 256);
-    cairo_line_to (cr, 131, 256+4);
-    cairo_line_to (cr, 129, 256+4);
-    cairo_fill (cr);
+    comac_move_to (cr,   1, 256);
+    comac_line_to (cr, 129, 256-4);
+    comac_line_to (cr, 131, 256-4);
+    comac_line_to (cr, 259, 256);
+    comac_line_to (cr, 131, 256+4);
+    comac_line_to (cr, 129, 256+4);
+    comac_fill (cr);
 #endif
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (simple_edge,
+COMAC_TEST (simple_edge,
 	    "Check the fidelity of the rasterisation.",
 	    NULL, /* keywords */
 	    "target=raster", /* requirements */

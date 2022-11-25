@@ -30,37 +30,37 @@
 #define IMAGE_HEIGHT 80
 
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
-    cairo_scale (cr, 0.3, 0.3);
-    cairo_translate (cr, 50, 50);
+    comac_scale (cr, 0.3, 0.3);
+    comac_translate (cr, 50, 50);
 
-    pattern = cairo_pattern_create_linear (70, 100, 130, 100);
-    cairo_pattern_add_color_stop_rgba (pattern, 0,  1, 0, 0,  1.0);
-    cairo_pattern_add_color_stop_rgba (pattern, 1,  0, 1, 0,  0.5);
+    pattern = comac_pattern_create_linear (70, 100, 130, 100);
+    comac_pattern_add_color_stop_rgba (pattern, 0,  1, 0, 0,  1.0);
+    comac_pattern_add_color_stop_rgba (pattern, 1,  0, 1, 0,  0.5);
 
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
-    cairo_set_source (cr, pattern);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_PAD);
+    comac_set_source (cr, pattern);
 
-    cairo_move_to(cr, 20, 20);
-    cairo_curve_to(cr,
+    comac_move_to(cr, 20, 20);
+    comac_curve_to(cr,
                    130, 0,
                    70, 200,
                    180, 180);
-    cairo_set_line_width (cr, 20);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 20);
+    comac_stroke (cr);
 
-    cairo_pattern_destroy (pattern);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (stroke_pattern,
+COMAC_TEST (stroke_pattern,
 	    "Patterned stroke",
 	    "stroke, pattern", /* keywords */
 	    NULL, /* requirements */

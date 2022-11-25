@@ -29,18 +29,18 @@
 #define PAD 2
 #define SIZE 10
 
-typedef void (*path_func_t) (cairo_t *cr);
+typedef void (*path_func_t) (comac_t *cr);
 
 static void
-rectangle (cairo_t *cr)
+rectangle (comac_t *cr)
 {
-    cairo_rectangle (cr, PAD, PAD, SIZE, SIZE);
+    comac_rectangle (cr, PAD, PAD, SIZE, SIZE);
 }
 
 static void
-circle (cairo_t *cr)
+circle (comac_t *cr)
 {
-    cairo_arc (cr,
+    comac_arc (cr,
 	       PAD + SIZE / 2, PAD + SIZE / 2,
 	       SIZE / 2,
 	       0, 2 * M_PI);
@@ -51,55 +51,55 @@ circle (cairo_t *cr)
  * offscreen group), then blend the result into the destination.
  */
 static void
-fill_and_stroke (cairo_t		*cr,
+fill_and_stroke (comac_t		*cr,
 		 path_func_t		 path_func,
-		 cairo_pattern_t	*fill_pattern,
-		 cairo_pattern_t	*stroke_pattern)
+		 comac_pattern_t	*fill_pattern,
+		 comac_pattern_t	*stroke_pattern)
 {
-    cairo_push_group (cr);
+    comac_push_group (cr);
     {
 	(path_func) (cr);
-	cairo_set_source (cr, fill_pattern);
-	cairo_fill_preserve (cr);
+	comac_set_source (cr, fill_pattern);
+	comac_fill_preserve (cr);
 
 	/* Use DEST_OUT to subtract stroke from fill. */
-	cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-	cairo_set_operator (cr, CAIRO_OPERATOR_DEST_OUT);
-	cairo_stroke_preserve (cr);
+	comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+	comac_set_operator (cr, COMAC_OPERATOR_DEST_OUT);
+	comac_stroke_preserve (cr);
 
 	/* Then use ADD to draw the stroke without a seam. */
-	cairo_set_source (cr, stroke_pattern);
-	cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
-	cairo_stroke (cr);
+	comac_set_source (cr, stroke_pattern);
+	comac_set_operator (cr, COMAC_OPERATOR_ADD);
+	comac_stroke (cr);
     }
-    cairo_pop_group_to_source (cr);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_paint (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *blue;
-    cairo_pattern_t *red;
+    comac_pattern_t *blue;
+    comac_pattern_t *red;
 
-    blue = cairo_pattern_create_rgba (0.0, 0.0, 1.0, 0.8);
-    red = cairo_pattern_create_rgba (1.0, 0.0, 0.0, 0.2);
+    blue = comac_pattern_create_rgba (0.0, 0.0, 1.0, 0.8);
+    red = comac_pattern_create_rgba (1.0, 0.0, 0.0, 0.2);
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
     fill_and_stroke (cr, rectangle, blue, red);
 
-    cairo_translate (cr, SIZE + 2 * PAD, 0);
+    comac_translate (cr, SIZE + 2 * PAD, 0);
 
     fill_and_stroke (cr, circle, red, blue);
 
-    cairo_pattern_destroy (blue);
-    cairo_pattern_destroy (red);
+    comac_pattern_destroy (blue);
+    comac_pattern_destroy (red);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_and_stroke_alpha_add,
+COMAC_TEST (fill_and_stroke_alpha_add,
 	    "Use a group to fill/stroke a path (each with different alpha) using DEST_OUT and ADD to combine",
 	    "fill-and-stroke, fill, stroke", /* keywords */
 	    NULL, /* requirements */

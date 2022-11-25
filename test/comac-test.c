@@ -40,7 +40,7 @@
 #if HAVE_FCFINI
 #include <fontconfig/fontconfig.h>
 #endif
-#if CAIRO_HAS_REAL_PTHREAD
+#if COMAC_HAS_REAL_PTHREAD
 #include <pthread.h>
 #endif
 #if HAVE_SYS_STAT_H
@@ -83,20 +83,20 @@
 #define alarm(X);
 #endif
 
-static const cairo_user_data_key_t _cairo_test_context_key;
+static const comac_user_data_key_t _comac_test_context_key;
 
 static void
-_xunlink (const cairo_test_context_t *ctx, const char *pathname);
+_xunlink (const comac_test_context_t *ctx, const char *pathname);
 
 static const char *fail_face = "", *xfail_face="", *normal_face = "";
-static cairo_bool_t print_fail_on_stdout;
-static int cairo_test_timeout = 60;
+static comac_bool_t print_fail_on_stdout;
+static int comac_test_timeout = 60;
 
 #define NUM_DEVICE_OFFSETS 2
 #define NUM_DEVICE_SCALE 2
 
-cairo_bool_t
-cairo_test_mkdir (const char *path)
+comac_bool_t
+comac_test_mkdir (const char *path)
 {
 #if ! HAVE_MKDIR
     return FALSE;
@@ -114,7 +114,7 @@ cairo_test_mkdir (const char *path)
 }
 
 static char *
-_cairo_test_fixup_name (const char *original)
+_comac_test_fixup_name (const char *original)
 {
     char *name, *s;
 
@@ -126,15 +126,15 @@ _cairo_test_fixup_name (const char *original)
 }
 
 char *
-cairo_test_get_name (const cairo_test_t *test)
+comac_test_get_name (const comac_test_t *test)
 {
-    return _cairo_test_fixup_name (test->name);
+    return _comac_test_fixup_name (test->name);
 }
 
 static void
-_cairo_test_init (cairo_test_context_t *ctx,
-		  const cairo_test_context_t *parent,
-		  const cairo_test_t *test,
+_comac_test_init (comac_test_context_t *ctx,
+		  const comac_test_context_t *parent,
+		  const comac_test_t *test,
 		  const char *test_name,
 		  const char *output)
 {
@@ -147,24 +147,24 @@ _cairo_test_init (cairo_test_context_t *ctx,
 #endif
 
     ctx->test = test;
-    ctx->test_name = _cairo_test_fixup_name (test_name);
+    ctx->test_name = _comac_test_fixup_name (test_name);
     ctx->output = output;
 
-    cairo_test_mkdir (ctx->output);
+    comac_test_mkdir (ctx->output);
 
     ctx->malloc_failure = 0;
 #if HAVE_MEMFAULT
-    if (getenv ("CAIRO_TEST_MALLOC_FAILURE"))
-	ctx->malloc_failure = atoi (getenv ("CAIRO_TEST_MALLOC_FAILURE"));
+    if (getenv ("COMAC_TEST_MALLOC_FAILURE"))
+	ctx->malloc_failure = atoi (getenv ("COMAC_TEST_MALLOC_FAILURE"));
     if (ctx->malloc_failure && ! RUNNING_ON_MEMFAULT ())
 	ctx->malloc_failure = 0;
 #endif
 
-    ctx->timeout = cairo_test_timeout;
-    if (getenv ("CAIRO_TEST_TIMEOUT"))
-	ctx->timeout = atoi (getenv ("CAIRO_TEST_TIMEOUT"));
+    ctx->timeout = comac_test_timeout;
+    if (getenv ("COMAC_TEST_TIMEOUT"))
+	ctx->timeout = atoi (getenv ("COMAC_TEST_TIMEOUT"));
 
-    xasprintf (&log_name, "%s/%s%s", ctx->output, ctx->test_name, CAIRO_TEST_LOG_SUFFIX);
+    xasprintf (&log_name, "%s/%s%s", ctx->output, ctx->test_name, COMAC_TEST_LOG_SUFFIX);
     _xunlink (NULL, log_name);
 
     ctx->log_file = fopen (log_name, "a");
@@ -188,9 +188,9 @@ _cairo_test_init (cairo_test_context_t *ctx,
 	ctx->refdir = parent->refdir;
     } else {
 	int tmp_num_targets;
-	cairo_bool_t tmp_limited_targets;
+	comac_bool_t tmp_limited_targets;
 
-	ctx->targets_to_test = cairo_boilerplate_get_targets (&tmp_num_targets, &tmp_limited_targets);
+	ctx->targets_to_test = comac_boilerplate_get_targets (&tmp_num_targets, &tmp_limited_targets);
 	ctx->num_targets = tmp_num_targets;
 	ctx->limited_targets = tmp_limited_targets;
 	ctx->own_targets = TRUE;
@@ -204,7 +204,7 @@ _cairo_test_init (cairo_test_context_t *ctx,
                 ctx->srcdir = "srcdir";
 #endif
         }
-	ctx->refdir = getenv ("CAIRO_REF_DIR");
+	ctx->refdir = getenv ("COMAC_REF_DIR");
     }
 
 #ifdef HAVE_UNISTD_H
@@ -221,23 +221,23 @@ _cairo_test_init (cairo_test_context_t *ctx,
 }
 
 void
-_cairo_test_context_init_for_test (cairo_test_context_t *ctx,
-				   const cairo_test_context_t *parent,
-				   const cairo_test_t *test)
+_comac_test_context_init_for_test (comac_test_context_t *ctx,
+				   const comac_test_context_t *parent,
+				   const comac_test_t *test)
 {
-    _cairo_test_init (ctx, parent, test, test->name, CAIRO_TEST_OUTPUT_DIR);
+    _comac_test_init (ctx, parent, test, test->name, COMAC_TEST_OUTPUT_DIR);
 }
 
 void
-cairo_test_init (cairo_test_context_t *ctx,
+comac_test_init (comac_test_context_t *ctx,
 		 const char *test_name,
 		 const char *output)
 {
-    _cairo_test_init (ctx, NULL, NULL, test_name, output);
+    _comac_test_init (ctx, NULL, NULL, test_name, output);
 }
 
 void
-cairo_test_fini (cairo_test_context_t *ctx)
+comac_test_fini (comac_test_context_t *ctx)
 {
     if (ctx->log_file == NULL)
 	return;
@@ -247,25 +247,25 @@ cairo_test_fini (cairo_test_context_t *ctx)
     ctx->log_file = NULL;
 
     free (ctx->ref_name);
-    cairo_surface_destroy (ctx->ref_image);
-    cairo_surface_destroy (ctx->ref_image_flattened);
+    comac_surface_destroy (ctx->ref_image);
+    comac_surface_destroy (ctx->ref_image_flattened);
 
     if (ctx->test_name != NULL)
 	free ((char *) ctx->test_name);
 
     if (ctx->own_targets)
-	cairo_boilerplate_free_targets (ctx->targets_to_test);
+	comac_boilerplate_free_targets (ctx->targets_to_test);
 
-    cairo_boilerplate_fini ();
+    comac_boilerplate_fini ();
 
-    cairo_debug_reset_static_data ();
+    comac_debug_reset_static_data ();
 #if HAVE_FCFINI
     FcFini ();
 #endif
 }
 
 void
-cairo_test_logv (const cairo_test_context_t *ctx,
+comac_test_logv (const comac_test_context_t *ctx,
 	        const char *fmt, va_list va)
 {
     FILE *file = ctx && ctx->log_file ? ctx->log_file : stderr;
@@ -273,27 +273,27 @@ cairo_test_logv (const cairo_test_context_t *ctx,
 }
 
 void
-cairo_test_log (const cairo_test_context_t *ctx, const char *fmt, ...)
+comac_test_log (const comac_test_context_t *ctx, const char *fmt, ...)
 {
     va_list va;
 
     va_start (va, fmt);
-    cairo_test_logv (ctx, fmt, va);
+    comac_test_logv (ctx, fmt, va);
     va_end (va);
 }
 
 static void
-_xunlink (const cairo_test_context_t *ctx, const char *pathname)
+_xunlink (const comac_test_context_t *ctx, const char *pathname)
 {
     if (unlink (pathname) < 0 && errno != ENOENT) {
-	cairo_test_log (ctx, "Error: Cannot remove %s: %s\n",
+	comac_test_log (ctx, "Error: Cannot remove %s: %s\n",
 			pathname, strerror (errno));
 	exit (1);
     }
 }
 
 char *
-cairo_test_reference_filename (const cairo_test_context_t *ctx,
+comac_test_reference_filename (const comac_test_context_t *ctx,
 			       const char *base_name,
 			       const char *test_name,
 			       const char *target_name,
@@ -305,8 +305,8 @@ cairo_test_reference_filename (const cairo_test_context_t *ctx,
     char *ref_name = NULL;
 
     /* First look for a previous build for comparison. */
-    if (ctx->refdir != NULL && strcmp(suffix, CAIRO_TEST_REF_SUFFIX) == 0) {
-	xasprintf (&ref_name, "%s/%s" CAIRO_TEST_OUT_SUFFIX "%s",
+    if (ctx->refdir != NULL && strcmp(suffix, COMAC_TEST_REF_SUFFIX) == 0) {
+	xasprintf (&ref_name, "%s/%s" COMAC_TEST_OUT_SUFFIX "%s",
 		   ctx->refdir,
 		   base_name,
 		   extension);
@@ -398,27 +398,27 @@ done:
     return ref_name;
 }
 
-cairo_test_similar_t
-cairo_test_target_has_similar (const cairo_test_context_t *ctx,
-			       const cairo_boilerplate_target_t *target)
+comac_test_similar_t
+comac_test_target_has_similar (const comac_test_context_t *ctx,
+			       const comac_boilerplate_target_t *target)
 {
-    cairo_surface_t *surface;
-    cairo_test_similar_t has_similar;
-    cairo_t * cr;
-    cairo_surface_t *similar;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_test_similar_t has_similar;
+    comac_t * cr;
+    comac_surface_t *similar;
+    comac_status_t status;
     void *closure;
     char *path;
 
     /* ignore image intermediate targets */
-    if (target->expected_type == CAIRO_SURFACE_TYPE_IMAGE)
+    if (target->expected_type == COMAC_SURFACE_TYPE_IMAGE)
 	return DIRECT;
 
-    if (getenv ("CAIRO_TEST_IGNORE_SIMILAR"))
+    if (getenv ("COMAC_TEST_IGNORE_SIMILAR"))
 	return DIRECT;
 
     xasprintf (&path, "%s/%s",
-	       cairo_test_mkdir (ctx->output) ? ctx->output : ".",
+	       comac_test_mkdir (ctx->output) ? ctx->output : ".",
 	       ctx->test_name);
 
     has_similar = DIRECT;
@@ -430,44 +430,44 @@ cairo_test_target_has_similar (const cairo_test_context_t *ctx,
 						ctx->test->height,
 						ctx->test->width* NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
 						ctx->test->height* NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
-						CAIRO_BOILERPLATE_MODE_TEST,
+						COMAC_BOILERPLATE_MODE_TEST,
 						&closure);
 	    if (surface == NULL)
 		goto out;
-	} while (cairo_test_malloc_failure (ctx, cairo_surface_status (surface)));
+	} while (comac_test_malloc_failure (ctx, comac_surface_status (surface)));
 
-	if (cairo_surface_status (surface))
+	if (comac_surface_status (surface))
 	    goto out;
 
-	cr = cairo_create (surface);
-	cairo_push_group_with_content (cr,
-				       cairo_boilerplate_content (target->content));
-	similar = cairo_get_group_target (cr);
-	status = cairo_surface_status (similar);
+	cr = comac_create (surface);
+	comac_push_group_with_content (cr,
+				       comac_boilerplate_content (target->content));
+	similar = comac_get_group_target (cr);
+	status = comac_surface_status (similar);
 
-	if (cairo_surface_get_type (similar) == cairo_surface_get_type (surface))
+	if (comac_surface_get_type (similar) == comac_surface_get_type (surface))
 	    has_similar = SIMILAR;
 	else
 	    has_similar = DIRECT;
 
-	cairo_destroy (cr);
-	cairo_surface_destroy (surface);
+	comac_destroy (cr);
+	comac_surface_destroy (surface);
 
 	if (target->cleanup)
 	    target->cleanup (closure);
-    } while (! has_similar && cairo_test_malloc_failure (ctx, status));
+    } while (! has_similar && comac_test_malloc_failure (ctx, status));
 out:
     free (path);
 
     return has_similar;
 }
 
-static cairo_surface_t *
-_cairo_test_flatten_reference_image (cairo_test_context_t *ctx,
-				     cairo_bool_t flatten)
+static comac_surface_t *
+_comac_test_flatten_reference_image (comac_test_context_t *ctx,
+				     comac_bool_t flatten)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
 
     if (! flatten)
 	return ctx->ref_image;
@@ -475,58 +475,58 @@ _cairo_test_flatten_reference_image (cairo_test_context_t *ctx,
     if (ctx->ref_image_flattened != NULL)
 	return ctx->ref_image_flattened;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					  cairo_image_surface_get_width (ctx->ref_image),
-					  cairo_image_surface_get_height (ctx->ref_image));
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32,
+					  comac_image_surface_get_width (ctx->ref_image),
+					  comac_image_surface_get_height (ctx->ref_image));
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_surface (cr, ctx->ref_image, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, ctx->ref_image, 0, 0);
+    comac_paint (cr);
 
-    surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
-    if (cairo_surface_status (surface) == CAIRO_STATUS_SUCCESS)
+    if (comac_surface_status (surface) == COMAC_STATUS_SUCCESS)
 	ctx->ref_image_flattened = surface;
     return surface;
 }
 
-cairo_surface_t *
-cairo_test_get_reference_image (cairo_test_context_t *ctx,
+comac_surface_t *
+comac_test_get_reference_image (comac_test_context_t *ctx,
 				const char *filename,
-				cairo_bool_t flatten)
+				comac_bool_t flatten)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
     if (ctx->ref_name != NULL) {
 	if (strcmp (ctx->ref_name, filename) == 0)
-	    return _cairo_test_flatten_reference_image (ctx, flatten);
+	    return _comac_test_flatten_reference_image (ctx, flatten);
 
-	cairo_surface_destroy (ctx->ref_image);
+	comac_surface_destroy (ctx->ref_image);
 	ctx->ref_image = NULL;
 
-	cairo_surface_destroy (ctx->ref_image_flattened);
+	comac_surface_destroy (ctx->ref_image_flattened);
 	ctx->ref_image_flattened = NULL;
 
 	free (ctx->ref_name);
 	ctx->ref_name = NULL;
     }
 
-    surface = cairo_image_surface_create_from_png (filename);
-    if (cairo_surface_status (surface))
+    surface = comac_image_surface_create_from_png (filename);
+    if (comac_surface_status (surface))
 	return surface;
 
     ctx->ref_name = xstrdup (filename);
     ctx->ref_image = surface;
-    return _cairo_test_flatten_reference_image (ctx, flatten);
+    return _comac_test_flatten_reference_image (ctx, flatten);
 }
 
-static cairo_bool_t
-cairo_test_file_is_older (const char *filename,
+static comac_bool_t
+comac_test_file_is_older (const char *filename,
 	                  char **ref_filenames,
 			  int num_ref_filenames)
 {
@@ -554,8 +554,8 @@ cairo_test_file_is_older (const char *filename,
     return FALSE;
 }
 
-static cairo_bool_t
-cairo_test_files_equal (const char *test_filename,
+static comac_bool_t
+comac_test_files_equal (const char *test_filename,
 			const char *pass_filename)
 {
     FILE *test, *pass;
@@ -588,8 +588,8 @@ cairo_test_files_equal (const char *test_filename,
     return t == p; /* both EOF */
 }
 
-static cairo_bool_t
-cairo_test_copy_file (const char *src_filename,
+static comac_bool_t
+comac_test_copy_file (const char *src_filename,
 		      const char *dst_filename)
 {
     FILE *src, *dst;
@@ -622,16 +622,16 @@ cairo_test_copy_file (const char *src_filename,
     return TRUE;
 }
 
-static cairo_test_status_t
-cairo_test_for_target (cairo_test_context_t		 *ctx,
-		       const cairo_boilerplate_target_t	 *target,
+static comac_test_status_t
+comac_test_for_target (comac_test_context_t		 *ctx,
+		       const comac_boilerplate_target_t	 *target,
 		       int				  dev_offset,
 		       int				  dev_scale,
-		       cairo_bool_t                       similar)
+		       comac_bool_t                       similar)
 {
-    cairo_status_t finish_status;
-    cairo_surface_t *surface = NULL;
-    cairo_t *cr;
+    comac_status_t finish_status;
+    comac_surface_t *surface = NULL;
+    comac_t *cr;
     const char *empty_str = "";
     char *offset_str;
     char *scale_str;
@@ -645,22 +645,22 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
     char *base_xfail_png_path;
     char *diff_png_path;
     char *test_filename = NULL, *pass_filename = NULL, *fail_filename = NULL;
-    cairo_test_status_t ret, test_status;
-    cairo_content_t expected_content;
-    cairo_font_options_t *font_options;
+    comac_test_status_t ret, test_status;
+    comac_content_t expected_content;
+    comac_font_options_t *font_options;
     const char *format;
-    cairo_bool_t have_output = FALSE;
-    cairo_bool_t have_result = FALSE;
+    comac_bool_t have_output = FALSE;
+    comac_bool_t have_result = FALSE;
     void *closure;
     double width, height;
-    cairo_bool_t have_output_dir;
+    comac_bool_t have_output_dir;
 #if HAVE_MEMFAULT
     int malloc_failure_iterations = ctx->malloc_failure;
     int last_fault_count = 0;
 #endif
 
     /* Get the strings ready that we'll need. */
-    format = cairo_boilerplate_content_name (target->content);
+    format = comac_boilerplate_content_name (target->content);
     if (dev_offset)
 	xasprintf (&offset_str, ".%d", dev_offset);
     else
@@ -684,105 +684,105 @@ cairo_test_for_target (cairo_test_context_t		 *ctx,
     if (scale_str != empty_str)
       free (scale_str);
 
-    ref_png_path = cairo_test_reference_filename (ctx,
+    ref_png_path = comac_test_reference_filename (ctx,
 						  base_name,
 						  ctx->test_name,
 						  target->name,
 						  target->basename,
 						  format,
-						  CAIRO_TEST_REF_SUFFIX,
-						  CAIRO_TEST_PNG_EXTENSION);
-    new_png_path = cairo_test_reference_filename (ctx,
+						  COMAC_TEST_REF_SUFFIX,
+						  COMAC_TEST_PNG_EXTENSION);
+    new_png_path = comac_test_reference_filename (ctx,
 						  base_name,
 						  ctx->test_name,
 						  target->name,
 						  target->basename,
 						  format,
-						  CAIRO_TEST_NEW_SUFFIX,
-						  CAIRO_TEST_PNG_EXTENSION);
-    xfail_png_path = cairo_test_reference_filename (ctx,
+						  COMAC_TEST_NEW_SUFFIX,
+						  COMAC_TEST_PNG_EXTENSION);
+    xfail_png_path = comac_test_reference_filename (ctx,
 						    base_name,
 						    ctx->test_name,
 						    target->name,
 						    target->basename,
 						    format,
-						    CAIRO_TEST_XFAIL_SUFFIX,
-						    CAIRO_TEST_PNG_EXTENSION);
+						    COMAC_TEST_XFAIL_SUFFIX,
+						    COMAC_TEST_PNG_EXTENSION);
 
-    base_ref_png_path = cairo_test_reference_filename (ctx,
+    base_ref_png_path = comac_test_reference_filename (ctx,
 						  base_name,
 						  ctx->test_name,
 						  NULL, NULL,
 						  format,
-						  CAIRO_TEST_REF_SUFFIX,
-						  CAIRO_TEST_PNG_EXTENSION);
-    base_new_png_path = cairo_test_reference_filename (ctx,
+						  COMAC_TEST_REF_SUFFIX,
+						  COMAC_TEST_PNG_EXTENSION);
+    base_new_png_path = comac_test_reference_filename (ctx,
 						  base_name,
 						  ctx->test_name,
 						  NULL, NULL,
 						  format,
-						  CAIRO_TEST_NEW_SUFFIX,
-						  CAIRO_TEST_PNG_EXTENSION);
-    base_xfail_png_path = cairo_test_reference_filename (ctx,
+						  COMAC_TEST_NEW_SUFFIX,
+						  COMAC_TEST_PNG_EXTENSION);
+    base_xfail_png_path = comac_test_reference_filename (ctx,
 						    base_name,
 						    ctx->test_name,
 						    NULL, NULL,
 						    format,
-						    CAIRO_TEST_XFAIL_SUFFIX,
-						    CAIRO_TEST_PNG_EXTENSION);
+						    COMAC_TEST_XFAIL_SUFFIX,
+						    COMAC_TEST_PNG_EXTENSION);
 
     if (target->file_extension != NULL) {
-	ref_path = cairo_test_reference_filename (ctx,
+	ref_path = comac_test_reference_filename (ctx,
 						  base_name,
 						  ctx->test_name,
 						  target->name,
 						  target->basename,
 						  format,
-						  CAIRO_TEST_REF_SUFFIX,
+						  COMAC_TEST_REF_SUFFIX,
 						  target->file_extension);
-	new_path = cairo_test_reference_filename (ctx,
+	new_path = comac_test_reference_filename (ctx,
 						  base_name,
 						  ctx->test_name,
 						  target->name,
 						  target->basename,
 						  format,
-						  CAIRO_TEST_NEW_SUFFIX,
+						  COMAC_TEST_NEW_SUFFIX,
 						  target->file_extension);
-	xfail_path = cairo_test_reference_filename (ctx,
+	xfail_path = comac_test_reference_filename (ctx,
 						    base_name,
 						    ctx->test_name,
 						    target->name,
 						    target->basename,
 						    format,
-						    CAIRO_TEST_XFAIL_SUFFIX,
+						    COMAC_TEST_XFAIL_SUFFIX,
 						    target->file_extension);
     }
 
-    have_output_dir = cairo_test_mkdir (ctx->output);
+    have_output_dir = comac_test_mkdir (ctx->output);
     xasprintf (&base_path, "%s/%s",
 	       have_output_dir ? ctx->output : ".",
 	       base_name);
-    xasprintf (&out_png_path, "%s" CAIRO_TEST_OUT_PNG, base_path);
-    xasprintf (&diff_png_path, "%s" CAIRO_TEST_DIFF_PNG, base_path);
+    xasprintf (&out_png_path, "%s" COMAC_TEST_OUT_PNG, base_path);
+    xasprintf (&diff_png_path, "%s" COMAC_TEST_DIFF_PNG, base_path);
 
     if (ctx->test->requirements != NULL) {
 	const char *required;
 
 	required = target->is_vector ? "target=raster" : "target=vector";
 	if (strstr (ctx->test->requirements, required) != NULL) {
-	    cairo_test_log (ctx, "Error: Skipping for %s target %s\n",
+	    comac_test_log (ctx, "Error: Skipping for %s target %s\n",
 			    target->is_vector ? "vector" : "raster",
 			    target->name);
-	    ret = CAIRO_TEST_UNTESTED;
+	    ret = COMAC_TEST_UNTESTED;
 	    goto UNWIND_STRINGS;
 	}
 
 	required = target->is_recording ? "target=!recording" : "target=recording";
 	if (strstr (ctx->test->requirements, required) != NULL) {
-	    cairo_test_log (ctx, "Error: Skipping for %s target %s\n",
+	    comac_test_log (ctx, "Error: Skipping for %s target %s\n",
 			    target->is_recording ? "recording" : "non-recording",
 			    target->name);
-	    ret = CAIRO_TEST_UNTESTED;
+	    ret = COMAC_TEST_UNTESTED;
 	    goto UNWIND_STRINGS;
 	}
     }
@@ -804,7 +804,7 @@ REPEAT:
     last_fault_count = MEMFAULT_COUNT_FAULTS ();
 
     /* Pre-initialise fontconfig so that the configuration is loaded without
-     * malloc failures (our primary goal is to test cairo fault tolerance).
+     * malloc failures (our primary goal is to test comac fault tolerance).
      */
 #if HAVE_FCINIT
     FcInit ();
@@ -816,129 +816,129 @@ REPEAT:
     have_result = FALSE;
 
     /* Run the actual drawing code. */
-    ret = CAIRO_TEST_SUCCESS;
+    ret = COMAC_TEST_SUCCESS;
     surface = (target->create_surface) (base_path,
 					target->content,
 					width, height,
 					ctx->test->width * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
 					ctx->test->height * NUM_DEVICE_SCALE + 25 * NUM_DEVICE_OFFSETS,
-					CAIRO_BOILERPLATE_MODE_TEST,
+					COMAC_BOILERPLATE_MODE_TEST,
 					&closure);
     if (surface == NULL) {
-	cairo_test_log (ctx, "Error: Failed to set %s target\n", target->name);
-	ret = CAIRO_TEST_UNTESTED;
+	comac_test_log (ctx, "Error: Failed to set %s target\n", target->name);
+	ret = COMAC_TEST_UNTESTED;
 	goto UNWIND_STRINGS;
     }
 
 #if HAVE_MEMFAULT
     if (ctx->malloc_failure &&
 	MEMFAULT_COUNT_FAULTS () - last_fault_count > 0 &&
-	cairo_surface_status (surface) == CAIRO_STATUS_NO_MEMORY)
+	comac_surface_status (surface) == COMAC_STATUS_NO_MEMORY)
     {
 	goto REPEAT;
     }
 #endif
 
-    if (cairo_surface_status (surface)) {
+    if (comac_surface_status (surface)) {
 	MF (MEMFAULT_PRINT_FAULTS ());
-	cairo_test_log (ctx, "Error: Created an error surface: %s\n",
-			cairo_status_to_string (cairo_surface_status (surface)));
-	ret = CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "Error: Created an error surface: %s\n",
+			comac_status_to_string (comac_surface_status (surface)));
+	ret = COMAC_TEST_FAILURE;
 	goto UNWIND_STRINGS;
     }
 
     /* Check that we created a surface of the expected type. */
-    if (cairo_surface_get_type (surface) != target->expected_type) {
+    if (comac_surface_get_type (surface) != target->expected_type) {
 	MF (MEMFAULT_PRINT_FAULTS ());
-	cairo_test_log (ctx, "Error: Created surface is of type %d (expected %d)\n",
-			cairo_surface_get_type (surface), target->expected_type);
-	ret = CAIRO_TEST_UNTESTED;
+	comac_test_log (ctx, "Error: Created surface is of type %d (expected %d)\n",
+			comac_surface_get_type (surface), target->expected_type);
+	ret = COMAC_TEST_UNTESTED;
 	goto UNWIND_SURFACE;
     }
 
     /* Check that we created a surface of the expected content,
-     * (ignore the artificial CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED value).
+     * (ignore the artificial COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED value).
      */
-    expected_content = cairo_boilerplate_content (target->content);
+    expected_content = comac_boilerplate_content (target->content);
 
-    if (cairo_surface_get_content (surface) != expected_content) {
+    if (comac_surface_get_content (surface) != expected_content) {
 	MF (MEMFAULT_PRINT_FAULTS ());
-	cairo_test_log (ctx, "Error: Created surface has content %d (expected %d)\n",
-			cairo_surface_get_content (surface), expected_content);
-	ret = CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "Error: Created surface has content %d (expected %d)\n",
+			comac_surface_get_content (surface), expected_content);
+	ret = COMAC_TEST_FAILURE;
 	goto UNWIND_SURFACE;
     }
 
-    if (cairo_surface_set_user_data (surface,
-				     &cairo_boilerplate_output_basename_key,
+    if (comac_surface_set_user_data (surface,
+				     &comac_boilerplate_output_basename_key,
 				     base_path,
 				     NULL))
     {
 #if HAVE_MEMFAULT
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
 	if (target->cleanup)
 	    target->cleanup (closure);
 
 	goto REPEAT;
 #else
-	ret = CAIRO_TEST_FAILURE;
+	ret = COMAC_TEST_FAILURE;
 	goto UNWIND_SURFACE;
 #endif
     }
 
-    cairo_surface_set_device_offset (surface, dev_offset, dev_offset);
-    cairo_surface_set_device_scale (surface, dev_scale, dev_scale);
+    comac_surface_set_device_offset (surface, dev_offset, dev_offset);
+    comac_surface_set_device_scale (surface, dev_scale, dev_scale);
 
-    cr = cairo_create (surface);
-    if (cairo_set_user_data (cr, &_cairo_test_context_key, (void*) ctx, NULL)) {
+    cr = comac_create (surface);
+    if (comac_set_user_data (cr, &_comac_test_context_key, (void*) ctx, NULL)) {
 #if HAVE_MEMFAULT
-	cairo_destroy (cr);
-	cairo_surface_destroy (surface);
+	comac_destroy (cr);
+	comac_surface_destroy (surface);
 
 	if (target->cleanup)
 	    target->cleanup (closure);
 
 	goto REPEAT;
 #else
-	ret = CAIRO_TEST_FAILURE;
-	goto UNWIND_CAIRO;
+	ret = COMAC_TEST_FAILURE;
+	goto UNWIND_COMAC;
 #endif
     }
 
     if (similar)
-	cairo_push_group_with_content (cr, expected_content);
+	comac_push_group_with_content (cr, expected_content);
 
     /* Clear to transparent (or black) depending on whether the target
      * surface supports alpha. */
-    cairo_save (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_CLEAR);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
     
     /* Set all components of font_options to avoid backend differences
      * and reduce number of needed reference images. */
-    font_options = cairo_font_options_create ();
-    cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_NONE);
-    cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_ON);
-    cairo_font_options_set_antialias (font_options, CAIRO_ANTIALIAS_GRAY);
-    cairo_set_font_options (cr, font_options);
-    cairo_font_options_destroy (font_options);
+    font_options = comac_font_options_create ();
+    comac_font_options_set_hint_style (font_options, COMAC_HINT_STYLE_NONE);
+    comac_font_options_set_hint_metrics (font_options, COMAC_HINT_METRICS_ON);
+    comac_font_options_set_antialias (font_options, COMAC_ANTIALIAS_GRAY);
+    comac_set_font_options (cr, font_options);
+    comac_font_options_destroy (font_options);
 
-    cairo_save (cr);
+    comac_save (cr);
     alarm (ctx->timeout);
     test_status = (ctx->test->draw) (cr, ctx->test->width, ctx->test->height);
     alarm (0);
-    cairo_restore (cr);
+    comac_restore (cr);
 
     if (similar) {
-	cairo_pop_group_to_source (cr);
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-	cairo_paint (cr);
+	comac_pop_group_to_source (cr);
+	comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+	comac_paint (cr);
     }
 
 #if HAVE_MEMFAULT
@@ -947,15 +947,15 @@ REPEAT:
     /* repeat test after malloc failure injection */
     if (ctx->malloc_failure &&
 	MEMFAULT_COUNT_FAULTS () - last_fault_count > 0 &&
-	(test_status == CAIRO_TEST_NO_MEMORY ||
-	 cairo_status (cr) == CAIRO_STATUS_NO_MEMORY ||
-	 cairo_surface_status (surface) == CAIRO_STATUS_NO_MEMORY))
+	(test_status == COMAC_TEST_NO_MEMORY ||
+	 comac_status (cr) == COMAC_STATUS_NO_MEMORY ||
+	 comac_surface_status (surface) == COMAC_STATUS_NO_MEMORY))
     {
-	cairo_destroy (cr);
-	cairo_surface_destroy (surface);
+	comac_destroy (cr);
+	comac_surface_destroy (surface);
 	if (target->cleanup)
 	    target->cleanup (closure);
-	cairo_debug_reset_static_data ();
+	comac_debug_reset_static_data ();
 #if HAVE_FCFINI
 	FcFini ();
 #endif
@@ -970,9 +970,9 @@ REPEAT:
 
     /* Then, check all the different ways it could fail. */
     if (test_status) {
-	cairo_test_log (ctx, "Error: Function under test failed\n");
+	comac_test_log (ctx, "Error: Function under test failed\n");
 	ret = test_status;
-	goto UNWIND_CAIRO;
+	goto UNWIND_COMAC;
     }
 
 #if HAVE_MEMFAULT
@@ -987,7 +987,7 @@ REPEAT:
     if (target->finish_surface != NULL) {
 #if HAVE_MEMFAULT
 	/* We need to re-enable faults as most recording-surface processing
-	 * is done during cairo_surface_finish().
+	 * is done during comac_surface_finish().
 	 */
 	MEMFAULT_CLEAR_FAULTS ();
 	last_fault_count = MEMFAULT_COUNT_FAULTS ();
@@ -1004,13 +1004,13 @@ REPEAT:
 
 	if (ctx->malloc_failure &&
 	    MEMFAULT_COUNT_FAULTS () - last_fault_count > 0 &&
-	    finish_status == CAIRO_STATUS_NO_MEMORY)
+	    finish_status == COMAC_STATUS_NO_MEMORY)
 	{
-	    cairo_destroy (cr);
-	    cairo_surface_destroy (surface);
+	    comac_destroy (cr);
+	    comac_surface_destroy (surface);
 	    if (target->cleanup)
 		target->cleanup (closure);
-	    cairo_debug_reset_static_data ();
+	    comac_debug_reset_static_data ();
 #if HAVE_FCFINI
 	    FcFini ();
 #endif
@@ -1023,23 +1023,23 @@ REPEAT:
 	}
 #endif
 	if (finish_status) {
-	    cairo_test_log (ctx, "Error: Failed to finish surface: %s\n",
-			    cairo_status_to_string (finish_status));
-	    ret = CAIRO_TEST_FAILURE;
-	    goto UNWIND_CAIRO;
+	    comac_test_log (ctx, "Error: Failed to finish surface: %s\n",
+			    comac_status_to_string (finish_status));
+	    ret = COMAC_TEST_FAILURE;
+	    goto UNWIND_COMAC;
 	}
     }
 
     /* Skip image check for tests with no image (width,height == 0,0) */
     if (ctx->test->width != 0 && ctx->test->height != 0) {
-	cairo_surface_t *ref_image;
-	cairo_surface_t *test_image;
-	cairo_surface_t *diff_image;
+	comac_surface_t *ref_image;
+	comac_surface_t *test_image;
+	comac_surface_t *diff_image;
 	buffer_diff_result_t result;
-	cairo_status_t diff_status;
+	comac_status_t diff_status;
 
 	if (ref_png_path == NULL) {
-	    cairo_test_log (ctx, "Error: Cannot find reference image for %s\n",
+	    comac_test_log (ctx, "Error: Cannot find reference image for %s\n",
 			    base_name);
 
 	    /* we may be running this test to generate reference images */
@@ -1050,21 +1050,21 @@ REPEAT:
 		                                    ctx->test->width,
 						    ctx->test->height);
 	    alarm (0);
-	    diff_status = cairo_surface_write_to_png (test_image, out_png_path);
-	    cairo_surface_destroy (test_image);
+	    diff_status = comac_surface_write_to_png (test_image, out_png_path);
+	    comac_surface_destroy (test_image);
 	    if (diff_status) {
-		if (cairo_surface_status (test_image) == CAIRO_STATUS_INVALID_STATUS)
-		    ret = CAIRO_TEST_CRASHED;
+		if (comac_surface_status (test_image) == COMAC_STATUS_INVALID_STATUS)
+		    ret = COMAC_TEST_CRASHED;
 		else
-		    ret = CAIRO_TEST_FAILURE;
-		cairo_test_log (ctx,
+		    ret = COMAC_TEST_FAILURE;
+		comac_test_log (ctx,
 			        "Error: Failed to write output image: %s\n",
-			        cairo_status_to_string (diff_status));
+			        comac_status_to_string (diff_status));
 	    }
 	    have_output = TRUE;
 
-	    ret = CAIRO_TEST_XFAILURE;
-	    goto UNWIND_CAIRO;
+	    ret = COMAC_TEST_XFAILURE;
+	    goto UNWIND_COMAC;
 	}
 
 	if (target->file_extension != NULL) { /* compare vector surfaces */
@@ -1087,52 +1087,52 @@ REPEAT:
 	    xasprintf (&fail_filename, "%s.fail%s",
 		       base_path, target->file_extension);
 
-	    if (cairo_test_file_is_older (pass_filename,
+	    if (comac_test_file_is_older (pass_filename,
 					  filenames,
 					  ARRAY_LENGTH (filenames)))
 	    {
 		_xunlink (ctx, pass_filename);
 	    }
-	    if (cairo_test_file_is_older (fail_filename,
+	    if (comac_test_file_is_older (fail_filename,
 					  filenames,
 					  ARRAY_LENGTH (filenames)))
 	    {
 		_xunlink (ctx, fail_filename);
 	    }
 
-	    if (cairo_test_files_equal (out_png_path, ref_path)) {
-		cairo_test_log (ctx, "Vector surface matches reference.\n");
+	    if (comac_test_files_equal (out_png_path, ref_path)) {
+		comac_test_log (ctx, "Vector surface matches reference.\n");
 		have_output = FALSE;
-		ret = CAIRO_TEST_SUCCESS;
-		goto UNWIND_CAIRO;
+		ret = COMAC_TEST_SUCCESS;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (out_png_path, new_path)) {
-		cairo_test_log (ctx, "Vector surface matches current failure.\n");
+	    if (comac_test_files_equal (out_png_path, new_path)) {
+		comac_test_log (ctx, "Vector surface matches current failure.\n");
 		have_output = FALSE;
-		ret = CAIRO_TEST_NEW;
-		goto UNWIND_CAIRO;
+		ret = COMAC_TEST_NEW;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (out_png_path, xfail_path)) {
-		cairo_test_log (ctx, "Vector surface matches known failure.\n");
+	    if (comac_test_files_equal (out_png_path, xfail_path)) {
+		comac_test_log (ctx, "Vector surface matches known failure.\n");
 		have_output = FALSE;
-		ret = CAIRO_TEST_XFAILURE;
-		goto UNWIND_CAIRO;
+		ret = COMAC_TEST_XFAILURE;
+		goto UNWIND_COMAC;
 	    }
 
-	    if (cairo_test_files_equal (test_filename, pass_filename)) {
+	    if (comac_test_files_equal (test_filename, pass_filename)) {
 		/* identical output as last known PASS */
-		cairo_test_log (ctx, "Vector surface matches last pass.\n");
+		comac_test_log (ctx, "Vector surface matches last pass.\n");
 		have_output = TRUE;
-		ret = CAIRO_TEST_SUCCESS;
-		goto UNWIND_CAIRO;
+		ret = COMAC_TEST_SUCCESS;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (test_filename, fail_filename)) {
+	    if (comac_test_files_equal (test_filename, fail_filename)) {
 		/* identical output as last known FAIL, fail */
-		cairo_test_log (ctx, "Vector surface matches last fail.\n");
+		comac_test_log (ctx, "Vector surface matches last fail.\n");
 		have_result = TRUE; /* presume these were kept around as well */
 		have_output = TRUE;
-		ret = CAIRO_TEST_FAILURE;
-		goto UNWIND_CAIRO;
+		ret = COMAC_TEST_FAILURE;
+		goto UNWIND_COMAC;
 	    }
 	}
 
@@ -1142,25 +1142,25 @@ REPEAT:
 					        ctx->test->width,
 						ctx->test->height);
 	alarm (0);
-	if (cairo_surface_status (test_image)) {
-	    cairo_test_log (ctx, "Error: Failed to extract image: %s\n",
-			    cairo_status_to_string (cairo_surface_status (test_image)));
-	    if (cairo_surface_status (test_image) == CAIRO_STATUS_INVALID_STATUS)
-		ret = CAIRO_TEST_CRASHED;
+	if (comac_surface_status (test_image)) {
+	    comac_test_log (ctx, "Error: Failed to extract image: %s\n",
+			    comac_status_to_string (comac_surface_status (test_image)));
+	    if (comac_surface_status (test_image) == COMAC_STATUS_INVALID_STATUS)
+		ret = COMAC_TEST_CRASHED;
 	    else
-		ret = CAIRO_TEST_FAILURE;
-	    cairo_surface_destroy (test_image);
-	    goto UNWIND_CAIRO;
+		ret = COMAC_TEST_FAILURE;
+	    comac_surface_destroy (test_image);
+	    goto UNWIND_COMAC;
 	}
 
 	_xunlink (ctx, out_png_path);
-	diff_status = cairo_surface_write_to_png (test_image, out_png_path);
+	diff_status = comac_surface_write_to_png (test_image, out_png_path);
 	if (diff_status) {
-	    cairo_test_log (ctx, "Error: Failed to write output image: %s\n",
-			    cairo_status_to_string (diff_status));
-	    cairo_surface_destroy (test_image);
-	    ret = CAIRO_TEST_FAILURE;
-	    goto UNWIND_CAIRO;
+	    comac_test_log (ctx, "Error: Failed to write output image: %s\n",
+			    comac_status_to_string (diff_status));
+	    comac_surface_destroy (test_image);
+	    ret = COMAC_TEST_FAILURE;
+	    goto UNWIND_COMAC;
 	}
 	have_output = TRUE;
 
@@ -1179,113 +1179,113 @@ REPEAT:
 	    xasprintf (&pass_filename, "%s.pass.png", base_path);
 	    xasprintf (&fail_filename, "%s.fail.png", base_path);
 
-	    if (cairo_test_file_is_older (pass_filename,
+	    if (comac_test_file_is_older (pass_filename,
 					  filenames,
 					  ARRAY_LENGTH (filenames)))
 	    {
 		_xunlink (ctx, pass_filename);
 	    }
-	    if (cairo_test_file_is_older (fail_filename,
+	    if (comac_test_file_is_older (fail_filename,
 					  filenames,
 					  ARRAY_LENGTH (filenames)))
 	    {
 		_xunlink (ctx, fail_filename);
 	    }
 
-	    if (cairo_test_files_equal (test_filename, pass_filename)) {
-		cairo_test_log (ctx, "PNG file exactly matches last pass.\n");
+	    if (comac_test_files_equal (test_filename, pass_filename)) {
+		comac_test_log (ctx, "PNG file exactly matches last pass.\n");
                 have_result = TRUE;
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_SUCCESS;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_SUCCESS;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (out_png_path, ref_png_path)) {
-		cairo_test_log (ctx, "PNG file exactly matches reference image.\n");
+	    if (comac_test_files_equal (out_png_path, ref_png_path)) {
+		comac_test_log (ctx, "PNG file exactly matches reference image.\n");
                 have_result = TRUE;
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_SUCCESS;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_SUCCESS;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (out_png_path, new_png_path)) {
-		cairo_test_log (ctx, "PNG file exactly matches current failure image.\n");
+	    if (comac_test_files_equal (out_png_path, new_png_path)) {
+		comac_test_log (ctx, "PNG file exactly matches current failure image.\n");
                 have_result = TRUE;
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_NEW;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_NEW;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (out_png_path, xfail_png_path)) {
-		cairo_test_log (ctx, "PNG file exactly matches known failure image.\n");
+	    if (comac_test_files_equal (out_png_path, xfail_png_path)) {
+		comac_test_log (ctx, "PNG file exactly matches known failure image.\n");
                 have_result = TRUE;
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_XFAILURE;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_XFAILURE;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (test_filename, fail_filename)) {
-		cairo_test_log (ctx, "PNG file exactly matches last fail.\n");
+	    if (comac_test_files_equal (test_filename, fail_filename)) {
+		comac_test_log (ctx, "PNG file exactly matches last fail.\n");
 		have_result = TRUE; /* presume these were kept around as well */
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_FAILURE;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_FAILURE;
+		goto UNWIND_COMAC;
 	    }
 	} else {
-	    if (cairo_test_files_equal (out_png_path, ref_png_path)) {
-		cairo_test_log (ctx, "PNG file exactly matches reference image.\n");
+	    if (comac_test_files_equal (out_png_path, ref_png_path)) {
+		comac_test_log (ctx, "PNG file exactly matches reference image.\n");
 		have_result = TRUE;
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_SUCCESS;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_SUCCESS;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (out_png_path, new_png_path)) {
-		cairo_test_log (ctx, "PNG file exactly matches current failure image.\n");
+	    if (comac_test_files_equal (out_png_path, new_png_path)) {
+		comac_test_log (ctx, "PNG file exactly matches current failure image.\n");
 		have_result = TRUE;
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_NEW;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_NEW;
+		goto UNWIND_COMAC;
 	    }
-	    if (cairo_test_files_equal (out_png_path, xfail_png_path)) {
-		cairo_test_log (ctx, "PNG file exactly matches known failure image.\n");
+	    if (comac_test_files_equal (out_png_path, xfail_png_path)) {
+		comac_test_log (ctx, "PNG file exactly matches known failure image.\n");
 		have_result = TRUE;
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_XFAILURE;
-		goto UNWIND_CAIRO;
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_XFAILURE;
+		goto UNWIND_COMAC;
 	    }
 	}
 
-	if (cairo_test_files_equal (out_png_path, base_ref_png_path)) {
-	    cairo_test_log (ctx, "PNG file exactly reference image.\n");
+	if (comac_test_files_equal (out_png_path, base_ref_png_path)) {
+	    comac_test_log (ctx, "PNG file exactly reference image.\n");
 	    have_result = TRUE;
-	    cairo_surface_destroy (test_image);
-	    ret = CAIRO_TEST_SUCCESS;
-	    goto UNWIND_CAIRO;
+	    comac_surface_destroy (test_image);
+	    ret = COMAC_TEST_SUCCESS;
+	    goto UNWIND_COMAC;
 	}
-	if (cairo_test_files_equal (out_png_path, base_new_png_path)) {
-	    cairo_test_log (ctx, "PNG file exactly current failure image.\n");
+	if (comac_test_files_equal (out_png_path, base_new_png_path)) {
+	    comac_test_log (ctx, "PNG file exactly current failure image.\n");
 	    have_result = TRUE;
-	    cairo_surface_destroy (test_image);
-	    ret = CAIRO_TEST_NEW;
-	    goto UNWIND_CAIRO;
+	    comac_surface_destroy (test_image);
+	    ret = COMAC_TEST_NEW;
+	    goto UNWIND_COMAC;
 	}
-	if (cairo_test_files_equal (out_png_path, base_xfail_png_path)) {
-	    cairo_test_log (ctx, "PNG file exactly known failure image.\n");
+	if (comac_test_files_equal (out_png_path, base_xfail_png_path)) {
+	    comac_test_log (ctx, "PNG file exactly known failure image.\n");
 	    have_result = TRUE;
-	    cairo_surface_destroy (test_image);
-	    ret = CAIRO_TEST_XFAILURE;
-	    goto UNWIND_CAIRO;
+	    comac_surface_destroy (test_image);
+	    ret = COMAC_TEST_XFAILURE;
+	    goto UNWIND_COMAC;
 	}
 
 	/* first compare against the ideal reference */
-	ref_image = cairo_test_get_reference_image (ctx, base_ref_png_path,
-						    target->content == CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
-	if (cairo_surface_status (ref_image)) {
-	    cairo_test_log (ctx, "Error: Cannot open reference image for %s: %s\n",
+	ref_image = comac_test_get_reference_image (ctx, base_ref_png_path,
+						    target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
+	if (comac_surface_status (ref_image)) {
+	    comac_test_log (ctx, "Error: Cannot open reference image for %s: %s\n",
 			    base_ref_png_path,
-			    cairo_status_to_string (cairo_surface_status (ref_image)));
-	    cairo_surface_destroy (test_image);
-	    ret = CAIRO_TEST_FAILURE;
-	    goto UNWIND_CAIRO;
+			    comac_status_to_string (comac_surface_status (ref_image)));
+	    comac_surface_destroy (test_image);
+	    ret = COMAC_TEST_FAILURE;
+	    goto UNWIND_COMAC;
 	}
 
-	diff_image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+	diff_image = comac_image_surface_create (COMAC_FORMAT_ARGB32,
 						 ctx->test->width,
 						 ctx->test->height);
 
@@ -1298,15 +1298,15 @@ REPEAT:
             image_diff_is_failure (&result, target->error_tolerance))
 	{
 	    /* that failed, so check against the specific backend */
-	    ref_image = cairo_test_get_reference_image (ctx, ref_png_path,
-							target->content == CAIRO_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
-	    if (cairo_surface_status (ref_image)) {
-		cairo_test_log (ctx, "Error: Cannot open reference image for %s: %s\n",
+	    ref_image = comac_test_get_reference_image (ctx, ref_png_path,
+							target->content == COMAC_TEST_CONTENT_COLOR_ALPHA_FLATTENED);
+	    if (comac_surface_status (ref_image)) {
+		comac_test_log (ctx, "Error: Cannot open reference image for %s: %s\n",
 				ref_png_path,
-				cairo_status_to_string (cairo_surface_status (ref_image)));
-		cairo_surface_destroy (test_image);
-		ret = CAIRO_TEST_FAILURE;
-		goto UNWIND_CAIRO;
+				comac_status_to_string (comac_surface_status (ref_image)));
+		comac_surface_destroy (test_image);
+		ret = COMAC_TEST_FAILURE;
+		goto UNWIND_COMAC;
 	    }
 
 	    cmp_png_path = ref_png_path;
@@ -1316,73 +1316,73 @@ REPEAT:
 				      &result);
 	    if (diff_status)
 	    {
-		cairo_test_log (ctx, "Error: Failed to compare images: %s\n",
-				cairo_status_to_string (diff_status));
-		ret = CAIRO_TEST_FAILURE;
+		comac_test_log (ctx, "Error: Failed to compare images: %s\n",
+				comac_status_to_string (diff_status));
+		ret = COMAC_TEST_FAILURE;
 	    }
 	    else if (image_diff_is_failure (&result, target->error_tolerance))
 	    {
-		ret = CAIRO_TEST_FAILURE;
+		ret = COMAC_TEST_FAILURE;
 
-		diff_status = cairo_surface_write_to_png (diff_image,
+		diff_status = comac_surface_write_to_png (diff_image,
 							  diff_png_path);
 		if (diff_status) {
-		    cairo_test_log (ctx, "Error: Failed to write differences image: %s\n",
-				    cairo_status_to_string (diff_status));
+		    comac_test_log (ctx, "Error: Failed to write differences image: %s\n",
+				    comac_status_to_string (diff_status));
 		} else {
 		    have_result = TRUE;
 		}
 
-		cairo_test_copy_file (test_filename, fail_filename);
+		comac_test_copy_file (test_filename, fail_filename);
 	    }
 	    else
 	    { /* success */
-		cairo_test_copy_file (test_filename, pass_filename);
+		comac_test_copy_file (test_filename, pass_filename);
 	    }
 	}
 	else
 	{ /* success */
-	    cairo_test_copy_file (test_filename, pass_filename);
+	    comac_test_copy_file (test_filename, pass_filename);
 	}
 
 	/* If failed, compare against the current image output,
 	 * and attempt to detect systematic failures.
 	 */
-	if (ret == CAIRO_TEST_FAILURE) {
+	if (ret == COMAC_TEST_FAILURE) {
 	    char *image_out_path;
 
 	    image_out_path =
-		cairo_test_reference_filename (ctx,
+		comac_test_reference_filename (ctx,
 					       base_name,
 					       ctx->test_name,
 					       "image",
 					       "image",
 					       format,
-					       CAIRO_TEST_OUT_SUFFIX,
-					       CAIRO_TEST_PNG_EXTENSION);
+					       COMAC_TEST_OUT_SUFFIX,
+					       COMAC_TEST_PNG_EXTENSION);
 	    if (image_out_path != NULL) {
-		if (cairo_test_files_equal (out_png_path,
+		if (comac_test_files_equal (out_png_path,
 					    image_out_path))
 		{
-		    ret = CAIRO_TEST_XFAILURE;
+		    ret = COMAC_TEST_XFAILURE;
 		}
 		else
 		{
 		    ref_image =
-			cairo_image_surface_create_from_png (image_out_path);
-		    if (cairo_surface_status (ref_image) == CAIRO_STATUS_SUCCESS)
+			comac_image_surface_create_from_png (image_out_path);
+		    if (comac_surface_status (ref_image) == COMAC_STATUS_SUCCESS)
 		    {
 			diff_status = image_diff (ctx,
 						  test_image, ref_image,
 						  diff_image,
 						  &result);
-			if (diff_status == CAIRO_STATUS_SUCCESS &&
+			if (diff_status == COMAC_STATUS_SUCCESS &&
 			    !image_diff_is_failure (&result, target->error_tolerance))
 			{
-			    ret = CAIRO_TEST_XFAILURE;
+			    ret = COMAC_TEST_XFAILURE;
 			}
 
-			cairo_surface_destroy (ref_image);
+			comac_surface_destroy (ref_image);
 		    }
 		}
 
@@ -1390,18 +1390,18 @@ REPEAT:
 	    }
 	}
 
-	cairo_surface_destroy (test_image);
-	cairo_surface_destroy (diff_image);
+	comac_surface_destroy (test_image);
+	comac_surface_destroy (diff_image);
     }
 
-    if (cairo_status (cr) != CAIRO_STATUS_SUCCESS) {
-	cairo_test_log (ctx, "Error: Function under test left cairo status in an error state: %s\n",
-			cairo_status_to_string (cairo_status (cr)));
-	ret = CAIRO_TEST_ERROR;
-	goto UNWIND_CAIRO;
+    if (comac_status (cr) != COMAC_STATUS_SUCCESS) {
+	comac_test_log (ctx, "Error: Function under test left comac status in an error state: %s\n",
+			comac_status_to_string (comac_status (cr)));
+	ret = COMAC_TEST_ERROR;
+	goto UNWIND_COMAC;
     }
 
-UNWIND_CAIRO:
+UNWIND_COMAC:
     free (test_filename);
     free (fail_filename);
     free (pass_filename);
@@ -1409,42 +1409,42 @@ UNWIND_CAIRO:
     test_filename = fail_filename = pass_filename = NULL;
 
 #if HAVE_MEMFAULT
-    if (ret == CAIRO_TEST_FAILURE)
+    if (ret == COMAC_TEST_FAILURE)
 	MEMFAULT_PRINT_FAULTS ();
 #endif
-    cairo_destroy (cr);
+    comac_destroy (cr);
 UNWIND_SURFACE:
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     if (target->cleanup)
 	target->cleanup (closure);
 
 #if HAVE_MEMFAULT
-    cairo_debug_reset_static_data ();
+    comac_debug_reset_static_data ();
 
 #if HAVE_FCFINI
     FcFini ();
 #endif
 
     if (MEMFAULT_COUNT_LEAKS () > 0) {
-	if (ret != CAIRO_TEST_FAILURE)
+	if (ret != COMAC_TEST_FAILURE)
 	    MEMFAULT_PRINT_FAULTS ();
 	MEMFAULT_PRINT_LEAKS ();
     }
 
-    if (ret == CAIRO_TEST_SUCCESS && --malloc_failure_iterations > 0)
+    if (ret == COMAC_TEST_SUCCESS && --malloc_failure_iterations > 0)
 	goto REPEAT;
 #endif
 
     if (have_output)
-	cairo_test_log (ctx, "OUTPUT: %s\n", out_png_path);
+	comac_test_log (ctx, "OUTPUT: %s\n", out_png_path);
 
     if (have_result) {
 	if (cmp_png_path == NULL) {
 	    /* XXX presume we matched the normal ref last time */
 	    cmp_png_path = ref_png_path;
 	}
-	cairo_test_log (ctx,
+	comac_test_log (ctx,
 			"REFERENCE: %s\nDIFFERENCE: %s\n",
 			cmp_png_path, diff_png_path);
     }
@@ -1482,21 +1482,21 @@ segfault_handler (int signal)
 }
 #endif
 
-cairo_test_status_t
-_cairo_test_context_run_for_target (cairo_test_context_t *ctx,
-				    const cairo_boilerplate_target_t *target,
-				    cairo_bool_t similar,
+comac_test_status_t
+_comac_test_context_run_for_target (comac_test_context_t *ctx,
+				    const comac_boilerplate_target_t *target,
+				    comac_bool_t similar,
 				    int dev_offset, int dev_scale)
 {
-    cairo_test_status_t status;
+    comac_test_status_t status;
 
     if (target->get_image_surface == NULL)
-	return CAIRO_TEST_UNTESTED;
+	return COMAC_TEST_UNTESTED;
 
-    if (similar && ! cairo_test_target_has_similar (ctx, target))
-	return CAIRO_TEST_UNTESTED;
+    if (similar && ! comac_test_target_has_similar (ctx, target))
+	return COMAC_TEST_UNTESTED;
 
-    cairo_test_log (ctx,
+    comac_test_log (ctx,
 		    "Testing %s with %s%s target (dev offset %d scale: %d)\n",
 		    ctx->test_name,
 		    similar ? " (similar) " : "",
@@ -1504,7 +1504,7 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 		    dev_offset, dev_scale);
 
     printf ("%s.%s.%s [%dx%d]%s:\t", ctx->test_name, target->name,
-	    cairo_boilerplate_content_name (target->content),
+	    comac_boilerplate_content_name (target->content),
 	    dev_offset, dev_scale,
 	    similar ? " (similar)": "");
     fflush (stdout);
@@ -1538,9 +1538,9 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 	old_sigalrm_handler = signal (SIGALRM, segfault_handler);
 #endif
 	if (0 == setjmp (jmpbuf))
-	    status = cairo_test_for_target (ctx, target, dev_offset, dev_scale, similar);
+	    status = comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
 	else
-	    status = CAIRO_TEST_CRASHED;
+	    status = COMAC_TEST_CRASHED;
 #ifdef SIGSEGV
 	signal (SIGSEGV, old_segfault_handler);
 #endif
@@ -1557,30 +1557,30 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 	signal (SIGALRM, old_sigalrm_handler);
 #endif
     } else {
-	status = cairo_test_for_target (ctx, target, dev_offset, dev_scale, similar);
+	status = comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
     }
 #else
-    status = cairo_test_for_target (ctx, target, dev_offset, dev_scale, similar);
+    status = comac_test_for_target (ctx, target, dev_offset, dev_scale, similar);
 #endif
 
-    cairo_test_log (ctx,
+    comac_test_log (ctx,
 		    "TEST: %s TARGET: %s FORMAT: %s OFFSET: %d SCALE: %d SIMILAR: %d RESULT: ",
 		    ctx->test_name, target->name,
-		    cairo_boilerplate_content_name (target->content),
+		    comac_boilerplate_content_name (target->content),
 		    dev_offset, dev_scale, similar);
     switch (status) {
-    case CAIRO_TEST_SUCCESS:
+    case COMAC_TEST_SUCCESS:
 	printf ("PASS\n");
-	cairo_test_log (ctx, "PASS\n");
+	comac_test_log (ctx, "PASS\n");
 	break;
 
-    case CAIRO_TEST_UNTESTED:
+    case COMAC_TEST_UNTESTED:
 	printf ("UNTESTED\n");
-	cairo_test_log (ctx, "UNTESTED\n");
+	comac_test_log (ctx, "UNTESTED\n");
 	break;
 
     default:
-    case CAIRO_TEST_CRASHED:
+    case COMAC_TEST_CRASHED:
 	if (print_fail_on_stdout) {
 	    printf ("!!!CRASHED!!!\n");
 	} else {
@@ -1588,14 +1588,14 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 	    printf ("\r");
 	    fflush (stdout);
 	}
-	cairo_test_log (ctx, "CRASHED\n");
+	comac_test_log (ctx, "CRASHED\n");
 	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%s!!!CRASHED!!!%s\n",
 		 ctx->test_name, target->name,
-		 cairo_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
+		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
 		 fail_face, normal_face);
 	break;
 
-    case CAIRO_TEST_ERROR:
+    case COMAC_TEST_ERROR:
 	if (print_fail_on_stdout) {
 	    printf ("!!!ERROR!!!\n");
 	} else {
@@ -1603,14 +1603,14 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 	    printf ("\r");
 	    fflush (stdout);
 	}
-	cairo_test_log (ctx, "ERROR\n");
+	comac_test_log (ctx, "ERROR\n");
 	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%s!!!ERROR!!!%s\n",
 		 ctx->test_name, target->name,
-		 cairo_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
+		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
 		 fail_face, normal_face);
 	break;
 
-    case CAIRO_TEST_XFAILURE:
+    case COMAC_TEST_XFAILURE:
 	if (print_fail_on_stdout) {
 	    printf ("XFAIL\n");
 	} else {
@@ -1620,12 +1620,12 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 	}
 	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%sXFAIL%s\n",
 		 ctx->test_name, target->name,
-		 cairo_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
+		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
 		 xfail_face, normal_face);
-	cairo_test_log (ctx, "XFAIL\n");
+	comac_test_log (ctx, "XFAIL\n");
 	break;
 
-    case CAIRO_TEST_NEW:
+    case COMAC_TEST_NEW:
 	if (print_fail_on_stdout) {
 	    printf ("NEW\n");
 	} else {
@@ -1635,13 +1635,13 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 	}
 	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%sNEW%s\n",
 		 ctx->test_name, target->name,
-		 cairo_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
+		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
 		 fail_face, normal_face);
-	cairo_test_log (ctx, "NEW\n");
+	comac_test_log (ctx, "NEW\n");
 	break;
 
-    case CAIRO_TEST_NO_MEMORY:
-    case CAIRO_TEST_FAILURE:
+    case COMAC_TEST_NO_MEMORY:
+    case COMAC_TEST_FAILURE:
 	if (print_fail_on_stdout) {
 	    printf ("FAIL\n");
 	} else {
@@ -1651,9 +1651,9 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
 	}
 	fprintf (stderr, "%s.%s.%s [%dx%d]%s:\t%sFAIL%s\n",
 		 ctx->test_name, target->name,
-		 cairo_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
+		 comac_boilerplate_content_name (target->content), dev_offset, dev_scale, similar ? " (similar)" : "",
 		 fail_face, normal_face);
-	cairo_test_log (ctx, "FAIL\n");
+	comac_test_log (ctx, "FAIL\n");
 	break;
     }
     fflush (stdout);
@@ -1661,120 +1661,120 @@ _cairo_test_context_run_for_target (cairo_test_context_t *ctx,
     return status;
 }
 
-const cairo_test_context_t *
-cairo_test_get_context (cairo_t *cr)
+const comac_test_context_t *
+comac_test_get_context (comac_t *cr)
 {
-    return cairo_get_user_data (cr, &_cairo_test_context_key);
+    return comac_get_user_data (cr, &_comac_test_context_key);
 }
 
-cairo_t *
-cairo_test_create (cairo_surface_t *surface,
-		   const cairo_test_context_t *ctx)
+comac_t *
+comac_test_create (comac_surface_t *surface,
+		   const comac_test_context_t *ctx)
 {
-    cairo_t *cr = cairo_create (surface);
-    cairo_set_user_data (cr, &_cairo_test_context_key,
+    comac_t *cr = comac_create (surface);
+    comac_set_user_data (cr, &_comac_test_context_key,
 			 (void*) ctx, NULL);
     return cr;
 }
 
-cairo_surface_t *
-cairo_test_create_surface_from_png (const cairo_test_context_t *ctx,
+comac_surface_t *
+comac_test_create_surface_from_png (const comac_test_context_t *ctx,
 	                            const char *filename)
 {
-    cairo_surface_t *image;
-    cairo_status_t status;
+    comac_surface_t *image;
+    comac_status_t status;
     char *unique_id;
 
-    image = cairo_image_surface_create_from_png (filename);
-    status = cairo_surface_status (image);
-    if (status == CAIRO_STATUS_FILE_NOT_FOUND) {
+    image = comac_image_surface_create_from_png (filename);
+    status = comac_surface_status (image);
+    if (status == COMAC_STATUS_FILE_NOT_FOUND) {
         /* expect not found when running with srcdir != builddir
          * such as when 'make distcheck' is run
          */
 	if (ctx->srcdir) {
 	    char *srcdir_filename;
 	    xasprintf (&srcdir_filename, "%s/%s", ctx->srcdir, filename);
-	    cairo_surface_destroy (image);
-	    image = cairo_image_surface_create_from_png (srcdir_filename);
+	    comac_surface_destroy (image);
+	    image = comac_image_surface_create_from_png (srcdir_filename);
 	    free (srcdir_filename);
 	}
     }
     unique_id = strdup(filename);
-    cairo_surface_set_mime_data (image, CAIRO_MIME_TYPE_UNIQUE_ID,
+    comac_surface_set_mime_data (image, COMAC_MIME_TYPE_UNIQUE_ID,
 				 (unsigned char *)unique_id, strlen(unique_id),
 				 free, unique_id);
 
     return image;
 }
 
-cairo_pattern_t *
-cairo_test_create_pattern_from_png (const cairo_test_context_t *ctx,
+comac_pattern_t *
+comac_test_create_pattern_from_png (const comac_test_context_t *ctx,
 	                            const char *filename)
 {
-    cairo_surface_t *image;
-    cairo_pattern_t *pattern;
+    comac_surface_t *image;
+    comac_pattern_t *pattern;
 
-    image = cairo_test_create_surface_from_png (ctx, filename);
+    image = comac_test_create_surface_from_png (ctx, filename);
 
-    pattern = cairo_pattern_create_for_surface (image);
+    pattern = comac_pattern_create_for_surface (image);
 
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
 
-    cairo_surface_destroy (image);
+    comac_surface_destroy (image);
 
     return pattern;
 }
 
-static cairo_surface_t *
+static comac_surface_t *
 _draw_check (int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 12, 12);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, 12, 12);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 0.75, 0.75, 0.75); /* light gray */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.75, 0.75, 0.75); /* light gray */
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0.25, 0.25, 0.25); /* dark gray */
-    cairo_rectangle (cr, width / 2,  0, width / 2, height / 2);
-    cairo_rectangle (cr, 0, height / 2, width / 2, height / 2);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0.25, 0.25, 0.25); /* dark gray */
+    comac_rectangle (cr, width / 2,  0, width / 2, height / 2);
+    comac_rectangle (cr, 0, height / 2, width / 2, height / 2);
+    comac_fill (cr);
 
-    surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return surface;
 }
 
 void
-cairo_test_paint_checkered (cairo_t *cr)
+comac_test_paint_checkered (comac_t *cr)
 {
-    cairo_surface_t *check;
+    comac_surface_t *check;
 
     check = _draw_check (12, 12);
 
-    cairo_save (cr);
-    cairo_set_source_surface (cr, check, 0, 0);
-    cairo_surface_destroy (check);
+    comac_save (cr);
+    comac_set_source_surface (cr, check, 0, 0);
+    comac_surface_destroy (check);
 
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_REPEAT);
-    cairo_paint (cr);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+    comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_REPEAT);
+    comac_paint (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-cairo_bool_t
-cairo_test_is_target_enabled (const cairo_test_context_t *ctx,
+comac_bool_t
+comac_test_is_target_enabled (const comac_test_context_t *ctx,
 			      const char *target)
 {
     size_t i;
 
     for (i = 0; i < ctx->num_targets; i++) {
-	const cairo_boilerplate_target_t *t = ctx->targets_to_test[i];
+	const comac_boilerplate_target_t *t = ctx->targets_to_test[i];
 	if (strcmp (t->name, target) == 0) {
 	    /* XXX ask the target whether is it possible to run?
 	     * e.g. the xlib backend could check whether it is able to connect
@@ -1787,14 +1787,14 @@ cairo_test_is_target_enabled (const cairo_test_context_t *ctx,
     return FALSE;
 }
 
-cairo_bool_t
-cairo_test_malloc_failure (const cairo_test_context_t *ctx,
-			   cairo_status_t status)
+comac_bool_t
+comac_test_malloc_failure (const comac_test_context_t *ctx,
+			   comac_status_t status)
 {
     if (! ctx->malloc_failure)
 	return FALSE;
 
-    if (status != CAIRO_STATUS_NO_MEMORY)
+    if (status != COMAC_STATUS_NO_MEMORY)
 	return FALSE;
 
 #if HAVE_MEMFAULT
@@ -1806,22 +1806,22 @@ cairo_test_malloc_failure (const cairo_test_context_t *ctx,
 	if (n_faults == ctx->last_fault_count)
 	    return FALSE;
 
-	((cairo_test_context_t *) ctx)->last_fault_count = n_faults;
+	((comac_test_context_t *) ctx)->last_fault_count = n_faults;
     }
 #endif
 
     return TRUE;
 }
 
-cairo_test_status_t
-cairo_test_status_from_status (const cairo_test_context_t *ctx,
-			       cairo_status_t status)
+comac_test_status_t
+comac_test_status_from_status (const comac_test_context_t *ctx,
+			       comac_status_t status)
 {
-    if (status == CAIRO_STATUS_SUCCESS)
-	return CAIRO_TEST_SUCCESS;
+    if (status == COMAC_STATUS_SUCCESS)
+	return COMAC_TEST_SUCCESS;
 
-    if (cairo_test_malloc_failure (ctx, status))
-	return CAIRO_TEST_NO_MEMORY;
+    if (comac_test_malloc_failure (ctx, status))
+	return COMAC_TEST_NO_MEMORY;
 
-    return CAIRO_TEST_FAILURE;
+    return COMAC_TEST_FAILURE;
 }

@@ -30,35 +30,35 @@
 #define WIDTH  50
 #define HEIGHT 50
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_set_source_rgb (cr, 0.5, 0.5, 0.5);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.5, 0.5, 0.5);
+    comac_paint (cr);
 
-    cairo_save (cr);
+    comac_save (cr);
 
-    pattern = cairo_pattern_create_linear (0, 0, 10.0, 0);
+    pattern = comac_pattern_create_linear (0, 0, 10.0, 0);
 
-    cairo_pattern_add_color_stop_rgb (pattern, 0.0,
+    comac_pattern_add_color_stop_rgb (pattern, 0.0,
 				      0.0, 0.0, 1.0);
-    cairo_pattern_add_color_stop_rgb (pattern, 1.0,
+    comac_pattern_add_color_stop_rgb (pattern, 1.0,
 				      1.0, 0.0, 0.0);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REFLECT);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_REFLECT);
 
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
-    cairo_rectangle (cr, 0.0, 0.0, WIDTH, HEIGHT);
-    cairo_fill (cr);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
+    comac_rectangle (cr, 0.0, 0.0, WIDTH, HEIGHT);
+    comac_fill (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (linear_gradient_reflect,
+COMAC_TEST (linear_gradient_reflect,
 	    "Tests the drawing of linear gradient with reflect",
 	    "gradient", /* keywords */
 	    NULL, /* requirements */

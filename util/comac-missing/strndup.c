@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006 Red Hat, Inc.
  * Copyright © 2011 Andrea Canciani
@@ -46,7 +46,7 @@ strndup (const char *s,
     len = strlen (s);
     if (len > n)
 	len = n;
-    sdup = (char *) _cairo_malloc (len + 1);
+    sdup = (char *) _comac_malloc (len + 1);
     if (sdup != NULL) {
 	memcpy (sdup, s, len);
 	sdup[len] = '\0';

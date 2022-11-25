@@ -28,61 +28,61 @@
 
 #define SIZE 120
 
-static void L(cairo_t *cr, int w, int h)
+static void L(comac_t *cr, int w, int h)
 {
-	cairo_move_to (cr, 0, 0);
-	cairo_line_to (cr, 0, h);
-	cairo_line_to (cr, w, h);
-	cairo_line_to (cr, w, h/2);
-	cairo_line_to (cr, w/2, h/2);
-	cairo_line_to (cr, w/2, 0);
-	cairo_close_path (cr);
+	comac_move_to (cr, 0, 0);
+	comac_line_to (cr, 0, h);
+	comac_line_to (cr, w, h);
+	comac_line_to (cr, w, h/2);
+	comac_line_to (cr, w/2, h/2);
+	comac_line_to (cr, w/2, 0);
+	comac_close_path (cr);
 }
 
-static void LL(cairo_t *cr, int w, int h)
+static void LL(comac_t *cr, int w, int h)
 {
-    cairo_save (cr);
+    comac_save (cr);
 
     /* aligned */
-    cairo_rectangle (cr, 0, 0, w, h);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, w, h);
+    comac_clip (cr);
     L (cr, w, h);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
     /* unaligned */
-    cairo_translate (cr, w+.25, .25);
-    cairo_rectangle (cr, 0, 0, w, h);
-    cairo_clip (cr);
+    comac_translate (cr, w+.25, .25);
+    comac_rectangle (cr, 0, 0, w, h);
+    comac_clip (cr);
     L (cr, w, h);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int w = SIZE/2, h = SIZE/2;
 
-    cairo_paint (cr); /* opaque background */
+    comac_paint (cr); /* opaque background */
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
     LL (cr, w, h);
 
-    cairo_translate (cr, 0, h);
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_translate (cr, 0, h);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
+    comac_set_source_rgb (cr, 0, 0, 1);
     LL (cr, w, h);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_rectilinear,
+COMAC_TEST (clip_rectilinear,
 	    "Test handling of rectilinear clipping",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

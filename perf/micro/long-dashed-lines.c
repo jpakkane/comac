@@ -27,48 +27,48 @@
 
 #include "comac-perf.h"
 
-static cairo_time_t
-do_long_dashed_lines (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_long_dashed_lines (comac_t *cr, int width, int height, int loops)
 {
     double dash[2] = { 2.0, 2.0 };
     int i;
 
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-    cairo_paint (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
-    cairo_set_dash (cr, dash, 2, 0.0);
+    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+    comac_set_dash (cr, dash, 2, 0.0);
 
-    cairo_new_path (cr);
-    cairo_set_line_width (cr, 1.0);
+    comac_new_path (cr);
+    comac_set_line_width (cr, 1.0);
 
     for (i = 0; i < height-1; i++) {
 	double y0 = (double) i + 0.5;
-	cairo_move_to (cr, 0.0, y0);
-	cairo_line_to (cr, width, y0);
+	comac_move_to (cr, 0.0, y0);
+	comac_line_to (cr, width, y0);
     }
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-long_dashed_lines_enabled (cairo_perf_t *perf)
+comac_bool_t
+long_dashed_lines_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "long-dashed-lines", NULL);
+    return comac_perf_can_run (perf, "long-dashed-lines", NULL);
 }
 
 void
-long_dashed_lines (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+long_dashed_lines (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "long-dashed-lines", do_long_dashed_lines, NULL);
+    comac_perf_run (perf, "long-dashed-lines", do_long_dashed_lines, NULL);
 }

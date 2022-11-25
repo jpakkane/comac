@@ -28,59 +28,59 @@
 #define WIDTH 20
 #define HEIGHT 20
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const char *cairo = "Cairo";
-    cairo_text_extents_t extents;
+    const char *comac = "Comac";
+    comac_text_extents_t extents;
     double x0, y0;
 
-    cairo_text_extents (cr, cairo, &extents);
+    comac_text_extents (cr, comac, &extents);
     x0 = WIDTH/2. - (extents.width/2. + extents.x_bearing);
     y0 = HEIGHT/2. - (extents.height/2. + extents.y_bearing);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     /* aligned-clip */
-    cairo_save (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_rectangle (cr, 3, 3, 10, 10);
-    cairo_rectangle (cr, 7, 7, 10, 10);
-    cairo_clip (cr);
+    comac_save (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_rectangle (cr, 3, 3, 10, 10);
+    comac_rectangle (cr, 7, 7, 10, 10);
+    comac_clip (cr);
 
-    cairo_set_source_rgb (cr, 0.7, 0, 0);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0.7, 0, 0);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_move_to (cr, x0, y0);
-    cairo_show_text (cr, cairo);
-    cairo_restore (cr);
+    comac_move_to (cr, x0, y0);
+    comac_show_text (cr, comac);
+    comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 
     /* force a clip-mask */
-    cairo_save (cr);
-    cairo_arc (cr, 10, 10, 10, 0, 2 * M_PI);
-    cairo_new_sub_path (cr);
-    cairo_arc_negative (cr, 10, 10, 5, 2 * M_PI, 0);
-    cairo_new_sub_path (cr);
-    cairo_arc (cr, 10, 10, 2, 0, 2 * M_PI);
-    cairo_clip (cr);
+    comac_save (cr);
+    comac_arc (cr, 10, 10, 10, 0, 2 * M_PI);
+    comac_new_sub_path (cr);
+    comac_arc_negative (cr, 10, 10, 5, 2 * M_PI, 0);
+    comac_new_sub_path (cr);
+    comac_arc (cr, 10, 10, 2, 0, 2 * M_PI);
+    comac_clip (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0.7);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0.7);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_move_to (cr, x0, y0);
-    cairo_show_text (cr, cairo);
-    cairo_restore (cr);
+    comac_move_to (cr, x0, y0);
+    comac_show_text (cr, comac);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_text,
+COMAC_TEST (clip_text,
 	    "Tests drawing text through complex clips.",
 	    "clip, text", /* keywords */
 	    NULL, /* requirements */

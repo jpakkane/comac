@@ -34,28 +34,28 @@
 #define WIDTH 300
 #define HEIGHT 300
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int x;
 
     /* black background */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     /* white rectangles */
-    cairo_set_source_rgb (cr, 1, 1, 1);
+    comac_set_source_rgb (cr, 1, 1, 1);
 
     /* fill with a set of rectangles that the rectangular tessellator
      * will not emit sorted. */
     for (x = 0; x < WIDTH - 10; x += 15)
-	cairo_rectangle (cr, x, x, 10, HEIGHT - 2*x);
-    cairo_fill (cr);
+	comac_rectangle (cr, x, x, 10, HEIGHT - 2*x);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_disjoint,
+COMAC_TEST (fill_disjoint,
 	    "Tests filling unsorted rectangles.",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

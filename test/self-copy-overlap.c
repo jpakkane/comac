@@ -28,16 +28,16 @@
 #include "comac-test.h"
 
 /* This test is only interesting if the target has alpha */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgba (cr, 0, 0, 0, .01);
-    cairo_paint (cr);
+    comac_set_source_rgba (cr, 0, 0, 0, .01);
+    comac_paint (cr);
 
-    cairo_set_source_surface (cr, cairo_get_target (cr), 1, 1);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, comac_get_target (cr), 1, 1);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /*
@@ -45,7 +45,7 @@ draw (cairo_t *cr, int width, int height)
  * backends which don't. One solution would be to clone overlapping areas of
  * dst/source, so patterns were effectively snapshotted across all backends.
  */
-CAIRO_TEST (self_copy_overlap,
+COMAC_TEST (self_copy_overlap,
 	    "Tests painting to itself using itself as the source"
 	    "\nBackends treat this case inconsistently---vector backends are creating snapshots.",
 	    "self-copy", /* keywords */

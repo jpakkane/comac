@@ -28,42 +28,42 @@
 
 /* This is a test case for the following bug:
  *
- *	Crash in cairo_stroke_extents when line width is 0 and line cap is ROUND
- *	(_cairo_pen_find_active_cw_vertex_index)
+ *	Crash in comac_stroke_extents when line width is 0 and line cap is ROUND
+ *	(_comac_pen_find_active_cw_vertex_index)
  *	https://bugs.freedesktop.org/show_bug.cgi?id=10231
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double x1, y1, x2, y2;
 
-    cairo_move_to (cr, 0.0, 0.0);
-    cairo_line_to (cr, 100.0, 100.0);
-    cairo_set_line_width (cr, 0.0);
+    comac_move_to (cr, 0.0, 0.0);
+    comac_line_to (cr, 100.0, 100.0);
+    comac_set_line_width (cr, 0.0);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
-    cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-    cairo_in_stroke (cr, 50, 50);
-    cairo_stroke_preserve (cr);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_MITER);
+    comac_stroke_extents (cr, &x1, &y1, &x2, &y2);
+    comac_in_stroke (cr, 50, 50);
+    comac_stroke_preserve (cr);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-    cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-    cairo_in_stroke (cr, 50, 50);
-    cairo_stroke_preserve (cr);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
+    comac_stroke_extents (cr, &x1, &y1, &x2, &y2);
+    comac_in_stroke (cr, 50, 50);
+    comac_stroke_preserve (cr);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
-    cairo_stroke_extents (cr, &x1, &y1, &x2, &y2);
-    cairo_in_stroke (cr, 50, 50);
-    cairo_stroke (cr);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_SQUARE);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_BEVEL);
+    comac_stroke_extents (cr, &x1, &y1, &x2, &y2);
+    comac_in_stroke (cr, 50, 50);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (line_width_zero,
+COMAC_TEST (line_width_zero,
 	    "Test all stroke operations and all cap,join styles with line width of zero",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

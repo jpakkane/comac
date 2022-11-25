@@ -31,18 +31,18 @@
 #define WIDTH	    (PAD + LINE_WIDTH + PAD)
 #define HEIGHT	    (WIDTH)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     /* Paint background white, then draw in black. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-    cairo_set_line_width (cr, LINE_WIDTH);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+    comac_set_line_width (cr, LINE_WIDTH);
 
     /* The default miter limit value of 10.0 guarantees that
      * right-angle turns, (in fact, any angle greater than 11
@@ -52,20 +52,20 @@ draw (cairo_t *cr, int width, int height)
      * inappropriately drawing miter joins when the miter limit would
      * turn them into bevels). So we draw here with a miter limit of
      * 1.0 to force all miter joins into bevels. */
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
-    cairo_set_miter_limit (cr, 1.0);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_MITER);
+    comac_set_miter_limit (cr, 1.0);
 
-    cairo_move_to (cr, LINE_WIDTH / 2.0, LINE_WIDTH);
-    cairo_rel_line_to (cr, 0, - LINE_WIDTH / 2.0);
-    cairo_rel_line_to (cr, LINE_WIDTH / 2.0, 0);
+    comac_move_to (cr, LINE_WIDTH / 2.0, LINE_WIDTH);
+    comac_rel_line_to (cr, 0, - LINE_WIDTH / 2.0);
+    comac_rel_line_to (cr, LINE_WIDTH / 2.0, 0);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (rectilinear_miter_limit,
-	    "Test that the rectilinear stroke optimization doesn't break cairo_set_miter_limit",
+COMAC_TEST (rectilinear_miter_limit,
+	    "Test that the rectilinear stroke optimization doesn't break comac_set_miter_limit",
 	    "miter, stroke, stress", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,

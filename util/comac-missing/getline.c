@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006 Red Hat, Inc.
  * Copyright © 2011 Andrea Canciani
@@ -52,14 +52,14 @@ getline (char	**lineptr,
     }
 
     if (line == NULL) {
-	line = (char *) _cairo_malloc (len);
+	line = (char *) _comac_malloc (len);
 	if (unlikely (line == NULL))
 	    return -1;
     }
 
     while (1) {
 	if (offset + 1 == len) {
-	    tmpline = (char *) _cairo_realloc_ab (line, len, 2);
+	    tmpline = (char *) _comac_realloc_ab (line, len, 2);
 	    if (unlikely (tmpline == NULL)) {
 		if (line != *lineptr)
 		    free (line);

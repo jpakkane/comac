@@ -34,7 +34,7 @@
 #define SIZE 64
 
 #include "../src/comac-fixed-type-private.h"
-#define SAMPLE (1 << CAIRO_FIXED_FRAC_BITS)
+#define SAMPLE (1 << COMAC_FIXED_FRAC_BITS)
 
 static uint32_t state;
 
@@ -86,62 +86,62 @@ compute_occupancy (uint8_t *occupancy, int coverage, int sample)
     }
 }
 
-static cairo_test_status_t
-reference (cairo_t *cr, int width, int height)
+static comac_test_status_t
+reference (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
     for (i = 0; i < SIZE*SIZE; i++) {
-	cairo_set_source_rgba (cr, 1., 1., 1.,
+	comac_set_source_rgba (cr, 1., 1., 1.,
 			       i / (double) (SIZE * SIZE));
-	cairo_rectangle (cr, i % SIZE, i / SIZE, 1, 1);
-	cairo_fill (cr);
+	comac_rectangle (cr, i % SIZE, i / SIZE, 1, 1);
+	comac_fill (cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-three_quarter_reference (cairo_t *cr, int width, int height)
+static comac_test_status_t
+three_quarter_reference (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
     for (i = 0; i < SIZE*SIZE; i++) {
-	cairo_set_source_rgba (cr, 1., 1., 1.,
+	comac_set_source_rgba (cr, 1., 1., 1.,
 			       .75 * i / (double) (SIZE * SIZE));
-	cairo_rectangle (cr, i % SIZE, i / SIZE, 1, 1);
-	cairo_fill (cr);
+	comac_rectangle (cr, i % SIZE, i / SIZE, 1, 1);
+	comac_fill (cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-half_reference (cairo_t *cr, int width, int height)
+static comac_test_status_t
+half_reference (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
     for (i = 0; i < SIZE*SIZE; i++) {
-	cairo_set_source_rgba (cr, 1., 1., 1.,
+	comac_set_source_rgba (cr, 1., 1., 1.,
 			       .5 * i / (double) (SIZE * SIZE));
-	cairo_rectangle (cr, i % SIZE, i / SIZE, 1, 1);
-	cairo_fill (cr);
+	comac_rectangle (cr, i % SIZE, i / SIZE, 1, 1);
+	comac_fill (cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-rectangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+rectangles (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -149,16 +149,16 @@ rectangles (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -170,24 +170,24 @@ rectangles (cairo_t *cr, int width, int height)
 	    ys = i / SIZE * SAMPLE;
 	    for (j = 0; j < SAMPLE*SAMPLE; j++) {
 		if (occupancy[j]) {
-		    cairo_rectangle (cr,
+		    comac_rectangle (cr,
 				     (j % SAMPLE + xs) / (double) SAMPLE,
 				     (j / SAMPLE + ys) / (double) SAMPLE,
 				     1 / (double) SAMPLE,
 				     1 / (double) SAMPLE);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-intersecting_quads (cairo_t *cr, int width, int height)
+static comac_test_status_t
+intersecting_quads (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -195,16 +195,16 @@ intersecting_quads (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -216,26 +216,26 @@ intersecting_quads (cairo_t *cr, int width, int height)
 	    ys = i / SIZE * SAMPLE;
 	    for (j = 0; j < SAMPLE*SAMPLE; j++) {
 		if (occupancy[j]) {
-		    cairo_move_to (cr,
+		    comac_move_to (cr,
 				     (j % SAMPLE + xs) / (double) SAMPLE,
 				     (j / SAMPLE + ys) / (double) SAMPLE);
-		    cairo_rel_line_to (cr, 1 / (double) SAMPLE, 1 / (double) SAMPLE);
-		    cairo_rel_line_to (cr, 0, -1 / (double) SAMPLE);
-		    cairo_rel_line_to (cr, -1 / (double) SAMPLE, 1 / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_rel_line_to (cr, 1 / (double) SAMPLE, 1 / (double) SAMPLE);
+		    comac_rel_line_to (cr, 0, -1 / (double) SAMPLE);
+		    comac_rel_line_to (cr, -1 / (double) SAMPLE, 1 / (double) SAMPLE);
+		    comac_close_path (cr);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-half_triangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+half_triangles (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -243,16 +243,16 @@ half_triangles (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -266,23 +266,23 @@ half_triangles (cairo_t *cr, int width, int height)
 		if (occupancy[j]) {
 		    int x = j % SAMPLE + xs;
 		    int y = j / SAMPLE + ys;
-		    cairo_move_to (cr, x / (double) SAMPLE, y / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, y / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, x / (double) SAMPLE, y / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, y / (double) SAMPLE);
+		    comac_close_path (cr);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-overlap_half_triangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+overlap_half_triangles (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -290,16 +290,16 @@ overlap_half_triangles (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -326,28 +326,28 @@ overlap_half_triangles (cairo_t *cr, int width, int height)
 		     * Coverage should be computable as 50% (due to counter-winding).
 		     */
 
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x) / (double) SAMPLE,   (y+2) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x) / (double) SAMPLE,   (y+2) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_close_path (cr);
 
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y+2) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y+2) / (double) SAMPLE);
+		    comac_close_path (cr);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-overlap_half_triangles_eo (cairo_t *cr, int width, int height)
+static comac_test_status_t
+overlap_half_triangles_eo (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -355,18 +355,18 @@ overlap_half_triangles_eo (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -393,28 +393,28 @@ overlap_half_triangles_eo (cairo_t *cr, int width, int height)
 		     * Coverage should be computable as 50%, due to even-odd fill rule.
 		     */
 
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x) / (double) SAMPLE,   (y+2) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x) / (double) SAMPLE,   (y+2) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_close_path (cr);
 
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y+2) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y+2) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_close_path (cr);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-overlap_three_quarter_triangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+overlap_three_quarter_triangles (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -422,16 +422,16 @@ overlap_three_quarter_triangles (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -458,28 +458,28 @@ overlap_three_quarter_triangles (cairo_t *cr, int width, int height)
 		     * Coverage should be computable as 75%.
 		     */
 
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x) / (double) SAMPLE,   (y+2) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x) / (double) SAMPLE,   (y+2) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_close_path (cr);
 
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y+2) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y+2) / (double) SAMPLE);
+		    comac_line_to (cr, (x+2) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_close_path (cr);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-triangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+triangles (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -487,16 +487,16 @@ triangles (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -518,29 +518,29 @@ triangles (cairo_t *cr, int width, int height)
 		    int y = j / SAMPLE + ys;
 
 		    /* top-left triangle */
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
+		    comac_close_path (cr);
 
 		    /* bottom-right triangle */
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_close_path (cr);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-intersecting_triangles (cairo_t *cr, int width, int height)
+static comac_test_status_t
+intersecting_triangles (comac_t *cr, int width, int height)
 {
     uint8_t *occupancy;
     int i, j, channel;
@@ -548,16 +548,16 @@ intersecting_triangles (cairo_t *cr, int width, int height)
     state = 0x12345678;
     occupancy = xmalloc (SAMPLE*SAMPLE);
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
     for (channel = 0; channel < 3; channel++) {
 	switch (channel) {
 	default:
-	case 0: cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
-	case 1: cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
-	case 2: cairo_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
+	case 0: comac_set_source_rgb (cr, 1.0, 0.0, 0.0); break;
+	case 1: comac_set_source_rgb (cr, 0.0, 1.0, 0.0); break;
+	case 2: comac_set_source_rgb (cr, 0.0, 0.0, 1.0); break;
 	}
 
 	for (i = 0; i < SIZE*SIZE; i++) {
@@ -580,99 +580,99 @@ intersecting_triangles (cairo_t *cr, int width, int height)
 		    int y = j / SAMPLE + ys;
 
 		    /* first pair of triangles, diagonal bottom-left to top-right */
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
-		    cairo_close_path (cr);
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
+		    comac_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y+1) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y) / (double) SAMPLE);
+		    comac_close_path (cr);
 
 		    /* second pair of triangles, diagonal top-left to bottom-right */
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_close_path (cr);
-		    cairo_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
-		    cairo_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
-		    cairo_line_to (cr, (x) / (double) SAMPLE, (y+1) / (double) SAMPLE);
-		    cairo_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_close_path (cr);
+		    comac_move_to (cr, (x) / (double) SAMPLE,   (y) / (double) SAMPLE);
+		    comac_line_to (cr, (x+1) / (double) SAMPLE, (y+1) / (double) SAMPLE);
+		    comac_line_to (cr, (x) / (double) SAMPLE, (y+1) / (double) SAMPLE);
+		    comac_close_path (cr);
 		}
 	    }
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
     free (occupancy);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (partial_coverage_rectangles,
+COMAC_TEST (partial_coverage_rectangles,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, rectangles)
 
-CAIRO_TEST (partial_coverage_intersecting_quads,
+COMAC_TEST (partial_coverage_intersecting_quads,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, intersecting_quads)
 
-CAIRO_TEST (partial_coverage_intersecting_triangles,
+COMAC_TEST (partial_coverage_intersecting_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, intersecting_triangles)
-CAIRO_TEST (partial_coverage_triangles,
+COMAC_TEST (partial_coverage_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, triangles)
-CAIRO_TEST (partial_coverage_overlap_three_quarter_triangles,
+COMAC_TEST (partial_coverage_overlap_three_quarter_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, overlap_three_quarter_triangles)
-CAIRO_TEST (partial_coverage_overlap_half_triangles_eo,
+COMAC_TEST (partial_coverage_overlap_half_triangles_eo,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, overlap_half_triangles_eo)
-CAIRO_TEST (partial_coverage_overlap_half_triangles,
+COMAC_TEST (partial_coverage_overlap_half_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, overlap_half_triangles)
-CAIRO_TEST (partial_coverage_half_triangles,
+COMAC_TEST (partial_coverage_half_triangles,
 	    "Check the fidelity of the rasterisation.",
 	    "coverage, raster", /* keywords */
 	    "target=raster slow", /* requirements */
 	    SIZE, SIZE,
 	    NULL, half_triangles)
 
-CAIRO_TEST (partial_coverage_reference,
+COMAC_TEST (partial_coverage_reference,
 	    "Check the fidelity of this test.",
 	    "coverage, raster", /* keywords */
 	    "target=raster", /* requirements */
 	    SIZE, SIZE,
 	    NULL, reference)
-CAIRO_TEST (partial_coverage_three_quarter_reference,
+COMAC_TEST (partial_coverage_three_quarter_reference,
 	    "Check the fidelity of this test.",
 	    "coverage, raster", /* keywords */
 	    "target=raster", /* requirements */
 	    SIZE, SIZE,
 	    NULL, three_quarter_reference)
-CAIRO_TEST (partial_coverage_half_reference,
+COMAC_TEST (partial_coverage_half_reference,
 	    "Check the fidelity of this test.",
 	    "coverage, raster", /* keywords */
 	    "target=raster", /* requirements */

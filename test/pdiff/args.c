@@ -54,8 +54,8 @@ args_init (args_t *args)
 void
 args_fini (args_t *args)
 {
-    cairo_surface_destroy (args->surface_a);
-    cairo_surface_destroy (args->surface_b);
+    comac_surface_destroy (args->surface_a);
+    comac_surface_destroy (args->surface_b);
 }
 
 bool
@@ -69,19 +69,19 @@ args_parse (args_t *args, int argc, char **argv)
     }
     for (i = 0; i < argc; i++) {
 	if (i == 1) {
-	    args->surface_a = cairo_image_surface_create_from_png (argv[1]);
-	    if (cairo_surface_status (args->surface_a))
+	    args->surface_a = comac_image_surface_create_from_png (argv[1]);
+	    if (comac_surface_status (args->surface_a))
 	    {
 		fprintf (stderr, "FAIL: Cannot open %s: %s\n",
-			 argv[1], cairo_status_to_string (cairo_surface_status (args->surface_a)));
+			 argv[1], comac_status_to_string (comac_surface_status (args->surface_a)));
 		return false;
 	    }
 	} else if (i == 2) {
-	    args->surface_b = cairo_image_surface_create_from_png (argv[2]);
-	    if (cairo_surface_status (args->surface_b))
+	    args->surface_b = comac_image_surface_create_from_png (argv[2]);
+	    if (comac_surface_status (args->surface_b))
 	    {
 		fprintf (stderr, "FAIL: Cannot open %s: %s\n",
-			 argv[2], cairo_status_to_string (cairo_surface_status (args->surface_b)));
+			 argv[2], comac_status_to_string (comac_surface_status (args->surface_b)));
 		return false;
 	    }
 	} else {

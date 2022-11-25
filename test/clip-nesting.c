@@ -32,76 +32,76 @@
 #define LINE_WIDTH 20
 
 static void
-_propagate_status (cairo_t *dst, cairo_t *src)
+_propagate_status (comac_t *dst, comac_t *src)
 {
-    cairo_path_t path;
+    comac_path_t path;
 
-    path.status = cairo_status (src);
+    path.status = comac_status (src);
     if (path.status) {
 	path.num_data = 0;
 	path.data = NULL;
-	cairo_append_path (dst, &path);
+	comac_append_path (dst, &path);
     }
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *target_surface;
-    cairo_t *cr2, *cr3;
+    comac_surface_t *target_surface;
+    comac_t *cr2, *cr3;
 
-    target_surface = cairo_get_group_target (cr);
+    target_surface = comac_get_group_target (cr);
 
-    cr2 = cairo_create (target_surface);
+    cr2 = comac_create (target_surface);
 
     /* Draw a diagonal line and clip to it */
 
-    cairo_move_to (cr2, BORDER,                     BORDER);
-    cairo_line_to (cr2, BORDER + LINE_WIDTH,        BORDER);
-    cairo_line_to (cr2, SIZE - BORDER,              SIZE - BORDER);
-    cairo_line_to (cr2, SIZE - BORDER - LINE_WIDTH, SIZE - BORDER);
+    comac_move_to (cr2, BORDER,                     BORDER);
+    comac_line_to (cr2, BORDER + LINE_WIDTH,        BORDER);
+    comac_line_to (cr2, SIZE - BORDER,              SIZE - BORDER);
+    comac_line_to (cr2, SIZE - BORDER - LINE_WIDTH, SIZE - BORDER);
 
-    cairo_clip (cr2);
-    cairo_set_source_rgb (cr2, 0, 0, 1); /* Blue */
-    cairo_paint (cr2);
+    comac_clip (cr2);
+    comac_set_source_rgb (cr2, 0, 0, 1); /* Blue */
+    comac_paint (cr2);
 
-    /* Clipping affects this cairo_t */
+    /* Clipping affects this comac_t */
 
-    cairo_set_source_rgb (cr2, 1, 1, 1); /* White */
-    cairo_rectangle (cr2,
+    comac_set_source_rgb (cr2, 1, 1, 1); /* White */
+    comac_rectangle (cr2,
 		     SIZE / 2 - LINE_WIDTH / 2, BORDER,
 		     LINE_WIDTH,                SIZE - 2 * BORDER);
-    cairo_fill (cr2);
+    comac_fill (cr2);
 
-    /* But doesn't affect another cairo_t that we create temporarily for
+    /* But doesn't affect another comac_t that we create temporarily for
      * the same surface
      */
-    cr3 = cairo_create (target_surface);
-    cairo_set_source_rgb (cr3, 1, 1, 1); /* White */
-    cairo_rectangle (cr3,
+    cr3 = comac_create (target_surface);
+    comac_set_source_rgb (cr3, 1, 1, 1); /* White */
+    comac_rectangle (cr3,
 		     SIZE - BORDER - LINE_WIDTH, BORDER,
 		     LINE_WIDTH,                 SIZE - 2 * BORDER);
-    cairo_fill (cr3);
+    comac_fill (cr3);
 
     _propagate_status (cr, cr3);
-    cairo_destroy (cr3);
+    comac_destroy (cr3);
 
     _propagate_status (cr, cr2);
-    cairo_destroy (cr2);
+    comac_destroy (cr2);
 
-    /* And doesn't affect anything after this cairo_t is destroyed */
+    /* And doesn't affect anything after this comac_t is destroyed */
 
-    cairo_set_source_rgb (cr, 1, 1, 1); /* White */
-    cairo_rectangle (cr,
+    comac_set_source_rgb (cr, 1, 1, 1); /* White */
+    comac_rectangle (cr,
 		     BORDER,     BORDER,
 		     LINE_WIDTH, SIZE - 2 * BORDER);
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 
 }
 
-CAIRO_TEST (clip_nesting,
+COMAC_TEST (clip_nesting,
 	    "Test clipping with multiple contexts for the same surface",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

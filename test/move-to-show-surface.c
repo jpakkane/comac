@@ -27,8 +27,8 @@
  *
  * 2004-10-25  Carl Worth  <cworth@cworth.org>
  *
- *   It looks like cairo_show_surface has no effect if it follows a
- *   call to cairo_move_to to any coordinate other than 0,0. A little
+ *   It looks like comac_show_surface has no effect if it follows a
+ *   call to comac_move_to to any coordinate other than 0,0. A little
  *   bit of poking around suggests this isn't a regression, (at least
  *   not since the last pixman snapshot).
  *
@@ -36,7 +36,7 @@
  *
  *   Status: RESOLVED
  *
- *   Inside cairo_show_surface the current point was being used as
+ *   Inside comac_show_surface the current point was being used as
  *   both source and destination offsets. After fixing that to use 0,0
  *   as the source offset and the current point as the destination
  *   offset, the bug seems to be gone.
@@ -45,10 +45,10 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     uint32_t colors[4] = {
 	0xffffffff, 0xffff0000,
 	0xff00ff00, 0xff0000ff
@@ -56,22 +56,22 @@ draw (cairo_t *cr, int width, int height)
     int i;
 
     for (i=0; i < 4; i++) {
-	surface = cairo_image_surface_create_for_data ((unsigned char *) &colors[i],
-						       CAIRO_FORMAT_RGB24,
+	surface = comac_image_surface_create_for_data ((unsigned char *) &colors[i],
+						       COMAC_FORMAT_RGB24,
 						       1, 1, 4);
-	cairo_set_source_surface (cr, surface,
+	comac_set_source_surface (cr, surface,
 				  i % 2, i / 2);
-	cairo_paint (cr);
+	comac_paint (cr);
 
-	cairo_surface_finish (surface); /* colors will go out of scope */
-	cairo_surface_destroy (surface);
+	comac_surface_finish (surface); /* colors will go out of scope */
+	comac_surface_destroy (surface);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (move_to_show_surface,
-	    "Tests calls to cairo_show_surface after cairo_move_to",
+COMAC_TEST (move_to_show_surface,
+	    "Tests calls to comac_show_surface after comac_move_to",
 	    "transform", /* keywords */
 	    NULL, /* requirements */
 	    2, 2,

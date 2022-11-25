@@ -25,108 +25,108 @@
  *	    Carl Worth <cworth@cworth.org>
  */
 
-#ifndef _CAIRO_PERF_H_
-#define _CAIRO_PERF_H_
+#ifndef _COMAC_PERF_H_
+#define _COMAC_PERF_H_
 
 #include "comac-boilerplate.h"
 #include "../src/comac-time-private.h"
 #include <stdio.h>
 
-typedef struct _cairo_stats {
-    cairo_time_t min_ticks;
-    cairo_time_t median_ticks;
+typedef struct _comac_stats {
+    comac_time_t min_ticks;
+    comac_time_t median_ticks;
     double ticks_per_ms;
     double std_dev;
     int iterations;
-    cairo_time_t *values;
-} cairo_stats_t;
+    comac_time_t *values;
+} comac_stats_t;
 
-typedef struct _cairo_histogram {
+typedef struct _comac_histogram {
     int width, height, max_count;
     int num_columns, num_rows;
-    cairo_time_t min_value, max_value;
+    comac_time_t min_value, max_value;
     int *columns;
-} cairo_histogram_t;
+} comac_histogram_t;
 
 
 /* timers */
 
 void
-cairo_perf_timer_start (void);
+comac_perf_timer_start (void);
 
 void
-cairo_perf_timer_stop (void);
+comac_perf_timer_stop (void);
 
 typedef void
-(*cairo_perf_timer_synchronize_t) (void *closure);
+(*comac_perf_timer_synchronize_t) (void *closure);
 
 void
-cairo_perf_timer_set_synchronize (cairo_perf_timer_synchronize_t  synchronize,
+comac_perf_timer_set_synchronize (comac_perf_timer_synchronize_t  synchronize,
 				  void				 *closure);
 
-cairo_time_t
-cairo_perf_timer_elapsed (void);
+comac_time_t
+comac_perf_timer_elapsed (void);
 
 /* yield */
 
 void
-cairo_perf_yield (void);
+comac_perf_yield (void);
 
 /* running a test case */
-typedef struct _cairo_perf {
+typedef struct _comac_perf {
     FILE *summary;
-    cairo_bool_t summary_continuous;
+    comac_bool_t summary_continuous;
 
     /* Options from command-line */
     unsigned int iterations;
-    cairo_bool_t exact_iterations;
-    cairo_bool_t raw;
-    cairo_bool_t list_only;
-    cairo_bool_t observe;
+    comac_bool_t exact_iterations;
+    comac_bool_t raw;
+    comac_bool_t list_only;
+    comac_bool_t observe;
     char **names;
     unsigned int num_names;
     char **exclude_names;
     unsigned int num_exclude_names;
-    cairo_bool_t exact_names;
+    comac_bool_t exact_names;
 
     double ms_per_iteration;
-    cairo_bool_t fast_and_sloppy;
+    comac_bool_t fast_and_sloppy;
 
     unsigned int tile_size;
 
     /* Stuff used internally */
-    cairo_time_t *times;
-    const cairo_boilerplate_target_t **targets;
+    comac_time_t *times;
+    const comac_boilerplate_target_t **targets;
     int num_targets;
-    const cairo_boilerplate_target_t *target;
-    cairo_bool_t has_described_backend;
+    const comac_boilerplate_target_t *target;
+    comac_bool_t has_described_backend;
     unsigned int test_number;
     unsigned int size;
-    cairo_t *cr;
-} cairo_perf_t;
+    comac_t *cr;
+} comac_perf_t;
 
-typedef cairo_time_t
-(*cairo_perf_func_t) (cairo_t *cr, int width, int height, int loops);
+typedef comac_time_t
+(*comac_perf_func_t) (comac_t *cr, int width, int height, int loops);
 
 typedef double
-(*cairo_count_func_t) (cairo_t *cr, int width, int height);
+(*comac_count_func_t) (comac_t *cr, int width, int height);
 
-cairo_bool_t
-cairo_perf_can_run (cairo_perf_t *perf,
+comac_bool_t
+comac_perf_can_run (comac_perf_t *perf,
 		    const char	 *name,
-		    cairo_bool_t *is_explicit);
+		    comac_bool_t *is_explicit);
 
 void
-cairo_perf_run (cairo_perf_t	   *perf,
+comac_perf_run (comac_perf_t	   *perf,
 		const char	   *name,
-		cairo_perf_func_t   perf_func,
-		cairo_count_func_t  count_func);
+		comac_perf_func_t   perf_func,
+		comac_count_func_t  count_func);
 
 void
-cairo_perf_cover_sources_and_operators (cairo_perf_t	   *perf,
+comac_perf_cover_sources_and_operators (comac_perf_t	   *perf,
 					const char	   *name,
-					cairo_perf_func_t   perf_func,
-					cairo_count_func_t  count_func);
+					comac_perf_func_t   perf_func,
+					comac_count_func_t  count_func);
 
 /* reporter convenience routines */
 
@@ -140,14 +140,14 @@ typedef struct _test_report {
     int size;
 
     /* The samples only exists for "raw" reports */
-    cairo_time_t *samples;
+    comac_time_t *samples;
     unsigned int samples_size;
     unsigned int samples_count;
 
     /* The stats are either read directly or computed from samples.
      * If the stats have not yet been computed from samples, then
      * iterations will be 0. */
-    cairo_stats_t stats;
+    comac_stats_t stats;
 } test_report_t;
 
 typedef struct _test_diff {
@@ -158,14 +158,14 @@ typedef struct _test_diff {
     double change;
 } test_diff_t;
 
-typedef struct _cairo_perf_report {
+typedef struct _comac_perf_report {
     char *configuration;
     const char *name;
     int fileno;
     test_report_t *tests;
     int tests_size;
     int tests_count;
-} cairo_perf_report_t;
+} comac_perf_report_t;
 
 typedef enum {
     TEST_REPORT_STATUS_SUCCESS,
@@ -174,12 +174,12 @@ typedef enum {
 } test_report_status_t;
 
 void
-cairo_perf_report_load (cairo_perf_report_t *report,
+comac_perf_report_load (comac_perf_report_t *report,
 			const char *filename, int id,
 			int (*cmp) (const void *, const void *));
 
 void
-cairo_perf_report_sort_and_compute_stats (cairo_perf_report_t *report,
+comac_perf_report_sort_and_compute_stats (comac_perf_report_t *report,
 					  int (*cmp) (const void *, const void *));
 
 int
@@ -190,10 +190,10 @@ int
 test_report_cmp_name (const void *a,
 		      const void *b);
 
-#define CAIRO_PERF_ENABLED_DECL(func) cairo_bool_t (func ## _enabled) (cairo_perf_t *perf)
-#define CAIRO_PERF_RUN_DECL(func) void (func) (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+#define COMAC_PERF_ENABLED_DECL(func) comac_bool_t (func ## _enabled) (comac_perf_t *perf)
+#define COMAC_PERF_RUN_DECL(func) void (func) (comac_perf_t *perf, comac_t *cr, int width, int height)
 
-#define CAIRO_PERF_DECL(func) CAIRO_PERF_RUN_DECL(func); CAIRO_PERF_ENABLED_DECL(func)
+#define COMAC_PERF_DECL(func) COMAC_PERF_RUN_DECL(func); COMAC_PERF_ENABLED_DECL(func)
 
 #ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -203,48 +203,48 @@ test_report_cmp_name (const void *a,
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-CAIRO_PERF_DECL (fill);
-CAIRO_PERF_DECL (paint);
-CAIRO_PERF_DECL (paint_with_alpha);
-CAIRO_PERF_DECL (mask);
-CAIRO_PERF_DECL (stroke);
-CAIRO_PERF_DECL (subimage_copy);
-CAIRO_PERF_DECL (disjoint);
-CAIRO_PERF_DECL (hatching);
-CAIRO_PERF_DECL (tessellate);
-CAIRO_PERF_DECL (text);
-CAIRO_PERF_DECL (glyphs);
-CAIRO_PERF_DECL (hash_table);
-CAIRO_PERF_DECL (pattern_create_radial);
-CAIRO_PERF_DECL (zrusin);
-CAIRO_PERF_DECL (world_map);
-CAIRO_PERF_DECL (box_outline);
-CAIRO_PERF_DECL (mosaic);
-CAIRO_PERF_DECL (long_lines);
-CAIRO_PERF_DECL (unaligned_clip);
-CAIRO_PERF_DECL (rectangles);
-CAIRO_PERF_DECL (rounded_rectangles);
-CAIRO_PERF_DECL (long_dashed_lines);
-CAIRO_PERF_DECL (composite_checker);
-CAIRO_PERF_DECL (twin);
-CAIRO_PERF_DECL (dragon);
-CAIRO_PERF_DECL (pythagoras_tree);
-CAIRO_PERF_DECL (intersections);
-CAIRO_PERF_DECL (spiral);
-CAIRO_PERF_DECL (wave);
-CAIRO_PERF_DECL (many_strokes);
-CAIRO_PERF_DECL (wide_strokes);
-CAIRO_PERF_DECL (many_fills);
-CAIRO_PERF_DECL (wide_fills);
-CAIRO_PERF_DECL (many_curves);
-CAIRO_PERF_DECL (curve);
-CAIRO_PERF_DECL (a1_curve);
-CAIRO_PERF_DECL (line);
-CAIRO_PERF_DECL (a1_line);
-CAIRO_PERF_DECL (pixel);
-CAIRO_PERF_DECL (a1_pixel);
-CAIRO_PERF_DECL (sierpinski);
-CAIRO_PERF_DECL (fill_clip);
-CAIRO_PERF_DECL (tiger);
+COMAC_PERF_DECL (fill);
+COMAC_PERF_DECL (paint);
+COMAC_PERF_DECL (paint_with_alpha);
+COMAC_PERF_DECL (mask);
+COMAC_PERF_DECL (stroke);
+COMAC_PERF_DECL (subimage_copy);
+COMAC_PERF_DECL (disjoint);
+COMAC_PERF_DECL (hatching);
+COMAC_PERF_DECL (tessellate);
+COMAC_PERF_DECL (text);
+COMAC_PERF_DECL (glyphs);
+COMAC_PERF_DECL (hash_table);
+COMAC_PERF_DECL (pattern_create_radial);
+COMAC_PERF_DECL (zrusin);
+COMAC_PERF_DECL (world_map);
+COMAC_PERF_DECL (box_outline);
+COMAC_PERF_DECL (mosaic);
+COMAC_PERF_DECL (long_lines);
+COMAC_PERF_DECL (unaligned_clip);
+COMAC_PERF_DECL (rectangles);
+COMAC_PERF_DECL (rounded_rectangles);
+COMAC_PERF_DECL (long_dashed_lines);
+COMAC_PERF_DECL (composite_checker);
+COMAC_PERF_DECL (twin);
+COMAC_PERF_DECL (dragon);
+COMAC_PERF_DECL (pythagoras_tree);
+COMAC_PERF_DECL (intersections);
+COMAC_PERF_DECL (spiral);
+COMAC_PERF_DECL (wave);
+COMAC_PERF_DECL (many_strokes);
+COMAC_PERF_DECL (wide_strokes);
+COMAC_PERF_DECL (many_fills);
+COMAC_PERF_DECL (wide_fills);
+COMAC_PERF_DECL (many_curves);
+COMAC_PERF_DECL (curve);
+COMAC_PERF_DECL (a1_curve);
+COMAC_PERF_DECL (line);
+COMAC_PERF_DECL (a1_line);
+COMAC_PERF_DECL (pixel);
+COMAC_PERF_DECL (a1_pixel);
+COMAC_PERF_DECL (sierpinski);
+COMAC_PERF_DECL (fill_clip);
+COMAC_PERF_DECL (tiger);
 
 #endif

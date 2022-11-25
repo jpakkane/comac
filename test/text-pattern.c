@@ -30,42 +30,42 @@
 
 
 static void
-draw_text_pattern (cairo_t *cr, double alpha)
+draw_text_pattern (comac_t *cr, double alpha)
 {
-    cairo_pattern_t *pat;
+    comac_pattern_t *pat;
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
-    pat = cairo_pattern_create_linear (0.0, 0.0, 1, 1);
-    cairo_pattern_add_color_stop_rgba (pat, 1, 1, 0, 0, alpha);
-    cairo_pattern_add_color_stop_rgba (pat, 0, 0, 0, 1, alpha);
-    cairo_set_source (cr, pat);
+    pat = comac_pattern_create_linear (0.0, 0.0, 1, 1);
+    comac_pattern_add_color_stop_rgba (pat, 1, 1, 0, 0, alpha);
+    comac_pattern_add_color_stop_rgba (pat, 0, 0, 0, 1, alpha);
+    comac_set_source (cr, pat);
 
     /* test rectangle - make sure the gradient is set correctly */
-    cairo_rectangle (cr, 0, 0, 0.1, 1);
-    cairo_fill (cr);
+    comac_rectangle (cr, 0, 0, 0.1, 1);
+    comac_fill (cr);
 
-    cairo_set_font_size (cr, 0.4);
-    cairo_move_to (cr, 0.1, 0.6);
-    cairo_show_text (cr, "cairo");
+    comac_set_font_size (cr, 0.4);
+    comac_move_to (cr, 0.1, 0.6);
+    comac_show_text (cr, "comac");
 
-    cairo_pattern_destroy (pat);
+    comac_pattern_destroy (pat);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_scale (cr, width/2, height);
+    comac_scale (cr, width/2, height);
     draw_text_pattern (cr, 1.0);
-    cairo_translate (cr, 1, 0);
+    comac_translate (cr, 1, 0);
     draw_text_pattern (cr, 0.5);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (text_pattern,
+COMAC_TEST (text_pattern,
 	    "Patterned Text",
 	    "text, pattern", /* keywords */
 	    NULL, /* requirements */

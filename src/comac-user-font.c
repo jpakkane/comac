@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006, 2008 Red Hat, Inc
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -42,52 +42,52 @@
 #include "comac-error-private.h"
 
 /**
- * SECTION:cairo-user-fonts
+ * SECTION:comac-user-fonts
  * @Title:User Fonts
  * @Short_Description: Font support with font data provided by the user
  *
- * The user-font feature allows the cairo user to provide drawings for glyphs
+ * The user-font feature allows the comac user to provide drawings for glyphs
  * in a font.  This is most useful in implementing fonts in non-standard
  * formats, like SVG fonts and Flash fonts, but can also be used by games and
  * other application to draw "funky" fonts.
  **/
 
 /**
- * CAIRO_HAS_USER_FONT:
+ * COMAC_HAS_USER_FONT:
  *
  * Defined if the user font backend is available.
  * This macro can be used to conditionally compile backend-specific code.
- * The user font backend is always built in versions of cairo that support
+ * The user font backend is always built in versions of comac that support
  * this feature (1.8 and later).
  *
  * Since: 1.8
  **/
 
-typedef struct _cairo_user_scaled_font_methods {
-    cairo_user_scaled_font_init_func_t			init;
-    cairo_user_scaled_font_render_glyph_func_t		render_color_glyph;
-    cairo_user_scaled_font_render_glyph_func_t		render_glyph;
-    cairo_user_scaled_font_unicode_to_glyph_func_t	unicode_to_glyph;
-    cairo_user_scaled_font_text_to_glyphs_func_t	text_to_glyphs;
-} cairo_user_scaled_font_methods_t;
+typedef struct _comac_user_scaled_font_methods {
+    comac_user_scaled_font_init_func_t			init;
+    comac_user_scaled_font_render_glyph_func_t		render_color_glyph;
+    comac_user_scaled_font_render_glyph_func_t		render_glyph;
+    comac_user_scaled_font_unicode_to_glyph_func_t	unicode_to_glyph;
+    comac_user_scaled_font_text_to_glyphs_func_t	text_to_glyphs;
+} comac_user_scaled_font_methods_t;
 
-typedef struct _cairo_user_font_face {
-    cairo_font_face_t	             base;
+typedef struct _comac_user_font_face {
+    comac_font_face_t	             base;
 
     /* Set to true after first scaled font is created.  At that point,
      * the scaled_font_methods cannot change anymore. */
-    cairo_bool_t		     immutable;
-    cairo_bool_t                     has_color;
-    cairo_user_scaled_font_methods_t scaled_font_methods;
-} cairo_user_font_face_t;
+    comac_bool_t		     immutable;
+    comac_bool_t                     has_color;
+    comac_user_scaled_font_methods_t scaled_font_methods;
+} comac_user_font_face_t;
 
-typedef struct _cairo_user_scaled_font {
-    cairo_scaled_font_t  base;
+typedef struct _comac_user_scaled_font {
+    comac_scaled_font_t  base;
 
-    cairo_text_extents_t default_glyph_extents;
+    comac_text_extents_t default_glyph_extents;
 
     /* space to compute extents in, and factors to convert back to user space */
-    cairo_matrix_t extent_scale;
+    comac_matrix_t extent_scale;
     double extent_x_scale;
     double extent_y_scale;
 
@@ -95,125 +95,125 @@ typedef struct _cairo_user_scaled_font {
     double snap_x_scale;
     double snap_y_scale;
 
-} cairo_user_scaled_font_t;
+} comac_user_scaled_font_t;
 
-/* #cairo_user_scaled_font_t */
+/* #comac_user_scaled_font_t */
 
-static cairo_surface_t *
-_cairo_user_scaled_font_create_recording_surface (const cairo_user_scaled_font_t *scaled_font,
-						  cairo_bool_t                    color)
+static comac_surface_t *
+_comac_user_scaled_font_create_recording_surface (const comac_user_scaled_font_t *scaled_font,
+						  comac_bool_t                    color)
 {
-    cairo_content_t content;
+    comac_content_t content;
 
     if (color) {
-	content = CAIRO_CONTENT_COLOR_ALPHA;
+	content = COMAC_CONTENT_COLOR_ALPHA;
     } else {
-	content = scaled_font->base.options.antialias == CAIRO_ANTIALIAS_SUBPIXEL ?
-						         CAIRO_CONTENT_COLOR_ALPHA :
-						         CAIRO_CONTENT_ALPHA;
+	content = scaled_font->base.options.antialias == COMAC_ANTIALIAS_SUBPIXEL ?
+						         COMAC_CONTENT_COLOR_ALPHA :
+						         COMAC_CONTENT_ALPHA;
     }
 
-    return cairo_recording_surface_create (content, NULL);
+    return comac_recording_surface_create (content, NULL);
 }
 
 
-static cairo_t *
-_cairo_user_scaled_font_create_recording_context (const cairo_user_scaled_font_t *scaled_font,
-						  cairo_surface_t                *recording_surface,
-						  cairo_bool_t                    color)
+static comac_t *
+_comac_user_scaled_font_create_recording_context (const comac_user_scaled_font_t *scaled_font,
+						  comac_surface_t                *recording_surface,
+						  comac_bool_t                    color)
 {
-    cairo_t *cr;
+    comac_t *cr;
 
-    cr = cairo_create (recording_surface);
+    cr = comac_create (recording_surface);
 
-    if (!_cairo_matrix_is_scale_0 (&scaled_font->base.scale)) {
-        cairo_matrix_t scale;
+    if (!_comac_matrix_is_scale_0 (&scaled_font->base.scale)) {
+        comac_matrix_t scale;
 	scale = scaled_font->base.scale;
 	scale.x0 = scale.y0 = 0.;
-	cairo_set_matrix (cr, &scale);
+	comac_set_matrix (cr, &scale);
     }
 
-    cairo_set_font_size (cr, 1.0);
-    cairo_set_font_options (cr, &scaled_font->base.options);
+    comac_set_font_size (cr, 1.0);
+    comac_set_font_options (cr, &scaled_font->base.options);
     if (!color)
-	cairo_set_source_rgb (cr, 1., 1., 1.);
+	comac_set_source_rgb (cr, 1., 1., 1.);
 
     return cr;
 }
 
-static cairo_int_status_t
-_cairo_user_scaled_glyph_init_record_glyph (cairo_user_scaled_font_t *scaled_font,
-					    cairo_scaled_glyph_t     *scaled_glyph)
+static comac_int_status_t
+_comac_user_scaled_glyph_init_record_glyph (comac_user_scaled_font_t *scaled_font,
+					    comac_scaled_glyph_t     *scaled_glyph)
 {
-    cairo_user_font_face_t *face =
-	(cairo_user_font_face_t *) scaled_font->base.font_face;
-    cairo_text_extents_t extents = scaled_font->default_glyph_extents;
-    cairo_surface_t *recording_surface = NULL;
-    cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
-    cairo_t *cr;
+    comac_user_font_face_t *face =
+	(comac_user_font_face_t *) scaled_font->base.font_face;
+    comac_text_extents_t extents = scaled_font->default_glyph_extents;
+    comac_surface_t *recording_surface = NULL;
+    comac_int_status_t status = COMAC_STATUS_SUCCESS;
+    comac_t *cr;
 
     if (!face->scaled_font_methods.render_color_glyph && !face->scaled_font_methods.render_glyph)
-	return CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
+	return COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
 
-    /* special case for 0 rank matrix (as in _cairo_scaled_font_init): empty surface */
-    if (_cairo_matrix_is_scale_0 (&scaled_font->base.scale)) {
-	recording_surface = _cairo_user_scaled_font_create_recording_surface (scaled_font, FALSE);
-	_cairo_scaled_glyph_set_recording_surface (scaled_glyph,
+    /* special case for 0 rank matrix (as in _comac_scaled_font_init): empty surface */
+    if (_comac_matrix_is_scale_0 (&scaled_font->base.scale)) {
+	recording_surface = _comac_user_scaled_font_create_recording_surface (scaled_font, FALSE);
+	_comac_scaled_glyph_set_recording_surface (scaled_glyph,
 						   &scaled_font->base,
 						   recording_surface);
     } else {
-	status = CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED;
+	status = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED;
 
 	if (face->scaled_font_methods.render_color_glyph) {
-	    cairo_pattern_t *pattern;
+	    comac_pattern_t *pattern;
 
-	    recording_surface = _cairo_user_scaled_font_create_recording_surface (scaled_font, TRUE);
+	    recording_surface = _comac_user_scaled_font_create_recording_surface (scaled_font, TRUE);
 
-	    cr = _cairo_user_scaled_font_create_recording_context (scaled_font, recording_surface, TRUE);
-	    pattern = cairo_pattern_create_rgb (0, 0, 0);
+	    cr = _comac_user_scaled_font_create_recording_context (scaled_font, recording_surface, TRUE);
+	    pattern = comac_pattern_create_rgb (0, 0, 0);
 	    pattern->is_userfont_foreground = TRUE;
-	    cairo_set_source (cr, pattern);
-	    cairo_pattern_destroy (pattern);
-	    status = face->scaled_font_methods.render_color_glyph ((cairo_scaled_font_t *)scaled_font,
-								   _cairo_scaled_glyph_index(scaled_glyph),
+	    comac_set_source (cr, pattern);
+	    comac_pattern_destroy (pattern);
+	    status = face->scaled_font_methods.render_color_glyph ((comac_scaled_font_t *)scaled_font,
+								   _comac_scaled_glyph_index(scaled_glyph),
 								   cr, &extents);
-	    if (status == CAIRO_INT_STATUS_SUCCESS) {
-		status = cairo_status (cr);
+	    if (status == COMAC_INT_STATUS_SUCCESS) {
+		status = comac_status (cr);
 		scaled_glyph->color_glyph = TRUE;
 		scaled_glyph->color_glyph_set = TRUE;
 	    }
-	    cairo_destroy (cr);
+	    comac_destroy (cr);
 	}
 
-	if (status == (cairo_int_status_t)CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED &&
+	if (status == (comac_int_status_t)COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED &&
 	    face->scaled_font_methods.render_glyph) {
 	    if (recording_surface)
-		cairo_surface_destroy (recording_surface);
-	    recording_surface = _cairo_user_scaled_font_create_recording_surface (scaled_font, FALSE);
-	    recording_surface->device_transform.x0 = .25 * _cairo_scaled_glyph_xphase (scaled_glyph);
-	    recording_surface->device_transform.y0 = .25 * _cairo_scaled_glyph_yphase (scaled_glyph);
+		comac_surface_destroy (recording_surface);
+	    recording_surface = _comac_user_scaled_font_create_recording_surface (scaled_font, FALSE);
+	    recording_surface->device_transform.x0 = .25 * _comac_scaled_glyph_xphase (scaled_glyph);
+	    recording_surface->device_transform.y0 = .25 * _comac_scaled_glyph_yphase (scaled_glyph);
 
-	    cr = _cairo_user_scaled_font_create_recording_context (scaled_font, recording_surface, FALSE);
+	    cr = _comac_user_scaled_font_create_recording_context (scaled_font, recording_surface, FALSE);
 
-	    status = face->scaled_font_methods.render_glyph ((cairo_scaled_font_t *)scaled_font,
-							     _cairo_scaled_glyph_index(scaled_glyph),
+	    status = face->scaled_font_methods.render_glyph ((comac_scaled_font_t *)scaled_font,
+							     _comac_scaled_glyph_index(scaled_glyph),
 							     cr, &extents);
-	    if (status == CAIRO_INT_STATUS_SUCCESS) {
-		status = cairo_status (cr);
+	    if (status == COMAC_INT_STATUS_SUCCESS) {
+		status = comac_status (cr);
 		scaled_glyph->color_glyph = FALSE;
 		scaled_glyph->color_glyph_set = TRUE;
 	    }
 
-	    cairo_destroy (cr);
+	    comac_destroy (cr);
 	}
 
-	if (status != CAIRO_INT_STATUS_SUCCESS) {
+	if (status != COMAC_INT_STATUS_SUCCESS) {
 	    if (recording_surface)
-		cairo_surface_destroy (recording_surface);
+		comac_surface_destroy (recording_surface);
 	    return status;
 	}
 
-	_cairo_scaled_glyph_set_recording_surface (scaled_glyph,
+	_comac_scaled_glyph_set_recording_surface (scaled_glyph,
 						   &scaled_font->base,
 						   recording_surface);
     }
@@ -221,20 +221,20 @@ _cairo_user_scaled_glyph_init_record_glyph (cairo_user_scaled_font_t *scaled_fon
     /* set metrics */
 
     if (extents.width == 0.) {
-	cairo_box_t bbox;
+	comac_box_t bbox;
 	double x1, y1, x2, y2;
 	double x_scale, y_scale;
 
 	/* Compute extents.x/y/width/height from recording_surface,
 	 * in font space.
 	 */
-	status = _cairo_recording_surface_get_bbox ((cairo_recording_surface_t *) recording_surface,
+	status = _comac_recording_surface_get_bbox ((comac_recording_surface_t *) recording_surface,
 						    &bbox,
 						    &scaled_font->extent_scale);
 	if (unlikely (status))
 	    return status;
 
-	_cairo_box_to_doubles (&bbox, &x1, &y1, &x2, &y2);
+	_comac_box_to_doubles (&bbox, &x1, &y1, &x2, &y2);
 
 	x_scale = scaled_font->extent_x_scale;
 	y_scale = scaled_font->extent_y_scale;
@@ -244,28 +244,28 @@ _cairo_user_scaled_glyph_init_record_glyph (cairo_user_scaled_font_t *scaled_fon
 	extents.height    = (y2 - y1) * y_scale;
     }
 
-    if (scaled_font->base.options.hint_metrics != CAIRO_HINT_METRICS_OFF) {
-	extents.x_advance = _cairo_lround (extents.x_advance / scaled_font->snap_x_scale) * scaled_font->snap_x_scale;
-	extents.y_advance = _cairo_lround (extents.y_advance / scaled_font->snap_y_scale) * scaled_font->snap_y_scale;
+    if (scaled_font->base.options.hint_metrics != COMAC_HINT_METRICS_OFF) {
+	extents.x_advance = _comac_lround (extents.x_advance / scaled_font->snap_x_scale) * scaled_font->snap_x_scale;
+	extents.y_advance = _comac_lround (extents.y_advance / scaled_font->snap_y_scale) * scaled_font->snap_y_scale;
     }
 
-    _cairo_scaled_glyph_set_metrics (scaled_glyph,
+    _comac_scaled_glyph_set_metrics (scaled_glyph,
 				     &scaled_font->base,
 				     &extents);
 
     return status;
 }
 
-static cairo_int_status_t
-_cairo_user_scaled_glyph_init_surface (cairo_user_scaled_font_t  *scaled_font,
-				       cairo_scaled_glyph_t	 *scaled_glyph,
-				       cairo_scaled_glyph_info_t  info,
-				       const cairo_color_t       *foreground_color)
+static comac_int_status_t
+_comac_user_scaled_glyph_init_surface (comac_user_scaled_font_t  *scaled_font,
+				       comac_scaled_glyph_t	 *scaled_glyph,
+				       comac_scaled_glyph_info_t  info,
+				       const comac_color_t       *foreground_color)
 {
-    cairo_surface_t *surface;
-    cairo_format_t format;
+    comac_surface_t *surface;
+    comac_format_t format;
     int width, height;
-    cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
+    comac_int_status_t status = COMAC_STATUS_SUCCESS;
 
     /* TODO
      * extend the glyph cache to support argb glyphs.
@@ -274,119 +274,119 @@ _cairo_user_scaled_glyph_init_surface (cairo_user_scaled_font_t  *scaled_font,
      */
 
     /* Only one info type at a time handled in this function */
-    assert (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE || info == CAIRO_SCALED_GLYPH_INFO_SURFACE);
+    assert (info == COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE || info == COMAC_SCALED_GLYPH_INFO_SURFACE);
 
-    width = _cairo_fixed_integer_ceil (scaled_glyph->bbox.p2.x) -
-	_cairo_fixed_integer_floor (scaled_glyph->bbox.p1.x);
-    height = _cairo_fixed_integer_ceil (scaled_glyph->bbox.p2.y) -
-	_cairo_fixed_integer_floor (scaled_glyph->bbox.p1.y);
+    width = _comac_fixed_integer_ceil (scaled_glyph->bbox.p2.x) -
+	_comac_fixed_integer_floor (scaled_glyph->bbox.p1.x);
+    height = _comac_fixed_integer_ceil (scaled_glyph->bbox.p2.y) -
+	_comac_fixed_integer_floor (scaled_glyph->bbox.p1.y);
 
-    if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
-	format = CAIRO_FORMAT_ARGB32;
+    if (info == COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) {
+	format = COMAC_FORMAT_ARGB32;
     } else {
 	switch (scaled_font->base.options.antialias) {
 	    default:
-	    case CAIRO_ANTIALIAS_DEFAULT:
-	    case CAIRO_ANTIALIAS_FAST:
-	    case CAIRO_ANTIALIAS_GOOD:
-	    case CAIRO_ANTIALIAS_GRAY:
-		format = CAIRO_FORMAT_A8;
+	    case COMAC_ANTIALIAS_DEFAULT:
+	    case COMAC_ANTIALIAS_FAST:
+	    case COMAC_ANTIALIAS_GOOD:
+	    case COMAC_ANTIALIAS_GRAY:
+		format = COMAC_FORMAT_A8;
 		break;
-	    case CAIRO_ANTIALIAS_NONE:
-		format = CAIRO_FORMAT_A1;
+	    case COMAC_ANTIALIAS_NONE:
+		format = COMAC_FORMAT_A1;
 		break;
-	    case CAIRO_ANTIALIAS_BEST:
-	    case CAIRO_ANTIALIAS_SUBPIXEL:
-		format = CAIRO_FORMAT_ARGB32;
+	    case COMAC_ANTIALIAS_BEST:
+	    case COMAC_ANTIALIAS_SUBPIXEL:
+		format = COMAC_FORMAT_ARGB32;
 		break;
 	}
     }
-    surface = cairo_image_surface_create (format, width, height);
+    surface = comac_image_surface_create (format, width, height);
 
-    cairo_surface_set_device_offset (surface,
-				     - _cairo_fixed_integer_floor (scaled_glyph->bbox.p1.x),
-				     - _cairo_fixed_integer_floor (scaled_glyph->bbox.p1.y));
+    comac_surface_set_device_offset (surface,
+				     - _comac_fixed_integer_floor (scaled_glyph->bbox.p1.x),
+				     - _comac_fixed_integer_floor (scaled_glyph->bbox.p1.y));
 
-    if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
-	status = _cairo_recording_surface_replay_with_foreground_color (scaled_glyph->recording_surface,
+    if (info == COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) {
+	status = _comac_recording_surface_replay_with_foreground_color (scaled_glyph->recording_surface,
 									surface,
 									foreground_color);
     } else {
-	status = _cairo_recording_surface_replay (scaled_glyph->recording_surface, surface);
+	status = _comac_recording_surface_replay (scaled_glyph->recording_surface, surface);
     }
 
     if (unlikely (status)) {
-	cairo_surface_destroy(surface);
+	comac_surface_destroy(surface);
 	return status;
     }
 
-    if (info == CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
-	_cairo_scaled_glyph_set_color_surface (scaled_glyph,
+    if (info == COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) {
+	_comac_scaled_glyph_set_color_surface (scaled_glyph,
 					       &scaled_font->base,
-					       (cairo_image_surface_t *)surface,
+					       (comac_image_surface_t *)surface,
 					       TRUE);
 	surface = NULL;
     } else {
-	_cairo_scaled_glyph_set_surface (scaled_glyph,
+	_comac_scaled_glyph_set_surface (scaled_glyph,
 					 &scaled_font->base,
-					 (cairo_image_surface_t *) surface);
+					 (comac_image_surface_t *) surface);
 	surface = NULL;
     }
 
     if (surface)
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
     return status;
 }
 
-static cairo_int_status_t
-_cairo_user_scaled_glyph_init (void			 *abstract_font,
-			       cairo_scaled_glyph_t	 *scaled_glyph,
-			       cairo_scaled_glyph_info_t  info,
-			       const cairo_color_t       *foreground_color)
+static comac_int_status_t
+_comac_user_scaled_glyph_init (void			 *abstract_font,
+			       comac_scaled_glyph_t	 *scaled_glyph,
+			       comac_scaled_glyph_info_t  info,
+			       const comac_color_t       *foreground_color)
 {
-    cairo_int_status_t status = CAIRO_STATUS_SUCCESS;
-    cairo_user_scaled_font_t *scaled_font = abstract_font;
+    comac_int_status_t status = COMAC_STATUS_SUCCESS;
+    comac_user_scaled_font_t *scaled_font = abstract_font;
 
     if (!scaled_glyph->recording_surface) {
-	status = _cairo_user_scaled_glyph_init_record_glyph (scaled_font, scaled_glyph);
+	status = _comac_user_scaled_glyph_init_record_glyph (scaled_font, scaled_glyph);
 	if (status)
 	    return status;
     }
 
-    if (info & CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE) {
+    if (info & COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE) {
 	if (!scaled_glyph->color_glyph )
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 
-	status = _cairo_user_scaled_glyph_init_surface (scaled_font,
+	status = _comac_user_scaled_glyph_init_surface (scaled_font,
 							scaled_glyph,
-							CAIRO_SCALED_GLYPH_INFO_COLOR_SURFACE,
+							COMAC_SCALED_GLYPH_INFO_COLOR_SURFACE,
 							foreground_color);
 	if (status)
 	    return status;
     }
 
-    if (info & CAIRO_SCALED_GLYPH_INFO_SURFACE) {
-	status = _cairo_user_scaled_glyph_init_surface (scaled_font,
+    if (info & COMAC_SCALED_GLYPH_INFO_SURFACE) {
+	status = _comac_user_scaled_glyph_init_surface (scaled_font,
 							scaled_glyph,
-							CAIRO_SCALED_GLYPH_INFO_SURFACE,
+							COMAC_SCALED_GLYPH_INFO_SURFACE,
 							NULL);
 	if (status)
 	    return status;
     }
 
-    if (info & CAIRO_SCALED_GLYPH_INFO_PATH) {
-	cairo_path_fixed_t *path = _cairo_path_fixed_create ();
+    if (info & COMAC_SCALED_GLYPH_INFO_PATH) {
+	comac_path_fixed_t *path = _comac_path_fixed_create ();
 	if (!path)
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-	status = _cairo_recording_surface_get_path (scaled_glyph->recording_surface, path);
+	status = _comac_recording_surface_get_path (scaled_glyph->recording_surface, path);
 	if (unlikely (status)) {
-	    _cairo_path_fixed_destroy (path);
+	    _comac_path_fixed_destroy (path);
 	    return status;
 	}
 
-	_cairo_scaled_glyph_set_path (scaled_glyph,
+	_comac_scaled_glyph_set_path (scaled_glyph,
 				      &scaled_font->base,
 				      path);
     }
@@ -395,25 +395,25 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
 }
 
 static unsigned long
-_cairo_user_ucs4_to_index (void	    *abstract_font,
+_comac_user_ucs4_to_index (void	    *abstract_font,
 			   uint32_t  ucs4)
 {
-    cairo_user_scaled_font_t *scaled_font = abstract_font;
-    cairo_user_font_face_t *face =
-	(cairo_user_font_face_t *) scaled_font->base.font_face;
+    comac_user_scaled_font_t *scaled_font = abstract_font;
+    comac_user_font_face_t *face =
+	(comac_user_font_face_t *) scaled_font->base.font_face;
     unsigned long glyph = 0;
 
     if (face->scaled_font_methods.unicode_to_glyph) {
-	cairo_status_t status;
+	comac_status_t status;
 
 	status = face->scaled_font_methods.unicode_to_glyph (&scaled_font->base,
 							     ucs4, &glyph);
 
-	if (status == CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED)
+	if (status == COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED)
 	    goto not_implemented;
 
-	if (status != CAIRO_STATUS_SUCCESS) {
-	    status = _cairo_scaled_font_set_error (&scaled_font->base, status);
+	if (status != COMAC_STATUS_SUCCESS) {
+	    status = _comac_scaled_font_set_error (&scaled_font->base, status);
 	    glyph = 0;
 	}
 
@@ -425,37 +425,37 @@ not_implemented:
     return glyph;
 }
 
-static cairo_bool_t
-_cairo_user_has_color_glyphs (void         *abstract_font)
+static comac_bool_t
+_comac_user_has_color_glyphs (void         *abstract_font)
 {
-    cairo_user_scaled_font_t *scaled_font = abstract_font;
-    cairo_user_font_face_t *face =
-	(cairo_user_font_face_t *) scaled_font->base.font_face;
+    comac_user_scaled_font_t *scaled_font = abstract_font;
+    comac_user_font_face_t *face =
+	(comac_user_font_face_t *) scaled_font->base.font_face;
 
     return face->has_color;
 }
 
-static cairo_int_status_t
-_cairo_user_text_to_glyphs (void		      *abstract_font,
+static comac_int_status_t
+_comac_user_text_to_glyphs (void		      *abstract_font,
 			    double		       x,
 			    double		       y,
 			    const char		      *utf8,
 			    int			       utf8_len,
-			    cairo_glyph_t	     **glyphs,
+			    comac_glyph_t	     **glyphs,
 			    int			       *num_glyphs,
-			    cairo_text_cluster_t      **clusters,
+			    comac_text_cluster_t      **clusters,
 			    int			       *num_clusters,
-			    cairo_text_cluster_flags_t *cluster_flags)
+			    comac_text_cluster_flags_t *cluster_flags)
 {
-    cairo_int_status_t status = CAIRO_INT_STATUS_UNSUPPORTED;
+    comac_int_status_t status = COMAC_INT_STATUS_UNSUPPORTED;
 
-    cairo_user_scaled_font_t *scaled_font = abstract_font;
-    cairo_user_font_face_t *face =
-	(cairo_user_font_face_t *) scaled_font->base.font_face;
+    comac_user_scaled_font_t *scaled_font = abstract_font;
+    comac_user_font_face_t *face =
+	(comac_user_font_face_t *) scaled_font->base.font_face;
 
     if (face->scaled_font_methods.text_to_glyphs) {
 	int i;
-	cairo_glyph_t *orig_glyphs = *glyphs;
+	comac_glyph_t *orig_glyphs = *glyphs;
 	int orig_num_glyphs = *num_glyphs;
 
 	status = face->scaled_font_methods.text_to_glyphs (&scaled_font->base,
@@ -463,18 +463,18 @@ _cairo_user_text_to_glyphs (void		      *abstract_font,
 							   glyphs, num_glyphs,
 							   clusters, num_clusters, cluster_flags);
 
-	if (status != CAIRO_INT_STATUS_SUCCESS &&
-	    status != CAIRO_INT_STATUS_USER_FONT_NOT_IMPLEMENTED)
+	if (status != COMAC_INT_STATUS_SUCCESS &&
+	    status != COMAC_INT_STATUS_USER_FONT_NOT_IMPLEMENTED)
 	    return status;
 
-	if (status == CAIRO_INT_STATUS_USER_FONT_NOT_IMPLEMENTED ||
+	if (status == COMAC_INT_STATUS_USER_FONT_NOT_IMPLEMENTED ||
 	    *num_glyphs < 0) {
 	    if (orig_glyphs != *glyphs) {
-		cairo_glyph_free (*glyphs);
+		comac_glyph_free (*glyphs);
 		*glyphs = orig_glyphs;
 	    }
 	    *num_glyphs = orig_num_glyphs;
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 	}
 
 	/* Convert from font space to user space and add x,y */
@@ -482,7 +482,7 @@ _cairo_user_text_to_glyphs (void		      *abstract_font,
 	    double gx = (*glyphs)[i].x;
 	    double gy = (*glyphs)[i].y;
 
-	    cairo_matrix_transform_point (&scaled_font->base.font_matrix,
+	    comac_matrix_transform_point (&scaled_font->base.font_matrix,
 					  &gx, &gy);
 
 	    (*glyphs)[i].x = gx + x;
@@ -493,58 +493,58 @@ _cairo_user_text_to_glyphs (void		      *abstract_font,
     return status;
 }
 
-static cairo_status_t
-_cairo_user_font_face_scaled_font_create (void                        *abstract_face,
-					  const cairo_matrix_t        *font_matrix,
-					  const cairo_matrix_t        *ctm,
-					  const cairo_font_options_t  *options,
-					  cairo_scaled_font_t        **scaled_font);
+static comac_status_t
+_comac_user_font_face_scaled_font_create (void                        *abstract_face,
+					  const comac_matrix_t        *font_matrix,
+					  const comac_matrix_t        *ctm,
+					  const comac_font_options_t  *options,
+					  comac_scaled_font_t        **scaled_font);
 
-static cairo_status_t
-_cairo_user_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
-				      cairo_font_face_t      **font_face)
+static comac_status_t
+_comac_user_font_face_create_for_toy (comac_toy_font_face_t   *toy_face,
+				      comac_font_face_t      **font_face)
 {
-    return _cairo_font_face_twin_create_for_toy (toy_face, font_face);
+    return _comac_font_face_twin_create_for_toy (toy_face, font_face);
 }
 
-static const cairo_scaled_font_backend_t _cairo_user_scaled_font_backend = {
-    CAIRO_FONT_TYPE_USER,
+static const comac_scaled_font_backend_t _comac_user_scaled_font_backend = {
+    COMAC_FONT_TYPE_USER,
     NULL,	/* scaled_font_fini */
-    _cairo_user_scaled_glyph_init,
-    _cairo_user_text_to_glyphs,
-    _cairo_user_ucs4_to_index,
+    _comac_user_scaled_glyph_init,
+    _comac_user_text_to_glyphs,
+    _comac_user_ucs4_to_index,
     NULL,	/* load_truetype_table */
     NULL,	/* index_to_ucs4 */
     NULL,       /* is_synthetic */
     NULL,       /* index_to_glyph_name */
     NULL,       /* load_type1_data */
-    _cairo_user_has_color_glyphs,
+    _comac_user_has_color_glyphs,
 };
 
-/* #cairo_user_font_face_t */
+/* #comac_user_font_face_t */
 
-static cairo_status_t
-_cairo_user_font_face_scaled_font_create (void                        *abstract_face,
-					  const cairo_matrix_t        *font_matrix,
-					  const cairo_matrix_t        *ctm,
-					  const cairo_font_options_t  *options,
-					  cairo_scaled_font_t        **scaled_font)
+static comac_status_t
+_comac_user_font_face_scaled_font_create (void                        *abstract_face,
+					  const comac_matrix_t        *font_matrix,
+					  const comac_matrix_t        *ctm,
+					  const comac_font_options_t  *options,
+					  comac_scaled_font_t        **scaled_font)
 {
-    cairo_status_t status = CAIRO_STATUS_SUCCESS;
-    cairo_user_font_face_t *font_face = abstract_face;
-    cairo_user_scaled_font_t *user_scaled_font = NULL;
-    cairo_font_extents_t font_extents = {1., 0., 1., 1., 0.};
+    comac_status_t status = COMAC_STATUS_SUCCESS;
+    comac_user_font_face_t *font_face = abstract_face;
+    comac_user_scaled_font_t *user_scaled_font = NULL;
+    comac_font_extents_t font_extents = {1., 0., 1., 1., 0.};
 
     font_face->immutable = TRUE;
 
-    user_scaled_font = _cairo_malloc (sizeof (cairo_user_scaled_font_t));
+    user_scaled_font = _comac_malloc (sizeof (comac_user_scaled_font_t));
     if (unlikely (user_scaled_font == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    status = _cairo_scaled_font_init (&user_scaled_font->base,
+    status = _comac_scaled_font_init (&user_scaled_font->base,
 				      &font_face->base,
 				      font_matrix, ctm, options,
-				      &_cairo_user_scaled_font_backend);
+				      &_comac_user_scaled_font_backend);
 
     if (unlikely (status)) {
 	free (user_scaled_font);
@@ -554,16 +554,16 @@ _cairo_user_font_face_scaled_font_create (void                        *abstract_
     /* XXX metrics hinting? */
 
     /* compute a normalized version of font scale matrix to compute
-     * extents in.  This is to minimize error caused by the cairo_fixed_t
+     * extents in.  This is to minimize error caused by the comac_fixed_t
      * representation. */
     {
 	double fixed_scale, x_scale, y_scale;
 
 	user_scaled_font->extent_scale = user_scaled_font->base.scale_inverse;
-	status = _cairo_matrix_compute_basis_scale_factors (&user_scaled_font->extent_scale,
+	status = _comac_matrix_compute_basis_scale_factors (&user_scaled_font->extent_scale,
 						      &x_scale, &y_scale,
 						      1);
-	if (status == CAIRO_STATUS_SUCCESS) {
+	if (status == COMAC_STATUS_SUCCESS) {
 
 	    if (x_scale == 0) x_scale = 1.;
 	    if (y_scale == 0) y_scale = 1.;
@@ -577,53 +577,53 @@ _cairo_user_font_face_scaled_font_create (void                        *abstract_
 	    x_scale /= fixed_scale;
 	    y_scale /= fixed_scale;
 
-	    cairo_matrix_scale (&user_scaled_font->extent_scale, 1. / x_scale, 1. / y_scale);
+	    comac_matrix_scale (&user_scaled_font->extent_scale, 1. / x_scale, 1. / y_scale);
 
 	    user_scaled_font->extent_x_scale = x_scale;
 	    user_scaled_font->extent_y_scale = y_scale;
 	}
     }
 
-    if (status == CAIRO_STATUS_SUCCESS &&
+    if (status == COMAC_STATUS_SUCCESS &&
 	font_face->scaled_font_methods.init != NULL)
     {
 	/* Lock the scaled_font mutex such that user doesn't accidentally try
          * to use it just yet. */
-	CAIRO_MUTEX_LOCK (user_scaled_font->base.mutex);
+	COMAC_MUTEX_LOCK (user_scaled_font->base.mutex);
 
 	/* Give away fontmap lock such that user-font can use other fonts */
-	status = _cairo_scaled_font_register_placeholder_and_unlock_font_map (&user_scaled_font->base);
-	if (status == CAIRO_STATUS_SUCCESS) {
-	    cairo_surface_t *recording_surface;
-	    cairo_t *cr;
+	status = _comac_scaled_font_register_placeholder_and_unlock_font_map (&user_scaled_font->base);
+	if (status == COMAC_STATUS_SUCCESS) {
+	    comac_surface_t *recording_surface;
+	    comac_t *cr;
 
-	    recording_surface = _cairo_user_scaled_font_create_recording_surface (user_scaled_font, FALSE);
-	    cr = _cairo_user_scaled_font_create_recording_context (user_scaled_font, recording_surface, FALSE);
-	    cairo_surface_destroy (recording_surface);
+	    recording_surface = _comac_user_scaled_font_create_recording_surface (user_scaled_font, FALSE);
+	    cr = _comac_user_scaled_font_create_recording_context (user_scaled_font, recording_surface, FALSE);
+	    comac_surface_destroy (recording_surface);
 
 	    status = font_face->scaled_font_methods.init (&user_scaled_font->base,
 							  cr,
 							  &font_extents);
 
-	    if (status == CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED)
-		status = CAIRO_STATUS_SUCCESS;
+	    if (status == COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED)
+		status = COMAC_STATUS_SUCCESS;
 
-	    if (status == CAIRO_STATUS_SUCCESS)
-		status = cairo_status (cr);
+	    if (status == COMAC_STATUS_SUCCESS)
+		status = comac_status (cr);
 
-	    cairo_destroy (cr);
+	    comac_destroy (cr);
 
-	    _cairo_scaled_font_unregister_placeholder_and_lock_font_map (&user_scaled_font->base);
+	    _comac_scaled_font_unregister_placeholder_and_lock_font_map (&user_scaled_font->base);
 	}
 
-	CAIRO_MUTEX_UNLOCK (user_scaled_font->base.mutex);
+	COMAC_MUTEX_UNLOCK (user_scaled_font->base.mutex);
     }
 
-    if (status == CAIRO_STATUS_SUCCESS)
-	status = _cairo_scaled_font_set_metrics (&user_scaled_font->base, &font_extents);
+    if (status == COMAC_STATUS_SUCCESS)
+	status = _comac_scaled_font_set_metrics (&user_scaled_font->base, &font_extents);
 
-    if (status != CAIRO_STATUS_SUCCESS) {
-        _cairo_scaled_font_fini (&user_scaled_font->base);
+    if (status != COMAC_STATUS_SUCCESS) {
+        _comac_scaled_font_fini (&user_scaled_font->base);
 	free (user_scaled_font);
     } else {
         user_scaled_font->default_glyph_extents.x_bearing = 0.;
@@ -639,24 +639,24 @@ _cairo_user_font_face_scaled_font_create (void                        *abstract_
     return status;
 }
 
-const cairo_font_face_backend_t _cairo_user_font_face_backend = {
-    CAIRO_FONT_TYPE_USER,
-    _cairo_user_font_face_create_for_toy,
-    _cairo_font_face_destroy,
-    _cairo_user_font_face_scaled_font_create
+const comac_font_face_backend_t _comac_user_font_face_backend = {
+    COMAC_FONT_TYPE_USER,
+    _comac_user_font_face_create_for_toy,
+    _comac_font_face_destroy,
+    _comac_user_font_face_scaled_font_create
 };
 
 
-cairo_bool_t
-_cairo_font_face_is_user (cairo_font_face_t *font_face)
+comac_bool_t
+_comac_font_face_is_user (comac_font_face_t *font_face)
 {
-    return font_face->backend == &_cairo_user_font_face_backend;
+    return font_face->backend == &_comac_user_font_face_backend;
 }
 
 /* Implement the public interface */
 
 /**
- * cairo_user_font_face_create:
+ * comac_user_font_face_create:
  *
  * Creates a new user font-face.
  *
@@ -664,28 +664,28 @@ _cairo_font_face_is_user (cairo_font_face_t *font_face)
  * user font.  The only mandatory callback is render_glyph.
  *
  * After the font-face is created, the user can attach arbitrary data
- * (the actual font data) to it using cairo_font_face_set_user_data()
+ * (the actual font data) to it using comac_font_face_set_user_data()
  * and access it from the user-font callbacks by using
- * cairo_scaled_font_get_font_face() followed by
- * cairo_font_face_get_user_data().
+ * comac_scaled_font_get_font_face() followed by
+ * comac_font_face_get_user_data().
  *
- * Return value: a newly created #cairo_font_face_t. Free with
- *  cairo_font_face_destroy() when you are done using it.
+ * Return value: a newly created #comac_font_face_t. Free with
+ *  comac_font_face_destroy() when you are done using it.
  *
  * Since: 1.8
  **/
-cairo_font_face_t *
-cairo_user_font_face_create (void)
+comac_font_face_t *
+comac_user_font_face_create (void)
 {
-    cairo_user_font_face_t *font_face;
+    comac_user_font_face_t *font_face;
 
-    font_face = _cairo_malloc (sizeof (cairo_user_font_face_t));
+    font_face = _comac_malloc (sizeof (comac_user_font_face_t));
     if (!font_face) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_font_face_t *)&_cairo_font_face_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_font_face_t *)&_comac_font_face_nil;
     }
 
-    _cairo_font_face_init (&font_face->base, &_cairo_user_font_face_backend);
+    _comac_font_face_init (&font_face->base, &_comac_user_font_face_backend);
 
     font_face->immutable = FALSE;
     font_face->has_color = FALSE;
@@ -698,86 +698,86 @@ cairo_user_font_face_create (void)
 
 
 /**
- * cairo_user_font_face_set_init_func:
+ * comac_user_font_face_set_init_func:
  * @font_face: A user font face
  * @init_func: The init callback, or %NULL
  *
  * Sets the scaled-font initialization function of a user-font.
- * See #cairo_user_scaled_font_init_func_t for details of how the callback
+ * See #comac_user_scaled_font_init_func_t for details of how the callback
  * works.
  *
- * The font-face should not be immutable or a %CAIRO_STATUS_USER_FONT_IMMUTABLE
+ * The font-face should not be immutable or a %COMAC_STATUS_USER_FONT_IMMUTABLE
  * error will occur.  A user font-face is immutable as soon as a scaled-font
  * is created from it.
  *
  * Since: 1.8
  **/
 void
-cairo_user_font_face_set_init_func (cairo_font_face_t                  *font_face,
-				    cairo_user_scaled_font_init_func_t  init_func)
+comac_user_font_face_set_init_func (comac_font_face_t                  *font_face,
+				    comac_user_scaled_font_init_func_t  init_func)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     if (user_font_face->immutable) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_USER_FONT_IMMUTABLE))
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_USER_FONT_IMMUTABLE))
 	    return;
     }
     user_font_face->scaled_font_methods.init = init_func;
 }
 
 /**
- * cairo_user_font_face_set_render_color_glyph_func:
+ * comac_user_font_face_set_render_color_glyph_func:
  * @font_face: A user font face
  * @render_glyph_func: The render_glyph callback, or %NULL
  *
  * Sets the color glyph rendering function of a user-font.
- * See #cairo_user_scaled_font_render_glyph_func_t for details of how the callback
+ * See #comac_user_scaled_font_render_glyph_func_t for details of how the callback
  * works.
  *
- * The font-face should not be immutable or a %CAIRO_STATUS_USER_FONT_IMMUTABLE
+ * The font-face should not be immutable or a %COMAC_STATUS_USER_FONT_IMMUTABLE
  * error will occur.  A user font-face is immutable as soon as a scaled-font
  * is created from it.
  *
  * The render_glyph callback is the only mandatory callback of a
  * user-font. At least one of
- * cairo_user_font_face_set_render_color_glyph_func() or
- * cairo_user_font_face_set_render_glyph_func() must be called to set
+ * comac_user_font_face_set_render_color_glyph_func() or
+ * comac_user_font_face_set_render_glyph_func() must be called to set
  * a render callback. If both callbacks are set, the color glyph
  * render callback is invoked first. If the color glyph render
- * callback returns %CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED, the
+ * callback returns %COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED, the
  * non-color version of the callback is invoked.
  *
  * If the callback is %NULL and a glyph is tried to be rendered using
- * @font_face, a %CAIRO_STATUS_USER_FONT_ERROR will occur.
+ * @font_face, a %COMAC_STATUS_USER_FONT_ERROR will occur.
  *
  * Since: 1.18
  **/
 void
-cairo_user_font_face_set_render_color_glyph_func (cairo_font_face_t                          *font_face,
-                                                  cairo_user_scaled_font_render_glyph_func_t  render_glyph_func)
+comac_user_font_face_set_render_color_glyph_func (comac_font_face_t                          *font_face,
+                                                  comac_user_scaled_font_render_glyph_func_t  render_glyph_func)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     if (user_font_face->immutable) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_USER_FONT_IMMUTABLE))
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_USER_FONT_IMMUTABLE))
 	    return;
     }
     user_font_face->scaled_font_methods.render_color_glyph = render_glyph_func;
@@ -785,122 +785,122 @@ cairo_user_font_face_set_render_color_glyph_func (cairo_font_face_t             
 }
 
 /**
- * cairo_user_font_face_set_render_glyph_func:
+ * comac_user_font_face_set_render_glyph_func:
  * @font_face: A user font face
  * @render_glyph_func: The render_glyph callback, or %NULL
  *
  * Sets the glyph rendering function of a user-font.
- * See #cairo_user_scaled_font_render_glyph_func_t for details of how the callback
+ * See #comac_user_scaled_font_render_glyph_func_t for details of how the callback
  * works.
  *
- * The font-face should not be immutable or a %CAIRO_STATUS_USER_FONT_IMMUTABLE
+ * The font-face should not be immutable or a %COMAC_STATUS_USER_FONT_IMMUTABLE
  * error will occur.  A user font-face is immutable as soon as a scaled-font
  * is created from it.
  *
  * The render_glyph callback is the only mandatory callback of a
  * user-font. At least one of
- * cairo_user_font_face_set_render_color_glyph_func() or
- * cairo_user_font_face_set_render_glyph_func() must be called to set
+ * comac_user_font_face_set_render_color_glyph_func() or
+ * comac_user_font_face_set_render_glyph_func() must be called to set
  * a render callback. If both callbacks are set, the color glyph
  * render callback is invoked first. If the color glyph render
- * callback returns %CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED, the
+ * callback returns %COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED, the
  * non-color version of the callback is invoked.
  *
  * If the callback is %NULL and a glyph is tried to be rendered using
- * @font_face, a %CAIRO_STATUS_USER_FONT_ERROR will occur.
+ * @font_face, a %COMAC_STATUS_USER_FONT_ERROR will occur.
  *
  * Since: 1.8
  **/
 void
-cairo_user_font_face_set_render_glyph_func (cairo_font_face_t                          *font_face,
-					    cairo_user_scaled_font_render_glyph_func_t  render_glyph_func)
+comac_user_font_face_set_render_glyph_func (comac_font_face_t                          *font_face,
+					    comac_user_scaled_font_render_glyph_func_t  render_glyph_func)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     if (user_font_face->immutable) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_USER_FONT_IMMUTABLE))
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_USER_FONT_IMMUTABLE))
 	    return;
     }
     user_font_face->scaled_font_methods.render_glyph = render_glyph_func;
 }
 
 /**
- * cairo_user_font_face_set_text_to_glyphs_func:
+ * comac_user_font_face_set_text_to_glyphs_func:
  * @font_face: A user font face
  * @text_to_glyphs_func: The text_to_glyphs callback, or %NULL
  *
  * Sets th text-to-glyphs conversion function of a user-font.
- * See #cairo_user_scaled_font_text_to_glyphs_func_t for details of how the callback
+ * See #comac_user_scaled_font_text_to_glyphs_func_t for details of how the callback
  * works.
  *
- * The font-face should not be immutable or a %CAIRO_STATUS_USER_FONT_IMMUTABLE
+ * The font-face should not be immutable or a %COMAC_STATUS_USER_FONT_IMMUTABLE
  * error will occur.  A user font-face is immutable as soon as a scaled-font
  * is created from it.
  *
  * Since: 1.8
  **/
 void
-cairo_user_font_face_set_text_to_glyphs_func (cairo_font_face_t                            *font_face,
-					      cairo_user_scaled_font_text_to_glyphs_func_t  text_to_glyphs_func)
+comac_user_font_face_set_text_to_glyphs_func (comac_font_face_t                            *font_face,
+					      comac_user_scaled_font_text_to_glyphs_func_t  text_to_glyphs_func)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     if (user_font_face->immutable) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_USER_FONT_IMMUTABLE))
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_USER_FONT_IMMUTABLE))
 	    return;
     }
     user_font_face->scaled_font_methods.text_to_glyphs = text_to_glyphs_func;
 }
 
 /**
- * cairo_user_font_face_set_unicode_to_glyph_func:
+ * comac_user_font_face_set_unicode_to_glyph_func:
  * @font_face: A user font face
  * @unicode_to_glyph_func: The unicode_to_glyph callback, or %NULL
  *
  * Sets the unicode-to-glyph conversion function of a user-font.
- * See #cairo_user_scaled_font_unicode_to_glyph_func_t for details of how the callback
+ * See #comac_user_scaled_font_unicode_to_glyph_func_t for details of how the callback
  * works.
  *
- * The font-face should not be immutable or a %CAIRO_STATUS_USER_FONT_IMMUTABLE
+ * The font-face should not be immutable or a %COMAC_STATUS_USER_FONT_IMMUTABLE
  * error will occur.  A user font-face is immutable as soon as a scaled-font
  * is created from it.
  *
  * Since: 1.8
  **/
 void
-cairo_user_font_face_set_unicode_to_glyph_func (cairo_font_face_t                              *font_face,
-						cairo_user_scaled_font_unicode_to_glyph_func_t  unicode_to_glyph_func)
+comac_user_font_face_set_unicode_to_glyph_func (comac_font_face_t                              *font_face,
+						comac_user_scaled_font_unicode_to_glyph_func_t  unicode_to_glyph_func)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
     if (font_face->status)
 	return;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     if (user_font_face->immutable) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_USER_FONT_IMMUTABLE))
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_USER_FONT_IMMUTABLE))
 	    return;
     }
     user_font_face->scaled_font_methods.unicode_to_glyph = unicode_to_glyph_func;
@@ -909,7 +909,7 @@ cairo_user_font_face_set_unicode_to_glyph_func (cairo_font_face_t               
 /* User-font method getters */
 
 /**
- * cairo_user_font_face_get_init_func:
+ * comac_user_font_face_get_init_func:
  * @font_face: A user font face
  *
  * Gets the scaled-font initialization function of a user-font.
@@ -919,25 +919,25 @@ cairo_user_font_face_set_unicode_to_glyph_func (cairo_font_face_t               
  *
  * Since: 1.8
  **/
-cairo_user_scaled_font_init_func_t
-cairo_user_font_face_get_init_func (cairo_font_face_t *font_face)
+comac_user_scaled_font_init_func_t
+comac_user_font_face_get_init_func (comac_font_face_t *font_face)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return NULL;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return NULL;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     return user_font_face->scaled_font_methods.init;
 }
 
 /**
- * cairo_user_font_face_get_render_color_glyph_func:
+ * comac_user_font_face_get_render_color_glyph_func:
  * @font_face: A user font face
  *
  * Gets the color glyph rendering function of a user-font.
@@ -947,25 +947,25 @@ cairo_user_font_face_get_init_func (cairo_font_face_t *font_face)
  *
  * Since: 1.18
  **/
-cairo_user_scaled_font_render_glyph_func_t
-cairo_user_font_face_get_render_color_glyph_func (cairo_font_face_t *font_face)
+comac_user_scaled_font_render_glyph_func_t
+comac_user_font_face_get_render_color_glyph_func (comac_font_face_t *font_face)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return NULL;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return NULL;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     return user_font_face->scaled_font_methods.render_color_glyph;
 }
 
 /**
- * cairo_user_font_face_get_render_glyph_func:
+ * comac_user_font_face_get_render_glyph_func:
  * @font_face: A user font face
  *
  * Gets the glyph rendering function of a user-font.
@@ -975,25 +975,25 @@ cairo_user_font_face_get_render_color_glyph_func (cairo_font_face_t *font_face)
  *
  * Since: 1.8
  **/
-cairo_user_scaled_font_render_glyph_func_t
-cairo_user_font_face_get_render_glyph_func (cairo_font_face_t *font_face)
+comac_user_scaled_font_render_glyph_func_t
+comac_user_font_face_get_render_glyph_func (comac_font_face_t *font_face)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return NULL;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return NULL;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     return user_font_face->scaled_font_methods.render_glyph;
 }
 
 /**
- * cairo_user_font_face_get_text_to_glyphs_func:
+ * comac_user_font_face_get_text_to_glyphs_func:
  * @font_face: A user font face
  *
  * Gets the text-to-glyphs conversion function of a user-font.
@@ -1003,25 +1003,25 @@ cairo_user_font_face_get_render_glyph_func (cairo_font_face_t *font_face)
  *
  * Since: 1.8
  **/
-cairo_user_scaled_font_text_to_glyphs_func_t
-cairo_user_font_face_get_text_to_glyphs_func (cairo_font_face_t *font_face)
+comac_user_scaled_font_text_to_glyphs_func_t
+comac_user_font_face_get_text_to_glyphs_func (comac_font_face_t *font_face)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return NULL;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return NULL;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     return user_font_face->scaled_font_methods.text_to_glyphs;
 }
 
 /**
- * cairo_user_font_face_get_unicode_to_glyph_func:
+ * comac_user_font_face_get_unicode_to_glyph_func:
  * @font_face: A user font face
  *
  * Gets the unicode-to-glyph conversion function of a user-font.
@@ -1031,19 +1031,19 @@ cairo_user_font_face_get_text_to_glyphs_func (cairo_font_face_t *font_face)
  *
  * Since: 1.8
  **/
-cairo_user_scaled_font_unicode_to_glyph_func_t
-cairo_user_font_face_get_unicode_to_glyph_func (cairo_font_face_t *font_face)
+comac_user_scaled_font_unicode_to_glyph_func_t
+comac_user_font_face_get_unicode_to_glyph_func (comac_font_face_t *font_face)
 {
-    cairo_user_font_face_t *user_font_face;
+    comac_user_font_face_t *user_font_face;
 
     if (font_face->status)
 	return NULL;
 
-    if (! _cairo_font_face_is_user (font_face)) {
-	if (_cairo_font_face_set_error (font_face, CAIRO_STATUS_FONT_TYPE_MISMATCH))
+    if (! _comac_font_face_is_user (font_face)) {
+	if (_comac_font_face_set_error (font_face, COMAC_STATUS_FONT_TYPE_MISMATCH))
 	    return NULL;
     }
 
-    user_font_face = (cairo_user_font_face_t *) font_face;
+    user_font_face = (comac_user_font_face_t *) font_face;
     return user_font_face->scaled_font_methods.unicode_to_glyph;
 }

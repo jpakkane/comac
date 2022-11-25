@@ -37,56 +37,56 @@
 #define HEIGHT (TEXT_SIZE + 2*BORDER)
 
 
-static cairo_status_t
-test_scaled_font_render_glyph (cairo_scaled_font_t  *scaled_font,
+static comac_status_t
+test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 			       unsigned long         glyph,
-			       cairo_t              *cr,
-			       cairo_text_extents_t *metrics)
+			       comac_t              *cr,
+			       comac_text_extents_t *metrics)
 {
-    cairo_rectangle (cr, 0, .45, 1., .1);
-    cairo_fill (cr);
-    return CAIRO_STATUS_SUCCESS;
+    comac_rectangle (cr, 0, .45, 1., .1);
+    comac_fill (cr);
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_font_face_t *
+static comac_font_face_t *
 _user_font_face_create (void)
 {
-    cairo_font_face_t *user_font_face;
+    comac_font_face_t *user_font_face;
 
-    user_font_face = cairo_user_font_face_create ();
-    cairo_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
+    user_font_face = comac_user_font_face_create ();
+    comac_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
 
     return user_font_face;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_font_face_t *font_face;
+    comac_font_face_t *font_face;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     font_face = _user_font_face_create ();
 
-    cairo_set_font_face (cr, font_face);
-    cairo_font_face_destroy (font_face);
+    comac_set_font_face (cr, font_face);
+    comac_font_face_destroy (font_face);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_font_size (cr, TEXT_SIZE);
 
     for (unsigned i = 0; i < REPEAT; i++)
     {
-      cairo_move_to (cr, BORDER + TEXT_SIZE * i, BORDER + i * .1);
-      cairo_show_text (cr, "-");
+      comac_move_to (cr, BORDER + TEXT_SIZE * i, BORDER + i * .1);
+      comac_show_text (cr, "-");
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (user_font_subpixel,
+COMAC_TEST (user_font_subpixel,
 	    "Tests user font subpixel rendering",
 	    "font, user-font", /* keywords */
-	    "cairo >= 1.17.4", /* requirements */
+	    "comac >= 1.17.4", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw)

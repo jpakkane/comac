@@ -40,36 +40,36 @@ uniform_random (double minval, double maxval)
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     state = 0x12345678;
-    cairo_translate (cr, 1, 1);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+    comac_translate (cr, 1, 1);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
-    cairo_move_to (cr, 0, 0);
+    comac_move_to (cr, 0, 0);
     for (i = 0; i < NUM_SEGMENTS; i++) {
 	double x = uniform_random (0, width);
 	double y = uniform_random (0, height);
-	cairo_line_to (cr, x, y);
+	comac_line_to (cr, x, y);
     }
-    cairo_close_path (cr);
+    comac_close_path (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill_preserve (cr);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_set_line_width (cr, 0.5);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill_preserve (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_set_line_width (cr, 0.5);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (random_intersections_eo,
+COMAC_TEST (random_intersections_eo,
 	    "Tests the tessellator trapezoid generation and intersection computation",
 	    "trap", /* keywords */
 	    NULL, /* requirements */

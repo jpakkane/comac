@@ -44,41 +44,41 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 1.0, 1.0);
+    comac_translate (cr, 1.0, 1.0);
 
-    cairo_set_source_rgb (cr, 1, 0, 0); /* red */
+    comac_set_source_rgb (cr, 1, 0, 0); /* red */
 
     /* First draw the desired shape with a fill */
-    cairo_rectangle (cr, 0.5, 0.5,  4.0, 4.0);
-    cairo_rectangle (cr, 3.5, 3.5,  4.0, 4.0);
-    cairo_rectangle (cr, 3.5, 1.5, -2.0, 2.0);
-    cairo_rectangle (cr, 6.5, 4.5, -2.0, 2.0);
+    comac_rectangle (cr, 0.5, 0.5,  4.0, 4.0);
+    comac_rectangle (cr, 3.5, 3.5,  4.0, 4.0);
+    comac_rectangle (cr, 3.5, 1.5, -2.0, 2.0);
+    comac_rectangle (cr, 6.5, 4.5, -2.0, 2.0);
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
     /* Then try the same thing with a stroke */
-    cairo_translate (cr, 0, 10);
-    cairo_move_to (cr, 1.0, 1.0);
-    cairo_rel_line_to (cr,  3.0,  0.0);
-    cairo_rel_line_to (cr,  0.0,  6.0);
-    cairo_rel_line_to (cr,  3.0,  0.0);
-    cairo_rel_line_to (cr,  0.0, -3.0);
-    cairo_rel_line_to (cr, -6.0,  0.0);
-    cairo_close_path (cr);
+    comac_translate (cr, 0, 10);
+    comac_move_to (cr, 1.0, 1.0);
+    comac_rel_line_to (cr,  3.0,  0.0);
+    comac_rel_line_to (cr,  0.0,  6.0);
+    comac_rel_line_to (cr,  3.0,  0.0);
+    comac_rel_line_to (cr,  0.0, -3.0);
+    comac_rel_line_to (cr, -6.0,  0.0);
+    comac_close_path (cr);
 
-    cairo_set_line_width (cr, 1.0);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 1.0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (self_intersecting,
+COMAC_TEST (self_intersecting,
 	    "Test strokes of self-intersecting paths"
 	    "\nSelf-intersecting strokes are wrong due to incremental trapezoidization.",
 	    "stroke, trap", /* keywords */

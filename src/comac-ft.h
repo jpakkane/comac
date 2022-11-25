@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,41 +34,41 @@
  *	Owen Taylor <otaylor@redhat.com>
  */
 
-#ifndef CAIRO_FT_H
-#define CAIRO_FT_H
+#ifndef COMAC_FT_H
+#define COMAC_FT_H
 
 #include "comac.h"
 
-#if CAIRO_HAS_FT_FONT
+#if COMAC_HAS_FT_FONT
 
 /* Fontconfig/Freetype platform-specific font interface */
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#if CAIRO_HAS_FC_FONT
+#if COMAC_HAS_FC_FONT
 #include <fontconfig/fontconfig.h>
 #endif
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_public cairo_font_face_t *
-cairo_ft_font_face_create_for_ft_face (FT_Face         face,
+comac_public comac_font_face_t *
+comac_ft_font_face_create_for_ft_face (FT_Face         face,
 				       int             load_flags);
 
 /**
- * cairo_ft_synthesize_t:
- * @CAIRO_FT_SYNTHESIZE_BOLD: Embolden the glyphs (redraw with a pixel offset)
- * @CAIRO_FT_SYNTHESIZE_OBLIQUE: Slant the glyph outline by 12 degrees to the
+ * comac_ft_synthesize_t:
+ * @COMAC_FT_SYNTHESIZE_BOLD: Embolden the glyphs (redraw with a pixel offset)
+ * @COMAC_FT_SYNTHESIZE_OBLIQUE: Slant the glyph outline by 12 degrees to the
  * right.
  *
  * A set of synthesis options to control how FreeType renders the glyphs
  * for a particular font face.
  *
- * Individual synthesis features of a #cairo_ft_font_face_t can be set
- * using cairo_ft_font_face_set_synthesize(), or disabled using
- * cairo_ft_font_face_unset_synthesize(). The currently enabled set of
- * synthesis options can be queried with cairo_ft_font_face_get_synthesize().
+ * Individual synthesis features of a #comac_ft_font_face_t can be set
+ * using comac_ft_font_face_set_synthesize(), or disabled using
+ * comac_ft_font_face_unset_synthesize(). The currently enabled set of
+ * synthesis options can be queried with comac_ft_font_face_get_synthesize().
  *
  * Note: that when synthesizing glyphs, the font metrics returned will only
  * be estimates.
@@ -76,43 +76,43 @@ cairo_ft_font_face_create_for_ft_face (FT_Face         face,
  * Since: 1.12
  **/
 typedef enum {
-    CAIRO_FT_SYNTHESIZE_BOLD = 1 << 0,
-    CAIRO_FT_SYNTHESIZE_OBLIQUE = 1 << 1
-} cairo_ft_synthesize_t;
+    COMAC_FT_SYNTHESIZE_BOLD = 1 << 0,
+    COMAC_FT_SYNTHESIZE_OBLIQUE = 1 << 1
+} comac_ft_synthesize_t;
 
-cairo_public void
-cairo_ft_font_face_set_synthesize (cairo_font_face_t *font_face,
+comac_public void
+comac_ft_font_face_set_synthesize (comac_font_face_t *font_face,
 				   unsigned int synth_flags);
 
-cairo_public void
-cairo_ft_font_face_unset_synthesize (cairo_font_face_t *font_face,
+comac_public void
+comac_ft_font_face_unset_synthesize (comac_font_face_t *font_face,
 				     unsigned int synth_flags);
 
-cairo_public unsigned int
-cairo_ft_font_face_get_synthesize (cairo_font_face_t *font_face);
+comac_public unsigned int
+comac_ft_font_face_get_synthesize (comac_font_face_t *font_face);
 
 
-cairo_public FT_Face
-cairo_ft_scaled_font_lock_face (cairo_scaled_font_t *scaled_font);
+comac_public FT_Face
+comac_ft_scaled_font_lock_face (comac_scaled_font_t *scaled_font);
 
-cairo_public void
-cairo_ft_scaled_font_unlock_face (cairo_scaled_font_t *scaled_font);
+comac_public void
+comac_ft_scaled_font_unlock_face (comac_scaled_font_t *scaled_font);
 
-#if CAIRO_HAS_FC_FONT
+#if COMAC_HAS_FC_FONT
 
-cairo_public cairo_font_face_t *
-cairo_ft_font_face_create_for_pattern (FcPattern *pattern);
+comac_public comac_font_face_t *
+comac_ft_font_face_create_for_pattern (FcPattern *pattern);
 
-cairo_public void
-cairo_ft_font_options_substitute (const cairo_font_options_t *options,
+comac_public void
+comac_ft_font_options_substitute (const comac_font_options_t *options,
 				  FcPattern                  *pattern);
 
 #endif
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#else  /* CAIRO_HAS_FT_FONT */
-# error Cairo was not compiled with support for the freetype font backend
-#endif /* CAIRO_HAS_FT_FONT */
+#else  /* COMAC_HAS_FT_FONT */
+# error Comac was not compiled with support for the freetype font backend
+#endif /* COMAC_HAS_FT_FONT */
 
-#endif /* CAIRO_FT_H */
+#endif /* COMAC_FT_H */

@@ -35,60 +35,60 @@
 #define HEIGHT		(20)
 
 static void
-border (cairo_t *cr)
+border (comac_t *cr)
 {
-    cairo_rectangle (cr, 1, 1, 8, 8);
-    cairo_rectangle (cr, 1.25, 1.25, 7.5, 7.5);
-    cairo_rectangle (cr, 1.75, 1.75, 6.5, 6.5);
-    cairo_rectangle (cr, 2, 2, 6, 6);
+    comac_rectangle (cr, 1, 1, 8, 8);
+    comac_rectangle (cr, 1.25, 1.25, 7.5, 7.5);
+    comac_rectangle (cr, 1.75, 1.75, 6.5, 6.5);
+    comac_rectangle (cr, 2, 2, 6, 6);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-
-    border (cr);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-    cairo_fill (cr);
-
-    cairo_translate (cr, 10, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     border (cr);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
+    comac_fill (cr);
 
-    cairo_translate (cr, 0, 10);
-
-    cairo_rectangle (cr, 0, 0, 10, 10);
-    cairo_clip (cr);
+    comac_translate (cr, 10, 0);
 
     border (cr);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_set_operator (cr, CAIRO_OPERATOR_IN);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_fill (cr);
 
-    cairo_reset_clip (cr);
+    comac_translate (cr, 0, 10);
 
-    cairo_translate (cr, -10, 0);
-
-    cairo_rectangle (cr, 0, 0, 10, 10);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, 10, 10);
+    comac_clip (cr);
 
     border (cr);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_set_operator (cr, COMAC_OPERATOR_IN);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    comac_reset_clip (cr);
+
+    comac_translate (cr, -10, 0);
+
+    comac_rectangle (cr, 0, 0, 10, 10);
+    comac_clip (cr);
+
+    border (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_set_operator (cr, COMAC_OPERATOR_CLEAR);
+    comac_fill (cr);
+
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (overlapping_boxes,
+COMAC_TEST (overlapping_boxes,
 	    "A sub-pixel double border to highlight the danger in an easy optimisation",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

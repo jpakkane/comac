@@ -28,59 +28,59 @@
 #define STAR_SIZE 20
 
 static void
-star_path (cairo_t *cr)
+star_path (comac_t *cr)
 {
-    cairo_move_to (cr, 10, 0);
-    cairo_rel_line_to (cr, 6, 20);
-    cairo_rel_line_to (cr, -16, -12);
-    cairo_rel_line_to (cr, 20, 0);
-    cairo_rel_line_to (cr, -16, 12);
+    comac_move_to (cr, 10, 0);
+    comac_rel_line_to (cr, 6, 20);
+    comac_rel_line_to (cr, -16, -12);
+    comac_rel_line_to (cr, 20, 0);
+    comac_rel_line_to (cr, -16, 12);
 }
 
 /* Use clipping to draw the same path twice, once with each fill rule */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_translate (cr, 1, 1);
-    cairo_save (cr);
+    comac_translate (cr, 1, 1);
+    comac_save (cr);
     {
 	star_path (cr);
-	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_WINDING);
-	cairo_clip (cr);
-	cairo_paint (cr);
+	comac_set_fill_rule (cr, COMAC_FILL_RULE_WINDING);
+	comac_clip (cr);
+	comac_paint (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, STAR_SIZE + 1, 0);
-    cairo_save (cr);
+    comac_translate (cr, STAR_SIZE + 1, 0);
+    comac_save (cr);
     {
 	star_path (cr);
-	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-	cairo_clip (cr);
-	cairo_paint (cr);
+	comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+	comac_clip (cr);
+	comac_paint (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-a1_draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+a1_draw (comac_t *cr, int width, int height)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
     return draw (cr, width, height);
 }
 
-CAIRO_TEST (clip_fill_rule,
-	    "Tests interaction of clipping with cairo_set_fill_rule",
+COMAC_TEST (clip_fill_rule,
+	    "Tests interaction of clipping with comac_set_fill_rule",
 	    "clip", /* keywords */
 	    NULL, /* requirements */
 	    STAR_SIZE * 2 + 2, STAR_SIZE + 2,
 	    NULL, draw)
-CAIRO_TEST (a1_clip_fill_rule,
-	    "Tests interaction of clipping with cairo_set_fill_rule",
+COMAC_TEST (a1_clip_fill_rule,
+	    "Tests interaction of clipping with comac_set_fill_rule",
 	    "clip", /* keywords */
 	    "target=raster", /* requirements */
 	    STAR_SIZE * 2 + 2, STAR_SIZE + 2,

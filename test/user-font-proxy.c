@@ -40,183 +40,183 @@
 #else
  #define HEIGHT WIDTH
 #endif
-#define TEXT   "geez... cairo user-font"
+#define TEXT   "geez... comac user-font"
 
-static cairo_user_data_key_t fallback_font_key;
+static comac_user_data_key_t fallback_font_key;
 
-static cairo_status_t
-test_scaled_font_init (cairo_scaled_font_t  *scaled_font,
-		       cairo_t              *cr,
-		       cairo_font_extents_t *extents)
+static comac_status_t
+test_scaled_font_init (comac_scaled_font_t  *scaled_font,
+		       comac_t              *cr,
+		       comac_font_extents_t *extents)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    cairo_set_font_face (cr,
-			 cairo_font_face_get_user_data (cairo_scaled_font_get_font_face (scaled_font),
+    comac_set_font_face (cr,
+			 comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
 							&fallback_font_key));
 
-    status = cairo_scaled_font_set_user_data (scaled_font,
+    status = comac_scaled_font_set_user_data (scaled_font,
 					      &fallback_font_key,
-					      cairo_scaled_font_reference (cairo_get_scaled_font (cr)),
-					      (cairo_destroy_func_t) cairo_scaled_font_destroy);
+					      comac_scaled_font_reference (comac_get_scaled_font (cr)),
+					      (comac_destroy_func_t) comac_scaled_font_destroy);
     if (unlikely (status)) {
-	cairo_scaled_font_destroy (cairo_get_scaled_font (cr));
+	comac_scaled_font_destroy (comac_get_scaled_font (cr));
 	return status;
     }
 
-    cairo_font_extents (cr, extents);
+    comac_font_extents (cr, extents);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-test_scaled_font_render_glyph (cairo_scaled_font_t  *scaled_font,
+static comac_status_t
+test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 			       unsigned long         glyph,
-			       cairo_t              *cr,
-			       cairo_text_extents_t *extents)
+			       comac_t              *cr,
+			       comac_text_extents_t *extents)
 {
-    cairo_glyph_t cairo_glyph;
+    comac_glyph_t comac_glyph;
 
-    cairo_glyph.index = glyph;
-    cairo_glyph.x = 0;
-    cairo_glyph.y = 0;
+    comac_glyph.index = glyph;
+    comac_glyph.x = 0;
+    comac_glyph.y = 0;
 
-    cairo_set_font_face (cr,
-			 cairo_font_face_get_user_data (cairo_scaled_font_get_font_face (scaled_font),
+    comac_set_font_face (cr,
+			 comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
 							&fallback_font_key));
 
-    cairo_show_glyphs (cr, &cairo_glyph, 1);
-    cairo_glyph_extents (cr, &cairo_glyph, 1, extents);
+    comac_show_glyphs (cr, &comac_glyph, 1);
+    comac_glyph_extents (cr, &comac_glyph, 1, extents);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-test_scaled_font_text_to_glyphs (cairo_scaled_font_t        *scaled_font,
+static comac_status_t
+test_scaled_font_text_to_glyphs (comac_scaled_font_t        *scaled_font,
 				 const char	            *utf8,
 				 int		             utf8_len,
-				 cairo_glyph_t	           **glyphs,
+				 comac_glyph_t	           **glyphs,
 				 int		            *num_glyphs,
-				 cairo_text_cluster_t      **clusters,
+				 comac_text_cluster_t      **clusters,
 				 int		            *num_clusters,
-				 cairo_text_cluster_flags_t *cluster_flags)
+				 comac_text_cluster_flags_t *cluster_flags)
 {
-  cairo_scaled_font_t *fallback_scaled_font;
+  comac_scaled_font_t *fallback_scaled_font;
 
-  fallback_scaled_font = cairo_scaled_font_get_user_data (scaled_font,
+  fallback_scaled_font = comac_scaled_font_get_user_data (scaled_font,
 							  &fallback_font_key);
 
-  return cairo_scaled_font_text_to_glyphs (fallback_scaled_font, 0, 0,
+  return comac_scaled_font_text_to_glyphs (fallback_scaled_font, 0, 0,
 					   utf8, utf8_len,
 					   glyphs, num_glyphs,
 					   clusters, num_clusters, cluster_flags);
 }
 
-static cairo_status_t
-_user_font_face_create (cairo_font_face_t **out)
+static comac_status_t
+_user_font_face_create (comac_font_face_t **out)
 {
-    cairo_font_face_t *user_font_face;
-    cairo_font_face_t *fallback_font_face;
-    cairo_status_t status;
+    comac_font_face_t *user_font_face;
+    comac_font_face_t *fallback_font_face;
+    comac_status_t status;
 
-    user_font_face = cairo_user_font_face_create ();
-    cairo_user_font_face_set_init_func             (user_font_face, test_scaled_font_init);
-    cairo_user_font_face_set_render_glyph_func     (user_font_face, test_scaled_font_render_glyph);
-    cairo_user_font_face_set_text_to_glyphs_func   (user_font_face, test_scaled_font_text_to_glyphs);
+    user_font_face = comac_user_font_face_create ();
+    comac_user_font_face_set_init_func             (user_font_face, test_scaled_font_init);
+    comac_user_font_face_set_render_glyph_func     (user_font_face, test_scaled_font_render_glyph);
+    comac_user_font_face_set_text_to_glyphs_func   (user_font_face, test_scaled_font_text_to_glyphs);
 
-    /* This also happens to be default font face on cairo_t, so does
+    /* This also happens to be default font face on comac_t, so does
      * not make much sense here.  For demonstration only.
      */
-    fallback_font_face = cairo_toy_font_face_create (CAIRO_TEST_FONT_FAMILY " Sans",
-						     CAIRO_FONT_SLANT_NORMAL,
-						     CAIRO_FONT_WEIGHT_NORMAL);
+    fallback_font_face = comac_toy_font_face_create (COMAC_TEST_FONT_FAMILY " Sans",
+						     COMAC_FONT_SLANT_NORMAL,
+						     COMAC_FONT_WEIGHT_NORMAL);
 
-    status = cairo_font_face_set_user_data (user_font_face,
+    status = comac_font_face_set_user_data (user_font_face,
 					    &fallback_font_key,
 					    fallback_font_face,
-					    (cairo_destroy_func_t) cairo_font_face_destroy);
+					    (comac_destroy_func_t) comac_font_face_destroy);
     if (status) {
-	cairo_font_face_destroy (fallback_font_face);
-	cairo_font_face_destroy (user_font_face);
+	comac_font_face_destroy (fallback_font_face);
+	comac_font_face_destroy (user_font_face);
 	return status;
     }
 
     *out = user_font_face;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     const char text[] = TEXT;
-    cairo_font_extents_t font_extents;
-    cairo_text_extents_t extents;
-    cairo_font_face_t *font_face;
-    cairo_status_t status;
+    comac_font_extents_t font_extents;
+    comac_text_extents_t extents;
+    comac_font_face_t *font_face;
+    comac_status_t status;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
 #ifdef ROTATED
-    cairo_translate (cr, TEXT_SIZE, 0);
-    cairo_rotate (cr, .6);
+    comac_translate (cr, TEXT_SIZE, 0);
+    comac_rotate (cr, .6);
 #endif
 
     status = _user_font_face_create (&font_face);
     if (status) {
-	return cairo_test_status_from_status (cairo_test_get_context (cr),
+	return comac_test_status_from_status (comac_test_get_context (cr),
 					      status);
     }
 
-    cairo_set_font_face (cr, font_face);
-    cairo_font_face_destroy (font_face);
+    comac_set_font_face (cr, font_face);
+    comac_font_face_destroy (font_face);
 
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    cairo_font_extents (cr, &font_extents);
-    cairo_text_extents (cr, text, &extents);
+    comac_font_extents (cr, &font_extents);
+    comac_text_extents (cr, text, &extents);
 
     /* logical boundaries in red */
-    cairo_move_to (cr, 0, BORDER);
-    cairo_rel_line_to (cr, WIDTH, 0);
-    cairo_move_to (cr, 0, BORDER + font_extents.ascent);
-    cairo_rel_line_to (cr, WIDTH, 0);
-    cairo_move_to (cr, 0, BORDER + font_extents.ascent + font_extents.descent);
-    cairo_rel_line_to (cr, WIDTH, 0);
-    cairo_move_to (cr, BORDER, 0);
-    cairo_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
-    cairo_move_to (cr, BORDER + extents.x_advance, 0);
-    cairo_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_set_line_width (cr, 2);
-    cairo_stroke (cr);
+    comac_move_to (cr, 0, BORDER);
+    comac_rel_line_to (cr, WIDTH, 0);
+    comac_move_to (cr, 0, BORDER + font_extents.ascent);
+    comac_rel_line_to (cr, WIDTH, 0);
+    comac_move_to (cr, 0, BORDER + font_extents.ascent + font_extents.descent);
+    comac_rel_line_to (cr, WIDTH, 0);
+    comac_move_to (cr, BORDER, 0);
+    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_move_to (cr, BORDER + extents.x_advance, 0);
+    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_set_line_width (cr, 2);
+    comac_stroke (cr);
 
     /* ink boundaries in green */
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
 		     BORDER + extents.x_bearing, BORDER + font_extents.ascent + extents.y_bearing,
 		     extents.width, extents.height);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_set_line_width (cr, 2);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_set_line_width (cr, 2);
+    comac_stroke (cr);
 
     /* text in gray */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_move_to (cr, BORDER, BORDER + font_extents.ascent);
-    cairo_show_text (cr, text);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_move_to (cr, BORDER, BORDER + font_extents.ascent);
+    comac_show_text (cr, text);
 
 
     /* filled version of text in light blue */
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_move_to (cr, BORDER, BORDER + font_extents.height + BORDER + font_extents.ascent);
-    cairo_text_path (cr, text);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_move_to (cr, BORDER, BORDER + font_extents.height + BORDER + font_extents.ascent);
+    comac_text_path (cr, text);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (user_font_proxy,
+COMAC_TEST (user_font_proxy,
 	    "Tests a user-font using a native font in its render_glyph",
 	    "font, user-font", /* keywords */
-	    "cairo >= 1.7.4", /* requirements */
+	    "comac >= 1.7.4", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw)

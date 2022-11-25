@@ -35,15 +35,15 @@ static bool Yee_Compare(args_t *args)
     unsigned int x, y, pixels_failed;
     bool identical = true;
 
-    width_a = cairo_image_surface_get_width (args->surface_a);
-    height_a = cairo_image_surface_get_height (args->surface_a);
-    stride_a = cairo_image_surface_get_stride (args->surface_a);
-    data_a = cairo_image_surface_get_data (args->surface_a);
+    width_a = comac_image_surface_get_width (args->surface_a);
+    height_a = comac_image_surface_get_height (args->surface_a);
+    stride_a = comac_image_surface_get_stride (args->surface_a);
+    data_a = comac_image_surface_get_data (args->surface_a);
 
-    width_b = cairo_image_surface_get_width (args->surface_b);
-    height_b = cairo_image_surface_get_height (args->surface_b);
-    stride_b = cairo_image_surface_get_stride (args->surface_b);
-    data_b = cairo_image_surface_get_data (args->surface_b);
+    width_b = comac_image_surface_get_width (args->surface_b);
+    height_b = comac_image_surface_get_height (args->surface_b);
+    stride_b = comac_image_surface_get_stride (args->surface_b);
+    data_b = comac_image_surface_get_data (args->surface_b);
 
     if ((width_a != width_b) || (height_a != height_b)) {
 	printf ("FAIL: Image dimensions do not match\n");

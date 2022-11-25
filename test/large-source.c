@@ -40,21 +40,21 @@
 #define GREEN_MASK 0x50
 #endif
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     unsigned char *data;
 
-    cairo_set_source_rgb (cr, 0, 0, 1); /* blue */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1); /* blue */
+    comac_paint (cr);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 32000, 20);
-    data = cairo_image_surface_get_data (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_A1, 32000, 20);
+    data = comac_image_surface_get_data (surface);
     if (data != NULL) {
-	int stride = cairo_image_surface_get_stride (surface);
-	int width  = cairo_image_surface_get_width  (surface);
-	int height = cairo_image_surface_get_height (surface);
+	int stride = comac_image_surface_get_stride (surface);
+	int width  = comac_image_surface_get_width  (surface);
+	int height = comac_image_surface_get_height (surface);
 	int x, y;
 
 	for (y = 0; y < height; y++) {
@@ -62,19 +62,19 @@ draw (cairo_t *cr, int width, int height)
 		data[x] = RED_MASK;
 	    data += stride;
 	}
-        cairo_surface_mark_dirty (surface);
+        comac_surface_mark_dirty (surface);
     }
 
-    cairo_set_source_rgb (cr, 1, 0, 0); /* red */
-    cairo_mask_surface (cr, surface, 0, 0);
-    cairo_surface_destroy (surface);
+    comac_set_source_rgb (cr, 1, 0, 0); /* red */
+    comac_mask_surface (cr, surface, 0, 0);
+    comac_surface_destroy (surface);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_A1, 20, 32000);
-    data = cairo_image_surface_get_data (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_A1, 20, 32000);
+    data = comac_image_surface_get_data (surface);
     if (data != NULL) {
-	int stride = cairo_image_surface_get_stride (surface);
-	int width  = cairo_image_surface_get_width  (surface);
-	int height = cairo_image_surface_get_height (surface);
+	int stride = comac_image_surface_get_stride (surface);
+	int width  = comac_image_surface_get_width  (surface);
+	int height = comac_image_surface_get_height (surface);
 	int x, y;
 
 	for (y = 0; y < height; y++) {
@@ -82,17 +82,17 @@ draw (cairo_t *cr, int width, int height)
 		data[x] = GREEN_MASK;
 	    data += stride;
 	}
-        cairo_surface_mark_dirty (surface);
+        comac_surface_mark_dirty (surface);
     }
 
-    cairo_set_source_rgb (cr, 0, 1, 0); /* green */
-    cairo_mask_surface (cr, surface, 0, 0);
-    cairo_surface_destroy (surface);
+    comac_set_source_rgb (cr, 0, 1, 0); /* green */
+    comac_mask_surface (cr, surface, 0, 0);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (large_source,
+COMAC_TEST (large_source,
 	    "Exercises mozilla bug 424333 - handling of massive images",
 	    "stress, source", /* keywords */
 	    NULL, /* requirements */

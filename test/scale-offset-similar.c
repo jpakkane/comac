@@ -25,99 +25,99 @@
 
 /*
  * Test case derived from the bug report by Michel Iwaniec:
- * https://lists.cairographics.org/archives/cairo/2008-November/015660.html
+ * https://lists.comacgraphics.org/archives/comac/2008-November/015660.html
  */
 
 #include "comac-test.h"
 
-static cairo_surface_t *
-create_source (cairo_surface_t *target, int width, int height)
+static comac_surface_t *
+create_source (comac_surface_t *target, int width, int height)
 {
-    cairo_surface_t *similar;
-    cairo_t *cr;
+    comac_surface_t *similar;
+    comac_t *cr;
 
-    similar = cairo_surface_create_similar (target,
-					    CAIRO_CONTENT_COLOR,
+    similar = comac_surface_create_similar (target,
+					    COMAC_CONTENT_COLOR,
 					    width, height);
-    cr = cairo_create (similar);
-    cairo_surface_destroy (similar);
+    cr = comac_create (similar);
+    comac_surface_destroy (similar);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_rectangle (cr,
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_rectangle (cr,
 		     width - 4, height - 4,
 		     2, 2);
-    cairo_fill (cr);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_rectangle (cr,
+    comac_fill (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_rectangle (cr,
 		     width - 2, height - 4,
 		     2, 2);
-    cairo_fill (cr);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_rectangle (cr,
+    comac_fill (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_rectangle (cr,
 		     width - 4, height - 2,
 		     2, 2);
-    cairo_fill (cr);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_rectangle (cr,
+    comac_fill (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_rectangle (cr,
 		     width - 2, height - 2,
 		     2, 2);
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    similar = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    similar = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return similar;
 }
 
 static void
-draw_grid (cairo_t *cr, cairo_pattern_t *pattern, int dst_x, int dst_y)
+draw_grid (comac_t *cr, comac_pattern_t *pattern, int dst_x, int dst_y)
 {
-    cairo_matrix_t m;
+    comac_matrix_t m;
 
-    cairo_save (cr);
-    cairo_translate (cr, dst_x, dst_y);
-    cairo_scale (cr, 16, 16);
-    cairo_rotate (cr, 1);
+    comac_save (cr);
+    comac_translate (cr, dst_x, dst_y);
+    comac_scale (cr, 16, 16);
+    comac_rotate (cr, 1);
 
-    cairo_matrix_init_translate (&m, 2560-4, 1280-4);
-    cairo_pattern_set_matrix (pattern, &m);
-    cairo_set_source (cr, pattern);
-    cairo_rectangle (cr, 0, 0, 4, 4);
-    cairo_fill (cr);
+    comac_matrix_init_translate (&m, 2560-4, 1280-4);
+    comac_pattern_set_matrix (pattern, &m);
+    comac_set_source (cr, pattern);
+    comac_rectangle (cr, 0, 0, 4, 4);
+    comac_fill (cr);
 
-    cairo_set_source_rgb (cr, .7, .7, .7);
-    cairo_set_line_width (cr, 1./16);
-    cairo_move_to (cr, 0, 0);
-    cairo_line_to (cr, 4, 0);
-    cairo_move_to (cr, 0, 2);
-    cairo_line_to (cr, 4, 2);
-    cairo_move_to (cr, 0, 4);
-    cairo_line_to (cr, 4, 4);
-    cairo_move_to (cr, 0, 0);
-    cairo_line_to (cr, 0, 4);
-    cairo_move_to (cr, 2, 0);
-    cairo_line_to (cr, 2, 4);
-    cairo_move_to (cr, 4, 0);
-    cairo_line_to (cr, 4, 4);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, .7, .7, .7);
+    comac_set_line_width (cr, 1./16);
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, 4, 0);
+    comac_move_to (cr, 0, 2);
+    comac_line_to (cr, 4, 2);
+    comac_move_to (cr, 0, 4);
+    comac_line_to (cr, 4, 4);
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, 0, 4);
+    comac_move_to (cr, 2, 0);
+    comac_line_to (cr, 2, 4);
+    comac_move_to (cr, 4, 0);
+    comac_line_to (cr, 4, 4);
+    comac_stroke (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *source;
-    cairo_pattern_t *pattern;
+    comac_surface_t *source;
+    comac_pattern_t *pattern;
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    source = create_source (cairo_get_target (cr), 2560, 1280);
-    pattern = cairo_pattern_create_for_surface (source);
-    cairo_surface_destroy (source);
+    source = create_source (comac_get_target (cr), 2560, 1280);
+    pattern = comac_pattern_create_for_surface (source);
+    comac_surface_destroy (source);
 
-    cairo_pattern_set_filter (pattern, CAIRO_FILTER_NEAREST);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_NONE);
+    comac_pattern_set_filter (pattern, COMAC_FILTER_NEAREST);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_NONE);
 
     draw_grid (cr, pattern, 50, 0);
     draw_grid (cr, pattern, 130, 0);
@@ -129,12 +129,12 @@ draw (cairo_t *cr, int width, int height)
     draw_grid (cr, pattern, 210, 230);
     draw_grid (cr, pattern, 290, 230);
 
-    cairo_pattern_destroy (pattern);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (scale_offset_similar,
+COMAC_TEST (scale_offset_similar,
 	    "Tests drawing surfaces under various scales and transforms",
 	    "surface, scale-offset", /* keywords */
 	    NULL, /* requirements */

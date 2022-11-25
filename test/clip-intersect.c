@@ -29,64 +29,64 @@
 #define WIDTH 20
 #define HEIGHT 20
 
-static void clip_mask (cairo_t *cr)
+static void clip_mask (comac_t *cr)
 {
-    cairo_move_to (cr, 10, 0);
-    cairo_line_to (cr, 0, 10);
-    cairo_line_to (cr, 10, 20);
-    cairo_line_to (cr, 20, 10);
-    cairo_clip (cr);
+    comac_move_to (cr, 10, 0);
+    comac_line_to (cr, 0, 10);
+    comac_line_to (cr, 10, 20);
+    comac_line_to (cr, 20, 10);
+    comac_clip (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     clip_mask (cr);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_rectangle (cr, 0, 0, 4, 4);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, 4, 4);
+    comac_clip (cr);
     clip_mask (cr);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
-    cairo_rectangle (cr, 20, 0, -4, 4);
-    cairo_clip (cr);
+    comac_rectangle (cr, 20, 0, -4, 4);
+    comac_clip (cr);
     clip_mask (cr);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
-    cairo_rectangle (cr, 20, 20, -4, -4);
-    cairo_clip (cr);
+    comac_rectangle (cr, 20, 20, -4, -4);
+    comac_clip (cr);
     clip_mask (cr);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
-    cairo_rectangle (cr, 0, 20, 4, -4);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 20, 4, -4);
+    comac_clip (cr);
     clip_mask (cr);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
+    comac_set_source_rgb (cr, 0, 0, 1);
 
-    cairo_rectangle (cr, 8, 8, 4, 4);
-    cairo_clip (cr);
+    comac_rectangle (cr, 8, 8, 4, 4);
+    comac_clip (cr);
     clip_mask (cr);
-    cairo_paint (cr);
-    cairo_reset_clip (cr);
+    comac_paint (cr);
+    comac_reset_clip (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_intersect,
+COMAC_TEST (clip_intersect,
 	    "Tests intersection of a simple clip with a clip-mask",
 	    "clip, paint", /* keywords */
 	    NULL, /* requirements */

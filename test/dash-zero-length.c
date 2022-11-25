@@ -34,16 +34,16 @@
  */
 
 static void
-draw_dash (cairo_t *cr, double *dash, int num_dashes)
+draw_dash (comac_t *cr, double *dash, int num_dashes)
 {
-    cairo_set_dash (cr, dash, num_dashes, 0.0);
-    cairo_move_to (cr,  1, 2);
-    cairo_line_to (cr, 18, 2);
-    cairo_stroke (cr);
-    cairo_translate (cr, 0, 3);
+    comac_set_dash (cr, dash, num_dashes, 0.0);
+    comac_move_to (cr,  1, 2);
+    comac_line_to (cr, 18, 2);
+    comac_stroke (cr);
+    comac_translate (cr, 0, 3);
 }
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     static double solid_line[] = { 4, 0 };
     static double invisible_line[] = { 0, 4 };
@@ -69,15 +69,15 @@ draw (cairo_t *cr, int width, int height)
     static double zero_1_3_4_of_4[] = { 0, 2, 0, 0 };
     static double zero_2_3_4_of_4[] = { 1, 0, 0, 0 };
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_set_line_width (cr, 2);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_set_line_width (cr, 2);
 
     draw_dash (cr, solid_line, 2);
     draw_dash (cr, invisible_line, 2);
 
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
     draw_dash (cr, dotted_line, 2);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
 
     draw_dash (cr, zero_1_of_3, 3);
     draw_dash (cr, zero_2_of_3, 3);
@@ -99,11 +99,11 @@ draw (cairo_t *cr, int width, int height)
     draw_dash (cr, zero_1_3_4_of_4, 4);
     draw_dash (cr, zero_2_3_4_of_4, 4);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (dash_zero_length,
-	    "Tests cairo_set_dash with zero length",
+COMAC_TEST (dash_zero_length,
+	    "Tests comac_set_dash with zero length",
 	    "dash, stroke", /* keywords */
 	    NULL, /* requirements */
 	    IMAGE_WIDTH, IMAGE_HEIGHT,

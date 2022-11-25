@@ -28,46 +28,46 @@
 
 #include "comac-perf.h"
 
-static cairo_time_t
-do_unaligned_clip (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_unaligned_clip (comac_t *cr, int width, int height, int loops)
 {
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	cairo_save (cr);
+	comac_save (cr);
 
 	/* First a triangular clip that obviously isn't along device-pixel
 	 * boundaries. */
-	cairo_move_to (cr, 50, 50);
-	cairo_line_to (cr, 50, 90);
-	cairo_line_to (cr, 90, 90);
-	cairo_close_path (cr);
-	cairo_clip (cr);
+	comac_move_to (cr, 50, 50);
+	comac_line_to (cr, 50, 90);
+	comac_line_to (cr, 90, 90);
+	comac_close_path (cr);
+	comac_clip (cr);
 
 	/* Then a rectangular clip that would be but for the non-integer
 	 * scaling. */
-	cairo_scale (cr, 1.1, 1.1);
-	cairo_rectangle (cr, 55, 55, 35, 35);
-	cairo_clip (cr);
+	comac_scale (cr, 1.1, 1.1);
+	comac_rectangle (cr, 55, 55, 35, 35);
+	comac_clip (cr);
 
 	/* And paint something to force the clip to be evaluated. */
-	cairo_paint (cr);
+	comac_paint (cr);
 
-	cairo_restore (cr);
+	comac_restore (cr);
     }
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-unaligned_clip_enabled (cairo_perf_t *perf)
+comac_bool_t
+unaligned_clip_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "unaligned-clip", NULL);
+    return comac_perf_can_run (perf, "unaligned-clip", NULL);
 }
 
 void
-unaligned_clip (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+unaligned_clip (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "unaligned-clip", do_unaligned_clip, NULL);
+    comac_perf_run (perf, "unaligned-clip", do_unaligned_clip, NULL);
 }

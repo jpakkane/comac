@@ -26,42 +26,42 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     const double dashes_1[] = { 10, 0 };
     const double dashes_2[] = { 10, 0, 10, 10};
     const double dashes_3[] = { 10, 0, 10, 0};
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_set_line_width (cr, 6);
+    comac_set_line_width (cr, 6);
 
-    cairo_set_dash (cr, NULL, 0, 0);
-    cairo_rectangle (cr, 10, 10, 30, 30);
-    cairo_stroke (cr);
+    comac_set_dash (cr, NULL, 0, 0);
+    comac_rectangle (cr, 10, 10, 30, 30);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 50, 0);
-    cairo_set_dash (cr, dashes_1, 2, 0);
-    cairo_rectangle (cr, 10, 10, 30, 30);
-    cairo_stroke (cr);
+    comac_translate (cr, 50, 0);
+    comac_set_dash (cr, dashes_1, 2, 0);
+    comac_rectangle (cr, 10, 10, 30, 30);
+    comac_stroke (cr);
 
-    cairo_translate (cr, 0, 50);
-    cairo_set_dash (cr, dashes_2, 4, 0);
-    cairo_rectangle (cr, 10, 10, 30, 30);
-    cairo_stroke (cr);
+    comac_translate (cr, 0, 50);
+    comac_set_dash (cr, dashes_2, 4, 0);
+    comac_rectangle (cr, 10, 10, 30, 30);
+    comac_stroke (cr);
 
-    cairo_translate (cr, -50, 0);
-    cairo_set_dash (cr, dashes_3, 4, 0);
-    cairo_rectangle (cr, 10, 10, 30, 30);
-    cairo_stroke (cr);
+    comac_translate (cr, -50, 0);
+    comac_set_dash (cr, dashes_3, 4, 0);
+    comac_rectangle (cr, 10, 10, 30, 30);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (degenerate_solid_dash,
+COMAC_TEST (degenerate_solid_dash,
 	    "Exercises degenerate dash ellison",
 	    "stroke, dash", /* keywords */
 	    NULL, /* requirements */

@@ -28,58 +28,58 @@
 #define SIZE 60 /* needs to be big to check large area effects (dithering) */
 #define PAD 2
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     const double alpha = 1./3;
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
     int n;
 
     /* draw a simple pattern behind */
-    pattern = cairo_pattern_create_linear (0, 0, width, height);
-    cairo_pattern_add_color_stop_rgb (pattern, 0, 1, 1, 0);
-    cairo_pattern_add_color_stop_rgb (pattern, 1, 1, 1, 1);
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
-    cairo_paint (cr);
+    pattern = comac_pattern_create_linear (0, 0, width, height);
+    comac_pattern_add_color_stop_rgb (pattern, 0, 1, 1, 0);
+    comac_pattern_add_color_stop_rgb (pattern, 1, 1, 1, 1);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
+    comac_paint (cr);
 
     /* square */
-    cairo_rectangle (cr, PAD, PAD, SIZE, SIZE);
-    cairo_set_source_rgba (cr, 1, 0, 0, alpha);
-    cairo_fill (cr);
+    comac_rectangle (cr, PAD, PAD, SIZE, SIZE);
+    comac_set_source_rgba (cr, 1, 0, 0, alpha);
+    comac_fill (cr);
 
     /* circle */
-    cairo_translate (cr, SIZE + 2 * PAD, 0);
-    cairo_arc (cr, PAD + SIZE / 2., PAD + SIZE / 2., SIZE / 2., 0, 2 * M_PI);
-    cairo_set_source_rgba (cr, 0, 1, 0, alpha);
-    cairo_fill (cr);
+    comac_translate (cr, SIZE + 2 * PAD, 0);
+    comac_arc (cr, PAD + SIZE / 2., PAD + SIZE / 2., SIZE / 2., 0, 2 * M_PI);
+    comac_set_source_rgba (cr, 0, 1, 0, alpha);
+    comac_fill (cr);
 
     /* triangle */
-    cairo_translate (cr, 0, SIZE + 2 * PAD);
-    cairo_move_to (cr, PAD + SIZE / 2, PAD);
-    cairo_line_to (cr, PAD + SIZE, PAD + SIZE);
-    cairo_line_to (cr, PAD, PAD + SIZE);
-    cairo_set_source_rgba (cr, 0, 0, 1, alpha);
-    cairo_fill (cr);
+    comac_translate (cr, 0, SIZE + 2 * PAD);
+    comac_move_to (cr, PAD + SIZE / 2, PAD);
+    comac_line_to (cr, PAD + SIZE, PAD + SIZE);
+    comac_line_to (cr, PAD, PAD + SIZE);
+    comac_set_source_rgba (cr, 0, 0, 1, alpha);
+    comac_fill (cr);
 
     /* star */
-    cairo_translate (cr, -(SIZE + 2 * PAD) + SIZE/2., SIZE/2.);
+    comac_translate (cr, -(SIZE + 2 * PAD) + SIZE/2., SIZE/2.);
     for (n = 0; n < 5; n++) {
-	cairo_line_to (cr,
+	comac_line_to (cr,
 		       SIZE/2 * cos (2*n * 2*M_PI / 10),
 		       SIZE/2 * sin (2*n * 2*M_PI / 10));
 
-	cairo_line_to (cr,
+	comac_line_to (cr,
 		       SIZE/4 * cos ((2*n+1)*2*M_PI / 10),
 		       SIZE/4 * sin ((2*n+1)*2*M_PI / 10));
     }
-    cairo_set_source_rgba (cr, 0, 0, 0, alpha);
-    cairo_fill (cr);
+    comac_set_source_rgba (cr, 0, 0, 0, alpha);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_alpha_pattern,
+COMAC_TEST (fill_alpha_pattern,
 	    "Tests using set_rgba();fill() over a linear gradient",
 	    "fill, alpha", /* keywords */
 	    NULL, /* requirements */

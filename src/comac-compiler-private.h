@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,8 +35,8 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_COMPILER_PRIVATE_H
-#define CAIRO_COMPILER_PRIVATE_H
+#ifndef COMAC_COMPILER_PRIVATE_H
+#define COMAC_COMPILER_PRIVATE_H
 
 #include "comac.h"
 
@@ -48,43 +48,43 @@
 /* Size in bytes of buffer to use off the stack per functions.
  * Mostly used by text functions.  For larger allocations, they'll
  * malloc(). */
-#ifndef CAIRO_STACK_BUFFER_SIZE
-#define CAIRO_STACK_BUFFER_SIZE (512 * sizeof (int))
+#ifndef COMAC_STACK_BUFFER_SIZE
+#define COMAC_STACK_BUFFER_SIZE (512 * sizeof (int))
 #endif
 
-#define CAIRO_STACK_ARRAY_LENGTH(T) (CAIRO_STACK_BUFFER_SIZE / sizeof(T))
+#define COMAC_STACK_ARRAY_LENGTH(T) (COMAC_STACK_BUFFER_SIZE / sizeof(T))
 
 #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
 #ifdef __MINGW32__
-#define CAIRO_PRINTF_FORMAT(fmt_index, va_index)                        \
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                        \
 	__attribute__((__format__(__MINGW_PRINTF_FORMAT, fmt_index, va_index)))
 #else
-#define CAIRO_PRINTF_FORMAT(fmt_index, va_index)                        \
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)                        \
 	__attribute__((__format__(__printf__, fmt_index, va_index)))
 #endif
 #else
-#define CAIRO_PRINTF_FORMAT(fmt_index, va_index)
+#define COMAC_PRINTF_FORMAT(fmt_index, va_index)
 #endif
 
 /* slim_internal.h */
-#define CAIRO_HAS_HIDDEN_SYMBOLS 1
+#define COMAC_HAS_HIDDEN_SYMBOLS 1
 #if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) && \
     (defined(__ELF__) || defined(__APPLE__)) &&			\
     !defined(__sun)
-#define cairo_private_no_warn	__attribute__((__visibility__("hidden")))
+#define comac_private_no_warn	__attribute__((__visibility__("hidden")))
 #elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
-#define cairo_private_no_warn	__hidden
+#define comac_private_no_warn	__hidden
 #else /* not gcc >= 3.3 and not Sun Studio >= 8 */
-#define cairo_private_no_warn
-#undef CAIRO_HAS_HIDDEN_SYMBOLS
+#define comac_private_no_warn
+#undef COMAC_HAS_HIDDEN_SYMBOLS
 #endif
 
 #ifndef WARN_UNUSED_RESULT
 #define WARN_UNUSED_RESULT
 #endif
 /* Add attribute(warn_unused_result) if supported */
-#define cairo_warn	    WARN_UNUSED_RESULT
-#define cairo_private	    cairo_private_no_warn cairo_warn
+#define comac_warn	    WARN_UNUSED_RESULT
+#define comac_private	    comac_private_no_warn comac_warn
 
 /* This macro allow us to deprecate a function by providing an alias
    for the old function name to the new function name. With this
@@ -98,42 +98,42 @@
    function.
 */
 #if __GNUC__ >= 2 && defined(__ELF__)
-# define CAIRO_FUNCTION_ALIAS(old, new)		\
+# define COMAC_FUNCTION_ALIAS(old, new)		\
 	extern __typeof (new) old		\
 	__asm__ ("" #old)			\
 	__attribute__((__alias__("" #new)))
 #else
-# define CAIRO_FUNCTION_ALIAS(old, new)
+# define COMAC_FUNCTION_ALIAS(old, new)
 #endif
 
 /*
- * Cairo uses the following function attributes in order to improve the
+ * Comac uses the following function attributes in order to improve the
  * generated code (effectively by manual inter-procedural analysis).
  *
- *   'cairo_pure': The function is only allowed to read from its arguments
+ *   'comac_pure': The function is only allowed to read from its arguments
  *                 and global memory (i.e. following a pointer argument or
  *                 accessing a shared variable). The return value should
  *                 only depend on its arguments, and for an identical set of
  *                 arguments should return the same value.
  *
- *   'cairo_const': The function is only allowed to read from its arguments.
+ *   'comac_const': The function is only allowed to read from its arguments.
  *                  It is not allowed to access global memory. The return
  *                  value should only depend its arguments, and for an
  *                  identical set of arguments should return the same value.
  *                  This is currently the most strict function attribute.
  *
  * Both these function attributes allow gcc to perform CSE and
- * constant-folding, with 'cairo_const 'also guaranteeing that pointer contents
+ * constant-folding, with 'comac_const 'also guaranteeing that pointer contents
  * do not change across the function call.
  */
 #if __GNUC__ >= 3
-#define cairo_pure __attribute__((pure))
-#define cairo_const __attribute__((const))
-#define cairo_always_inline inline __attribute__((always_inline))
+#define comac_pure __attribute__((pure))
+#define comac_const __attribute__((const))
+#define comac_always_inline inline __attribute__((always_inline))
 #else
-#define cairo_pure
-#define cairo_const
-#define cairo_always_inline inline
+#define comac_pure
+#define comac_const
+#define comac_always_inline inline
 #endif
 
 #if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
@@ -175,10 +175,10 @@
 
 #if defined(_MSC_VER) && defined(_M_IX86)
 /* When compiling with /Gy and /OPT:ICF identical functions will be folded in together.
-   The CAIRO_ENSURE_UNIQUE macro ensures that a function is always unique and
+   The COMAC_ENSURE_UNIQUE macro ensures that a function is always unique and
    will never be folded into another one. Something like this might eventually
    be needed for GCC but it seems fine for now. */
-#define CAIRO_ENSURE_UNIQUE                       \
+#define COMAC_ENSURE_UNIQUE                       \
     do {                                          \
 	char file[] = __FILE__;                   \
 	__asm {                                   \
@@ -192,7 +192,7 @@
 	};                                        \
     } while (0)
 #else
-#define CAIRO_ENSURE_UNIQUE    do { } while (0)
+#define COMAC_ENSURE_UNIQUE    do { } while (0)
 #endif
 
 #ifdef __STRICT_ANSI__
@@ -202,12 +202,12 @@
 
 /* size_t add/multiply with overflow check.
  *
- * These _cairo_fallback_*_size_t_overflow() functions are always defined
+ * These _comac_fallback_*_size_t_overflow() functions are always defined
  * to allow them to be tested in the test suite.  They are used
  * if no compiler builtin is available.
  */
-static cairo_always_inline cairo_bool_t
-_cairo_fallback_add_size_t_overflow(size_t a, size_t b, size_t *c)
+static comac_always_inline comac_bool_t
+_comac_fallback_add_size_t_overflow(size_t a, size_t b, size_t *c)
 {
     if (b > SIZE_MAX - a)
         return 1;
@@ -216,8 +216,8 @@ _cairo_fallback_add_size_t_overflow(size_t a, size_t b, size_t *c)
     return 0;
 }
 
-static cairo_always_inline cairo_bool_t
-_cairo_fallback_mul_size_t_overflow(size_t a, size_t b, size_t *c)
+static comac_always_inline comac_bool_t
+_comac_fallback_mul_size_t_overflow(size_t a, size_t b, size_t *c)
 {
     if (b != 0 && a > SIZE_MAX / b)
         return 1;
@@ -231,24 +231,24 @@ _cairo_fallback_mul_size_t_overflow(size_t a, size_t b, size_t *c)
  */
 #ifdef __clang__
 #if defined(__has_builtin) && __has_builtin(__builtin_add_overflow)
-#define _cairo_add_size_t_overflow(a, b, c)  __builtin_add_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
-#define _cairo_mul_size_t_overflow(a, b, c)  __builtin_mul_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
+#define _comac_add_size_t_overflow(a, b, c)  __builtin_add_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
+#define _comac_mul_size_t_overflow(a, b, c)  __builtin_mul_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
 #endif
 #elif __GNUC__ >= 8 || (__GNUC__ >= 5 && (INTPTR_MAX == INT64_MAX))
 /* Overflow builtins are available in gcc 5 but the 32-bit version is broken on gcc < 8.
  *   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82274
  */
-#define _cairo_add_size_t_overflow(a, b, c)  __builtin_add_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
-#define _cairo_mul_size_t_overflow(a, b, c)  __builtin_mul_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
+#define _comac_add_size_t_overflow(a, b, c)  __builtin_add_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
+#define _comac_mul_size_t_overflow(a, b, c)  __builtin_mul_overflow((size_t)(a), (size_t)(b), (size_t*)(c))
 #elif defined(_MSC_VER) && defined(HAVE_INTSAFE_H)
 #include <intsafe.h>
-#define _cairo_add_size_t_overflow(a,b,c) (SizeTAdd((size_t)(a), (size_t)(b), (size_t*)(c)) != S_OK)
-#define _cairo_mul_size_t_overflow(a,b,c) (SizeTMult((size_t)(a), (size_t)(b), (size_t*)(c)) != S_OK)
+#define _comac_add_size_t_overflow(a,b,c) (SizeTAdd((size_t)(a), (size_t)(b), (size_t*)(c)) != S_OK)
+#define _comac_mul_size_t_overflow(a,b,c) (SizeTMult((size_t)(a), (size_t)(b), (size_t*)(c)) != S_OK)
 #endif
 
-#ifndef _cairo_add_size_t_overflow
-#define _cairo_add_size_t_overflow _cairo_fallback_add_size_t_overflow
-#define _cairo_mul_size_t_overflow _cairo_fallback_mul_size_t_overflow
+#ifndef _comac_add_size_t_overflow
+#define _comac_add_size_t_overflow _comac_fallback_add_size_t_overflow
+#define _comac_mul_size_t_overflow _comac_fallback_mul_size_t_overflow
 #endif
 
 #endif

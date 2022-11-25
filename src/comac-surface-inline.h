@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,26 +35,26 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_SURFACE_INLINE_H
-#define CAIRO_SURFACE_INLINE_H
+#ifndef COMAC_SURFACE_INLINE_H
+#define COMAC_SURFACE_INLINE_H
 
 #include "comac-surface-private.h"
 
-static inline cairo_status_t
-__cairo_surface_flush (cairo_surface_t *surface, unsigned flags)
+static inline comac_status_t
+__comac_surface_flush (comac_surface_t *surface, unsigned flags)
 {
-    cairo_status_t status = CAIRO_STATUS_SUCCESS;
+    comac_status_t status = COMAC_STATUS_SUCCESS;
     if (surface->backend->flush)
 	status = surface->backend->flush (surface, flags);
     return status;
 }
 
-static inline cairo_surface_t *
-_cairo_surface_reference (cairo_surface_t *surface)
+static inline comac_surface_t *
+_comac_surface_reference (comac_surface_t *surface)
 {
-    if (!CAIRO_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
-	_cairo_reference_count_inc (&surface->ref_count);
+    if (!COMAC_REFERENCE_COUNT_IS_INVALID (&surface->ref_count))
+	_comac_reference_count_inc (&surface->ref_count);
     return surface;
 }
 
-#endif /* CAIRO_SURFACE_INLINE_H */
+#endif /* COMAC_SURFACE_INLINE_H */

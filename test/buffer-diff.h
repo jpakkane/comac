@@ -59,14 +59,14 @@ buffer_diff_noalpha (const unsigned char *buf_a,
  * Provides number of pixels changed and maximum single-channel
  * difference in result.
  */
-cairo_status_t
-image_diff (const cairo_test_context_t *ctx,
-	    cairo_surface_t *surface_a,
-	    cairo_surface_t *surface_b,
-	    cairo_surface_t *surface_diff,
+comac_status_t
+image_diff (const comac_test_context_t *ctx,
+	    comac_surface_t *surface_a,
+	    comac_surface_t *surface_b,
+	    comac_surface_t *surface_diff,
 	    buffer_diff_result_t *result);
 
-cairo_bool_t
+comac_bool_t
 image_diff_is_failure (const buffer_diff_result_t *result,
                        unsigned int                tolerance);
 

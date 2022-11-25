@@ -45,7 +45,7 @@ cleanup (void *data)
     free (arg);
 }
 
-static cairo_surface_t *
+static comac_surface_t *
 create_source_surface (int size)
 {
     int rgba_attribs[] = {
@@ -60,8 +60,8 @@ create_source_surface (int size)
     XVisualInfo *visinfo;
     GLXContext ctx;
     struct closure *arg;
-    cairo_device_t *device;
-    cairo_surface_t *surface;
+    comac_device_t *device;
+    comac_surface_t *surface;
     Display *dpy;
 
     dpy = XOpenDisplay (NULL);
@@ -85,9 +85,9 @@ create_source_surface (int size)
     arg = xmalloc (sizeof (struct closure));
     arg->dpy = dpy;
     arg->ctx = ctx;
-    device = cairo_glx_device_create (dpy, ctx);
-    if (cairo_device_set_user_data (device,
-				    (cairo_user_data_key_t *) cleanup,
+    device = comac_glx_device_create (dpy, ctx);
+    if (comac_device_set_user_data (device,
+				    (comac_user_data_key_t *) cleanup,
 				    arg,
 				    cleanup))
     {
@@ -95,15 +95,15 @@ create_source_surface (int size)
 	return NULL;
     }
 
-    surface = cairo_gl_surface_create (device,
-				       CAIRO_CONTENT_COLOR_ALPHA,
+    surface = comac_gl_surface_create (device,
+				       COMAC_CONTENT_COLOR_ALPHA,
 				       size, size);
-    cairo_device_destroy (device);
+    comac_device_destroy (device);
 
     return surface;
 }
 
-CAIRO_TEST (gl_surface_source,
+COMAC_TEST (gl_surface_source,
 	    "Test using a GL surface as the source",
 	    "source", /* keywords */
 	    NULL, /* requirements */

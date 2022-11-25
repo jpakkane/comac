@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2008 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -36,20 +36,20 @@
 #include "comacint.h"
 #include "comac-path-fixed-private.h"
 
-typedef struct cairo_in_fill {
+typedef struct comac_in_fill {
     double tolerance;
-    cairo_bool_t on_edge;
+    comac_bool_t on_edge;
     int winding;
 
-    cairo_fixed_t x, y;
+    comac_fixed_t x, y;
 
-    cairo_bool_t has_current_point;
-    cairo_point_t current_point;
-    cairo_point_t first_point;
-} cairo_in_fill_t;
+    comac_bool_t has_current_point;
+    comac_point_t current_point;
+    comac_point_t first_point;
+} comac_in_fill_t;
 
 static void
-_cairo_in_fill_init (cairo_in_fill_t	*in_fill,
+_comac_in_fill_init (comac_in_fill_t	*in_fill,
 		     double		 tolerance,
 		     double		 x,
 		     double		 y)
@@ -58,8 +58,8 @@ _cairo_in_fill_init (cairo_in_fill_t	*in_fill,
     in_fill->winding = 0;
     in_fill->tolerance = tolerance;
 
-    in_fill->x = _cairo_fixed_from_double (x);
-    in_fill->y = _cairo_fixed_from_double (y);
+    in_fill->x = _comac_fixed_from_double (x);
+    in_fill->y = _comac_fixed_from_double (y);
 
     in_fill->has_current_point = FALSE;
     in_fill->current_point.x = 0;
@@ -67,19 +67,19 @@ _cairo_in_fill_init (cairo_in_fill_t	*in_fill,
 }
 
 static void
-_cairo_in_fill_fini (cairo_in_fill_t *in_fill)
+_comac_in_fill_fini (comac_in_fill_t *in_fill)
 {
 }
 
 static int
-edge_compare_for_y_against_x (const cairo_point_t *p1,
-			      const cairo_point_t *p2,
-			      cairo_fixed_t y,
-			      cairo_fixed_t x)
+edge_compare_for_y_against_x (const comac_point_t *p1,
+			      const comac_point_t *p2,
+			      comac_fixed_t y,
+			      comac_fixed_t x)
 {
-    cairo_fixed_t adx, ady;
-    cairo_fixed_t dx, dy;
-    cairo_int64_t L, R;
+    comac_fixed_t adx, ady;
+    comac_fixed_t dx, dy;
+    comac_int64_t L, R;
 
     adx = p2->x - p1->x;
     dx = x - p1->x;
@@ -92,16 +92,16 @@ edge_compare_for_y_against_x (const cairo_point_t *p1,
     dy = y - p1->y;
     ady = p2->y - p1->y;
 
-    L = _cairo_int32x32_64_mul (dy, adx);
-    R = _cairo_int32x32_64_mul (dx, ady);
+    L = _comac_int32x32_64_mul (dy, adx);
+    R = _comac_int32x32_64_mul (dx, ady);
 
-    return _cairo_int64_cmp (L, R);
+    return _comac_int64_cmp (L, R);
 }
 
 static void
-_cairo_in_fill_add_edge (cairo_in_fill_t *in_fill,
-			 const cairo_point_t *p1,
-			 const cairo_point_t *p2)
+_comac_in_fill_add_edge (comac_in_fill_t *in_fill,
+			 const comac_point_t *p1,
+			 const comac_point_t *p2)
 {
     int dir;
 
@@ -112,7 +112,7 @@ _cairo_in_fill_add_edge (cairo_in_fill_t *in_fill,
 
     dir = 1;
     if (p2->y < p1->y) {
-	const cairo_point_t *tmp;
+	const comac_point_t *tmp;
 
 	tmp = p1;
 	p1 = p2;
@@ -148,15 +148,15 @@ _cairo_in_fill_add_edge (cairo_in_fill_t *in_fill,
     }
 }
 
-static cairo_status_t
-_cairo_in_fill_move_to (void *closure,
-			const cairo_point_t *point)
+static comac_status_t
+_comac_in_fill_move_to (void *closure,
+			const comac_point_t *point)
 {
-    cairo_in_fill_t *in_fill = closure;
+    comac_in_fill_t *in_fill = closure;
 
     /* implicit close path */
     if (in_fill->has_current_point) {
-	_cairo_in_fill_add_edge (in_fill,
+	_comac_in_fill_add_edge (in_fill,
 				 &in_fill->current_point,
 				 &in_fill->first_point);
     }
@@ -165,41 +165,41 @@ _cairo_in_fill_move_to (void *closure,
     in_fill->current_point = *point;
     in_fill->has_current_point = TRUE;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_in_fill_line_to (void *closure,
-			const cairo_point_t *point)
+static comac_status_t
+_comac_in_fill_line_to (void *closure,
+			const comac_point_t *point)
 {
-    cairo_in_fill_t *in_fill = closure;
+    comac_in_fill_t *in_fill = closure;
 
     if (in_fill->has_current_point)
-	_cairo_in_fill_add_edge (in_fill, &in_fill->current_point, point);
+	_comac_in_fill_add_edge (in_fill, &in_fill->current_point, point);
 
     in_fill->current_point = *point;
     in_fill->has_current_point = TRUE;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_in_fill_add_point (void *closure,
-                          const cairo_point_t *point,
-                          const cairo_slope_t *tangent)
+static comac_status_t
+_comac_in_fill_add_point (void *closure,
+                          const comac_point_t *point,
+                          const comac_slope_t *tangent)
 {
-    return _cairo_in_fill_line_to (closure, point);
+    return _comac_in_fill_line_to (closure, point);
 };
 
-static cairo_status_t
-_cairo_in_fill_curve_to (void *closure,
-			 const cairo_point_t *b,
-			 const cairo_point_t *c,
-			 const cairo_point_t *d)
+static comac_status_t
+_comac_in_fill_curve_to (void *closure,
+			 const comac_point_t *b,
+			 const comac_point_t *c,
+			 const comac_point_t *d)
 {
-    cairo_in_fill_t *in_fill = closure;
-    cairo_spline_t spline;
-    cairo_fixed_t top, bot, left;
+    comac_in_fill_t *in_fill = closure;
+    comac_spline_t spline;
+    comac_fixed_t top, bot, left;
 
     /* first reject based on bbox */
     bot = top = in_fill->current_point.y;
@@ -211,7 +211,7 @@ _cairo_in_fill_curve_to (void *closure,
     if (d->y > bot) bot = d->y;
     if (bot < in_fill->y || top > in_fill->y) {
 	in_fill->current_point = *d;
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     left = in_fill->current_point.x;
@@ -220,70 +220,70 @@ _cairo_in_fill_curve_to (void *closure,
     if (d->x < left) left = d->x;
     if (left > in_fill->x) {
 	in_fill->current_point = *d;
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     /* XXX Investigate direct inspection of the inflections? */
-    if (! _cairo_spline_init (&spline,
-			      _cairo_in_fill_add_point,
+    if (! _comac_spline_init (&spline,
+			      _comac_in_fill_add_point,
 			      in_fill,
 			      &in_fill->current_point, b, c, d))
     {
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
-    return _cairo_spline_decompose (&spline, in_fill->tolerance);
+    return _comac_spline_decompose (&spline, in_fill->tolerance);
 }
 
-static cairo_status_t
-_cairo_in_fill_close_path (void *closure)
+static comac_status_t
+_comac_in_fill_close_path (void *closure)
 {
-    cairo_in_fill_t *in_fill = closure;
+    comac_in_fill_t *in_fill = closure;
 
     if (in_fill->has_current_point) {
-	_cairo_in_fill_add_edge (in_fill,
+	_comac_in_fill_add_edge (in_fill,
 				 &in_fill->current_point,
 				 &in_fill->first_point);
 
 	in_fill->has_current_point = FALSE;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_bool_t
-_cairo_path_fixed_in_fill (const cairo_path_fixed_t	*path,
-			   cairo_fill_rule_t	 fill_rule,
+comac_bool_t
+_comac_path_fixed_in_fill (const comac_path_fixed_t	*path,
+			   comac_fill_rule_t	 fill_rule,
 			   double		 tolerance,
 			   double		 x,
 			   double		 y)
 {
-    cairo_in_fill_t in_fill;
-    cairo_status_t status;
-    cairo_bool_t is_inside;
+    comac_in_fill_t in_fill;
+    comac_status_t status;
+    comac_bool_t is_inside;
 
-    if (_cairo_path_fixed_fill_is_empty (path))
+    if (_comac_path_fixed_fill_is_empty (path))
 	return FALSE;
 
-    _cairo_in_fill_init (&in_fill, tolerance, x, y);
+    _comac_in_fill_init (&in_fill, tolerance, x, y);
 
-    status = _cairo_path_fixed_interpret (path,
-					  _cairo_in_fill_move_to,
-					  _cairo_in_fill_line_to,
-					  _cairo_in_fill_curve_to,
-					  _cairo_in_fill_close_path,
+    status = _comac_path_fixed_interpret (path,
+					  _comac_in_fill_move_to,
+					  _comac_in_fill_line_to,
+					  _comac_in_fill_curve_to,
+					  _comac_in_fill_close_path,
 					  &in_fill);
-    assert (status == CAIRO_STATUS_SUCCESS);
+    assert (status == COMAC_STATUS_SUCCESS);
 
-    _cairo_in_fill_close_path (&in_fill);
+    _comac_in_fill_close_path (&in_fill);
 
     if (in_fill.on_edge) {
 	is_inside = TRUE;
     } else switch (fill_rule) {
-    case CAIRO_FILL_RULE_EVEN_ODD:
+    case COMAC_FILL_RULE_EVEN_ODD:
 	is_inside = in_fill.winding & 1;
 	break;
-    case CAIRO_FILL_RULE_WINDING:
+    case COMAC_FILL_RULE_WINDING:
 	is_inside = in_fill.winding != 0;
 	break;
     default:
@@ -292,7 +292,7 @@ _cairo_path_fixed_in_fill (const cairo_path_fixed_t	*path,
 	break;
     }
 
-    _cairo_in_fill_fini (&in_fill);
+    _comac_in_fill_fini (&in_fill);
 
     return is_inside;
 }

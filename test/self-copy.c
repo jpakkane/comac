@@ -29,54 +29,54 @@
 
 #define SIZE 40
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
-    cairo_matrix_t matrix;
+    comac_pattern_t *pattern;
+    comac_matrix_t matrix;
 
     /* Paint a diagonal division as a test image */
-    cairo_set_source_rgb (cr, 1, 1, 1);	/* White */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);	/* White */
+    comac_paint (cr);
 
-    cairo_move_to (cr, SIZE,    0);
-    cairo_line_to (cr, SIZE, SIZE);
-    cairo_line_to (cr, 0,    SIZE);
+    comac_move_to (cr, SIZE,    0);
+    comac_line_to (cr, SIZE, SIZE);
+    comac_line_to (cr, 0,    SIZE);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_fill (cr);
 
     /* Create a pattern with the target surface as the source,
      * offset by SIZE/2
      */
-    pattern = cairo_pattern_create_for_surface (cairo_get_group_target (cr));
+    pattern = comac_pattern_create_for_surface (comac_get_group_target (cr));
 
-    cairo_matrix_init_translate (&matrix, - SIZE / 2, - SIZE / 2);
-    cairo_pattern_set_matrix (pattern, &matrix);
+    comac_matrix_init_translate (&matrix, - SIZE / 2, - SIZE / 2);
+    comac_pattern_set_matrix (pattern, &matrix);
 
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
 
     /* Copy two rectangles from the upper-left quarter of the image to
-     * the lower right.  It will work if we use cairo_fill(), but the
-     * cairo_clip() cairo_paint() combination fails because the clip
+     * the lower right.  It will work if we use comac_fill(), but the
+     * comac_clip() comac_paint() combination fails because the clip
      * on the surface as a destination affects it as the source as
      * well.
      */
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
 		     2 * SIZE / 4, 2 * SIZE / 4,
 		     SIZE / 4,     SIZE / 4);
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
 		     3 * SIZE / 4, 3 * SIZE / 4,
 		     SIZE / 4,     SIZE / 4);
-    cairo_clip (cr);
-    cairo_paint (cr);
+    comac_clip (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 
 }
 
-CAIRO_TEST (self_copy,
+COMAC_TEST (self_copy,
 	    "Test copying from a surface to itself with a clip",
 	    "paint", /* keywords */
 	    NULL, /* requirements */

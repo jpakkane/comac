@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,8 +35,8 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_SURFACE_PRIVATE_H
-#define CAIRO_SURFACE_PRIVATE_H
+#ifndef COMAC_SURFACE_PRIVATE_H
+#define COMAC_SURFACE_PRIVATE_H
 
 #include "comac.h"
 
@@ -46,24 +46,24 @@
 #include "comac-clip-private.h"
 #include "comac-surface-backend-private.h"
 
-typedef void (*cairo_surface_func_t) (cairo_surface_t *);
+typedef void (*comac_surface_func_t) (comac_surface_t *);
 
-struct _cairo_surface {
-    const cairo_surface_backend_t *backend;
-    cairo_device_t *device;
+struct _comac_surface {
+    const comac_surface_backend_t *backend;
+    comac_device_t *device;
 
     /* We allow surfaces to override the backend->type by shoving something
      * else into surface->type. This is for "wrapper" surfaces that want to
      * hide their internal type from the user-level API. */
-    cairo_surface_type_t type;
+    comac_surface_type_t type;
 
-    cairo_content_t content;
+    comac_content_t content;
 
-    cairo_reference_count_t ref_count;
-    cairo_status_t status;
+    comac_reference_count_t ref_count;
+    comac_status_t status;
     unsigned int unique_id;
     unsigned int serial;
-    cairo_damage_t *damage;
+    comac_damage_t *damage;
 
     unsigned _finishing : 1;
     unsigned finished : 1;
@@ -72,12 +72,12 @@ struct _cairo_surface {
     unsigned owns_device : 1;
     unsigned is_vector : 1;
 
-    cairo_user_data_array_t user_data;
-    cairo_user_data_array_t mime_data;
+    comac_user_data_array_t user_data;
+    comac_user_data_array_t mime_data;
 
-    cairo_matrix_t device_transform;
-    cairo_matrix_t device_transform_inverse;
-    cairo_list_t device_transform_observers;
+    comac_matrix_t device_transform;
+    comac_matrix_t device_transform_inverse;
+    comac_list_t device_transform_observers;
 
     /* The actual resolution of the device, in dots per inch. */
     double x_resolution;
@@ -90,33 +90,33 @@ struct _cairo_surface {
     double x_fallback_resolution;
     double y_fallback_resolution;
 
-    /* A "snapshot" surface is immutable. See _cairo_surface_snapshot. */
-    cairo_surface_t *snapshot_of;
-    cairo_surface_func_t snapshot_detach;
+    /* A "snapshot" surface is immutable. See _comac_surface_snapshot. */
+    comac_surface_t *snapshot_of;
+    comac_surface_func_t snapshot_detach;
     /* current snapshots of this surface*/
-    cairo_list_t snapshots;
+    comac_list_t snapshots;
     /* place upon snapshot list */
-    cairo_list_t snapshot;
+    comac_list_t snapshot;
 
     /*
      * Surface font options, falling back to backend's default options,
-     * and set using _cairo_surface_set_font_options(), and propagated by
-     * cairo_surface_create_similar().
+     * and set using _comac_surface_set_font_options(), and propagated by
+     * comac_surface_create_similar().
      */
-    cairo_font_options_t font_options;
+    comac_font_options_t font_options;
 };
 
-cairo_private cairo_surface_t *
-_cairo_surface_create_in_error (cairo_status_t status);
+comac_private comac_surface_t *
+_comac_surface_create_in_error (comac_status_t status);
 
-cairo_private cairo_surface_t *
-_cairo_int_surface_create_in_error (cairo_int_status_t status);
+comac_private comac_surface_t *
+_comac_int_surface_create_in_error (comac_int_status_t status);
 
-cairo_private cairo_surface_t *
-_cairo_surface_get_source (cairo_surface_t *surface,
-			   cairo_rectangle_int_t *extents);
+comac_private comac_surface_t *
+_comac_surface_get_source (comac_surface_t *surface,
+			   comac_rectangle_int_t *extents);
 
-cairo_private cairo_status_t
-_cairo_surface_flush (cairo_surface_t *surface, unsigned flags);
+comac_private comac_status_t
+_comac_surface_flush (comac_surface_t *surface, unsigned flags);
 
-#endif /* CAIRO_SURFACE_PRIVATE_H */
+#endif /* COMAC_SURFACE_PRIVATE_H */

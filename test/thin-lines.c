@@ -33,61 +33,61 @@
 
 
 static void
-draw_lines(cairo_t *cr)
+draw_lines(comac_t *cr)
 {
     /* horizontal line */
-    cairo_translate (cr, PAD, PAD);
-    cairo_move_to (cr, 0, CELL_HEIGHT/2);
-    cairo_line_to (cr, CELL_WIDTH, CELL_HEIGHT/2);
-    cairo_stroke (cr);
+    comac_translate (cr, PAD, PAD);
+    comac_move_to (cr, 0, CELL_HEIGHT/2);
+    comac_line_to (cr, CELL_WIDTH, CELL_HEIGHT/2);
+    comac_stroke (cr);
 
     /* vertical line */
-    cairo_translate (cr, 0, CELL_HEIGHT + PAD);
-    cairo_move_to (cr, CELL_WIDTH/2, 0);
-    cairo_line_to (cr, CELL_WIDTH/2, CELL_HEIGHT);
-    cairo_stroke (cr);
+    comac_translate (cr, 0, CELL_HEIGHT + PAD);
+    comac_move_to (cr, CELL_WIDTH/2, 0);
+    comac_line_to (cr, CELL_WIDTH/2, CELL_HEIGHT);
+    comac_stroke (cr);
 
     /* diagonal line */
-    cairo_translate (cr, 0, CELL_HEIGHT + PAD);
-    cairo_move_to (cr, 0, CELL_HEIGHT);
-    cairo_line_to (cr, CELL_WIDTH, 0);
-    cairo_stroke (cr);
+    comac_translate (cr, 0, CELL_HEIGHT + PAD);
+    comac_move_to (cr, 0, CELL_HEIGHT);
+    comac_line_to (cr, CELL_WIDTH, 0);
+    comac_stroke (cr);
 
     /* curved line */
-    cairo_translate (cr, 0, CELL_HEIGHT + PAD);
-    cairo_move_to (cr, CELL_WIDTH, 0);
-    cairo_curve_to (cr, 0, 0,
+    comac_translate (cr, 0, CELL_HEIGHT + PAD);
+    comac_move_to (cr, CELL_WIDTH, 0);
+    comac_curve_to (cr, 0, 0,
 		    CELL_WIDTH, CELL_HEIGHT,
 		    0, CELL_HEIGHT);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 }
 
 #define FIXED_POINT_MIN (1.0/256)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_save (cr);
-    cairo_set_line_width (cr, FIXED_POINT_MIN*10.0);
+    comac_save (cr);
+    comac_set_line_width (cr, FIXED_POINT_MIN*10.0);
     draw_lines (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, CELL_WIDTH + PAD, 0);
-    cairo_save (cr);
-    cairo_set_line_width (cr, FIXED_POINT_MIN);
+    comac_translate (cr, CELL_WIDTH + PAD, 0);
+    comac_save (cr);
+    comac_set_line_width (cr, FIXED_POINT_MIN);
     draw_lines (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, CELL_WIDTH + PAD, 0);
-    cairo_save (cr);
-    cairo_set_line_width (cr, FIXED_POINT_MIN/10.0);
+    comac_translate (cr, CELL_WIDTH + PAD, 0);
+    comac_save (cr);
+    comac_set_line_width (cr, FIXED_POINT_MIN/10.0);
     draw_lines (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (thin_lines,
+COMAC_TEST (thin_lines,
 	    "Tests that very thin lines are output to vector surfaces",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

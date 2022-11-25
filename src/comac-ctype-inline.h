@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009,2016,2021,2022 Adrian Johnson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -34,53 +34,53 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#ifndef _CAIRO_CTYPE_INLINE_H_
-#define _CAIRO_CTYPE_INLINE_H_
+#ifndef _COMAC_CTYPE_INLINE_H_
+#define _COMAC_CTYPE_INLINE_H_
 
 #include "comac-error-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 /* ASCII only versions of some ctype.h character classification functions.
  * The glibc versions are slow in UTF-8 locales.
  */
 
-static inline int cairo_const
-_cairo_isspace (int c)
+static inline int comac_const
+_comac_isspace (int c)
 {
     return (c == 0x20 || (c >= 0x09 && c <= 0x0d));
 }
 
-static inline int cairo_const
-_cairo_isdigit (int c)
+static inline int comac_const
+_comac_isdigit (int c)
 {
     return (c >= '0' && c <= '9');
 }
 
-static inline int cairo_const
-_cairo_isxdigit (int c)
+static inline int comac_const
+_comac_isxdigit (int c)
 {
     return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
 }
 
-static inline int cairo_const
-_cairo_isalpha (int c)
+static inline int comac_const
+_comac_isalpha (int c)
 {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static inline int cairo_const
-_cairo_isprint (int c)
+static inline int comac_const
+_comac_isprint (int c)
 {
     return (c >= 0x20 && c <= 0x7e);
 }
 
-static inline int cairo_const
-_cairo_isalnum (int c)
+static inline int comac_const
+_comac_isalnum (int c)
 {
     return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
 }
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* _CAIRO_CTYPE_INLINE_H_ */
+#endif /* _COMAC_CTYPE_INLINE_H_ */

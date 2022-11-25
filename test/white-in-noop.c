@@ -30,21 +30,21 @@
 #define HEIGHT 4
 #define WIDTH 4
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_IN);
+    comac_set_operator (cr, COMAC_OPERATOR_IN);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (white_in_noop,
+COMAC_TEST (white_in_noop,
 	    "Test an invalid optimization of the IN operator with white sources",
 	    "operator", /* keywords */
 	    NULL, /* requirements */

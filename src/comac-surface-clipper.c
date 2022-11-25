@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -42,74 +42,74 @@
 
 /* XXX Eliminate repeated paths and nested clips */
 
-static cairo_status_t
-_cairo_path_fixed_add_box (cairo_path_fixed_t *path,
-			   const cairo_box_t *box)
+static comac_status_t
+_comac_path_fixed_add_box (comac_path_fixed_t *path,
+			   const comac_box_t *box)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    status = _cairo_path_fixed_move_to (path, box->p1.x, box->p1.y);
+    status = _comac_path_fixed_move_to (path, box->p1.x, box->p1.y);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_path_fixed_line_to (path, box->p2.x, box->p1.y);
+    status = _comac_path_fixed_line_to (path, box->p2.x, box->p1.y);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_path_fixed_line_to (path, box->p2.x, box->p2.y);
+    status = _comac_path_fixed_line_to (path, box->p2.x, box->p2.y);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_path_fixed_line_to (path, box->p1.x, box->p2.y);
+    status = _comac_path_fixed_line_to (path, box->p1.x, box->p2.y);
     if (unlikely (status))
 	return status;
 
-    return _cairo_path_fixed_close_path (path);
+    return _comac_path_fixed_close_path (path);
 }
 
-static cairo_status_t
-_cairo_surface_clipper_intersect_clip_boxes (cairo_surface_clipper_t *clipper,
-					     const cairo_clip_t *clip)
+static comac_status_t
+_comac_surface_clipper_intersect_clip_boxes (comac_surface_clipper_t *clipper,
+					     const comac_clip_t *clip)
 {
-    cairo_path_fixed_t path;
-    cairo_status_t status;
+    comac_path_fixed_t path;
+    comac_status_t status;
     int i;
 
     if (clip->num_boxes == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     /* Reconstruct the path for the clip boxes.
      * XXX maybe a new clipper callback?
      */
 
-    _cairo_path_fixed_init (&path);
+    _comac_path_fixed_init (&path);
     for (i = 0; i < clip->num_boxes; i++) {
-	status = _cairo_path_fixed_add_box (&path, &clip->boxes[i]);
+	status = _comac_path_fixed_add_box (&path, &clip->boxes[i]);
 	if (unlikely (status)) {
-	    _cairo_path_fixed_fini (&path);
+	    _comac_path_fixed_fini (&path);
 	    return status;
 	}
     }
 
     status = clipper->intersect_clip_path (clipper, &path,
-					   CAIRO_FILL_RULE_WINDING,
+					   COMAC_FILL_RULE_WINDING,
 					   0.,
-					   CAIRO_ANTIALIAS_DEFAULT);
-    _cairo_path_fixed_fini (&path);
+					   COMAC_ANTIALIAS_DEFAULT);
+    _comac_path_fixed_fini (&path);
 
     return status;
 }
 
-static cairo_status_t
-_cairo_surface_clipper_intersect_clip_path_recursive (cairo_surface_clipper_t *clipper,
-						      cairo_clip_path_t *clip_path,
-						      cairo_clip_path_t *end)
+static comac_status_t
+_comac_surface_clipper_intersect_clip_path_recursive (comac_surface_clipper_t *clipper,
+						      comac_clip_path_t *clip_path,
+						      comac_clip_path_t *end)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     if (clip_path->prev != end) {
 	status =
-	    _cairo_surface_clipper_intersect_clip_path_recursive (clipper,
+	    _comac_surface_clipper_intersect_clip_path_recursive (clipper,
 								  clip_path->prev,
 								  end);
 	if (unlikely (status))
@@ -123,39 +123,39 @@ _cairo_surface_clipper_intersect_clip_path_recursive (cairo_surface_clipper_t *c
 					 clip_path->antialias);
 }
 
-cairo_status_t
-_cairo_surface_clipper_set_clip (cairo_surface_clipper_t *clipper,
-				 const cairo_clip_t *clip)
+comac_status_t
+_comac_surface_clipper_set_clip (comac_surface_clipper_t *clipper,
+				 const comac_clip_t *clip)
 {
-    cairo_status_t status;
-    cairo_bool_t incremental = FALSE;
+    comac_status_t status;
+    comac_bool_t incremental = FALSE;
 
-    if (_cairo_clip_equal (clip, clipper->clip))
-	return CAIRO_STATUS_SUCCESS;
+    if (_comac_clip_equal (clip, clipper->clip))
+	return COMAC_STATUS_SUCCESS;
 
     /* all clipped out state should never propagate this far */
-    assert (!_cairo_clip_is_all_clipped (clip));
+    assert (!_comac_clip_is_all_clipped (clip));
 
     /* XXX Is this an incremental clip? */
     if (clipper->clip && clip &&
 	clip->num_boxes == clipper->clip->num_boxes &&
 	memcmp (clip->boxes, clipper->clip->boxes,
-		sizeof (cairo_box_t) * clip->num_boxes) == 0)
+		sizeof (comac_box_t) * clip->num_boxes) == 0)
     {
-	cairo_clip_path_t *clip_path = clip->path;
+	comac_clip_path_t *clip_path = clip->path;
 	while (clip_path != NULL && clip_path != clipper->clip->path)
 	    clip_path = clip_path->prev;
 
 	if (clip_path) {
 	    incremental = TRUE;
-	    status = _cairo_surface_clipper_intersect_clip_path_recursive (clipper,
+	    status = _comac_surface_clipper_intersect_clip_path_recursive (clipper,
 									   clip->path,
 									   clipper->clip->path);
 	}
     }
 
-    _cairo_clip_destroy (clipper->clip);
-    clipper->clip = _cairo_clip_copy (clip);
+    _comac_clip_destroy (clipper->clip);
+    clipper->clip = _comac_clip_copy (clip);
 
     if (incremental)
 	return status;
@@ -165,14 +165,14 @@ _cairo_surface_clipper_set_clip (cairo_surface_clipper_t *clipper,
 	return status;
 
     if (clip == NULL)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
-    status = _cairo_surface_clipper_intersect_clip_boxes (clipper, clip);
+    status = _comac_surface_clipper_intersect_clip_boxes (clipper, clip);
     if (unlikely (status))
 	return status;
 
     if (clip->path != NULL) {
-	    status = _cairo_surface_clipper_intersect_clip_path_recursive (clipper,
+	    status = _comac_surface_clipper_intersect_clip_path_recursive (clipper,
 									   clip->path,
 									   NULL);
     }
@@ -181,16 +181,16 @@ _cairo_surface_clipper_set_clip (cairo_surface_clipper_t *clipper,
 }
 
 void
-_cairo_surface_clipper_init (cairo_surface_clipper_t *clipper,
-			     cairo_surface_clipper_intersect_clip_path_func_t func)
+_comac_surface_clipper_init (comac_surface_clipper_t *clipper,
+			     comac_surface_clipper_intersect_clip_path_func_t func)
 {
     clipper->clip = NULL;
     clipper->intersect_clip_path = func;
 }
 
 void
-_cairo_surface_clipper_reset (cairo_surface_clipper_t *clipper)
+_comac_surface_clipper_reset (comac_surface_clipper_t *clipper)
 {
-    _cairo_clip_destroy (clipper->clip);
+    _comac_clip_destroy (clipper->clip);
     clipper->clip = NULL;
 }

@@ -32,63 +32,63 @@
 
 /* Check the border-pixels of an EXTEND_PAD image pattern */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_t * cr_surface;
+    comac_surface_t *surface;
+    comac_t * cr_surface;
     int surface_size = (SIZE - 30) / 10;
 
-    cairo_set_source_rgba (cr, 0, 0, 0, 1);
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_fill (cr);
+    comac_set_source_rgba (cr, 0, 0, 0, 1);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_fill (cr);
 
     /* Create an image surface with my favorite four colors in each
      * quadrant. */
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24,
 					  surface_size, surface_size);
-    cr_surface = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr_surface = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr_surface, 1, 1, 1);
-    cairo_rectangle (cr_surface,
+    comac_set_source_rgb (cr_surface, 1, 1, 1);
+    comac_rectangle (cr_surface,
 		     0, 0,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 1, 0, 0);
-    cairo_rectangle (cr_surface,
+    comac_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 1, 0, 0);
+    comac_rectangle (cr_surface,
 		     surface_size / 2, 0,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 0, 1, 0);
-    cairo_rectangle (cr_surface,
+    comac_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 0, 1, 0);
+    comac_rectangle (cr_surface,
 		     0, surface_size / 2,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
-    cairo_set_source_rgb (cr_surface, 0, 0, 1);
-    cairo_rectangle (cr_surface,
+    comac_fill (cr_surface);
+    comac_set_source_rgb (cr_surface, 0, 0, 1);
+    comac_rectangle (cr_surface,
 		     surface_size / 2, surface_size / 2,
 		     surface_size / 2, surface_size / 2);
-    cairo_fill (cr_surface);
+    comac_fill (cr_surface);
 
-    cairo_scale (cr, 10, 10);
-    cairo_set_source_surface (cr, cairo_get_target (cr_surface), 1.5, 1.5);
-    cairo_destroy (cr_surface);
+    comac_scale (cr, 10, 10);
+    comac_set_source_surface (cr, comac_get_target (cr_surface), 1.5, 1.5);
+    comac_destroy (cr_surface);
 
     /* Using EXTEND_REFLECT makes this test pass for image and xlib backends */
-    /*cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_REFLECT);*/
+    /*comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_REFLECT);*/
 
-    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_PAD);
-    cairo_rectangle (cr, 1.5, 1.5, 6, 6);
-    cairo_clip (cr);
+    comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_PAD);
+    comac_rectangle (cr, 1.5, 1.5, 6, 6);
+    comac_clip (cr);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (extend_pad_border,
-	    "Test CAIRO_EXTEND_PAD for surface patterns",
+COMAC_TEST (extend_pad_border,
+	    "Test COMAC_EXTEND_PAD for surface patterns",
 	    "extend", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,

@@ -35,90 +35,90 @@ typedef enum {
 #define SIZE 10
 #define SPACE 5
 
-static cairo_surface_t *
-create_surface (cairo_t *target, cairo_content_t content, surface_type_t type)
+static comac_surface_t *
+create_surface (comac_t *target, comac_content_t content, surface_type_t type)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_surface_create_similar (cairo_get_target (target),
+    surface = comac_surface_create_similar (comac_get_target (target),
 					    content,
 					    SIZE, SIZE);
 
     if (type == CLEAR)
 	return surface;
 
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 0.75, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.75, 0, 0);
+    comac_paint (cr);
 
     if (type == PAINTED)
 	goto DONE;
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
-    cairo_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_CLEAR);
+    comac_paint (cr);
 
 DONE:
-    surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return surface;
 }
 
 static void
-paint (cairo_t *cr, cairo_surface_t *surface)
+paint (comac_t *cr, comac_surface_t *surface)
 {
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_paint (cr);
 }
 
 static void
-fill (cairo_t *cr, cairo_surface_t *surface)
+fill (comac_t *cr, comac_surface_t *surface)
 {
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_rectangle (cr, -SPACE, -SPACE, SIZE + 2 * SPACE, SIZE + 2 * SPACE);
-    cairo_fill (cr);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_rectangle (cr, -SPACE, -SPACE, SIZE + 2 * SPACE, SIZE + 2 * SPACE);
+    comac_fill (cr);
 }
 
 static void
-stroke (cairo_t *cr, cairo_surface_t *surface)
+stroke (comac_t *cr, comac_surface_t *surface)
 {
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_set_line_width (cr, 2.0);
-    cairo_rectangle (cr, 1, 1, SIZE - 2, SIZE - 2);
-    cairo_stroke (cr);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_set_line_width (cr, 2.0);
+    comac_rectangle (cr, 1, 1, SIZE - 2, SIZE - 2);
+    comac_stroke (cr);
 }
 
 static void
-mask (cairo_t *cr, cairo_surface_t *surface)
+mask (comac_t *cr, comac_surface_t *surface)
 {
-    cairo_set_source_rgb (cr, 0, 0, 0.75);
-    cairo_mask_surface (cr, surface, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0.75);
+    comac_mask_surface (cr, surface, 0, 0);
 }
 
 static void
-mask_self (cairo_t *cr, cairo_surface_t *surface)
+mask_self (comac_t *cr, comac_surface_t *surface)
 {
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_mask_surface (cr, surface, 0, 0);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_mask_surface (cr, surface, 0, 0);
 }
 
 static void
-glyphs (cairo_t *cr, cairo_surface_t *surface)
+glyphs (comac_t *cr, comac_surface_t *surface)
 {
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_select_font_face (cr,
-			    "@cairo:",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, 16);
-    cairo_translate (cr, 0, SIZE);
-    cairo_show_text (cr, "C");
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_select_font_face (cr,
+			    "@comac:",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, 16);
+    comac_translate (cr, 0, SIZE);
+    comac_show_text (cr, "C");
 }
 
-typedef void (* operation_t) (cairo_t *cr, cairo_surface_t *surface);
+typedef void (* operation_t) (comac_t *cr, comac_surface_t *surface);
 static operation_t operations[] = {
     paint,
     fill,
@@ -128,40 +128,40 @@ static operation_t operations[] = {
     glyphs
 };
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_content_t contents[] = { CAIRO_CONTENT_COLOR_ALPHA, CAIRO_CONTENT_COLOR, CAIRO_CONTENT_ALPHA };
+    comac_content_t contents[] = { COMAC_CONTENT_COLOR_ALPHA, COMAC_CONTENT_COLOR, COMAC_CONTENT_ALPHA };
     unsigned int content, type, ops;
 
-    cairo_set_source_rgb (cr, 0.5, 0.5, 0.5);
-    cairo_paint (cr);
-    cairo_translate (cr, SPACE, SPACE);
+    comac_set_source_rgb (cr, 0.5, 0.5, 0.5);
+    comac_paint (cr);
+    comac_translate (cr, SPACE, SPACE);
 
     for (type = 0; type <= PAINTED; type++) {
 	for (content = 0; content < ARRAY_LENGTH (contents); content++) {
-	    cairo_surface_t *surface;
+	    comac_surface_t *surface;
 
 	    surface = create_surface (cr, contents[content], type);
 
-            cairo_save (cr);
+            comac_save (cr);
             for (ops = 0; ops < ARRAY_LENGTH (operations); ops++) {
-                cairo_save (cr);
+                comac_save (cr);
                 operations[ops] (cr, surface);
-                cairo_restore (cr);
-                cairo_translate (cr, 0, SIZE + SPACE);
+                comac_restore (cr);
+                comac_translate (cr, 0, SIZE + SPACE);
             }
-            cairo_restore (cr);
-            cairo_translate (cr, SIZE + SPACE, 0);
+            comac_restore (cr);
+            comac_translate (cr, SIZE + SPACE, 0);
 
-	    cairo_surface_destroy (surface);
+	    comac_surface_destroy (surface);
         }
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clear_source,
+COMAC_TEST (clear_source,
 	    "Check painting with cleared surfaces works as expected",
 	    NULL, /* keywords */
 	    NULL, /* requirements */

@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Keith Packard
  *
@@ -32,43 +32,43 @@
  *      Keith Packard <keithp@keithp.com>
  */
 
-#ifndef CAIRO_ANALYSIS_SURFACE_H
-#define CAIRO_ANALYSIS_SURFACE_H
+#ifndef COMAC_ANALYSIS_SURFACE_H
+#define COMAC_ANALYSIS_SURFACE_H
 
 #include "comacint.h"
 
-cairo_private cairo_surface_t *
-_cairo_analysis_surface_create (cairo_surface_t		*target);
+comac_private comac_surface_t *
+_comac_analysis_surface_create (comac_surface_t		*target);
 
-cairo_private void
-_cairo_analysis_surface_set_ctm (cairo_surface_t *surface,
-				 const cairo_matrix_t  *ctm);
+comac_private void
+_comac_analysis_surface_set_ctm (comac_surface_t *surface,
+				 const comac_matrix_t  *ctm);
 
-cairo_private void
-_cairo_analysis_surface_get_ctm (cairo_surface_t *surface,
-				 cairo_matrix_t  *ctm);
+comac_private void
+_comac_analysis_surface_get_ctm (comac_surface_t *surface,
+				 comac_matrix_t  *ctm);
 
-cairo_private cairo_region_t *
-_cairo_analysis_surface_get_supported (cairo_surface_t *surface);
+comac_private comac_region_t *
+_comac_analysis_surface_get_supported (comac_surface_t *surface);
 
-cairo_private cairo_region_t *
-_cairo_analysis_surface_get_unsupported (cairo_surface_t *surface);
+comac_private comac_region_t *
+_comac_analysis_surface_get_unsupported (comac_surface_t *surface);
 
-cairo_private cairo_bool_t
-_cairo_analysis_surface_has_supported (cairo_surface_t *surface);
+comac_private comac_bool_t
+_comac_analysis_surface_has_supported (comac_surface_t *surface);
 
-cairo_private cairo_bool_t
-_cairo_analysis_surface_has_unsupported (cairo_surface_t *surface);
+comac_private comac_bool_t
+_comac_analysis_surface_has_unsupported (comac_surface_t *surface);
 
-cairo_private void
-_cairo_analysis_surface_get_bounding_box (cairo_surface_t *surface,
-					  cairo_box_t     *bbox);
+comac_private void
+_comac_analysis_surface_get_bounding_box (comac_surface_t *surface,
+					  comac_box_t     *bbox);
 
-cairo_private cairo_int_status_t
-_cairo_analysis_surface_merge_status (cairo_int_status_t status_a,
-				      cairo_int_status_t status_b);
+comac_private comac_int_status_t
+_comac_analysis_surface_merge_status (comac_int_status_t status_a,
+				      comac_int_status_t status_b);
 
-cairo_private cairo_surface_t *
-_cairo_null_surface_create (cairo_content_t content);
+comac_private comac_surface_t *
+_comac_null_surface_create (comac_content_t content);
 
-#endif /* CAIRO_ANALYSIS_SURFACE_H */
+#endif /* COMAC_ANALYSIS_SURFACE_H */

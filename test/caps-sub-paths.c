@@ -30,33 +30,33 @@
    https://bugs.freedesktop.org/show_bug.cgi?id=4205
 */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_set_line_width (cr, 4);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+    comac_set_line_width (cr, 4);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
 
-    cairo_move_to (cr,  4,  4);
-    cairo_line_to (cr,  4, 16);
+    comac_move_to (cr,  4,  4);
+    comac_line_to (cr,  4, 16);
 
-    cairo_move_to (cr, 10,  4);
-    cairo_line_to (cr, 10, 16);
+    comac_move_to (cr, 10,  4);
+    comac_line_to (cr, 10, 16);
 
-    cairo_move_to (cr, 16,  4);
-    cairo_line_to (cr, 16, 16);
+    comac_move_to (cr, 16,  4);
+    comac_line_to (cr, 16, 16);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (caps_sub_paths,
+COMAC_TEST (caps_sub_paths,
 	    "Test that sub-paths receive caps.",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

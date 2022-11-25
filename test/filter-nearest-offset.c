@@ -34,10 +34,10 @@
 #define IMAGE_WIDTH  (PAD + STEPS * (STAMP_WIDTH  + PAD) + PAD)
 #define IMAGE_HEIGHT (PAD + STEPS * (STAMP_HEIGHT + PAD) + PAD)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     uint32_t data[STAMP_WIDTH * STAMP_HEIGHT] = {
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
@@ -48,21 +48,21 @@ draw (cairo_t *cr, int width, int height)
     int i, j;
 
     /* fill with off-white to avoid a separate rgb24 ref image */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, .7, .7, .7);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, .7, .7, .7);
+    comac_paint (cr);
+    comac_restore (cr);
 
     /* Draw reference lines where the jump should be. */
-    cairo_move_to (cr, PAD + STEPS / 2 * (STAMP_WIDTH + PAD), 0);
-    cairo_rel_line_to (cr, 0, IMAGE_HEIGHT);
-    cairo_move_to (cr, 0, PAD + STEPS / 2 * (STAMP_HEIGHT + PAD));
-    cairo_rel_line_to (cr, IMAGE_WIDTH, 0);
-    cairo_set_line_width (cr, 2.0);
-    cairo_stroke (cr);
+    comac_move_to (cr, PAD + STEPS / 2 * (STAMP_WIDTH + PAD), 0);
+    comac_rel_line_to (cr, 0, IMAGE_HEIGHT);
+    comac_move_to (cr, 0, PAD + STEPS / 2 * (STAMP_HEIGHT + PAD));
+    comac_rel_line_to (cr, IMAGE_WIDTH, 0);
+    comac_set_line_width (cr, 2.0);
+    comac_stroke (cr);
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) data,
-						   CAIRO_FORMAT_RGB24,
+    surface = comac_image_surface_create_for_data ((unsigned char *) data,
+						   COMAC_FORMAT_RGB24,
 						   STAMP_WIDTH,
 						   STAMP_HEIGHT,
 						   STAMP_WIDTH * 4);
@@ -82,26 +82,26 @@ draw (cairo_t *cr, int width, int height)
 	    j_step = j * 1.0 / STEPS;
 #endif
 
-	    cairo_save (cr);
+	    comac_save (cr);
 
-	    cairo_set_source_surface (cr, surface,
+	    comac_set_source_surface (cr, surface,
 				      PAD + i * (STAMP_WIDTH  + PAD) + i_step,
 				      PAD + j * (STAMP_HEIGHT + PAD) + j_step);
-	    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-	    cairo_paint (cr);
+	    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+	    comac_paint (cr);
 
-	    cairo_restore (cr);
+	    comac_restore (cr);
 	}
     }
 
-    cairo_surface_finish (surface); /* data goes out of scope */
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface); /* data goes out of scope */
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (filter_nearest_offset,
-	    "Test sampling offset of CAIRO_FILTER_NEAREST"
+COMAC_TEST (filter_nearest_offset,
+	    "Test sampling offset of COMAC_FILTER_NEAREST"
 	    "\nwrong sampling location for nearest-neighbor filter in libpixman and Render",
 	    "filter", /* keywords */
 	    NULL, /* requirements */

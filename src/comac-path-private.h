@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  * Copyright © 2006 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,24 +34,24 @@
  *	Carl D. Worth <cworth@redhat.com>
  */
 
-#ifndef CAIRO_PATH_PRIVATE_H
-#define CAIRO_PATH_PRIVATE_H
+#ifndef COMAC_PATH_PRIVATE_H
+#define COMAC_PATH_PRIVATE_H
 
 #include "comacint.h"
 
-cairo_private cairo_path_t *
-_cairo_path_create (cairo_path_fixed_t *path,
-		    cairo_t		*cr);
+comac_private comac_path_t *
+_comac_path_create (comac_path_fixed_t *path,
+		    comac_t		*cr);
 
-cairo_private cairo_path_t *
-_cairo_path_create_flat (cairo_path_fixed_t *path,
-			 cairo_t	    *cr);
+comac_private comac_path_t *
+_comac_path_create_flat (comac_path_fixed_t *path,
+			 comac_t	    *cr);
 
-cairo_private cairo_path_t *
-_cairo_path_create_in_error (cairo_status_t status);
+comac_private comac_path_t *
+_comac_path_create_in_error (comac_status_t status);
 
-cairo_private cairo_status_t
-_cairo_path_append_to_context (const cairo_path_t	*path,
-			       cairo_t			*cr);
+comac_private comac_status_t
+_comac_path_append_to_context (const comac_path_t	*path,
+			       comac_t			*cr);
 
-#endif /* CAIRO_PATH_DATA_PRIVATE_H */
+#endif /* COMAC_PATH_DATA_PRIVATE_H */

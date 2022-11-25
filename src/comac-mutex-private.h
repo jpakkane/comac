@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005,2007 Red Hat, Inc.
@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -38,30 +38,30 @@
  *	Behdad Esfahbod <behdad@behdad.org>
  */
 
-#ifndef CAIRO_MUTEX_PRIVATE_H
-#define CAIRO_MUTEX_PRIVATE_H
+#ifndef COMAC_MUTEX_PRIVATE_H
+#define COMAC_MUTEX_PRIVATE_H
 
 #include "comac-mutex-type-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-#if _CAIRO_MUTEX_IMPL_USE_STATIC_INITIALIZER
-cairo_private void _cairo_mutex_initialize (void);
+#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER
+comac_private void _comac_mutex_initialize (void);
 #endif
-#if _CAIRO_MUTEX_IMPL_USE_STATIC_FINALIZER
-cairo_private void _cairo_mutex_finalize (void);
+#if _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
+comac_private void _comac_mutex_finalize (void);
 #endif
 /* only if using static initializer and/or finalizer define the boolean */
-#if _CAIRO_MUTEX_IMPL_USE_STATIC_INITIALIZER || _CAIRO_MUTEX_IMPL_USE_STATIC_FINALIZER
-  cairo_private extern cairo_bool_t _cairo_mutex_initialized;
+#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER || _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
+  comac_private extern comac_bool_t _comac_mutex_initialized;
 #endif
 
 /* Finally, extern the static mutexes and undef */
 
-#define CAIRO_MUTEX_DECLARE(mutex) cairo_private extern cairo_mutex_t mutex;
+#define COMAC_MUTEX_DECLARE(mutex) comac_private extern comac_mutex_t mutex;
 #include "comac-mutex-list-private.h"
-#undef CAIRO_MUTEX_DECLARE
+#undef COMAC_MUTEX_DECLARE
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
 #endif

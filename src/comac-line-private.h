@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2014 Intel Corporation, Inc
  *
@@ -25,27 +25,27 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
  *
  */
 
-#ifndef CAIRO_LINE_PRIVATE_H
-#define CAIRO_LINE_PRIVATE_H
+#ifndef COMAC_LINE_PRIVATE_H
+#define COMAC_LINE_PRIVATE_H
 
 #include "comac-types-private.h"
 #include "comac-error-private.h"
 #include "comac-compiler-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_private int
-_cairo_lines_compare_at_y (const cairo_line_t *a,
-			 const cairo_line_t *b,
+comac_private int
+_comac_lines_compare_at_y (const comac_line_t *a,
+			 const comac_line_t *b,
 			 int y);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_LINE_PRIVATE_H */
+#endif /* COMAC_LINE_PRIVATE_H */

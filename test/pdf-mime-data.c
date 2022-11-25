@@ -41,8 +41,8 @@
 
 #define BASENAME "pdf-mime-data.out"
 
-static cairo_test_status_t
-read_file (const cairo_test_context_t *ctx,
+static comac_test_status_t
+read_file (const comac_test_context_t *ctx,
 	   const char *file,
 	   unsigned char **data,
 	   unsigned int *len)
@@ -61,12 +61,12 @@ read_file (const cairo_test_context_t *ctx,
     if (fp == NULL) {
 	switch (errno) {
 	case ENOMEM:
-	    cairo_test_log (ctx, "Could not create file handle for %s due to \
+	    comac_test_log (ctx, "Could not create file handle for %s due to \
 				lack of memory\n", file);
-	    return CAIRO_TEST_NO_MEMORY;
+	    return COMAC_TEST_NO_MEMORY;
 	default:
-	    cairo_test_log (ctx, "Could not get the file handle for %s\n", file);
-	    return CAIRO_TEST_FAILURE;
+	    comac_test_log (ctx, "Could not get the file handle for %s\n", file);
+	    return COMAC_TEST_FAILURE;
 	}
     }
 
@@ -76,30 +76,30 @@ read_file (const cairo_test_context_t *ctx,
     *data = malloc (*len);
     if (*data == NULL) {
 	fclose(fp);
-	cairo_test_log (ctx, "Could not allocate memory for buffer to read \
+	comac_test_log (ctx, "Could not allocate memory for buffer to read \
 				from file %s\n", file);
-	return CAIRO_TEST_NO_MEMORY;
+	return COMAC_TEST_NO_MEMORY;
     }
 
     if (fread(*data, *len, 1, fp) != 1) {
 	free (*data);
 	fclose(fp);
-	cairo_test_log (ctx, "Could not read data from file %s\n", file);
-	return CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "Could not read data from file %s\n", file);
+	return COMAC_TEST_FAILURE;
     }
 
     fclose(fp);
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_surface_t *image;
-    cairo_surface_t *surface;
-    cairo_t *cr;
-    cairo_status_t status, status2;
-    cairo_test_status_t test_status;
+    comac_surface_t *image;
+    comac_surface_t *surface;
+    comac_t *cr;
+    comac_status_t status, status2;
+    comac_test_status_t test_status;
     int width, height;
     unsigned char *data;
     unsigned char *out_data;
@@ -107,59 +107,59 @@ preamble (cairo_test_context_t *ctx)
     char command[4096];
     int exit_status;
     char *filename;
-    const char *path = cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
+    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
-    if (! cairo_test_is_target_enabled (ctx, "pdf"))
-	return CAIRO_TEST_UNTESTED;
+    if (! comac_test_is_target_enabled (ctx, "pdf"))
+	return COMAC_TEST_UNTESTED;
 
     exit_status = system ("command -v pdfimages");
     if (exit_status) {
-	cairo_test_log (ctx, "pdfimages not available\n");
-	return CAIRO_TEST_UNTESTED;
+	comac_test_log (ctx, "pdfimages not available\n");
+	return COMAC_TEST_UNTESTED;
     }
 
-    image = cairo_test_create_surface_from_png (ctx, IMAGE_FILE ".png");
+    image = comac_test_create_surface_from_png (ctx, IMAGE_FILE ".png");
     test_status = read_file (ctx, IMAGE_FILE ".jpg", &data, &len);
     if (test_status) {
 	return test_status;
     }
 
-    cairo_surface_set_mime_data (image, CAIRO_MIME_TYPE_JPEG,
+    comac_surface_set_mime_data (image, COMAC_MIME_TYPE_JPEG,
 				 data, len,
 				 free, data);
-    width = cairo_image_surface_get_width (image);
-    height = cairo_image_surface_get_height (image);
+    width = comac_image_surface_get_width (image);
+    height = comac_image_surface_get_height (image);
 
     xasprintf (&filename, "%s/%s.pdf", path, BASENAME);
-    surface = cairo_pdf_surface_create (filename, width + 20, height + 20);
-    cr = cairo_create (surface);
-    cairo_translate (cr, 10, 10);
-    cairo_set_source_surface (cr, image, 0, 0);
-    cairo_paint (cr);
-    status = cairo_status (cr);
-    cairo_destroy (cr);
-    cairo_surface_finish (surface);
-    status2 = cairo_surface_status (surface);
-    if (status == CAIRO_STATUS_SUCCESS)
+    surface = comac_pdf_surface_create (filename, width + 20, height + 20);
+    cr = comac_create (surface);
+    comac_translate (cr, 10, 10);
+    comac_set_source_surface (cr, image, 0, 0);
+    comac_paint (cr);
+    status = comac_status (cr);
+    comac_destroy (cr);
+    comac_surface_finish (surface);
+    status2 = comac_surface_status (surface);
+    if (status == COMAC_STATUS_SUCCESS)
 	status = status2;
-    cairo_surface_destroy (surface);
-    cairo_surface_destroy (image);
+    comac_surface_destroy (surface);
+    comac_surface_destroy (image);
 
     if (status) {
-	cairo_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
-			filename, cairo_status_to_string (status));
+	comac_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
+			filename, comac_status_to_string (status));
         free (filename);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     printf ("pdf-mime-data: Please check %s to ensure it looks/prints correctly.\n", filename);
 
-    sprintf (command, "pdfimages -j %s %s", filename, CAIRO_TEST_OUTPUT_DIR "/" BASENAME);
+    sprintf (command, "pdfimages -j %s %s", filename, COMAC_TEST_OUTPUT_DIR "/" BASENAME);
     exit_status = system (command);
     free (filename);
     if (exit_status) {
-	cairo_test_log (ctx, "pdfimages failed with exit status %d\n", exit_status);
-	return CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "pdfimages failed with exit status %d\n", exit_status);
+	return COMAC_TEST_FAILURE;
     }
 
     test_status = read_file (ctx, IMAGE_FILE ".jpg", &data, &len);
@@ -167,7 +167,7 @@ preamble (cairo_test_context_t *ctx)
 	return test_status;
     }
 
-    test_status = read_file (ctx, CAIRO_TEST_OUTPUT_DIR "/" BASENAME "-000.jpg", &out_data, &out_len);
+    test_status = read_file (ctx, COMAC_TEST_OUTPUT_DIR "/" BASENAME "-000.jpg", &out_data, &out_len);
     if (test_status) {
 	return test_status;
     }
@@ -175,17 +175,17 @@ preamble (cairo_test_context_t *ctx)
     if (len != out_len || memcmp(data, out_data, len) != 0) {
 	free (data);
 	free (out_data);
-	cairo_test_log (ctx, "output mime data does not match source mime data\n");
-	return CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "output mime data does not match source mime data\n");
+	return COMAC_TEST_FAILURE;
     }
 
     free (data);
     free (out_data);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (pdf_mime_data,
+COMAC_TEST (pdf_mime_data,
 	    "Check mime data correctly used by PDF surface",
 	    "pdf, mime-data", /* keywords */
 	    NULL, /* requirements */

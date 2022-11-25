@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation.
  *
@@ -33,23 +33,23 @@
  *      Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_SURFACE_SUBSURFACE_PRIVATE_H
-#define CAIRO_SURFACE_SUBSURFACE_PRIVATE_H
+#ifndef COMAC_SURFACE_SUBSURFACE_PRIVATE_H
+#define COMAC_SURFACE_SUBSURFACE_PRIVATE_H
 
 #include "comac-surface-private.h"
 #include "comac-surface-backend-private.h"
 
-struct _cairo_surface_subsurface {
-    cairo_surface_t base;
+struct _comac_surface_subsurface {
+    comac_surface_t base;
 
-    cairo_rectangle_int_t extents;
+    comac_rectangle_int_t extents;
 
-    cairo_surface_t *target;
-    cairo_surface_t *snapshot;
+    comac_surface_t *target;
+    comac_surface_t *snapshot;
 };
 
-cairo_private void
-_cairo_surface_subsurface_set_snapshot (cairo_surface_t *surface,
-					cairo_surface_t *snapshot);
+comac_private void
+_comac_surface_subsurface_set_snapshot (comac_surface_t *surface,
+					comac_surface_t *snapshot);
 
-#endif /* CAIRO_SURFACE_SUBSURFACE_PRIVATE_H */
+#endif /* COMAC_SURFACE_SUBSURFACE_PRIVATE_H */

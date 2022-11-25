@@ -30,73 +30,73 @@
 #define WIDTH	100
 #define HEIGHT	100
 
-static void hatching (cairo_t *cr)
+static void hatching (comac_t *cr)
 {
     int i;
 
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
 
-    cairo_translate (cr, WIDTH/2, HEIGHT/2);
-    cairo_rotate (cr, M_PI/4);
-    cairo_translate (cr, -WIDTH/2, -HEIGHT/2);
+    comac_translate (cr, WIDTH/2, HEIGHT/2);
+    comac_rotate (cr, M_PI/4);
+    comac_translate (cr, -WIDTH/2, -HEIGHT/2);
 
     for (i = 0; i < WIDTH; i += STEP) {
-	cairo_rectangle (cr, i, -2, 1, HEIGHT+4);
-	cairo_rectangle (cr, -2, i, WIDTH+4, 1);
+	comac_rectangle (cr, i, -2, 1, HEIGHT+4);
+	comac_rectangle (cr, -2, i, WIDTH+4, 1);
     }
 }
 
-static void background (cairo_t *cr)
+static void background (comac_t *cr)
 {
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
 }
 
-static void clip_to_grid (cairo_t *cr)
+static void clip_to_grid (comac_t *cr)
 {
     int i, j;
 
     for (j = 0; j < HEIGHT; j += 2*STEP) {
 	for (i = 0; i < WIDTH; i += 2*STEP)
-	    cairo_rectangle (cr, i, j, STEP, STEP);
+	    comac_rectangle (cr, i, j, STEP, STEP);
 
 	j += 2*STEP;
 	for (i = 0; i < WIDTH; i += 2*STEP)
-	    cairo_rectangle (cr, i+STEP/2, j, STEP, STEP);
+	    comac_rectangle (cr, i+STEP/2, j, STEP, STEP);
     }
 
-    cairo_clip (cr);
+    comac_clip (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     background (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
 
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_grid (cr);
 	hatching (cr);
-	cairo_set_source_rgb (cr, 1, 0, 0);
-	cairo_fill (cr);
-    } cairo_restore (cr);
+	comac_set_source_rgb (cr, 1, 0, 0);
+	comac_fill (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, 0.25, HEIGHT+.25);
+    comac_translate (cr, 0.25, HEIGHT+.25);
 
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_grid (cr);
 	hatching (cr);
-	cairo_set_source_rgb (cr, 0, 0, 1);
-	cairo_fill (cr);
-    } cairo_restore (cr);
+	comac_set_source_rgb (cr, 0, 0, 1);
+	comac_fill (cr);
+    } comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_disjoint_hatching,
+COMAC_TEST (clip_disjoint_hatching,
 	    "Test drawing through through an array of clips",
 	    "clip", /* keywords */
 	    "target=raster", /* requirements */

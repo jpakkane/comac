@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -36,35 +36,35 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_STROKE_DASH_PRIVATE_H
-#define CAIRO_STROKE_DASH_PRIVATE_H
+#ifndef COMAC_STROKE_DASH_PRIVATE_H
+#define COMAC_STROKE_DASH_PRIVATE_H
 
 #include "comacint.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-typedef struct _cairo_stroker_dash {
-    cairo_bool_t dashed;
+typedef struct _comac_stroker_dash {
+    comac_bool_t dashed;
     unsigned int dash_index;
-    cairo_bool_t dash_on;
-    cairo_bool_t dash_starts_on;
+    comac_bool_t dash_on;
+    comac_bool_t dash_starts_on;
     double dash_remain;
 
     double dash_offset;
     const double *dashes;
     unsigned int num_dashes;
-} cairo_stroker_dash_t;
+} comac_stroker_dash_t;
 
-cairo_private void
-_cairo_stroker_dash_init (cairo_stroker_dash_t *dash,
-			  const cairo_stroke_style_t *style);
+comac_private void
+_comac_stroker_dash_init (comac_stroker_dash_t *dash,
+			  const comac_stroke_style_t *style);
 
-cairo_private void
-_cairo_stroker_dash_start (cairo_stroker_dash_t *dash);
+comac_private void
+_comac_stroker_dash_start (comac_stroker_dash_t *dash);
 
-cairo_private void
-_cairo_stroker_dash_step (cairo_stroker_dash_t *dash, double step);
+comac_private void
+_comac_stroker_dash_step (comac_stroker_dash_t *dash, double step);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_STROKE_DASH_PRIVATE_H */
+#endif /* COMAC_STROKE_DASH_PRIVATE_H */

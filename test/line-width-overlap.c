@@ -39,109 +39,109 @@
 #define SIZE 100
 #define RECT_SIZE 10
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* fill with green so RGB and RGBA tests can share the ref image */
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_paint (cr);
 
     /* red to see eventual bugs immediately */
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
     /* big line width */
-    cairo_set_line_width (cr, LINE_WIDTH);
+    comac_set_line_width (cr, LINE_WIDTH);
 
     /* rectangle that is smaller than the line width in center of image */
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
                      (SIZE - RECT_SIZE) / 2,
                      (SIZE - RECT_SIZE) / 2,
                      RECT_SIZE,
                      RECT_SIZE);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /* and again slightly offset to trigger another path */
-static cairo_test_status_t
-draw_offset (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_offset (comac_t *cr, int width, int height)
 {
-    cairo_translate (cr, .5, .5);
+    comac_translate (cr, .5, .5);
     return draw (cr, width, height);
 }
 
-static cairo_test_status_t
-draw_rotated (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_rotated (comac_t *cr, int width, int height)
 {
-    cairo_translate (cr, SIZE/2, SIZE/2);
-    cairo_rotate (cr, M_PI/4);
-    cairo_translate (cr, -SIZE/2, -SIZE/2);
-
-    return draw (cr, width, height);
-}
-
-static cairo_test_status_t
-draw_flipped (cairo_t *cr, int width, int height)
-{
-    cairo_translate (cr, SIZE/2, SIZE/2);
-    cairo_scale (cr, -1, 1);
-    cairo_translate (cr, -SIZE/2, -SIZE/2);
+    comac_translate (cr, SIZE/2, SIZE/2);
+    comac_rotate (cr, M_PI/4);
+    comac_translate (cr, -SIZE/2, -SIZE/2);
 
     return draw (cr, width, height);
 }
 
-static cairo_test_status_t
-draw_flopped (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_flipped (comac_t *cr, int width, int height)
 {
-    cairo_translate (cr, SIZE/2, SIZE/2);
-    cairo_scale (cr, 1, -1);
-    cairo_translate (cr, -SIZE/2, -SIZE/2);
+    comac_translate (cr, SIZE/2, SIZE/2);
+    comac_scale (cr, -1, 1);
+    comac_translate (cr, -SIZE/2, -SIZE/2);
 
     return draw (cr, width, height);
 }
 
-static cairo_test_status_t
-draw_dashed (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_flopped (comac_t *cr, int width, int height)
+{
+    comac_translate (cr, SIZE/2, SIZE/2);
+    comac_scale (cr, 1, -1);
+    comac_translate (cr, -SIZE/2, -SIZE/2);
+
+    return draw (cr, width, height);
+}
+
+static comac_test_status_t
+draw_dashed (comac_t *cr, int width, int height)
 {
     const double dashes[] = { 4 };
-    cairo_set_dash (cr, dashes, 1, 0);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+    comac_set_dash (cr, dashes, 1, 0);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
     return draw (cr, width, height);
 }
 
-CAIRO_TEST (line_width_overlap,
+COMAC_TEST (line_width_overlap,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, draw)
-CAIRO_TEST (line_width_overlap_offset,
+COMAC_TEST (line_width_overlap_offset,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, draw_offset)
-CAIRO_TEST (line_width_overlap_rotated,
+COMAC_TEST (line_width_overlap_rotated,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, draw_rotated)
-CAIRO_TEST (line_width_overlap_flipped,
+COMAC_TEST (line_width_overlap_flipped,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, draw_flipped)
-CAIRO_TEST (line_width_overlap_flopped,
+COMAC_TEST (line_width_overlap_flopped,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,
 	    NULL, draw_flopped)
-CAIRO_TEST (line_width_overlap_dashed,
+COMAC_TEST (line_width_overlap_dashed,
 	    "Test overlapping lines due to large line width",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

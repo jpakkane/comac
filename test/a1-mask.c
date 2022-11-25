@@ -46,35 +46,35 @@ static unsigned char mask[(MASK_WIDTH + 7) / 8 * MASK_HEIGHT] = {
     MASK,
 };
 
-static cairo_test_status_t
-check_status (const cairo_test_context_t *ctx,
-	      cairo_status_t status,
-	      cairo_status_t expected)
+static comac_test_status_t
+check_status (const comac_test_context_t *ctx,
+	      comac_status_t status,
+	      comac_status_t expected)
 {
     if (status == expected)
-	return CAIRO_TEST_SUCCESS;
+	return COMAC_TEST_SUCCESS;
 
-    cairo_test_log (ctx,
+    comac_test_log (ctx,
 		    "Error: Expected status value %d (%s), received %d (%s)\n",
 		    expected,
-		    cairo_status_to_string (expected),
+		    comac_status_to_string (expected),
 		    status,
-		    cairo_status_to_string (status));
-    return CAIRO_TEST_FAILURE;
+		    comac_status_to_string (status));
+    return COMAC_TEST_FAILURE;
 }
 
-static cairo_test_status_t
-test_surface_with_width_and_stride (const cairo_test_context_t *ctx,
+static comac_test_status_t
+test_surface_with_width_and_stride (const comac_test_context_t *ctx,
 				    int width, int stride,
-				    cairo_status_t expected)
+				    comac_status_t expected)
 {
-    cairo_test_status_t status;
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_test_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
     int len;
     unsigned char *data;
 
-    cairo_test_log (ctx,
+    comac_test_log (ctx,
 		    "Creating surface with width %d and stride %d\n",
 		    width, stride);
 
@@ -83,40 +83,40 @@ test_surface_with_width_and_stride (const cairo_test_context_t *ctx,
 	len = -len;
     data = xmalloc (len);
 
-    surface = cairo_image_surface_create_for_data (data, CAIRO_FORMAT_A1,
+    surface = comac_image_surface_create_for_data (data, COMAC_FORMAT_A1,
 						   width, 1, stride);
-    cr = cairo_create (surface);
+    cr = comac_create (surface);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    status = check_status (ctx, cairo_surface_status (surface), expected);
+    status = check_status (ctx, comac_surface_status (surface), expected);
     if (status)
 	goto BAIL;
 
-    status = check_status (ctx, cairo_status (cr), expected);
+    status = check_status (ctx, comac_status (cr), expected);
     if (status)
 	goto BAIL;
 
   BAIL:
-    cairo_destroy (cr);
-    cairo_surface_destroy (surface);
+    comac_destroy (cr);
+    comac_surface_destroy (surface);
     free (data);
     return status;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int dst_width, int dst_height)
+static comac_test_status_t
+draw (comac_t *cr, int dst_width, int dst_height)
 {
     unsigned char *mask_aligned;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_A1,
+    surface = comac_image_surface_create (COMAC_FORMAT_A1,
 					  MASK_WIDTH,
 					  MASK_HEIGHT);
 
-    mask_aligned = cairo_image_surface_get_data (surface);
+    mask_aligned = comac_image_surface_get_data (surface);
     if (mask_aligned != NULL) {
-	int stride = cairo_image_surface_get_stride (surface), row;
+	int stride = comac_image_surface_get_stride (surface), row;
 	const unsigned char *src = mask;
 	unsigned char *dst = mask_aligned;
 	for (row = 0; row < MASK_HEIGHT; row++) {
@@ -125,38 +125,38 @@ draw (cairo_t *cr, int dst_width, int dst_height)
 	    dst += stride;
 	}
     }
-    cairo_surface_mark_dirty (surface);
+    comac_surface_mark_dirty (surface);
 
     /* Paint background blue */
-    cairo_set_source_rgb (cr, 0, 0, 1); /* blue */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1); /* blue */
+    comac_paint (cr);
 
     /* Then paint red through our mask */
-    cairo_set_source_rgb (cr, 1, 0, 0); /* red */
-    cairo_mask_surface (cr, surface, 0, 0);
-    cairo_surface_destroy (surface);
+    comac_set_source_rgb (cr, 1, 0, 0); /* red */
+    comac_mask_surface (cr, surface, 0, 0);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_test_status_t status = CAIRO_TEST_SUCCESS;
+    comac_test_status_t status = COMAC_TEST_SUCCESS;
     int test_width;
 
     /* first check the API strictness */
     for (test_width = 0; test_width < 40; test_width++) {
 	int test_stride = (test_width + 7) / 8;
-	int stride = cairo_format_stride_for_width (CAIRO_FORMAT_A1,
+	int stride = comac_format_stride_for_width (COMAC_FORMAT_A1,
 						    test_width);
-	cairo_status_t expected;
+	comac_status_t expected;
 
 	/* First create a surface using the width as the stride,
 	 * (most of these should fail).
 	 */
 	expected = (stride == test_stride) ?
-	    CAIRO_STATUS_SUCCESS : CAIRO_STATUS_INVALID_STRIDE;
+	    COMAC_STATUS_SUCCESS : COMAC_STATUS_INVALID_STRIDE;
 
 	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
@@ -179,14 +179,14 @@ preamble (cairo_test_context_t *ctx)
 	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
 						     stride,
-						     CAIRO_STATUS_SUCCESS);
+						     COMAC_STATUS_SUCCESS);
 	if (status)
 	    return status;
 
 	status = test_surface_with_width_and_stride (ctx,
 						     test_width,
 						     -stride,
-						     CAIRO_STATUS_SUCCESS);
+						     COMAC_STATUS_SUCCESS);
 	if (status)
 	    return status;
     }
@@ -194,8 +194,8 @@ preamble (cairo_test_context_t *ctx)
     return status;
 }
 
-CAIRO_TEST (a1_mask,
-            "test masks of CAIRO_FORMAT_A1",
+COMAC_TEST (a1_mask,
+            "test masks of COMAC_FORMAT_A1",
 	    "alpha, mask", /* keywords */
 	    NULL, /* requirements */
 	    MASK_WIDTH, MASK_HEIGHT,

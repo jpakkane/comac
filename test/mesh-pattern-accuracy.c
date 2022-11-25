@@ -39,59 +39,59 @@
  * center of the surface which should measure 2x2 pixels.
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
     double offset;
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
-    pattern = cairo_pattern_create_mesh ();
+    pattern = comac_pattern_create_mesh ();
 
-    cairo_mesh_pattern_begin_patch (pattern);
+    comac_mesh_pattern_begin_patch (pattern);
 
-    cairo_mesh_pattern_move_to (pattern, 0, 0);
-    cairo_mesh_pattern_line_to (pattern, 1, 0);
-    cairo_mesh_pattern_line_to (pattern, 1, 1);
-    cairo_mesh_pattern_line_to (pattern, 0, 1);
+    comac_mesh_pattern_move_to (pattern, 0, 0);
+    comac_mesh_pattern_line_to (pattern, 1, 0);
+    comac_mesh_pattern_line_to (pattern, 1, 1);
+    comac_mesh_pattern_line_to (pattern, 0, 1);
 
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 0, 0, 0);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 1, 1, 1);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 0);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 1);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 0, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 1, 1, 1);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 1, 1);
 
-    cairo_mesh_pattern_end_patch (pattern);
+    comac_mesh_pattern_end_patch (pattern);
 
-    cairo_mesh_pattern_begin_patch (pattern);
+    comac_mesh_pattern_begin_patch (pattern);
 
     /* A small 1x1 red patch, that should be rendered as a 2x2 red
      * square in the center of the image */
 
     offset = 0.5 / SIZE;
 
-    cairo_mesh_pattern_move_to (pattern, 0.5 + offset, 0.5 + offset);
-    cairo_mesh_pattern_line_to (pattern, 0.5 + offset, 0.5 - offset);
-    cairo_mesh_pattern_line_to (pattern, 0.5 - offset, 0.5 - offset);
-    cairo_mesh_pattern_line_to (pattern, 0.5 - offset, 0.5 + offset);
+    comac_mesh_pattern_move_to (pattern, 0.5 + offset, 0.5 + offset);
+    comac_mesh_pattern_line_to (pattern, 0.5 + offset, 0.5 - offset);
+    comac_mesh_pattern_line_to (pattern, 0.5 - offset, 0.5 - offset);
+    comac_mesh_pattern_line_to (pattern, 0.5 - offset, 0.5 + offset);
 
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 1, 0, 0);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 1, 0, 0);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 1, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 2, 1, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 3, 1, 0, 0);
 
-    cairo_mesh_pattern_end_patch (pattern);
+    comac_mesh_pattern_end_patch (pattern);
 
-    cairo_scale (cr, SIZE, SIZE);
+    comac_scale (cr, SIZE, SIZE);
 
-    cairo_set_source (cr, pattern);
-    cairo_paint (cr);
-    cairo_pattern_destroy (pattern);
+    comac_set_source (cr, pattern);
+    comac_paint (cr);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (mesh_pattern_accuracy,
+COMAC_TEST (mesh_pattern_accuracy,
 	    "Paint mesh pattern",
 	    "mesh, pattern", /* keywords */
 	    NULL, /* requirements */

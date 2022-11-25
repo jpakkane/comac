@@ -19,36 +19,36 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
  * OF THIS SOFTWARE.
  */
-#ifndef CAIRO_FREELIST_TYPE_H
-#define CAIRO_FREELIST_TYPE_H
+#ifndef COMAC_FREELIST_TYPE_H
+#define COMAC_FREELIST_TYPE_H
 
 #include "comac-types-private.h"
 #include "comac-compiler-private.h"
 
-typedef struct _cairo_freelist_node cairo_freelist_node_t;
-struct _cairo_freelist_node {
-    cairo_freelist_node_t *next;
+typedef struct _comac_freelist_node comac_freelist_node_t;
+struct _comac_freelist_node {
+    comac_freelist_node_t *next;
 };
 
-typedef struct _cairo_freelist {
-    cairo_freelist_node_t *first_free_node;
+typedef struct _comac_freelist {
+    comac_freelist_node_t *first_free_node;
     unsigned nodesize;
-} cairo_freelist_t;
+} comac_freelist_t;
 
-typedef struct _cairo_freelist_pool cairo_freelist_pool_t;
-struct _cairo_freelist_pool {
-    cairo_freelist_pool_t *next;
+typedef struct _comac_freelist_pool comac_freelist_pool_t;
+struct _comac_freelist_pool {
+    comac_freelist_pool_t *next;
     unsigned size, rem;
     uint8_t *data;
 };
 
-typedef struct _cairo_freepool {
-    cairo_freelist_node_t *first_free_node;
-    cairo_freelist_pool_t *pools;
-    cairo_freelist_pool_t *freepools;
+typedef struct _comac_freepool {
+    comac_freelist_node_t *first_free_node;
+    comac_freelist_pool_t *pools;
+    comac_freelist_pool_t *freepools;
     unsigned nodesize;
-    cairo_freelist_pool_t embedded_pool;
+    comac_freelist_pool_t embedded_pool;
     uint8_t embedded_data[1000];
-} cairo_freepool_t;
+} comac_freepool_t;
 
-#endif /* CAIRO_FREELIST_TYPE_H */
+#endif /* COMAC_FREELIST_TYPE_H */

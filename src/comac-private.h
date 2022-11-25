@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,32 +33,32 @@
  *	Carl D. Worth <cworth@redhat.com>
  */
 
-#ifndef CAIRO_PRIVATE_H
-#define CAIRO_PRIVATE_H
+#ifndef COMAC_PRIVATE_H
+#define COMAC_PRIVATE_H
 
 #include "comac-types-private.h"
 #include "comac-reference-count-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-struct _cairo {
-    cairo_reference_count_t ref_count;
-    cairo_status_t status;
-    cairo_user_data_array_t user_data;
+struct _comac {
+    comac_reference_count_t ref_count;
+    comac_status_t status;
+    comac_user_data_array_t user_data;
 
-    const cairo_backend_t *backend;
+    const comac_backend_t *backend;
 };
 
-cairo_private cairo_t *
-_cairo_create_in_error (cairo_status_t status);
+comac_private comac_t *
+_comac_create_in_error (comac_status_t status);
 
-cairo_private void
-_cairo_init (cairo_t *cr,
-	     const cairo_backend_t *backend);
+comac_private void
+_comac_init (comac_t *cr,
+	     const comac_backend_t *backend);
 
-cairo_private void
-_cairo_fini (cairo_t *cr);
+comac_private void
+_comac_fini (comac_t *cr);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_PRIVATE_H */
+#endif /* COMAC_PRIVATE_H */

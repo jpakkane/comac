@@ -1,4 +1,4 @@
-/* cairo-fdr - a 'flight data recorder', a black box, for cairo
+/* comac-fdr - a 'flight data recorder', a black box, for comac
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -33,7 +33,7 @@ static void *_dlhandle = RTLD_NEXT;
     if (name##_real == NULL) { \
 	name##_real = dlsym (_dlhandle, #name); \
 	if (name##_real == NULL && _dlhandle == RTLD_NEXT) { \
-	    _dlhandle = dlopen ("libcairo.so", RTLD_LAZY); \
+	    _dlhandle = dlopen ("libcomac.so", RTLD_LAZY); \
 	    name##_real = dlsym (_dlhandle, #name); \
 	    assert (name##_real != NULL); \
 	} \
@@ -42,28 +42,28 @@ static void *_dlhandle = RTLD_NEXT;
 })
 
 #define RINGBUFFER_SIZE 16
-static cairo_surface_t *fdr_ringbuffer[RINGBUFFER_SIZE];
+static comac_surface_t *fdr_ringbuffer[RINGBUFFER_SIZE];
 static int fdr_position;
 static int fdr_dump;
 
-static const cairo_user_data_key_t fdr_key;
+static const comac_user_data_key_t fdr_key;
 
 static void
-fdr_replay_to_script (cairo_surface_t *recording, cairo_device_t *ctx)
+fdr_replay_to_script (comac_surface_t *recording, comac_device_t *ctx)
 {
     if (recording != NULL) {
-	DLCALL (cairo_script_write_comment, ctx, "--- fdr ---", -1);
-	DLCALL (cairo_script_from_recording_surface, ctx, recording);
+	DLCALL (comac_script_write_comment, ctx, "--- fdr ---", -1);
+	DLCALL (comac_script_from_recording_surface, ctx, recording);
     }
 }
 
 static void
 fdr_dump_ringbuffer (void)
 {
-    cairo_device_t *ctx;
+    comac_device_t *ctx;
     int n;
 
-    ctx = DLCALL (cairo_script_create, "/tmp/fdr.trace");
+    ctx = DLCALL (comac_script_create, "/tmp/fdr.trace");
 
     for (n = fdr_position; n < RINGBUFFER_SIZE; n++)
 	fdr_replay_to_script (fdr_ringbuffer[n], ctx);
@@ -71,7 +71,7 @@ fdr_dump_ringbuffer (void)
     for (n = 0; n < fdr_position; n++)
 	fdr_replay_to_script (fdr_ringbuffer[n], ctx);
 
-    DLCALL (cairo_device_destroy, ctx);
+    DLCALL (comac_device_destroy, ctx);
 }
 
 static void
@@ -115,15 +115,15 @@ fdr_pending_signals (void)
 }
 
 static void
-fdr_get_extents (cairo_surface_t *surface,
-		 cairo_rectangle_t *extents)
+fdr_get_extents (comac_surface_t *surface,
+		 comac_rectangle_t *extents)
 {
-    cairo_t *cr;
+    comac_t *cr;
 
-    cr = DLCALL (cairo_create, surface);
-    DLCALL (cairo_clip_extents, cr,
+    cr = DLCALL (comac_create, surface);
+    DLCALL (comac_clip_extents, cr,
 	    &extents->x, &extents->y, &extents->width, &extents->height);
-    DLCALL (cairo_destroy, cr);
+    DLCALL (comac_destroy, cr);
 
     extents->width -= extents->x;
     extents->height -= extents->y;
@@ -132,47 +132,47 @@ fdr_get_extents (cairo_surface_t *surface,
 static void
 fdr_surface_destroy (void *surface)
 {
-    DLCALL (cairo_surface_destroy, surface);
+    DLCALL (comac_surface_destroy, surface);
 }
 
 static void
 fdr_surface_reference (void *surface)
 {
-    DLCALL (cairo_surface_reference, surface);
+    DLCALL (comac_surface_reference, surface);
 }
 
-static cairo_surface_t *
-fdr_surface_get_tee (cairo_surface_t *surface)
+static comac_surface_t *
+fdr_surface_get_tee (comac_surface_t *surface)
 {
-    return DLCALL (cairo_surface_get_user_data, surface, &fdr_key);
+    return DLCALL (comac_surface_get_user_data, surface, &fdr_key);
 }
 
-static cairo_surface_t *
-fdr_tee_surface_index (cairo_surface_t *surface, int index)
+static comac_surface_t *
+fdr_tee_surface_index (comac_surface_t *surface, int index)
 {
-    return DLCALL (cairo_tee_surface_index, surface, index);
+    return DLCALL (comac_tee_surface_index, surface, index);
 }
 
-cairo_t *
-cairo_create (cairo_surface_t *surface)
+comac_t *
+comac_create (comac_surface_t *surface)
 {
-    cairo_surface_t *record, *tee;
+    comac_surface_t *record, *tee;
 
     fdr_pending_signals ();
 
     tee = fdr_surface_get_tee (surface);
     if (tee == NULL) {
-	cairo_rectangle_t extents;
-	cairo_content_t content;
+	comac_rectangle_t extents;
+	comac_content_t content;
 
 	fdr_get_extents (surface, &extents);
-	content = DLCALL (cairo_surface_get_content, surface);
+	content = DLCALL (comac_surface_get_content, surface);
 
-	tee = DLCALL (cairo_tee_surface_create, surface);
-	record = DLCALL (cairo_recording_surface_create, content, &extents);
-	DLCALL (cairo_tee_surface_add, tee, record);
+	tee = DLCALL (comac_tee_surface_create, surface);
+	record = DLCALL (comac_recording_surface_create, content, &extents);
+	DLCALL (comac_tee_surface_add, tee, record);
 
-	DLCALL (cairo_surface_set_user_data, surface,
+	DLCALL (comac_surface_set_user_data, surface,
 		&fdr_key, tee, fdr_surface_destroy);
     } else {
 	int n;
@@ -192,136 +192,136 @@ cairo_create (cairo_surface_t *surface)
     fdr_ringbuffer[fdr_position] = record;
     fdr_position = (fdr_position + 1) % RINGBUFFER_SIZE;
 
-    return DLCALL (cairo_create, tee);
+    return DLCALL (comac_create, tee);
 }
 
 static void
-fdr_remove_tee (cairo_surface_t *surface)
+fdr_remove_tee (comac_surface_t *surface)
 {
     fdr_surface_reference (surface);
-    DLCALL (cairo_surface_set_user_data, surface, &fdr_key, NULL, NULL);
+    DLCALL (comac_surface_set_user_data, surface, &fdr_key, NULL, NULL);
     fdr_surface_destroy (surface);
 }
 
 void
-cairo_destroy (cairo_t *cr)
+comac_destroy (comac_t *cr)
 {
-    cairo_surface_t *tee;
+    comac_surface_t *tee;
 
-    tee = DLCALL (cairo_get_target, cr);
-    DLCALL (cairo_destroy, cr);
+    tee = DLCALL (comac_get_target, cr);
+    DLCALL (comac_destroy, cr);
 
-    if (DLCALL (cairo_surface_get_reference_count, tee) == 1)
+    if (DLCALL (comac_surface_get_reference_count, tee) == 1)
 	fdr_remove_tee (fdr_tee_surface_index (tee, 0));
 }
 
 void
-cairo_pattern_destroy (cairo_pattern_t *pattern)
+comac_pattern_destroy (comac_pattern_t *pattern)
 {
-    if (DLCALL (cairo_pattern_get_type, pattern) == CAIRO_PATTERN_TYPE_SURFACE) {
-	cairo_surface_t *surface;
+    if (DLCALL (comac_pattern_get_type, pattern) == COMAC_PATTERN_TYPE_SURFACE) {
+	comac_surface_t *surface;
 
-	if (DLCALL (cairo_pattern_get_surface, pattern, &surface) == CAIRO_STATUS_SUCCESS &&
-	    DLCALL (cairo_surface_get_type, surface) == CAIRO_SURFACE_TYPE_TEE &&
-	    DLCALL (cairo_surface_get_reference_count, surface) == 2)
+	if (DLCALL (comac_pattern_get_surface, pattern, &surface) == COMAC_STATUS_SUCCESS &&
+	    DLCALL (comac_surface_get_type, surface) == COMAC_SURFACE_TYPE_TEE &&
+	    DLCALL (comac_surface_get_reference_count, surface) == 2)
 	{
 	    fdr_remove_tee (fdr_tee_surface_index (surface, 0));
 	}
     }
 
-    DLCALL (cairo_pattern_destroy, pattern);
+    DLCALL (comac_pattern_destroy, pattern);
 }
 
-cairo_surface_t *
-cairo_get_target (cairo_t *cr)
+comac_surface_t *
+comac_get_target (comac_t *cr)
 {
-    cairo_surface_t *tee;
+    comac_surface_t *tee;
 
-    tee = DLCALL (cairo_get_target, cr);
+    tee = DLCALL (comac_get_target, cr);
     return fdr_tee_surface_index (tee, 0);
 }
 
-cairo_surface_t *
-cairo_get_group_target (cairo_t *cr)
+comac_surface_t *
+comac_get_group_target (comac_t *cr)
 {
-    cairo_surface_t *tee;
+    comac_surface_t *tee;
 
-    tee = DLCALL (cairo_get_group_target, cr);
+    tee = DLCALL (comac_get_group_target, cr);
     return fdr_tee_surface_index (tee, 0);
 }
 
-cairo_pattern_t *
-cairo_pattern_create_for_surface (cairo_surface_t *surface)
+comac_pattern_t *
+comac_pattern_create_for_surface (comac_surface_t *surface)
 {
-    cairo_surface_t *tee;
+    comac_surface_t *tee;
 
     tee = fdr_surface_get_tee (surface);
     if (tee != NULL)
 	surface = tee;
 
-    return DLCALL (cairo_pattern_create_for_surface, surface);
+    return DLCALL (comac_pattern_create_for_surface, surface);
 }
 
-cairo_status_t
-cairo_pattern_get_surface (cairo_pattern_t *pattern,
-			   cairo_surface_t **surface)
+comac_status_t
+comac_pattern_get_surface (comac_pattern_t *pattern,
+			   comac_surface_t **surface)
 {
-    cairo_status_t status;
-    cairo_surface_t *tee;
+    comac_status_t status;
+    comac_surface_t *tee;
 
-    status = DLCALL (cairo_pattern_get_surface, pattern, surface);
-    if (status != CAIRO_STATUS_SUCCESS)
+    status = DLCALL (comac_pattern_get_surface, pattern, surface);
+    if (status != COMAC_STATUS_SUCCESS)
 	return status;
 
     tee = fdr_surface_get_tee (*surface);
     if (tee != NULL)
 	*surface = tee;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void
-cairo_set_source_surface (cairo_t *cr,
-			  cairo_surface_t *surface,
+comac_set_source_surface (comac_t *cr,
+			  comac_surface_t *surface,
 			  double x, double y)
 {
-    cairo_surface_t *tee;
+    comac_surface_t *tee;
 
     tee = fdr_surface_get_tee (surface);
     if (tee != NULL)
 	surface = tee;
 
-    DLCALL (cairo_set_source_surface, cr, surface, x, y);
+    DLCALL (comac_set_source_surface, cr, surface, x, y);
 }
 
-cairo_surface_t *
-cairo_surface_create_similar (cairo_surface_t *surface,
-			      cairo_content_t content,
+comac_surface_t *
+comac_surface_create_similar (comac_surface_t *surface,
+			      comac_content_t content,
 			      int width, int height)
 {
-    cairo_surface_t *tee;
+    comac_surface_t *tee;
 
     tee = fdr_surface_get_tee (surface);
     if (tee != NULL)
 	surface = tee;
 
-    return DLCALL (cairo_surface_create_similar,
+    return DLCALL (comac_surface_create_similar,
 		   surface, content, width, height);
 }
 
-cairo_surface_t *
-cairo_surface_create_for_rectangle (cairo_surface_t *surface,
+comac_surface_t *
+comac_surface_create_for_rectangle (comac_surface_t *surface,
                                     double		 x,
                                     double		 y,
                                     double		 width,
                                     double		 height)
 {
-    cairo_surface_t *tee;
+    comac_surface_t *tee;
 
     tee = fdr_surface_get_tee (surface);
     if (tee != NULL)
 	surface = tee;
 
-    return DLCALL (cairo_surface_create_for_rectangle,
+    return DLCALL (comac_surface_create_for_rectangle,
 		   surface, x, y, width, height);
 }

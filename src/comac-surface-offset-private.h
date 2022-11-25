@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -36,60 +36,60 @@
  *	Chris Wilson <chris@chris-wilson.co.u>
  */
 
-#ifndef CAIRO_SURFACE_OFFSET_PRIVATE_H
-#define CAIRO_SURFACE_OFFSET_PRIVATE_H
+#ifndef COMAC_SURFACE_OFFSET_PRIVATE_H
+#define COMAC_SURFACE_OFFSET_PRIVATE_H
 
 #include "comac-types-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_private cairo_status_t
-_cairo_surface_offset_paint (cairo_surface_t *target,
+comac_private comac_status_t
+_comac_surface_offset_paint (comac_surface_t *target,
 			     int x, int y,
-			     cairo_operator_t	 op,
-			     const cairo_pattern_t *source,
-			     const cairo_clip_t	    *clip);
+			     comac_operator_t	 op,
+			     const comac_pattern_t *source,
+			     const comac_clip_t	    *clip);
 
-cairo_private cairo_status_t
-_cairo_surface_offset_mask (cairo_surface_t *target,
+comac_private comac_status_t
+_comac_surface_offset_mask (comac_surface_t *target,
 			    int x, int y,
-			    cairo_operator_t	 op,
-			    const cairo_pattern_t *source,
-			    const cairo_pattern_t *mask,
-			    const cairo_clip_t	    *clip);
+			    comac_operator_t	 op,
+			    const comac_pattern_t *source,
+			    const comac_pattern_t *mask,
+			    const comac_clip_t	    *clip);
 
-cairo_private cairo_status_t
-_cairo_surface_offset_stroke (cairo_surface_t *surface,
+comac_private comac_status_t
+_comac_surface_offset_stroke (comac_surface_t *surface,
 			      int x, int y,
-			      cairo_operator_t		 op,
-			      const cairo_pattern_t	*source,
-			      const cairo_path_fixed_t	*path,
-			      const cairo_stroke_style_t	*stroke_style,
-			      const cairo_matrix_t		*ctm,
-			      const cairo_matrix_t		*ctm_inverse,
+			      comac_operator_t		 op,
+			      const comac_pattern_t	*source,
+			      const comac_path_fixed_t	*path,
+			      const comac_stroke_style_t	*stroke_style,
+			      const comac_matrix_t		*ctm,
+			      const comac_matrix_t		*ctm_inverse,
 			      double			 tolerance,
-			      cairo_antialias_t	 antialias,
-			      const cairo_clip_t		*clip);
+			      comac_antialias_t	 antialias,
+			      const comac_clip_t		*clip);
 
-cairo_private cairo_status_t
-_cairo_surface_offset_fill (cairo_surface_t	*surface,
+comac_private comac_status_t
+_comac_surface_offset_fill (comac_surface_t	*surface,
 			    int x, int y,
-			    cairo_operator_t	 op,
-			    const cairo_pattern_t*source,
-			    const cairo_path_fixed_t	*path,
-			    cairo_fill_rule_t	 fill_rule,
+			    comac_operator_t	 op,
+			    const comac_pattern_t*source,
+			    const comac_path_fixed_t	*path,
+			    comac_fill_rule_t	 fill_rule,
 			    double		 tolerance,
-			    cairo_antialias_t	 antialias,
-			    const cairo_clip_t		*clip);
+			    comac_antialias_t	 antialias,
+			    const comac_clip_t		*clip);
 
-cairo_private cairo_status_t
-_cairo_surface_offset_glyphs (cairo_surface_t		*surface,
+comac_private comac_status_t
+_comac_surface_offset_glyphs (comac_surface_t		*surface,
 			      int x, int y,
-			      cairo_operator_t		 op,
-			      const cairo_pattern_t	*source,
-			      cairo_scaled_font_t	*scaled_font,
-			      cairo_glyph_t		*glyphs,
+			      comac_operator_t		 op,
+			      const comac_pattern_t	*source,
+			      comac_scaled_font_t	*scaled_font,
+			      comac_glyph_t		*glyphs,
 			      int			 num_glyphs,
-			      const cairo_clip_t		*clip);
+			      const comac_clip_t		*clip);
 
-#endif /* CAIRO_SURFACE_OFFSET_PRIVATE_H */
+#endif /* COMAC_SURFACE_OFFSET_PRIVATE_H */

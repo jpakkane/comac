@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo-output-stream.c: Output stream abstraction
+/* comac-output-stream.c: Output stream abstraction
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -51,7 +51,7 @@
  */
 #define SIGNIFICANT_DIGITS_AFTER_DECIMAL 6
 
-/* Numbers printed with %g are assumed to only have %CAIRO_FIXED_FRAC_BITS
+/* Numbers printed with %g are assumed to only have %COMAC_FIXED_FRAC_BITS
  * bits of precision available after the decimal point.
  *
  * FIXED_POINT_DECIMAL_DIGITS specifies the minimum number of decimal
@@ -61,100 +61,100 @@
  * The conversion is:
  *
  * <programlisting>
- * FIXED_POINT_DECIMAL_DIGITS = ceil( CAIRO_FIXED_FRAC_BITS * ln(2)/ln(10) )
+ * FIXED_POINT_DECIMAL_DIGITS = ceil( COMAC_FIXED_FRAC_BITS * ln(2)/ln(10) )
  * </programlisting>
  *
  * We can replace ceil(x) with (int)(x+1) since x will never be an
- * integer for any likely value of %CAIRO_FIXED_FRAC_BITS.
+ * integer for any likely value of %COMAC_FIXED_FRAC_BITS.
  */
-#define FIXED_POINT_DECIMAL_DIGITS ((int)(CAIRO_FIXED_FRAC_BITS*0.301029996 + 1))
+#define FIXED_POINT_DECIMAL_DIGITS ((int)(COMAC_FIXED_FRAC_BITS*0.301029996 + 1))
 
 void
-_cairo_output_stream_init (cairo_output_stream_t            *stream,
-			   cairo_output_stream_write_func_t  write_func,
-			   cairo_output_stream_flush_func_t  flush_func,
-			   cairo_output_stream_close_func_t  close_func)
+_comac_output_stream_init (comac_output_stream_t            *stream,
+			   comac_output_stream_write_func_t  write_func,
+			   comac_output_stream_flush_func_t  flush_func,
+			   comac_output_stream_close_func_t  close_func)
 {
     stream->write_func = write_func;
     stream->flush_func = flush_func;
     stream->close_func = close_func;
     stream->position = 0;
-    stream->status = CAIRO_STATUS_SUCCESS;
+    stream->status = COMAC_STATUS_SUCCESS;
     stream->closed = FALSE;
 }
 
-cairo_status_t
-_cairo_output_stream_fini (cairo_output_stream_t *stream)
+comac_status_t
+_comac_output_stream_fini (comac_output_stream_t *stream)
 {
-    return _cairo_output_stream_close (stream);
+    return _comac_output_stream_close (stream);
 }
 
-const cairo_output_stream_t _cairo_output_stream_nil = {
+const comac_output_stream_t _comac_output_stream_nil = {
     NULL, /* write_func */
     NULL, /* flush_func */
     NULL, /* close_func */
     0,    /* position */
-    CAIRO_STATUS_NO_MEMORY,
+    COMAC_STATUS_NO_MEMORY,
     FALSE /* closed */
 };
 
-static const cairo_output_stream_t _cairo_output_stream_nil_write_error = {
+static const comac_output_stream_t _comac_output_stream_nil_write_error = {
     NULL, /* write_func */
     NULL, /* flush_func */
     NULL, /* close_func */
     0,    /* position */
-    CAIRO_STATUS_WRITE_ERROR,
+    COMAC_STATUS_WRITE_ERROR,
     FALSE /* closed */
 };
 
-typedef struct _cairo_output_stream_with_closure {
-    cairo_output_stream_t	 base;
-    cairo_write_func_t		 write_func;
-    cairo_close_func_t		 close_func;
+typedef struct _comac_output_stream_with_closure {
+    comac_output_stream_t	 base;
+    comac_write_func_t		 write_func;
+    comac_close_func_t		 close_func;
     void			*closure;
-} cairo_output_stream_with_closure_t;
+} comac_output_stream_with_closure_t;
 
 
-static cairo_status_t
-closure_write (cairo_output_stream_t *stream,
+static comac_status_t
+closure_write (comac_output_stream_t *stream,
 	       const unsigned char *data, unsigned int length)
 {
-    cairo_output_stream_with_closure_t *stream_with_closure =
-	(cairo_output_stream_with_closure_t *) stream;
+    comac_output_stream_with_closure_t *stream_with_closure =
+	(comac_output_stream_with_closure_t *) stream;
 
     if (stream_with_closure->write_func == NULL)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     return stream_with_closure->write_func (stream_with_closure->closure,
 					    data, length);
 }
 
-static cairo_status_t
-closure_close (cairo_output_stream_t *stream)
+static comac_status_t
+closure_close (comac_output_stream_t *stream)
 {
-    cairo_output_stream_with_closure_t *stream_with_closure =
-	(cairo_output_stream_with_closure_t *) stream;
+    comac_output_stream_with_closure_t *stream_with_closure =
+	(comac_output_stream_with_closure_t *) stream;
 
     if (stream_with_closure->close_func != NULL)
 	return stream_with_closure->close_func (stream_with_closure->closure);
     else
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 }
 
-cairo_output_stream_t *
-_cairo_output_stream_create (cairo_write_func_t		write_func,
-			     cairo_close_func_t		close_func,
+comac_output_stream_t *
+_comac_output_stream_create (comac_write_func_t		write_func,
+			     comac_close_func_t		close_func,
 			     void			*closure)
 {
-    cairo_output_stream_with_closure_t *stream;
+    comac_output_stream_with_closure_t *stream;
 
-    stream = _cairo_malloc (sizeof (cairo_output_stream_with_closure_t));
+    stream = _comac_malloc (sizeof (comac_output_stream_with_closure_t));
     if (unlikely (stream == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (&stream->base,
+    _comac_output_stream_init (&stream->base,
 			       closure_write, NULL, closure_close);
     stream->write_func = write_func;
     stream->close_func = close_func;
@@ -163,39 +163,39 @@ _cairo_output_stream_create (cairo_write_func_t		write_func,
     return &stream->base;
 }
 
-cairo_output_stream_t *
-_cairo_output_stream_create_in_error (cairo_status_t status)
+comac_output_stream_t *
+_comac_output_stream_create_in_error (comac_status_t status)
 {
-    cairo_output_stream_t *stream;
+    comac_output_stream_t *stream;
 
     /* check for the common ones */
-    if (status == CAIRO_STATUS_NO_MEMORY)
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
-    if (status == CAIRO_STATUS_WRITE_ERROR)
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil_write_error;
+    if (status == COMAC_STATUS_NO_MEMORY)
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
+    if (status == COMAC_STATUS_WRITE_ERROR)
+	return (comac_output_stream_t *) &_comac_output_stream_nil_write_error;
 
-    stream = _cairo_malloc (sizeof (cairo_output_stream_t));
+    stream = _comac_malloc (sizeof (comac_output_stream_t));
     if (unlikely (stream == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (stream, NULL, NULL, NULL);
+    _comac_output_stream_init (stream, NULL, NULL, NULL);
     stream->status = status;
 
     return stream;
 }
 
-cairo_status_t
-_cairo_output_stream_flush (cairo_output_stream_t *stream)
+comac_status_t
+_comac_output_stream_flush (comac_output_stream_t *stream)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     if (stream->closed)
 	return stream->status;
 
-    if (stream == &_cairo_output_stream_nil ||
-	stream == &_cairo_output_stream_nil_write_error)
+    if (stream == &_comac_output_stream_nil ||
+	stream == &_comac_output_stream_nil_write_error)
     {
 	return stream->status;
     }
@@ -203,23 +203,23 @@ _cairo_output_stream_flush (cairo_output_stream_t *stream)
     if (stream->flush_func) {
 	status = stream->flush_func (stream);
 	/* Don't overwrite a pre-existing status failure. */
-	if (stream->status == CAIRO_STATUS_SUCCESS)
+	if (stream->status == COMAC_STATUS_SUCCESS)
 	    stream->status = status;
     }
 
     return stream->status;
 }
 
-cairo_status_t
-_cairo_output_stream_close (cairo_output_stream_t *stream)
+comac_status_t
+_comac_output_stream_close (comac_output_stream_t *stream)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     if (stream->closed)
 	return stream->status;
 
-    if (stream == &_cairo_output_stream_nil ||
-	stream == &_cairo_output_stream_nil_write_error)
+    if (stream == &_comac_output_stream_nil ||
+	stream == &_comac_output_stream_nil_write_error)
     {
 	return stream->status;
     }
@@ -227,7 +227,7 @@ _cairo_output_stream_close (cairo_output_stream_t *stream)
     if (stream->close_func) {
 	status = stream->close_func (stream);
 	/* Don't overwrite a pre-existing status failure. */
-	if (stream->status == CAIRO_STATUS_SUCCESS)
+	if (stream->status == COMAC_STATUS_SUCCESS)
 	    stream->status = status;
     }
 
@@ -236,27 +236,27 @@ _cairo_output_stream_close (cairo_output_stream_t *stream)
     return stream->status;
 }
 
-cairo_status_t
-_cairo_output_stream_destroy (cairo_output_stream_t *stream)
+comac_status_t
+_comac_output_stream_destroy (comac_output_stream_t *stream)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     assert (stream != NULL);
 
-    if (stream == &_cairo_output_stream_nil ||
-	stream == &_cairo_output_stream_nil_write_error)
+    if (stream == &_comac_output_stream_nil ||
+	stream == &_comac_output_stream_nil_write_error)
     {
 	return stream->status;
     }
 
-    status = _cairo_output_stream_fini (stream);
+    status = _comac_output_stream_fini (stream);
     free (stream);
 
     return status;
 }
 
 void
-_cairo_output_stream_write (cairo_output_stream_t *stream,
+_comac_output_stream_write (comac_output_stream_t *stream,
 			    const void *data, size_t length)
 {
     if (length == 0)
@@ -270,7 +270,7 @@ _cairo_output_stream_write (cairo_output_stream_t *stream,
 }
 
 void
-_cairo_output_stream_write_hex_string (cairo_output_stream_t *stream,
+_comac_output_stream_write_hex_string (comac_output_stream_t *stream,
 				       const unsigned char *data,
 				       size_t length)
 {
@@ -283,12 +283,12 @@ _cairo_output_stream_write_hex_string (cairo_output_stream_t *stream,
 
     for (i = 0, column = 0; i < length; i++, column++) {
 	if (column == 38) {
-	    _cairo_output_stream_write (stream, "\n", 1);
+	    _comac_output_stream_write (stream, "\n", 1);
 	    column = 0;
 	}
 	buffer[0] = hex_chars[(data[i] >> 4) & 0x0f];
 	buffer[1] = hex_chars[data[i] & 0x0f];
-	_cairo_output_stream_write (stream, buffer, 2);
+	_comac_output_stream_write (stream, buffer, 2);
     }
 }
 
@@ -298,10 +298,10 @@ _cairo_output_stream_write_hex_string (cairo_output_stream_t *stream,
  *
  * The code in the patch is copyright Red Hat, Inc under the LGPL, but
  * has been relicensed under the LGPL/MPL dual license for inclusion
- * into cairo (see COPYING). -- Kristian Høgsberg <krh@redhat.com>
+ * into comac (see COPYING). -- Kristian Høgsberg <krh@redhat.com>
  */
 static void
-_cairo_dtostr (char *buffer, size_t size, double d, cairo_bool_t limited_precision)
+_comac_dtostr (char *buffer, size_t size, double d, comac_bool_t limited_precision)
 {
     const char *decimal_point;
     int decimal_point_len;
@@ -313,7 +313,7 @@ _cairo_dtostr (char *buffer, size_t size, double d, cairo_bool_t limited_precisi
     if (d == 0.0)
 	d = 0.0;
 
-    decimal_point = _cairo_get_locale_decimal_point ();
+    decimal_point = _comac_get_locale_decimal_point ();
     decimal_point_len = strlen (decimal_point);
 
     assert (decimal_point_len != 0);
@@ -341,7 +341,7 @@ _cairo_dtostr (char *buffer, size_t size, double d, cairo_bool_t limited_precisi
 	    if (*p == '+' || *p == '-')
 		p++;
 
-	    while (_cairo_isdigit (*p))
+	    while (_comac_isdigit (*p))
 		p++;
 
 	    if (strncmp (p, decimal_point, decimal_point_len) == 0)
@@ -362,7 +362,7 @@ _cairo_dtostr (char *buffer, size_t size, double d, cairo_bool_t limited_precisi
     if (*p == '+' || *p == '-')
 	p++;
 
-    while (_cairo_isdigit (*p))
+    while (_comac_isdigit (*p))
 	p++;
 
     if (strncmp (p, decimal_point, decimal_point_len) == 0) {
@@ -396,7 +396,7 @@ enum {
  * only implement the formats we actually use.
  */
 void
-_cairo_output_stream_vprintf (cairo_output_stream_t *stream,
+_comac_output_stream_vprintf (comac_output_stream_t *stream,
 			      const char *fmt, va_list ap)
 {
 #define SINGLE_FMT_BUFFER_SIZE 32
@@ -405,7 +405,7 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
     char *p;
     const char *f, *start;
     int length_modifier, width;
-    cairo_bool_t var_width;
+    comac_bool_t var_width;
 
     if (stream->status)
 	return;
@@ -414,7 +414,7 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
     p = buffer;
     while (*f != '\0') {
 	if (p == buffer + sizeof (buffer)) {
-	    _cairo_output_stream_write (stream, buffer, sizeof (buffer));
+	    _comac_output_stream_write (stream, buffer, sizeof (buffer));
 	    p = buffer;
 	}
 
@@ -435,7 +435,7 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
 	    f++;
         }
 
-	while (_cairo_isdigit (*f))
+	while (_comac_isdigit (*f))
 	    f++;
 
 	length_modifier = 0;
@@ -448,7 +448,7 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
 	    }
 	}
 
-	/* The only format strings exist in the cairo implementation
+	/* The only format strings exist in the comac implementation
 	 * itself. So there's an internal consistency problem if any
 	 * of them is larger than our format buffer size. */
 	single_fmt_length = f - start + 1;
@@ -459,7 +459,7 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
 	single_fmt[single_fmt_length] = '\0';
 
 	/* Flush contents of buffer before snprintf()'ing into it. */
-	_cairo_output_stream_write (stream, buffer, p - buffer);
+	_comac_output_stream_write (stream, buffer, p - buffer);
 
 	/* We group signed and unsigned together in this switch, the
 	 * only thing that matters here is the size of the arguments,
@@ -514,15 +514,15 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
 	    /* Write out strings as they may be larger than the buffer. */
 	    const char *s = va_arg (ap, const char *);
 	    int len = strlen(s);
-	    _cairo_output_stream_write (stream, s, len);
+	    _comac_output_stream_write (stream, s, len);
 	    buffer[0] = 0;
 	    }
 	    break;
 	case 'f':
-	    _cairo_dtostr (buffer, sizeof buffer, va_arg (ap, double), FALSE);
+	    _comac_dtostr (buffer, sizeof buffer, va_arg (ap, double), FALSE);
 	    break;
 	case 'g':
-	    _cairo_dtostr (buffer, sizeof buffer, va_arg (ap, double), TRUE);
+	    _comac_dtostr (buffer, sizeof buffer, va_arg (ap, double), TRUE);
 	    break;
 	case 'c':
 	    buffer[0] = va_arg (ap, int);
@@ -535,18 +535,18 @@ _cairo_output_stream_vprintf (cairo_output_stream_t *stream,
 	f++;
     }
 
-    _cairo_output_stream_write (stream, buffer, p - buffer);
+    _comac_output_stream_write (stream, buffer, p - buffer);
 }
 
 void
-_cairo_output_stream_printf (cairo_output_stream_t *stream,
+_comac_output_stream_printf (comac_output_stream_t *stream,
 			     const char *fmt, ...)
 {
     va_list ap;
 
     va_start (ap, fmt);
 
-    _cairo_output_stream_vprintf (stream, fmt, ap);
+    _comac_output_stream_vprintf (stream, fmt, ap);
 
     va_end (ap);
 }
@@ -556,10 +556,10 @@ _cairo_output_stream_printf (cairo_output_stream_t *stream,
 #define MATRIX_ROUNDING_TOLERANCE 1e-12
 
 void
-_cairo_output_stream_print_matrix (cairo_output_stream_t *stream,
-				   const cairo_matrix_t  *matrix)
+_comac_output_stream_print_matrix (comac_output_stream_t *stream,
+				   const comac_matrix_t  *matrix)
 {
-    cairo_matrix_t m;
+    comac_matrix_t m;
     double s, e;
 
     m = *matrix;
@@ -585,19 +585,19 @@ _cairo_output_stream_print_matrix (cairo_output_stream_t *stream,
     if (fabs(m.y0) < e)
 	m.y0 = 0;
 
-    _cairo_output_stream_printf (stream,
+    _comac_output_stream_printf (stream,
 				 "%f %f %f %f %f %f",
 				 m.xx, m.yx, m.xy, m.yy, m.x0, m.y0);
 }
 
 long long
-_cairo_output_stream_get_position (cairo_output_stream_t *stream)
+_comac_output_stream_get_position (comac_output_stream_t *stream)
 {
     return stream->position;
 }
 
-cairo_status_t
-_cairo_output_stream_get_status (cairo_output_stream_t *stream)
+comac_status_t
+_comac_output_stream_get_status (comac_output_stream_t *stream)
 {
     return stream->status;
 }
@@ -607,39 +607,39 @@ _cairo_output_stream_get_status (cairo_output_stream_t *stream)
 
 
 typedef struct _stdio_stream {
-    cairo_output_stream_t	 base;
+    comac_output_stream_t	 base;
     FILE			*file;
 } stdio_stream_t;
 
-static cairo_status_t
-stdio_write (cairo_output_stream_t *base,
+static comac_status_t
+stdio_write (comac_output_stream_t *base,
 	     const unsigned char *data, unsigned int length)
 {
     stdio_stream_t *stream = (stdio_stream_t *) base;
 
     if (fwrite (data, 1, length, stream->file) != length)
-	return _cairo_error (CAIRO_STATUS_WRITE_ERROR);
+	return _comac_error (COMAC_STATUS_WRITE_ERROR);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-stdio_flush (cairo_output_stream_t *base)
+static comac_status_t
+stdio_flush (comac_output_stream_t *base)
 {
     stdio_stream_t *stream = (stdio_stream_t *) base;
 
     fflush (stream->file);
 
     if (ferror (stream->file))
-	return _cairo_error (CAIRO_STATUS_WRITE_ERROR);
+	return _comac_error (COMAC_STATUS_WRITE_ERROR);
     else
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-stdio_close (cairo_output_stream_t *base)
+static comac_status_t
+stdio_close (comac_output_stream_t *base)
 {
-    cairo_status_t status;
+    comac_status_t status;
     stdio_stream_t *stream = (stdio_stream_t *) base;
 
     status = stdio_flush (base);
@@ -649,63 +649,63 @@ stdio_close (cairo_output_stream_t *base)
     return status;
 }
 
-cairo_output_stream_t *
-_cairo_output_stream_create_for_file (FILE *file)
+comac_output_stream_t *
+_comac_output_stream_create_for_file (FILE *file)
 {
     stdio_stream_t *stream;
 
     if (file == NULL) {
-	_cairo_error_throw (CAIRO_STATUS_WRITE_ERROR);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil_write_error;
+	_comac_error_throw (COMAC_STATUS_WRITE_ERROR);
+	return (comac_output_stream_t *) &_comac_output_stream_nil_write_error;
     }
 
-    stream = _cairo_malloc (sizeof *stream);
+    stream = _comac_malloc (sizeof *stream);
     if (unlikely (stream == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (&stream->base,
+    _comac_output_stream_init (&stream->base,
 			       stdio_write, stdio_flush, stdio_flush);
     stream->file = file;
 
     return &stream->base;
 }
 
-cairo_output_stream_t *
-_cairo_output_stream_create_for_filename (const char *filename)
+comac_output_stream_t *
+_comac_output_stream_create_for_filename (const char *filename)
 {
     stdio_stream_t *stream;
     FILE *file;
-    cairo_status_t status;
+    comac_status_t status;
 
     if (filename == NULL)
-	return _cairo_null_stream_create ();
+	return _comac_null_stream_create ();
 
-    status = _cairo_fopen (filename, "wb", &file);
+    status = _comac_fopen (filename, "wb", &file);
 
-    if (status != CAIRO_STATUS_SUCCESS)
-	return _cairo_output_stream_create_in_error (status);
+    if (status != COMAC_STATUS_SUCCESS)
+	return _comac_output_stream_create_in_error (status);
 
     if (file == NULL) {
 	switch (errno) {
 	case ENOMEM:
-	    _cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	    return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	    _comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	    return (comac_output_stream_t *) &_comac_output_stream_nil;
 	default:
-	    _cairo_error_throw (CAIRO_STATUS_WRITE_ERROR);
-	    return (cairo_output_stream_t *) &_cairo_output_stream_nil_write_error;
+	    _comac_error_throw (COMAC_STATUS_WRITE_ERROR);
+	    return (comac_output_stream_t *) &_comac_output_stream_nil_write_error;
 	}
     }
 
-    stream = _cairo_malloc (sizeof *stream);
+    stream = _comac_malloc (sizeof *stream);
     if (unlikely (stream == NULL)) {
 	fclose (file);
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (&stream->base,
+    _comac_output_stream_init (&stream->base,
 			       stdio_write, stdio_flush, stdio_close);
     stream->file = file;
 
@@ -714,75 +714,75 @@ _cairo_output_stream_create_for_filename (const char *filename)
 
 
 typedef struct _memory_stream {
-    cairo_output_stream_t	base;
-    cairo_array_t		array;
+    comac_output_stream_t	base;
+    comac_array_t		array;
 } memory_stream_t;
 
-static cairo_status_t
-memory_write (cairo_output_stream_t *base,
+static comac_status_t
+memory_write (comac_output_stream_t *base,
 	      const unsigned char *data, unsigned int length)
 {
     memory_stream_t *stream = (memory_stream_t *) base;
 
-    return _cairo_array_append_multiple (&stream->array, data, length);
+    return _comac_array_append_multiple (&stream->array, data, length);
 }
 
-static cairo_status_t
-memory_close (cairo_output_stream_t *base)
+static comac_status_t
+memory_close (comac_output_stream_t *base)
 {
     memory_stream_t *stream = (memory_stream_t *) base;
 
-    _cairo_array_fini (&stream->array);
+    _comac_array_fini (&stream->array);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_output_stream_t *
-_cairo_memory_stream_create (void)
+comac_output_stream_t *
+_comac_memory_stream_create (void)
 {
     memory_stream_t *stream;
 
-    stream = _cairo_malloc (sizeof *stream);
+    stream = _comac_malloc (sizeof *stream);
     if (unlikely (stream == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (&stream->base, memory_write, NULL, memory_close);
-    _cairo_array_init (&stream->array, 1);
+    _comac_output_stream_init (&stream->base, memory_write, NULL, memory_close);
+    _comac_array_init (&stream->array, 1);
 
     return &stream->base;
 }
 
-cairo_status_t
-_cairo_memory_stream_destroy (cairo_output_stream_t *abstract_stream,
+comac_status_t
+_comac_memory_stream_destroy (comac_output_stream_t *abstract_stream,
 			      unsigned char **data_out,
 			      unsigned long *length_out)
 {
     memory_stream_t *stream;
-    cairo_status_t status;
+    comac_status_t status;
 
     status = abstract_stream->status;
     if (unlikely (status))
-	return _cairo_output_stream_destroy (abstract_stream);
+	return _comac_output_stream_destroy (abstract_stream);
 
     stream = (memory_stream_t *) abstract_stream;
 
-    *length_out = _cairo_array_num_elements (&stream->array);
-    *data_out = _cairo_malloc (*length_out);
+    *length_out = _comac_array_num_elements (&stream->array);
+    *data_out = _comac_malloc (*length_out);
     if (unlikely (*data_out == NULL)) {
-	status = _cairo_output_stream_destroy (abstract_stream);
-	assert (status == CAIRO_STATUS_SUCCESS);
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	status = _comac_output_stream_destroy (abstract_stream);
+	assert (status == COMAC_STATUS_SUCCESS);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
-    memcpy (*data_out, _cairo_array_index (&stream->array, 0), *length_out);
+    memcpy (*data_out, _comac_array_index (&stream->array, 0), *length_out);
 
-    return _cairo_output_stream_destroy (abstract_stream);
+    return _comac_output_stream_destroy (abstract_stream);
 }
 
 void
-_cairo_memory_stream_copy (cairo_output_stream_t *base,
-			   cairo_output_stream_t *dest)
+_comac_memory_stream_copy (comac_output_stream_t *base,
+			   comac_output_stream_t *dest)
 {
     memory_stream_t *stream = (memory_stream_t *) base;
 
@@ -794,38 +794,38 @@ _cairo_memory_stream_copy (cairo_output_stream_t *base,
 	return;
     }
 
-    _cairo_output_stream_write (dest,
-				_cairo_array_index (&stream->array, 0),
-				_cairo_array_num_elements (&stream->array));
+    _comac_output_stream_write (dest,
+				_comac_array_index (&stream->array, 0),
+				_comac_array_num_elements (&stream->array));
 }
 
 int
-_cairo_memory_stream_length (cairo_output_stream_t *base)
+_comac_memory_stream_length (comac_output_stream_t *base)
 {
     memory_stream_t *stream = (memory_stream_t *) base;
 
-    return _cairo_array_num_elements (&stream->array);
+    return _comac_array_num_elements (&stream->array);
 }
 
-static cairo_status_t
-null_write (cairo_output_stream_t *base,
+static comac_status_t
+null_write (comac_output_stream_t *base,
 	    const unsigned char *data, unsigned int length)
 {
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_output_stream_t *
-_cairo_null_stream_create (void)
+comac_output_stream_t *
+_comac_null_stream_create (void)
 {
-    cairo_output_stream_t *stream;
+    comac_output_stream_t *stream;
 
-    stream = _cairo_malloc (sizeof *stream);
+    stream = _comac_malloc (sizeof *stream);
     if (unlikely (stream == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (stream, null_write, NULL, NULL);
+    _comac_output_stream_init (stream, null_write, NULL, NULL);
 
     return stream;
 }

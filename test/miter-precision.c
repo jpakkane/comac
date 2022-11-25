@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Keith Packard
  *
@@ -33,38 +33,38 @@
  */
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double  xscale, yscale;
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_set_miter_limit (cr, 100000);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_miter_limit (cr, 100000);
     for (xscale = 1; xscale <= 1000; xscale += 999)
 	for (yscale = 1; yscale <= 1000; yscale += 999)
 	{
 	    double  max_scale = xscale > yscale ? xscale : yscale;
-	    cairo_save (cr);
+	    comac_save (cr);
 	    if (xscale > 1)
-		cairo_translate (cr, 50, 0);
+		comac_translate (cr, 50, 0);
 	    if (yscale > 1)
-		cairo_translate (cr, 0, 50);
-	    cairo_scale (cr, xscale, yscale);
-	    cairo_set_line_width (cr, 10.0 / max_scale);
-	    cairo_move_to (cr, 10.0 / xscale, 10.0 / yscale);
-	    cairo_line_to (cr, 40.0 / xscale, 10.0 / yscale);
-	    cairo_line_to (cr, 10.0 / xscale, 30.0 / yscale);
-	    cairo_stroke (cr);
-	    cairo_restore (cr);
+		comac_translate (cr, 0, 50);
+	    comac_scale (cr, xscale, yscale);
+	    comac_set_line_width (cr, 10.0 / max_scale);
+	    comac_move_to (cr, 10.0 / xscale, 10.0 / yscale);
+	    comac_line_to (cr, 40.0 / xscale, 10.0 / yscale);
+	    comac_line_to (cr, 10.0 / xscale, 30.0 / yscale);
+	    comac_stroke (cr);
+	    comac_restore (cr);
 	}
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (miter_precision,
-	    "test how cairo deals with small miters"
+COMAC_TEST (miter_precision,
+	    "test how comac deals with small miters"
 	    "\ncurrent code draws inappropriate bevels at times",
 	    "stoke, stress", /* keywords */
 	    NULL, /* requirements */

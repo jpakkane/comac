@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -57,13 +57,13 @@
    >  0 => a more positive than b
 */
 int
-_cairo_slope_compare (const cairo_slope_t *a, const cairo_slope_t *b)
+_comac_slope_compare (const comac_slope_t *a, const comac_slope_t *b)
 {
-    cairo_int64_t ady_bdx = _cairo_int32x32_64_mul (a->dy, b->dx);
-    cairo_int64_t bdy_adx = _cairo_int32x32_64_mul (b->dy, a->dx);
+    comac_int64_t ady_bdx = _comac_int32x32_64_mul (a->dy, b->dx);
+    comac_int64_t bdy_adx = _comac_int32x32_64_mul (b->dy, a->dx);
     int cmp;
 
-    cmp = _cairo_int64_cmp (ady_bdx, bdy_adx);
+    cmp = _comac_int64_cmp (ady_bdx, bdy_adx);
     if (cmp)
 	return cmp;
 

@@ -25,45 +25,45 @@
 
 #include "comac-perf.h"
 
-static cairo_time_t
-do_text (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_text (comac_t *cr, int width, int height, int loops)
 {
     const char text[] = "the jay, pig, fox, zebra and my wolves quack";
     int len = strlen (text);
     double x, y;
     int i = 0, j = 0;
 
-    cairo_set_font_size (cr, 9);
+    comac_set_font_size (cr, 9);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	do {
-	    cairo_move_to (cr, 0, j++ * 10);
-	    cairo_show_text (cr, text + i);
-	    cairo_get_current_point (cr, &x, &y);
-	    while (x < width && cairo_status (cr) == CAIRO_STATUS_SUCCESS) {
-		cairo_show_text (cr, text);
-		cairo_get_current_point (cr, &x, &y);
+	    comac_move_to (cr, 0, j++ * 10);
+	    comac_show_text (cr, text + i);
+	    comac_get_current_point (cr, &x, &y);
+	    while (x < width && comac_status (cr) == COMAC_STATUS_SUCCESS) {
+		comac_show_text (cr, text);
+		comac_get_current_point (cr, &x, &y);
 	    }
 	    if (++i >= len)
 		i = 0;
-	} while (y < height && cairo_status (cr) == CAIRO_STATUS_SUCCESS);
+	} while (y < height && comac_status (cr) == COMAC_STATUS_SUCCESS);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-text_enabled (cairo_perf_t *perf)
+comac_bool_t
+text_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "text", NULL);
+    return comac_perf_can_run (perf, "text", NULL);
 }
 
 void
-text (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+text (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_cover_sources_and_operators (perf, "text", do_text, NULL);
+    comac_perf_cover_sources_and_operators (perf, "text", do_text, NULL);
 }

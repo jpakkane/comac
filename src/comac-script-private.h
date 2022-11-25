@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2008 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -33,8 +33,8 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_SCRIPT_PRIVATE_H
-#define CAIRO_SCRIPT_PRIVATE_H
+#ifndef COMAC_SCRIPT_PRIVATE_H
+#define COMAC_SCRIPT_PRIVATE_H
 
 #include "comac.h"
 #include "comac-script.h"
@@ -43,16 +43,16 @@
 #include "comac-output-stream-private.h"
 #include "comac-types-private.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_private cairo_device_t *
-_cairo_script_context_create_internal (cairo_output_stream_t *stream);
+comac_private comac_device_t *
+_comac_script_context_create_internal (comac_output_stream_t *stream);
 
-cairo_private void
-_cairo_script_context_attach_snapshots (cairo_device_t *device,
-					cairo_bool_t enable);
+comac_private void
+_comac_script_context_attach_snapshots (comac_device_t *device,
+					comac_bool_t enable);
 
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_SCRIPT_PRIVATE_H */
+#endif /* COMAC_SCRIPT_PRIVATE_H */

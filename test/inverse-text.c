@@ -29,37 +29,37 @@
 
 #define TEXT_SIZE 12
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* This is just the inverse of select-font-face.c */
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
+    comac_set_source_rgb (cr, 1, 1, 1);
 
-    cairo_set_font_size (cr, TEXT_SIZE);
-    cairo_move_to (cr, 0, TEXT_SIZE);
+    comac_set_font_size (cr, TEXT_SIZE);
+    comac_move_to (cr, 0, TEXT_SIZE);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Serif",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_show_text (cr, "i-am-serif");
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Serif",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_show_text (cr, "i-am-serif");
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_show_text (cr, " i-am-sans");
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_show_text (cr, " i-am-sans");
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans Mono",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_show_text (cr, " i-am-mono");
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans Mono",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_show_text (cr, " i-am-mono");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (inverse_text,
+COMAC_TEST (inverse_text,
 	    "Tests rendering of inverse text (white-on-black)",
 	    "font, text", /* keywords */
 	    NULL, /* requirements */

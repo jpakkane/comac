@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,33 +33,33 @@
  *	Carl D. Worth <cworth@redhat.com>
  */
 
-#ifndef CAIRO_PATTERN_INLINE_H
-#define CAIRO_PATTERN_INLINE_H
+#ifndef COMAC_PATTERN_INLINE_H
+#define COMAC_PATTERN_INLINE_H
 
 #include "comac-pattern-private.h"
 
 #include "comac-list-inline.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 static inline void
-_cairo_pattern_add_observer (cairo_pattern_t *pattern,
-			     cairo_pattern_observer_t *observer,
-			     void (*func) (cairo_pattern_observer_t *,
-					   cairo_pattern_t *,
+_comac_pattern_add_observer (comac_pattern_t *pattern,
+			     comac_pattern_observer_t *observer,
+			     void (*func) (comac_pattern_observer_t *,
+					   comac_pattern_t *,
 					   unsigned int))
 {
     observer->notify = func;
-    cairo_list_add (&observer->link, &pattern->observers);
+    comac_list_add (&observer->link, &pattern->observers);
 }
 
-static inline cairo_surface_t *
-_cairo_pattern_get_source (const cairo_surface_pattern_t *pattern,
-			   cairo_rectangle_int_t *extents)
+static inline comac_surface_t *
+_comac_pattern_get_source (const comac_surface_pattern_t *pattern,
+			   comac_rectangle_int_t *extents)
 {
-    return _cairo_surface_get_source (pattern->surface, extents);
+    return _comac_surface_get_source (pattern->surface, extents);
 }
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_PATTERN_INLINE_H */
+#endif /* COMAC_PATTERN_INLINE_H */

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  * Copyright © 2007 Adrian Johnson
@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -45,156 +45,156 @@
 /* A collection of routines to facilitate surface wrapping */
 
 static void
-_copy_transformed_pattern (cairo_pattern_t *pattern,
-			   const cairo_pattern_t *original,
-			   const cairo_matrix_t  *ctm_inverse)
+_copy_transformed_pattern (comac_pattern_t *pattern,
+			   const comac_pattern_t *original,
+			   const comac_matrix_t  *ctm_inverse)
 {
-    _cairo_pattern_init_static_copy (pattern, original);
+    _comac_pattern_init_static_copy (pattern, original);
 
-    if (! _cairo_matrix_is_identity (ctm_inverse))
-	_cairo_pattern_transform (pattern, ctm_inverse);
+    if (! _comac_matrix_is_identity (ctm_inverse))
+	_comac_pattern_transform (pattern, ctm_inverse);
 }
 
-cairo_status_t
-_cairo_surface_wrapper_acquire_source_image (cairo_surface_wrapper_t *wrapper,
-					     cairo_image_surface_t  **image_out,
+comac_status_t
+_comac_surface_wrapper_acquire_source_image (comac_surface_wrapper_t *wrapper,
+					     comac_image_surface_t  **image_out,
 					     void                   **image_extra)
 {
     if (unlikely (wrapper->target->status))
 	return wrapper->target->status;
 
-    return _cairo_surface_acquire_source_image (wrapper->target,
+    return _comac_surface_acquire_source_image (wrapper->target,
 						image_out, image_extra);
 }
 
 void
-_cairo_surface_wrapper_release_source_image (cairo_surface_wrapper_t *wrapper,
-					     cairo_image_surface_t  *image,
+_comac_surface_wrapper_release_source_image (comac_surface_wrapper_t *wrapper,
+					     comac_image_surface_t  *image,
 					     void                   *image_extra)
 {
-    _cairo_surface_release_source_image (wrapper->target, image, image_extra);
+    _comac_surface_release_source_image (wrapper->target, image, image_extra);
 }
 
 static void
-_cairo_surface_wrapper_get_transform (cairo_surface_wrapper_t *wrapper,
-				      cairo_matrix_t *m)
+_comac_surface_wrapper_get_transform (comac_surface_wrapper_t *wrapper,
+				      comac_matrix_t *m)
 {
-    cairo_matrix_init_identity (m);
+    comac_matrix_init_identity (m);
 
-    if (! _cairo_matrix_is_identity (&wrapper->transform))
-	cairo_matrix_multiply (m, &wrapper->transform, m);
+    if (! _comac_matrix_is_identity (&wrapper->transform))
+	comac_matrix_multiply (m, &wrapper->transform, m);
 
-    if (! _cairo_matrix_is_identity (&wrapper->target->device_transform))
-	cairo_matrix_multiply (m, &wrapper->target->device_transform, m);
+    if (! _comac_matrix_is_identity (&wrapper->target->device_transform))
+	comac_matrix_multiply (m, &wrapper->target->device_transform, m);
 }
 
 static void
-_cairo_surface_wrapper_get_inverse_transform (cairo_surface_wrapper_t *wrapper,
-					      cairo_matrix_t *m)
+_comac_surface_wrapper_get_inverse_transform (comac_surface_wrapper_t *wrapper,
+					      comac_matrix_t *m)
 {
-    cairo_matrix_init_identity (m);
+    comac_matrix_init_identity (m);
 
-    if (! _cairo_matrix_is_identity (&wrapper->target->device_transform_inverse))
-	cairo_matrix_multiply (m, &wrapper->target->device_transform_inverse, m);
+    if (! _comac_matrix_is_identity (&wrapper->target->device_transform_inverse))
+	comac_matrix_multiply (m, &wrapper->target->device_transform_inverse, m);
 
-    if (! _cairo_matrix_is_identity (&wrapper->transform)) {
-	cairo_matrix_t inv;
-	cairo_status_t status;
+    if (! _comac_matrix_is_identity (&wrapper->transform)) {
+	comac_matrix_t inv;
+	comac_status_t status;
 
 	inv = wrapper->transform;
-	status = cairo_matrix_invert (&inv);
-	assert (status == CAIRO_STATUS_SUCCESS);
-	cairo_matrix_multiply (m, &inv, m);
+	status = comac_matrix_invert (&inv);
+	assert (status == COMAC_STATUS_SUCCESS);
+	comac_matrix_multiply (m, &inv, m);
     }
 }
 
-static cairo_clip_t *
-_cairo_surface_wrapper_get_clip (cairo_surface_wrapper_t *wrapper,
-				 const cairo_clip_t *clip)
+static comac_clip_t *
+_comac_surface_wrapper_get_clip (comac_surface_wrapper_t *wrapper,
+				 const comac_clip_t *clip)
 {
-    cairo_clip_t *copy;
-    cairo_matrix_t m;
+    comac_clip_t *copy;
+    comac_matrix_t m;
 
-    copy = _cairo_clip_copy (clip);
+    copy = _comac_clip_copy (clip);
     if (wrapper->has_extents) {
-	copy = _cairo_clip_intersect_rectangle (copy, &wrapper->extents);
+	copy = _comac_clip_intersect_rectangle (copy, &wrapper->extents);
     }
-    _cairo_surface_wrapper_get_transform (wrapper, &m);
-    copy = _cairo_clip_transform (copy, &m);
+    _comac_surface_wrapper_get_transform (wrapper, &m);
+    copy = _comac_clip_transform (copy, &m);
     if (wrapper->clip)
-	copy = _cairo_clip_intersect_clip (copy, wrapper->clip);
+	copy = _comac_clip_intersect_clip (copy, wrapper->clip);
 
     return copy;
 }
 
-cairo_status_t
-_cairo_surface_wrapper_paint (cairo_surface_wrapper_t *wrapper,
-			      cairo_operator_t	 op,
-			      const cairo_pattern_t *source,
-			      const cairo_clip_t    *clip)
+comac_status_t
+_comac_surface_wrapper_paint (comac_surface_wrapper_t *wrapper,
+			      comac_operator_t	 op,
+			      const comac_pattern_t *source,
+			      const comac_clip_t    *clip)
 {
-    cairo_status_t status;
-    cairo_clip_t *dev_clip;
-    cairo_pattern_union_t source_copy;
+    comac_status_t status;
+    comac_clip_t *dev_clip;
+    comac_pattern_union_t source_copy;
 
     if (unlikely (wrapper->target->status))
 	return wrapper->target->status;
 
-    dev_clip = _cairo_surface_wrapper_get_clip (wrapper, clip);
-    if (_cairo_clip_is_all_clipped (dev_clip))
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    dev_clip = _comac_surface_wrapper_get_clip (wrapper, clip);
+    if (_comac_clip_is_all_clipped (dev_clip))
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
     if (source->is_userfont_foreground && wrapper->foreground_source)
         source = wrapper->foreground_source;
 
     if (wrapper->needs_transform) {
-	cairo_matrix_t m;
+	comac_matrix_t m;
 
-	_cairo_surface_wrapper_get_transform (wrapper, &m);
+	_comac_surface_wrapper_get_transform (wrapper, &m);
 
-	status = cairo_matrix_invert (&m);
-	assert (status == CAIRO_STATUS_SUCCESS);
+	status = comac_matrix_invert (&m);
+	assert (status == COMAC_STATUS_SUCCESS);
 
 	_copy_transformed_pattern (&source_copy.base, source, &m);
 	source = &source_copy.base;
     }
 
-    status = _cairo_surface_paint (wrapper->target, op, source, dev_clip);
+    status = _comac_surface_paint (wrapper->target, op, source, dev_clip);
 
-    _cairo_clip_destroy (dev_clip);
+    _comac_clip_destroy (dev_clip);
     return status;
 }
 
 
-cairo_status_t
-_cairo_surface_wrapper_mask (cairo_surface_wrapper_t *wrapper,
-			     cairo_operator_t	 op,
-			     const cairo_pattern_t *source,
-			     const cairo_pattern_t *mask,
-			     const cairo_clip_t	    *clip)
+comac_status_t
+_comac_surface_wrapper_mask (comac_surface_wrapper_t *wrapper,
+			     comac_operator_t	 op,
+			     const comac_pattern_t *source,
+			     const comac_pattern_t *mask,
+			     const comac_clip_t	    *clip)
 {
-    cairo_status_t status;
-    cairo_clip_t *dev_clip;
-    cairo_pattern_union_t source_copy;
-    cairo_pattern_union_t mask_copy;
+    comac_status_t status;
+    comac_clip_t *dev_clip;
+    comac_pattern_union_t source_copy;
+    comac_pattern_union_t mask_copy;
 
     if (unlikely (wrapper->target->status))
 	return wrapper->target->status;
 
-    dev_clip = _cairo_surface_wrapper_get_clip (wrapper, clip);
-    if (_cairo_clip_is_all_clipped (dev_clip))
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    dev_clip = _comac_surface_wrapper_get_clip (wrapper, clip);
+    if (_comac_clip_is_all_clipped (dev_clip))
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
     if (source->is_userfont_foreground && wrapper->foreground_source)
         source = wrapper->foreground_source;
 
     if (wrapper->needs_transform) {
-	cairo_matrix_t m;
+	comac_matrix_t m;
 
-	_cairo_surface_wrapper_get_transform (wrapper, &m);
+	_comac_surface_wrapper_get_transform (wrapper, &m);
 
-	status = cairo_matrix_invert (&m);
-	assert (status == CAIRO_STATUS_SUCCESS);
+	status = comac_matrix_invert (&m);
+	assert (status == COMAC_STATUS_SUCCESS);
 
 	_copy_transformed_pattern (&source_copy.base, source, &m);
 	source = &source_copy.base;
@@ -203,65 +203,65 @@ _cairo_surface_wrapper_mask (cairo_surface_wrapper_t *wrapper,
 	mask = &mask_copy.base;
     }
 
-    status = _cairo_surface_mask (wrapper->target, op, source, mask, dev_clip);
+    status = _comac_surface_mask (wrapper->target, op, source, mask, dev_clip);
 
-    _cairo_clip_destroy (dev_clip);
+    _comac_clip_destroy (dev_clip);
     return status;
 }
 
-cairo_status_t
-_cairo_surface_wrapper_stroke (cairo_surface_wrapper_t *wrapper,
-			       cairo_operator_t		 op,
-			       const cairo_pattern_t	*source,
-			       const cairo_path_fixed_t	*path,
-			       const cairo_stroke_style_t	*stroke_style,
-			       const cairo_matrix_t		*ctm,
-			       const cairo_matrix_t		*ctm_inverse,
+comac_status_t
+_comac_surface_wrapper_stroke (comac_surface_wrapper_t *wrapper,
+			       comac_operator_t		 op,
+			       const comac_pattern_t	*source,
+			       const comac_path_fixed_t	*path,
+			       const comac_stroke_style_t	*stroke_style,
+			       const comac_matrix_t		*ctm,
+			       const comac_matrix_t		*ctm_inverse,
 			       double			 tolerance,
-			       cairo_antialias_t	 antialias,
-			       const cairo_clip_t		*clip)
+			       comac_antialias_t	 antialias,
+			       const comac_clip_t		*clip)
 {
-    cairo_status_t status;
-    cairo_path_fixed_t path_copy, *dev_path = (cairo_path_fixed_t *) path;
-    cairo_clip_t *dev_clip;
-    cairo_matrix_t dev_ctm = *ctm;
-    cairo_matrix_t dev_ctm_inverse = *ctm_inverse;
-    cairo_pattern_union_t source_copy;
+    comac_status_t status;
+    comac_path_fixed_t path_copy, *dev_path = (comac_path_fixed_t *) path;
+    comac_clip_t *dev_clip;
+    comac_matrix_t dev_ctm = *ctm;
+    comac_matrix_t dev_ctm_inverse = *ctm_inverse;
+    comac_pattern_union_t source_copy;
 
     if (unlikely (wrapper->target->status))
 	return wrapper->target->status;
 
-    dev_clip = _cairo_surface_wrapper_get_clip (wrapper, clip);
-    if (_cairo_clip_is_all_clipped (dev_clip))
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    dev_clip = _comac_surface_wrapper_get_clip (wrapper, clip);
+    if (_comac_clip_is_all_clipped (dev_clip))
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
     if (source->is_userfont_foreground && wrapper->foreground_source)
         source = wrapper->foreground_source;
 
     if (wrapper->needs_transform) {
-	cairo_matrix_t m;
+	comac_matrix_t m;
 
-	_cairo_surface_wrapper_get_transform (wrapper, &m);
+	_comac_surface_wrapper_get_transform (wrapper, &m);
 
-	status = _cairo_path_fixed_init_copy (&path_copy, dev_path);
+	status = _comac_path_fixed_init_copy (&path_copy, dev_path);
 	if (unlikely (status))
 	    goto FINISH;
 
-	_cairo_path_fixed_transform (&path_copy, &m);
+	_comac_path_fixed_transform (&path_copy, &m);
 	dev_path = &path_copy;
 
-	cairo_matrix_multiply (&dev_ctm, &dev_ctm, &m);
+	comac_matrix_multiply (&dev_ctm, &dev_ctm, &m);
 
-	status = cairo_matrix_invert (&m);
-	assert (status == CAIRO_STATUS_SUCCESS);
+	status = comac_matrix_invert (&m);
+	assert (status == COMAC_STATUS_SUCCESS);
 
-	cairo_matrix_multiply (&dev_ctm_inverse, &m, &dev_ctm_inverse);
+	comac_matrix_multiply (&dev_ctm_inverse, &m, &dev_ctm_inverse);
 
 	_copy_transformed_pattern (&source_copy.base, source, &m);
 	source = &source_copy.base;
     }
 
-    status = _cairo_surface_stroke (wrapper->target, op, source,
+    status = _comac_surface_stroke (wrapper->target, op, source,
 				    dev_path, stroke_style,
 				    &dev_ctm, &dev_ctm_inverse,
 				    tolerance, antialias,
@@ -269,42 +269,42 @@ _cairo_surface_wrapper_stroke (cairo_surface_wrapper_t *wrapper,
 
  FINISH:
     if (dev_path != path)
-	_cairo_path_fixed_fini (dev_path);
-    _cairo_clip_destroy (dev_clip);
+	_comac_path_fixed_fini (dev_path);
+    _comac_clip_destroy (dev_clip);
     return status;
 }
 
-cairo_status_t
-_cairo_surface_wrapper_fill_stroke (cairo_surface_wrapper_t *wrapper,
-				    cairo_operator_t	     fill_op,
-				    const cairo_pattern_t   *fill_source,
-				    cairo_fill_rule_t	     fill_rule,
+comac_status_t
+_comac_surface_wrapper_fill_stroke (comac_surface_wrapper_t *wrapper,
+				    comac_operator_t	     fill_op,
+				    const comac_pattern_t   *fill_source,
+				    comac_fill_rule_t	     fill_rule,
 				    double		     fill_tolerance,
-				    cairo_antialias_t	     fill_antialias,
-				    const cairo_path_fixed_t*path,
-				    cairo_operator_t	     stroke_op,
-				    const cairo_pattern_t   *stroke_source,
-				    const cairo_stroke_style_t    *stroke_style,
-				    const cairo_matrix_t	    *stroke_ctm,
-				    const cairo_matrix_t	    *stroke_ctm_inverse,
+				    comac_antialias_t	     fill_antialias,
+				    const comac_path_fixed_t*path,
+				    comac_operator_t	     stroke_op,
+				    const comac_pattern_t   *stroke_source,
+				    const comac_stroke_style_t    *stroke_style,
+				    const comac_matrix_t	    *stroke_ctm,
+				    const comac_matrix_t	    *stroke_ctm_inverse,
 				    double		     stroke_tolerance,
-				    cairo_antialias_t	     stroke_antialias,
-				    const cairo_clip_t	    *clip)
+				    comac_antialias_t	     stroke_antialias,
+				    const comac_clip_t	    *clip)
 {
-    cairo_status_t status;
-    cairo_path_fixed_t path_copy, *dev_path = (cairo_path_fixed_t *)path;
-    cairo_matrix_t dev_ctm = *stroke_ctm;
-    cairo_matrix_t dev_ctm_inverse = *stroke_ctm_inverse;
-    cairo_clip_t *dev_clip;
-    cairo_pattern_union_t stroke_source_copy;
-    cairo_pattern_union_t fill_source_copy;
+    comac_status_t status;
+    comac_path_fixed_t path_copy, *dev_path = (comac_path_fixed_t *)path;
+    comac_matrix_t dev_ctm = *stroke_ctm;
+    comac_matrix_t dev_ctm_inverse = *stroke_ctm_inverse;
+    comac_clip_t *dev_clip;
+    comac_pattern_union_t stroke_source_copy;
+    comac_pattern_union_t fill_source_copy;
 
     if (unlikely (wrapper->target->status))
 	return wrapper->target->status;
 
-    dev_clip = _cairo_surface_wrapper_get_clip (wrapper, clip);
-    if (_cairo_clip_is_all_clipped (dev_clip))
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    dev_clip = _comac_surface_wrapper_get_clip (wrapper, clip);
+    if (_comac_clip_is_all_clipped (dev_clip))
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
     if (fill_source->is_userfont_foreground && wrapper->foreground_source)
         fill_source = wrapper->foreground_source;
@@ -313,23 +313,23 @@ _cairo_surface_wrapper_fill_stroke (cairo_surface_wrapper_t *wrapper,
         stroke_source = wrapper->foreground_source;
 
     if (wrapper->needs_transform) {
-	cairo_matrix_t m;
+	comac_matrix_t m;
 
-	_cairo_surface_wrapper_get_transform (wrapper, &m);
+	_comac_surface_wrapper_get_transform (wrapper, &m);
 
-	status = _cairo_path_fixed_init_copy (&path_copy, dev_path);
+	status = _comac_path_fixed_init_copy (&path_copy, dev_path);
 	if (unlikely (status))
 	    goto FINISH;
 
-	_cairo_path_fixed_transform (&path_copy, &m);
+	_comac_path_fixed_transform (&path_copy, &m);
 	dev_path = &path_copy;
 
-	cairo_matrix_multiply (&dev_ctm, &dev_ctm, &m);
+	comac_matrix_multiply (&dev_ctm, &dev_ctm, &m);
 
-	status = cairo_matrix_invert (&m);
-	assert (status == CAIRO_STATUS_SUCCESS);
+	status = comac_matrix_invert (&m);
+	assert (status == COMAC_STATUS_SUCCESS);
 
-	cairo_matrix_multiply (&dev_ctm_inverse, &m, &dev_ctm_inverse);
+	comac_matrix_multiply (&dev_ctm_inverse, &m, &dev_ctm_inverse);
 
 	_copy_transformed_pattern (&stroke_source_copy.base, stroke_source, &m);
 	stroke_source = &stroke_source_copy.base;
@@ -338,7 +338,7 @@ _cairo_surface_wrapper_fill_stroke (cairo_surface_wrapper_t *wrapper,
 	fill_source = &fill_source_copy.base;
     }
 
-    status = _cairo_surface_fill_stroke (wrapper->target,
+    status = _comac_surface_fill_stroke (wrapper->target,
 					 fill_op, fill_source, fill_rule,
 					 fill_tolerance, fill_antialias,
 					 dev_path,
@@ -350,163 +350,163 @@ _cairo_surface_wrapper_fill_stroke (cairo_surface_wrapper_t *wrapper,
 
   FINISH:
     if (dev_path != path)
-	_cairo_path_fixed_fini (dev_path);
-    _cairo_clip_destroy (dev_clip);
+	_comac_path_fixed_fini (dev_path);
+    _comac_clip_destroy (dev_clip);
     return status;
 }
 
-cairo_status_t
-_cairo_surface_wrapper_fill (cairo_surface_wrapper_t	*wrapper,
-			     cairo_operator_t	 op,
-			     const cairo_pattern_t *source,
-			     const cairo_path_fixed_t	*path,
-			     cairo_fill_rule_t	 fill_rule,
+comac_status_t
+_comac_surface_wrapper_fill (comac_surface_wrapper_t	*wrapper,
+			     comac_operator_t	 op,
+			     const comac_pattern_t *source,
+			     const comac_path_fixed_t	*path,
+			     comac_fill_rule_t	 fill_rule,
 			     double		 tolerance,
-			     cairo_antialias_t	 antialias,
-			     const cairo_clip_t	*clip)
+			     comac_antialias_t	 antialias,
+			     const comac_clip_t	*clip)
 {
-    cairo_status_t status;
-    cairo_path_fixed_t path_copy, *dev_path = (cairo_path_fixed_t *) path;
-    cairo_pattern_union_t source_copy;
-    cairo_clip_t *dev_clip;
+    comac_status_t status;
+    comac_path_fixed_t path_copy, *dev_path = (comac_path_fixed_t *) path;
+    comac_pattern_union_t source_copy;
+    comac_clip_t *dev_clip;
 
     if (unlikely (wrapper->target->status))
 	return wrapper->target->status;
 
-    dev_clip = _cairo_surface_wrapper_get_clip (wrapper, clip);
-    if (_cairo_clip_is_all_clipped (dev_clip))
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    dev_clip = _comac_surface_wrapper_get_clip (wrapper, clip);
+    if (_comac_clip_is_all_clipped (dev_clip))
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
     if (source->is_userfont_foreground && wrapper->foreground_source)
         source = wrapper->foreground_source;
 
     if (wrapper->needs_transform) {
-	cairo_matrix_t m;
+	comac_matrix_t m;
 
-	_cairo_surface_wrapper_get_transform (wrapper, &m);
+	_comac_surface_wrapper_get_transform (wrapper, &m);
 
-	status = _cairo_path_fixed_init_copy (&path_copy, dev_path);
+	status = _comac_path_fixed_init_copy (&path_copy, dev_path);
 	if (unlikely (status))
 	    goto FINISH;
 
-	_cairo_path_fixed_transform (&path_copy, &m);
+	_comac_path_fixed_transform (&path_copy, &m);
 	dev_path = &path_copy;
 
-	status = cairo_matrix_invert (&m);
-	assert (status == CAIRO_STATUS_SUCCESS);
+	status = comac_matrix_invert (&m);
+	assert (status == COMAC_STATUS_SUCCESS);
 
 	_copy_transformed_pattern (&source_copy.base, source, &m);
 	source = &source_copy.base;
     }
 
-    status = _cairo_surface_fill (wrapper->target, op, source,
+    status = _comac_surface_fill (wrapper->target, op, source,
 				  dev_path, fill_rule,
 				  tolerance, antialias,
 				  dev_clip);
 
  FINISH:
     if (dev_path != path)
-	_cairo_path_fixed_fini (dev_path);
-    _cairo_clip_destroy (dev_clip);
+	_comac_path_fixed_fini (dev_path);
+    _comac_clip_destroy (dev_clip);
     return status;
 }
 
-cairo_status_t
-_cairo_surface_wrapper_show_text_glyphs (cairo_surface_wrapper_t *wrapper,
-					 cairo_operator_t	     op,
-					 const cairo_pattern_t	    *source,
+comac_status_t
+_comac_surface_wrapper_show_text_glyphs (comac_surface_wrapper_t *wrapper,
+					 comac_operator_t	     op,
+					 const comac_pattern_t	    *source,
 					 const char		    *utf8,
 					 int			     utf8_len,
-					 const cairo_glyph_t	    *glyphs,
+					 const comac_glyph_t	    *glyphs,
 					 int			     num_glyphs,
-					 const cairo_text_cluster_t *clusters,
+					 const comac_text_cluster_t *clusters,
 					 int			     num_clusters,
-					 cairo_text_cluster_flags_t  cluster_flags,
-					 cairo_scaled_font_t	    *scaled_font,
-					 const cairo_clip_t	    *clip)
+					 comac_text_cluster_flags_t  cluster_flags,
+					 comac_scaled_font_t	    *scaled_font,
+					 const comac_clip_t	    *clip)
 {
-    cairo_status_t status;
-    cairo_clip_t *dev_clip;
-    cairo_glyph_t stack_glyphs [CAIRO_STACK_ARRAY_LENGTH(cairo_glyph_t)];
-    cairo_glyph_t *dev_glyphs = stack_glyphs;
-    cairo_scaled_font_t *dev_scaled_font = scaled_font;
-    cairo_pattern_union_t source_copy;
-    cairo_font_options_t options;
+    comac_status_t status;
+    comac_clip_t *dev_clip;
+    comac_glyph_t stack_glyphs [COMAC_STACK_ARRAY_LENGTH(comac_glyph_t)];
+    comac_glyph_t *dev_glyphs = stack_glyphs;
+    comac_scaled_font_t *dev_scaled_font = scaled_font;
+    comac_pattern_union_t source_copy;
+    comac_font_options_t options;
 
     if (unlikely (wrapper->target->status))
 	return wrapper->target->status;
 
-    dev_clip = _cairo_surface_wrapper_get_clip (wrapper, clip);
-    if (_cairo_clip_is_all_clipped (dev_clip))
-	return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    dev_clip = _comac_surface_wrapper_get_clip (wrapper, clip);
+    if (_comac_clip_is_all_clipped (dev_clip))
+	return COMAC_INT_STATUS_NOTHING_TO_DO;
 
-    cairo_surface_get_font_options (wrapper->target, &options);
-    cairo_font_options_merge (&options, &scaled_font->options);
+    comac_surface_get_font_options (wrapper->target, &options);
+    comac_font_options_merge (&options, &scaled_font->options);
 
     if (source->is_userfont_foreground && wrapper->foreground_source)
         source = wrapper->foreground_source;
 
     if (wrapper->needs_transform) {
-	cairo_matrix_t m;
+	comac_matrix_t m;
 	int i;
 
-	_cairo_surface_wrapper_get_transform (wrapper, &m);
+	_comac_surface_wrapper_get_transform (wrapper, &m);
 
-	if (! _cairo_matrix_is_translation (&m)) {
-	    cairo_matrix_t ctm;
+	if (! _comac_matrix_is_translation (&m)) {
+	    comac_matrix_t ctm;
 
-	    _cairo_matrix_multiply (&ctm,
+	    _comac_matrix_multiply (&ctm,
 				    &m,
 				    &scaled_font->ctm);
-	    dev_scaled_font = cairo_scaled_font_create (scaled_font->font_face,
+	    dev_scaled_font = comac_scaled_font_create (scaled_font->font_face,
 							&scaled_font->font_matrix,
 							&ctm, &options);
 	}
 
 	if (num_glyphs > ARRAY_LENGTH (stack_glyphs)) {
-	    dev_glyphs = _cairo_malloc_ab (num_glyphs, sizeof (cairo_glyph_t));
+	    dev_glyphs = _comac_malloc_ab (num_glyphs, sizeof (comac_glyph_t));
 	    if (unlikely (dev_glyphs == NULL)) {
-		status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+		status = _comac_error (COMAC_STATUS_NO_MEMORY);
 		goto FINISH;
 	    }
 	}
 
 	for (i = 0; i < num_glyphs; i++) {
 	    dev_glyphs[i] = glyphs[i];
-	    cairo_matrix_transform_point (&m,
+	    comac_matrix_transform_point (&m,
 					  &dev_glyphs[i].x,
 					  &dev_glyphs[i].y);
 	}
 
-	status = cairo_matrix_invert (&m);
-	assert (status == CAIRO_STATUS_SUCCESS);
+	status = comac_matrix_invert (&m);
+	assert (status == COMAC_STATUS_SUCCESS);
 
 	_copy_transformed_pattern (&source_copy.base, source, &m);
 	source = &source_copy.base;
     } else {
-	if (! cairo_font_options_equal (&options, &scaled_font->options)) {
-	    dev_scaled_font = cairo_scaled_font_create (scaled_font->font_face,
+	if (! comac_font_options_equal (&options, &scaled_font->options)) {
+	    dev_scaled_font = comac_scaled_font_create (scaled_font->font_face,
 							&scaled_font->font_matrix,
 							&scaled_font->ctm,
 							&options);
 	}
 
-	/* show_text_glyphs is special because _cairo_surface_show_text_glyphs is allowed
+	/* show_text_glyphs is special because _comac_surface_show_text_glyphs is allowed
 	 * to modify the glyph array that's passed in.  We must always
 	 * copy the array before handing it to the backend.
 	 */
 	if (num_glyphs > ARRAY_LENGTH (stack_glyphs)) {
-	    dev_glyphs = _cairo_malloc_ab (num_glyphs, sizeof (cairo_glyph_t));
+	    dev_glyphs = _comac_malloc_ab (num_glyphs, sizeof (comac_glyph_t));
 	    if (unlikely (dev_glyphs == NULL)) {
-		status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+		status = _comac_error (COMAC_STATUS_NO_MEMORY);
 		goto FINISH;
 	    }
 	}
 
-	memcpy (dev_glyphs, glyphs, sizeof (cairo_glyph_t) * num_glyphs);
+	memcpy (dev_glyphs, glyphs, sizeof (comac_glyph_t) * num_glyphs);
     }
 
-    status = _cairo_surface_show_text_glyphs (wrapper->target, op, source,
+    status = _comac_surface_show_text_glyphs (wrapper->target, op, source,
 					      utf8, utf8_len,
 					      dev_glyphs, num_glyphs,
 					      clusters, num_clusters,
@@ -514,17 +514,17 @@ _cairo_surface_wrapper_show_text_glyphs (cairo_surface_wrapper_t *wrapper,
 					      dev_scaled_font,
 					      dev_clip);
  FINISH:
-    _cairo_clip_destroy (dev_clip);
+    _comac_clip_destroy (dev_clip);
     if (dev_glyphs != stack_glyphs)
 	free (dev_glyphs);
     if (dev_scaled_font != scaled_font)
-	cairo_scaled_font_destroy (dev_scaled_font);
+	comac_scaled_font_destroy (dev_scaled_font);
     return status;
 }
 
-cairo_status_t
-_cairo_surface_wrapper_tag (cairo_surface_wrapper_t     *wrapper,
-			    cairo_bool_t                 begin,
+comac_status_t
+_comac_surface_wrapper_tag (comac_surface_wrapper_t     *wrapper,
+			    comac_bool_t                 begin,
 			    const char                  *tag_name,
 			    const char                  *attributes)
 {
@@ -532,103 +532,103 @@ _cairo_surface_wrapper_tag (cairo_surface_wrapper_t     *wrapper,
 	return wrapper->target->status;
 
 
-    return _cairo_surface_tag (wrapper->target, begin, tag_name, attributes);
+    return _comac_surface_tag (wrapper->target, begin, tag_name, attributes);
 }
 
-cairo_surface_t *
-_cairo_surface_wrapper_create_similar (cairo_surface_wrapper_t *wrapper,
-				       cairo_content_t	content,
+comac_surface_t *
+_comac_surface_wrapper_create_similar (comac_surface_wrapper_t *wrapper,
+				       comac_content_t	content,
 				       int		width,
 				       int		height)
 {
-    return _cairo_surface_create_scratch (wrapper->target,
+    return _comac_surface_create_scratch (wrapper->target,
 					  content, width, height, NULL);
 }
 
-cairo_bool_t
-_cairo_surface_wrapper_get_extents (cairo_surface_wrapper_t *wrapper,
-				    cairo_rectangle_int_t   *extents)
+comac_bool_t
+_comac_surface_wrapper_get_extents (comac_surface_wrapper_t *wrapper,
+				    comac_rectangle_int_t   *extents)
 {
     if (wrapper->has_extents) {
-	if (_cairo_surface_get_extents (wrapper->target, extents))
-	    _cairo_rectangle_intersect (extents, &wrapper->extents);
+	if (_comac_surface_get_extents (wrapper->target, extents))
+	    _comac_rectangle_intersect (extents, &wrapper->extents);
 	else
 	    *extents = wrapper->extents;
 
 	return TRUE;
     } else {
-	return _cairo_surface_get_extents (wrapper->target, extents);
+	return _comac_surface_get_extents (wrapper->target, extents);
     }
 }
 
-static cairo_bool_t
-_cairo_surface_wrapper_needs_device_transform (cairo_surface_wrapper_t *wrapper)
+static comac_bool_t
+_comac_surface_wrapper_needs_device_transform (comac_surface_wrapper_t *wrapper)
 {
     return
 	(wrapper->has_extents && (wrapper->extents.x | wrapper->extents.y)) ||
-	! _cairo_matrix_is_identity (&wrapper->transform) ||
-	! _cairo_matrix_is_identity (&wrapper->target->device_transform);
+	! _comac_matrix_is_identity (&wrapper->transform) ||
+	! _comac_matrix_is_identity (&wrapper->target->device_transform);
 }
 
 void
-_cairo_surface_wrapper_intersect_extents (cairo_surface_wrapper_t *wrapper,
-					  const cairo_rectangle_int_t *extents)
+_comac_surface_wrapper_intersect_extents (comac_surface_wrapper_t *wrapper,
+					  const comac_rectangle_int_t *extents)
 {
     if (! wrapper->has_extents) {
 	wrapper->extents = *extents;
 	wrapper->has_extents = TRUE;
     } else
-	_cairo_rectangle_intersect (&wrapper->extents, extents);
+	_comac_rectangle_intersect (&wrapper->extents, extents);
 
     wrapper->needs_transform =
-	_cairo_surface_wrapper_needs_device_transform (wrapper);
+	_comac_surface_wrapper_needs_device_transform (wrapper);
 }
 
 void
-_cairo_surface_wrapper_set_inverse_transform (cairo_surface_wrapper_t *wrapper,
-					      const cairo_matrix_t *transform)
+_comac_surface_wrapper_set_inverse_transform (comac_surface_wrapper_t *wrapper,
+					      const comac_matrix_t *transform)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    if (transform == NULL || _cairo_matrix_is_identity (transform)) {
-	cairo_matrix_init_identity (&wrapper->transform);
+    if (transform == NULL || _comac_matrix_is_identity (transform)) {
+	comac_matrix_init_identity (&wrapper->transform);
 
 	wrapper->needs_transform =
-	    _cairo_surface_wrapper_needs_device_transform (wrapper);
+	    _comac_surface_wrapper_needs_device_transform (wrapper);
     } else {
 	wrapper->transform = *transform;
-	status = cairo_matrix_invert (&wrapper->transform);
+	status = comac_matrix_invert (&wrapper->transform);
 	/* should always be invertible unless given pathological input */
-	assert (status == CAIRO_STATUS_SUCCESS);
+	assert (status == COMAC_STATUS_SUCCESS);
 
 	wrapper->needs_transform = TRUE;
     }
 }
 
 void
-_cairo_surface_wrapper_set_clip (cairo_surface_wrapper_t *wrapper,
-				 const cairo_clip_t *clip)
+_comac_surface_wrapper_set_clip (comac_surface_wrapper_t *wrapper,
+				 const comac_clip_t *clip)
 {
     wrapper->clip = clip;
 }
 
 void
-_cairo_surface_wrapper_set_foreground_color (cairo_surface_wrapper_t *wrapper,
-                                             const cairo_color_t *color)
+_comac_surface_wrapper_set_foreground_color (comac_surface_wrapper_t *wrapper,
+                                             const comac_color_t *color)
 {
     if (color)
-        wrapper->foreground_source = _cairo_pattern_create_solid (color);
+        wrapper->foreground_source = _comac_pattern_create_solid (color);
 }
 
 void
-_cairo_surface_wrapper_get_font_options (cairo_surface_wrapper_t    *wrapper,
-					 cairo_font_options_t	    *options)
+_comac_surface_wrapper_get_font_options (comac_surface_wrapper_t    *wrapper,
+					 comac_font_options_t	    *options)
 {
-    cairo_surface_get_font_options (wrapper->target, options);
+    comac_surface_get_font_options (wrapper->target, options);
 }
 
-cairo_surface_t *
-_cairo_surface_wrapper_snapshot (cairo_surface_wrapper_t *wrapper)
+comac_surface_t *
+_comac_surface_wrapper_snapshot (comac_surface_wrapper_t *wrapper)
 {
     if (wrapper->target->backend->snapshot)
 	return wrapper->target->backend->snapshot (wrapper->target);
@@ -636,18 +636,18 @@ _cairo_surface_wrapper_snapshot (cairo_surface_wrapper_t *wrapper)
     return NULL;
 }
 
-cairo_bool_t
-_cairo_surface_wrapper_has_show_text_glyphs (cairo_surface_wrapper_t *wrapper)
+comac_bool_t
+_comac_surface_wrapper_has_show_text_glyphs (comac_surface_wrapper_t *wrapper)
 {
-    return cairo_surface_has_show_text_glyphs (wrapper->target);
+    return comac_surface_has_show_text_glyphs (wrapper->target);
 }
 
 void
-_cairo_surface_wrapper_init (cairo_surface_wrapper_t *wrapper,
-			     cairo_surface_t *target)
+_comac_surface_wrapper_init (comac_surface_wrapper_t *wrapper,
+			     comac_surface_t *target)
 {
-    wrapper->target = cairo_surface_reference (target);
-    cairo_matrix_init_identity (&wrapper->transform);
+    wrapper->target = comac_surface_reference (target);
+    comac_matrix_init_identity (&wrapper->transform);
     wrapper->has_extents = FALSE;
     wrapper->extents.x = wrapper->extents.y = 0;
     wrapper->clip = NULL;
@@ -656,53 +656,53 @@ _cairo_surface_wrapper_init (cairo_surface_wrapper_t *wrapper,
     wrapper->needs_transform = FALSE;
     if (target) {
 	wrapper->needs_transform =
-	    ! _cairo_matrix_is_identity (&target->device_transform);
+	    ! _comac_matrix_is_identity (&target->device_transform);
     }
 }
 
 void
-_cairo_surface_wrapper_fini (cairo_surface_wrapper_t *wrapper)
+_comac_surface_wrapper_fini (comac_surface_wrapper_t *wrapper)
 {
     if (wrapper->foreground_source)
-        cairo_pattern_destroy (wrapper->foreground_source);
+        comac_pattern_destroy (wrapper->foreground_source);
 
-    cairo_surface_destroy (wrapper->target);
+    comac_surface_destroy (wrapper->target);
 }
 
-cairo_bool_t
-_cairo_surface_wrapper_get_target_extents (cairo_surface_wrapper_t *wrapper,
-					   cairo_bool_t surface_is_unbounded,
-					   cairo_rectangle_int_t *extents)
+comac_bool_t
+_comac_surface_wrapper_get_target_extents (comac_surface_wrapper_t *wrapper,
+					   comac_bool_t surface_is_unbounded,
+					   comac_rectangle_int_t *extents)
 {
-    cairo_rectangle_int_t clip;
-    cairo_bool_t has_clip = FALSE;
+    comac_rectangle_int_t clip;
+    comac_bool_t has_clip = FALSE;
 
     if (!surface_is_unbounded)
-	has_clip = _cairo_surface_get_extents (wrapper->target, &clip);
+	has_clip = _comac_surface_get_extents (wrapper->target, &clip);
 
     if (wrapper->clip) {
 	if (has_clip) {
-	    if (! _cairo_rectangle_intersect (&clip,
-					      _cairo_clip_get_extents (wrapper->clip)))
+	    if (! _comac_rectangle_intersect (&clip,
+					      _comac_clip_get_extents (wrapper->clip)))
 		return FALSE;
 	} else {
 	    has_clip = TRUE;
-	    clip = *_cairo_clip_get_extents (wrapper->clip);
+	    clip = *_comac_clip_get_extents (wrapper->clip);
 	}
     }
 
     if (has_clip && wrapper->needs_transform) {
-	cairo_matrix_t m;
+	comac_matrix_t m;
 	double x1, y1, x2, y2;
 
-	_cairo_surface_wrapper_get_inverse_transform (wrapper, &m);
+	_comac_surface_wrapper_get_inverse_transform (wrapper, &m);
 
 	x1 = clip.x;
 	y1 = clip.y;
 	x2 = clip.x + clip.width;
 	y2 = clip.y + clip.height;
 
-	_cairo_matrix_transform_bounding_box (&m, &x1, &y1, &x2, &y2, NULL);
+	_comac_matrix_transform_bounding_box (&m, &x1, &y1, &x2, &y2, NULL);
 
 	clip.x = floor (x1);
 	clip.y = floor (y1);
@@ -713,7 +713,7 @@ _cairo_surface_wrapper_get_target_extents (cairo_surface_wrapper_t *wrapper,
     if (has_clip) {
 	if (wrapper->has_extents) {
 	    *extents = wrapper->extents;
-	    return _cairo_rectangle_intersect (extents, &clip);
+	    return _comac_rectangle_intersect (extents, &clip);
 	} else {
 	    *extents = clip;
 	    return TRUE;
@@ -722,7 +722,7 @@ _cairo_surface_wrapper_get_target_extents (cairo_surface_wrapper_t *wrapper,
 	*extents = wrapper->extents;
 	return TRUE;
     } else {
-	_cairo_unbounded_rectangle_init (extents);
+	_comac_unbounded_rectangle_init (extents);
 	return TRUE;
     }
 }

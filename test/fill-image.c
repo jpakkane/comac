@@ -30,52 +30,52 @@
 #define IMAGE_SIZE (SIZE-PAD*2)
 #define LINE_WIDTH 10
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *image;
-    cairo_t *cr_image;
+    comac_surface_t *image;
+    comac_t *cr_image;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    image = cairo_image_surface_create (CAIRO_FORMAT_RGB24,
+    image = comac_image_surface_create (COMAC_FORMAT_RGB24,
 	                                IMAGE_SIZE, IMAGE_SIZE);
-    cr_image = cairo_create (image);
-    cairo_surface_destroy (image);
+    cr_image = comac_create (image);
+    comac_surface_destroy (image);
 
     /* Create the image */
-    cairo_set_source_rgb (cr_image, 0, 0, 0);
-    cairo_paint (cr_image);
+    comac_set_source_rgb (cr_image, 0, 0, 0);
+    comac_paint (cr_image);
 
-    cairo_set_source_rgb (cr_image, 0, 1, 0);
-    cairo_new_sub_path (cr_image);
-    cairo_arc (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH, 0, M_PI * 2.0);
-    cairo_close_path (cr_image);
-    cairo_new_sub_path (cr_image);
-    cairo_arc_negative (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2, 0, -M_PI * 2.0);
-    cairo_close_path (cr_image);
-    cairo_fill (cr_image);
+    comac_set_source_rgb (cr_image, 0, 1, 0);
+    comac_new_sub_path (cr_image);
+    comac_arc (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH, 0, M_PI * 2.0);
+    comac_close_path (cr_image);
+    comac_new_sub_path (cr_image);
+    comac_arc_negative (cr_image, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2, 0, -M_PI * 2.0);
+    comac_close_path (cr_image);
+    comac_fill (cr_image);
 
     /* Now stroke^Wfill with it */
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
-    cairo_set_source_surface (cr, cairo_get_target (cr_image), 0, 0);
-    cairo_destroy (cr_image);
+    comac_set_source_surface (cr, comac_get_target (cr_image), 0, 0);
+    comac_destroy (cr_image);
 
-    cairo_new_sub_path (cr);
-    cairo_arc (cr, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH, 0, M_PI * 2.0);
-    cairo_close_path (cr);
-    cairo_new_sub_path (cr);
-    cairo_arc_negative (cr, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2, 0, -M_PI * 2.0);
-    cairo_close_path (cr);
+    comac_new_sub_path (cr);
+    comac_arc (cr, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2 - LINE_WIDTH, 0, M_PI * 2.0);
+    comac_close_path (cr);
+    comac_new_sub_path (cr);
+    comac_arc_negative (cr, IMAGE_SIZE/2, IMAGE_SIZE/2, IMAGE_SIZE/2, 0, -M_PI * 2.0);
+    comac_close_path (cr);
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_image,
+COMAC_TEST (fill_image,
 	    "Test filling with an image source, with a non-identity CTM",
 	    "fill, image, transform", /* keywords */
 	    NULL, /* requirements */

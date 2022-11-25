@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -40,22 +40,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static cairo_status_t
+static comac_status_t
 write_func (void *closure,
 	    const unsigned char *data,
 	    unsigned int length)
 {
     if (fwrite (data, length, 1, closure) != 1)
-	return CAIRO_STATUS_WRITE_ERROR;
+	return COMAC_STATUS_WRITE_ERROR;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 int
 main (int argc, char **argv)
 {
     FILE *in = stdin, *out = stdout;
-    cairo_status_t status;
+    comac_status_t status;
     int i;
 
     if (argc >= 3) {
@@ -76,7 +76,7 @@ main (int argc, char **argv)
 		return 1;
 	    }
 
-	    status = cairo_script_interpreter_translate_stream (in, write_func, out);
+	    status = comac_script_interpreter_translate_stream (in, write_func, out);
 	    fclose (in);
 
 	    if (status)
@@ -93,7 +93,7 @@ main (int argc, char **argv)
 	    }
 	}
 
-	status = cairo_script_interpreter_translate_stream (in, write_func, out);
+	status = comac_script_interpreter_translate_stream (in, write_func, out);
 
 	if (in != stdin)
 	    fclose (in);
@@ -104,7 +104,7 @@ main (int argc, char **argv)
 
     if (status) {
 	fprintf (stderr, "Translation failed: %s\n",
-		cairo_status_to_string (status));
+		comac_status_to_string (status));
 	return status;
     }
 

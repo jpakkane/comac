@@ -27,26 +27,26 @@
 
 /* Exercises a bug found by alois@astro.ch:
  *   https://bugs.freedesktop.org/show_bug.cgi?id=26010
- *   cairo_line_to optimizes away path segment
+ *   comac_line_to optimizes away path segment
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_move_to (cr, 10, 10);
-    cairo_line_to (cr, 10, 20);
-    cairo_line_to (cr, 20, 30);
-    cairo_line_to (cr, 10, 20);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_move_to (cr, 10, 10);
+    comac_line_to (cr, 10, 20);
+    comac_line_to (cr, 20, 30);
+    comac_line_to (cr, 10, 20);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (path_stroke_twice,
+COMAC_TEST (path_stroke_twice,
 	    "Tests stroking of a path containing a segment drawn twice",
 	    "path, stroke", /* keywords */
 	    NULL, /* requirements */

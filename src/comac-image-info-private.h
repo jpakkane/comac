@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2008 Adrian Johnson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -33,36 +33,36 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#ifndef CAIRO_IMAGE_INFO_PRIVATE_H
-#define CAIRO_IMAGE_INFO_PRIVATE_H
+#ifndef COMAC_IMAGE_INFO_PRIVATE_H
+#define COMAC_IMAGE_INFO_PRIVATE_H
 
 #include "comacint.h"
 
-typedef struct _cairo_image_info {
+typedef struct _comac_image_info {
     int		 width;
     int		 height;
     int		 num_components;
     int		 bits_per_component;
-} cairo_image_info_t;
+} comac_image_info_t;
 
-cairo_private cairo_int_status_t
-_cairo_image_info_get_jpeg_info (cairo_image_info_t	*info,
+comac_private comac_int_status_t
+_comac_image_info_get_jpeg_info (comac_image_info_t	*info,
 				 const unsigned char	*data,
 				 unsigned long		 length);
 
-cairo_private cairo_int_status_t
-_cairo_image_info_get_jpx_info (cairo_image_info_t	*info,
+comac_private comac_int_status_t
+_comac_image_info_get_jpx_info (comac_image_info_t	*info,
 				const unsigned char	*data,
 				unsigned long		 length);
 
-cairo_private cairo_int_status_t
-_cairo_image_info_get_png_info (cairo_image_info_t	*info,
+comac_private comac_int_status_t
+_comac_image_info_get_png_info (comac_image_info_t	*info,
 				const unsigned char     *data,
 				unsigned long            length);
 
-cairo_private cairo_int_status_t
-_cairo_image_info_get_jbig2_info (cairo_image_info_t	*info,
+comac_private comac_int_status_t
+_comac_image_info_get_jbig2_info (comac_image_info_t	*info,
 				  const unsigned char	*data,
 				  unsigned long		 length);
 
-#endif /* CAIRO_IMAGE_INFO_PRIVATE_H */
+#endif /* COMAC_IMAGE_INFO_PRIVATE_H */

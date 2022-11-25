@@ -32,14 +32,14 @@
 #define HEIGHT 32
 #define WIDTH 32
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_test_paint_checkered (cr);
-    return CAIRO_TEST_SUCCESS;
+    comac_test_paint_checkered (cr);
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (checkerboard,
+COMAC_TEST (checkerboard,
 	    "Tests the checkerboard background",
 	    "paint", /* keywords */
 	    NULL, /* requirements */

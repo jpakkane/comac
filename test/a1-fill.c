@@ -28,38 +28,38 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *a1;
-    cairo_t *cr2;
+    comac_surface_t *a1;
+    comac_t *cr2;
 
-    a1 = cairo_image_surface_create (CAIRO_FORMAT_A1, 100, 100);
-    cr2 = cairo_create (a1);
-    cairo_surface_destroy (a1);
+    a1 = comac_image_surface_create (COMAC_FORMAT_A1, 100, 100);
+    cr2 = comac_create (a1);
+    comac_surface_destroy (a1);
 
-    cairo_set_operator (cr2, CAIRO_OPERATOR_SOURCE);
-    cairo_rectangle (cr2, 10, 10, 80, 80);
-    cairo_set_source_rgb (cr2, 1, 1, 1);
-    cairo_fill (cr2);
-    cairo_rectangle (cr2, 20, 20, 60, 60);
-    cairo_set_source_rgb (cr2, 0, 0, 0);
-    cairo_fill (cr2);
+    comac_set_operator (cr2, COMAC_OPERATOR_SOURCE);
+    comac_rectangle (cr2, 10, 10, 80, 80);
+    comac_set_source_rgb (cr2, 1, 1, 1);
+    comac_fill (cr2);
+    comac_rectangle (cr2, 20, 20, 60, 60);
+    comac_set_source_rgb (cr2, 0, 0, 0);
+    comac_fill (cr2);
 
-    a1 = cairo_surface_reference (cairo_get_target (cr2));
-    cairo_destroy (cr2);
+    a1 = comac_surface_reference (comac_get_target (cr2));
+    comac_destroy (cr2);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_mask_surface (cr, a1, 0, 0);
-    cairo_surface_destroy (a1);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_mask_surface (cr, a1, 0, 0);
+    comac_surface_destroy (a1);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a1_fill,
+COMAC_TEST (a1_fill,
 	    "Test filling of an a1-surface and use as mask",
 	    "a1, alpha, fill, mask", /* keywords */
 	    "target=raster", /* requirements */

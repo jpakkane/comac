@@ -28,47 +28,47 @@
 
 #include "comac-test.h"
 
-static cairo_surface_t*
+static comac_surface_t*
 draw_recording ()
 {
-    cairo_surface_t *recording;
-    cairo_rectangle_t extents;
-    cairo_t *cr;
+    comac_surface_t *recording;
+    comac_rectangle_t extents;
+    comac_t *cr;
 
     extents.x = 0;
     extents.y = 0;
     extents.width = 10;
     extents.height = 10;
 
-    recording = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
+    recording = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
 
-    cr = cairo_create(recording);
-    cairo_tag_begin (cr, CAIRO_TAG_DEST, "name='dest'");
-    cairo_rectangle (cr, 3, 3, 4, 4);
-    cairo_stroke (cr);
-    cairo_tag_end (cr, CAIRO_TAG_DEST);
-    cairo_destroy(cr);
+    cr = comac_create(recording);
+    comac_tag_begin (cr, COMAC_TAG_DEST, "name='dest'");
+    comac_rectangle (cr, 3, 3, 4, 4);
+    comac_stroke (cr);
+    comac_tag_end (cr, COMAC_TAG_DEST);
+    comac_destroy(cr);
 
     return recording;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *recording;
+    comac_surface_t *recording;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     recording = draw_recording ();
-    cairo_set_source_surface (cr, recording, 0, 0);
-    cairo_paint (cr);
-    cairo_surface_destroy (recording);
+    comac_set_source_surface (cr, recording, 0, 0);
+    comac_paint (cr);
+    comac_surface_destroy (recording);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_448,
+COMAC_TEST (bug_448,
 	    "Exercises a bug with the tag API",
 	    "pdf", /* keywords */
 	    NULL, /* requirements */

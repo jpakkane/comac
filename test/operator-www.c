@@ -29,110 +29,110 @@
 #define HEIGHT 120
 
 static void
-example (cairo_t *cr, const char *name)
+example (comac_t *cr, const char *name)
 {
-    cairo_save (cr);
-    cairo_push_group_with_content (cr, cairo_surface_get_content (cairo_get_target (cr)));
+    comac_save (cr);
+    comac_push_group_with_content (cr, comac_surface_get_content (comac_get_target (cr)));
 
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
 
-    cairo_rectangle (cr, 0, 0, 120, 90);
-    cairo_set_source_rgba (cr, 0.7, 0, 0, 0.8);
-    cairo_fill (cr);
+    comac_rectangle (cr, 0, 0, 120, 90);
+    comac_set_source_rgba (cr, 0.7, 0, 0, 0.8);
+    comac_fill (cr);
 
     if (strcmp (name, "clear") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_CLEAR);
+	comac_set_operator (cr, COMAC_OPERATOR_CLEAR);
 
     else if (strcmp (name, "source") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+	comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
     else if (strcmp (name, "over") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+	comac_set_operator (cr, COMAC_OPERATOR_OVER);
     else if (strcmp (name, "in") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_IN);
+	comac_set_operator (cr, COMAC_OPERATOR_IN);
     else if (strcmp (name, "out") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_OUT);
+	comac_set_operator (cr, COMAC_OPERATOR_OUT);
     else if (strcmp (name, "atop") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_ATOP);
+	comac_set_operator (cr, COMAC_OPERATOR_ATOP);
 
     else if (strcmp (name, "dest") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_DEST);
+	comac_set_operator (cr, COMAC_OPERATOR_DEST);
     else if (strcmp (name, "dest_over") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_DEST_OVER);
+	comac_set_operator (cr, COMAC_OPERATOR_DEST_OVER);
     else if (strcmp (name, "dest_in") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_DEST_IN);
+	comac_set_operator (cr, COMAC_OPERATOR_DEST_IN);
     else if (strcmp (name, "dest_out") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_DEST_OUT);
+	comac_set_operator (cr, COMAC_OPERATOR_DEST_OUT);
     else if (strcmp (name, "dest_atop") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_DEST_ATOP);
+	comac_set_operator (cr, COMAC_OPERATOR_DEST_ATOP);
 
     else if (strcmp (name, "xor") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_XOR);
+	comac_set_operator (cr, COMAC_OPERATOR_XOR);
     else if (strcmp (name, "add") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+	comac_set_operator (cr, COMAC_OPERATOR_ADD);
     else if (strcmp (name, "saturate") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_SATURATE);
+	comac_set_operator (cr, COMAC_OPERATOR_SATURATE);
     else if (strcmp (name, "multiply") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_MULTIPLY);
+	comac_set_operator (cr, COMAC_OPERATOR_MULTIPLY);
     else if (strcmp (name, "screen") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_SCREEN);
+	comac_set_operator (cr, COMAC_OPERATOR_SCREEN);
     else if (strcmp (name, "overlay") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_OVERLAY);
+	comac_set_operator (cr, COMAC_OPERATOR_OVERLAY);
     else if (strcmp (name, "darken") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_DARKEN);
+	comac_set_operator (cr, COMAC_OPERATOR_DARKEN);
     else if (strcmp (name, "lighten") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_LIGHTEN);
+	comac_set_operator (cr, COMAC_OPERATOR_LIGHTEN);
     else if (strcmp (name, "color_dodge") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_COLOR_DODGE);
+	comac_set_operator (cr, COMAC_OPERATOR_COLOR_DODGE);
     else if (strcmp (name, "color_burn") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_COLOR_BURN);
+	comac_set_operator (cr, COMAC_OPERATOR_COLOR_BURN);
     else if (strcmp (name, "hard_light") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_HARD_LIGHT);
+	comac_set_operator (cr, COMAC_OPERATOR_HARD_LIGHT);
     else if (strcmp (name, "soft_light") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOFT_LIGHT);
+	comac_set_operator (cr, COMAC_OPERATOR_SOFT_LIGHT);
     else if (strcmp (name, "difference") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_DIFFERENCE);
+	comac_set_operator (cr, COMAC_OPERATOR_DIFFERENCE);
     else if (strcmp (name, "exclusion") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_EXCLUSION);
+	comac_set_operator (cr, COMAC_OPERATOR_EXCLUSION);
     else if (strcmp (name, "hsl_hue") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_HSL_HUE);
+	comac_set_operator (cr, COMAC_OPERATOR_HSL_HUE);
     else if (strcmp (name, "hsl_saturation") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_HSL_SATURATION);
+	comac_set_operator (cr, COMAC_OPERATOR_HSL_SATURATION);
     else if (strcmp (name, "hsl_color") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_HSL_COLOR);
+	comac_set_operator (cr, COMAC_OPERATOR_HSL_COLOR);
     else if (strcmp (name, "hsl_luminosity") == 0)
-	cairo_set_operator (cr, CAIRO_OPERATOR_HSL_LUMINOSITY);
+	comac_set_operator (cr, COMAC_OPERATOR_HSL_LUMINOSITY);
 
-    cairo_rectangle (cr, 40, 30, 120, 90);
-    cairo_set_source_rgba (cr, 0, 0, 0.9, 0.4);
-    cairo_fill (cr);
+    comac_rectangle (cr, 40, 30, 120, 90);
+    comac_set_source_rgba (cr, 0, 0, 0.9, 0.4);
+    comac_fill (cr);
 
-    cairo_pattern_t *pattern = cairo_pop_group (cr);
-    cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-    cairo_clip (cr);
-    // Make problems with CAIRO_CONTENT_COLOR visible
-    if (cairo_surface_get_content (cairo_get_target (cr)) == CAIRO_CONTENT_COLOR) {
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_paint (cr);
+    comac_pattern_t *pattern = comac_pop_group (cr);
+    comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+    comac_clip (cr);
+    // Make problems with COMAC_CONTENT_COLOR visible
+    if (comac_surface_get_content (comac_get_target (cr)) == COMAC_CONTENT_COLOR) {
+	comac_set_source_rgb (cr, 1, 1, 1);
+	comac_paint (cr);
     }
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, 17);
-    cairo_move_to (cr, WIDTH + 20, 70);
-    cairo_set_source_rgb (cr, 1, 1, 0);
-    cairo_show_text (cr, name);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, 17);
+    comac_move_to (cr, WIDTH + 20, 70);
+    comac_set_source_rgb (cr, 1, 1, 0);
+    comac_show_text (cr, name);
 
-    cairo_translate (cr, 0, HEIGHT);
+    comac_translate (cr, 0, HEIGHT);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     example (cr, "clear");
 
@@ -168,11 +168,11 @@ draw (cairo_t *cr, int width, int height)
     example (cr, "hsl_color");
     example (cr, "hsl_luminosity");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (operator_www,
-	    "Operator samples from https://cairographics.org/operators/",
+COMAC_TEST (operator_www,
+	    "Operator samples from https://comacgraphics.org/operators/",
 	    "operator", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH * 2, HEIGHT * OPERATORS_COUNT,

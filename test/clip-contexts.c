@@ -26,7 +26,7 @@
 #include "comac-test.h"
 
 /*
- * Jeff Muizelaar found a bug on Quartz with cairo-surface-clipper, which was
+ * Jeff Muizelaar found a bug on Quartz with comac-surface-clipper, which was
  * the topmost clip path from two different contexts and finding them equally
  * incorrectly concluding that the operation was a no-op.
  */
@@ -34,40 +34,40 @@
 #define SIZE 10
 #define CLIP_SIZE 2
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_t *cr2;
+    comac_t *cr2;
 
     /* opaque background */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     /* first create an empty, non-overlappiny clip */
-    cr2 = cairo_create (cairo_get_target (cr));
-    cairo_rectangle (cr2, 0, 0, SIZE/2-2, SIZE/2-2);
-    cairo_clip (cr2);
+    cr2 = comac_create (comac_get_target (cr));
+    comac_rectangle (cr2, 0, 0, SIZE/2-2, SIZE/2-2);
+    comac_clip (cr2);
 
-    cairo_rectangle (cr2, SIZE/2+2, SIZE/2+2, SIZE/2-2, SIZE/2-2);
-    cairo_clip (cr2);
+    comac_rectangle (cr2, SIZE/2+2, SIZE/2+2, SIZE/2-2, SIZE/2-2);
+    comac_clip (cr2);
 
     /* and apply the clip onto the surface, empty nothing should be painted */
-    cairo_set_source_rgba (cr2, 1, 0, 0, .5);
-    cairo_paint (cr2);
+    comac_set_source_rgba (cr2, 1, 0, 0, .5);
+    comac_paint (cr2);
 
     /* switch back to the original, and set only the last clip */
-    cairo_rectangle (cr, SIZE/2+2, SIZE/2+2, SIZE/2-2, SIZE/2-2);
-    cairo_clip (cr);
+    comac_rectangle (cr, SIZE/2+2, SIZE/2+2, SIZE/2-2, SIZE/2-2);
+    comac_clip (cr);
 
-    cairo_set_source_rgba (cr, 0, 0, 1, .5);
-    cairo_paint (cr);
+    comac_set_source_rgba (cr, 0, 0, 1, .5);
+    comac_paint (cr);
 
-    cairo_destroy (cr2);
+    comac_destroy (cr2);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_contexts,
+COMAC_TEST (clip_contexts,
 	    "Test clipping with 2 separate contexts",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

@@ -29,68 +29,68 @@
 
 #include "comac-test.h"
 
-#if CAIRO_HAS_GL_SURFACE
+#if COMAC_HAS_GL_SURFACE
 #include <comac-gl.h>
 #endif
-#if CAIRO_HAS_PDF_SURFACE
+#if COMAC_HAS_PDF_SURFACE
 #include <comac-pdf.h>
 #endif
-#if CAIRO_HAS_PS_SURFACE
+#if COMAC_HAS_PS_SURFACE
 #include <comac-ps.h>
 #endif
-#if CAIRO_HAS_XCB_SURFACE
+#if COMAC_HAS_XCB_SURFACE
 #include <comac-xcb.h>
 #endif
-#if CAIRO_HAS_XLIB_SURFACE
+#if COMAC_HAS_XLIB_SURFACE
 #include <comac-xlib.h>
 #endif
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
     /* get the error surface */
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, INT_MAX, INT_MAX);
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, INT_MAX, INT_MAX);
 
-#if CAIRO_HAS_GL_SURFACE
-    cairo_gl_surface_set_size (surface, 0, 0);
-    cairo_gl_surface_swapbuffers (surface);
+#if COMAC_HAS_GL_SURFACE
+    comac_gl_surface_set_size (surface, 0, 0);
+    comac_gl_surface_swapbuffers (surface);
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
-    cairo_pdf_surface_restrict_to_version (surface, CAIRO_PDF_VERSION_1_4);
-    cairo_pdf_surface_set_size (surface, 0, 0);
+#if COMAC_HAS_PDF_SURFACE
+    comac_pdf_surface_restrict_to_version (surface, COMAC_PDF_VERSION_1_4);
+    comac_pdf_surface_set_size (surface, 0, 0);
 #endif
 
-#if CAIRO_HAS_PS_SURFACE
-    cairo_ps_surface_set_eps (surface, FALSE);
-    cairo_ps_surface_set_size (surface, 0, 0);
-    cairo_ps_surface_restrict_to_level (surface, CAIRO_PS_LEVEL_2);
-    cairo_ps_surface_dsc_comment (surface, NULL);
-    cairo_ps_surface_dsc_begin_setup (surface);
-    cairo_ps_surface_dsc_begin_page_setup (surface);
+#if COMAC_HAS_PS_SURFACE
+    comac_ps_surface_set_eps (surface, FALSE);
+    comac_ps_surface_set_size (surface, 0, 0);
+    comac_ps_surface_restrict_to_level (surface, COMAC_PS_LEVEL_2);
+    comac_ps_surface_dsc_comment (surface, NULL);
+    comac_ps_surface_dsc_begin_setup (surface);
+    comac_ps_surface_dsc_begin_page_setup (surface);
 #endif
 
-#if CAIRO_HAS_XCB_SURFACE
-    cairo_xcb_surface_set_size (surface, 0, 0);
+#if COMAC_HAS_XCB_SURFACE
+    comac_xcb_surface_set_size (surface, 0, 0);
 #endif
 
-#if CAIRO_HAS_XLIB_SURFACE
-    cairo_xlib_surface_set_size (surface, 0, 0);
-    cairo_xlib_surface_set_drawable (surface, 0, 0, 0);
+#if COMAC_HAS_XLIB_SURFACE
+    comac_xlib_surface_set_size (surface, 0, 0);
+    comac_xlib_surface_set_drawable (surface, 0, 0, 0);
 #endif
 
-    cairo_surface_set_mime_data (surface, NULL, NULL, 0, NULL, 0);
-    cairo_surface_set_device_offset (surface, 0, 0);
-    cairo_surface_set_fallback_resolution (surface, 0, 0);
+    comac_surface_set_mime_data (surface, NULL, NULL, 0, NULL, 0);
+    comac_surface_set_device_offset (surface, 0, 0);
+    comac_surface_set_fallback_resolution (surface, 0, 0);
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (error_setters,
+COMAC_TEST (error_setters,
 	    "Check setters properly error out on read-only error surfaces",
 	    NULL, /* keywords */
 	    NULL, /* requirements */

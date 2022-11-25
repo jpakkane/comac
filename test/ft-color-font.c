@@ -34,11 +34,11 @@
 
 static const char smiley_face_utf8[] = { 0xf0, 0x9f, 0x99, 0x82, 0x00 }; /* U+1F642 */
 
-static cairo_test_status_t
-set_color_emoji_font (cairo_t *cr)
+static comac_test_status_t
+set_color_emoji_font (comac_t *cr)
 {
-    cairo_font_options_t *font_options;
-    cairo_font_face_t *font_face;
+    comac_font_options_t *font_options;
+    comac_font_face_t *font_face;
     FcPattern *pattern;
     FcPattern *resolved;
     FcChar8 *font_name;
@@ -46,71 +46,71 @@ set_color_emoji_font (cairo_t *cr)
 
     pattern = FcPatternCreate ();
     if (pattern == NULL)
-	return CAIRO_TEST_NO_MEMORY;
+	return COMAC_TEST_NO_MEMORY;
 
     FcPatternAddString (pattern, FC_FAMILY, (FcChar8 *) FONT);
     FcConfigSubstitute (NULL, pattern, FcMatchPattern);
 
-    font_options = cairo_font_options_create ();
-    cairo_get_font_options (cr, font_options);
-    cairo_ft_font_options_substitute (font_options, pattern);
+    font_options = comac_font_options_create ();
+    comac_get_font_options (cr, font_options);
+    comac_ft_font_options_substitute (font_options, pattern);
 
     FcDefaultSubstitute (pattern);
     resolved = FcFontMatch (NULL, pattern, &result);
     if (resolved == NULL) {
 	FcPatternDestroy (pattern);
-	return CAIRO_TEST_NO_MEMORY;
+	return COMAC_TEST_NO_MEMORY;
     }
 
     if (FcPatternGetString (resolved, FC_FAMILY, 0, &font_name) == FcResultMatch) {
         if (strcmp((char*)font_name, FONT) != 0) {
-            const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-            cairo_test_log (ctx, "Could not find %s font\n", FONT);
-            return CAIRO_TEST_UNTESTED;
+            const comac_test_context_t *ctx = comac_test_get_context (cr);
+            comac_test_log (ctx, "Could not find %s font\n", FONT);
+            return COMAC_TEST_UNTESTED;
         }
     } else {
-        return CAIRO_TEST_FAILURE;
+        return COMAC_TEST_FAILURE;
     }
 
-    font_face = cairo_ft_font_face_create_for_pattern (resolved);
-    cairo_set_font_face (cr, font_face);
+    font_face = comac_ft_font_face_create_for_pattern (resolved);
+    comac_set_font_face (cr, font_face);
 
-    cairo_font_options_destroy (font_options);
-    cairo_font_face_destroy (font_face);
+    comac_font_options_destroy (font_options);
+    comac_font_face_destroy (font_face);
     FcPatternDestroy (pattern);
     FcPatternDestroy (resolved);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_test_status_t result;
-    cairo_font_options_t *font_options;
+    comac_test_status_t result;
+    comac_font_options_t *font_options;
 
     result = set_color_emoji_font (cr);
-    if (result != CAIRO_TEST_SUCCESS)
+    if (result != COMAC_TEST_SUCCESS)
         return result;
 
-    cairo_set_font_size (cr, SIZE/2);
-    cairo_move_to (cr, SIZE/8, 0.7 * SIZE);
+    comac_set_font_size (cr, SIZE/2);
+    comac_move_to (cr, SIZE/8, 0.7 * SIZE);
 
-    cairo_show_text(cr, smiley_face_utf8);
+    comac_show_text(cr, smiley_face_utf8);
 
     /* Show that the color mode font option can disable color rendering */
-    font_options = cairo_font_options_create ();
-    cairo_get_font_options (cr, font_options);
-    cairo_font_options_set_color_mode (font_options, CAIRO_COLOR_MODE_NO_COLOR);
-    cairo_set_font_options (cr, font_options);
-    cairo_font_options_destroy (font_options);
+    font_options = comac_font_options_create ();
+    comac_get_font_options (cr, font_options);
+    comac_font_options_set_color_mode (font_options, COMAC_COLOR_MODE_NO_COLOR);
+    comac_set_font_options (cr, font_options);
+    comac_font_options_destroy (font_options);
 
-    cairo_show_text(cr, smiley_face_utf8);
+    comac_show_text(cr, smiley_face_utf8);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (ft_color_font,
+COMAC_TEST (ft_color_font,
 	    "Test color font",
 	    "ft, font", /* keywords */
 	    NULL, /* requirements */

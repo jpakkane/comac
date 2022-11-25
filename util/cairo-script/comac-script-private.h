@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -32,8 +32,8 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_SCRIPT_PRIVATE_H
-#define CAIRO_SCRIPT_PRIVATE_H
+#ifndef COMAC_SCRIPT_PRIVATE_H
+#define COMAC_SCRIPT_PRIVATE_H
 
 #include "config.h"
 
@@ -185,50 +185,50 @@
 #endif
 
 typedef enum _csi_status {
-    CSI_STATUS_SUCCESS = CAIRO_STATUS_SUCCESS,
-    CSI_STATUS_NO_MEMORY = CAIRO_STATUS_NO_MEMORY,
-    CSI_STATUS_INVALID_RESTORE = CAIRO_STATUS_INVALID_RESTORE,
-    CSI_STATUS_INVALID_POP_GROUP = CAIRO_STATUS_INVALID_POP_GROUP,
-    CSI_STATUS_NO_CURRENT_POINT = CAIRO_STATUS_NO_CURRENT_POINT,
-    CSI_STATUS_INVALID_MATRIX = CAIRO_STATUS_INVALID_MATRIX,
-    CSI_STATUS_INVALID_STATUS = CAIRO_STATUS_INVALID_STATUS,
-    CSI_STATUS_NULL_POINTER = CAIRO_STATUS_NULL_POINTER,
-    CSI_STATUS_INVALID_STRING = CAIRO_STATUS_INVALID_STRING,
-    CSI_STATUS_INVALID_PATH_DATA = CAIRO_STATUS_INVALID_PATH_DATA,
-    CSI_STATUS_READ_ERROR = CAIRO_STATUS_READ_ERROR,
-    CSI_STATUS_WRITE_ERROR = CAIRO_STATUS_WRITE_ERROR,
-    CSI_STATUS_SURFACE_FINISHED = CAIRO_STATUS_SURFACE_FINISHED,
-    CSI_STATUS_SURFACE_TYPE_MISMATCH = CAIRO_STATUS_SURFACE_TYPE_MISMATCH,
-    CSI_STATUS_PATTERN_TYPE_MISMATCH = CAIRO_STATUS_PATTERN_TYPE_MISMATCH,
-    CSI_STATUS_INVALID_CONTENT = CAIRO_STATUS_INVALID_CONTENT,
-    CSI_STATUS_INVALID_FORMAT = CAIRO_STATUS_INVALID_FORMAT,
-    CSI_STATUS_INVALID_VISUAL = CAIRO_STATUS_INVALID_VISUAL,
-    CSI_STATUS_FILE_NOT_FOUND = CAIRO_STATUS_FILE_NOT_FOUND,
-    CSI_STATUS_INVALID_DASH = CAIRO_STATUS_INVALID_DASH,
-    CSI_STATUS_INVALID_DSC_COMMENT = CAIRO_STATUS_INVALID_DSC_COMMENT,
-    CSI_STATUS_INVALID_INDEX = CAIRO_STATUS_INVALID_INDEX,
-    CSI_STATUS_CLIP_NOT_REPRESENTABLE = CAIRO_STATUS_CLIP_NOT_REPRESENTABLE,
-    CSI_STATUS_TEMP_FILE_ERROR = CAIRO_STATUS_TEMP_FILE_ERROR,
-    CSI_STATUS_INVALID_STRIDE = CAIRO_STATUS_INVALID_STRIDE,
-    CSI_STATUS_FONT_TYPE_MISMATCH = CAIRO_STATUS_FONT_TYPE_MISMATCH,
-    CSI_STATUS_USER_FONT_IMMUTABLE = CAIRO_STATUS_USER_FONT_IMMUTABLE,
-    CSI_STATUS_USER_FONT_ERROR = CAIRO_STATUS_USER_FONT_ERROR,
-    CSI_STATUS_NEGATIVE_COUNT = CAIRO_STATUS_NEGATIVE_COUNT,
-    CSI_STATUS_INVALID_CLUSTERS = CAIRO_STATUS_INVALID_CLUSTERS,
-    CSI_STATUS_INVALID_SLANT = CAIRO_STATUS_INVALID_SLANT,
-    CSI_STATUS_INVALID_WEIGHT = CAIRO_STATUS_INVALID_WEIGHT,
-    CSI_STATUS_INVALID_SIZE = CAIRO_STATUS_INVALID_SIZE,
-    CSI_STATUS_USER_FONT_NOT_IMPLEMENTED = CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED,
-    CSI_STATUS_DEVICE_TYPE_MISMATCH = CAIRO_STATUS_DEVICE_TYPE_MISMATCH,
-    CSI_STATUS_DEVICE_ERROR = CAIRO_STATUS_DEVICE_ERROR,
-    CSI_STATUS_INVALID_MESH_CONSTRUCTION = CAIRO_STATUS_INVALID_MESH_CONSTRUCTION,
-    CSI_STATUS_DEVICE_FINISHED = CAIRO_STATUS_DEVICE_FINISHED,
-    CSI_STATUS_JBIG2_GLOBAL_MISSING = CAIRO_STATUS_JBIG2_GLOBAL_MISSING,
-    CSI_STATUS_PNG_ERROR = CAIRO_STATUS_PNG_ERROR,
-    CSI_STATUS_FREETYPE_ERROR = CAIRO_STATUS_FREETYPE_ERROR,
-    CSI_STATUS_WIN32_GDI_ERROR = CAIRO_STATUS_WIN32_GDI_ERROR,
+    CSI_STATUS_SUCCESS = COMAC_STATUS_SUCCESS,
+    CSI_STATUS_NO_MEMORY = COMAC_STATUS_NO_MEMORY,
+    CSI_STATUS_INVALID_RESTORE = COMAC_STATUS_INVALID_RESTORE,
+    CSI_STATUS_INVALID_POP_GROUP = COMAC_STATUS_INVALID_POP_GROUP,
+    CSI_STATUS_NO_CURRENT_POINT = COMAC_STATUS_NO_CURRENT_POINT,
+    CSI_STATUS_INVALID_MATRIX = COMAC_STATUS_INVALID_MATRIX,
+    CSI_STATUS_INVALID_STATUS = COMAC_STATUS_INVALID_STATUS,
+    CSI_STATUS_NULL_POINTER = COMAC_STATUS_NULL_POINTER,
+    CSI_STATUS_INVALID_STRING = COMAC_STATUS_INVALID_STRING,
+    CSI_STATUS_INVALID_PATH_DATA = COMAC_STATUS_INVALID_PATH_DATA,
+    CSI_STATUS_READ_ERROR = COMAC_STATUS_READ_ERROR,
+    CSI_STATUS_WRITE_ERROR = COMAC_STATUS_WRITE_ERROR,
+    CSI_STATUS_SURFACE_FINISHED = COMAC_STATUS_SURFACE_FINISHED,
+    CSI_STATUS_SURFACE_TYPE_MISMATCH = COMAC_STATUS_SURFACE_TYPE_MISMATCH,
+    CSI_STATUS_PATTERN_TYPE_MISMATCH = COMAC_STATUS_PATTERN_TYPE_MISMATCH,
+    CSI_STATUS_INVALID_CONTENT = COMAC_STATUS_INVALID_CONTENT,
+    CSI_STATUS_INVALID_FORMAT = COMAC_STATUS_INVALID_FORMAT,
+    CSI_STATUS_INVALID_VISUAL = COMAC_STATUS_INVALID_VISUAL,
+    CSI_STATUS_FILE_NOT_FOUND = COMAC_STATUS_FILE_NOT_FOUND,
+    CSI_STATUS_INVALID_DASH = COMAC_STATUS_INVALID_DASH,
+    CSI_STATUS_INVALID_DSC_COMMENT = COMAC_STATUS_INVALID_DSC_COMMENT,
+    CSI_STATUS_INVALID_INDEX = COMAC_STATUS_INVALID_INDEX,
+    CSI_STATUS_CLIP_NOT_REPRESENTABLE = COMAC_STATUS_CLIP_NOT_REPRESENTABLE,
+    CSI_STATUS_TEMP_FILE_ERROR = COMAC_STATUS_TEMP_FILE_ERROR,
+    CSI_STATUS_INVALID_STRIDE = COMAC_STATUS_INVALID_STRIDE,
+    CSI_STATUS_FONT_TYPE_MISMATCH = COMAC_STATUS_FONT_TYPE_MISMATCH,
+    CSI_STATUS_USER_FONT_IMMUTABLE = COMAC_STATUS_USER_FONT_IMMUTABLE,
+    CSI_STATUS_USER_FONT_ERROR = COMAC_STATUS_USER_FONT_ERROR,
+    CSI_STATUS_NEGATIVE_COUNT = COMAC_STATUS_NEGATIVE_COUNT,
+    CSI_STATUS_INVALID_CLUSTERS = COMAC_STATUS_INVALID_CLUSTERS,
+    CSI_STATUS_INVALID_SLANT = COMAC_STATUS_INVALID_SLANT,
+    CSI_STATUS_INVALID_WEIGHT = COMAC_STATUS_INVALID_WEIGHT,
+    CSI_STATUS_INVALID_SIZE = COMAC_STATUS_INVALID_SIZE,
+    CSI_STATUS_USER_FONT_NOT_IMPLEMENTED = COMAC_STATUS_USER_FONT_NOT_IMPLEMENTED,
+    CSI_STATUS_DEVICE_TYPE_MISMATCH = COMAC_STATUS_DEVICE_TYPE_MISMATCH,
+    CSI_STATUS_DEVICE_ERROR = COMAC_STATUS_DEVICE_ERROR,
+    CSI_STATUS_INVALID_MESH_CONSTRUCTION = COMAC_STATUS_INVALID_MESH_CONSTRUCTION,
+    CSI_STATUS_DEVICE_FINISHED = COMAC_STATUS_DEVICE_FINISHED,
+    CSI_STATUS_JBIG2_GLOBAL_MISSING = COMAC_STATUS_JBIG2_GLOBAL_MISSING,
+    CSI_STATUS_PNG_ERROR = COMAC_STATUS_PNG_ERROR,
+    CSI_STATUS_FREETYPE_ERROR = COMAC_STATUS_FREETYPE_ERROR,
+    CSI_STATUS_WIN32_GDI_ERROR = COMAC_STATUS_WIN32_GDI_ERROR,
 
-    /* cairo-script-interpreter specific errors */
+    /* comac-script-interpreter specific errors */
 
     CSI_STATUS_INVALID_SCRIPT,
     CSI_STATUS_SCRIPT_INVALID_TYPE,
@@ -258,7 +258,7 @@ typedef enum {
     CSI_OBJECT_TYPE_MATRIX,
     CSI_OBJECT_TYPE_STRING,
 
-    /* cairo */
+    /* comac */
     CSI_OBJECT_TYPE_CONTEXT = 0x10,
     CSI_OBJECT_TYPE_FONT,
     CSI_OBJECT_TYPE_PATTERN,
@@ -268,7 +268,7 @@ typedef enum {
 
 #define CSI_OBJECT_IS_ATOM(OBJ) (((OBJ)->type & CSI_OBJECT_TYPE_MASK) < 0x08)
 #define CSI_OBJECT_IS_COMPOUND(OBJ) ((OBJ)->type & 0x08)
-#define CSI_OBJECT_IS_CAIRO(OBJ) ((OBJ)->type & 0x10)
+#define CSI_OBJECT_IS_COMAC(OBJ) ((OBJ)->type & 0x10)
 
 enum { /* attributes */
     CSI_OBJECT_ATTR_EXECUTABLE = 1 << 6,
@@ -278,9 +278,9 @@ enum { /* attributes */
 			      CSI_OBJECT_ATTR_WRITABLE)
 #define CSI_OBJECT_TYPE_MASK (~CSI_OBJECT_ATTR_MASK)
 
-typedef struct _cairo_script_interpreter csi_t;
+typedef struct _comac_script_interpreter csi_t;
 
-typedef cairo_bool_t csi_boolean_t;
+typedef comac_bool_t csi_boolean_t;
 typedef csi_status_t (*csi_operator_t) (csi_t *);
 typedef float csi_real_t;
 typedef long csi_integer_t;
@@ -300,24 +300,24 @@ typedef struct _csi_scanner csi_scanner_t;
 typedef struct _csi_stack csi_stack_t;
 typedef struct _csi_string csi_string_t;
 
-typedef cairo_bool_t
+typedef comac_bool_t
 (*csi_hash_predicate_func_t) (void *entry);
 
 typedef void
 (*csi_hash_callback_func_t) (void *entry,
 			     void *closure);
 
-typedef cairo_bool_t
+typedef comac_bool_t
 (*csi_hash_keys_equal_func_t) (const void *key_a, const void *key_b);
 
 struct _csi_object {
     csi_object_type_t type;
     union {
-	cairo_t *cr;
-	cairo_font_face_t *font_face;
-	cairo_pattern_t *pattern;
-	cairo_scaled_font_t *scaled_font;
-	cairo_surface_t *surface;
+	comac_t *cr;
+	comac_font_face_t *font_face;
+	comac_pattern_t *pattern;
+	comac_scaled_font_t *scaled_font;
+	comac_surface_t *surface;
 	csi_array_t *array;
 	csi_boolean_t boolean;
 	csi_compound_object_t *object;
@@ -393,7 +393,7 @@ struct _csi_dictionary {
 
 struct _csi_matrix {
     csi_compound_object_t base;
-    cairo_matrix_t matrix;
+    comac_matrix_t matrix;
 };
 
 struct _csi_string {
@@ -461,7 +461,7 @@ struct _csi_scanner {
     unsigned int line_number;
 };
 
-typedef cairo_script_interpreter_hooks_t csi_hooks_t;
+typedef comac_script_interpreter_hooks_t csi_hooks_t;
 
 typedef struct _csi_chunk {
     struct _csi_chunk *next;
@@ -469,7 +469,7 @@ typedef struct _csi_chunk {
     char *ptr;
 } csi_chunk_t;
 
-struct _cairo_script_interpreter {
+struct _comac_script_interpreter {
     int ref_count;
     csi_status_t status;
 
@@ -515,7 +515,7 @@ typedef struct _csi_real_constant_def {
     csi_real_t value;
 } csi_real_constant_def_t;
 
-/* cairo-script-file.c */
+/* comac-script-file.c */
 
 csi_private csi_status_t
 csi_file_new (csi_t *ctx,
@@ -576,7 +576,7 @@ _csi_file_as_string (csi_t *ctx,
 		     csi_file_t *file,
 		     csi_object_t *obj);
 
-/* cairo-script-hash.c */
+/* comac-script-hash.c */
 
 csi_private csi_status_t
 _csi_hash_table_init (csi_hash_table_t *hash_table,
@@ -602,7 +602,7 @@ _csi_hash_table_foreach (csi_hash_table_t	      *hash_table,
 			 csi_hash_callback_func_t  hash_callback,
 			 void			      *closure);
 
-/* cairo-script-interpreter.c */
+/* comac-script-interpreter.c */
 
 csi_private void *
 _csi_alloc (csi_t *ctx, int size);
@@ -643,7 +643,7 @@ _csi_intern_string (csi_t *ctx, const char **str_inout, int len);
 csi_private csi_status_t
 _csi_error (csi_status_t status);
 
-/* cairo-script-objects.c */
+/* comac-script-objects.c */
 
 csi_private csi_status_t
 csi_array_new (csi_t *ctx,
@@ -731,7 +731,7 @@ csi_matrix_new_from_array (csi_t *ctx,
 csi_private csi_status_t
 csi_matrix_new_from_matrix (csi_t *ctx,
 			    csi_object_t *obj,
-			    const cairo_matrix_t *m);
+			    const comac_matrix_t *m);
 
 csi_private csi_status_t
 csi_matrix_new_from_values (csi_t *ctx,
@@ -815,7 +815,7 @@ csi_object_compare (csi_object_t *a,
 		    csi_object_t *b,
 		    int          *out_cmp);
 
-/* cairo-script-operators.c */
+/* comac-script-operators.c */
 
 csi_private const csi_operator_def_t *
 _csi_operators (void);
@@ -826,7 +826,7 @@ _csi_integer_constants (void);
 csi_private const csi_real_constant_def_t *
 _csi_real_constants (void);
 
-/* cairo-script-scanner.c */
+/* comac-script-scanner.c */
 
 csi_private csi_status_t
 _csi_scanner_init (csi_t *ctx, csi_scanner_t *scanner);
@@ -837,7 +837,7 @@ _csi_scan_file (csi_t *ctx, csi_file_t *src);
 csi_private csi_status_t
 _csi_translate_file (csi_t *ctx,
 	             csi_file_t *file,
-		     cairo_write_func_t write_func,
+		     comac_write_func_t write_func,
 		     void *closure);
 
 csi_private void
@@ -846,7 +846,7 @@ _csi_scanner_fini (csi_t *ctx, csi_scanner_t *scanner);
 csi_private csi_boolean_t
 _csi_parse_number (csi_object_t *obj, const char *s, int len);
 
-/* cairo-script-stack.c */
+/* comac-script-stack.c */
 
 csi_private csi_status_t
 _csi_stack_init (csi_t *ctx, csi_stack_t *stack, csi_integer_t size);
@@ -990,4 +990,4 @@ _csi_push_ostack_real (csi_t *ctx, csi_real_t v)
 }
 
 
-#endif /* CAIRO_SCRIPT_PRIVATE_H */
+#endif /* COMAC_SCRIPT_PRIVATE_H */

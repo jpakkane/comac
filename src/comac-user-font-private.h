@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006, 2008 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,13 +34,13 @@
  *      Behdad Esfahbod <behdad@behdad.org>
  */
 
-#ifndef CAIRO_USER_FONT_PRIVATE_H
-#define CAIRO_USER_FONT_PRIVATE_H
+#ifndef COMAC_USER_FONT_PRIVATE_H
+#define COMAC_USER_FONT_PRIVATE_H
 
 #include "comac.h"
 #include "comac-compiler-private.h"
 
-cairo_private cairo_bool_t
-_cairo_font_face_is_user (cairo_font_face_t *font_face);
+comac_private comac_bool_t
+_comac_font_face_is_user (comac_font_face_t *font_face);
 
-#endif /* CAIRO_USER_FONT_PRIVATE_H */
+#endif /* COMAC_USER_FONT_PRIVATE_H */

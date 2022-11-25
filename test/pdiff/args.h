@@ -22,8 +22,8 @@
 /* Args to pass into the comparison function */
 typedef struct _args
 {
-    cairo_surface_t	*surface_a;		/* Image A */
-    cairo_surface_t	*surface_b;		/* Image B */
+    comac_surface_t	*surface_a;		/* Image A */
+    comac_surface_t	*surface_b;		/* Image B */
     bool		Verbose;		/* Print lots of text or not */
     float		FieldOfView;		/* Field of view in degrees */
     float		Gamma;			/* The gamma to convert to linear color space */

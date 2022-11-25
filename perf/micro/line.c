@@ -26,197 +26,197 @@
 
 #include "comac-perf.h"
 
-static cairo_time_t
-horizontal (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+horizontal (comac_t *cr, int width, int height, int loops)
 {
     double h = height/2 + .5;
 
-    cairo_move_to (cr, 0, h);
-    cairo_line_to (cr, width, h);
+    comac_move_to (cr, 0, h);
+    comac_line_to (cr, width, h);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-horizontal_hair (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+horizontal_hair (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
     return horizontal (cr, width, height, loops);
 }
 
-static cairo_time_t
-horizontal_wide (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+horizontal_wide (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 5.);
+    comac_set_line_width (cr, 5.);
     return horizontal (cr, width, height, loops);
 }
 
-static cairo_time_t
-nearly_horizontal (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+nearly_horizontal (comac_t *cr, int width, int height, int loops)
 {
     double h = height/2;
 
-    cairo_move_to (cr, 0, h);
-    cairo_line_to (cr, width, h+1);
+    comac_move_to (cr, 0, h);
+    comac_line_to (cr, width, h+1);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-nearly_horizontal_hair (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+nearly_horizontal_hair (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
     return nearly_horizontal (cr, width, height, loops);
 }
 
-static cairo_time_t
-nearly_horizontal_wide (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+nearly_horizontal_wide (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 5.);
+    comac_set_line_width (cr, 5.);
     return nearly_horizontal (cr, width, height, loops);
 }
 
 
-static cairo_time_t
-vertical (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+vertical (comac_t *cr, int width, int height, int loops)
 {
     double w = width/2 + .5;
 
-    cairo_move_to (cr, w, 0);
-    cairo_line_to (cr, w, height);
+    comac_move_to (cr, w, 0);
+    comac_line_to (cr, w, height);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-vertical_hair (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+vertical_hair (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
     return vertical (cr, width, height, loops);
 }
 
-static cairo_time_t
-vertical_wide (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+vertical_wide (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 5.);
+    comac_set_line_width (cr, 5.);
     return vertical (cr, width, height, loops);
 }
 
-static cairo_time_t
-nearly_vertical (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+nearly_vertical (comac_t *cr, int width, int height, int loops)
 {
     double w = width/2;
 
-    cairo_move_to (cr, w, 0);
-    cairo_line_to (cr, w+1, height);
+    comac_move_to (cr, w, 0);
+    comac_line_to (cr, w+1, height);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-nearly_vertical_hair (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+nearly_vertical_hair (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
     return nearly_vertical (cr, width, height, loops);
 }
 
-static cairo_time_t
-nearly_vertical_wide (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+nearly_vertical_wide (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 5.);
+    comac_set_line_width (cr, 5.);
     return nearly_vertical (cr, width, height, loops);
 }
 
 
-static cairo_time_t
-diagonal (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+diagonal (comac_t *cr, int width, int height, int loops)
 {
-    cairo_move_to (cr, 0, 0);
-    cairo_line_to (cr, width, height);
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, width, height);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-diagonal_hair (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+diagonal_hair (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
     return diagonal (cr, width, height, loops);
 }
 
-static cairo_time_t
-diagonal_wide (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+diagonal_wide (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_line_width (cr, 5.);
+    comac_set_line_width (cr, 5.);
     return diagonal (cr, width, height, loops);
 }
 
-cairo_bool_t
-line_enabled (cairo_perf_t *perf)
+comac_bool_t
+line_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "line", NULL);
+    return comac_perf_can_run (perf, "line", NULL);
 }
 
 void
-line (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+line (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1., 1., 1.);
+    comac_set_source_rgb (cr, 1., 1., 1.);
 
-    cairo_perf_run (perf, "line-hh", horizontal_hair, NULL);
-    cairo_perf_run (perf, "line-hw", horizontal_wide, NULL);
-    cairo_perf_run (perf, "line-nhh", nearly_horizontal_hair, NULL);
-    cairo_perf_run (perf, "line-nhw", nearly_horizontal_wide, NULL);
+    comac_perf_run (perf, "line-hh", horizontal_hair, NULL);
+    comac_perf_run (perf, "line-hw", horizontal_wide, NULL);
+    comac_perf_run (perf, "line-nhh", nearly_horizontal_hair, NULL);
+    comac_perf_run (perf, "line-nhw", nearly_horizontal_wide, NULL);
 
-    cairo_perf_run (perf, "line-vh", vertical_hair, NULL);
-    cairo_perf_run (perf, "line-vw", vertical_wide, NULL);
-    cairo_perf_run (perf, "line-nvh", nearly_vertical_hair, NULL);
-    cairo_perf_run (perf, "line-nvw", nearly_vertical_wide, NULL);
+    comac_perf_run (perf, "line-vh", vertical_hair, NULL);
+    comac_perf_run (perf, "line-vw", vertical_wide, NULL);
+    comac_perf_run (perf, "line-nvh", nearly_vertical_hair, NULL);
+    comac_perf_run (perf, "line-nvw", nearly_vertical_wide, NULL);
 
-    cairo_perf_run (perf, "line-dh", diagonal_hair, NULL);
-    cairo_perf_run (perf, "line-dw", diagonal_wide, NULL);
+    comac_perf_run (perf, "line-dh", diagonal_hair, NULL);
+    comac_perf_run (perf, "line-dw", diagonal_wide, NULL);
 }

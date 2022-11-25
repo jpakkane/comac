@@ -25,43 +25,43 @@
 
 #include "comac-perf.h"
 
-static cairo_time_t
-do_stroke (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_stroke (comac_t *cr, int width, int height, int loops)
 {
-    cairo_arc (cr,
+    comac_arc (cr,
 	       width/2.0, height/2.0,
 	       width/3.0,
 	       0, 2 * M_PI);
-    cairo_close_path (cr);
+    comac_close_path (cr);
 
-    cairo_set_line_width (cr, width/5.0);
+    comac_set_line_width (cr, width/5.0);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
 static void
-rounded_rectangle (cairo_t *cr,
+rounded_rectangle (comac_t *cr,
 		   double x, double y, double w, double h,
 		   double radius)
 {
-    cairo_move_to (cr, x+radius, y);
-    cairo_arc (cr, x+w-radius, y+radius,   radius, M_PI + M_PI / 2, M_PI * 2        );
-    cairo_arc (cr, x+w-radius, y+h-radius, radius, 0,               M_PI / 2        );
-    cairo_arc (cr, x+radius,   y+h-radius, radius, M_PI/2,          M_PI            );
-    cairo_arc (cr, x+radius,   y+radius,   radius, M_PI,            270 * M_PI / 180);
+    comac_move_to (cr, x+radius, y);
+    comac_arc (cr, x+w-radius, y+radius,   radius, M_PI + M_PI / 2, M_PI * 2        );
+    comac_arc (cr, x+w-radius, y+h-radius, radius, 0,               M_PI / 2        );
+    comac_arc (cr, x+radius,   y+h-radius, radius, M_PI/2,          M_PI            );
+    comac_arc (cr, x+radius,   y+radius,   radius, M_PI,            270 * M_PI / 180);
 }
 
-static cairo_time_t
-do_strokes (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_strokes (comac_t *cr, int width, int height, int loops)
 {
     /* a pair of overlapping rectangles */
     rounded_rectangle (cr,
@@ -72,29 +72,29 @@ do_strokes (cairo_t *cr, int width, int height, int loops)
 		       width/2. - 2, height/2. - 2,
 		       10);
 
-    cairo_set_line_width (cr, 2.);
+    comac_set_line_width (cr, 2.);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-stroke_enabled (cairo_perf_t *perf)
+comac_bool_t
+stroke_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "stroke", NULL);
+    return comac_perf_can_run (perf, "stroke", NULL);
 }
 
 void
-stroke (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+stroke (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_cover_sources_and_operators (perf, "stroke", do_stroke, NULL);
-    cairo_perf_cover_sources_and_operators (perf, "strokes", do_strokes, NULL);
+    comac_perf_cover_sources_and_operators (perf, "stroke", do_stroke, NULL);
+    comac_perf_cover_sources_and_operators (perf, "strokes", do_strokes, NULL);
 }

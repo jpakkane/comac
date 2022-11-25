@@ -27,51 +27,51 @@
 
 #define SIZE 10
 
-static cairo_surface_t *
-create_source (cairo_surface_t *target)
+static comac_surface_t *
+create_source (comac_surface_t *target)
 {
-    cairo_surface_t *similar;
-    cairo_t *cr;
+    comac_surface_t *similar;
+    comac_t *cr;
 
-    similar = cairo_surface_create_similar (target,
-					    CAIRO_CONTENT_COLOR, SIZE/2, SIZE);
-    cr = cairo_create (similar);
-    cairo_surface_destroy (similar);
+    similar = comac_surface_create_similar (target,
+					    COMAC_CONTENT_COLOR, SIZE/2, SIZE);
+    cr = comac_create (similar);
+    comac_surface_destroy (similar);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    similar = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    similar = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return similar;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *source;
+    comac_surface_t *source;
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_rectangle (cr, 0, 0, SIZE/2, SIZE);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, SIZE/2, SIZE);
+    comac_clip (cr);
 
     /* Draw a source rectangle outside the image, the effect should be to
      * clear only within the clip region.
      */
-    source = create_source (cairo_get_target (cr));
-    cairo_set_source_surface (cr, source, SIZE/2, 0);
-    cairo_surface_destroy (source);
+    source = create_source (comac_get_target (cr));
+    comac_set_source_surface (cr, source, SIZE/2, 0);
+    comac_surface_destroy (source);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_unbounded,
+COMAC_TEST (clip_unbounded,
 	    "Test handling of an unbounded fill outside the clip region",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

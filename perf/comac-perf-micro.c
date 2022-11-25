@@ -46,63 +46,63 @@
 #include <sched.h>
 #endif
 
-#define CAIRO_PERF_ITERATIONS_DEFAULT		100
-#define CAIRO_PERF_LOW_STD_DEV			0.03
-#define CAIRO_PERF_STABLE_STD_DEV_COUNT		5
-#define CAIRO_PERF_ITERATION_MS_DEFAULT		2000
-#define CAIRO_PERF_ITERATION_MS_FAST		5
+#define COMAC_PERF_ITERATIONS_DEFAULT		100
+#define COMAC_PERF_LOW_STD_DEV			0.03
+#define COMAC_PERF_STABLE_STD_DEV_COUNT		5
+#define COMAC_PERF_ITERATION_MS_DEFAULT		2000
+#define COMAC_PERF_ITERATION_MS_FAST		5
 
-typedef struct _cairo_perf_case {
-    CAIRO_PERF_RUN_DECL (*run);
-    cairo_bool_t (*enabled) (cairo_perf_t *perf);
+typedef struct _comac_perf_case {
+    COMAC_PERF_RUN_DECL (*run);
+    comac_bool_t (*enabled) (comac_perf_t *perf);
     unsigned int min_size;
     unsigned int max_size;
-} cairo_perf_case_t;
+} comac_perf_case_t;
 
-const cairo_perf_case_t perf_cases[];
+const comac_perf_case_t perf_cases[];
 
 static const char *
-_content_to_string (cairo_content_t content,
-		    cairo_bool_t    similar)
+_content_to_string (comac_content_t content,
+		    comac_bool_t    similar)
 {
     switch (content|similar) {
-    case CAIRO_CONTENT_COLOR:
+    case COMAC_CONTENT_COLOR:
 	return "rgb";
-    case CAIRO_CONTENT_COLOR|1:
+    case COMAC_CONTENT_COLOR|1:
 	return "rgb&";
-    case CAIRO_CONTENT_ALPHA:
+    case COMAC_CONTENT_ALPHA:
 	return "a";
-    case CAIRO_CONTENT_ALPHA|1:
+    case COMAC_CONTENT_ALPHA|1:
 	return "a&";
-    case CAIRO_CONTENT_COLOR_ALPHA:
+    case COMAC_CONTENT_COLOR_ALPHA:
 	return "rgba";
-    case CAIRO_CONTENT_COLOR_ALPHA|1:
+    case COMAC_CONTENT_COLOR_ALPHA|1:
 	return "rgba&";
     default:
 	return "<unknown_content>";
     }
 }
 
-static cairo_bool_t
-cairo_perf_has_similar (cairo_perf_t *perf)
+static comac_bool_t
+comac_perf_has_similar (comac_perf_t *perf)
 {
-    cairo_surface_t *target;
+    comac_surface_t *target;
 
-    if (getenv ("CAIRO_TEST_SIMILAR") == NULL)
+    if (getenv ("COMAC_TEST_SIMILAR") == NULL)
 	return FALSE;
 
     /* exclude the image backend */
-    target = cairo_get_target (perf->cr);
-    if (cairo_surface_get_type (target) == CAIRO_SURFACE_TYPE_IMAGE)
+    target = comac_get_target (perf->cr);
+    if (comac_surface_get_type (target) == COMAC_SURFACE_TYPE_IMAGE)
 	return FALSE;
 
     return TRUE;
 }
 
-cairo_bool_t
-cairo_perf_can_run (cairo_perf_t *perf,
+comac_bool_t
+comac_perf_can_run (comac_perf_t *perf,
 		    const char	 *name,
-		    cairo_bool_t *is_explicit)
+		    comac_bool_t *is_explicit)
 {
     unsigned int i;
 
@@ -124,17 +124,17 @@ cairo_perf_can_run (cairo_perf_t *perf,
 }
 
 static unsigned
-cairo_perf_calibrate (cairo_perf_t	*perf,
-		      cairo_perf_func_t  perf_func)
+comac_perf_calibrate (comac_perf_t	*perf,
+		      comac_perf_func_t  perf_func)
 {
-    cairo_time_t calibration, calibration_max;
+    comac_time_t calibration, calibration_max;
     unsigned loops, min_loops;
 
     min_loops = 1;
     calibration = perf_func (perf->cr, perf->size, perf->size, min_loops);
 
     if (!perf->fast_and_sloppy) {
-	calibration_max = _cairo_time_from_s (perf->ms_per_iteration * 0.0001 / 4);
+	calibration_max = _comac_time_from_s (perf->ms_per_iteration * 0.0001 / 4);
 	while (calibration < calibration_max) {
 	    min_loops *= 2;
 	    calibration = perf_func (perf->cr, perf->size, perf->size, min_loops);
@@ -152,7 +152,7 @@ cairo_perf_calibrate (cairo_perf_t	*perf,
      * a more rigorous analysis of the synchronisation overhead,
      * that is to estimate the time for loop=0.
      */
-    loops = _cairo_time_from_s (perf->ms_per_iteration * 0.001 * min_loops / calibration);
+    loops = _comac_time_from_s (perf->ms_per_iteration * 0.001 * min_loops / calibration);
     min_loops = perf->fast_and_sloppy ? 1 : 10;
     if (loops < min_loops)
 	loops = min_loops;
@@ -161,15 +161,15 @@ cairo_perf_calibrate (cairo_perf_t	*perf,
 }
 
 void
-cairo_perf_run (cairo_perf_t	   *perf,
+comac_perf_run (comac_perf_t	   *perf,
 		const char	   *name,
-		cairo_perf_func_t   perf_func,
-		cairo_count_func_t  count_func)
+		comac_perf_func_t   perf_func,
+		comac_count_func_t  count_func)
 {
-    static cairo_bool_t first_run = TRUE;
+    static comac_bool_t first_run = TRUE;
     unsigned int i, similar, similar_iters;
-    cairo_time_t *times;
-    cairo_stats_t stats = {0.0, 0.0};
+    comac_time_t *times;
+    comac_stats_t stats = {0.0, 0.0};
     int low_std_dev_count;
 
     if (perf->list_only) {
@@ -194,28 +194,28 @@ cairo_perf_run (cairo_perf_t	   *perf,
 
     times = perf->times;
 
-    if (getenv ("CAIRO_PERF_OUTPUT") != NULL) { /* check output */
+    if (getenv ("COMAC_PERF_OUTPUT") != NULL) { /* check output */
 	char *filename;
-	cairo_status_t status;
+	comac_status_t status;
 
 	xasprintf (&filename, "%s.%s.%s.%d.out.png",
 		   name, perf->target->name,
 		   _content_to_string (perf->target->content, 0),
 		   perf->size);
-	cairo_save (perf->cr);
+	comac_save (perf->cr);
 	perf_func (perf->cr, perf->size, perf->size, 1);
-	cairo_restore (perf->cr);
-	status = cairo_surface_write_to_png (cairo_get_target (perf->cr), filename);
+	comac_restore (perf->cr);
+	status = comac_surface_write_to_png (comac_get_target (perf->cr), filename);
 	if (status) {
 	    fprintf (stderr, "Failed to generate output check '%s': %s\n",
-		     filename, cairo_status_to_string (status));
+		     filename, comac_status_to_string (status));
 	    return;
 	}
 
 	free (filename);
     }
 
-    if (cairo_perf_has_similar (perf))
+    if (comac_perf_has_similar (perf))
 	similar_iters = 2;
     else
 	similar_iters = 1;
@@ -233,47 +233,47 @@ cairo_perf_run (cairo_perf_t	   *perf,
 	}
 
 	/* We run one iteration in advance to warm caches and calibrate. */
-	cairo_perf_yield ();
+	comac_perf_yield ();
 	if (similar)
-	    cairo_push_group_with_content (perf->cr,
-					   cairo_boilerplate_content (perf->target->content));
+	    comac_push_group_with_content (perf->cr,
+					   comac_boilerplate_content (perf->target->content));
 	else
-	    cairo_save (perf->cr);
+	    comac_save (perf->cr);
 	perf_func (perf->cr, perf->size, perf->size, 1);
-	loops = cairo_perf_calibrate (perf, perf_func);
+	loops = comac_perf_calibrate (perf, perf_func);
 	if (similar)
-	    cairo_pattern_destroy (cairo_pop_group (perf->cr));
+	    comac_pattern_destroy (comac_pop_group (perf->cr));
 	else
-	    cairo_restore (perf->cr);
+	    comac_restore (perf->cr);
 
 	low_std_dev_count = 0;
 	for (i =0; i < perf->iterations; i++) {
-	    cairo_perf_yield ();
+	    comac_perf_yield ();
 	    if (similar)
-		cairo_push_group_with_content (perf->cr,
-					       cairo_boilerplate_content (perf->target->content));
+		comac_push_group_with_content (perf->cr,
+					       comac_boilerplate_content (perf->target->content));
 	    else
-		cairo_save (perf->cr);
+		comac_save (perf->cr);
 	    times[i] = perf_func (perf->cr, perf->size, perf->size, loops) ;
 	    if (similar)
-		cairo_pattern_destroy (cairo_pop_group (perf->cr));
+		comac_pattern_destroy (comac_pop_group (perf->cr));
 	    else
-		cairo_restore (perf->cr);
+		comac_restore (perf->cr);
 	    if (perf->raw) {
 		if (i == 0)
 		    printf ("[*] %s.%s %s.%d %g",
 			    perf->target->name,
 			    _content_to_string (perf->target->content, similar),
 			    name, perf->size,
-			    _cairo_time_to_double (_cairo_time_from_s (1.)) / 1000.);
+			    _comac_time_to_double (_comac_time_from_s (1.)) / 1000.);
 		printf (" %lld", (long long) (times[i] / (double) loops));
 	    } else if (! perf->exact_iterations) {
 		if (i > 0) {
-		    _cairo_stats_compute (&stats, times, i+1);
+		    _comac_stats_compute (&stats, times, i+1);
 
-		    if (stats.std_dev <= CAIRO_PERF_LOW_STD_DEV) {
+		    if (stats.std_dev <= COMAC_PERF_LOW_STD_DEV) {
 			low_std_dev_count++;
-			if (low_std_dev_count >= CAIRO_PERF_STABLE_STD_DEV_COUNT)
+			if (low_std_dev_count >= COMAC_PERF_STABLE_STD_DEV_COUNT)
 			    break;
 		    } else {
 			low_std_dev_count = 0;
@@ -286,24 +286,24 @@ cairo_perf_run (cairo_perf_t	   *perf,
 	    printf ("\n");
 
 	if (perf->summary) {
-	    _cairo_stats_compute (&stats, times, i);
+	    _comac_stats_compute (&stats, times, i);
 	    if (count_func != NULL) {
 		double count = count_func (perf->cr, perf->size, perf->size);
 		fprintf (perf->summary,
 			 "%.3f [%10lld/%d] %#8.3f %#8.3f %#5.2f%% %3d: %.2f\n",
 			 stats.min_ticks /(double) loops,
 			 (long long) stats.min_ticks, loops,
-			 _cairo_time_to_s (stats.min_ticks) * 1000.0 / loops,
-			 _cairo_time_to_s (stats.median_ticks) * 1000.0 / loops,
+			 _comac_time_to_s (stats.min_ticks) * 1000.0 / loops,
+			 _comac_time_to_s (stats.median_ticks) * 1000.0 / loops,
 			 stats.std_dev * 100.0, stats.iterations,
-			 count / _cairo_time_to_s (stats.min_ticks));
+			 count / _comac_time_to_s (stats.min_ticks));
 	    } else {
 		fprintf (perf->summary,
 			 "%.3f [%10lld/%d] %#8.3f %#8.3f %#5.2f%% %3d\n",
 			 stats.min_ticks /(double) loops,
 			 (long long) stats.min_ticks, loops,
-			 _cairo_time_to_s (stats.min_ticks) * 1000.0 / loops,
-			 _cairo_time_to_s (stats.median_ticks) * 1000.0 / loops,
+			 _comac_time_to_s (stats.min_ticks) * 1000.0 / loops,
+			 _comac_time_to_s (stats.median_ticks) * 1000.0 / loops,
 			 stats.std_dev * 100.0, stats.iterations);
 	    }
 	    fflush (perf->summary);
@@ -319,7 +319,7 @@ usage (const char *argv0)
     fprintf (stderr,
 "Usage: %s [-flrv] [-i iterations] [test-names ...]\n"
 "\n"
-"Run the cairo performance test suite over the given tests (all by default)\n"
+"Run the comac performance test suite over the given tests (all by default)\n"
 "The command-line arguments are interpreted as follows:\n"
 "\n"
 "  -f	fast; faster, less accurate\n"
@@ -334,7 +334,7 @@ usage (const char *argv0)
 }
 
 static void
-parse_options (cairo_perf_t *perf,
+parse_options (comac_perf_t *perf,
 	       int	     argc,
 	       char	    *argv[])
 {
@@ -344,15 +344,15 @@ parse_options (cairo_perf_t *perf,
     char *end;
     int verbose = 0;
 
-    if ((iters = getenv("CAIRO_PERF_ITERATIONS")) && *iters)
+    if ((iters = getenv("COMAC_PERF_ITERATIONS")) && *iters)
 	perf->iterations = strtol(iters, NULL, 0);
     else
-	perf->iterations = CAIRO_PERF_ITERATIONS_DEFAULT;
+	perf->iterations = COMAC_PERF_ITERATIONS_DEFAULT;
     perf->exact_iterations = 0;
 
     perf->fast_and_sloppy = FALSE;
-    perf->ms_per_iteration = CAIRO_PERF_ITERATION_MS_DEFAULT;
-    if ((ms = getenv("CAIRO_PERF_ITERATION_MS")) && *ms) {
+    perf->ms_per_iteration = COMAC_PERF_ITERATION_MS_DEFAULT;
+    if ((ms = getenv("COMAC_PERF_ITERATION_MS")) && *ms) {
 	perf->ms_per_iteration = atof(ms);
     }
 
@@ -363,7 +363,7 @@ parse_options (cairo_perf_t *perf,
     perf->summary = stdout;
 
     while (1) {
-	c = _cairo_getopt (argc, argv, "fi:lrv");
+	c = _comac_getopt (argc, argv, "fi:lrv");
 	if (c == -1)
 	    break;
 
@@ -371,7 +371,7 @@ parse_options (cairo_perf_t *perf,
 	case 'f':
 	    perf->fast_and_sloppy = TRUE;
 	    if (ms == NULL)
-		perf->ms_per_iteration = CAIRO_PERF_ITERATION_MS_FAST;
+		perf->ms_per_iteration = COMAC_PERF_ITERATION_MS_FAST;
 	    break;
 	case 'i':
 	    perf->exact_iterations = TRUE;
@@ -430,7 +430,7 @@ check_cpu_affinity (void)
 
     if (cpu_count > 1) {
 	fputs(
-	    "WARNING: cairo-perf has not been bound to a single CPU.\n",
+	    "WARNING: comac-perf has not been bound to a single CPU.\n",
 	    stderr);
 	return -1;
     }
@@ -445,13 +445,13 @@ check_cpu_affinity (void)
 }
 
 static void
-cairo_perf_fini (cairo_perf_t *perf)
+comac_perf_fini (comac_perf_t *perf)
 {
-    cairo_boilerplate_free_targets (perf->targets);
-    cairo_boilerplate_fini ();
+    comac_boilerplate_free_targets (perf->targets);
+    comac_boilerplate_fini ();
 
     free (perf->times);
-    cairo_debug_reset_static_data ();
+    comac_debug_reset_static_data ();
 #if HAVE_FCFINI
     FcFini ();
 #endif
@@ -463,16 +463,16 @@ main (int   argc,
       char *argv[])
 {
     int i, j;
-    cairo_perf_t perf;
-    cairo_surface_t *surface;
+    comac_perf_t perf;
+    comac_surface_t *surface;
 
     parse_options (&perf, argc, argv);
 
     if (check_cpu_affinity()) {
 	fputs(
-	    "NOTICE: cairo-perf and the X server should be bound to CPUs (either the same\n"
+	    "NOTICE: comac-perf and the X server should be bound to CPUs (either the same\n"
 	    "or separate) on SMP systems. Not doing so causes random results when the X\n"
-	    "server is moved to or from cairo-perf's CPU during the benchmarks:\n"
+	    "server is moved to or from comac-perf's CPU during the benchmarks:\n"
 	    "\n"
 	    "    $ sudo taskset -cp 0 $(pidof X)\n"
 	    "    $ taskset -cp 1 $$\n"
@@ -481,11 +481,11 @@ main (int   argc,
 	    stderr);
     }
 
-    perf.targets = cairo_boilerplate_get_targets (&perf.num_targets, NULL);
-    perf.times = xmalloc (perf.iterations * sizeof (cairo_time_t));
+    perf.targets = comac_boilerplate_get_targets (&perf.num_targets, NULL);
+    perf.times = xmalloc (perf.iterations * sizeof (comac_time_t));
 
     for (i = 0; i < perf.num_targets; i++) {
-	const cairo_boilerplate_target_t *target = perf.targets[i];
+	const comac_boilerplate_target_t *target = perf.targets[i];
 
 	if (! target->is_measurable)
 	    continue;
@@ -494,7 +494,7 @@ main (int   argc,
 	perf.test_number = 0;
 
 	for (j = 0; perf_cases[j].run; j++) {
-	    const cairo_perf_case_t *perf_case = &perf_cases[j];
+	    const comac_perf_case_t *perf_case = &perf_cases[j];
 
 	    if (! perf_case->enabled (&perf))
 		continue;
@@ -509,7 +509,7 @@ main (int   argc,
 						    target->content,
 						    perf.size, perf.size,
 						    perf.size, perf.size,
-						    CAIRO_BOILERPLATE_MODE_PERF,
+						    COMAC_BOILERPLATE_MODE_PERF,
 						    &closure);
 		if (surface == NULL) {
 		    fprintf (stderr,
@@ -518,19 +518,19 @@ main (int   argc,
 		    continue;
 		}
 
-		cairo_perf_timer_set_synchronize (target->synchronize, closure);
+		comac_perf_timer_set_synchronize (target->synchronize, closure);
 
-		perf.cr = cairo_create (surface);
+		perf.cr = comac_create (surface);
 
 		perf_case->run (&perf, perf.cr, perf.size, perf.size);
 
-		if (cairo_status (perf.cr)) {
-		    fprintf (stderr, "Error: Test left cairo in an error state: %s\n",
-			     cairo_status_to_string (cairo_status (perf.cr)));
+		if (comac_status (perf.cr)) {
+		    fprintf (stderr, "Error: Test left comac in an error state: %s\n",
+			     comac_status_to_string (comac_status (perf.cr)));
 		}
 
-		cairo_destroy (perf.cr);
-		cairo_surface_destroy (surface);
+		comac_destroy (perf.cr);
+		comac_surface_destroy (surface);
 
 		if (target->cleanup)
 		    target->cleanup (closure);
@@ -538,13 +538,13 @@ main (int   argc,
 	}
     }
 
-    cairo_perf_fini (&perf);
+    comac_perf_fini (&perf);
 
     return 0;
 }
 
 #define FUNC(f) f, f##_enabled
-const cairo_perf_case_t perf_cases[] = {
+const comac_perf_case_t perf_cases[] = {
     { FUNC(pixel),  1, 1 },
     { FUNC(a1_pixel),  1, 1 },
     { FUNC(paint),  64, 512},

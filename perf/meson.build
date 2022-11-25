@@ -2,8 +2,6 @@ incmicro = include_directories('.')
 
 subdir('micro')
 
-gtk2_dep = dependency('gtk+-2.0', required: false)
-
 libcairoperf = static_library('cairoperf',
   [
     'comac-perf.c',
@@ -80,15 +78,3 @@ compare_backends = executable('comac-perf-compare-backends',
   include_directories: [incbase, incsrc],
   dependencies: [libcairoperf_dep, cairoboilerplate_dep],
 )
-
-if gtk2_dep.found()
-  graph_files = executable('comac-perf-graph',
-    [
-      'comac-perf-graph-files.c',
-      'comac-perf-graph-widget.c',
-      'comac-perf-graph.h',
-    ],
-    include_directories: [incbase, incsrc],
-    dependencies: [gtk2_dep, libcairo_dep, cairoboilerplate_dep, libcairoperf_dep],
-  )
-endif

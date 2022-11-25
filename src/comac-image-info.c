@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2008 Adrian Johnson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -79,7 +79,7 @@ _jpeg_skip_segment (const unsigned char *p)
 }
 
 static void
-_jpeg_extract_info (cairo_image_info_t *info, const unsigned char *p)
+_jpeg_extract_info (comac_image_info_t *info, const unsigned char *p)
 {
     info->width = (p[6] << 8) + p[7];
     info->height = (p[4] << 8) + p[5];
@@ -87,8 +87,8 @@ _jpeg_extract_info (cairo_image_info_t *info, const unsigned char *p)
     info->bits_per_component = p[3];
 }
 
-cairo_int_status_t
-_cairo_image_info_get_jpeg_info (cairo_image_info_t	*info,
+comac_int_status_t
+_comac_image_info_get_jpeg_info (comac_image_info_t	*info,
 				 const unsigned char	*data,
 				 unsigned long		 length)
 {
@@ -96,7 +96,7 @@ _cairo_image_info_get_jpeg_info (cairo_image_info_t	*info,
 
     while (p + 1 < data + length) {
 	if (*p != 0xff)
-	    return CAIRO_INT_STATUS_UNSUPPORTED;
+	    return COMAC_INT_STATUS_UNSUPPORTED;
 	p++;
 
 	switch (*p) {
@@ -126,10 +126,10 @@ _cairo_image_info_get_jpeg_info (cairo_image_info_t	*info,
 	case SOF15:
 	    /* Start of frame found. Extract the image parameters. */
 	    if (p + 8 > data + length)
-		return CAIRO_INT_STATUS_UNSUPPORTED;
+		return COMAC_INT_STATUS_UNSUPPORTED;
 
 	    _jpeg_extract_info (info, p);
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 
 	default:
 	    if (*p >= RST_begin && *p <= RST_end) {
@@ -138,14 +138,14 @@ _cairo_image_info_get_jpeg_info (cairo_image_info_t	*info,
 	    }
 
 	    if (p + 3 > data + length)
-		return CAIRO_INT_STATUS_UNSUPPORTED;
+		return COMAC_INT_STATUS_UNSUPPORTED;
 
 	    p = _jpeg_skip_segment (p);
 	    break;
 	}
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /* JPEG 2000 (image/jp2)
@@ -173,7 +173,7 @@ _jpx_get_box_contents (const unsigned char *p)
     return p + 8;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _jpx_match_box (const unsigned char *p, const unsigned char *end, uint32_t type)
 {
     uint32_t length;
@@ -200,7 +200,7 @@ _jpx_find_box (const unsigned char *p, const unsigned char *end, uint32_t type)
 }
 
 static void
-_jpx_extract_info (const unsigned char *p, cairo_image_info_t *info)
+_jpx_extract_info (const unsigned char *p, comac_image_info_t *info)
 {
     info->height = get_unaligned_be32 (p);
     info->width = get_unaligned_be32 (p + 4);
@@ -208,8 +208,8 @@ _jpx_extract_info (const unsigned char *p, cairo_image_info_t *info)
     info->bits_per_component = p[10];
 }
 
-cairo_int_status_t
-_cairo_image_info_get_jpx_info (cairo_image_info_t	*info,
+comac_int_status_t
+_comac_image_info_get_jpx_info (comac_image_info_t	*info,
 				const unsigned char	*data,
 				unsigned long		 length)
 {
@@ -219,32 +219,32 @@ _cairo_image_info_get_jpx_info (cairo_image_info_t	*info,
     /* First 12 bytes must be the JPEG 2000 signature box. */
     if (length < ARRAY_LENGTH(_jpx_signature) ||
 	memcmp(p, _jpx_signature, ARRAY_LENGTH(_jpx_signature)) != 0)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     p += ARRAY_LENGTH(_jpx_signature);
 
     /* Next box must be a File Type Box */
     if (! _jpx_match_box (p, end, JPX_FILETYPE))
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     p = _jpx_next_box (p);
 
     /* Locate the JP2 header box. */
     p = _jpx_find_box (p, end, JPX_JP2_HEADER);
     if (!p)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Step into the JP2 header box. First box must be the Image
      * Header */
     p = _jpx_get_box_contents (p);
     if (! _jpx_match_box (p, end, JPX_IMAGE_HEADER))
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     /* Get the image info */
     p = _jpx_get_box_contents (p);
     _jpx_extract_info (p, info);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /* PNG (image/png)
@@ -256,8 +256,8 @@ _cairo_image_info_get_jpx_info (cairo_image_info_t	*info,
 
 static const unsigned char _png_magic[8] = { 137, 80, 78, 71, 13, 10, 26, 10 };
 
-cairo_int_status_t
-_cairo_image_info_get_png_info (cairo_image_info_t     *info,
+comac_int_status_t
+_comac_image_info_get_png_info (comac_image_info_t     *info,
                                const unsigned char     *data,
                                unsigned long            length)
 {
@@ -265,25 +265,25 @@ _cairo_image_info_get_png_info (cairo_image_info_t     *info,
     const unsigned char *end = data + length;
 
     if (length < 8 || memcmp (data, _png_magic, 8) != 0)
-       return CAIRO_INT_STATUS_UNSUPPORTED;
+       return COMAC_INT_STATUS_UNSUPPORTED;
 
     p += 8;
 
     /* The first chunk must be IDHR. IDHR has 13 bytes of data plus
      * the 12 bytes of overhead for the chunk. */
     if (p + 13 + 12 > end)
-       return CAIRO_INT_STATUS_UNSUPPORTED;
+       return COMAC_INT_STATUS_UNSUPPORTED;
 
     p += 4;
     if (get_unaligned_be32 (p) != PNG_IHDR)
-       return CAIRO_INT_STATUS_UNSUPPORTED;
+       return COMAC_INT_STATUS_UNSUPPORTED;
 
     p += 4;
     info->width = get_unaligned_be32 (p);
     p += 4;
     info->height = get_unaligned_be32 (p);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static const unsigned char *
@@ -333,7 +333,7 @@ _jbig2_get_next_segment (const unsigned char  *p,
 			 unsigned long        *data_len)
 {
     unsigned long seg_num;
-    cairo_bool_t big_page_size;
+    comac_bool_t big_page_size;
     int num_segs;
     int ref_seg_bytes;
     int referred_size;
@@ -389,7 +389,7 @@ _jbig2_get_next_segment (const unsigned char  *p,
 }
 
 static void
-_jbig2_extract_info (cairo_image_info_t *info, const unsigned char *p)
+_jbig2_extract_info (comac_image_info_t *info, const unsigned char *p)
 {
     info->width = get_unaligned_be32 (p);
     info->height = get_unaligned_be32 (p + 4);
@@ -397,8 +397,8 @@ _jbig2_extract_info (cairo_image_info_t *info, const unsigned char *p)
     info->bits_per_component = 1;
 }
 
-cairo_int_status_t
-_cairo_image_info_get_jbig2_info (cairo_image_info_t	*info,
+comac_int_status_t
+_comac_image_info_get_jbig2_info (comac_image_info_t	*info,
 				  const unsigned char	*data,
 				  unsigned long		 length)
 {
@@ -413,9 +413,9 @@ _cairo_image_info_get_jbig2_info (cairo_image_info_t	*info,
 	if (p && seg_type == 48 && seg_data_len > 8) {
 	    /* page information segment */
 	    _jbig2_extract_info (info, seg_data);
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 	}
     }
 
-    return CAIRO_INT_STATUS_UNSUPPORTED;
+    return COMAC_INT_STATUS_UNSUPPORTED;
 }

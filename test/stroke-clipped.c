@@ -24,29 +24,29 @@
 
 #define SIZE 200
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int row;
 
-    cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_paint(cr);
+    comac_set_source_rgb(cr, 1, 1, 1);
+    comac_paint(cr);
 
-    cairo_set_source_rgb(cr, 1, 0, 0);
+    comac_set_source_rgb(cr, 1, 0, 0);
     for(row = 0; row < SIZE; row++) {
-	cairo_rectangle(cr, 0, row, SIZE, 1);
-	cairo_clip(cr);
+	comac_rectangle(cr, 0, row, SIZE, 1);
+	comac_clip(cr);
 
-	cairo_arc(cr, SIZE/2, SIZE/2, SIZE/2-8, 0, 2*M_PI);
-	cairo_stroke(cr);
+	comac_arc(cr, SIZE/2, SIZE/2, SIZE/2-8, 0, 2*M_PI);
+	comac_stroke(cr);
 
-	cairo_reset_clip(cr);
+	comac_reset_clip(cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (stroke_clipped,
+COMAC_TEST (stroke_clipped,
 	    "Check that the stroke is accurately drawn through smaller clips",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

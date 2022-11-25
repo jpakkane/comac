@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,28 +34,28 @@
  *	Owen Taylor <otaylor@redhat.com>
  */
 
-#ifndef CAIRO_FT_PRIVATE_H
-#define CAIRO_FT_PRIVATE_H
+#ifndef COMAC_FT_PRIVATE_H
+#define COMAC_FT_PRIVATE_H
 
 #include "comacint.h"
 #include "comac-ft.h"
 
-#if CAIRO_HAS_FT_FONT
+#if COMAC_HAS_FT_FONT
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-typedef struct _cairo_ft_unscaled_font cairo_ft_unscaled_font_t;
+typedef struct _comac_ft_unscaled_font comac_ft_unscaled_font_t;
 
-cairo_private cairo_bool_t
-_cairo_scaled_font_is_ft (cairo_scaled_font_t *scaled_font);
+comac_private comac_bool_t
+_comac_scaled_font_is_ft (comac_scaled_font_t *scaled_font);
 
 /* These functions are needed by the PDF backend, which needs to keep track of the
  * the different fonts-on-disk used by a document, so it can embed them
  */
-cairo_private unsigned int
-_cairo_ft_scaled_font_get_load_flags (cairo_scaled_font_t *scaled_font);
+comac_private unsigned int
+_comac_ft_scaled_font_get_load_flags (comac_scaled_font_t *scaled_font);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_HAS_FT_FONT */
-#endif /* CAIRO_FT_PRIVATE_H */
+#endif /* COMAC_HAS_FT_FONT */
+#endif /* COMAC_FT_PRIVATE_H */

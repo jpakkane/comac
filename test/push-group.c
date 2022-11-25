@@ -32,81 +32,81 @@
 #define WIDTH (UNIT_SIZE + PAD) + PAD
 #define HEIGHT (UNIT_SIZE + PAD) + PAD
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *gradient;
+    comac_pattern_t *gradient;
     int i, j;
 
-    gradient = cairo_pattern_create_linear (UNIT_SIZE - (INNER_PAD*2), 0,
+    gradient = comac_pattern_create_linear (UNIT_SIZE - (INNER_PAD*2), 0,
                                             UNIT_SIZE - (INNER_PAD*2), UNIT_SIZE - (INNER_PAD*2));
-    cairo_pattern_add_color_stop_rgba (gradient, 0.0, 0.3, 0.3, 0.3, 1.0);
-    cairo_pattern_add_color_stop_rgba (gradient, 1.0, 1.0, 1.0, 1.0, 1.0);
+    comac_pattern_add_color_stop_rgba (gradient, 0.0, 0.3, 0.3, 0.3, 1.0);
+    comac_pattern_add_color_stop_rgba (gradient, 1.0, 1.0, 1.0, 1.0, 1.0);
 
     for (j = 0; j < 1; j++) {
         for (i = 0; i < 1; i++) {
             double x = (i * UNIT_SIZE) + (i + 1) * PAD;
             double y = (j * UNIT_SIZE) + (j + 1) * PAD;
 
-            cairo_save (cr);
+            comac_save (cr);
 
-            cairo_translate (cr, x, y);
+            comac_translate (cr, x, y);
 
             /* draw a gradient background */
-            cairo_save (cr);
-            cairo_translate (cr, INNER_PAD, INNER_PAD);
-            cairo_new_path (cr);
-            cairo_rectangle (cr, 0, 0,
+            comac_save (cr);
+            comac_translate (cr, INNER_PAD, INNER_PAD);
+            comac_new_path (cr);
+            comac_rectangle (cr, 0, 0,
                              UNIT_SIZE - (INNER_PAD*2), UNIT_SIZE - (INNER_PAD*2));
-            cairo_set_source (cr, gradient);
-            cairo_fill (cr);
-            cairo_restore (cr);
+            comac_set_source (cr, gradient);
+            comac_fill (cr);
+            comac_restore (cr);
 
             /* clip to the unit size */
-            cairo_rectangle (cr, 0, 0,
+            comac_rectangle (cr, 0, 0,
                              UNIT_SIZE, UNIT_SIZE);
-            cairo_clip (cr);
+            comac_clip (cr);
 
-            cairo_rectangle (cr, 0, 0,
+            comac_rectangle (cr, 0, 0,
                              UNIT_SIZE, UNIT_SIZE);
-            cairo_set_source_rgba (cr, 0, 0, 0, 1);
-            cairo_set_line_width (cr, 2);
-            cairo_stroke (cr);
+            comac_set_source_rgba (cr, 0, 0, 0, 1);
+            comac_set_line_width (cr, 2);
+            comac_stroke (cr);
 
             /* start a group */
-            cairo_push_group (cr);
+            comac_push_group (cr);
 
             /* draw diamond */
-            cairo_move_to (cr, UNIT_SIZE / 2, 0);
-            cairo_line_to (cr, UNIT_SIZE    , UNIT_SIZE / 2);
-            cairo_line_to (cr, UNIT_SIZE / 2, UNIT_SIZE);
-            cairo_line_to (cr, 0            , UNIT_SIZE / 2);
-            cairo_close_path (cr);
-            cairo_set_source_rgba (cr, 0, 0, 1, 1);
-            cairo_fill (cr);
+            comac_move_to (cr, UNIT_SIZE / 2, 0);
+            comac_line_to (cr, UNIT_SIZE    , UNIT_SIZE / 2);
+            comac_line_to (cr, UNIT_SIZE / 2, UNIT_SIZE);
+            comac_line_to (cr, 0            , UNIT_SIZE / 2);
+            comac_close_path (cr);
+            comac_set_source_rgba (cr, 0, 0, 1, 1);
+            comac_fill (cr);
 
             /* draw circle */
-            cairo_arc (cr,
+            comac_arc (cr,
                        UNIT_SIZE / 2, UNIT_SIZE / 2,
                        UNIT_SIZE / 3.5,
                        0, M_PI * 2);
-            cairo_set_source_rgba (cr, 1, 0, 0, 1);
-            cairo_fill (cr);
+            comac_set_source_rgba (cr, 1, 0, 0, 1);
+            comac_fill (cr);
 
-            cairo_pop_group_to_source (cr);
-            cairo_paint_with_alpha (cr, 0.5);
+            comac_pop_group_to_source (cr);
+            comac_paint_with_alpha (cr, 0.5);
 
-            cairo_restore (cr);
+            comac_restore (cr);
         }
     }
 
-    cairo_pattern_destroy (gradient);
+    comac_pattern_destroy (gradient);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (push_group,
-	    "Verify that cairo_push_group works.",
+COMAC_TEST (push_group,
+	    "Verify that comac_push_group works.",
 	    "group", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,

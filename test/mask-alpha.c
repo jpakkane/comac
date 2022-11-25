@@ -34,47 +34,47 @@
 /* This test is designed to test that PDF viewers use the correct
  * alpha values in an Alpha SMasks. Some viewers use the color values
  * instead of the alpha. The test draws a triangle and rectangle in a
- * group then draws the group using cairo_mask(). The mask consists of
+ * group then draws the group using comac_mask(). The mask consists of
  * a circle with the rgba (0.4, 0.4, 0.4, 0.8) and the background rgba
  * (0.8, 0.8, 0.8, 0.4).
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     /* mask */
-    cairo_push_group (cr);
-    cairo_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.4);
-    cairo_paint (cr);
-    cairo_arc (cr, SIZE / 2, SIZE / 2, SIZE / 6, 0., 2. * M_PI);
-    cairo_set_source_rgba (cr, 0.4, 0.4, 0.4, 0.8);
-    cairo_fill (cr);
-    pattern = cairo_pop_group (cr);
+    comac_push_group (cr);
+    comac_set_source_rgba (cr, 0.8, 0.8, 0.8, 0.4);
+    comac_paint (cr);
+    comac_arc (cr, SIZE / 2, SIZE / 2, SIZE / 6, 0., 2. * M_PI);
+    comac_set_source_rgba (cr, 0.4, 0.4, 0.4, 0.8);
+    comac_fill (cr);
+    pattern = comac_pop_group (cr);
 
     /* source */
-    cairo_push_group (cr);
-    cairo_rectangle (cr, 0.3 * SIZE, 0.2 * SIZE, 0.5 * SIZE, 0.5 * SIZE);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_fill (cr);
-    cairo_move_to     (cr,   0.0,          0.8 * SIZE);
-    cairo_rel_line_to (cr,   0.7 * SIZE,   0.0);
-    cairo_rel_line_to (cr, -0.375 * SIZE, -0.6 * SIZE);
-    cairo_close_path (cr);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_fill (cr);
-    cairo_pop_group_to_source (cr);
+    comac_push_group (cr);
+    comac_rectangle (cr, 0.3 * SIZE, 0.2 * SIZE, 0.5 * SIZE, 0.5 * SIZE);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_fill (cr);
+    comac_move_to     (cr,   0.0,          0.8 * SIZE);
+    comac_rel_line_to (cr,   0.7 * SIZE,   0.0);
+    comac_rel_line_to (cr, -0.375 * SIZE, -0.6 * SIZE);
+    comac_close_path (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_fill (cr);
+    comac_pop_group_to_source (cr);
 
-    cairo_mask (cr, pattern);
-    cairo_pattern_destroy (pattern);
+    comac_mask (cr, pattern);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (mask_alpha,
+COMAC_TEST (mask_alpha,
 	    "A simple test painting a group through a circle mask",
 	    "mask, alpha", /* keywords */
 	    NULL, /* requirements */

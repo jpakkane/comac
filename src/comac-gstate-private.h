@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,370 +33,370 @@
  *	Carl D. Worth <cworth@redhat.com>
  */
 
-#ifndef CAIRO_GSTATE_PRIVATE_H
-#define CAIRO_GSTATE_PRIVATE_H
+#ifndef COMAC_GSTATE_PRIVATE_H
+#define COMAC_GSTATE_PRIVATE_H
 
 #include "comac-clip-private.h"
 
-struct _cairo_gstate {
-    cairo_operator_t op;
+struct _comac_gstate {
+    comac_operator_t op;
 
     double opacity;
     double tolerance;
-    cairo_antialias_t antialias;
+    comac_antialias_t antialias;
 
-    cairo_stroke_style_t stroke_style;
+    comac_stroke_style_t stroke_style;
 
-    cairo_fill_rule_t fill_rule;
+    comac_fill_rule_t fill_rule;
 
-    cairo_font_face_t *font_face;
-    cairo_scaled_font_t *scaled_font;	/* Specific to the current CTM */
-    cairo_scaled_font_t *previous_scaled_font;	/* holdover */
-    cairo_matrix_t font_matrix;
-    cairo_font_options_t font_options;
+    comac_font_face_t *font_face;
+    comac_scaled_font_t *scaled_font;	/* Specific to the current CTM */
+    comac_scaled_font_t *previous_scaled_font;	/* holdover */
+    comac_matrix_t font_matrix;
+    comac_font_options_t font_options;
 
-    cairo_clip_t *clip;
+    comac_clip_t *clip;
 
-    cairo_surface_t *target;		/* The target to which all rendering is directed */
-    cairo_surface_t *parent_target;	/* The previous target which was receiving rendering */
-    cairo_surface_t *original_target;	/* The original target the initial gstate was created with */
+    comac_surface_t *target;		/* The target to which all rendering is directed */
+    comac_surface_t *parent_target;	/* The previous target which was receiving rendering */
+    comac_surface_t *original_target;	/* The original target the initial gstate was created with */
 
     /* the user is allowed to update the device after we have cached the matrices... */
-    cairo_observer_t device_transform_observer;
+    comac_observer_t device_transform_observer;
 
-    cairo_matrix_t ctm;
-    cairo_matrix_t ctm_inverse;
-    cairo_matrix_t source_ctm_inverse; /* At the time ->source was set */
-    cairo_bool_t is_identity;
+    comac_matrix_t ctm;
+    comac_matrix_t ctm_inverse;
+    comac_matrix_t source_ctm_inverse; /* At the time ->source was set */
+    comac_bool_t is_identity;
 
-    cairo_pattern_t *source;
+    comac_pattern_t *source;
 
-    struct _cairo_gstate *next;
+    struct _comac_gstate *next;
 };
 
-/* cairo-gstate.c */
-cairo_private cairo_status_t
-_cairo_gstate_init (cairo_gstate_t  *gstate,
-		    cairo_surface_t *target);
+/* comac-gstate.c */
+comac_private comac_status_t
+_comac_gstate_init (comac_gstate_t  *gstate,
+		    comac_surface_t *target);
 
-cairo_private void
-_cairo_gstate_fini (cairo_gstate_t *gstate);
+comac_private void
+_comac_gstate_fini (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_save (cairo_gstate_t **gstate, cairo_gstate_t **freelist);
+comac_private comac_status_t
+_comac_gstate_save (comac_gstate_t **gstate, comac_gstate_t **freelist);
 
-cairo_private cairo_status_t
-_cairo_gstate_restore (cairo_gstate_t **gstate, cairo_gstate_t **freelist);
+comac_private comac_status_t
+_comac_gstate_restore (comac_gstate_t **gstate, comac_gstate_t **freelist);
 
-cairo_private cairo_bool_t
-_cairo_gstate_is_group (cairo_gstate_t *gstate);
+comac_private comac_bool_t
+_comac_gstate_is_group (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_redirect_target (cairo_gstate_t *gstate, cairo_surface_t *child);
+comac_private comac_status_t
+_comac_gstate_redirect_target (comac_gstate_t *gstate, comac_surface_t *child);
 
-cairo_private cairo_surface_t *
-_cairo_gstate_get_target (cairo_gstate_t *gstate);
+comac_private comac_surface_t *
+_comac_gstate_get_target (comac_gstate_t *gstate);
 
-cairo_private cairo_surface_t *
-_cairo_gstate_get_original_target (cairo_gstate_t *gstate);
+comac_private comac_surface_t *
+_comac_gstate_get_original_target (comac_gstate_t *gstate);
 
-cairo_private cairo_clip_t *
-_cairo_gstate_get_clip (cairo_gstate_t *gstate);
+comac_private comac_clip_t *
+_comac_gstate_get_clip (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_source (cairo_gstate_t *gstate, cairo_pattern_t *source);
+comac_private comac_status_t
+_comac_gstate_set_source (comac_gstate_t *gstate, comac_pattern_t *source);
 
-cairo_private cairo_pattern_t *
-_cairo_gstate_get_source (cairo_gstate_t *gstate);
+comac_private comac_pattern_t *
+_comac_gstate_get_source (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_operator (cairo_gstate_t *gstate, cairo_operator_t op);
+comac_private comac_status_t
+_comac_gstate_set_operator (comac_gstate_t *gstate, comac_operator_t op);
 
-cairo_private cairo_operator_t
-_cairo_gstate_get_operator (cairo_gstate_t *gstate);
+comac_private comac_operator_t
+_comac_gstate_get_operator (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_opacity (cairo_gstate_t *gstate, double opacity);
+comac_private comac_status_t
+_comac_gstate_set_opacity (comac_gstate_t *gstate, double opacity);
 
-cairo_private double
-_cairo_gstate_get_opacity (cairo_gstate_t *gstate);
+comac_private double
+_comac_gstate_get_opacity (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_tolerance (cairo_gstate_t *gstate, double tolerance);
+comac_private comac_status_t
+_comac_gstate_set_tolerance (comac_gstate_t *gstate, double tolerance);
 
-cairo_private double
-_cairo_gstate_get_tolerance (cairo_gstate_t *gstate);
+comac_private double
+_comac_gstate_get_tolerance (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_fill_rule (cairo_gstate_t *gstate, cairo_fill_rule_t fill_rule);
+comac_private comac_status_t
+_comac_gstate_set_fill_rule (comac_gstate_t *gstate, comac_fill_rule_t fill_rule);
 
-cairo_private cairo_fill_rule_t
-_cairo_gstate_get_fill_rule (cairo_gstate_t *gstate);
+comac_private comac_fill_rule_t
+_comac_gstate_get_fill_rule (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_line_width (cairo_gstate_t *gstate, double width);
+comac_private comac_status_t
+_comac_gstate_set_line_width (comac_gstate_t *gstate, double width);
 
-cairo_private double
-_cairo_gstate_get_line_width (cairo_gstate_t *gstate);
+comac_private double
+_comac_gstate_get_line_width (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_hairline (cairo_gstate_t *gstate, cairo_bool_t set_hairline);
+comac_private comac_status_t
+_comac_gstate_set_hairline (comac_gstate_t *gstate, comac_bool_t set_hairline);
 
-cairo_private cairo_bool_t
-_cairo_gstate_get_hairline (cairo_gstate_t *gstate);
+comac_private comac_bool_t
+_comac_gstate_get_hairline (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_line_cap (cairo_gstate_t *gstate, cairo_line_cap_t line_cap);
+comac_private comac_status_t
+_comac_gstate_set_line_cap (comac_gstate_t *gstate, comac_line_cap_t line_cap);
 
-cairo_private cairo_line_cap_t
-_cairo_gstate_get_line_cap (cairo_gstate_t *gstate);
+comac_private comac_line_cap_t
+_comac_gstate_get_line_cap (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_line_join (cairo_gstate_t *gstate, cairo_line_join_t line_join);
+comac_private comac_status_t
+_comac_gstate_set_line_join (comac_gstate_t *gstate, comac_line_join_t line_join);
 
-cairo_private cairo_line_join_t
-_cairo_gstate_get_line_join (cairo_gstate_t *gstate);
+comac_private comac_line_join_t
+_comac_gstate_get_line_join (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_dash (cairo_gstate_t *gstate, const double *dash, int num_dashes, double offset);
+comac_private comac_status_t
+_comac_gstate_set_dash (comac_gstate_t *gstate, const double *dash, int num_dashes, double offset);
 
-cairo_private void
-_cairo_gstate_get_dash (cairo_gstate_t *gstate, double *dash, int *num_dashes, double *offset);
+comac_private void
+_comac_gstate_get_dash (comac_gstate_t *gstate, double *dash, int *num_dashes, double *offset);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_miter_limit (cairo_gstate_t *gstate, double limit);
+comac_private comac_status_t
+_comac_gstate_set_miter_limit (comac_gstate_t *gstate, double limit);
 
-cairo_private double
-_cairo_gstate_get_miter_limit (cairo_gstate_t *gstate);
+comac_private double
+_comac_gstate_get_miter_limit (comac_gstate_t *gstate);
 
-cairo_private void
-_cairo_gstate_get_matrix (cairo_gstate_t *gstate, cairo_matrix_t *matrix);
+comac_private void
+_comac_gstate_get_matrix (comac_gstate_t *gstate, comac_matrix_t *matrix);
 
-cairo_private cairo_status_t
-_cairo_gstate_translate (cairo_gstate_t *gstate, double tx, double ty);
+comac_private comac_status_t
+_comac_gstate_translate (comac_gstate_t *gstate, double tx, double ty);
 
-cairo_private cairo_status_t
-_cairo_gstate_scale (cairo_gstate_t *gstate, double sx, double sy);
+comac_private comac_status_t
+_comac_gstate_scale (comac_gstate_t *gstate, double sx, double sy);
 
-cairo_private cairo_status_t
-_cairo_gstate_rotate (cairo_gstate_t *gstate, double angle);
+comac_private comac_status_t
+_comac_gstate_rotate (comac_gstate_t *gstate, double angle);
 
-cairo_private cairo_status_t
-_cairo_gstate_transform (cairo_gstate_t	      *gstate,
-			 const cairo_matrix_t *matrix);
+comac_private comac_status_t
+_comac_gstate_transform (comac_gstate_t	      *gstate,
+			 const comac_matrix_t *matrix);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_matrix (cairo_gstate_t       *gstate,
-			  const cairo_matrix_t *matrix);
+comac_private comac_status_t
+_comac_gstate_set_matrix (comac_gstate_t       *gstate,
+			  const comac_matrix_t *matrix);
 
-cairo_private void
-_cairo_gstate_identity_matrix (cairo_gstate_t *gstate);
+comac_private void
+_comac_gstate_identity_matrix (comac_gstate_t *gstate);
 
-cairo_private void
-_cairo_gstate_user_to_device (cairo_gstate_t *gstate, double *x, double *y);
+comac_private void
+_comac_gstate_user_to_device (comac_gstate_t *gstate, double *x, double *y);
 
-cairo_private void
-_cairo_gstate_user_to_device_distance (cairo_gstate_t *gstate, double *dx, double *dy);
+comac_private void
+_comac_gstate_user_to_device_distance (comac_gstate_t *gstate, double *dx, double *dy);
 
-cairo_private void
-_cairo_gstate_device_to_user (cairo_gstate_t *gstate, double *x, double *y);
+comac_private void
+_comac_gstate_device_to_user (comac_gstate_t *gstate, double *x, double *y);
 
-cairo_private void
-_cairo_gstate_device_to_user_distance (cairo_gstate_t *gstate, double *dx, double *dy);
+comac_private void
+_comac_gstate_device_to_user_distance (comac_gstate_t *gstate, double *dx, double *dy);
 
-cairo_private void
-_do_cairo_gstate_user_to_backend (cairo_gstate_t *gstate, double *x, double *y);
-
-static inline void
-_cairo_gstate_user_to_backend (cairo_gstate_t *gstate, double *x, double *y)
-{
-    if (! gstate->is_identity)
-	_do_cairo_gstate_user_to_backend (gstate, x, y);
-}
-
-cairo_private void
-_do_cairo_gstate_user_to_backend_distance (cairo_gstate_t *gstate, double *x, double *y);
+comac_private void
+_do_comac_gstate_user_to_backend (comac_gstate_t *gstate, double *x, double *y);
 
 static inline void
-_cairo_gstate_user_to_backend_distance (cairo_gstate_t *gstate, double *x, double *y)
+_comac_gstate_user_to_backend (comac_gstate_t *gstate, double *x, double *y)
 {
     if (! gstate->is_identity)
-	_do_cairo_gstate_user_to_backend_distance (gstate, x, y);
+	_do_comac_gstate_user_to_backend (gstate, x, y);
 }
 
-cairo_private void
-_do_cairo_gstate_backend_to_user (cairo_gstate_t *gstate, double *x, double *y);
+comac_private void
+_do_comac_gstate_user_to_backend_distance (comac_gstate_t *gstate, double *x, double *y);
 
 static inline void
-_cairo_gstate_backend_to_user (cairo_gstate_t *gstate, double *x, double *y)
+_comac_gstate_user_to_backend_distance (comac_gstate_t *gstate, double *x, double *y)
 {
     if (! gstate->is_identity)
-	_do_cairo_gstate_backend_to_user (gstate, x, y);
+	_do_comac_gstate_user_to_backend_distance (gstate, x, y);
 }
 
-cairo_private void
-_do_cairo_gstate_backend_to_user_distance (cairo_gstate_t *gstate, double *x, double *y);
+comac_private void
+_do_comac_gstate_backend_to_user (comac_gstate_t *gstate, double *x, double *y);
 
 static inline void
-_cairo_gstate_backend_to_user_distance (cairo_gstate_t *gstate, double *x, double *y)
+_comac_gstate_backend_to_user (comac_gstate_t *gstate, double *x, double *y)
 {
     if (! gstate->is_identity)
-	_do_cairo_gstate_backend_to_user_distance (gstate, x, y);
+	_do_comac_gstate_backend_to_user (gstate, x, y);
 }
 
-cairo_private void
-_cairo_gstate_backend_to_user_rectangle (cairo_gstate_t *gstate,
+comac_private void
+_do_comac_gstate_backend_to_user_distance (comac_gstate_t *gstate, double *x, double *y);
+
+static inline void
+_comac_gstate_backend_to_user_distance (comac_gstate_t *gstate, double *x, double *y)
+{
+    if (! gstate->is_identity)
+	_do_comac_gstate_backend_to_user_distance (gstate, x, y);
+}
+
+comac_private void
+_comac_gstate_backend_to_user_rectangle (comac_gstate_t *gstate,
                                          double *x1, double *y1,
                                          double *x2, double *y2,
-                                         cairo_bool_t *is_tight);
+                                         comac_bool_t *is_tight);
 
-cairo_private void
-_cairo_gstate_path_extents (cairo_gstate_t     *gstate,
-			    cairo_path_fixed_t *path,
+comac_private void
+_comac_gstate_path_extents (comac_gstate_t     *gstate,
+			    comac_path_fixed_t *path,
 			    double *x1, double *y1,
 			    double *x2, double *y2);
 
-cairo_private cairo_status_t
-_cairo_gstate_paint (cairo_gstate_t *gstate);
+comac_private comac_status_t
+_comac_gstate_paint (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_mask (cairo_gstate_t  *gstate,
-		    cairo_pattern_t *mask);
+comac_private comac_status_t
+_comac_gstate_mask (comac_gstate_t  *gstate,
+		    comac_pattern_t *mask);
 
-cairo_private cairo_status_t
-_cairo_gstate_stroke (cairo_gstate_t *gstate, cairo_path_fixed_t *path);
+comac_private comac_status_t
+_comac_gstate_stroke (comac_gstate_t *gstate, comac_path_fixed_t *path);
 
-cairo_private cairo_status_t
-_cairo_gstate_fill (cairo_gstate_t *gstate, cairo_path_fixed_t *path);
+comac_private comac_status_t
+_comac_gstate_fill (comac_gstate_t *gstate, comac_path_fixed_t *path);
 
-cairo_private cairo_status_t
-_cairo_gstate_copy_page (cairo_gstate_t *gstate);
+comac_private comac_status_t
+_comac_gstate_copy_page (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_show_page (cairo_gstate_t *gstate);
+comac_private comac_status_t
+_comac_gstate_show_page (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_stroke_extents (cairo_gstate_t	 *gstate,
-			      cairo_path_fixed_t *path,
+comac_private comac_status_t
+_comac_gstate_stroke_extents (comac_gstate_t	 *gstate,
+			      comac_path_fixed_t *path,
                               double *x1, double *y1,
 			      double *x2, double *y2);
 
-cairo_private cairo_status_t
-_cairo_gstate_fill_extents (cairo_gstate_t     *gstate,
-			    cairo_path_fixed_t *path,
+comac_private comac_status_t
+_comac_gstate_fill_extents (comac_gstate_t     *gstate,
+			    comac_path_fixed_t *path,
                             double *x1, double *y1,
 			    double *x2, double *y2);
 
-cairo_private cairo_status_t
-_cairo_gstate_in_stroke (cairo_gstate_t	    *gstate,
-			 cairo_path_fixed_t *path,
+comac_private comac_status_t
+_comac_gstate_in_stroke (comac_gstate_t	    *gstate,
+			 comac_path_fixed_t *path,
 			 double		     x,
 			 double		     y,
-			 cairo_bool_t	    *inside_ret);
+			 comac_bool_t	    *inside_ret);
 
-cairo_private cairo_bool_t
-_cairo_gstate_in_fill (cairo_gstate_t	  *gstate,
-		       cairo_path_fixed_t *path,
+comac_private comac_bool_t
+_comac_gstate_in_fill (comac_gstate_t	  *gstate,
+		       comac_path_fixed_t *path,
 		       double		   x,
 		       double		   y);
 
-cairo_private cairo_bool_t
-_cairo_gstate_in_clip (cairo_gstate_t	  *gstate,
+comac_private comac_bool_t
+_comac_gstate_in_clip (comac_gstate_t	  *gstate,
 		       double		   x,
 		       double		   y);
 
-cairo_private cairo_status_t
-_cairo_gstate_clip (cairo_gstate_t *gstate, cairo_path_fixed_t *path);
+comac_private comac_status_t
+_comac_gstate_clip (comac_gstate_t *gstate, comac_path_fixed_t *path);
 
-cairo_private cairo_status_t
-_cairo_gstate_reset_clip (cairo_gstate_t *gstate);
+comac_private comac_status_t
+_comac_gstate_reset_clip (comac_gstate_t *gstate);
 
-cairo_private cairo_bool_t
-_cairo_gstate_clip_extents (cairo_gstate_t *gstate,
+comac_private comac_bool_t
+_comac_gstate_clip_extents (comac_gstate_t *gstate,
 		            double         *x1,
 		            double         *y1,
 			    double         *x2,
 			    double         *y2);
 
-cairo_private cairo_rectangle_list_t*
-_cairo_gstate_copy_clip_rectangle_list (cairo_gstate_t *gstate);
+comac_private comac_rectangle_list_t*
+_comac_gstate_copy_clip_rectangle_list (comac_gstate_t *gstate);
 
-cairo_private cairo_status_t
-_cairo_gstate_show_surface (cairo_gstate_t	*gstate,
-			    cairo_surface_t	*surface,
+comac_private comac_status_t
+_comac_gstate_show_surface (comac_gstate_t	*gstate,
+			    comac_surface_t	*surface,
 			    double		 x,
 			    double		 y,
 			    double		width,
 			    double		height);
 
-cairo_private cairo_status_t
-_cairo_gstate_tag_begin (cairo_gstate_t	*gstate,
+comac_private comac_status_t
+_comac_gstate_tag_begin (comac_gstate_t	*gstate,
 			 const char     *tag_name,
 			 const char     *attributes);
 
-cairo_private cairo_status_t
-_cairo_gstate_tag_end (cairo_gstate_t	*gstate,
+comac_private comac_status_t
+_comac_gstate_tag_end (comac_gstate_t	*gstate,
 		       const char       *tag_name);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_font_size (cairo_gstate_t *gstate,
+comac_private comac_status_t
+_comac_gstate_set_font_size (comac_gstate_t *gstate,
 			     double          size);
 
-cairo_private void
-_cairo_gstate_get_font_matrix (cairo_gstate_t *gstate,
-			       cairo_matrix_t *matrix);
+comac_private void
+_comac_gstate_get_font_matrix (comac_gstate_t *gstate,
+			       comac_matrix_t *matrix);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_font_matrix (cairo_gstate_t	    *gstate,
-			       const cairo_matrix_t *matrix);
+comac_private comac_status_t
+_comac_gstate_set_font_matrix (comac_gstate_t	    *gstate,
+			       const comac_matrix_t *matrix);
 
-cairo_private void
-_cairo_gstate_get_font_options (cairo_gstate_t       *gstate,
-				cairo_font_options_t *options);
+comac_private void
+_comac_gstate_get_font_options (comac_gstate_t       *gstate,
+				comac_font_options_t *options);
 
-cairo_private void
-_cairo_gstate_set_font_options (cairo_gstate_t	           *gstate,
-				const cairo_font_options_t *options);
+comac_private void
+_comac_gstate_set_font_options (comac_gstate_t	           *gstate,
+				const comac_font_options_t *options);
 
-cairo_private cairo_status_t
-_cairo_gstate_get_font_face (cairo_gstate_t     *gstate,
-			     cairo_font_face_t **font_face);
+comac_private comac_status_t
+_comac_gstate_get_font_face (comac_gstate_t     *gstate,
+			     comac_font_face_t **font_face);
 
-cairo_private cairo_status_t
-_cairo_gstate_get_scaled_font (cairo_gstate_t       *gstate,
-			       cairo_scaled_font_t **scaled_font);
+comac_private comac_status_t
+_comac_gstate_get_scaled_font (comac_gstate_t       *gstate,
+			       comac_scaled_font_t **scaled_font);
 
-cairo_private cairo_status_t
-_cairo_gstate_get_font_extents (cairo_gstate_t *gstate,
-				cairo_font_extents_t *extents);
+comac_private comac_status_t
+_comac_gstate_get_font_extents (comac_gstate_t *gstate,
+				comac_font_extents_t *extents);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_font_face (cairo_gstate_t    *gstate,
-			     cairo_font_face_t *font_face);
+comac_private comac_status_t
+_comac_gstate_set_font_face (comac_gstate_t    *gstate,
+			     comac_font_face_t *font_face);
 
-cairo_private cairo_status_t
-_cairo_gstate_glyph_extents (cairo_gstate_t *gstate,
-			     const cairo_glyph_t *glyphs,
+comac_private comac_status_t
+_comac_gstate_glyph_extents (comac_gstate_t *gstate,
+			     const comac_glyph_t *glyphs,
 			     int num_glyphs,
-			     cairo_text_extents_t *extents);
+			     comac_text_extents_t *extents);
 
-cairo_private cairo_status_t
-_cairo_gstate_show_text_glyphs (cairo_gstate_t		   *gstate,
-				const cairo_glyph_t	   *glyphs,
+comac_private comac_status_t
+_comac_gstate_show_text_glyphs (comac_gstate_t		   *gstate,
+				const comac_glyph_t	   *glyphs,
 				int			    num_glyphs,
-				cairo_glyph_text_info_t    *info);
+				comac_glyph_text_info_t    *info);
 
-cairo_private cairo_status_t
-_cairo_gstate_glyph_path (cairo_gstate_t      *gstate,
-			  const cairo_glyph_t *glyphs,
+comac_private comac_status_t
+_comac_gstate_glyph_path (comac_gstate_t      *gstate,
+			  const comac_glyph_t *glyphs,
 			  int		       num_glyphs,
-			  cairo_path_fixed_t  *path);
+			  comac_path_fixed_t  *path);
 
-cairo_private cairo_status_t
-_cairo_gstate_set_antialias (cairo_gstate_t *gstate,
-			     cairo_antialias_t antialias);
+comac_private comac_status_t
+_comac_gstate_set_antialias (comac_gstate_t *gstate,
+			     comac_antialias_t antialias);
 
-cairo_private cairo_antialias_t
-_cairo_gstate_get_antialias (cairo_gstate_t *gstate);
+comac_private comac_antialias_t
+_comac_gstate_get_antialias (comac_gstate_t *gstate);
 
-#endif /* CAIRO_GSTATE_PRIVATE_H */
+#endif /* COMAC_GSTATE_PRIVATE_H */

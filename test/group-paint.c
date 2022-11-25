@@ -25,22 +25,22 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_push_group (cr);
+    comac_push_group (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_pop_group_to_source (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (group_paint,
+COMAC_TEST (group_paint,
 	    "test push_group(); pop_group_to_source(); set_operator(SOURCE); paint();",
 	    "group", /* keywords */
 	    NULL, /* requirements */

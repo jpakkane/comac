@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2012 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -33,53 +33,53 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_DAMAGE_PRIVATE_H
-#define CAIRO_DAMAGE_PRIVATE_H
+#ifndef COMAC_DAMAGE_PRIVATE_H
+#define COMAC_DAMAGE_PRIVATE_H
 
 #include "comac-types-private.h"
 
 #include <pixman.h>
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-struct _cairo_damage {
-    cairo_status_t status;
-    cairo_region_t *region;
+struct _comac_damage {
+    comac_status_t status;
+    comac_region_t *region;
 
     int dirty, remain;
-    struct _cairo_damage_chunk {
-	struct _cairo_damage_chunk *next;
-	cairo_box_t *base;
+    struct _comac_damage_chunk {
+	struct _comac_damage_chunk *next;
+	comac_box_t *base;
 	int count;
 	int size;
     } chunks, *tail;
-    cairo_box_t boxes[32];
+    comac_box_t boxes[32];
 };
 
-cairo_private cairo_damage_t *
-_cairo_damage_create (void);
+comac_private comac_damage_t *
+_comac_damage_create (void);
 
-cairo_private cairo_damage_t *
-_cairo_damage_create_in_error (cairo_status_t status);
+comac_private comac_damage_t *
+_comac_damage_create_in_error (comac_status_t status);
 
-cairo_private cairo_damage_t *
-_cairo_damage_add_box (cairo_damage_t *damage,
-		       const cairo_box_t *box);
+comac_private comac_damage_t *
+_comac_damage_add_box (comac_damage_t *damage,
+		       const comac_box_t *box);
 
-cairo_private cairo_damage_t *
-_cairo_damage_add_rectangle (cairo_damage_t *damage,
-			     const cairo_rectangle_int_t *rect);
+comac_private comac_damage_t *
+_comac_damage_add_rectangle (comac_damage_t *damage,
+			     const comac_rectangle_int_t *rect);
 
-cairo_private cairo_damage_t *
-_cairo_damage_add_region (cairo_damage_t *damage,
-			  const cairo_region_t *region);
+comac_private comac_damage_t *
+_comac_damage_add_region (comac_damage_t *damage,
+			  const comac_region_t *region);
 
-cairo_private cairo_damage_t *
-_cairo_damage_reduce (cairo_damage_t *damage);
+comac_private comac_damage_t *
+_comac_damage_reduce (comac_damage_t *damage);
 
-cairo_private void
-_cairo_damage_destroy (cairo_damage_t *damage);
+comac_private void
+_comac_damage_destroy (comac_damage_t *damage);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_DAMAGE_PRIVATE_H */
+#endif /* COMAC_DAMAGE_PRIVATE_H */

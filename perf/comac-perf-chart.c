@@ -38,17 +38,17 @@
 #include <assert.h>
 
 struct chart {
-    cairo_perf_report_t *reports;
+    comac_perf_report_t *reports;
     const char **names;
 
-    cairo_t *cr;
+    comac_t *cr;
     int width, height;
     int num_tests, num_reports;
     double min_value, max_value;
     double *average;
 
-    cairo_bool_t use_html;
-    cairo_bool_t relative;
+    comac_bool_t use_html;
+    comac_bool_t relative;
 };
 struct color {
     double red, green, blue;
@@ -312,29 +312,29 @@ static void set_report_color (struct chart *chart, int report)
     struct color color;
 
     hsv_to_rgb (6. / chart->num_reports * report, .7, .7, &color);
-    cairo_set_source_rgb (chart->cr, color.red, color.green, color.blue);
+    comac_set_source_rgb (chart->cr, color.red, color.green, color.blue);
 }
 
 static void set_report_gradient (struct chart *chart, int report,
 				 double x, double y, double w, double h)
 {
     struct color color;
-    cairo_pattern_t *p;
+    comac_pattern_t *p;
 
     hsv_to_rgb (6. / chart->num_reports * report, .7, .7, &color);
 
-    p = cairo_pattern_create_linear (x, 0, x+w, 0);
-    cairo_pattern_add_color_stop_rgba (p, 0.0,
+    p = comac_pattern_create_linear (x, 0, x+w, 0);
+    comac_pattern_add_color_stop_rgba (p, 0.0,
 				       color.red, color.green, color.blue,
 				       .50);
-    cairo_pattern_add_color_stop_rgba (p, 0.5,
+    comac_pattern_add_color_stop_rgba (p, 0.5,
 				       color.red, color.green, color.blue,
 				       .50);
-    cairo_pattern_add_color_stop_rgba (p, 1.0,
+    comac_pattern_add_color_stop_rgba (p, 1.0,
 				       color.red, color.green, color.blue,
 				       1.0);
-    cairo_set_source (chart->cr, p);
-    cairo_pattern_destroy (p);
+    comac_set_source (chart->cr, p);
+    comac_pattern_destroy (p);
 }
 
 static void
@@ -347,13 +347,13 @@ test_background (struct chart *c,
     x = dx * test;
 
     if (test & 1)
-	cairo_set_source_rgba (c->cr, .2, .2, .2, .2);
+	comac_set_source_rgba (c->cr, .2, .2, .2, .2);
     else
-	cairo_set_source_rgba (c->cr, .8, .8, .8, .2);
+	comac_set_source_rgba (c->cr, .8, .8, .8, .2);
 
-    cairo_rectangle (c->cr, floor (x), 0,
+    comac_rectangle (c->cr, floor (x), 0,
 		     floor (dx + x) - floor (x), c->height);
-    cairo_fill (c->cr);
+    comac_fill (c->cr);
 }
 
 static void
@@ -368,7 +368,7 @@ add_chart (struct chart *c,
 	return;
 
     if (c->relative) {
-	cairo_text_extents_t extents;
+	comac_text_extents_t extents;
 	char buf[80];
 	double y;
 
@@ -377,40 +377,40 @@ add_chart (struct chart *c,
 	dx = c->width / (double) (c->num_tests * c->num_reports);
 	x = dx * (c->num_reports * test + report - .5);
 
-	cairo_rectangle (c->cr,
+	comac_rectangle (c->cr,
 			 floor (x), c->height / 2.,
 			 floor (x + dx) - floor (x),
 			 ceil (-dy*value - c->height/2.) + c->height/2.);
 	if (dx < 5) {
 	    set_report_color (c, report);
-	    cairo_fill (c->cr);
+	    comac_fill (c->cr);
 	} else {
 	    set_report_gradient (c, report,
 				 floor (x), c->height / 2.,
 				 floor (x + dx) - floor (x),
 				 ceil (-dy*value - c->height/2.) + c->height/2.);
 
-	    cairo_fill_preserve (c->cr);
-	    cairo_save (c->cr);
-	    cairo_clip_preserve (c->cr);
+	    comac_fill_preserve (c->cr);
+	    comac_save (c->cr);
+	    comac_clip_preserve (c->cr);
 	    set_report_color (c, report);
-	    cairo_stroke (c->cr);
-	    cairo_restore (c->cr);
+	    comac_stroke (c->cr);
+	    comac_restore (c->cr);
 	}
 
 	/* Skip the label if the difference between the two is less than 0.1% */
 	if (fabs (value) < 0.1)
 		return;
 
-	cairo_save (c->cr);
-	cairo_set_font_size (c->cr, dx - 2);
+	comac_save (c->cr);
+	comac_set_font_size (c->cr, dx - 2);
 
 	if (value < 0) {
 	    sprintf (buf, "%.1f", -value/100 + 1);
 	} else {
 	    sprintf (buf, "%.1f", value/100 + 1);
 	}
-	cairo_text_extents (c->cr, buf, &extents);
+	comac_text_extents (c->cr, buf, &extents);
 
 	/* will it be clipped? */
 	y = -dy * value;
@@ -428,42 +428,42 @@ add_chart (struct chart *c,
 		    y += extents.width + 6;
 	}
 
-	cairo_translate (c->cr,
+	comac_translate (c->cr,
 			 floor (x) + (floor (x + dx) - floor (x))/2,
 			 floor (y) + c->height/2.);
-	cairo_rotate (c->cr, -M_PI/2);
+	comac_rotate (c->cr, -M_PI/2);
 	if (y < 0) {
-	    cairo_move_to (c->cr, -extents.x_bearing -extents.width - 4, -extents.y_bearing/2);
+	    comac_move_to (c->cr, -extents.x_bearing -extents.width - 4, -extents.y_bearing/2);
 	} else {
-	    cairo_move_to (c->cr, 2, -extents.y_bearing/2);
+	    comac_move_to (c->cr, 2, -extents.y_bearing/2);
 	}
 
-	cairo_set_source_rgb (c->cr, .95, .95, .95);
-	cairo_show_text (c->cr, buf);
-	cairo_restore (c->cr);
+	comac_set_source_rgb (c->cr, .95, .95, .95);
+	comac_show_text (c->cr, buf);
+	comac_restore (c->cr);
     } else {
 	dy = (c->height - PAD) / c->max_value;
 	dx = c->width / (double) (c->num_tests * (c->num_reports+1));
 	x = dx * ((c->num_reports+1) * test + report + .5);
 
-	cairo_rectangle (c->cr,
+	comac_rectangle (c->cr,
 			 floor (x), c->height,
 			 floor (x + dx) - floor (x),
 			 floor (c->height - dy*value) - c->height);
 	if (dx < 5) {
 	    set_report_color (c, report);
-	    cairo_fill (c->cr);
+	    comac_fill (c->cr);
 	} else {
 	    set_report_gradient (c, report,
 				 floor (x), c->height,
 				 floor (x + dx) - floor (x),
 				 floor (c->height - dy*value) - c->height);
-	    cairo_fill_preserve (c->cr);
-	    cairo_save (c->cr);
-	    cairo_clip_preserve (c->cr);
+	    comac_fill_preserve (c->cr);
+	    comac_save (c->cr);
+	    comac_clip_preserve (c->cr);
 	    set_report_color (c, report);
-	    cairo_stroke (c->cr);
-	    cairo_restore (c->cr);
+	    comac_stroke (c->cr);
+	    comac_restore (c->cr);
 	}
     }
 }
@@ -475,7 +475,7 @@ add_average (struct chart *c,
 	     double	 value)
 {
     double dx, dy, x;
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
     char buf[80];
     double y;
 
@@ -487,40 +487,40 @@ add_average (struct chart *c,
     dx = c->width / (double) (c->num_tests * c->num_reports);
     x = dx * (c->num_reports * test + report - .5);
 
-    cairo_rectangle (c->cr,
+    comac_rectangle (c->cr,
 		     floor (x), c->height / 2.,
 		     floor (x + dx) - floor (x),
 		     ceil (-dy*value - c->height/2.) + c->height/2.);
     if (dx < 5) {
 	set_report_color (c, report);
-	cairo_fill (c->cr);
+	comac_fill (c->cr);
     } else {
 	set_report_gradient (c, report,
 			     floor (x), c->height / 2.,
 			     floor (x + dx) - floor (x),
 			     ceil (-dy*value - c->height/2.) + c->height/2.);
 
-	cairo_fill_preserve (c->cr);
-	cairo_save (c->cr);
-	cairo_clip_preserve (c->cr);
+	comac_fill_preserve (c->cr);
+	comac_save (c->cr);
+	comac_clip_preserve (c->cr);
 	set_report_color (c, report);
-	cairo_stroke (c->cr);
-	cairo_restore (c->cr);
+	comac_stroke (c->cr);
+	comac_restore (c->cr);
     }
 
     /* Skip the label if the difference between the two is less than 0.1% */
     if (fabs (value) < 0.1)
 	return;
 
-    cairo_save (c->cr);
-    cairo_set_font_size (c->cr, dx - 2);
+    comac_save (c->cr);
+    comac_set_font_size (c->cr, dx - 2);
 
     if (value < 0) {
 	sprintf (buf, "%.1f", -value/100 + 1);
     } else {
 	sprintf (buf, "%.1f", value/100 + 1);
     }
-    cairo_text_extents (c->cr, buf, &extents);
+    comac_text_extents (c->cr, buf, &extents);
 
     /* will it be clipped? */
     y = -dy * value;
@@ -538,19 +538,19 @@ add_average (struct chart *c,
 	    y += extents.width + 6;
     }
 
-    cairo_translate (c->cr,
+    comac_translate (c->cr,
 		     floor (x) + (floor (x + dx) - floor (x))/2,
 		     floor (y) + c->height/2.);
-    cairo_rotate (c->cr, -M_PI/2);
+    comac_rotate (c->cr, -M_PI/2);
     if (y < 0) {
-	cairo_move_to (c->cr, -extents.x_bearing -extents.width - 4, -extents.y_bearing/2);
+	comac_move_to (c->cr, -extents.x_bearing -extents.width - 4, -extents.y_bearing/2);
     } else {
-	cairo_move_to (c->cr, 2, -extents.y_bearing/2);
+	comac_move_to (c->cr, 2, -extents.y_bearing/2);
     }
 
-    cairo_set_source_rgb (c->cr, .95, .95, .95);
-    cairo_show_text (c->cr, buf);
-    cairo_restore (c->cr);
+    comac_set_source_rgb (c->cr, .95, .95, .95);
+    comac_show_text (c->cr, buf);
+    comac_restore (c->cr);
 }
 
 static void
@@ -558,34 +558,34 @@ add_label (struct chart *c,
 	   int		 test,
 	   const char	*label)
 {
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
     double dx, x;
 
-    cairo_save (c->cr);
+    comac_save (c->cr);
     dx = c->width / (double) c->num_tests;
     if (dx / 2 - PAD < 4)
 	return;
-    cairo_set_font_size (c->cr, dx / 2 - PAD);
-    cairo_text_extents (c->cr, label, &extents);
+    comac_set_font_size (c->cr, dx / 2 - PAD);
+    comac_text_extents (c->cr, label, &extents);
 
-    cairo_set_source_rgb (c->cr, .5, .5, .5);
+    comac_set_source_rgb (c->cr, .5, .5, .5);
 
     x = (test + .5) * dx;
-    cairo_save (c->cr);
-    cairo_translate (c->cr, x, c->height - PAD / 2);
-    cairo_rotate (c->cr, -M_PI/2);
-    cairo_move_to (c->cr, 0, -extents.y_bearing/2);
-    cairo_show_text (c->cr, label);
-    cairo_restore (c->cr);
+    comac_save (c->cr);
+    comac_translate (c->cr, x, c->height - PAD / 2);
+    comac_rotate (c->cr, -M_PI/2);
+    comac_move_to (c->cr, 0, -extents.y_bearing/2);
+    comac_show_text (c->cr, label);
+    comac_restore (c->cr);
 
-    cairo_save (c->cr);
-    cairo_translate (c->cr, x, PAD / 2);
-    cairo_rotate (c->cr, -M_PI/2);
-    cairo_move_to (c->cr, -extents.width, -extents.y_bearing/2);
-    cairo_show_text (c->cr, label);
-    cairo_restore (c->cr);
+    comac_save (c->cr);
+    comac_translate (c->cr, x, PAD / 2);
+    comac_rotate (c->cr, -M_PI/2);
+    comac_move_to (c->cr, -extents.width, -extents.y_bearing/2);
+    comac_show_text (c->cr, label);
+    comac_restore (c->cr);
 
-    cairo_restore (c->cr);
+    comac_restore (c->cr);
 }
 
 static void
@@ -593,18 +593,18 @@ add_base_line (struct chart *c)
 {
     double y;
 
-    cairo_save (c->cr);
-    cairo_set_line_width (c->cr, 2.);
+    comac_save (c->cr);
+    comac_set_line_width (c->cr, 2.);
     if (c->relative) {
 	y = c->height / 2.;
     } else {
 	y = c->height;
     }
-    cairo_move_to (c->cr, 0, y);
-    cairo_line_to (c->cr, c->width, y);
-    cairo_set_source_rgb (c->cr, 1, 1, 1);
-    cairo_stroke (c->cr);
-    cairo_restore (c->cr);
+    comac_move_to (c->cr, 0, y);
+    comac_line_to (c->cr, c->width, y);
+    comac_set_source_rgb (c->cr, 1, 1, 1);
+    comac_stroke (c->cr);
+    comac_restore (c->cr);
 }
 
 static void
@@ -615,7 +615,7 @@ add_absolute_lines (struct chart *c)
     double v, y, dy;
     unsigned int i;
     char buf[80];
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
     v = c->max_value / 2.;
 
@@ -631,9 +631,9 @@ done:
 
     dy = (c->height - PAD) / c->max_value;
 
-    cairo_save (c->cr);
-    cairo_set_line_width (c->cr, 1.);
-    cairo_set_dash (c->cr, dashes, sizeof (dashes) / sizeof (dashes[0]), 0);
+    comac_save (c->cr);
+    comac_set_line_width (c->cr, 1.);
+    comac_set_dash (c->cr, dashes, sizeof (dashes) / sizeof (dashes[0]), 0);
 
     i = 0;
     do {
@@ -641,29 +641,29 @@ done:
 	if (y < PAD)
 	    break;
 
-	cairo_set_font_size (c->cr, 8);
+	comac_set_font_size (c->cr, 8);
 
 	sprintf (buf, "%.0fs", i*v/1000);
-	cairo_text_extents (c->cr, buf, &extents);
+	comac_text_extents (c->cr, buf, &extents);
 
-	cairo_set_source_rgba (c->cr, .75, 0, 0, .95);
-	cairo_move_to (c->cr, 1-extents.x_bearing, floor (y) - (extents.height/2 + extents.y_bearing) + .5);
-	cairo_show_text (c->cr, buf);
+	comac_set_source_rgba (c->cr, .75, 0, 0, .95);
+	comac_move_to (c->cr, 1-extents.x_bearing, floor (y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_show_text (c->cr, buf);
 
-	cairo_move_to (c->cr, c->width-extents.width-1, floor (y) - (extents.height/2 + extents.y_bearing) + .5);
-	cairo_show_text (c->cr, buf);
+	comac_move_to (c->cr, c->width-extents.width-1, floor (y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_show_text (c->cr, buf);
 
-	cairo_set_source_rgba (c->cr, .75, 0, 0, .5);
-	cairo_move_to (c->cr,
+	comac_set_source_rgba (c->cr, .75, 0, 0, .5);
+	comac_move_to (c->cr,
 		       ceil (extents.width + extents.x_bearing + 2),
 		       floor (y) + .5);
-	cairo_line_to (c->cr,
+	comac_line_to (c->cr,
 		       floor (c->width - (extents.width + extents.x_bearing + 2)),
 		       floor (y) + .5);
-	cairo_stroke (c->cr);
+	comac_stroke (c->cr);
     } while (1);
 
-    cairo_restore (c->cr);
+    comac_restore (c->cr);
 }
 
 static void
@@ -676,7 +676,7 @@ add_relative_lines (struct chart *c)
     double v, y, dy, mid;
     unsigned int i;
     char buf[80];
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
     v = MAX (-c->min_value, c->max_value) / 200;
 
@@ -693,10 +693,10 @@ done:
     mid = c->height/2.;
     dy = (mid - PAD) / MAX (-c->min_value, c->max_value);
 
-    cairo_save (c->cr);
-    cairo_set_line_width (c->cr, 1.);
-    cairo_set_dash (c->cr, dashes, sizeof (dashes) / sizeof (dashes[0]), 0);
-    cairo_set_font_size (c->cr, 8);
+    comac_save (c->cr);
+    comac_set_line_width (c->cr, 1.);
+    comac_set_dash (c->cr, dashes, sizeof (dashes) / sizeof (dashes[0]), 0);
+    comac_set_font_size (c->cr, 8);
 
     i = 0;
     do {
@@ -705,83 +705,83 @@ done:
 	    break;
 
 	sprintf (buf, "%.*fx", precision, i*v + 1);
-	cairo_text_extents (c->cr, buf, &extents);
+	comac_text_extents (c->cr, buf, &extents);
 
-	cairo_set_source_rgba (c->cr, .75, 0, 0, .95);
-	cairo_move_to (c->cr, 1-extents.x_bearing, floor (mid + y) - (extents.height/2 + extents.y_bearing) + .5);
-	cairo_show_text (c->cr, buf);
+	comac_set_source_rgba (c->cr, .75, 0, 0, .95);
+	comac_move_to (c->cr, 1-extents.x_bearing, floor (mid + y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_show_text (c->cr, buf);
 
-	cairo_move_to (c->cr, c->width-extents.width-1, floor (mid + y) - (extents.height/2 + extents.y_bearing) + .5);
-	cairo_show_text (c->cr, buf);
+	comac_move_to (c->cr, c->width-extents.width-1, floor (mid + y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_show_text (c->cr, buf);
 
-	cairo_set_source_rgba (c->cr, 0, .75, 0, .95);
-	cairo_move_to (c->cr, 1-extents.x_bearing, ceil (mid - y) - (extents.height/2 + extents.y_bearing) + .5);
-	cairo_show_text (c->cr, buf);
+	comac_set_source_rgba (c->cr, 0, .75, 0, .95);
+	comac_move_to (c->cr, 1-extents.x_bearing, ceil (mid - y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_show_text (c->cr, buf);
 
-	cairo_move_to (c->cr, c->width-extents.width-1, ceil (mid - y) - (extents.height/2 + extents.y_bearing) + .5);
-	cairo_show_text (c->cr, buf);
+	comac_move_to (c->cr, c->width-extents.width-1, ceil (mid - y) - (extents.height/2 + extents.y_bearing) + .5);
+	comac_show_text (c->cr, buf);
 
 	/* trim the dashes to no obscure the labels */
-	cairo_set_source_rgba (c->cr, .75, 0, 0, .5);
-	cairo_move_to (c->cr,
+	comac_set_source_rgba (c->cr, .75, 0, 0, .5);
+	comac_move_to (c->cr,
 		       ceil (extents.width + extents.x_bearing + 2),
 		       floor (mid + y) + .5);
-	cairo_line_to (c->cr,
+	comac_line_to (c->cr,
 		       floor (c->width - (extents.width + 2)),
 		       floor (mid + y) + .5);
-	cairo_stroke (c->cr);
+	comac_stroke (c->cr);
 
-	cairo_set_source_rgba (c->cr, 0, .75, 0, .5);
-	cairo_move_to (c->cr,
+	comac_set_source_rgba (c->cr, 0, .75, 0, .5);
+	comac_move_to (c->cr,
 		       ceil (extents.width + extents.x_bearing + 2),
 		       ceil (mid - y) + .5);
-	cairo_line_to (c->cr,
+	comac_line_to (c->cr,
 		       floor (c->width - (extents.width + 2)),
 		       ceil (mid - y) + .5);
-	cairo_stroke (c->cr);
+	comac_stroke (c->cr);
 
     } while (1);
 
-    cairo_restore (c->cr);
+    comac_restore (c->cr);
 }
 
 static void
 add_slower_faster_guide (struct chart *c)
 {
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
-    cairo_save (c->cr);
+    comac_save (c->cr);
 
-    cairo_set_font_size (c->cr, FONT_SIZE);
+    comac_set_font_size (c->cr, FONT_SIZE);
 
-    cairo_text_extents (c->cr, "FASTER", &extents);
-    cairo_set_source_rgba (c->cr, 0, .75, 0, .5);
-    cairo_move_to (c->cr,
+    comac_text_extents (c->cr, "FASTER", &extents);
+    comac_set_source_rgba (c->cr, 0, .75, 0, .5);
+    comac_move_to (c->cr,
 		   c->width/4. - extents.width/2. + extents.x_bearing,
 		   1 - extents.y_bearing);
-    cairo_show_text (c->cr, "FASTER");
-    cairo_move_to (c->cr,
+    comac_show_text (c->cr, "FASTER");
+    comac_move_to (c->cr,
 		   3*c->width/4. - extents.width/2. + extents.x_bearing,
 		   1 - extents.y_bearing);
-    cairo_show_text (c->cr, "FASTER");
+    comac_show_text (c->cr, "FASTER");
 
-    cairo_text_extents (c->cr, "SLOWER", &extents);
-    cairo_set_source_rgba (c->cr, .75, 0, 0, .5);
-    cairo_move_to (c->cr,
+    comac_text_extents (c->cr, "SLOWER", &extents);
+    comac_set_source_rgba (c->cr, .75, 0, 0, .5);
+    comac_move_to (c->cr,
 		   c->width/4. - extents.width/2. + extents.x_bearing,
 		   c->height - 1);
-    cairo_show_text (c->cr, "SLOWER");
-    cairo_move_to (c->cr,
+    comac_show_text (c->cr, "SLOWER");
+    comac_move_to (c->cr,
 		   3*c->width/4. - extents.width/2. + extents.x_bearing,
 		   c->height - 1);
-    cairo_show_text (c->cr, "SLOWER");
+    comac_show_text (c->cr, "SLOWER");
 
-    cairo_restore (c->cr);
+    comac_restore (c->cr);
 }
 
 static void
-cairo_perf_reports_compare (struct chart *chart,
-			    cairo_bool_t  print)
+comac_perf_reports_compare (struct chart *chart,
+			    comac_bool_t  print)
 {
     test_report_t **tests, *min_test;
     double test_time, best_time;
@@ -955,11 +955,11 @@ cairo_perf_reports_compare (struct chart *chart,
 static void
 add_legend (struct chart *chart)
 {
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
     const char *str;
     int i, x, y;
 
-    cairo_set_font_size (chart->cr, FONT_SIZE);
+    comac_set_font_size (chart->cr, FONT_SIZE);
 
     x = PAD;
     y = chart->height + PAD;
@@ -969,13 +969,13 @@ add_legend (struct chart *chart)
 
 	set_report_color (chart, i);
 
-	cairo_rectangle (chart->cr, x, y + 6, 8, 8);
-	cairo_fill (chart->cr);
+	comac_rectangle (chart->cr, x, y + 6, 8, 8);
+	comac_fill (chart->cr);
 
-	cairo_set_source_rgb (chart->cr, 1, 1, 1);
-	cairo_move_to (chart->cr, x + 10, y + FONT_SIZE + PAD / 2.);
-	cairo_text_extents (chart->cr, str, &extents);
-	cairo_show_text (chart->cr, str);
+	comac_set_source_rgb (chart->cr, 1, 1, 1);
+	comac_move_to (chart->cr, x + 10, y + FONT_SIZE + PAD / 2.);
+	comac_text_extents (chart->cr, str, &extents);
+	comac_show_text (chart->cr, str);
 
 	x += 10 + 2 * PAD + ceil (extents.width);
     }
@@ -987,13 +987,13 @@ add_legend (struct chart *chart)
 	      chart->names[0] : chart->reports[0].configuration;
 
 	sprintf (buf, "(relative to %s)", str);
-	cairo_text_extents (chart->cr, buf, &extents);
+	comac_text_extents (chart->cr, buf, &extents);
 
-	cairo_set_source_rgb (chart->cr, 1, 1, 1);
-	cairo_move_to (chart->cr,
+	comac_set_source_rgb (chart->cr, 1, 1, 1);
+	comac_move_to (chart->cr,
 		       chart->width - 1 - extents.width,
 		       y + FONT_SIZE + PAD / 2.);
-	cairo_show_text (chart->cr, buf);
+	comac_show_text (chart->cr, buf);
     }
 }
 
@@ -1001,7 +1001,7 @@ static void
 usage (void)
 {
 	printf("Usage:\n");
-	printf("  cairo-perf-chart [OPTION...] <result1> <result2>...<resultN>\n");
+	printf("  comac-perf-chart [OPTION...] <result1> <result2>...<resultN>\n");
 	printf("\n");
 	printf("Help Options:\n");
 	printf("  --help, --?\tShow help options\n");
@@ -1018,7 +1018,7 @@ usage (void)
 			" the results file.\n");
 	printf("\n");
 	printf("Example:\n");
-	printf("  cairo-perf-chart --width=1024 --height=768 run1 run2 run3\n");
+	printf("  comac-perf-chart --width=1024 --height=768 run1 run2 run3\n");
 	return;
 }
 
@@ -1026,7 +1026,7 @@ int
 main (int	  argc,
       const char *argv[])
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     struct chart chart;
     test_report_t *t;
     int i;
@@ -1035,8 +1035,8 @@ main (int	  argc,
     chart.width = 640;
     chart.height = 480;
 
-    chart.reports = xcalloc (argc-1, sizeof (cairo_perf_report_t));
-    chart.names = xcalloc (argc-1, sizeof (cairo_perf_report_t));
+    chart.reports = xcalloc (argc-1, sizeof (comac_perf_report_t));
+    chart.names = xcalloc (argc-1, sizeof (comac_perf_report_t));
 
     chart.num_reports = 0;
     for (i = 1; i < argc; i++) {
@@ -1056,21 +1056,21 @@ main (int	  argc,
 		usage();
 		return 0;
 	} else {
-	    cairo_perf_report_load (&chart.reports[chart.num_reports++],
+	    comac_perf_report_load (&chart.reports[chart.num_reports++],
 				    argv[i], i,
 				    test_report_cmp_name);
 	}
     }
 
     for (chart.relative = 0; chart.relative <= 1; chart.relative++) {
-	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+	surface = comac_image_surface_create (COMAC_FORMAT_ARGB32,
 					      chart.width,
 					      chart.height + (FONT_SIZE + PAD) + 2*PAD);
-	chart.cr = cairo_create (surface);
-	cairo_surface_destroy (surface);
+	chart.cr = comac_create (surface);
+	comac_surface_destroy (surface);
 
-	cairo_set_source_rgb (chart.cr, 0, 0, 0);
-	cairo_paint (chart.cr);
+	comac_set_source_rgb (chart.cr, 0, 0, 0);
+	comac_paint (chart.cr);
 
 	find_ranges (&chart);
 
@@ -1082,18 +1082,18 @@ main (int	  argc,
 	} else
 	    add_absolute_lines (&chart);
 
-	cairo_save (chart.cr);
-	cairo_rectangle (chart.cr, 0, 0, chart.width, chart.height);
-	cairo_clip (chart.cr);
-	cairo_perf_reports_compare (&chart, !chart.relative);
-	cairo_restore (chart.cr);
+	comac_save (chart.cr);
+	comac_rectangle (chart.cr, 0, 0, chart.width, chart.height);
+	comac_clip (chart.cr);
+	comac_perf_reports_compare (&chart, !chart.relative);
+	comac_restore (chart.cr);
 
 	add_base_line (&chart);
 	add_legend (&chart);
 
-	cairo_surface_write_to_png (cairo_get_target (chart.cr),
+	comac_surface_write_to_png (comac_get_target (chart.cr),
 				    chart.relative ? "relative.png" : "absolute.png");
-	cairo_destroy (chart.cr);
+	comac_destroy (chart.cr);
     }
 
     /* Pointless memory cleanup, (would be a great place for talloc) */

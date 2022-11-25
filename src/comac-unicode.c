@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * The code in this file is derived from GLib's gutf8.c and
  *   ultimately from libunicode. It is relicensed under the
@@ -31,7 +31,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Tom Tromey.
  *  and Red Hat, Inc.
@@ -195,7 +195,7 @@ _utf8_get_char_extended (const unsigned char *p,
 }
 
 /**
- * _cairo_utf8_get_char_validated:
+ * _comac_utf8_get_char_validated:
  * @p: a UTF-8 string
  * @unicode: location to store one Unicode character
  *
@@ -208,7 +208,7 @@ _utf8_get_char_extended (const unsigned char *p,
  * Returns: the number of bytes forming the character returned.
  **/
 int
-_cairo_utf8_get_char_validated (const char *p,
+_comac_utf8_get_char_validated (const char *p,
 				uint32_t   *unicode)
 {
     int i, mask = 0, len;
@@ -229,7 +229,7 @@ _cairo_utf8_get_char_validated (const char *p,
 }
 
 /**
- * _cairo_utf8_to_ucs4:
+ * _comac_utf8_to_ucs4:
  * @str: an UTF-8 string
  * @len: length of @str in bytes, or -1 if it is nul-terminated.
  *   If @len is supplied and the string has an embedded nul
@@ -244,12 +244,12 @@ _cairo_utf8_get_char_validated (const char *p,
  * with 1 32-bit word per character. The string is validated to
  * consist entirely of valid Unicode characters.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if the entire string was
- *   successfully converted. %CAIRO_STATUS_INVALID_STRING if an
+ * Return value: %COMAC_STATUS_SUCCESS if the entire string was
+ *   successfully converted. %COMAC_STATUS_INVALID_STRING if an
  *   invalid sequence was found.
  **/
-cairo_status_t
-_cairo_utf8_to_ucs4 (const char *str,
+comac_status_t
+_comac_utf8_to_ucs4 (const char *str,
 		     int	 len,
 		     uint32_t  **result,
 		     int	*items_written)
@@ -265,19 +265,19 @@ _cairo_utf8_to_ucs4 (const char *str,
     {
 	uint32_t wc = _utf8_get_char_extended (in, ustr + len - in);
 	if (wc & 0x80000000 || !UNICODE_VALID (wc))
-	    return _cairo_error (CAIRO_STATUS_INVALID_STRING);
+	    return _comac_error (COMAC_STATUS_INVALID_STRING);
 
 	n_chars++;
 	if (n_chars == INT_MAX)
-	    return _cairo_error (CAIRO_STATUS_INVALID_STRING);
+	    return _comac_error (COMAC_STATUS_INVALID_STRING);
 
 	in = UTF8_NEXT_CHAR (in);
     }
 
     if (result) {
-	str32 = _cairo_malloc_ab (n_chars + 1, sizeof (uint32_t));
+	str32 = _comac_malloc_ab (n_chars + 1, sizeof (uint32_t));
 	if (!str32)
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	in = ustr;
 	for (i=0; i < n_chars; i++) {
@@ -292,11 +292,11 @@ _cairo_utf8_to_ucs4 (const char *str,
     if (items_written)
 	*items_written = n_chars;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * _cairo_ucs4_to_utf8:
+ * _comac_ucs4_to_utf8:
  * @unicode: a UCS-4 character
  * @utf8: buffer to write utf8 string into. Must have at least 4 bytes
  * space available. Or %NULL.
@@ -307,7 +307,7 @@ _cairo_utf8_to_ucs4 (const char *str,
  * unicode character
  **/
 int
-_cairo_ucs4_to_utf8 (uint32_t  unicode,
+_comac_ucs4_to_utf8 (uint32_t  unicode,
 		     char     *utf8)
 {
     int bytes;
@@ -341,7 +341,7 @@ _cairo_ucs4_to_utf8 (uint32_t  unicode,
 }
 
 /**
- * _cairo_ucs4_to_utf16:
+ * _comac_ucs4_to_utf16:
  * @unicode: a UCS-4 character
  * @utf16: buffer to write utf16 string into. Must have at least 2
  * elements. Or %NULL.
@@ -352,7 +352,7 @@ _cairo_ucs4_to_utf8 (uint32_t  unicode,
  * invalid unicode character
  **/
 int
-_cairo_ucs4_to_utf16 (uint32_t  unicode,
+_comac_ucs4_to_utf16 (uint32_t  unicode,
 		      uint16_t *utf16)
 {
     if (unicode < 0x10000) {
@@ -370,9 +370,9 @@ _cairo_ucs4_to_utf16 (uint32_t  unicode,
     }
 }
 
-#if CAIRO_HAS_UTF8_TO_UTF16
+#if COMAC_HAS_UTF8_TO_UTF16
 /**
- * _cairo_utf8_to_utf16:
+ * _comac_utf8_to_utf16:
  * @str: an UTF-8 string
  * @len: length of @str in bytes, or -1 if it is nul-terminated.
  *   If @len is supplied and the string has an embedded nul
@@ -388,12 +388,12 @@ _cairo_ucs4_to_utf16 (uint32_t  unicode,
  * as a pair of 16-bit "surrogates". The string is validated to
  * consist entirely of valid Unicode characters.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if the entire string was
- *   successfully converted. %CAIRO_STATUS_INVALID_STRING if an
+ * Return value: %COMAC_STATUS_SUCCESS if the entire string was
+ *   successfully converted. %COMAC_STATUS_INVALID_STRING if an
  *   an invalid sequence was found.
  **/
-cairo_status_t
-_cairo_utf8_to_utf16 (const char *str,
+comac_status_t
+_comac_utf8_to_utf16 (const char *str,
 		      int	  len,
 		      uint16_t **result,
 		      int	*items_written)
@@ -408,7 +408,7 @@ _cairo_utf8_to_utf16 (const char *str,
     while ((len < 0 || ustr + len - in > 0) && *in) {
 	uint32_t wc = _utf8_get_char_extended (in, ustr + len - in);
 	if (wc & 0x80000000 || !UNICODE_VALID (wc))
-	    return _cairo_error (CAIRO_STATUS_INVALID_STRING);
+	    return _comac_error (COMAC_STATUS_INVALID_STRING);
 
 	if (wc < 0x10000)
 	    n16 += 1;
@@ -416,20 +416,20 @@ _cairo_utf8_to_utf16 (const char *str,
 	    n16 += 2;
 
 	if (n16 == INT_MAX - 1 || n16 == INT_MAX)
-	    return _cairo_error (CAIRO_STATUS_INVALID_STRING);
+	    return _comac_error (COMAC_STATUS_INVALID_STRING);
 
 	in = UTF8_NEXT_CHAR (in);
     }
 
-    str16 = _cairo_malloc_ab (n16 + 1, sizeof (uint16_t));
+    str16 = _comac_malloc_ab (n16 + 1, sizeof (uint16_t));
     if (!str16)
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     in = ustr;
     for (i = 0; i < n16;) {
 	uint32_t wc = _utf8_get_char (in);
 
-	i += _cairo_ucs4_to_utf16 (wc, str16 + i);
+	i += _comac_ucs4_to_utf16 (wc, str16 + i);
 
 	in = UTF8_NEXT_CHAR (in);
     }
@@ -440,6 +440,6 @@ _cairo_utf8_to_utf16 (const char *str,
     if (items_written)
 	*items_written = n16;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 #endif

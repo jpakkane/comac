@@ -27,8 +27,8 @@
  *
  * 2005-04-12 Carl Worth <cworth@cworth.org>
  *
- *   I noticed that if we call cairo_select_font_face, but then do a
- *   cairo_destroy before ever drawing any text, then we get:
+ *   I noticed that if we call comac_select_font_face, but then do a
+ *   comac_destroy before ever drawing any text, then we get:
  *
  *   *** glibc detected *** double free or corruption (fasttop): 0x083274d0 ***
  *   Aborted
@@ -41,18 +41,18 @@
 #include "comac-test.h"
 #include <math.h>
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_BOLD);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_BOLD);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (select_font_no_show_text,
-	    "Test calling cairo_select_font_face but never drawing text.",
+COMAC_TEST (select_font_no_show_text,
+	    "Test calling comac_select_font_face but never drawing text.",
 	    "font", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

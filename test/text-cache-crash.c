@@ -30,15 +30,15 @@
  *   Reported bug on mailing list:
  *
  *	From: Ned Konz <ned@squeakland.org>
- *	To: cairo@cairographics.org
+ *	To: comac@comacgraphics.org
  *	Date: Thu, 4 Nov 2004 09:49:38 -0800
- *	Subject: [cairo] getting assertions [cairo_cache.c:143: _entry_destroy:
+ *	Subject: [comac] getting assertions [comac_cache.c:143: _entry_destroy:
  *	        Assertion `cache->used_memory > entry->memory' failed]
  *
  *	The attached program dies on me with the assert
  *
- *	$ ./testCairo
- *	testCairo: cairo_cache.c:143: _entry_destroy: Assertion `cache->used_memory > entry->memory' failed.
+ *	$ ./testComac
+ *	testComac: comac_cache.c:143: _entry_destroy: Assertion `cache->used_memory > entry->memory' failed.
  *
  * 2004-11-04 Carl Worth <cworth@cworth.org>
  *
@@ -48,13 +48,13 @@
  *   Oh, actually, it looks like I may have triggered something
  *   slightly different:
  *
- *	text_cache_crash: cairo_cache.c:422: _cairo_cache_lookup: Assertion `cache->max_memory >= (cache->used_memory + new_entry->memory)' failed.
+ *	text_cache_crash: comac_cache.c:422: _comac_cache_lookup: Assertion `cache->max_memory >= (cache->used_memory + new_entry->memory)' failed.
  *
  *   I'll have to go back and try the original test after I fix this.
  *
  * 2004-11-13 Carl Worth <cworth@cworth.org>
  *
- *   Found the bug. cairo_gstate_select_font was noticing when the
+ *   Found the bug. comac_gstate_select_font was noticing when the
  *   same font was selected twice in a row and was erroneously failing
  *   to free the old reference. Committed a fix and verified it also
  *   fixed the original test case.
@@ -62,31 +62,31 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* Once there was a bug that choked when selecting the same font twice. */
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size (cr, 40.0);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL, COMAC_FONT_WEIGHT_BOLD);
+    comac_set_font_size (cr, 40.0);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size (cr, 40.0);
-    cairo_move_to (cr, 10, 50);
-    cairo_show_text (cr, "hello");
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL, COMAC_FONT_WEIGHT_BOLD);
+    comac_set_font_size (cr, 40.0);
+    comac_move_to (cr, 10, 50);
+    comac_show_text (cr, "hello");
 
     /* Then there was a bug that choked when selecting a font too big
      * for the cache. */
 
-    cairo_set_font_size (cr, 500);
-    cairo_show_text (cr, "hello");
+    comac_set_font_size (cr, 500);
+    comac_show_text (cr, "hello");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (text_cache_crash,
-	    "Test case for bug causing an assertion failure in _cairo_cache_lookup",
+COMAC_TEST (text_cache_crash,
+	    "Test case for bug causing an assertion failure in _comac_cache_lookup",
 	    "text, stress", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

@@ -27,28 +27,28 @@
 
 #define TEXT_SIZE 42
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
+    comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
-    cairo_set_font_size (cr, TEXT_SIZE);
-    cairo_translate (cr, 0, TEXT_SIZE);
+    comac_set_font_size (cr, TEXT_SIZE);
+    comac_translate (cr, 0, TEXT_SIZE);
 
     /* U+1F030, DOMINO TILE HORIZONTAL BACK */
-    cairo_show_text (cr, "\xf0\x9f\x80\xb0");
+    comac_show_text (cr, "\xf0\x9f\x80\xb0");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (smp_glyph,
+COMAC_TEST (smp_glyph,
 	    "Test glyphs for symbols in the Supplementary Multilingual Plane",
 	    "text, glyphs", /* keywords */
 	    NULL, /* requirements */

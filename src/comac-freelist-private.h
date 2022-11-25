@@ -19,8 +19,8 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
  * OF THIS SOFTWARE.
  */
-#ifndef CAIRO_FREELIST_H
-#define CAIRO_FREELIST_H
+#ifndef COMAC_FREELIST_H
+#define COMAC_FREELIST_H
 
 #include "comac-types-private.h"
 #include "comac-compiler-private.h"
@@ -37,45 +37,45 @@
 
 /* Initialise a freelist that will be responsible for allocating
  * nodes of size nodesize. */
-cairo_private void
-_cairo_freelist_init (cairo_freelist_t *freelist, unsigned nodesize);
+comac_private void
+_comac_freelist_init (comac_freelist_t *freelist, unsigned nodesize);
 
 /* Deallocate any nodes in the freelist. */
-cairo_private void
-_cairo_freelist_fini (cairo_freelist_t *freelist);
+comac_private void
+_comac_freelist_fini (comac_freelist_t *freelist);
 
 /* Allocate a new node from the freelist.  If the freelist contains no
  * nodes, a new one will be allocated using malloc().  The caller is
- * responsible for calling _cairo_freelist_free() or free() on the
+ * responsible for calling _comac_freelist_free() or free() on the
  * returned node.  Returns %NULL on memory allocation error. */
-cairo_private void *
-_cairo_freelist_alloc (cairo_freelist_t *freelist);
+comac_private void *
+_comac_freelist_alloc (comac_freelist_t *freelist);
 
 /* Allocate a new node from the freelist.  If the freelist contains no
  * nodes, a new one will be allocated using calloc().  The caller is
- * responsible for calling _cairo_freelist_free() or free() on the
+ * responsible for calling _comac_freelist_free() or free() on the
  * returned node.  Returns %NULL on memory allocation error. */
-cairo_private void *
-_cairo_freelist_calloc (cairo_freelist_t *freelist);
+comac_private void *
+_comac_freelist_calloc (comac_freelist_t *freelist);
 
 /* Return a node to the freelist. This does not deallocate the memory,
  * but makes it available for later reuse by
- * _cairo_freelist_alloc(). */
-cairo_private void
-_cairo_freelist_free (cairo_freelist_t *freelist, void *node);
+ * _comac_freelist_alloc(). */
+comac_private void
+_comac_freelist_free (comac_freelist_t *freelist, void *node);
 
 
-cairo_private void
-_cairo_freepool_init (cairo_freepool_t *freepool, unsigned nodesize);
+comac_private void
+_comac_freepool_init (comac_freepool_t *freepool, unsigned nodesize);
 
-cairo_private void
-_cairo_freepool_fini (cairo_freepool_t *freepool);
+comac_private void
+_comac_freepool_fini (comac_freepool_t *freepool);
 
 static inline void
-_cairo_freepool_reset (cairo_freepool_t *freepool)
+_comac_freepool_reset (comac_freepool_t *freepool)
 {
     while (freepool->pools != &freepool->embedded_pool) {
-	cairo_freelist_pool_t *pool = freepool->pools;
+	comac_freelist_pool_t *pool = freepool->pools;
 	freepool->pools = pool->next;
 	pool->next = freepool->freepools;
 	freepool->freepools = pool;
@@ -85,18 +85,18 @@ _cairo_freepool_reset (cairo_freepool_t *freepool)
     freepool->embedded_pool.data = freepool->embedded_data;
 }
 
-cairo_private void *
-_cairo_freepool_alloc_from_new_pool (cairo_freepool_t *freepool);
+comac_private void *
+_comac_freepool_alloc_from_new_pool (comac_freepool_t *freepool);
 
 static inline void *
-_cairo_freepool_alloc_from_pool (cairo_freepool_t *freepool)
+_comac_freepool_alloc_from_pool (comac_freepool_t *freepool)
 {
-    cairo_freelist_pool_t *pool;
+    comac_freelist_pool_t *pool;
     uint8_t *ptr;
 
     pool = freepool->pools;
     if (unlikely (freepool->nodesize > pool->rem))
-	return _cairo_freepool_alloc_from_new_pool (freepool);
+	return _comac_freepool_alloc_from_new_pool (freepool);
 
     ptr = pool->data;
     pool->data += freepool->nodesize;
@@ -106,13 +106,13 @@ _cairo_freepool_alloc_from_pool (cairo_freepool_t *freepool)
 }
 
 static inline void *
-_cairo_freepool_alloc (cairo_freepool_t *freepool)
+_comac_freepool_alloc (comac_freepool_t *freepool)
 {
-    cairo_freelist_node_t *node;
+    comac_freelist_node_t *node;
 
     node = freepool->first_free_node;
     if (node == NULL)
-	return _cairo_freepool_alloc_from_pool (freepool);
+	return _comac_freepool_alloc_from_pool (freepool);
 
     VG (VALGRIND_MAKE_MEM_DEFINED (node, sizeof (node->next)));
     freepool->first_free_node = node->next;
@@ -121,19 +121,19 @@ _cairo_freepool_alloc (cairo_freepool_t *freepool)
     return node;
 }
 
-cairo_private cairo_status_t
-_cairo_freepool_alloc_array (cairo_freepool_t *freepool,
+comac_private comac_status_t
+_comac_freepool_alloc_array (comac_freepool_t *freepool,
 			     int count,
 			     void **array);
 
 static inline void
-_cairo_freepool_free (cairo_freepool_t *freepool, void *ptr)
+_comac_freepool_free (comac_freepool_t *freepool, void *ptr)
 {
-    cairo_freelist_node_t *node = ptr;
+    comac_freelist_node_t *node = ptr;
 
     node->next = freepool->first_free_node;
     freepool->first_free_node = node;
     VG (VALGRIND_MAKE_MEM_UNDEFINED (node, freepool->nodesize));
 }
 
-#endif /* CAIRO_FREELIST_H */
+#endif /* COMAC_FREELIST_H */

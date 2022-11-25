@@ -37,45 +37,45 @@
 /* A single, opaque pixel */
 static const uint32_t black_pixel = 0xffffffff;
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_pattern_t *mask;
+    comac_surface_t *surface;
+    comac_pattern_t *mask;
     int i, j;
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) &black_pixel,
-						   CAIRO_FORMAT_A8,
+    surface = comac_image_surface_create_for_data ((unsigned char *) &black_pixel,
+						   COMAC_FORMAT_A8,
 						   1, 1, 4);
-    mask = cairo_pattern_create_for_surface (surface);
-    cairo_pattern_set_filter (mask, CAIRO_FILTER_NEAREST);
-    cairo_surface_destroy (surface);
+    mask = comac_pattern_create_for_surface (surface);
+    comac_pattern_set_filter (mask, COMAC_FILTER_NEAREST);
+    comac_surface_destroy (surface);
 
     /* Fill background white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0);
     for (i = 0; i < POINTS; i++) {
 	for (j = 0; j < POINTS; j++) {
-	    cairo_matrix_t m;
+	    comac_matrix_t m;
 
-	    cairo_matrix_init_translate (&m,
+	    comac_matrix_init_translate (&m,
 					 -(2 * i + i * STEP),
 					 -(2 * j + j * STEP));
-	    cairo_pattern_set_matrix (mask, &m);
-	    cairo_mask (cr, mask);
+	    comac_pattern_set_matrix (mask, &m);
+	    comac_mask (cr, mask);
 	}
     }
 
-    cairo_pattern_destroy (mask);
+    comac_pattern_destroy (mask);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a1_mask_sample,
+COMAC_TEST (a1_mask_sample,
 	    "Test sample position when masking with FILTER_NEAREST",
 	    "image, alpha", /* keywords */
 	    "target=raster", /* requirements */

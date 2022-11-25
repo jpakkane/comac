@@ -24,104 +24,104 @@
 
 #define SIZE 10
 
-static cairo_status_t
-invalid_rel_move_to (cairo_surface_t *target)
+static comac_status_t
+invalid_rel_move_to (comac_surface_t *target)
 {
-    cairo_t *cr;
-    cairo_status_t status;
+    comac_t *cr;
+    comac_status_t status;
 
-    cr = cairo_create (target);
-    cairo_rel_move_to (cr, SIZE, SIZE/2);
-    status = cairo_status (cr);
-    cairo_destroy (cr);
+    cr = comac_create (target);
+    comac_rel_move_to (cr, SIZE, SIZE/2);
+    status = comac_status (cr);
+    comac_destroy (cr);
 
     return status;
 }
 
-static cairo_status_t
-invalid_rel_line_to (cairo_surface_t *target)
+static comac_status_t
+invalid_rel_line_to (comac_surface_t *target)
 {
-    cairo_t *cr;
-    cairo_status_t status;
+    comac_t *cr;
+    comac_status_t status;
 
-    cr = cairo_create (target);
-    cairo_rel_line_to (cr, -SIZE, SIZE/2);
-    status = cairo_status (cr);
-    cairo_destroy (cr);
+    cr = comac_create (target);
+    comac_rel_line_to (cr, -SIZE, SIZE/2);
+    status = comac_status (cr);
+    comac_destroy (cr);
 
     return status;
 }
 
-static cairo_status_t
-invalid_rel_curve_to (cairo_surface_t *target)
+static comac_status_t
+invalid_rel_curve_to (comac_surface_t *target)
 {
-    cairo_t *cr;
-    cairo_status_t status;
+    comac_t *cr;
+    comac_status_t status;
 
-    cr = cairo_create (target);
-    cairo_rel_curve_to (cr,
+    cr = comac_create (target);
+    comac_rel_curve_to (cr,
 			SIZE/2, -SIZE/2,
 			SIZE*2/3, -SIZE/3,
 			SIZE/2, -SIZE);
-    status = cairo_status (cr);
-    cairo_destroy (cr);
+    status = comac_status (cr);
+    comac_destroy (cr);
 
     return status;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_status_t status;
-    cairo_test_status_t result;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_status_t status;
+    comac_test_status_t result;
 
     /* first test that a relative move without a current point fails... */
-    status = invalid_rel_move_to (cairo_get_target (cr));
-    if (status != CAIRO_STATUS_NO_CURRENT_POINT) {
-	result = cairo_test_status_from_status (ctx, status);
-	if (result == CAIRO_TEST_NO_MEMORY)
+    status = invalid_rel_move_to (comac_get_target (cr));
+    if (status != COMAC_STATUS_NO_CURRENT_POINT) {
+	result = comac_test_status_from_status (ctx, status);
+	if (result == COMAC_TEST_NO_MEMORY)
 	    return result;
 
-	cairo_test_log (ctx, "Error: invalid cairo_rel_move_to() did not raise NO_CURRENT_POINT\n");
+	comac_test_log (ctx, "Error: invalid comac_rel_move_to() did not raise NO_CURRENT_POINT\n");
 	return result;
     }
 
-    status = invalid_rel_line_to (cairo_get_target (cr));
-    if (status != CAIRO_STATUS_NO_CURRENT_POINT) {
-	result = cairo_test_status_from_status (ctx, status);
-	if (result == CAIRO_TEST_NO_MEMORY)
+    status = invalid_rel_line_to (comac_get_target (cr));
+    if (status != COMAC_STATUS_NO_CURRENT_POINT) {
+	result = comac_test_status_from_status (ctx, status);
+	if (result == COMAC_TEST_NO_MEMORY)
 	    return result;
 
-	cairo_test_log (ctx, "Error: invalid cairo_rel_line_to() did not raise NO_CURRENT_POINT\n");
+	comac_test_log (ctx, "Error: invalid comac_rel_line_to() did not raise NO_CURRENT_POINT\n");
 	return result;
     }
 
-    status = invalid_rel_curve_to (cairo_get_target (cr));
-    if (status != CAIRO_STATUS_NO_CURRENT_POINT) {
-	result = cairo_test_status_from_status (ctx, status);
-	if (result == CAIRO_TEST_NO_MEMORY)
+    status = invalid_rel_curve_to (comac_get_target (cr));
+    if (status != COMAC_STATUS_NO_CURRENT_POINT) {
+	result = comac_test_status_from_status (ctx, status);
+	if (result == COMAC_TEST_NO_MEMORY)
 	    return result;
 
-	cairo_test_log (ctx, "Error: invalid cairo_rel_curve_to() did not raise NO_CURRENT_POINT\n");
+	comac_test_log (ctx, "Error: invalid comac_rel_curve_to() did not raise NO_CURRENT_POINT\n");
 	return result;
     }
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_move_to (cr, 0, 0);
-    cairo_rel_move_to (cr, SIZE, SIZE/2);
-    cairo_rel_line_to (cr, -SIZE, SIZE/2);
-    cairo_rel_curve_to (cr,
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_move_to (cr, 0, 0);
+    comac_rel_move_to (cr, SIZE, SIZE/2);
+    comac_rel_line_to (cr, -SIZE, SIZE/2);
+    comac_rel_curve_to (cr,
 			SIZE/2, -SIZE/2,
 			SIZE*2/3, -SIZE/3,
 			SIZE/2, -SIZE);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (rel_path,
+COMAC_TEST (rel_path,
 	    "Tests calls to various relative path functions",
 	    "path", /* keywords */
 	    NULL, /* requirements */

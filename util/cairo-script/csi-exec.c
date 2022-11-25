@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -40,32 +40,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static cairo_surface_t *
+static comac_surface_t *
 _surface_create (void *closure,
-		 cairo_content_t content,
+		 comac_content_t content,
 		 double width, double height,
 		 long uid)
 {
-    return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+    return comac_image_surface_create (COMAC_FORMAT_ARGB32, width, height);
 }
 
 int
 main (int argc, char **argv)
 {
-    const cairo_script_interpreter_hooks_t hooks = {
+    const comac_script_interpreter_hooks_t hooks = {
 	.surface_create = _surface_create
     };
-    cairo_script_interpreter_t *csi;
+    comac_script_interpreter_t *csi;
     int i;
 
     for (i = 1; i < argc; i++) {
 	int status, line;
 
-	csi = cairo_script_interpreter_create ();
-	cairo_script_interpreter_install_hooks (csi, &hooks);
-	cairo_script_interpreter_run (csi, argv[i]);
-	line = cairo_script_interpreter_get_line_number (csi);
-	status = cairo_script_interpreter_destroy (csi);
+	csi = comac_script_interpreter_create ();
+	comac_script_interpreter_install_hooks (csi, &hooks);
+	comac_script_interpreter_run (csi, argv[i]);
+	line = comac_script_interpreter_get_line_number (csi);
+	status = comac_script_interpreter_destroy (csi);
 	if (status) {
 	    fprintf (stderr, "Error during replay of '%s', line %d: %d\n",
 		     argv[i], line, status);

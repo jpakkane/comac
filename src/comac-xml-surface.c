@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -36,7 +36,7 @@
 
 /* This surface is intended to produce a verbose, hierarchical, DAG XML file
  * representing a single surface. It is intended to be used by debuggers,
- * such as cairo-sphinx, or by application test-suites that want a log of
+ * such as comac-sphinx, or by application test-suites that want a log of
  * operations.
  */
 
@@ -52,183 +52,183 @@
 #include "comac-output-stream-private.h"
 #include "comac-recording-surface-inline.h"
 
-#define static cairo_warn static
+#define static comac_warn static
 
-typedef struct _cairo_xml_surface cairo_xml_surface_t;
+typedef struct _comac_xml_surface comac_xml_surface_t;
 
-typedef struct _cairo_xml {
-    cairo_device_t base;
+typedef struct _comac_xml {
+    comac_device_t base;
 
-    cairo_output_stream_t *stream;
+    comac_output_stream_t *stream;
     int indent;
-} cairo_xml_t;
+} comac_xml_t;
 
-struct _cairo_xml_surface {
-    cairo_surface_t base;
+struct _comac_xml_surface {
+    comac_surface_t base;
 
     double width, height;
 };
 
 
-static const cairo_surface_backend_t _cairo_xml_surface_backend;
+static const comac_surface_backend_t _comac_xml_surface_backend;
 
 static const char *
-_operator_to_string (cairo_operator_t op)
+_operator_to_string (comac_operator_t op)
 {
     static const char *names[] = {
-	"CLEAR",	/* CAIRO_OPERATOR_CLEAR */
+	"CLEAR",	/* COMAC_OPERATOR_CLEAR */
 
-	"SOURCE",	/* CAIRO_OPERATOR_SOURCE */
-	"OVER",		/* CAIRO_OPERATOR_OVER */
-	"IN",		/* CAIRO_OPERATOR_IN */
-	"OUT",		/* CAIRO_OPERATOR_OUT */
-	"ATOP",		/* CAIRO_OPERATOR_ATOP */
+	"SOURCE",	/* COMAC_OPERATOR_SOURCE */
+	"OVER",		/* COMAC_OPERATOR_OVER */
+	"IN",		/* COMAC_OPERATOR_IN */
+	"OUT",		/* COMAC_OPERATOR_OUT */
+	"ATOP",		/* COMAC_OPERATOR_ATOP */
 
-	"DEST",		/* CAIRO_OPERATOR_DEST */
-	"DEST_OVER",	/* CAIRO_OPERATOR_DEST_OVER */
-	"DEST_IN",	/* CAIRO_OPERATOR_DEST_IN */
-	"DEST_OUT",	/* CAIRO_OPERATOR_DEST_OUT */
-	"DEST_ATOP",	/* CAIRO_OPERATOR_DEST_ATOP */
+	"DEST",		/* COMAC_OPERATOR_DEST */
+	"DEST_OVER",	/* COMAC_OPERATOR_DEST_OVER */
+	"DEST_IN",	/* COMAC_OPERATOR_DEST_IN */
+	"DEST_OUT",	/* COMAC_OPERATOR_DEST_OUT */
+	"DEST_ATOP",	/* COMAC_OPERATOR_DEST_ATOP */
 
-	"XOR",		/* CAIRO_OPERATOR_XOR */
-	"ADD",		/* CAIRO_OPERATOR_ADD */
-	"SATURATE",	/* CAIRO_OPERATOR_SATURATE */
+	"XOR",		/* COMAC_OPERATOR_XOR */
+	"ADD",		/* COMAC_OPERATOR_ADD */
+	"SATURATE",	/* COMAC_OPERATOR_SATURATE */
 
-	"MULTIPLY",	/* CAIRO_OPERATOR_MULTIPLY */
-	"SCREEN",	/* CAIRO_OPERATOR_SCREEN */
-	"OVERLAY",	/* CAIRO_OPERATOR_OVERLAY */
-	"DARKEN",	/* CAIRO_OPERATOR_DARKEN */
-	"LIGHTEN",	/* CAIRO_OPERATOR_LIGHTEN */
-	"DODGE",	/* CAIRO_OPERATOR_COLOR_DODGE */
-	"BURN",		/* CAIRO_OPERATOR_COLOR_BURN */
-	"HARD_LIGHT",	/* CAIRO_OPERATOR_HARD_LIGHT */
-	"SOFT_LIGHT",	/* CAIRO_OPERATOR_SOFT_LIGHT */
-	"DIFFERENCE",	/* CAIRO_OPERATOR_DIFFERENCE */
-	"EXCLUSION",	/* CAIRO_OPERATOR_EXCLUSION */
-	"HSL_HUE",	/* CAIRO_OPERATOR_HSL_HUE */
-	"HSL_SATURATION", /* CAIRO_OPERATOR_HSL_SATURATION */
-	"HSL_COLOR",	/* CAIRO_OPERATOR_HSL_COLOR */
-	"HSL_LUMINOSITY" /* CAIRO_OPERATOR_HSL_LUMINOSITY */
+	"MULTIPLY",	/* COMAC_OPERATOR_MULTIPLY */
+	"SCREEN",	/* COMAC_OPERATOR_SCREEN */
+	"OVERLAY",	/* COMAC_OPERATOR_OVERLAY */
+	"DARKEN",	/* COMAC_OPERATOR_DARKEN */
+	"LIGHTEN",	/* COMAC_OPERATOR_LIGHTEN */
+	"DODGE",	/* COMAC_OPERATOR_COLOR_DODGE */
+	"BURN",		/* COMAC_OPERATOR_COLOR_BURN */
+	"HARD_LIGHT",	/* COMAC_OPERATOR_HARD_LIGHT */
+	"SOFT_LIGHT",	/* COMAC_OPERATOR_SOFT_LIGHT */
+	"DIFFERENCE",	/* COMAC_OPERATOR_DIFFERENCE */
+	"EXCLUSION",	/* COMAC_OPERATOR_EXCLUSION */
+	"HSL_HUE",	/* COMAC_OPERATOR_HSL_HUE */
+	"HSL_SATURATION", /* COMAC_OPERATOR_HSL_SATURATION */
+	"HSL_COLOR",	/* COMAC_OPERATOR_HSL_COLOR */
+	"HSL_LUMINOSITY" /* COMAC_OPERATOR_HSL_LUMINOSITY */
     };
     assert (op < ARRAY_LENGTH (names));
     return names[op];
 }
 
 static const char *
-_extend_to_string (cairo_extend_t extend)
+_extend_to_string (comac_extend_t extend)
 {
     static const char *names[] = {
-	"EXTEND_NONE",		/* CAIRO_EXTEND_NONE */
-	"EXTEND_REPEAT",	/* CAIRO_EXTEND_REPEAT */
-	"EXTEND_REFLECT",	/* CAIRO_EXTEND_REFLECT */
-	"EXTEND_PAD"		/* CAIRO_EXTEND_PAD */
+	"EXTEND_NONE",		/* COMAC_EXTEND_NONE */
+	"EXTEND_REPEAT",	/* COMAC_EXTEND_REPEAT */
+	"EXTEND_REFLECT",	/* COMAC_EXTEND_REFLECT */
+	"EXTEND_PAD"		/* COMAC_EXTEND_PAD */
     };
     assert (extend < ARRAY_LENGTH (names));
     return names[extend];
 }
 
 static const char *
-_filter_to_string (cairo_filter_t filter)
+_filter_to_string (comac_filter_t filter)
 {
     static const char *names[] = {
-	"FILTER_FAST",		/* CAIRO_FILTER_FAST */
-	"FILTER_GOOD",		/* CAIRO_FILTER_GOOD */
-	"FILTER_BEST",		/* CAIRO_FILTER_BEST */
-	"FILTER_NEAREST",	/* CAIRO_FILTER_NEAREST */
-	"FILTER_BILINEAR",	/* CAIRO_FILTER_BILINEAR */
-	"FILTER_GAUSSIAN",	/* CAIRO_FILTER_GAUSSIAN */
+	"FILTER_FAST",		/* COMAC_FILTER_FAST */
+	"FILTER_GOOD",		/* COMAC_FILTER_GOOD */
+	"FILTER_BEST",		/* COMAC_FILTER_BEST */
+	"FILTER_NEAREST",	/* COMAC_FILTER_NEAREST */
+	"FILTER_BILINEAR",	/* COMAC_FILTER_BILINEAR */
+	"FILTER_GAUSSIAN",	/* COMAC_FILTER_GAUSSIAN */
     };
     assert (filter < ARRAY_LENGTH (names));
     return names[filter];
 }
 
 static const char *
-_fill_rule_to_string (cairo_fill_rule_t rule)
+_fill_rule_to_string (comac_fill_rule_t rule)
 {
     static const char *names[] = {
-	"WINDING",	/* CAIRO_FILL_RULE_WINDING */
-	"EVEN_ODD"	/* CAIRO_FILL_RILE_EVEN_ODD */
+	"WINDING",	/* COMAC_FILL_RULE_WINDING */
+	"EVEN_ODD"	/* COMAC_FILL_RILE_EVEN_ODD */
     };
     assert (rule < ARRAY_LENGTH (names));
     return names[rule];
 }
 
 static const char *
-_antialias_to_string (cairo_antialias_t antialias)
+_antialias_to_string (comac_antialias_t antialias)
 {
     static const char *names[] = {
-	"DEFAULT",	/* CAIRO_ANTIALIAS_DEFAULT */
-	"NONE",         /* CAIRO_ANTIALIAS_NONE */
-	"GRAY",         /* CAIRO_ANTIALIAS_GRAY */
-	"SUBPIXEL",	/* CAIRO_ANTIALIAS_SUBPIXEL */
-	"FAST",         /* CAIRO_ANTIALIAS_FAST */
-	"GOOD",         /* CAIRO_ANTIALIAS_GOOD */
-	"BEST",         /* CAIRO_ANTIALIAS_BEST */
+	"DEFAULT",	/* COMAC_ANTIALIAS_DEFAULT */
+	"NONE",         /* COMAC_ANTIALIAS_NONE */
+	"GRAY",         /* COMAC_ANTIALIAS_GRAY */
+	"SUBPIXEL",	/* COMAC_ANTIALIAS_SUBPIXEL */
+	"FAST",         /* COMAC_ANTIALIAS_FAST */
+	"GOOD",         /* COMAC_ANTIALIAS_GOOD */
+	"BEST",         /* COMAC_ANTIALIAS_BEST */
     };
     assert (antialias < ARRAY_LENGTH (names));
     return names[antialias];
 }
 
 static const char *
-_line_cap_to_string (cairo_line_cap_t line_cap)
+_line_cap_to_string (comac_line_cap_t line_cap)
 {
     static const char *names[] = {
-	"LINE_CAP_BUTT",	/* CAIRO_LINE_CAP_BUTT */
-	"LINE_CAP_ROUND",	/* CAIRO_LINE_CAP_ROUND */
-	"LINE_CAP_SQUARE"	/* CAIRO_LINE_CAP_SQUARE */
+	"LINE_CAP_BUTT",	/* COMAC_LINE_CAP_BUTT */
+	"LINE_CAP_ROUND",	/* COMAC_LINE_CAP_ROUND */
+	"LINE_CAP_SQUARE"	/* COMAC_LINE_CAP_SQUARE */
     };
     assert (line_cap < ARRAY_LENGTH (names));
     return names[line_cap];
 }
 
 static const char *
-_line_join_to_string (cairo_line_join_t line_join)
+_line_join_to_string (comac_line_join_t line_join)
 {
     static const char *names[] = {
-	"LINE_JOIN_MITER",	/* CAIRO_LINE_JOIN_MITER */
-	"LINE_JOIN_ROUND",	/* CAIRO_LINE_JOIN_ROUND */
-	"LINE_JOIN_BEVEL",	/* CAIRO_LINE_JOIN_BEVEL */
+	"LINE_JOIN_MITER",	/* COMAC_LINE_JOIN_MITER */
+	"LINE_JOIN_ROUND",	/* COMAC_LINE_JOIN_ROUND */
+	"LINE_JOIN_BEVEL",	/* COMAC_LINE_JOIN_BEVEL */
     };
     assert (line_join < ARRAY_LENGTH (names));
     return names[line_join];
 }
 
 static const char *
-_content_to_string (cairo_content_t content)
+_content_to_string (comac_content_t content)
 {
     switch (content) {
-    case CAIRO_CONTENT_ALPHA: return "ALPHA";
-    case CAIRO_CONTENT_COLOR: return "COLOR";
+    case COMAC_CONTENT_ALPHA: return "ALPHA";
+    case COMAC_CONTENT_COLOR: return "COLOR";
     default:
-    case CAIRO_CONTENT_COLOR_ALPHA: return "COLOR_ALPHA";
+    case COMAC_CONTENT_COLOR_ALPHA: return "COLOR_ALPHA";
     }
 }
 
 static const char *
-_format_to_string (cairo_format_t format)
+_format_to_string (comac_format_t format)
 {
     switch (format) {
-    case CAIRO_FORMAT_ARGB32:    return "ARGB32";
-    case CAIRO_FORMAT_RGB30:     return "RGB30";
-    case CAIRO_FORMAT_RGB24:     return "RGB24";
-    case CAIRO_FORMAT_RGB16_565: return "RGB16_565";
-    case CAIRO_FORMAT_RGB96F:    return "RGB96F";
-    case CAIRO_FORMAT_RGBA128F:  return "RGBA128F";
-    case CAIRO_FORMAT_A8:        return "A8";
-    case CAIRO_FORMAT_A1:        return "A1";
-    case CAIRO_FORMAT_INVALID:   return "INVALID";
+    case COMAC_FORMAT_ARGB32:    return "ARGB32";
+    case COMAC_FORMAT_RGB30:     return "RGB30";
+    case COMAC_FORMAT_RGB24:     return "RGB24";
+    case COMAC_FORMAT_RGB16_565: return "RGB16_565";
+    case COMAC_FORMAT_RGB96F:    return "RGB96F";
+    case COMAC_FORMAT_RGBA128F:  return "RGBA128F";
+    case COMAC_FORMAT_A8:        return "A8";
+    case COMAC_FORMAT_A1:        return "A1";
+    case COMAC_FORMAT_INVALID:   return "INVALID";
     }
     ASSERT_NOT_REACHED;
     return "INVALID";
 }
 
-static cairo_status_t
+static comac_status_t
 _device_flush (void *abstract_device)
 {
-    cairo_xml_t *xml = abstract_device;
-    cairo_status_t status;
+    comac_xml_t *xml = abstract_device;
+    comac_status_t status;
 
-    status = _cairo_output_stream_flush (xml->stream);
+    status = _comac_output_stream_flush (xml->stream);
 
     return status;
 }
@@ -236,16 +236,16 @@ _device_flush (void *abstract_device)
 static void
 _device_destroy (void *abstract_device)
 {
-    cairo_xml_t *xml = abstract_device;
-    cairo_status_t status;
+    comac_xml_t *xml = abstract_device;
+    comac_status_t status;
 
-    status = _cairo_output_stream_destroy (xml->stream);
+    status = _comac_output_stream_destroy (xml->stream);
 
     free (xml);
 }
 
-static const cairo_device_backend_t _cairo_xml_device_backend = {
-    CAIRO_DEVICE_TYPE_XML,
+static const comac_device_backend_t _comac_xml_device_backend = {
+    COMAC_DEVICE_TYPE_XML,
 
     NULL, NULL, /* lock, unlock */
 
@@ -254,18 +254,18 @@ static const cairo_device_backend_t _cairo_xml_device_backend = {
     _device_destroy
 };
 
-static cairo_device_t *
-_cairo_xml_create_internal (cairo_output_stream_t *stream)
+static comac_device_t *
+_comac_xml_create_internal (comac_output_stream_t *stream)
 {
-    cairo_xml_t *xml;
+    comac_xml_t *xml;
 
-    xml = _cairo_malloc (sizeof (cairo_xml_t));
+    xml = _comac_malloc (sizeof (comac_xml_t));
     if (unlikely (xml == NULL))
-	return _cairo_device_create_in_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_device_create_in_error (COMAC_STATUS_NO_MEMORY);
 
-    memset (xml, 0, sizeof (cairo_xml_t));
+    memset (xml, 0, sizeof (comac_xml_t));
 
-    _cairo_device_init (&xml->base, &_cairo_xml_device_backend);
+    _comac_device_init (&xml->base, &_comac_xml_device_backend);
 
     xml->indent = 0;
     xml->stream = stream;
@@ -274,14 +274,14 @@ _cairo_xml_create_internal (cairo_output_stream_t *stream)
 }
 
 static void
-_cairo_xml_indent (cairo_xml_t *xml, int indent)
+_comac_xml_indent (comac_xml_t *xml, int indent)
 {
     xml->indent += indent;
     assert (xml->indent >= 0);
 }
 
-static void CAIRO_PRINTF_FORMAT (2, 3)
-_cairo_xml_printf (cairo_xml_t *xml, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+_comac_xml_printf (comac_xml_t *xml, const char *fmt, ...)
 {
     va_list ap;
     char indent[80];
@@ -289,78 +289,78 @@ _cairo_xml_printf (cairo_xml_t *xml, const char *fmt, ...)
 
     len = MIN (xml->indent, ARRAY_LENGTH (indent));
     memset (indent, ' ', len);
-    _cairo_output_stream_write (xml->stream, indent, len);
+    _comac_output_stream_write (xml->stream, indent, len);
 
     va_start (ap, fmt);
-    _cairo_output_stream_vprintf (xml->stream, fmt, ap);
+    _comac_output_stream_vprintf (xml->stream, fmt, ap);
     va_end (ap);
 
-    _cairo_output_stream_write (xml->stream, "\n", 1);
+    _comac_output_stream_write (xml->stream, "\n", 1);
 }
 
-static void CAIRO_PRINTF_FORMAT (2, 3)
-_cairo_xml_printf_start (cairo_xml_t *xml, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+_comac_xml_printf_start (comac_xml_t *xml, const char *fmt, ...)
 {
     char indent[80];
     int len;
 
     len = MIN (xml->indent, ARRAY_LENGTH (indent));
     memset (indent, ' ', len);
-    _cairo_output_stream_write (xml->stream, indent, len);
+    _comac_output_stream_write (xml->stream, indent, len);
 
     if (fmt != NULL) {
 	va_list ap;
 
 	va_start (ap, fmt);
-	_cairo_output_stream_vprintf (xml->stream, fmt, ap);
+	_comac_output_stream_vprintf (xml->stream, fmt, ap);
 	va_end (ap);
     }
 }
 
-static void CAIRO_PRINTF_FORMAT (2, 3)
-_cairo_xml_printf_continue (cairo_xml_t *xml, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+_comac_xml_printf_continue (comac_xml_t *xml, const char *fmt, ...)
 {
     va_list ap;
 
     va_start (ap, fmt);
-    _cairo_output_stream_vprintf (xml->stream, fmt, ap);
+    _comac_output_stream_vprintf (xml->stream, fmt, ap);
     va_end (ap);
 }
 
-static void CAIRO_PRINTF_FORMAT (2, 3)
-_cairo_xml_printf_end (cairo_xml_t *xml, const char *fmt, ...)
+static void COMAC_PRINTF_FORMAT (2, 3)
+_comac_xml_printf_end (comac_xml_t *xml, const char *fmt, ...)
 {
     if (fmt != NULL) {
 	va_list ap;
 
 	va_start (ap, fmt);
-	_cairo_output_stream_vprintf (xml->stream, fmt, ap);
+	_comac_output_stream_vprintf (xml->stream, fmt, ap);
 	va_end (ap);
     }
 
-    _cairo_output_stream_write (xml->stream, "\n", 1);
+    _comac_output_stream_write (xml->stream, "\n", 1);
 }
 
-static cairo_surface_t *
-_cairo_xml_surface_create_similar (void			*abstract_surface,
-				   cairo_content_t	 content,
+static comac_surface_t *
+_comac_xml_surface_create_similar (void			*abstract_surface,
+				   comac_content_t	 content,
 				   int			 width,
 				   int			 height)
 {
-    cairo_rectangle_t extents;
+    comac_rectangle_t extents;
 
     extents.x = extents.y = 0;
     extents.width  = width;
     extents.height = height;
 
-    return cairo_recording_surface_create (content, &extents);
+    return comac_recording_surface_create (content, &extents);
 }
 
-static cairo_bool_t
-_cairo_xml_surface_get_extents (void *abstract_surface,
-				cairo_rectangle_int_t *rectangle)
+static comac_bool_t
+_comac_xml_surface_get_extents (void *abstract_surface,
+				comac_rectangle_int_t *rectangle)
 {
-    cairo_xml_surface_t *surface = abstract_surface;
+    comac_xml_surface_t *surface = abstract_surface;
 
     if (surface->width < 0 || surface->height < 0)
 	return FALSE;
@@ -373,231 +373,231 @@ _cairo_xml_surface_get_extents (void *abstract_surface,
     return TRUE;
 }
 
-static cairo_status_t
-_cairo_xml_move_to (void *closure,
-		    const cairo_point_t *p1)
+static comac_status_t
+_comac_xml_move_to (void *closure,
+		    const comac_point_t *p1)
 {
-    _cairo_xml_printf_continue (closure, " %f %f m",
-				_cairo_fixed_to_double (p1->x),
-				_cairo_fixed_to_double (p1->y));
+    _comac_xml_printf_continue (closure, " %f %f m",
+				_comac_fixed_to_double (p1->x),
+				_comac_fixed_to_double (p1->y));
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_line_to (void *closure,
-		    const cairo_point_t *p1)
+static comac_status_t
+_comac_xml_line_to (void *closure,
+		    const comac_point_t *p1)
 {
-    _cairo_xml_printf_continue (closure, " %f %f l",
-				_cairo_fixed_to_double (p1->x),
-				_cairo_fixed_to_double (p1->y));
+    _comac_xml_printf_continue (closure, " %f %f l",
+				_comac_fixed_to_double (p1->x),
+				_comac_fixed_to_double (p1->y));
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_curve_to (void *closure,
-		     const cairo_point_t *p1,
-		     const cairo_point_t *p2,
-		     const cairo_point_t *p3)
+static comac_status_t
+_comac_xml_curve_to (void *closure,
+		     const comac_point_t *p1,
+		     const comac_point_t *p2,
+		     const comac_point_t *p3)
 {
-    _cairo_xml_printf_continue (closure, " %f %f %f %f %f %f c",
-				_cairo_fixed_to_double (p1->x),
-				_cairo_fixed_to_double (p1->y),
-				_cairo_fixed_to_double (p2->x),
-				_cairo_fixed_to_double (p2->y),
-				_cairo_fixed_to_double (p3->x),
-				_cairo_fixed_to_double (p3->y));
+    _comac_xml_printf_continue (closure, " %f %f %f %f %f %f c",
+				_comac_fixed_to_double (p1->x),
+				_comac_fixed_to_double (p1->y),
+				_comac_fixed_to_double (p2->x),
+				_comac_fixed_to_double (p2->y),
+				_comac_fixed_to_double (p3->x),
+				_comac_fixed_to_double (p3->y));
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_close_path (void *closure)
+static comac_status_t
+_comac_xml_close_path (void *closure)
 {
-    _cairo_xml_printf_continue (closure, " h");
+    _comac_xml_printf_continue (closure, " h");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-_cairo_xml_emit_path (cairo_xml_t *xml,
-		      const cairo_path_fixed_t *path)
+_comac_xml_emit_path (comac_xml_t *xml,
+		      const comac_path_fixed_t *path)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    _cairo_xml_printf_start (xml, "<path>");
-    status = _cairo_path_fixed_interpret (path,
-					_cairo_xml_move_to,
-					_cairo_xml_line_to,
-					_cairo_xml_curve_to,
-					_cairo_xml_close_path,
+    _comac_xml_printf_start (xml, "<path>");
+    status = _comac_path_fixed_interpret (path,
+					_comac_xml_move_to,
+					_comac_xml_line_to,
+					_comac_xml_curve_to,
+					_comac_xml_close_path,
 					xml);
-    assert (status == CAIRO_STATUS_SUCCESS);
-    _cairo_xml_printf_end (xml, "</path>");
+    assert (status == COMAC_STATUS_SUCCESS);
+    _comac_xml_printf_end (xml, "</path>");
 }
 
 static void
-_cairo_xml_emit_string (cairo_xml_t *xml,
+_comac_xml_emit_string (comac_xml_t *xml,
 			const char *node,
 			const char *data)
 {
-    _cairo_xml_printf (xml, "<%s>%s</%s>", node, data, node);
+    _comac_xml_printf (xml, "<%s>%s</%s>", node, data, node);
 }
 
 static void
-_cairo_xml_emit_double (cairo_xml_t *xml,
+_comac_xml_emit_double (comac_xml_t *xml,
 			const char *node,
 			double data)
 {
-    _cairo_xml_printf (xml, "<%s>%f</%s>", node, data, node);
+    _comac_xml_printf (xml, "<%s>%f</%s>", node, data, node);
 }
 
-static cairo_xml_t *
-to_xml (cairo_xml_surface_t *surface)
+static comac_xml_t *
+to_xml (comac_xml_surface_t *surface)
 {
-    return (cairo_xml_t *) surface->base.device;
+    return (comac_xml_t *) surface->base.device;
 }
 
-static cairo_status_t
-_cairo_xml_surface_emit_clip_boxes (cairo_xml_surface_t *surface,
-				    const cairo_clip_t *clip)
+static comac_status_t
+_comac_xml_surface_emit_clip_boxes (comac_xml_surface_t *surface,
+				    const comac_clip_t *clip)
 {
-    cairo_box_t *box;
-    cairo_xml_t *xml;
+    comac_box_t *box;
+    comac_xml_t *xml;
     int n;
 
     if (clip->num_boxes == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     /* skip the trivial clip covering the surface extents */
     if (surface->width >= 0 && surface->height >= 0 && clip->num_boxes == 1) {
 	box = &clip->boxes[0];
 	if (box->p1.x <= 0 && box->p1.y <= 0 &&
-	    box->p2.x - box->p1.x >= _cairo_fixed_from_double (surface->width) &&
-	    box->p2.y - box->p1.y >= _cairo_fixed_from_double (surface->height))
+	    box->p2.x - box->p1.x >= _comac_fixed_from_double (surface->width) &&
+	    box->p2.y - box->p1.y >= _comac_fixed_from_double (surface->height))
 	{
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 	}
     }
 
     xml = to_xml (surface);
 
-    _cairo_xml_printf (xml, "<clip>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<clip>");
+    _comac_xml_indent (xml, 2);
 
-    _cairo_xml_printf (xml, "<path>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<path>");
+    _comac_xml_indent (xml, 2);
     for (n = 0; n < clip->num_boxes; n++) {
 	box = &clip->boxes[n];
 
-	_cairo_xml_printf_start (xml, "%f %f m",
-				 _cairo_fixed_to_double (box->p1.x),
-				 _cairo_fixed_to_double (box->p1.y));
-	_cairo_xml_printf_continue (xml, " %f %f l",
-				    _cairo_fixed_to_double (box->p2.x),
-				    _cairo_fixed_to_double (box->p1.y));
-	_cairo_xml_printf_continue (xml, " %f %f l",
-				    _cairo_fixed_to_double (box->p2.x),
-				    _cairo_fixed_to_double (box->p2.y));
-	_cairo_xml_printf_continue (xml, " %f %f l",
-				    _cairo_fixed_to_double (box->p1.x),
-				    _cairo_fixed_to_double (box->p2.y));
-	_cairo_xml_printf_end (xml, " h");
+	_comac_xml_printf_start (xml, "%f %f m",
+				 _comac_fixed_to_double (box->p1.x),
+				 _comac_fixed_to_double (box->p1.y));
+	_comac_xml_printf_continue (xml, " %f %f l",
+				    _comac_fixed_to_double (box->p2.x),
+				    _comac_fixed_to_double (box->p1.y));
+	_comac_xml_printf_continue (xml, " %f %f l",
+				    _comac_fixed_to_double (box->p2.x),
+				    _comac_fixed_to_double (box->p2.y));
+	_comac_xml_printf_continue (xml, " %f %f l",
+				    _comac_fixed_to_double (box->p1.x),
+				    _comac_fixed_to_double (box->p2.y));
+	_comac_xml_printf_end (xml, " h");
     }
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</path>");
-    _cairo_xml_emit_double (xml, "tolerance", 1.0);
-    _cairo_xml_emit_string (xml, "antialias",
-			    _antialias_to_string (CAIRO_ANTIALIAS_NONE));
-    _cairo_xml_emit_string (xml, "fill-rule",
-			    _fill_rule_to_string (CAIRO_FILL_RULE_WINDING));
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</path>");
+    _comac_xml_emit_double (xml, "tolerance", 1.0);
+    _comac_xml_emit_string (xml, "antialias",
+			    _antialias_to_string (COMAC_ANTIALIAS_NONE));
+    _comac_xml_emit_string (xml, "fill-rule",
+			    _fill_rule_to_string (COMAC_FILL_RULE_WINDING));
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</clip>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</clip>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_surface_emit_clip_path (cairo_xml_surface_t *surface,
-				   const cairo_clip_path_t *clip_path)
+static comac_status_t
+_comac_xml_surface_emit_clip_path (comac_xml_surface_t *surface,
+				   const comac_clip_path_t *clip_path)
 {
-    cairo_box_t box;
-    cairo_status_t status;
-    cairo_xml_t *xml;
+    comac_box_t box;
+    comac_status_t status;
+    comac_xml_t *xml;
 
     if (clip_path == NULL)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
-    status = _cairo_xml_surface_emit_clip_path (surface, clip_path->prev);
+    status = _comac_xml_surface_emit_clip_path (surface, clip_path->prev);
     if (unlikely (status))
 	return status;
 
     /* skip the trivial clip covering the surface extents */
     if (surface->width >= 0 && surface->height >= 0 &&
-	_cairo_path_fixed_is_box (&clip_path->path, &box))
+	_comac_path_fixed_is_box (&clip_path->path, &box))
     {
 	if (box.p1.x <= 0 && box.p1.y <= 0 &&
-	    box.p2.x - box.p1.x >= _cairo_fixed_from_double (surface->width) &&
-	    box.p2.y - box.p1.y >= _cairo_fixed_from_double (surface->height))
+	    box.p2.x - box.p1.x >= _comac_fixed_from_double (surface->width) &&
+	    box.p2.y - box.p1.y >= _comac_fixed_from_double (surface->height))
 	{
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 	}
     }
 
     xml = to_xml (surface);
 
-    _cairo_xml_printf_start (xml, "<clip>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf_start (xml, "<clip>");
+    _comac_xml_indent (xml, 2);
 
-    _cairo_xml_emit_path (xml, &clip_path->path);
-    _cairo_xml_emit_double (xml, "tolerance", clip_path->tolerance);
-    _cairo_xml_emit_string (xml, "antialias",
+    _comac_xml_emit_path (xml, &clip_path->path);
+    _comac_xml_emit_double (xml, "tolerance", clip_path->tolerance);
+    _comac_xml_emit_string (xml, "antialias",
 			    _antialias_to_string (clip_path->antialias));
-    _cairo_xml_emit_string (xml, "fill-rule",
+    _comac_xml_emit_string (xml, "fill-rule",
 			    _fill_rule_to_string (clip_path->fill_rule));
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf_end (xml, "</clip>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf_end (xml, "</clip>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_surface_emit_clip (cairo_xml_surface_t *surface,
-			      const cairo_clip_t *clip)
+static comac_status_t
+_comac_xml_surface_emit_clip (comac_xml_surface_t *surface,
+			      const comac_clip_t *clip)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     if (clip == NULL)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
-    status = _cairo_xml_surface_emit_clip_boxes (surface, clip);
+    status = _comac_xml_surface_emit_clip_boxes (surface, clip);
     if (unlikely (status))
 	return status;
 
-    return _cairo_xml_surface_emit_clip_path (surface, clip->path);
+    return _comac_xml_surface_emit_clip_path (surface, clip->path);
 }
 
-static cairo_status_t
-_cairo_xml_emit_solid (cairo_xml_t *xml,
-		       const cairo_solid_pattern_t *solid)
+static comac_status_t
+_comac_xml_emit_solid (comac_xml_t *xml,
+		       const comac_solid_pattern_t *solid)
 {
-    _cairo_xml_printf (xml, "<solid>%f %f %f %f</solid>",
+    _comac_xml_printf (xml, "<solid>%f %f %f %f</solid>",
 		       solid->color.red,
 		       solid->color.green,
 		       solid->color.blue,
 		       solid->color.alpha);
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
-_cairo_xml_emit_matrix (cairo_xml_t *xml,
-			const cairo_matrix_t *matrix)
+_comac_xml_emit_matrix (comac_xml_t *xml,
+			const comac_matrix_t *matrix)
 {
-    if (! _cairo_matrix_is_identity (matrix)) {
-	_cairo_xml_printf (xml, "<matrix>%f %f %f %f %f %f</matrix>",
+    if (! _comac_matrix_is_identity (matrix)) {
+	_comac_xml_printf (xml, "<matrix>%f %f %f %f %f %f</matrix>",
 			   matrix->xx, matrix->yx,
 			   matrix->xy, matrix->yy,
 			   matrix->x0, matrix->y0);
@@ -605,13 +605,13 @@ _cairo_xml_emit_matrix (cairo_xml_t *xml,
 }
 
 static void
-_cairo_xml_emit_gradient (cairo_xml_t *xml,
-			  const cairo_gradient_pattern_t *gradient)
+_comac_xml_emit_gradient (comac_xml_t *xml,
+			  const comac_gradient_pattern_t *gradient)
 {
     unsigned int i;
 
     for (i = 0; i < gradient->n_stops; i++) {
-	_cairo_xml_printf (xml,
+	_comac_xml_printf (xml,
 			   "<color-stop>%f %f %f %f %f</color-stop>",
 			   gradient->stops[i].offset,
 			   gradient->stops[i].color.red,
@@ -621,322 +621,322 @@ _cairo_xml_emit_gradient (cairo_xml_t *xml,
     }
 }
 
-static cairo_status_t
-_cairo_xml_emit_linear (cairo_xml_t *xml,
-			const cairo_linear_pattern_t *linear)
+static comac_status_t
+_comac_xml_emit_linear (comac_xml_t *xml,
+			const comac_linear_pattern_t *linear)
 {
-    _cairo_xml_printf (xml,
+    _comac_xml_printf (xml,
 		       "<linear x1='%f' y1='%f' x2='%f' y2='%f'>",
 		       linear->pd1.x, linear->pd1.y,
 		       linear->pd2.x, linear->pd2.y);
-    _cairo_xml_indent (xml, 2);
-    _cairo_xml_emit_gradient (xml, &linear->base);
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</linear>");
-    return CAIRO_STATUS_SUCCESS;
+    _comac_xml_indent (xml, 2);
+    _comac_xml_emit_gradient (xml, &linear->base);
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</linear>");
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_emit_radial (cairo_xml_t *xml,
-			const cairo_radial_pattern_t *radial)
+static comac_status_t
+_comac_xml_emit_radial (comac_xml_t *xml,
+			const comac_radial_pattern_t *radial)
 {
-    _cairo_xml_printf (xml,
+    _comac_xml_printf (xml,
 		       "<radial x1='%f' y1='%f' r1='%f' x2='%f' y2='%f' r2='%f'>",
 		       radial->cd1.center.x, radial->cd1.center.y, radial->cd1.radius,
 		       radial->cd2.center.x, radial->cd2.center.y, radial->cd2.radius);
-    _cairo_xml_indent (xml, 2);
-    _cairo_xml_emit_gradient (xml, &radial->base);
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</radial>");
-    return CAIRO_STATUS_SUCCESS;
+    _comac_xml_indent (xml, 2);
+    _comac_xml_emit_gradient (xml, &radial->base);
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</radial>");
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 _write_func (void *closure, const unsigned char *data, unsigned len)
 {
-    _cairo_output_stream_write (closure, data, len);
-    return CAIRO_STATUS_SUCCESS;
+    _comac_output_stream_write (closure, data, len);
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_emit_image (cairo_xml_t *xml,
-		       cairo_image_surface_t *image)
+static comac_status_t
+_comac_xml_emit_image (comac_xml_t *xml,
+		       comac_image_surface_t *image)
 {
-    cairo_output_stream_t *stream;
-    cairo_status_t status;
+    comac_output_stream_t *stream;
+    comac_status_t status;
 
-    _cairo_xml_printf_start (xml,
+    _comac_xml_printf_start (xml,
 			     "<image width='%d' height='%d' format='%s'>",
 			     image->width, image->height,
 			     _format_to_string (image->format));
 
-    stream = _cairo_base64_stream_create (xml->stream);
-    status = cairo_surface_write_to_png_stream (&image->base,
+    stream = _comac_base64_stream_create (xml->stream);
+    status = comac_surface_write_to_png_stream (&image->base,
 						_write_func, stream);
-    assert (status == CAIRO_STATUS_SUCCESS);
-    status = _cairo_output_stream_destroy (stream);
+    assert (status == COMAC_STATUS_SUCCESS);
+    status = _comac_output_stream_destroy (stream);
     if (unlikely (status))
 	return status;
 
-    _cairo_xml_printf_end (xml, "</image>");
+    _comac_xml_printf_end (xml, "</image>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_emit_surface (cairo_xml_t *xml,
-			 const cairo_surface_pattern_t *pattern)
+static comac_status_t
+_comac_xml_emit_surface (comac_xml_t *xml,
+			 const comac_surface_pattern_t *pattern)
 {
-    cairo_surface_t *source = pattern->surface;
-    cairo_status_t status;
+    comac_surface_t *source = pattern->surface;
+    comac_status_t status;
 
-    if (_cairo_surface_is_recording (source)) {
-	status = cairo_xml_for_recording_surface (&xml->base, source);
+    if (_comac_surface_is_recording (source)) {
+	status = comac_xml_for_recording_surface (&xml->base, source);
     } else {
-	cairo_image_surface_t *image;
+	comac_image_surface_t *image;
 	void *image_extra;
 
-	status = _cairo_surface_acquire_source_image (source,
+	status = _comac_surface_acquire_source_image (source,
 						      &image, &image_extra);
 	if (unlikely (status))
 	    return status;
 
-	status = _cairo_xml_emit_image (xml, image);
+	status = _comac_xml_emit_image (xml, image);
 
-	_cairo_surface_release_source_image (source, image, image_extra);
+	_comac_surface_release_source_image (source, image, image_extra);
     }
 
     return status;
 }
 
-static cairo_status_t
-_cairo_xml_emit_pattern (cairo_xml_t *xml,
+static comac_status_t
+_comac_xml_emit_pattern (comac_xml_t *xml,
 			 const char *source_or_mask,
-			 const cairo_pattern_t *pattern)
+			 const comac_pattern_t *pattern)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    _cairo_xml_printf (xml, "<%s-pattern>", source_or_mask);
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<%s-pattern>", source_or_mask);
+    _comac_xml_indent (xml, 2);
 
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID:
-	status = _cairo_xml_emit_solid (xml, (cairo_solid_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_SOLID:
+	status = _comac_xml_emit_solid (xml, (comac_solid_pattern_t *) pattern);
 	break;
-    case CAIRO_PATTERN_TYPE_LINEAR:
-	status = _cairo_xml_emit_linear (xml, (cairo_linear_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_LINEAR:
+	status = _comac_xml_emit_linear (xml, (comac_linear_pattern_t *) pattern);
 	break;
-    case CAIRO_PATTERN_TYPE_RADIAL:
-	status = _cairo_xml_emit_radial (xml, (cairo_radial_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_RADIAL:
+	status = _comac_xml_emit_radial (xml, (comac_radial_pattern_t *) pattern);
 	break;
-    case CAIRO_PATTERN_TYPE_SURFACE:
-	status = _cairo_xml_emit_surface (xml, (cairo_surface_pattern_t *) pattern);
+    case COMAC_PATTERN_TYPE_SURFACE:
+	status = _comac_xml_emit_surface (xml, (comac_surface_pattern_t *) pattern);
 	break;
     default:
 	ASSERT_NOT_REACHED;
-	status = CAIRO_INT_STATUS_UNSUPPORTED;
+	status = COMAC_INT_STATUS_UNSUPPORTED;
 	break;
     }
 
-    if (pattern->type != CAIRO_PATTERN_TYPE_SOLID) {
-	_cairo_xml_emit_matrix (xml, &pattern->matrix);
-	_cairo_xml_printf (xml,
+    if (pattern->type != COMAC_PATTERN_TYPE_SOLID) {
+	_comac_xml_emit_matrix (xml, &pattern->matrix);
+	_comac_xml_printf (xml,
 			   "<extend>%s</extend>",
 			   _extend_to_string (pattern->extend));
-	_cairo_xml_printf (xml,
+	_comac_xml_printf (xml,
 			   "<filter>%s</filter>",
 			   _filter_to_string (pattern->filter));
     }
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</%s-pattern>", source_or_mask);
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</%s-pattern>", source_or_mask);
 
     return status;
 }
 
-static cairo_int_status_t
-_cairo_xml_surface_paint (void			*abstract_surface,
-			  cairo_operator_t	 op,
-			  const cairo_pattern_t	*source,
-			  const cairo_clip_t	*clip)
+static comac_int_status_t
+_comac_xml_surface_paint (void			*abstract_surface,
+			  comac_operator_t	 op,
+			  const comac_pattern_t	*source,
+			  const comac_clip_t	*clip)
 {
-    cairo_xml_surface_t *surface = abstract_surface;
-    cairo_xml_t *xml = to_xml (surface);
-    cairo_status_t status;
+    comac_xml_surface_t *surface = abstract_surface;
+    comac_xml_t *xml = to_xml (surface);
+    comac_status_t status;
 
-    _cairo_xml_printf (xml, "<paint>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<paint>");
+    _comac_xml_indent (xml, 2);
 
-    _cairo_xml_emit_string (xml, "operator", _operator_to_string (op));
+    _comac_xml_emit_string (xml, "operator", _operator_to_string (op));
 
-    status = _cairo_xml_surface_emit_clip (surface, clip);
+    status = _comac_xml_surface_emit_clip (surface, clip);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_xml_emit_pattern (xml, "source", source);
+    status = _comac_xml_emit_pattern (xml, "source", source);
     if (unlikely (status))
 	return status;
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</paint>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</paint>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
-_cairo_xml_surface_mask (void			*abstract_surface,
-			 cairo_operator_t	 op,
-			 const cairo_pattern_t	*source,
-			 const cairo_pattern_t	*mask,
-			 const cairo_clip_t	*clip)
+static comac_int_status_t
+_comac_xml_surface_mask (void			*abstract_surface,
+			 comac_operator_t	 op,
+			 const comac_pattern_t	*source,
+			 const comac_pattern_t	*mask,
+			 const comac_clip_t	*clip)
 {
-    cairo_xml_surface_t *surface = abstract_surface;
-    cairo_xml_t *xml = to_xml (surface);
-    cairo_status_t status;
+    comac_xml_surface_t *surface = abstract_surface;
+    comac_xml_t *xml = to_xml (surface);
+    comac_status_t status;
 
-    _cairo_xml_printf (xml, "<mask>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<mask>");
+    _comac_xml_indent (xml, 2);
 
-    _cairo_xml_emit_string (xml, "operator", _operator_to_string (op));
+    _comac_xml_emit_string (xml, "operator", _operator_to_string (op));
 
-    status = _cairo_xml_surface_emit_clip (surface, clip);
+    status = _comac_xml_surface_emit_clip (surface, clip);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_xml_emit_pattern (xml, "source", source);
+    status = _comac_xml_emit_pattern (xml, "source", source);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_xml_emit_pattern (xml, "mask", mask);
+    status = _comac_xml_emit_pattern (xml, "mask", mask);
     if (unlikely (status))
 	return status;
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</mask>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</mask>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
-_cairo_xml_surface_stroke (void				*abstract_surface,
-			   cairo_operator_t		 op,
-			   const cairo_pattern_t	*source,
-			   const cairo_path_fixed_t		*path,
-			   const cairo_stroke_style_t		*style,
-			   const cairo_matrix_t		*ctm,
-			   const cairo_matrix_t		*ctm_inverse,
+static comac_int_status_t
+_comac_xml_surface_stroke (void				*abstract_surface,
+			   comac_operator_t		 op,
+			   const comac_pattern_t	*source,
+			   const comac_path_fixed_t		*path,
+			   const comac_stroke_style_t		*style,
+			   const comac_matrix_t		*ctm,
+			   const comac_matrix_t		*ctm_inverse,
 			   double			 tolerance,
-			   cairo_antialias_t		 antialias,
-			   const cairo_clip_t		*clip)
+			   comac_antialias_t		 antialias,
+			   const comac_clip_t		*clip)
 {
-    cairo_xml_surface_t *surface = abstract_surface;
-    cairo_xml_t *xml = to_xml (surface);
-    cairo_status_t status;
+    comac_xml_surface_t *surface = abstract_surface;
+    comac_xml_t *xml = to_xml (surface);
+    comac_status_t status;
 
-    _cairo_xml_printf (xml, "<stroke>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<stroke>");
+    _comac_xml_indent (xml, 2);
 
-    _cairo_xml_emit_string (xml, "operator", _operator_to_string (op));
-    _cairo_xml_emit_double (xml, "line-width", style->line_width);
-    _cairo_xml_emit_double (xml, "miter-limit", style->miter_limit);
-    _cairo_xml_emit_string (xml, "line-cap", _line_cap_to_string (style->line_cap));
-    _cairo_xml_emit_string (xml, "line-join", _line_join_to_string (style->line_join));
+    _comac_xml_emit_string (xml, "operator", _operator_to_string (op));
+    _comac_xml_emit_double (xml, "line-width", style->line_width);
+    _comac_xml_emit_double (xml, "miter-limit", style->miter_limit);
+    _comac_xml_emit_string (xml, "line-cap", _line_cap_to_string (style->line_cap));
+    _comac_xml_emit_string (xml, "line-join", _line_join_to_string (style->line_join));
 
-    status = _cairo_xml_surface_emit_clip (surface, clip);
+    status = _comac_xml_surface_emit_clip (surface, clip);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_xml_emit_pattern (xml, "source", source);
+    status = _comac_xml_emit_pattern (xml, "source", source);
     if (unlikely (status))
 	return status;
 
     if (style->num_dashes) {
 	unsigned int i;
 
-	_cairo_xml_printf_start (xml, "<dash offset='%f'>",
+	_comac_xml_printf_start (xml, "<dash offset='%f'>",
 				 style->dash_offset);
 	for (i = 0; i < style->num_dashes; i++)
-	    _cairo_xml_printf_continue (xml, "%f ", style->dash[i]);
+	    _comac_xml_printf_continue (xml, "%f ", style->dash[i]);
 
-	_cairo_xml_printf_end (xml, "</dash>");
+	_comac_xml_printf_end (xml, "</dash>");
     }
 
-    _cairo_xml_emit_path (xml, path);
-    _cairo_xml_emit_double (xml, "tolerance", tolerance);
-    _cairo_xml_emit_string (xml, "antialias", _antialias_to_string (antialias));
+    _comac_xml_emit_path (xml, path);
+    _comac_xml_emit_double (xml, "tolerance", tolerance);
+    _comac_xml_emit_string (xml, "antialias", _antialias_to_string (antialias));
 
-    _cairo_xml_emit_matrix (xml, ctm);
+    _comac_xml_emit_matrix (xml, ctm);
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</stroke>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</stroke>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
-_cairo_xml_surface_fill (void			*abstract_surface,
-			 cairo_operator_t	 op,
-			 const cairo_pattern_t	*source,
-			 const cairo_path_fixed_t*path,
-			 cairo_fill_rule_t	 fill_rule,
+static comac_int_status_t
+_comac_xml_surface_fill (void			*abstract_surface,
+			 comac_operator_t	 op,
+			 const comac_pattern_t	*source,
+			 const comac_path_fixed_t*path,
+			 comac_fill_rule_t	 fill_rule,
 			 double			 tolerance,
-			 cairo_antialias_t	 antialias,
-			 const cairo_clip_t	*clip)
+			 comac_antialias_t	 antialias,
+			 const comac_clip_t	*clip)
 {
-    cairo_xml_surface_t *surface = abstract_surface;
-    cairo_xml_t *xml = to_xml (surface);
-    cairo_status_t status;
+    comac_xml_surface_t *surface = abstract_surface;
+    comac_xml_t *xml = to_xml (surface);
+    comac_status_t status;
 
-    _cairo_xml_printf (xml, "<fill>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<fill>");
+    _comac_xml_indent (xml, 2);
 
-    _cairo_xml_emit_string (xml, "operator", _operator_to_string (op));
+    _comac_xml_emit_string (xml, "operator", _operator_to_string (op));
 
-    status = _cairo_xml_surface_emit_clip (surface, clip);
+    status = _comac_xml_surface_emit_clip (surface, clip);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_xml_emit_pattern (xml, "source", source);
+    status = _comac_xml_emit_pattern (xml, "source", source);
     if (unlikely (status))
 	return status;
 
-    _cairo_xml_emit_path (xml, path);
-    _cairo_xml_emit_double (xml, "tolerance", tolerance);
-    _cairo_xml_emit_string (xml, "antialias", _antialias_to_string (antialias));
-    _cairo_xml_emit_string (xml, "fill-rule", _fill_rule_to_string (fill_rule));
+    _comac_xml_emit_path (xml, path);
+    _comac_xml_emit_double (xml, "tolerance", tolerance);
+    _comac_xml_emit_string (xml, "antialias", _antialias_to_string (antialias));
+    _comac_xml_emit_string (xml, "fill-rule", _fill_rule_to_string (fill_rule));
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</fill>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</fill>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-#if CAIRO_HAS_FT_FONT
+#if COMAC_HAS_FT_FONT
 #include "comac-ft-private.h"
-static cairo_status_t
-_cairo_xml_emit_type42_font (cairo_xml_t *xml,
-			     cairo_scaled_font_t *scaled_font)
+static comac_status_t
+_comac_xml_emit_type42_font (comac_xml_t *xml,
+			     comac_scaled_font_t *scaled_font)
 {
-    const cairo_scaled_font_backend_t *backend;
-    cairo_output_stream_t *base64_stream;
-    cairo_output_stream_t *zlib_stream;
-    cairo_status_t status, status2;
+    const comac_scaled_font_backend_t *backend;
+    comac_output_stream_t *base64_stream;
+    comac_output_stream_t *zlib_stream;
+    comac_status_t status, status2;
     unsigned long size;
     uint32_t len;
     uint8_t *buf;
 
     backend = scaled_font->backend;
     if (backend->load_truetype_table == NULL)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     size = 0;
     status = backend->load_truetype_table (scaled_font, 0, 0, NULL, &size);
     if (unlikely (status))
 	return status;
 
-    buf = _cairo_malloc (size);
+    buf = _comac_malloc (size);
     if (unlikely (buf == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     status = backend->load_truetype_table (scaled_font, 0, 0, buf, &size);
     if (unlikely (status)) {
@@ -944,132 +944,132 @@ _cairo_xml_emit_type42_font (cairo_xml_t *xml,
 	return status;
     }
 
-    _cairo_xml_printf_start (xml, "<font type='42' flags='%d' index='0'>",
-		       _cairo_ft_scaled_font_get_load_flags (scaled_font));
+    _comac_xml_printf_start (xml, "<font type='42' flags='%d' index='0'>",
+		       _comac_ft_scaled_font_get_load_flags (scaled_font));
 
 
-    base64_stream = _cairo_base64_stream_create (xml->stream);
+    base64_stream = _comac_base64_stream_create (xml->stream);
     len = size;
-    _cairo_output_stream_write (base64_stream, &len, sizeof (len));
+    _comac_output_stream_write (base64_stream, &len, sizeof (len));
 
-    zlib_stream = _cairo_deflate_stream_create (base64_stream);
+    zlib_stream = _comac_deflate_stream_create (base64_stream);
 
-    _cairo_output_stream_write (zlib_stream, buf, size);
+    _comac_output_stream_write (zlib_stream, buf, size);
     free (buf);
 
-    status2 = _cairo_output_stream_destroy (zlib_stream);
-    if (status == CAIRO_STATUS_SUCCESS)
+    status2 = _comac_output_stream_destroy (zlib_stream);
+    if (status == COMAC_STATUS_SUCCESS)
 	status = status2;
 
-    status2 = _cairo_output_stream_destroy (base64_stream);
-    if (status == CAIRO_STATUS_SUCCESS)
+    status2 = _comac_output_stream_destroy (base64_stream);
+    if (status == COMAC_STATUS_SUCCESS)
 	status = status2;
 
-    _cairo_xml_printf_end (xml, "</font>");
+    _comac_xml_printf_end (xml, "</font>");
 
     return status;
 }
 #else
-static cairo_status_t
-_cairo_xml_emit_type42_font (cairo_xml_t *xml,
-			     cairo_scaled_font_t *scaled_font)
+static comac_status_t
+_comac_xml_emit_type42_font (comac_xml_t *xml,
+			     comac_scaled_font_t *scaled_font)
 {
-    return CAIRO_INT_STATUS_UNSUPPORTED;
+    return COMAC_INT_STATUS_UNSUPPORTED;
 }
 #endif
 
-static cairo_status_t
-_cairo_xml_emit_type3_font (cairo_xml_t *xml,
-			    cairo_scaled_font_t *scaled_font,
-			    cairo_glyph_t *glyphs,
+static comac_status_t
+_comac_xml_emit_type3_font (comac_xml_t *xml,
+			    comac_scaled_font_t *scaled_font,
+			    comac_glyph_t *glyphs,
 			    int num_glyphs)
 {
-    _cairo_xml_printf_start (xml, "<font type='3'>");
-    _cairo_xml_printf_end (xml, "</font>");
+    _comac_xml_printf_start (xml, "<font type='3'>");
+    _comac_xml_printf_end (xml, "</font>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_xml_emit_scaled_font (cairo_xml_t *xml,
-			     cairo_scaled_font_t *scaled_font,
-			     cairo_glyph_t *glyphs,
+static comac_status_t
+_comac_xml_emit_scaled_font (comac_xml_t *xml,
+			     comac_scaled_font_t *scaled_font,
+			     comac_glyph_t *glyphs,
 			     int num_glyphs)
 {
-    cairo_int_status_t status;
+    comac_int_status_t status;
 
-    _cairo_xml_printf (xml, "<scaled-font>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<scaled-font>");
+    _comac_xml_indent (xml, 2);
 
-    status = _cairo_xml_emit_type42_font (xml, scaled_font);
-    if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
-	status = _cairo_xml_emit_type3_font (xml, scaled_font,
+    status = _comac_xml_emit_type42_font (xml, scaled_font);
+    if (status == COMAC_INT_STATUS_UNSUPPORTED) {
+	status = _comac_xml_emit_type3_font (xml, scaled_font,
 					     glyphs, num_glyphs);
     }
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</scaled-font>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</scaled-font>");
 
     return status;
 }
 
-static cairo_int_status_t
-_cairo_xml_surface_glyphs (void			    *abstract_surface,
-			   cairo_operator_t	     op,
-			   const cairo_pattern_t    *source,
-			   cairo_glyph_t	    *glyphs,
+static comac_int_status_t
+_comac_xml_surface_glyphs (void			    *abstract_surface,
+			   comac_operator_t	     op,
+			   const comac_pattern_t    *source,
+			   comac_glyph_t	    *glyphs,
 			   int			     num_glyphs,
-			   cairo_scaled_font_t	    *scaled_font,
-			   const cairo_clip_t       *clip)
+			   comac_scaled_font_t	    *scaled_font,
+			   const comac_clip_t       *clip)
 {
-    cairo_xml_surface_t *surface = abstract_surface;
-    cairo_xml_t *xml = to_xml (surface);
-    cairo_status_t status;
+    comac_xml_surface_t *surface = abstract_surface;
+    comac_xml_t *xml = to_xml (surface);
+    comac_status_t status;
     int i;
 
-    _cairo_xml_printf (xml, "<glyphs>");
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_printf (xml, "<glyphs>");
+    _comac_xml_indent (xml, 2);
 
-    _cairo_xml_emit_string (xml, "operator", _operator_to_string (op));
+    _comac_xml_emit_string (xml, "operator", _operator_to_string (op));
 
-    status = _cairo_xml_surface_emit_clip (surface, clip);
+    status = _comac_xml_surface_emit_clip (surface, clip);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_xml_emit_pattern (xml, "source", source);
+    status = _comac_xml_emit_pattern (xml, "source", source);
     if (unlikely (status))
 	return status;
 
-    status = _cairo_xml_emit_scaled_font (xml, scaled_font, glyphs, num_glyphs);
+    status = _comac_xml_emit_scaled_font (xml, scaled_font, glyphs, num_glyphs);
     if (unlikely (status))
 	return status;
 
     for (i = 0; i < num_glyphs; i++) {
-	_cairo_xml_printf (xml, "<glyph index='%lu'>%f %f</glyph>",
+	_comac_xml_printf (xml, "<glyph index='%lu'>%f %f</glyph>",
 			   glyphs[i].index,
 			   glyphs[i].x,
 			   glyphs[i].y);
     }
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</glyphs>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</glyphs>");
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static const cairo_surface_backend_t
-_cairo_xml_surface_backend = {
-    CAIRO_SURFACE_TYPE_XML,
+static const comac_surface_backend_t
+_comac_xml_surface_backend = {
+    COMAC_SURFACE_TYPE_XML,
     NULL,
 
-    _cairo_default_context_create,
+    _comac_default_context_create,
 
-    _cairo_xml_surface_create_similar,
+    _comac_xml_surface_create_similar,
     NULL, /* create_similar_image */
     NULL, /* map_to_image */
     NULL, /* unmap_image */
 
-    _cairo_surface_default_source,
+    _comac_surface_default_source,
     NULL, /* acquire source image */
     NULL, /* release source image */
     NULL, /* snapshot */
@@ -1077,34 +1077,34 @@ _cairo_xml_surface_backend = {
     NULL, /* copy page */
     NULL, /* show page */
 
-    _cairo_xml_surface_get_extents,
+    _comac_xml_surface_get_extents,
     NULL, /* get_font_options */
 
     NULL, /* flush */
     NULL, /* mark_dirty_rectangle */
 
-    _cairo_xml_surface_paint,
-    _cairo_xml_surface_mask,
-    _cairo_xml_surface_stroke,
-    _cairo_xml_surface_fill,
+    _comac_xml_surface_paint,
+    _comac_xml_surface_mask,
+    _comac_xml_surface_stroke,
+    _comac_xml_surface_fill,
     NULL, /* fill_stroke */
-    _cairo_xml_surface_glyphs,
+    _comac_xml_surface_glyphs,
 };
 
-static cairo_surface_t *
-_cairo_xml_surface_create_internal (cairo_device_t *device,
-				    cairo_content_t content,
+static comac_surface_t *
+_comac_xml_surface_create_internal (comac_device_t *device,
+				    comac_content_t content,
 				    double width,
 				    double height)
 {
-    cairo_xml_surface_t *surface;
+    comac_xml_surface_t *surface;
 
-    surface = _cairo_malloc (sizeof (cairo_xml_surface_t));
+    surface = _comac_malloc (sizeof (comac_xml_surface_t));
     if (unlikely (surface == NULL))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
 
-    _cairo_surface_init (&surface->base,
-			 &_cairo_xml_surface_backend,
+    _comac_surface_init (&surface->base,
+			 &_comac_xml_surface_backend,
 			 device,
 			 content,
 			 TRUE); /* is_vector */
@@ -1115,56 +1115,56 @@ _cairo_xml_surface_create_internal (cairo_device_t *device,
     return &surface->base;
 }
 
-cairo_device_t *
-cairo_xml_create (const char *filename)
+comac_device_t *
+comac_xml_create (const char *filename)
 {
-    cairo_output_stream_t *stream;
-    cairo_status_t status;
+    comac_output_stream_t *stream;
+    comac_status_t status;
 
-    stream = _cairo_output_stream_create_for_filename (filename);
-    if ((status = _cairo_output_stream_get_status (stream)))
-	return _cairo_device_create_in_error (status);
+    stream = _comac_output_stream_create_for_filename (filename);
+    if ((status = _comac_output_stream_get_status (stream)))
+	return _comac_device_create_in_error (status);
 
-    return _cairo_xml_create_internal (stream);
+    return _comac_xml_create_internal (stream);
 }
 
-cairo_device_t *
-cairo_xml_create_for_stream (cairo_write_func_t	 write_func,
+comac_device_t *
+comac_xml_create_for_stream (comac_write_func_t	 write_func,
 			     void		*closure)
 {
-    cairo_output_stream_t *stream;
-    cairo_status_t status;
+    comac_output_stream_t *stream;
+    comac_status_t status;
 
-    stream = _cairo_output_stream_create (write_func, NULL, closure);
-    if ((status = _cairo_output_stream_get_status (stream)))
-	return _cairo_device_create_in_error (status);
+    stream = _comac_output_stream_create (write_func, NULL, closure);
+    if ((status = _comac_output_stream_get_status (stream)))
+	return _comac_device_create_in_error (status);
 
-    return _cairo_xml_create_internal (stream);
+    return _comac_xml_create_internal (stream);
 }
 
-cairo_surface_t *
-cairo_xml_surface_create (cairo_device_t *device,
-			  cairo_content_t content,
+comac_surface_t *
+comac_xml_surface_create (comac_device_t *device,
+			  comac_content_t content,
 			  double width, double height)
 {
-    if (unlikely (device->backend->type != CAIRO_DEVICE_TYPE_XML))
-	return _cairo_surface_create_in_error (CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+    if (unlikely (device->backend->type != COMAC_DEVICE_TYPE_XML))
+	return _comac_surface_create_in_error (COMAC_STATUS_DEVICE_TYPE_MISMATCH);
 
     if (unlikely (device->status))
-	return _cairo_surface_create_in_error (device->status);
+	return _comac_surface_create_in_error (device->status);
 
-    return _cairo_xml_surface_create_internal (device, content, width, height);
+    return _comac_xml_surface_create_internal (device, content, width, height);
 }
 
-cairo_status_t
-cairo_xml_for_recording_surface (cairo_device_t	 *device,
-				 cairo_surface_t *recording_surface)
+comac_status_t
+comac_xml_for_recording_surface (comac_device_t	 *device,
+				 comac_surface_t *recording_surface)
 {
-    cairo_box_t bbox;
-    cairo_rectangle_int_t extents;
-    cairo_surface_t *surface;
-    cairo_xml_t *xml;
-    cairo_status_t status;
+    comac_box_t bbox;
+    comac_rectangle_int_t extents;
+    comac_surface_t *surface;
+    comac_xml_t *xml;
+    comac_status_t status;
 
     if (unlikely (device->status))
 	return device->status;
@@ -1172,39 +1172,39 @@ cairo_xml_for_recording_surface (cairo_device_t	 *device,
     if (unlikely (recording_surface->status))
 	return recording_surface->status;
 
-    if (unlikely (device->backend->type != CAIRO_DEVICE_TYPE_XML))
-	return _cairo_error (CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+    if (unlikely (device->backend->type != COMAC_DEVICE_TYPE_XML))
+	return _comac_error (COMAC_STATUS_DEVICE_TYPE_MISMATCH);
 
-    if (unlikely (! _cairo_surface_is_recording (recording_surface)))
-	return _cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (unlikely (! _comac_surface_is_recording (recording_surface)))
+	return _comac_error (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 
-    status = _cairo_recording_surface_get_bbox ((cairo_recording_surface_t *) recording_surface,
+    status = _comac_recording_surface_get_bbox ((comac_recording_surface_t *) recording_surface,
 						&bbox, NULL);
     if (unlikely (status))
 	return status;
 
-    _cairo_box_round_to_rectangle (&bbox, &extents);
-    surface = _cairo_xml_surface_create_internal (device,
+    _comac_box_round_to_rectangle (&bbox, &extents);
+    surface = _comac_xml_surface_create_internal (device,
 						  recording_surface->content,
 						  extents.width,
 						  extents.height);
     if (unlikely (surface->status))
 	return surface->status;
 
-    xml = (cairo_xml_t *) device;
+    xml = (comac_xml_t *) device;
 
-    _cairo_xml_printf (xml,
+    _comac_xml_printf (xml,
 		       "<surface content='%s' width='%d' height='%d'>",
 		       _content_to_string (recording_surface->content),
 		       extents.width, extents.height);
-    _cairo_xml_indent (xml, 2);
+    _comac_xml_indent (xml, 2);
 
-    cairo_surface_set_device_offset (surface, -extents.x, -extents.y);
-    status = _cairo_recording_surface_replay (recording_surface, surface);
-    cairo_surface_destroy (surface);
+    comac_surface_set_device_offset (surface, -extents.x, -extents.y);
+    status = _comac_recording_surface_replay (recording_surface, surface);
+    comac_surface_destroy (surface);
 
-    _cairo_xml_indent (xml, -2);
-    _cairo_xml_printf (xml, "</surface>");
+    _comac_xml_indent (xml, -2);
+    _comac_xml_printf (xml, "</surface>");
 
     return status;
 }

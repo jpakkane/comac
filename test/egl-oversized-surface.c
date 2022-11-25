@@ -34,8 +34,8 @@
 #include <assert.h>
 #include <limits.h>
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *test_ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *test_ctx)
 {
     EGLint rgba_attribs[] = {
 	EGL_RED_SIZE, 8,
@@ -43,15 +43,15 @@ preamble (cairo_test_context_t *test_ctx)
 	EGL_BLUE_SIZE, 8,
 	EGL_ALPHA_SIZE, 8,
 	EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-#if CAIRO_HAS_GL_SURFACE
+#if COMAC_HAS_GL_SURFACE
 	EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-#elif CAIRO_HAS_GLESV2_SURFACE
+#elif COMAC_HAS_GLESV2_SURFACE
 	EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
 #endif
 	EGL_NONE
     };
     const EGLint ctx_attribs[] = {
-#if CAIRO_HAS_GLESV2_SURFACE
+#if COMAC_HAS_GLESV2_SURFACE
 	EGL_CONTEXT_CLIENT_VERSION, 2,
 #endif
 	EGL_NONE
@@ -62,42 +62,42 @@ preamble (cairo_test_context_t *test_ctx)
     EGLConfig config;
     EGLint numConfigs;
     int major, minor;
-    cairo_device_t *device;
-    cairo_surface_t *oversized_surface;
-    cairo_test_status_t test_status = CAIRO_TEST_SUCCESS;
+    comac_device_t *device;
+    comac_surface_t *oversized_surface;
+    comac_test_status_t test_status = COMAC_TEST_SUCCESS;
 
     dpy = eglGetDisplay (EGL_DEFAULT_DISPLAY);
     if (! eglInitialize (dpy, &major, &minor)) {
-	test_status = CAIRO_TEST_UNTESTED;
+	test_status = COMAC_TEST_UNTESTED;
 	goto CLEANUP_1;
     }
 
     eglChooseConfig (dpy, rgba_attribs, &config, 1, &numConfigs);
     if (numConfigs == 0) {
-	test_status = CAIRO_TEST_UNTESTED;
+	test_status = COMAC_TEST_UNTESTED;
 	goto CLEANUP_1;
     }
 
-#if CAIRO_HAS_GL_SURFACE
+#if COMAC_HAS_GL_SURFACE
     eglBindAPI (EGL_OPENGL_API);
-#elif CAIRO_HAS_GLESV2_SURFACE
+#elif COMAC_HAS_GLESV2_SURFACE
     eglBindAPI (EGL_OPENGL_ES_API);
 #endif
 
    ctx = eglCreateContext (dpy, config, EGL_NO_CONTEXT,
 				  ctx_attribs);
     if (ctx == EGL_NO_CONTEXT) {
-	test_status = CAIRO_TEST_UNTESTED;
+	test_status = COMAC_TEST_UNTESTED;
 	goto CLEANUP_2;
     }
 
-    device = cairo_egl_device_create (dpy, ctx);
+    device = comac_egl_device_create (dpy, ctx);
 
-    oversized_surface = cairo_gl_surface_create (device, CAIRO_CONTENT_COLOR_ALPHA, INT_MAX, INT_MAX);
-    if (cairo_surface_status (oversized_surface) != CAIRO_STATUS_INVALID_SIZE)
-        test_status = CAIRO_TEST_FAILURE;
+    oversized_surface = comac_gl_surface_create (device, COMAC_CONTENT_COLOR_ALPHA, INT_MAX, INT_MAX);
+    if (comac_surface_status (oversized_surface) != COMAC_STATUS_INVALID_SIZE)
+        test_status = COMAC_TEST_FAILURE;
 
-    cairo_device_destroy (device);
+    comac_device_destroy (device);
     eglDestroyContext (dpy, ctx);
     eglMakeCurrent (dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     ctx = EGL_NO_CONTEXT;
@@ -109,7 +109,7 @@ CLEANUP_1:
     return test_status;
 }
 
-CAIRO_TEST (egl_oversized_surface,
+COMAC_TEST (egl_oversized_surface,
 	    "Test that creating a surface beyond texture limits results in an error surface",
 	    "egl", /* keywords */
 	    NULL, /* requirements */

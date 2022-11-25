@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -28,7 +28,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -43,65 +43,65 @@
 
 #include "comac-compositor-private.h"
 
-static cairo_int_status_t
-_cairo_no_compositor_paint (const cairo_compositor_t *_compositor,
-			    cairo_composite_rectangles_t *extents)
+static comac_int_status_t
+_comac_no_compositor_paint (const comac_compositor_t *_compositor,
+			    comac_composite_rectangles_t *extents)
 {
     ASSERT_NOT_REACHED;
-    return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    return COMAC_INT_STATUS_NOTHING_TO_DO;
 }
 
-static cairo_int_status_t
-_cairo_no_compositor_mask (const cairo_compositor_t *compositor,
-			   cairo_composite_rectangles_t *extents)
+static comac_int_status_t
+_comac_no_compositor_mask (const comac_compositor_t *compositor,
+			   comac_composite_rectangles_t *extents)
 {
     ASSERT_NOT_REACHED;
-    return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    return COMAC_INT_STATUS_NOTHING_TO_DO;
 }
 
-static cairo_int_status_t
-_cairo_no_compositor_stroke (const cairo_compositor_t *_compositor,
-			     cairo_composite_rectangles_t *extents,
-			     const cairo_path_fixed_t	*path,
-			     const cairo_stroke_style_t	*style,
-			     const cairo_matrix_t	*ctm,
-			     const cairo_matrix_t	*ctm_inverse,
+static comac_int_status_t
+_comac_no_compositor_stroke (const comac_compositor_t *_compositor,
+			     comac_composite_rectangles_t *extents,
+			     const comac_path_fixed_t	*path,
+			     const comac_stroke_style_t	*style,
+			     const comac_matrix_t	*ctm,
+			     const comac_matrix_t	*ctm_inverse,
 			     double		 tolerance,
-			     cairo_antialias_t	 antialias)
+			     comac_antialias_t	 antialias)
 {
     ASSERT_NOT_REACHED;
-    return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    return COMAC_INT_STATUS_NOTHING_TO_DO;
 }
 
-static cairo_int_status_t
-_cairo_no_compositor_fill (const cairo_compositor_t *_compositor,
-			   cairo_composite_rectangles_t *extents,
-			   const cairo_path_fixed_t	*path,
-			   cairo_fill_rule_t	 fill_rule,
+static comac_int_status_t
+_comac_no_compositor_fill (const comac_compositor_t *_compositor,
+			   comac_composite_rectangles_t *extents,
+			   const comac_path_fixed_t	*path,
+			   comac_fill_rule_t	 fill_rule,
 			   double			 tolerance,
-			   cairo_antialias_t	 antialias)
+			   comac_antialias_t	 antialias)
 {
     ASSERT_NOT_REACHED;
-    return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    return COMAC_INT_STATUS_NOTHING_TO_DO;
 }
 
-static cairo_int_status_t
-_cairo_no_compositor_glyphs (const cairo_compositor_t *compositor,
-			     cairo_composite_rectangles_t *extents,
-			     cairo_scaled_font_t	*scaled_font,
-			     cairo_glyph_t		*glyphs,
+static comac_int_status_t
+_comac_no_compositor_glyphs (const comac_compositor_t *compositor,
+			     comac_composite_rectangles_t *extents,
+			     comac_scaled_font_t	*scaled_font,
+			     comac_glyph_t		*glyphs,
 			     int			 num_glyphs,
-			     cairo_bool_t overlap)
+			     comac_bool_t overlap)
 {
     ASSERT_NOT_REACHED;
-    return CAIRO_INT_STATUS_NOTHING_TO_DO;
+    return COMAC_INT_STATUS_NOTHING_TO_DO;
 }
 
-const cairo_compositor_t __cairo_no_compositor = {
+const comac_compositor_t __comac_no_compositor = {
     NULL,
-    _cairo_no_compositor_paint,
-    _cairo_no_compositor_mask,
-    _cairo_no_compositor_stroke,
-    _cairo_no_compositor_fill,
-    _cairo_no_compositor_glyphs,
+    _comac_no_compositor_paint,
+    _comac_no_compositor_mask,
+    _comac_no_compositor_stroke,
+    _comac_no_compositor_fill,
+    _comac_no_compositor_glyphs,
 };

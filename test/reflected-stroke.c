@@ -26,64 +26,64 @@
 #include "comac-test.h"
 
 static void
-draw_symbol (cairo_t *cr)
+draw_symbol (comac_t *cr)
 {
     double dash[] = {6, 3};
 
-    cairo_rectangle (cr, -25, -25, 50, 50);
-    cairo_stroke (cr);
+    comac_rectangle (cr, -25, -25, 50, 50);
+    comac_stroke (cr);
 
-    cairo_move_to (cr, 0, -25);
-    cairo_curve_to (cr, 12.5, -12.5, 12.5, -12.5, 0, 0);
-    cairo_curve_to (cr, -12.5, 12.5, -12.5, 12.5, 0, 25);
-    cairo_curve_to (cr, 12.5, 12.5, 12.5, 12.5, 0, 0);
-    cairo_stroke (cr);
+    comac_move_to (cr, 0, -25);
+    comac_curve_to (cr, 12.5, -12.5, 12.5, -12.5, 0, 0);
+    comac_curve_to (cr, -12.5, 12.5, -12.5, 12.5, 0, 25);
+    comac_curve_to (cr, 12.5, 12.5, 12.5, 12.5, 0, 0);
+    comac_stroke (cr);
 
-    cairo_save (cr);
-    cairo_set_dash (cr, dash, ARRAY_LENGTH (dash), 0.);
-    cairo_move_to (cr, 0, 0);
-    cairo_arc (cr, 0, 0, 12.5, 0, 3 * M_PI / 2);
-    cairo_close_path (cr);
-    cairo_stroke (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_dash (cr, dash, ARRAY_LENGTH (dash), 0.);
+    comac_move_to (cr, 0, 0);
+    comac_arc (cr, 0, 0, 12.5, 0, 3 * M_PI / 2);
+    comac_close_path (cr);
+    comac_stroke (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_save (cr);
-    cairo_translate (cr, 50, 50);
-    cairo_scale (cr, 1, 1);
+    comac_save (cr);
+    comac_translate (cr, 50, 50);
+    comac_scale (cr, 1, 1);
     draw_symbol (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_save (cr);
-    cairo_translate (cr, 150, 50);
-    cairo_scale (cr, -1, 1);
+    comac_save (cr);
+    comac_translate (cr, 150, 50);
+    comac_scale (cr, -1, 1);
     draw_symbol (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_save (cr);
-    cairo_translate (cr, 150, 150);
-    cairo_scale (cr, -1, -1);
+    comac_save (cr);
+    comac_translate (cr, 150, 150);
+    comac_scale (cr, -1, -1);
     draw_symbol (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_save (cr);
-    cairo_translate (cr, 50, 150);
-    cairo_scale (cr, 1, -1);
+    comac_save (cr);
+    comac_translate (cr, 50, 150);
+    comac_scale (cr, 1, -1);
     draw_symbol (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (reflected_stroke,
+COMAC_TEST (reflected_stroke,
 	    "Exercises the stroker with a reflected ctm",
 	    "stroke, transform", /* keywords */
 	    NULL, /* requirements */

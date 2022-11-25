@@ -27,68 +27,68 @@
 
 #define SIZE 20
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    /* subpath starts with cairo_move_to */
-    cairo_new_sub_path (cr);
-    cairo_move_to (cr, SIZE, SIZE);
-    cairo_rel_line_to (cr, SIZE, 0);
-    cairo_rel_line_to (cr, 0, SIZE);
-    cairo_close_path (cr);
-    cairo_rel_line_to (cr, 0.5 * SIZE, SIZE);
+    /* subpath starts with comac_move_to */
+    comac_new_sub_path (cr);
+    comac_move_to (cr, SIZE, SIZE);
+    comac_rel_line_to (cr, SIZE, 0);
+    comac_rel_line_to (cr, 0, SIZE);
+    comac_close_path (cr);
+    comac_rel_line_to (cr, 0.5 * SIZE, SIZE);
 
-    /* subpath starts with cairo_line_to */
-    cairo_new_sub_path (cr);
-    cairo_line_to (cr, SIZE, 3 * SIZE);
-    cairo_rel_line_to (cr, SIZE, 0);
-    cairo_rel_line_to (cr, 0, SIZE);
-    cairo_close_path (cr);
-    cairo_rel_line_to (cr, 0, SIZE);
+    /* subpath starts with comac_line_to */
+    comac_new_sub_path (cr);
+    comac_line_to (cr, SIZE, 3 * SIZE);
+    comac_rel_line_to (cr, SIZE, 0);
+    comac_rel_line_to (cr, 0, SIZE);
+    comac_close_path (cr);
+    comac_rel_line_to (cr, 0, SIZE);
 
-    /* subpath starts with cairo_curve_to */
-    cairo_new_sub_path (cr);
-    cairo_curve_to (cr,
+    /* subpath starts with comac_curve_to */
+    comac_new_sub_path (cr);
+    comac_curve_to (cr,
 		    SIZE, 5 * SIZE,
 		    1.5 * SIZE, 6 * SIZE,
 		    2 * SIZE, 5 * SIZE);
-    cairo_rel_line_to (cr, 0, SIZE);
-    cairo_close_path (cr);
-    cairo_rel_line_to (cr, -0.5 * SIZE, SIZE);
+    comac_rel_line_to (cr, 0, SIZE);
+    comac_close_path (cr);
+    comac_rel_line_to (cr, -0.5 * SIZE, SIZE);
 
-    /* subpath starts with cairo_arc */
-    cairo_new_sub_path (cr);
-    cairo_arc (cr,
+    /* subpath starts with comac_arc */
+    comac_new_sub_path (cr);
+    comac_arc (cr,
 	       1.5 * SIZE, 7 * SIZE,
 	       0.5 * SIZE,
 	       M_PI, 2 * M_PI);
-    cairo_rel_line_to (cr, 0, SIZE);
-    cairo_close_path (cr);
-    cairo_rel_line_to (cr, -0.7 * SIZE, 0.7 * SIZE);
+    comac_rel_line_to (cr, 0, SIZE);
+    comac_close_path (cr);
+    comac_rel_line_to (cr, -0.7 * SIZE, 0.7 * SIZE);
 
-    /* subpath starts with cairo_arc_negative */
-    cairo_new_sub_path (cr);
-    cairo_arc_negative (cr,
+    /* subpath starts with comac_arc_negative */
+    comac_new_sub_path (cr);
+    comac_arc_negative (cr,
 			1.5 * SIZE, 9 * SIZE,
 			0.5 * SIZE,
 			M_PI, 2 * M_PI);
-    cairo_rel_line_to (cr, 0, SIZE);
-    cairo_close_path (cr);
-    cairo_rel_line_to (cr, -0.8 * SIZE, 0.3 * SIZE);
+    comac_rel_line_to (cr, 0, SIZE);
+    comac_close_path (cr);
+    comac_rel_line_to (cr, -0.8 * SIZE, 0.3 * SIZE);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (close_path_current_point,
-	    "Test some corner cases related to cairo path operations and the current point",
+COMAC_TEST (close_path_current_point,
+	    "Test some corner cases related to comac path operations and the current point",
 	    "path", /* keywords */
 	    NULL, /* requirements */
 	    3 * SIZE, 11 * SIZE,

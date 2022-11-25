@@ -29,90 +29,90 @@
 #define HEIGHT 40
 
 static void
-shapes (cairo_t *cr)
+shapes (comac_t *cr)
 {
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0.7, 0);
-    cairo_arc (cr, 10, 10, 7.5, 0, 2 * M_PI);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 0.7, 0);
+    comac_arc (cr, 10, 10, 7.5, 0, 2 * M_PI);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, 0, 0.7, 0.7);
-    cairo_arc (cr, 10, 10, 25, 0, 2 * M_PI);
-    cairo_stroke (cr);
-    cairo_rectangle (cr, -5, -5, 30, 30);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 0.7, 0.7);
+    comac_arc (cr, 10, 10, 25, 0, 2 * M_PI);
+    comac_stroke (cr);
+    comac_rectangle (cr, -5, -5, 30, 30);
+    comac_stroke (cr);
 
-    cairo_set_source_rgb (cr, 0.7, 0.7, 0);
-    cairo_save (cr);
-    cairo_translate (cr, 10, 10);
-    cairo_rotate (cr, M_PI/4);
-    cairo_translate (cr, -10, -10);
-    cairo_rectangle (cr, -5, -5, 30, 30);
-    cairo_stroke (cr);
-    cairo_restore (cr);
+    comac_set_source_rgb (cr, 0.7, 0.7, 0);
+    comac_save (cr);
+    comac_translate (cr, 10, 10);
+    comac_rotate (cr, M_PI/4);
+    comac_translate (cr, -10, -10);
+    comac_rectangle (cr, -5, -5, 30, 30);
+    comac_stroke (cr);
+    comac_restore (cr);
 
-    cairo_set_source_rgb (cr, 0.7, 0.0, 0.7);
-    cairo_move_to (cr, 15, -10);
-    cairo_line_to (cr, 30, 10);
-    cairo_line_to (cr, 15, 30);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0.7, 0.0, 0.7);
+    comac_move_to (cr, 15, -10);
+    comac_line_to (cr, 30, 10);
+    comac_line_to (cr, 15, 30);
+    comac_stroke (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 10, 10);
+    comac_translate (cr, 10, 10);
 
     /* simple clip */
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_clip (cr);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_clip (cr);
     shapes (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 
     /* unaligned clip */
-    cairo_save (cr);
-    cairo_rectangle (cr, 0.5, 0.5, 20, 20);
-    cairo_clip (cr);
+    comac_save (cr);
+    comac_rectangle (cr, 0.5, 0.5, 20, 20);
+    comac_clip (cr);
     shapes (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, -WIDTH, HEIGHT);
+    comac_translate (cr, -WIDTH, HEIGHT);
 
     /* aligned-clip */
-    cairo_save (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_rectangle (cr, 0, 0, 20, 20);
-    cairo_rectangle (cr, 3, 3, 10, 10);
-    cairo_rectangle (cr, 7, 7, 10, 10);
-    cairo_clip (cr);
+    comac_save (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_rectangle (cr, 0, 0, 20, 20);
+    comac_rectangle (cr, 3, 3, 10, 10);
+    comac_rectangle (cr, 7, 7, 10, 10);
+    comac_clip (cr);
     shapes (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, WIDTH, 0);
+    comac_translate (cr, WIDTH, 0);
 
     /* force a clip-mask */
-    cairo_save (cr);
-    cairo_arc (cr, 10, 10, 10, 0, 2 * M_PI);
-    cairo_new_sub_path (cr);
-    cairo_arc_negative (cr, 10, 10, 5, 2 * M_PI, 0);
-    cairo_new_sub_path (cr);
-    cairo_arc (cr, 10, 10, 2, 0, 2 * M_PI);
-    cairo_clip (cr);
+    comac_save (cr);
+    comac_arc (cr, 10, 10, 10, 0, 2 * M_PI);
+    comac_new_sub_path (cr);
+    comac_arc_negative (cr, 10, 10, 5, 2 * M_PI, 0);
+    comac_new_sub_path (cr);
+    comac_arc (cr, 10, 10, 2, 0, 2 * M_PI);
+    comac_clip (cr);
     shapes (cr);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_stroke,
+COMAC_TEST (clip_stroke,
 	    "Tests stroke through complex clips.",
 	    "clip, stroke", /* keywords */
 	    NULL, /* requirements */

@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2016 Adrian Johnson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -39,7 +39,7 @@
 #include "comac-tag-stack-private.h"
 
 /* Tagged PDF must have one of these tags at the top level */
-static const char * _cairo_tag_stack_tagged_pdf_top_level_element_list[] =
+static const char * _comac_tag_stack_tagged_pdf_top_level_element_list[] =
 {
     "Document",
     "Part",
@@ -50,7 +50,7 @@ static const char * _cairo_tag_stack_tagged_pdf_top_level_element_list[] =
 };
 
 /* List of valid tag names. Table numbers reference PDF 32000 */
-static const char * _cairo_tag_stack_struct_pdf_list[] =
+static const char * _comac_tag_stack_struct_pdf_list[] =
 {
     /* Table 333 - Grouping Elements */
     "Document",
@@ -85,7 +85,7 @@ static const char * _cairo_tag_stack_struct_pdf_list[] =
     "Reference",
     "BibEntry",
     "Code",
-    "Link", /* CAIRO_TAG_LINK */
+    "Link", /* COMAC_TAG_LINK */
     "Annot",
     "Ruby",
     "Warichu",
@@ -102,42 +102,42 @@ static const char * _cairo_tag_stack_struct_pdf_list[] =
     NULL
 };
 
-/* List of cairo specific tag names */
-static const char * _cairo_tag_stack_cairo_tag_list[] =
+/* List of comac specific tag names */
+static const char * _comac_tag_stack_comac_tag_list[] =
 {
-    CAIRO_TAG_DEST,
+    COMAC_TAG_DEST,
     NULL
 };
 
 void
-_cairo_tag_stack_init (cairo_tag_stack_t *stack)
+_comac_tag_stack_init (comac_tag_stack_t *stack)
 {
-    cairo_list_init (&stack->list);
+    comac_list_init (&stack->list);
     stack->type = TAG_TREE_TYPE_NO_TAGS;
     stack->size = 0;
 }
 
 void
-_cairo_tag_stack_fini (cairo_tag_stack_t *stack)
+_comac_tag_stack_fini (comac_tag_stack_t *stack)
 {
-    while (! cairo_list_is_empty (&stack->list)) {
-	cairo_tag_stack_elem_t *elem;
+    while (! comac_list_is_empty (&stack->list)) {
+	comac_tag_stack_elem_t *elem;
 
-	elem = cairo_list_first_entry (&stack->list, cairo_tag_stack_elem_t, link);
-	cairo_list_del (&elem->link);
+	elem = comac_list_first_entry (&stack->list, comac_tag_stack_elem_t, link);
+	comac_list_del (&elem->link);
 	free (elem->name);
 	free (elem->attributes);
 	free (elem);
     }
 }
 
-cairo_tag_stack_structure_type_t
-_cairo_tag_stack_get_structure_type (cairo_tag_stack_t *stack)
+comac_tag_stack_structure_type_t
+_comac_tag_stack_get_structure_type (comac_tag_stack_t *stack)
 {
     return stack->type;
 }
 
-static cairo_bool_t
+static comac_bool_t
 name_in_list (const char *name, const char **list)
 {
     if (! name)
@@ -152,145 +152,145 @@ name_in_list (const char *name, const char **list)
     return FALSE;
 }
 
-cairo_int_status_t
-_cairo_tag_stack_push (cairo_tag_stack_t *stack,
+comac_int_status_t
+_comac_tag_stack_push (comac_tag_stack_t *stack,
 		       const char        *name,
 		       const char        *attributes)
 {
-    cairo_tag_stack_elem_t *elem;
+    comac_tag_stack_elem_t *elem;
 
-    if (! name_in_list (name, _cairo_tag_stack_struct_pdf_list) &&
-	! name_in_list (name, _cairo_tag_stack_cairo_tag_list))
+    if (! name_in_list (name, _comac_tag_stack_struct_pdf_list) &&
+	! name_in_list (name, _comac_tag_stack_comac_tag_list))
     {
 	stack->type = TAG_TYPE_INVALID;
-	return _cairo_tag_error ("Invalid tag: %s", name);
+	return _comac_tag_error ("Invalid tag: %s", name);
     }
 
     if (stack->type == TAG_TREE_TYPE_NO_TAGS) {
-	if (name_in_list (name, _cairo_tag_stack_tagged_pdf_top_level_element_list))
+	if (name_in_list (name, _comac_tag_stack_tagged_pdf_top_level_element_list))
 	    stack->type = TAG_TREE_TYPE_TAGGED;
 	else if (strcmp (name, "Link") == 0)
 	    stack->type = TAG_TREE_TYPE_LINK_ONLY;
-	else if (name_in_list (name, _cairo_tag_stack_struct_pdf_list))
+	else if (name_in_list (name, _comac_tag_stack_struct_pdf_list))
 	    stack->type = TAG_TREE_TYPE_STRUCTURE;
     } else {
 	if (stack->type == TAG_TREE_TYPE_LINK_ONLY &&
 	    (strcmp (name, "Link") != 0) &&
-	    name_in_list (name, _cairo_tag_stack_struct_pdf_list))
+	    name_in_list (name, _comac_tag_stack_struct_pdf_list))
 	{
 	    stack->type = TAG_TREE_TYPE_STRUCTURE;
 	}
     }
 
-    elem = _cairo_malloc (sizeof(cairo_tag_stack_elem_t));
+    elem = _comac_malloc (sizeof(comac_tag_stack_elem_t));
     if (unlikely (elem == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     elem->name = strdup (name);
     if (unlikely (elem->name == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     if (attributes) {
 	elem->attributes = strdup (attributes);
 	if (unlikely (elem->attributes == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     } else {
 	elem->attributes = NULL;
     }
 
     elem->data = NULL;
 
-    cairo_list_add_tail (&elem->link, &stack->list);
+    comac_list_add_tail (&elem->link, &stack->list);
     stack->size++;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_private void
-_cairo_tag_stack_set_top_data (cairo_tag_stack_t *stack,
+comac_private void
+_comac_tag_stack_set_top_data (comac_tag_stack_t *stack,
 			       void        *data)
 {
-    cairo_tag_stack_elem_t *top;
+    comac_tag_stack_elem_t *top;
 
-    top = _cairo_tag_stack_top_elem (stack);
+    top = _comac_tag_stack_top_elem (stack);
     if (top)
 	top->data = data;
 }
 
-cairo_int_status_t
-_cairo_tag_stack_pop (cairo_tag_stack_t *stack,
+comac_int_status_t
+_comac_tag_stack_pop (comac_tag_stack_t *stack,
 		      const char *name,
-		      cairo_tag_stack_elem_t **elem)
+		      comac_tag_stack_elem_t **elem)
 {
-    cairo_tag_stack_elem_t *top;
+    comac_tag_stack_elem_t *top;
 
-    top = _cairo_tag_stack_top_elem (stack);
+    top = _comac_tag_stack_top_elem (stack);
     if (!top) {
 	stack->type = TAG_TYPE_INVALID;
-	return _cairo_tag_error ("cairo_tag_end(\"%s\") no matching begin tag", name);
+	return _comac_tag_error ("comac_tag_end(\"%s\") no matching begin tag", name);
     }
 
-    cairo_list_del (&top->link);
+    comac_list_del (&top->link);
     stack->size--;
     if (strcmp (top->name, name) != 0) {
 	stack->type = TAG_TYPE_INVALID;
-	_cairo_tag_stack_free_elem (top);
-	return _cairo_tag_error ("cairo_tag_end(\"%s\") does not matching previous begin tag \"%s\"",
+	_comac_tag_stack_free_elem (top);
+	return _comac_tag_error ("comac_tag_end(\"%s\") does not matching previous begin tag \"%s\"",
 				 name, top->name);
     }
 
     if (elem)
 	*elem = top;
     else
-	_cairo_tag_stack_free_elem (top);
+	_comac_tag_stack_free_elem (top);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_tag_stack_elem_t *
-_cairo_tag_stack_top_elem (cairo_tag_stack_t *stack)
+comac_tag_stack_elem_t *
+_comac_tag_stack_top_elem (comac_tag_stack_t *stack)
 {
-    if (cairo_list_is_empty (&stack->list))
+    if (comac_list_is_empty (&stack->list))
 	return NULL;
 
-    return cairo_list_last_entry (&stack->list, cairo_tag_stack_elem_t, link);
+    return comac_list_last_entry (&stack->list, comac_tag_stack_elem_t, link);
 }
 
 void
-_cairo_tag_stack_free_elem (cairo_tag_stack_elem_t *elem)
+_comac_tag_stack_free_elem (comac_tag_stack_elem_t *elem)
 {
     free (elem->name);
     free (elem->attributes);
     free (elem);
 }
 
-cairo_tag_type_t
-_cairo_tag_get_type (const char *name)
+comac_tag_type_t
+_comac_tag_get_type (const char *name)
 {
-    if (! name_in_list (name, _cairo_tag_stack_struct_pdf_list) &&
-	! name_in_list (name, _cairo_tag_stack_cairo_tag_list))
+    if (! name_in_list (name, _comac_tag_stack_struct_pdf_list) &&
+	! name_in_list (name, _comac_tag_stack_comac_tag_list))
 	return TAG_TYPE_INVALID;
 
     if (strcmp(name, "Link") == 0)
 	return (TAG_TYPE_LINK | TAG_TYPE_STRUCTURE);
 
-    if (strcmp(name, "cairo.dest") == 0)
+    if (strcmp(name, "comac.dest") == 0)
 	return TAG_TYPE_DEST;
 
     return TAG_TYPE_STRUCTURE;
 }
 
-cairo_status_t
-_cairo_tag_error (const char *fmt, ...)
+comac_status_t
+_comac_tag_error (const char *fmt, ...)
 {
     va_list ap;
 
-    if (getenv ("CAIRO_DEBUG_TAG") != NULL) {
+    if (getenv ("COMAC_DEBUG_TAG") != NULL) {
 	printf ("TAG ERROR: ");
 	va_start (ap, fmt);
 	vprintf (fmt, ap);
 	va_end (ap);
 	printf ("\n");
     }
-    return _cairo_error (CAIRO_STATUS_TAG_ERROR);
+    return _comac_error (COMAC_STATUS_TAG_ERROR);
 }

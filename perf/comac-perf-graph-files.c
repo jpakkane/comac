@@ -121,7 +121,7 @@ struct _app_data {
     GtkWidget *window;
 
     test_case_t *cases;
-    cairo_perf_report_t *reports;
+    comac_perf_report_t *reports;
     int num_reports;
 
     GtkTreeStore *case_store;
@@ -312,7 +312,7 @@ gv_report_selected (GraphView	     *gv,
 		    int 	      i,
 		    struct _app_data *app)
 {
-    cairo_perf_report_t *report;
+    comac_perf_report_t *report;
     char *hyphen;
 
     if (i == -1)
@@ -345,7 +345,7 @@ gv_report_selected (GraphView	     *gv,
 
 static GtkWidget *
 window_create (test_case_t	   *cases,
-	       cairo_perf_report_t *reports,
+	       comac_perf_report_t *reports,
 	       int		    num_reports)
 {
     GtkWidget *window, *table, *w;
@@ -362,7 +362,7 @@ window_create (test_case_t	   *cases,
     data->num_reports = num_reports;
 
     window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title (GTK_WINDOW (window), "Cairo Performance Graph");
+    gtk_window_set_title (GTK_WINDOW (window), "Comac Performance Graph");
     g_object_set_data_full (G_OBJECT (window),
 			    "app-data", data, (GDestroyNotify)g_free);
 
@@ -475,7 +475,7 @@ name_to_color (const char *name,
 }
 
 static test_case_t *
-test_cases_from_reports (cairo_perf_report_t *reports,
+test_cases_from_reports (comac_perf_report_t *reports,
 			 int		      num_reports)
 {
     test_case_t *cases, *c;
@@ -574,7 +574,7 @@ int
 main (int   argc,
       char *argv[])
 {
-    cairo_perf_report_t *reports;
+    comac_perf_report_t *reports;
     test_case_t *cases;
     test_report_t *t;
     int i;
@@ -585,9 +585,9 @@ main (int   argc,
     if (argc < 3)
 	usage (argv[0]);
 
-    reports = xmalloc ((argc-1) * sizeof (cairo_perf_report_t));
+    reports = xmalloc ((argc-1) * sizeof (comac_perf_report_t));
     for (i = 1; i < argc; i++ )
-	cairo_perf_report_load (&reports[i-1], argv[i], i, NULL);
+	comac_perf_report_load (&reports[i-1], argv[i], i, NULL);
 
     cases = test_cases_from_reports (reports, argc-1);
 

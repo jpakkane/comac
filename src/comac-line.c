@@ -28,7 +28,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Keith Packard
  *
@@ -44,13 +44,13 @@
 #include "comac-slope-private.h"
 
 static int
-line_compare_for_y_against_x (const cairo_line_t *a,
+line_compare_for_y_against_x (const comac_line_t *a,
 			      int32_t y,
 			      int32_t x)
 {
     int32_t adx, ady;
     int32_t dx, dy;
-    cairo_int64_t L, R;
+    comac_int64_t L, R;
 
     if (x < a->p1.x && x < a->p2.x)
 	return 1;
@@ -68,10 +68,10 @@ line_compare_for_y_against_x (const cairo_line_t *a,
     dy = y - a->p1.y;
     ady = a->p2.y - a->p1.y;
 
-    L = _cairo_int32x32_64_mul (dy, adx);
-    R = _cairo_int32x32_64_mul (dx, ady);
+    L = _comac_int32x32_64_mul (dy, adx);
+    R = _comac_int32x32_64_mul (dx, ady);
 
-    return _cairo_int64_cmp (L, R);
+    return _comac_int64_cmp (L, R);
 }
 
 /*
@@ -101,8 +101,8 @@ line_compare_for_y_against_x (const cairo_line_t *a,
  * See the similar discussion for _slope_compare().
  */
 static int
-lines_compare_x_for_y_general (const cairo_line_t *a,
-			       const cairo_line_t *b,
+lines_compare_x_for_y_general (const comac_line_t *a,
+			       const comac_line_t *b,
 			       int32_t y)
 {
     /* XXX: We're assuming here that dx and dy will still fit in 32
@@ -138,9 +138,9 @@ lines_compare_x_for_y_general (const cairo_line_t *a,
     if (dx == 0)
 	have_dx_adx_bdx &= ~HAVE_DX;
 
-#define L _cairo_int64x32_128_mul (_cairo_int32x32_64_mul (ady, bdy), dx)
-#define A _cairo_int64x32_128_mul (_cairo_int32x32_64_mul (adx, bdy), y - a->p1.y)
-#define B _cairo_int64x32_128_mul (_cairo_int32x32_64_mul (bdx, ady), y - b->p1.y)
+#define L _comac_int64x32_128_mul (_comac_int32x32_64_mul (ady, bdy), dx)
+#define A _comac_int64x32_128_mul (_comac_int32x32_64_mul (adx, bdy), y - a->p1.y)
+#define B _comac_int64x32_128_mul (_comac_int32x32_64_mul (bdx, ady), y - b->p1.y)
     switch (have_dx_adx_bdx) {
     default:
     case HAVE_NONE:
@@ -159,43 +159,43 @@ lines_compare_x_for_y_general (const cairo_line_t *a,
 	if ((adx ^ bdx) < 0) {
 	    return adx;
 	} else if (a->p1.y == b->p1.y) { /* common origin */
-	    cairo_int64_t adx_bdy, bdx_ady;
+	    comac_int64_t adx_bdy, bdx_ady;
 
 	    /* ∴ A_dx * B_dy ∘ B_dx * A_dy */
 
-	    adx_bdy = _cairo_int32x32_64_mul (adx, bdy);
-	    bdx_ady = _cairo_int32x32_64_mul (bdx, ady);
+	    adx_bdy = _comac_int32x32_64_mul (adx, bdy);
+	    bdx_ady = _comac_int32x32_64_mul (bdx, ady);
 
-	    return _cairo_int64_cmp (adx_bdy, bdx_ady);
+	    return _comac_int64_cmp (adx_bdy, bdx_ady);
 	} else
-	    return _cairo_int128_cmp (A, B);
+	    return _comac_int128_cmp (A, B);
     case HAVE_DX_ADX:
 	/* A_dy * (A_x - B_x) ∘ - (Y - A_y) * A_dx */
 	if ((-adx ^ dx) < 0) {
 	    return dx;
 	} else {
-	    cairo_int64_t ady_dx, dy_adx;
+	    comac_int64_t ady_dx, dy_adx;
 
-	    ady_dx = _cairo_int32x32_64_mul (ady, dx);
-	    dy_adx = _cairo_int32x32_64_mul (a->p1.y - y, adx);
+	    ady_dx = _comac_int32x32_64_mul (ady, dx);
+	    dy_adx = _comac_int32x32_64_mul (a->p1.y - y, adx);
 
-	    return _cairo_int64_cmp (ady_dx, dy_adx);
+	    return _comac_int64_cmp (ady_dx, dy_adx);
 	}
     case HAVE_DX_BDX:
 	/* B_dy * (A_x - B_x) ∘ (Y - B_y) * B_dx */
 	if ((bdx ^ dx) < 0) {
 	    return dx;
 	} else {
-	    cairo_int64_t bdy_dx, dy_bdx;
+	    comac_int64_t bdy_dx, dy_bdx;
 
-	    bdy_dx = _cairo_int32x32_64_mul (bdy, dx);
-	    dy_bdx = _cairo_int32x32_64_mul (y - b->p1.y, bdx);
+	    bdy_dx = _comac_int32x32_64_mul (bdy, dx);
+	    dy_bdx = _comac_int32x32_64_mul (y - b->p1.y, bdx);
 
-	    return _cairo_int64_cmp (bdy_dx, dy_bdx);
+	    return _comac_int64_cmp (bdy_dx, dy_bdx);
 	}
     case HAVE_ALL:
 	/* XXX try comparing (a->p2.x - b->p2.x) et al */
-	return _cairo_int128_cmp (L, _cairo_int128_sub (B, A));
+	return _comac_int128_cmp (L, _comac_int128_sub (B, A));
     }
 #undef B
 #undef A
@@ -203,8 +203,8 @@ lines_compare_x_for_y_general (const cairo_line_t *a,
 }
 
 static int
-lines_compare_x_for_y (const cairo_line_t *a,
-		       const cairo_line_t *b,
+lines_compare_x_for_y (const comac_line_t *a,
+		       const comac_line_t *b,
 		       int32_t y)
 {
     /* If the sweep-line is currently on an end-point of a line,
@@ -247,8 +247,8 @@ lines_compare_x_for_y (const cairo_line_t *a,
     }
 }
 
-static int bbox_compare (const cairo_line_t *a,
-			 const cairo_line_t *b)
+static int bbox_compare (const comac_line_t *a,
+			 const comac_line_t *b)
 {
     int32_t amin, amax;
     int32_t bmin, bmax;
@@ -279,14 +279,14 @@ static int bbox_compare (const cairo_line_t *a,
 }
 
 int
-_cairo_lines_compare_at_y (const cairo_line_t *a,
-			      const cairo_line_t *b,
+_comac_lines_compare_at_y (const comac_line_t *a,
+			      const comac_line_t *b,
 			      int y)
 {
-    cairo_slope_t sa, sb;
+    comac_slope_t sa, sb;
     int ret;
 
-    if (cairo_lines_equal (a, b))
+    if (comac_lines_equal (a, b))
 	return 0;
 
     /* Don't bother solving for abscissa if the edges' bounding boxes
@@ -300,8 +300,8 @@ _cairo_lines_compare_at_y (const cairo_line_t *a,
     if (ret)
 	return ret;
 
-    _cairo_slope_init (&sa, &a->p1, &a->p2);
-    _cairo_slope_init (&sb, &b->p1, &b->p2);
+    _comac_slope_init (&sa, &a->p1, &a->p2);
+    _comac_slope_init (&sb, &b->p1, &b->p2);
 
-    return _cairo_slope_compare (&sb, &sa);
+    return _comac_slope_compare (&sb, &sa);
 }

@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006 Adrian Johnson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -36,7 +36,7 @@
 
 #include "comacint.h"
 
-#if CAIRO_HAS_DEFLATE_STREAM
+#if COMAC_HAS_DEFLATE_STREAM
 
 #include "comac-error-private.h"
 #include "comac-output-stream-private.h"
@@ -44,25 +44,25 @@
 
 #define BUFFER_SIZE 16384
 
-typedef struct _cairo_deflate_stream {
-    cairo_output_stream_t  base;
-    cairo_output_stream_t *output;
+typedef struct _comac_deflate_stream {
+    comac_output_stream_t  base;
+    comac_output_stream_t *output;
     z_stream               zlib_stream;
     unsigned char          input_buf[BUFFER_SIZE];
     unsigned char          output_buf[BUFFER_SIZE];
-} cairo_deflate_stream_t;
+} comac_deflate_stream_t;
 
 static void
-cairo_deflate_stream_deflate (cairo_deflate_stream_t *stream, cairo_bool_t flush)
+comac_deflate_stream_deflate (comac_deflate_stream_t *stream, comac_bool_t flush)
 {
     int ret;
-    cairo_bool_t finished;
+    comac_bool_t finished;
 
     do {
         ret = deflate (&stream->zlib_stream, flush ? Z_FINISH : Z_NO_FLUSH);
         if (flush || stream->zlib_stream.avail_out == 0)
         {
-            _cairo_output_stream_write (stream->output,
+            _comac_output_stream_write (stream->output,
                                         stream->output_buf,
                                         BUFFER_SIZE - stream->zlib_stream.avail_out);
             stream->zlib_stream.next_out = stream->output_buf;
@@ -80,12 +80,12 @@ cairo_deflate_stream_deflate (cairo_deflate_stream_t *stream, cairo_bool_t flush
     stream->zlib_stream.next_in = stream->input_buf;
 }
 
-static cairo_status_t
-_cairo_deflate_stream_write (cairo_output_stream_t *base,
+static comac_status_t
+_comac_deflate_stream_write (comac_output_stream_t *base,
                              const unsigned char   *data,
                              unsigned int	    length)
 {
-    cairo_deflate_stream_t *stream = (cairo_deflate_stream_t *) base;
+    comac_deflate_stream_t *stream = (comac_deflate_stream_t *) base;
     unsigned int count;
     const unsigned char *p = data;
 
@@ -99,41 +99,41 @@ _cairo_deflate_stream_write (cairo_output_stream_t *base,
         length -= count;
 
         if (stream->zlib_stream.avail_in == BUFFER_SIZE)
-            cairo_deflate_stream_deflate (stream, FALSE);
+            comac_deflate_stream_deflate (stream, FALSE);
     }
 
-    return _cairo_output_stream_get_status (stream->output);
+    return _comac_output_stream_get_status (stream->output);
 }
 
-static cairo_status_t
-_cairo_deflate_stream_close (cairo_output_stream_t *base)
+static comac_status_t
+_comac_deflate_stream_close (comac_output_stream_t *base)
 {
-    cairo_deflate_stream_t *stream = (cairo_deflate_stream_t *) base;
+    comac_deflate_stream_t *stream = (comac_deflate_stream_t *) base;
 
-    cairo_deflate_stream_deflate (stream, TRUE);
+    comac_deflate_stream_deflate (stream, TRUE);
     deflateEnd (&stream->zlib_stream);
 
-    return _cairo_output_stream_get_status (stream->output);
+    return _comac_output_stream_get_status (stream->output);
 }
 
-cairo_output_stream_t *
-_cairo_deflate_stream_create (cairo_output_stream_t *output)
+comac_output_stream_t *
+_comac_deflate_stream_create (comac_output_stream_t *output)
 {
-    cairo_deflate_stream_t *stream;
+    comac_deflate_stream_t *stream;
 
     if (output->status)
-	return _cairo_output_stream_create_in_error (output->status);
+	return _comac_output_stream_create_in_error (output->status);
 
-    stream = _cairo_malloc (sizeof (cairo_deflate_stream_t));
+    stream = _comac_malloc (sizeof (comac_deflate_stream_t));
     if (unlikely (stream == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (&stream->base,
-			       _cairo_deflate_stream_write,
+    _comac_output_stream_init (&stream->base,
+			       _comac_deflate_stream_write,
 			       NULL,
-			       _cairo_deflate_stream_close);
+			       _comac_deflate_stream_close);
     stream->output = output;
 
     stream->zlib_stream.zalloc = Z_NULL;
@@ -142,7 +142,7 @@ _cairo_deflate_stream_create (cairo_output_stream_t *output)
 
     if (deflateInit (&stream->zlib_stream, Z_DEFAULT_COMPRESSION) != Z_OK) {
 	free (stream);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
     stream->zlib_stream.next_in = stream->input_buf;
@@ -153,4 +153,4 @@ _cairo_deflate_stream_create (cairo_output_stream_t *output)
     return &stream->base;
 }
 
-#endif /* CAIRO_HAS_DEFLATE_STREAM */
+#endif /* COMAC_HAS_DEFLATE_STREAM */

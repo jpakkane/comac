@@ -32,8 +32,8 @@
 #define WIDTH (SIZE * NUM_GRADIENTS)
 #define HEIGHT (SIZE * NUM_EXTEND)
 
-typedef void (*composite_t)(cairo_t *cr, cairo_pattern_t *pattern);
-typedef void (*add_stops_t)(cairo_pattern_t *pattern);
+typedef void (*composite_t)(comac_t *cr, comac_pattern_t *pattern);
+typedef void (*add_stops_t)(comac_pattern_t *pattern);
 
 /*
  * We want to test all the possible relative positions of the start
@@ -88,7 +88,7 @@ static const double radiuses[NUM_GRADIENTS] = {
     1.75
 };
 
-static cairo_pattern_t *
+static comac_pattern_t *
 create_pattern (int index)
 {
     double x0, x1, radius0, radius1, left, right, center;
@@ -111,144 +111,144 @@ create_pattern (int index)
     radius0 *= 0.25;
     radius1 *= 0.25;
 
-    return cairo_pattern_create_radial (x0, 0, radius0, x1, 0, radius1);
+    return comac_pattern_create_radial (x0, 0, radius0, x1, 0, radius1);
 }
 
 static void
-pattern_add_stops (cairo_pattern_t *pattern)
+pattern_add_stops (comac_pattern_t *pattern)
 {
-    cairo_pattern_add_color_stop_rgba (pattern, 0.0,        1, 0, 0, 0.75);
-    cairo_pattern_add_color_stop_rgba (pattern, sqrt (0.5), 0, 1, 0, 0);
-    cairo_pattern_add_color_stop_rgba (pattern, 1.0,        0, 0, 1, 1);
+    comac_pattern_add_color_stop_rgba (pattern, 0.0,        1, 0, 0, 0.75);
+    comac_pattern_add_color_stop_rgba (pattern, sqrt (0.5), 0, 1, 0, 0);
+    comac_pattern_add_color_stop_rgba (pattern, 1.0,        0, 0, 1, 1);
 }
 
 static void
-pattern_add_single_stop (cairo_pattern_t *pattern)
+pattern_add_single_stop (comac_pattern_t *pattern)
 {
-    cairo_pattern_add_color_stop_rgba (pattern, 0.25, 1, 0, 0, 1);
+    comac_pattern_add_color_stop_rgba (pattern, 0.25, 1, 0, 0, 1);
 }
 
 
-static cairo_test_status_t
-draw (cairo_t *cr, add_stops_t add_stops, composite_t composite)
+static comac_test_status_t
+draw (comac_t *cr, add_stops_t add_stops, composite_t composite)
 {
     int i, j;
-    cairo_extend_t extend[NUM_EXTEND] = {
-	CAIRO_EXTEND_NONE,
-	CAIRO_EXTEND_REPEAT,
-	CAIRO_EXTEND_REFLECT,
-	CAIRO_EXTEND_PAD
+    comac_extend_t extend[NUM_EXTEND] = {
+	COMAC_EXTEND_NONE,
+	COMAC_EXTEND_REPEAT,
+	COMAC_EXTEND_REFLECT,
+	COMAC_EXTEND_PAD
     };
 
-    cairo_scale (cr, SIZE, SIZE);
-    cairo_translate (cr, 0.5, 0.5);
+    comac_scale (cr, SIZE, SIZE);
+    comac_translate (cr, 0.5, 0.5);
 
     for (j = 0; j < NUM_EXTEND; j++) {
-	cairo_save (cr);
+	comac_save (cr);
 	for (i = 0; i < NUM_GRADIENTS; i++) {
-	    cairo_pattern_t *pattern;
+	    comac_pattern_t *pattern;
 
 	    pattern = create_pattern (i);
 	    add_stops (pattern);
-	    cairo_pattern_set_extend (pattern, extend[j]);
+	    comac_pattern_set_extend (pattern, extend[j]);
 
-	    cairo_save (cr);
-	    cairo_rectangle (cr, -0.5, -0.5, 1, 1);
-	    cairo_clip (cr);
+	    comac_save (cr);
+	    comac_rectangle (cr, -0.5, -0.5, 1, 1);
+	    comac_clip (cr);
 	    composite (cr, pattern);
-	    cairo_restore (cr);
-	    cairo_pattern_destroy (pattern);
+	    comac_restore (cr);
+	    comac_pattern_destroy (pattern);
 
-	    cairo_translate (cr, 1, 0);
+	    comac_translate (cr, 1, 0);
 	}
-	cairo_restore (cr);
-	cairo_translate (cr, 0, 1);
+	comac_restore (cr);
+	comac_translate (cr, 0, 1);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 
 static void
-composite_simple (cairo_t *cr, cairo_pattern_t *pattern)
+composite_simple (comac_t *cr, comac_pattern_t *pattern)
 {
-    cairo_set_source (cr, pattern);
-    cairo_paint (cr);
+    comac_set_source (cr, pattern);
+    comac_paint (cr);
 }
 
 static void
-composite_mask (cairo_t *cr, cairo_pattern_t *pattern)
+composite_mask (comac_t *cr, comac_pattern_t *pattern)
 {
-    cairo_set_source_rgb (cr, 1, 0, 1);
-    cairo_mask (cr, pattern);
+    comac_set_source_rgb (cr, 1, 0, 1);
+    comac_mask (cr, pattern);
 }
 
 
-static cairo_test_status_t
-draw_simple (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_simple (comac_t *cr, int width, int height)
 {
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
     return draw (cr, pattern_add_stops, composite_simple);
 }
 
-static cairo_test_status_t
-draw_mask (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_mask (comac_t *cr, int width, int height)
 {
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
     return draw (cr, pattern_add_stops, composite_mask);
 }
 
-static cairo_test_status_t
-draw_source (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_source (comac_t *cr, int width, int height)
 {
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
     return draw (cr, pattern_add_stops, composite_simple);
 }
 
 
-static cairo_test_status_t
-draw_mask_source (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_mask_source (comac_t *cr, int width, int height)
 {
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
     return draw (cr, pattern_add_stops, composite_mask);
 }
 
-static cairo_test_status_t
-draw_one_stop (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_one_stop (comac_t *cr, int width, int height)
 {
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
     return draw (cr, pattern_add_single_stop, composite_simple);
 }
 
-CAIRO_TEST (radial_gradient,
+COMAC_TEST (radial_gradient,
 	    "Simple test of radial gradients",
 	    "gradient", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw_simple)
 
-CAIRO_TEST (radial_gradient_mask,
+COMAC_TEST (radial_gradient_mask,
 	    "Simple test of radial gradients using a MASK",
 	    "gradient,mask", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw_mask)
 
-CAIRO_TEST (radial_gradient_source,
+COMAC_TEST (radial_gradient_source,
 	    "Simple test of radial gradients using the SOURCE operator",
 	    "gradient,source", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw_source)
 
-CAIRO_TEST (radial_gradient_mask_source,
+COMAC_TEST (radial_gradient_mask_source,
 	    "Simple test of radial gradients using a MASK with a SOURCE operator",
 	    "gradient,mask,source", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw_mask_source)
 
-CAIRO_TEST (radial_gradient_one_stop,
+COMAC_TEST (radial_gradient_one_stop,
 	    "Tests radial gradients with a single stop",
 	    "gradient,radial", /* keywords */
 	    NULL, /* requirements */

@@ -45,41 +45,41 @@
 
 
 /* timers */
-static cairo_time_t timer;
-static cairo_perf_timer_synchronize_t cairo_perf_timer_synchronize = NULL;
-static void *cairo_perf_timer_synchronize_closure = NULL;
+static comac_time_t timer;
+static comac_perf_timer_synchronize_t comac_perf_timer_synchronize = NULL;
+static void *comac_perf_timer_synchronize_closure = NULL;
 
 void
-cairo_perf_timer_set_synchronize (cairo_perf_timer_synchronize_t  synchronize,
+comac_perf_timer_set_synchronize (comac_perf_timer_synchronize_t  synchronize,
 				  void				 *closure)
 {
-    cairo_perf_timer_synchronize = synchronize;
-    cairo_perf_timer_synchronize_closure = closure;
+    comac_perf_timer_synchronize = synchronize;
+    comac_perf_timer_synchronize_closure = closure;
 }
 
 void
-cairo_perf_timer_start (void)
+comac_perf_timer_start (void)
 {
-    timer = _cairo_time_get ();
+    timer = _comac_time_get ();
 }
 
 void
-cairo_perf_timer_stop (void)
+comac_perf_timer_stop (void)
 {
-    if (cairo_perf_timer_synchronize)
-	cairo_perf_timer_synchronize (cairo_perf_timer_synchronize_closure);
+    if (comac_perf_timer_synchronize)
+	comac_perf_timer_synchronize (comac_perf_timer_synchronize_closure);
 
-    timer = _cairo_time_get_delta (timer);
+    timer = _comac_time_get_delta (timer);
 }
 
-cairo_time_t
-cairo_perf_timer_elapsed (void)
+comac_time_t
+comac_perf_timer_elapsed (void)
 {
     return timer;
 }
 
 void
-cairo_perf_yield (void)
+comac_perf_yield (void)
 {
     /* try to deactivate this thread until the scheduler calls it again */
 

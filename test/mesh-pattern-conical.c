@@ -45,7 +45,7 @@
 #define RADIUS   50
 
 static void
-sector_patch (cairo_pattern_t *pattern,
+sector_patch (comac_pattern_t *pattern,
 	      double angle_A,
 	      double A_r, double A_g, double A_b,
 	      double angle_B,
@@ -62,14 +62,14 @@ sector_patch (cairo_pattern_t *pattern,
 
     h = 4.0/3.0 * tan ((angle_B - angle_A) / 4.0);
 
-    cairo_mesh_pattern_begin_patch (pattern);
+    comac_mesh_pattern_begin_patch (pattern);
 
-    cairo_mesh_pattern_move_to (pattern, CENTER_X, CENTER_Y);
-    cairo_mesh_pattern_line_to (pattern,
+    comac_mesh_pattern_move_to (pattern, CENTER_X, CENTER_Y);
+    comac_mesh_pattern_line_to (pattern,
 				CENTER_X + r_cos_A,
 				CENTER_Y + r_sin_A);
 
-    cairo_mesh_pattern_curve_to (pattern,
+    comac_mesh_pattern_curve_to (pattern,
 				 CENTER_X + r_cos_A - h * r_sin_A,
 				 CENTER_Y + r_sin_A + h * r_cos_A,
 				 CENTER_X + r_cos_B + h * r_sin_B,
@@ -77,24 +77,24 @@ sector_patch (cairo_pattern_t *pattern,
 				 CENTER_X + r_cos_B,
 				 CENTER_Y + r_sin_B);
 
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 1, 1);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, A_r, A_g, A_b);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, B_r, B_g, B_b);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 1, 1);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 1, A_r, A_g, A_b);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 2, B_r, B_g, B_b);
 
-    cairo_mesh_pattern_end_patch (pattern);
+    comac_mesh_pattern_end_patch (pattern);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
-    pattern = cairo_pattern_create_mesh ();
+    pattern = comac_pattern_create_mesh ();
     sector_patch (pattern,
 		  0,         1, 0, 0,
 		  M_PI/4,    1, 1, 0);
@@ -120,14 +120,14 @@ draw (cairo_t *cr, int width, int height)
 		  -M_PI/4,   0, 0, 1,
 		  0,         1, 0, 0);
 
-    cairo_set_source (cr, pattern);
-    cairo_paint (cr);
-    cairo_pattern_destroy (pattern);
+    comac_set_source (cr, pattern);
+    comac_paint (cr);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (mesh_pattern_conical,
+COMAC_TEST (mesh_pattern_conical,
 	    "Paint a conical pattern using a mesh pattern",
 	    "conical, mesh, pattern", /* keywords */
 	    NULL, /* requirements */

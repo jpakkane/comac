@@ -61,23 +61,23 @@
 
 #include <comac.h>
 
-#if CAIRO_HAS_INTERPRETER
+#if COMAC_HAS_INTERPRETER
 #include <comac-script-interpreter.h>
 #endif
 
-#if CAIRO_CAN_TEST_PDF_SURFACE
+#if COMAC_CAN_TEST_PDF_SURFACE
 #include <poppler.h>
 #endif
 
-#if CAIRO_CAN_TEST_SVG_SURFACE
+#if COMAC_CAN_TEST_SVG_SURFACE
 #define RSVG_DISABLE_DEPRECATION_WARNINGS
 #include <librsvg/rsvg.h>
-#ifndef RSVG_CAIRO_H
+#ifndef RSVG_COMAC_H
 #include <librsvg/rsvg-comac.h>
 #endif
 #endif
 
-#if CAIRO_HAS_SPECTRE
+#if COMAC_HAS_SPECTRE
 #include <libspectre/spectre.h>
 #endif
 
@@ -110,7 +110,7 @@
 #define ARRAY_LENGTH(__array) ((int) (sizeof (__array) / sizeof (__array[0])))
 
 static int
-_cairo_writen (int fd, char *buf, int len)
+_comac_writen (int fd, char *buf, int len)
 {
     while (len) {
 	int ret;
@@ -134,7 +134,7 @@ _cairo_writen (int fd, char *buf, int len)
 }
 
 static int
-_cairo_write (int fd,
+_comac_write (int fd,
 	char *buf, int maxlen, int buflen,
 	const unsigned char *src, int srclen)
 {
@@ -155,7 +155,7 @@ _cairo_write (int fd,
 	src += len;
 
 	if (buflen == maxlen) {
-	    if (! _cairo_writen (fd, buf, buflen))
+	    if (! _comac_writen (fd, buf, buflen))
 		return -1;
 
 	    buflen = 0;
@@ -166,22 +166,22 @@ _cairo_write (int fd,
 }
 
 static const char *
-write_ppm (cairo_surface_t *surface, int fd)
+write_ppm (comac_surface_t *surface, int fd)
 {
     char buf[4096];
-    cairo_format_t format;
+    comac_format_t format;
     const char *format_str;
     const unsigned char *data;
     int len;
     int width, height, stride;
     int i, j;
 
-    data = cairo_image_surface_get_data (surface);
-    height = cairo_image_surface_get_height (surface);
-    width = cairo_image_surface_get_width (surface);
-    stride = cairo_image_surface_get_stride (surface);
-    format = cairo_image_surface_get_format (surface);
-    if (format == CAIRO_FORMAT_ARGB32) {
+    data = comac_image_surface_get_data (surface);
+    height = comac_image_surface_get_height (surface);
+    width = comac_image_surface_get_width (surface);
+    stride = comac_image_surface_get_stride (surface);
+    format = comac_image_surface_get_format (surface);
+    if (format == COMAC_FORMAT_ARGB32) {
 	/* see if we can convert to a standard ppm type and trim a few bytes */
 	const unsigned char *alpha = data;
 	for (j = height; j--; alpha += stride) {
@@ -190,27 +190,27 @@ write_ppm (cairo_surface_t *surface, int fd)
 		    goto done;
 	    }
 	}
-	format = CAIRO_FORMAT_RGB24;
+	format = COMAC_FORMAT_RGB24;
  done: ;
     }
 
     switch (format) {
-    case CAIRO_FORMAT_ARGB32:
+    case COMAC_FORMAT_ARGB32:
 	/* XXX need true alpha for svg */
 	format_str = "P7";
 	break;
-    case CAIRO_FORMAT_RGB24:
+    case COMAC_FORMAT_RGB24:
 	format_str = "P6";
 	break;
-    case CAIRO_FORMAT_A8:
+    case COMAC_FORMAT_A8:
 	format_str = "P5";
 	break;
-    case CAIRO_FORMAT_A1:
-    case CAIRO_FORMAT_RGB16_565:
-    case CAIRO_FORMAT_RGB30:
-    case CAIRO_FORMAT_RGB96F:
-    case CAIRO_FORMAT_RGBA128F:
-    case CAIRO_FORMAT_INVALID:
+    case COMAC_FORMAT_A1:
+    case COMAC_FORMAT_RGB16_565:
+    case COMAC_FORMAT_RGB30:
+    case COMAC_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGBA128F:
+    case COMAC_FORMAT_INVALID:
     default:
 	return "unhandled image format";
     }
@@ -220,25 +220,25 @@ write_ppm (cairo_surface_t *surface, int fd)
 	const unsigned int *row = (unsigned int *) (data + stride * j);
 
 	switch ((int) format) {
-	case CAIRO_FORMAT_ARGB32:
-	    len = _cairo_write (fd,
+	case COMAC_FORMAT_ARGB32:
+	    len = _comac_write (fd,
 			  buf, sizeof (buf), len,
 			  (unsigned char *) row, 4 * width);
 	    break;
-	case CAIRO_FORMAT_RGB24:
+	case COMAC_FORMAT_RGB24:
 	    for (i = 0; i < width; i++) {
 		unsigned char rgb[3];
 		unsigned int p = *row++;
 		rgb[0] = (p & 0xff0000) >> 16;
 		rgb[1] = (p & 0x00ff00) >> 8;
 		rgb[2] = (p & 0x0000ff) >> 0;
-		len = _cairo_write (fd,
+		len = _comac_write (fd,
 			      buf, sizeof (buf), len,
 			      rgb, 3);
 	    }
 	    break;
-	case CAIRO_FORMAT_A8:
-	    len = _cairo_write (fd,
+	case COMAC_FORMAT_A8:
+	    len = _comac_write (fd,
 			  buf, sizeof (buf), len,
 			  (unsigned char *) row, width);
 	    break;
@@ -247,45 +247,45 @@ write_ppm (cairo_surface_t *surface, int fd)
 	    return "write failed";
     }
 
-    if (len && ! _cairo_writen (fd, buf, len))
+    if (len && ! _comac_writen (fd, buf, len))
 	return "write failed";
 
     return NULL;
 }
 
-#if CAIRO_HAS_INTERPRETER
-static cairo_surface_t *
+#if COMAC_HAS_INTERPRETER
+static comac_surface_t *
 _create_image (void *closure,
-	       cairo_content_t content,
+	       comac_content_t content,
 	       double width, double height,
 	       long uid)
 {
-    cairo_surface_t **out = closure;
-    cairo_format_t format;
+    comac_surface_t **out = closure;
+    comac_format_t format;
     switch (content) {
-    case CAIRO_CONTENT_ALPHA:
-	format = CAIRO_FORMAT_A8;
+    case COMAC_CONTENT_ALPHA:
+	format = COMAC_FORMAT_A8;
 	break;
-    case CAIRO_CONTENT_COLOR:
-	format = CAIRO_FORMAT_RGB24;
+    case COMAC_CONTENT_COLOR:
+	format = COMAC_FORMAT_RGB24;
 	break;
     default:
-    case CAIRO_CONTENT_COLOR_ALPHA:
-	format = CAIRO_FORMAT_ARGB32;
+    case COMAC_CONTENT_COLOR_ALPHA:
+	format = COMAC_FORMAT_ARGB32;
 	break;
     }
-    *out = cairo_image_surface_create (format, width, height);
-    return cairo_surface_reference (*out);
+    *out = comac_image_surface_create (format, width, height);
+    return comac_surface_reference (*out);
 }
 
 static const char *
-_cairo_script_render_page (const char *filename,
-			   cairo_surface_t **surface_out)
+_comac_script_render_page (const char *filename,
+			   comac_surface_t **surface_out)
 {
-    cairo_script_interpreter_t *csi;
-    cairo_surface_t *surface = NULL;
-    cairo_status_t status;
-    const cairo_script_interpreter_hooks_t hooks = {
+    comac_script_interpreter_t *csi;
+    comac_surface_t *surface = NULL;
+    comac_status_t status;
+    const comac_script_interpreter_hooks_t hooks = {
 	&surface,
 	_create_image,
 	NULL, /* surface_destroy */
@@ -295,22 +295,22 @@ _cairo_script_render_page (const char *filename,
 	NULL  /* copy_page */
     };
 
-    csi = cairo_script_interpreter_create ();
-    cairo_script_interpreter_install_hooks (csi, &hooks);
-    status = cairo_script_interpreter_run (csi, filename);
+    csi = comac_script_interpreter_create ();
+    comac_script_interpreter_install_hooks (csi, &hooks);
+    status = comac_script_interpreter_run (csi, filename);
     if (status) {
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 	surface = NULL;
     }
-    status = cairo_script_interpreter_destroy (csi);
+    status = comac_script_interpreter_destroy (csi);
     if (surface == NULL)
-	return "cairo-script interpreter failed";
+	return "comac-script interpreter failed";
 
-    if (status == CAIRO_STATUS_SUCCESS)
-	status = cairo_surface_status (surface);
+    if (status == COMAC_STATUS_SUCCESS)
+	status = comac_surface_status (surface);
     if (status) {
-	cairo_surface_destroy (surface);
-	return cairo_status_to_string (status);
+	comac_surface_destroy (surface);
+	return comac_status_to_string (status);
     }
 
     *surface_out = surface;
@@ -321,14 +321,14 @@ static const char *
 cs_convert (char **argv, int fd)
 {
     const char *err;
-    cairo_surface_t *surface = NULL; /* silence compiler warning */
+    comac_surface_t *surface = NULL; /* silence compiler warning */
 
-    err = _cairo_script_render_page (argv[0], &surface);
+    err = _comac_script_render_page (argv[0], &surface);
     if (err != NULL)
 	return err;
 
     err = write_ppm (surface, fd);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     return err;
 }
@@ -336,25 +336,25 @@ cs_convert (char **argv, int fd)
 static const char *
 cs_convert (char **argv, int fd)
 {
-    return "compiled without CairoScript support.";
+    return "compiled without ComacScript support.";
 }
 #endif
 
-#if CAIRO_CAN_TEST_PDF_SURFACE
+#if COMAC_CAN_TEST_PDF_SURFACE
 /* adapted from pdf2png.c */
 static const char *
 _poppler_render_page (const char *filename,
 		      const char *page_label,
-		      cairo_surface_t **surface_out)
+		      comac_surface_t **surface_out)
 {
     PopplerDocument *document;
     PopplerPage *page;
     double width, height;
     GError *error = NULL;
     gchar *absolute, *uri;
-    cairo_surface_t *surface;
-    cairo_t *cr;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
+    comac_status_t status;
 
     if (g_path_is_absolute (filename)) {
 	absolute = g_strdup (filename);
@@ -381,25 +381,25 @@ _poppler_render_page (const char *filename,
 
     poppler_page_get_size (page, &width, &height);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
-    cr = cairo_create (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, width, height);
+    cr = comac_create (surface);
 
-    cairo_set_source_rgb (cr, 1., 1., 1.);
-    cairo_paint (cr);
-    cairo_push_group_with_content (cr, CAIRO_CONTENT_COLOR_ALPHA);
+    comac_set_source_rgb (cr, 1., 1., 1.);
+    comac_paint (cr);
+    comac_push_group_with_content (cr, COMAC_CONTENT_COLOR_ALPHA);
 
     poppler_page_render (page, cr);
     g_object_unref (page);
 
-    cairo_pop_group_to_source (cr);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_paint (cr);
 
-    status = cairo_status (cr);
-    cairo_destroy (cr);
+    status = comac_status (cr);
+    comac_destroy (cr);
 
     if (status) {
-	cairo_surface_destroy (surface);
-	return  cairo_status_to_string (status);
+	comac_surface_destroy (surface);
+	return  comac_status_to_string (status);
     }
 
     *surface_out = surface;
@@ -410,14 +410,14 @@ static const char *
 pdf_convert (char **argv, int fd)
 {
     const char *err;
-    cairo_surface_t *surface = NULL; /* silence compiler warning */
+    comac_surface_t *surface = NULL; /* silence compiler warning */
 
     err = _poppler_render_page (argv[0], argv[1], &surface);
     if (err != NULL)
 	return err;
 
     err = write_ppm (surface, fd);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     return err;
 }
@@ -429,17 +429,17 @@ pdf_convert (char **argv, int fd)
 }
 #endif
 
-#if CAIRO_CAN_TEST_SVG_SURFACE
+#if COMAC_CAN_TEST_SVG_SURFACE
 static const char *
 _rsvg_render_page (const char *filename,
-		   cairo_surface_t **surface_out)
+		   comac_surface_t **surface_out)
 {
     RsvgHandle *handle;
     RsvgDimensionData dimensions;
     GError *error = NULL;
-    cairo_surface_t *surface;
-    cairo_t *cr;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
+    comac_status_t status;
 
     handle = rsvg_handle_new_from_file (filename, &error);
     if (handle == NULL)
@@ -447,20 +447,20 @@ _rsvg_render_page (const char *filename,
 
     rsvg_handle_set_dpi (handle, 72.0);
     rsvg_handle_get_dimensions (handle, &dimensions);
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32,
 					  dimensions.width,
 					  dimensions.height);
-    cr = cairo_create (surface);
+    cr = comac_create (surface);
 
-    rsvg_handle_render_cairo (handle, cr);
+    rsvg_handle_render_comac (handle, cr);
     g_object_unref (handle);
 
-    status = cairo_status (cr);
-    cairo_destroy (cr);
+    status = comac_status (cr);
+    comac_destroy (cr);
 
     if (status) {
-	cairo_surface_destroy (surface);
-	return  cairo_status_to_string (status);
+	comac_surface_destroy (surface);
+	return  comac_status_to_string (status);
     }
 
     *surface_out = surface;
@@ -471,14 +471,14 @@ static const char *
 svg_convert (char **argv, int fd)
 {
     const char *err;
-    cairo_surface_t *surface = NULL; /* silence compiler warning */
+    comac_surface_t *surface = NULL; /* silence compiler warning */
 
     err = _rsvg_render_page (argv[0], &surface);
     if (err != NULL)
 	return err;
 
     err = write_ppm (surface, fd);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     return err;
 }
@@ -490,19 +490,19 @@ svg_convert (char **argv, int fd)
 }
 #endif
 
-#if CAIRO_HAS_SPECTRE
+#if COMAC_HAS_SPECTRE
 static const char *
 _spectre_render_page (const char *filename,
 		      const char *page_label,
-		      cairo_surface_t **surface_out)
+		      comac_surface_t **surface_out)
 {
-    static const cairo_user_data_key_t key;
+    static const comac_user_data_key_t key;
 
     SpectreDocument *document;
     SpectreStatus status;
     int width, height, stride;
     unsigned char *pixels;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
     document = spectre_document_new ();
     spectre_document_load (document, filename);
@@ -538,12 +538,12 @@ _spectre_render_page (const char *filename,
 	spectre_document_free (document);
     }
 
-    surface = cairo_image_surface_create_for_data (pixels,
-						   CAIRO_FORMAT_RGB24,
+    surface = comac_image_surface_create_for_data (pixels,
+						   COMAC_FORMAT_RGB24,
 						   width, height,
 						   stride);
-    cairo_surface_set_user_data (surface, &key,
-				 pixels, (cairo_destroy_func_t) free);
+    comac_surface_set_user_data (surface, &key,
+				 pixels, (comac_destroy_func_t) free);
     *surface_out = surface;
     return NULL;
 }
@@ -552,14 +552,14 @@ static const char *
 ps_convert (char **argv, int fd)
 {
     const char *err;
-    cairo_surface_t *surface = NULL; /* silence compiler warning */
+    comac_surface_t *surface = NULL; /* silence compiler warning */
 
     err = _spectre_render_page (argv[0], argv[1], &surface);
     if (err != NULL)
 	return err;
 
     err = write_ppm (surface, fd);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     return err;
 }
@@ -877,7 +877,7 @@ main (int argc, char **argv)
 {
     const char *err;
 
-#if CAIRO_CAN_TEST_PDF_SURFACE || CAIRO_CAN_TEST_SVG_SURFACE
+#if COMAC_CAN_TEST_PDF_SURFACE || COMAC_CAN_TEST_SVG_SURFACE
 #if GLIB_MAJOR_VERSION <= 2 && GLIB_MINOR_VERSION <= 34
     g_type_init ();
 #endif

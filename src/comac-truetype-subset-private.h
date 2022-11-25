@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,12 +34,12 @@
  *	Adrian Johnson <ajohnson@redneon.com>
  */
 
-#ifndef CAIRO_TRUETYPE_SUBSET_PRIVATE_H
-#define CAIRO_TRUETYPE_SUBSET_PRIVATE_H
+#ifndef COMAC_TRUETYPE_SUBSET_PRIVATE_H
+#define COMAC_TRUETYPE_SUBSET_PRIVATE_H
 
 #include "comacint.h"
 
-#if CAIRO_HAS_FONT_SUBSET
+#if COMAC_HAS_FONT_SUBSET
 
 /* The structs defined here should strictly follow the TrueType
  * specification and not be padded.  We use only 16-bit integer
@@ -179,7 +179,7 @@ typedef struct _tt_name {
 #define TT_FS_SELECTION_ITALIC   1
 #define TT_FS_SELECTION_BOLD    32
 
-/* _unused fields are defined in TT spec but not used by cairo */
+/* _unused fields are defined in TT spec but not used by comac */
 typedef struct _tt_os2 {
     uint16_t   _unused1[2];
     uint16_t   usWeightClass;
@@ -207,6 +207,6 @@ typedef struct _tt_glyph_data {
     tt_composite_glyph_t glyph;
 } tt_glyph_data_t;
 
-#endif /* CAIRO_HAS_FONT_SUBSET */
+#endif /* COMAC_HAS_FONT_SUBSET */
 
-#endif /* CAIRO_TRUETYPE_SUBSET_PRIVATE_H */
+#endif /* COMAC_TRUETYPE_SUBSET_PRIVATE_H */

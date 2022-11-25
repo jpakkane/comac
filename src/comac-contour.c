@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Carl Worth
  *
@@ -45,7 +45,7 @@
 #include "comac-contour-private.h"
 
 void
-_cairo_contour_init (cairo_contour_t *contour,
+_comac_contour_init (comac_contour_t *contour,
 		     int direction)
 {
     contour->direction = direction;
@@ -56,36 +56,36 @@ _cairo_contour_init (cairo_contour_t *contour,
     contour->tail = &contour->chain;
 }
 
-cairo_int_status_t
-__cairo_contour_add_point (cairo_contour_t *contour,
-			  const cairo_point_t *point)
+comac_int_status_t
+__comac_contour_add_point (comac_contour_t *contour,
+			  const comac_point_t *point)
 {
-    cairo_contour_chain_t *tail = contour->tail;
-    cairo_contour_chain_t *next;
+    comac_contour_chain_t *tail = contour->tail;
+    comac_contour_chain_t *next;
 
     assert (tail->next == NULL);
 
-    next = _cairo_malloc_ab_plus_c (tail->size_points*2,
-				    sizeof (cairo_point_t),
-				    sizeof (cairo_contour_chain_t));
+    next = _comac_malloc_ab_plus_c (tail->size_points*2,
+				    sizeof (comac_point_t),
+				    sizeof (comac_contour_chain_t));
     if (unlikely (next == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     next->size_points = tail->size_points*2;
     next->num_points = 1;
-    next->points = (cairo_point_t *)(next+1);
+    next->points = (comac_point_t *)(next+1);
     next->next = NULL;
     tail->next = next;
     contour->tail = next;
 
     next->points[0] = *point;
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
 static void
-first_inc (cairo_contour_t *contour,
-	   cairo_point_t **p,
-	   cairo_contour_chain_t **chain)
+first_inc (comac_contour_t *contour,
+	   comac_point_t **p,
+	   comac_contour_chain_t **chain)
 {
     if (*p == (*chain)->points + (*chain)->num_points) {
 	assert ((*chain)->next);
@@ -96,12 +96,12 @@ first_inc (cairo_contour_t *contour,
 }
 
 static void
-last_dec (cairo_contour_t *contour,
-	  cairo_point_t **p,
-	  cairo_contour_chain_t **chain)
+last_dec (comac_contour_t *contour,
+	  comac_point_t **p,
+	  comac_contour_chain_t **chain)
 {
     if (*p == (*chain)->points) {
-	cairo_contour_chain_t *prev;
+	comac_contour_chain_t *prev;
 	assert (*chain != &contour->chain);
 	for (prev = &contour->chain; prev->next != *chain; prev = prev->next)
 	    ;
@@ -112,10 +112,10 @@ last_dec (cairo_contour_t *contour,
 }
 
 void
-_cairo_contour_reverse (cairo_contour_t *contour)
+_comac_contour_reverse (comac_contour_t *contour)
 {
-    cairo_contour_chain_t *first_chain, *last_chain;
-    cairo_point_t *first, *last;
+    comac_contour_chain_t *first_chain, *last_chain;
+    comac_point_t *first, *last;
 
     contour->direction = -contour->direction;
 
@@ -129,7 +129,7 @@ _cairo_contour_reverse (cairo_contour_t *contour)
     last = &last_chain->points[last_chain->num_points-1];
 
     while (first != last) {
-	cairo_point_t p;
+	comac_point_t p;
 
 	p = *first;
 	*first = *last;
@@ -140,27 +140,27 @@ _cairo_contour_reverse (cairo_contour_t *contour)
     }
 }
 
-cairo_int_status_t
-_cairo_contour_add (cairo_contour_t *dst,
-		    const cairo_contour_t *src)
+comac_int_status_t
+_comac_contour_add (comac_contour_t *dst,
+		    const comac_contour_t *src)
 {
-    const cairo_contour_chain_t *chain;
-    cairo_int_status_t status;
+    const comac_contour_chain_t *chain;
+    comac_int_status_t status;
     int i;
 
     for (chain = &src->chain; chain; chain = chain->next) {
 	for (i = 0; i < chain->num_points; i++) {
-	    status = _cairo_contour_add_point (dst, &chain->points[i]);
+	    status = _comac_contour_add_point (dst, &chain->points[i]);
 	    if (unlikely (status))
 		return status;
 	}
     }
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
-static inline cairo_bool_t
-iter_next (cairo_contour_iter_t *iter)
+static inline comac_bool_t
+iter_next (comac_contour_iter_t *iter)
 {
     if (iter->point == &iter->chain->points[iter->chain->size_points-1]) {
 	iter->chain = iter->chain->next;
@@ -175,31 +175,31 @@ iter_next (cairo_contour_iter_t *iter)
     }
 }
 
-static cairo_bool_t
-iter_equal (const cairo_contour_iter_t *i1,
-	    const cairo_contour_iter_t *i2)
+static comac_bool_t
+iter_equal (const comac_contour_iter_t *i1,
+	    const comac_contour_iter_t *i2)
 {
     return i1->chain == i2->chain && i1->point == i2->point;
 }
 
 static void
-iter_init (cairo_contour_iter_t *iter, cairo_contour_t *contour)
+iter_init (comac_contour_iter_t *iter, comac_contour_t *contour)
 {
     iter->chain = &contour->chain;
     iter->point = &contour->chain.points[0];
 }
 
 static void
-iter_init_last (cairo_contour_iter_t *iter, cairo_contour_t *contour)
+iter_init_last (comac_contour_iter_t *iter, comac_contour_t *contour)
 {
     iter->chain = contour->tail;
     iter->point = &contour->tail->points[contour->tail->num_points-1];
 }
 
-static const cairo_contour_chain_t *prev_const_chain(const cairo_contour_t *contour,
-						     const cairo_contour_chain_t *chain)
+static const comac_contour_chain_t *prev_const_chain(const comac_contour_t *contour,
+						     const comac_contour_chain_t *chain)
 {
-    const cairo_contour_chain_t *prev;
+    const comac_contour_chain_t *prev;
 
     if (chain == &contour->chain)
 	return NULL;
@@ -210,46 +210,46 @@ static const cairo_contour_chain_t *prev_const_chain(const cairo_contour_t *cont
     return prev;
 }
 
-cairo_int_status_t
-_cairo_contour_add_reversed (cairo_contour_t *dst,
-			     const cairo_contour_t *src)
+comac_int_status_t
+_comac_contour_add_reversed (comac_contour_t *dst,
+			     const comac_contour_t *src)
 {
-    const cairo_contour_chain_t *last;
-    cairo_int_status_t status;
+    const comac_contour_chain_t *last;
+    comac_int_status_t status;
     int i;
 
     if (src->chain.num_points == 0)
-	return CAIRO_INT_STATUS_SUCCESS;
+	return COMAC_INT_STATUS_SUCCESS;
 
     for (last = src->tail; last; last = prev_const_chain (src, last)) {
 	for (i = last->num_points-1; i >= 0; i--) {
-	    status = _cairo_contour_add_point (dst, &last->points[i]);
+	    status = _comac_contour_add_point (dst, &last->points[i]);
 	    if (unlikely (status))
 		return status;
 	}
     }
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
-static cairo_uint64_t
-point_distance_sq (const cairo_point_t *p1,
-		   const cairo_point_t *p2)
+static comac_uint64_t
+point_distance_sq (const comac_point_t *p1,
+		   const comac_point_t *p2)
 {
     int32_t dx = p1->x - p2->x;
     int32_t dy = p1->y - p2->y;
-    return _cairo_int32x32_64_mul (dx, dx) + _cairo_int32x32_64_mul (dy, dy);
+    return _comac_int32x32_64_mul (dx, dx) + _comac_int32x32_64_mul (dy, dy);
 }
 
 #define DELETED(p) ((p)->x == INT_MIN && (p)->y == INT_MAX)
 #define MARK_DELETED(p) ((p)->x = INT_MIN, (p)->y = INT_MAX)
 
-static cairo_bool_t
-_cairo_contour_simplify_chain (cairo_contour_t *contour, const double tolerance,
-			       const cairo_contour_iter_t *first,
-			       const cairo_contour_iter_t *last)
+static comac_bool_t
+_comac_contour_simplify_chain (comac_contour_t *contour, const double tolerance,
+			       const comac_contour_iter_t *first,
+			       const comac_contour_iter_t *last)
 {
-    cairo_contour_iter_t iter, furthest;
+    comac_contour_iter_t iter, furthest;
     uint64_t max_error;
     int x0, y0;
     int nx, ny;
@@ -268,7 +268,7 @@ _cairo_contour_simplify_chain (cairo_contour_t *contour, const double tolerance,
     count = 0;
     max_error = 0;
     do {
-	cairo_point_t *p = iter.point;
+	comac_point_t *p = iter.point;
 	if (! DELETED(p)) {
 	    uint64_t d = (uint64_t)nx * (x0 - p->x) + (uint64_t)ny * (y0 - p->y);
 	    if (d * d > max_error) {
@@ -283,12 +283,12 @@ _cairo_contour_simplify_chain (cairo_contour_t *contour, const double tolerance,
 	return FALSE;
 
     if (max_error > tolerance * ((uint64_t)nx * nx + (uint64_t)ny * ny)) {
-	cairo_bool_t simplified;
+	comac_bool_t simplified;
 
 	simplified = FALSE;
-	simplified |= _cairo_contour_simplify_chain (contour, tolerance,
+	simplified |= _comac_contour_simplify_chain (contour, tolerance,
 						     first, &furthest);
-	simplified |= _cairo_contour_simplify_chain (contour, tolerance,
+	simplified |= _comac_contour_simplify_chain (contour, tolerance,
 						     &furthest, last);
 	return simplified;
     } else {
@@ -304,19 +304,19 @@ _cairo_contour_simplify_chain (cairo_contour_t *contour, const double tolerance,
 }
 
 void
-_cairo_contour_simplify (cairo_contour_t *contour, double tolerance)
+_comac_contour_simplify (comac_contour_t *contour, double tolerance)
 {
-    cairo_contour_chain_t *chain;
-    cairo_point_t *last = NULL;
-    cairo_contour_iter_t iter, furthest;
-    cairo_bool_t simplified;
+    comac_contour_chain_t *chain;
+    comac_point_t *last = NULL;
+    comac_contour_iter_t iter, furthest;
+    comac_bool_t simplified;
     uint64_t max = 0;
     int i;
 
     if (contour->chain.num_points <= 2)
 	return;
 
-    tolerance = tolerance * CAIRO_FIXED_ONE;
+    tolerance = tolerance * COMAC_FIXED_ONE;
     tolerance *= tolerance;
 
     /* stage 1: vertex reduction */
@@ -355,12 +355,12 @@ _cairo_contour_simplify (cairo_contour_t *contour, double tolerance)
 
 	simplified = FALSE;
 	iter_init (&iter, contour);
-	simplified |= _cairo_contour_simplify_chain (contour, tolerance,
+	simplified |= _comac_contour_simplify_chain (contour, tolerance,
 						     &iter, &furthest);
 
 	iter_init_last (&iter, contour);
 	if (! iter_equal (&furthest, &iter))
-	    simplified |= _cairo_contour_simplify_chain (contour, tolerance,
+	    simplified |= _comac_contour_simplify_chain (contour, tolerance,
 							 &furthest, &iter);
     } while (simplified);
 
@@ -379,7 +379,7 @@ _cairo_contour_simplify (cairo_contour_t *contour, double tolerance)
     }
 
     if (iter.chain) {
-	cairo_contour_chain_t *next;
+	comac_contour_chain_t *next;
 
 	for (chain = iter.chain->next; chain; chain = next) {
 	    next = chain->next;
@@ -392,16 +392,16 @@ _cairo_contour_simplify (cairo_contour_t *contour, double tolerance)
 }
 
 void
-_cairo_contour_reset (cairo_contour_t *contour)
+_comac_contour_reset (comac_contour_t *contour)
 {
-    _cairo_contour_fini (contour);
-    _cairo_contour_init (contour, contour->direction);
+    _comac_contour_fini (contour);
+    _comac_contour_init (contour, contour->direction);
 }
 
 void
-_cairo_contour_fini (cairo_contour_t *contour)
+_comac_contour_fini (comac_contour_t *contour)
 {
-    cairo_contour_chain_t *chain, *next;
+    comac_contour_chain_t *chain, *next;
 
     for (chain = contour->chain.next; chain; chain = next) {
 	next = chain->next;
@@ -410,9 +410,9 @@ _cairo_contour_fini (cairo_contour_t *contour)
 }
 
 void
-_cairo_debug_print_contour (FILE *file, cairo_contour_t *contour)
+_comac_debug_print_contour (FILE *file, comac_contour_t *contour)
 {
-    cairo_contour_chain_t *chain;
+    comac_contour_chain_t *chain;
     int num_points, size_points;
     int i;
 
@@ -431,16 +431,16 @@ _cairo_debug_print_contour (FILE *file, cairo_contour_t *contour)
 	for (i = 0; i < chain->num_points; i++) {
 	    fprintf (file, "  [%d] = (%f, %f)\n",
 		     num_points++,
-		     _cairo_fixed_to_double (chain->points[i].x),
-		     _cairo_fixed_to_double (chain->points[i].y));
+		     _comac_fixed_to_double (chain->points[i].x),
+		     _comac_fixed_to_double (chain->points[i].y));
 	}
     }
 }
 
 void
-__cairo_contour_remove_last_chain (cairo_contour_t *contour)
+__comac_contour_remove_last_chain (comac_contour_t *contour)
 {
-    cairo_contour_chain_t *chain;
+    comac_contour_chain_t *chain;
 
     if (contour->tail == &contour->chain)
 	return;

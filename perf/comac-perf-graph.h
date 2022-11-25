@@ -25,8 +25,8 @@
  * Authors: Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_PERF_GRAPH_H
-#define CAIRO_PERF_GRAPH_H
+#ifndef COMAC_PERF_GRAPH_H
+#define COMAC_PERF_GRAPH_H
 
 #include <gtk/gtk.h>
 
@@ -40,7 +40,7 @@ typedef struct _test_case {
 
     test_report_t *min_test;
 
-    cairo_bool_t shown;
+    comac_bool_t shown;
     double baseline;
     double min, max;
     GdkColor color;
@@ -54,7 +54,7 @@ graph_view_new (void);
 void
 graph_view_set_reports (GraphView	    *gv,
 			test_case_t	    *tests,
-			cairo_perf_report_t *reports,
+			comac_perf_report_t *reports,
 			int		     num_reports);
 
 void

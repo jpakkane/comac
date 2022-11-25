@@ -29,18 +29,18 @@
 #define PAD 2
 #define SIZE 10
 
-typedef void (*path_func_t) (cairo_t *cr);
+typedef void (*path_func_t) (comac_t *cr);
 
 static void
-rectangle (cairo_t *cr)
+rectangle (comac_t *cr)
 {
-    cairo_rectangle (cr, PAD, PAD, SIZE, SIZE);
+    comac_rectangle (cr, PAD, PAD, SIZE, SIZE);
 }
 
 static void
-circle (cairo_t *cr)
+circle (comac_t *cr)
 {
-    cairo_arc (cr,
+    comac_arc (cr,
 	       PAD + SIZE / 2, PAD + SIZE / 2,
 	       SIZE / 2,
 	       0, 2 * M_PI);
@@ -52,48 +52,48 @@ circle (cairo_t *cr)
  * value.
  */
 static void
-fill_and_stroke_alpha (cairo_t		*cr,
+fill_and_stroke_alpha (comac_t		*cr,
 		       path_func_t	 path_func,
-		       cairo_pattern_t	*fill_pattern,
-		       cairo_pattern_t	*stroke_pattern,
+		       comac_pattern_t	*fill_pattern,
+		       comac_pattern_t	*stroke_pattern,
 		       double		 alpha)
 {
-    cairo_push_group (cr);
+    comac_push_group (cr);
     {
 	(path_func) (cr);
-	cairo_set_source (cr, fill_pattern);
-	cairo_fill_preserve (cr);
-	cairo_set_source (cr, stroke_pattern);
-	cairo_stroke (cr);
+	comac_set_source (cr, fill_pattern);
+	comac_fill_preserve (cr);
+	comac_set_source (cr, stroke_pattern);
+	comac_stroke (cr);
     }
-    cairo_pop_group_to_source (cr);
-    cairo_paint_with_alpha (cr, alpha);
+    comac_pop_group_to_source (cr);
+    comac_paint_with_alpha (cr, alpha);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *blue;
-    cairo_pattern_t *red;
+    comac_pattern_t *blue;
+    comac_pattern_t *red;
 
-    blue = cairo_pattern_create_rgb (0.0, 0.0, 1.0);
-    red = cairo_pattern_create_rgb (1.0, 0.0, 0.0);
+    blue = comac_pattern_create_rgb (0.0, 0.0, 1.0);
+    red = comac_pattern_create_rgb (1.0, 0.0, 0.0);
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
     fill_and_stroke_alpha (cr, rectangle, blue, red, 0.5);
 
-    cairo_translate (cr, SIZE + 2 * PAD, 0);
+    comac_translate (cr, SIZE + 2 * PAD, 0);
 
     fill_and_stroke_alpha (cr, circle, red, blue, 0.5);
 
-    cairo_pattern_destroy (blue);
-    cairo_pattern_destroy (red);
+    comac_pattern_destroy (blue);
+    comac_pattern_destroy (red);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_and_stroke_alpha,
+COMAC_TEST (fill_and_stroke_alpha,
 	    "Use a group to fill/stroke a path then blend the result with alpha onto the destination",
 	    "fill-and-stroke, fill, stroke", /* keywords */
 	    NULL, /* requirements */

@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2003 University of Southern California
  * Copyright © 2009,2010,2011 Intel Corporation
@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -50,46 +50,46 @@
 
 #error This file isn't included in any Makefile
 
-static cairo_int_status_t
+static comac_int_status_t
 acquire (void *abstract_dst)
 {
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 release (void *abstract_dst)
 {
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 set_clip_region (void *_surface,
-		 cairo_region_t *region)
+		 comac_region_t *region)
 {
-    cairo_image_surface_t *surface = _surface;
+    comac_image_surface_t *surface = _surface;
     pixman_region32_t *rgn = region ? &region->rgn : NULL;
 
     if (! pixman_image_set_clip_region32 (surface->pixman_image, rgn))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_bool_t
+static comac_bool_t
 has_snapshot (void *_dst,
-	      const cairo_pattern_t *pattern)
+	      const comac_pattern_t *pattern)
 {
     return FALSE;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 draw_image (void *_dst,
-	    cairo_image_surface_t *image,
+	    comac_image_surface_t *image,
 	    int src_x, int src_y,
 	    int width, int height,
 	    int dst_x, int dst_y)
 {
-    cairo_image_surface_t *dst = (cairo_image_surface_t *)_dst;
+    comac_image_surface_t *dst = (comac_image_surface_t *)_dst;
 
     pixman_image_composite32 (PIXMAN_OP_SRC,
 			      image->pixman_image, NULL, dst->pixman_image,
@@ -97,11 +97,11 @@ draw_image (void *_dst,
 			      0, 0,
 			      dst_x, dst_y,
 			      width, height);
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static inline uint32_t
-color_to_uint32 (const cairo_color_t *color)
+color_to_uint32 (const comac_color_t *color)
 {
     return
         ((uint32_t)color->alpha_short >> 8 << 24) |
@@ -110,13 +110,13 @@ color_to_uint32 (const cairo_color_t *color)
         (color->blue_short >> 8);
 }
 
-static inline cairo_bool_t
-color_to_pixel (const cairo_color_t	*color,
+static inline comac_bool_t
+color_to_pixel (const comac_color_t	*color,
 		double opacity,
                 pixman_format_code_t	 format,
                 uint32_t		*pixel)
 {
-    cairo_color_t opacity_color;
+    comac_color_t opacity_color;
     uint32_t c;
 
     if (!(format == PIXMAN_a8r8g8b8     ||
@@ -133,7 +133,7 @@ color_to_pixel (const cairo_color_t	*color,
     }
 
     if (opacity != 1.0) {
-	_cairo_color_init_rgba (&opacity_color,
+	_comac_color_init_rgba (&opacity_color,
 				color->red,
 				color->green,
 				color->blue,
@@ -168,19 +168,19 @@ color_to_pixel (const cairo_color_t	*color,
     return TRUE;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 fill_rectangles (void			*_dst,
-		 cairo_operator_t	 op,
-		 const cairo_color_t	*color,
-		 cairo_rectangle_int_t	*rects,
+		 comac_operator_t	 op,
+		 const comac_color_t	*color,
+		 comac_rectangle_int_t	*rects,
 		 int			 num_rects)
 {
-    cairo_image_surface_t *dst = _dst;
+    comac_image_surface_t *dst = _dst;
     uint32_t pixel;
     int i;
 
     if (! color_to_pixel (color, 1.0, dst->pixman_format, &pixel))
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     for (i = 0; i < num_rects; i++) {
 	pixman_fill ((uint32_t *) dst->data, dst->stride / sizeof (uint32_t),
@@ -190,31 +190,31 @@ fill_rectangles (void			*_dst,
 		     pixel);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 fill_boxes (void		*_dst,
-	    cairo_operator_t	 op,
-	    const cairo_color_t	*color,
-	    cairo_boxes_t	*boxes)
+	    comac_operator_t	 op,
+	    const comac_color_t	*color,
+	    comac_boxes_t	*boxes)
 {
-    cairo_image_surface_t *dst = _dst;
-    struct _cairo_boxes_chunk *chunk;
+    comac_image_surface_t *dst = _dst;
+    struct _comac_boxes_chunk *chunk;
     uint32_t pixel;
     int i;
 
     assert (boxes->is_pixel_aligned);
 
     if (! color_to_pixel (color, 1.0, dst->pixman_format, &pixel))
-	return CAIRO_INT_STATUS_UNSUPPORTED;
+	return COMAC_INT_STATUS_UNSUPPORTED;
 
     for (chunk = &boxes->chunks; chunk; chunk = chunk->next) {
 	for (i = 0; i < chunk->count; i++) {
-	    int x1 = _cairo_fixed_integer_part (chunk->base[i].p1.x);
-	    int y1 = _cairo_fixed_integer_part (chunk->base[i].p1.y);
-	    int x2 = _cairo_fixed_integer_part (chunk->base[i].p2.x);
-	    int y2 = _cairo_fixed_integer_part (chunk->base[i].p2.y);
+	    int x1 = _comac_fixed_integer_part (chunk->base[i].p1.x);
+	    int y1 = _comac_fixed_integer_part (chunk->base[i].p1.y);
+	    int x2 = _comac_fixed_integer_part (chunk->base[i].p2.x);
+	    int y2 = _comac_fixed_integer_part (chunk->base[i].p2.y);
 	    pixman_fill ((uint32_t *) dst->data, dst->stride / sizeof (uint32_t),
 			 PIXMAN_FORMAT_BPP (dst->pixman_format),
 			 x1, y1, x2 - x1, y2 - y1,
@@ -222,74 +222,74 @@ fill_boxes (void		*_dst,
 	}
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static pixman_op_t
-_pixman_operator (cairo_operator_t op)
+_pixman_operator (comac_operator_t op)
 {
     switch ((int) op) {
-    case CAIRO_OPERATOR_CLEAR:
+    case COMAC_OPERATOR_CLEAR:
 	return PIXMAN_OP_CLEAR;
 
-    case CAIRO_OPERATOR_SOURCE:
+    case COMAC_OPERATOR_SOURCE:
 	return PIXMAN_OP_SRC;
-    case CAIRO_OPERATOR_OVER:
+    case COMAC_OPERATOR_OVER:
 	return PIXMAN_OP_OVER;
-    case CAIRO_OPERATOR_IN:
+    case COMAC_OPERATOR_IN:
 	return PIXMAN_OP_IN;
-    case CAIRO_OPERATOR_OUT:
+    case COMAC_OPERATOR_OUT:
 	return PIXMAN_OP_OUT;
-    case CAIRO_OPERATOR_ATOP:
+    case COMAC_OPERATOR_ATOP:
 	return PIXMAN_OP_ATOP;
 
-    case CAIRO_OPERATOR_DEST:
+    case COMAC_OPERATOR_DEST:
 	return PIXMAN_OP_DST;
-    case CAIRO_OPERATOR_DEST_OVER:
+    case COMAC_OPERATOR_DEST_OVER:
 	return PIXMAN_OP_OVER_REVERSE;
-    case CAIRO_OPERATOR_DEST_IN:
+    case COMAC_OPERATOR_DEST_IN:
 	return PIXMAN_OP_IN_REVERSE;
-    case CAIRO_OPERATOR_DEST_OUT:
+    case COMAC_OPERATOR_DEST_OUT:
 	return PIXMAN_OP_OUT_REVERSE;
-    case CAIRO_OPERATOR_DEST_ATOP:
+    case COMAC_OPERATOR_DEST_ATOP:
 	return PIXMAN_OP_ATOP_REVERSE;
 
-    case CAIRO_OPERATOR_XOR:
+    case COMAC_OPERATOR_XOR:
 	return PIXMAN_OP_XOR;
-    case CAIRO_OPERATOR_ADD:
+    case COMAC_OPERATOR_ADD:
 	return PIXMAN_OP_ADD;
-    case CAIRO_OPERATOR_SATURATE:
+    case COMAC_OPERATOR_SATURATE:
 	return PIXMAN_OP_SATURATE;
 
-    case CAIRO_OPERATOR_MULTIPLY:
+    case COMAC_OPERATOR_MULTIPLY:
 	return PIXMAN_OP_MULTIPLY;
-    case CAIRO_OPERATOR_SCREEN:
+    case COMAC_OPERATOR_SCREEN:
 	return PIXMAN_OP_SCREEN;
-    case CAIRO_OPERATOR_OVERLAY:
+    case COMAC_OPERATOR_OVERLAY:
 	return PIXMAN_OP_OVERLAY;
-    case CAIRO_OPERATOR_DARKEN:
+    case COMAC_OPERATOR_DARKEN:
 	return PIXMAN_OP_DARKEN;
-    case CAIRO_OPERATOR_LIGHTEN:
+    case COMAC_OPERATOR_LIGHTEN:
 	return PIXMAN_OP_LIGHTEN;
-    case CAIRO_OPERATOR_COLOR_DODGE:
+    case COMAC_OPERATOR_COLOR_DODGE:
 	return PIXMAN_OP_COLOR_DODGE;
-    case CAIRO_OPERATOR_COLOR_BURN:
+    case COMAC_OPERATOR_COLOR_BURN:
 	return PIXMAN_OP_COLOR_BURN;
-    case CAIRO_OPERATOR_HARD_LIGHT:
+    case COMAC_OPERATOR_HARD_LIGHT:
 	return PIXMAN_OP_HARD_LIGHT;
-    case CAIRO_OPERATOR_SOFT_LIGHT:
+    case COMAC_OPERATOR_SOFT_LIGHT:
 	return PIXMAN_OP_SOFT_LIGHT;
-    case CAIRO_OPERATOR_DIFFERENCE:
+    case COMAC_OPERATOR_DIFFERENCE:
 	return PIXMAN_OP_DIFFERENCE;
-    case CAIRO_OPERATOR_EXCLUSION:
+    case COMAC_OPERATOR_EXCLUSION:
 	return PIXMAN_OP_EXCLUSION;
-    case CAIRO_OPERATOR_HSL_HUE:
+    case COMAC_OPERATOR_HSL_HUE:
 	return PIXMAN_OP_HSL_HUE;
-    case CAIRO_OPERATOR_HSL_SATURATION:
+    case COMAC_OPERATOR_HSL_SATURATION:
 	return PIXMAN_OP_HSL_SATURATION;
-    case CAIRO_OPERATOR_HSL_COLOR:
+    case COMAC_OPERATOR_HSL_COLOR:
 	return PIXMAN_OP_HSL_COLOR;
-    case CAIRO_OPERATOR_HSL_LUMINOSITY:
+    case COMAC_OPERATOR_HSL_LUMINOSITY:
 	return PIXMAN_OP_HSL_LUMINOSITY;
 
     default:
@@ -298,11 +298,11 @@ _pixman_operator (cairo_operator_t op)
     }
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite (void			*_dst,
-	   cairo_operator_t	op,
-	   cairo_surface_t	*abstract_src,
-	   cairo_surface_t	*abstract_mask,
+	   comac_operator_t	op,
+	   comac_surface_t	*abstract_src,
+	   comac_surface_t	*abstract_mask,
 	   int			src_x,
 	   int			src_y,
 	   int			mask_x,
@@ -312,9 +312,9 @@ composite (void			*_dst,
 	   unsigned int		width,
 	   unsigned int		height)
 {
-    cairo_image_surface_t *dst = _dst;
-    cairo_pixman_source_t *src = (cairo_pixman_source_t *)abstract_src;
-    cairo_pixman_source_t *mask = (cairo_pixman_source_t *)abstract_mask;
+    comac_image_surface_t *dst = _dst;
+    comac_pixman_source_t *src = (comac_pixman_source_t *)abstract_src;
+    comac_pixman_source_t *mask = (comac_pixman_source_t *)abstract_mask;
     if (mask) {
 	pixman_image_composite32 (_pixman_operator (op),
 				  src->pixman_image, mask->pixman_image, dst->pixman_image,
@@ -331,26 +331,26 @@ composite (void			*_dst,
 				  width, height);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 composite_boxes (void			*_dst,
-		 cairo_operator_t	op,
-		 cairo_surface_t	*abstract_src,
-		 cairo_surface_t	*abstract_mask,
+		 comac_operator_t	op,
+		 comac_surface_t	*abstract_src,
+		 comac_surface_t	*abstract_mask,
 		 int			src_x,
 		 int			src_y,
 		 int			mask_x,
 		 int			mask_y,
 		 int			dst_x,
 		 int			dst_y,
-		 cairo_boxes_t		*boxes)
+		 comac_boxes_t		*boxes)
 {
-    cairo_image_surface_t *dst = _dst;
-    cairo_pixman_source_t *src = (cairo_pixman_source_t *)abstract_src;
-    cairo_pixman_source_t *mask = (cairo_pixman_source_t *)abstract_mask;
-    struct _cairo_boxes_chunk *chunk;
+    comac_image_surface_t *dst = _dst;
+    comac_pixman_source_t *src = (comac_pixman_source_t *)abstract_src;
+    comac_pixman_source_t *mask = (comac_pixman_source_t *)abstract_mask;
+    struct _comac_boxes_chunk *chunk;
     int i;
 
     assert (boxes->is_pixel_aligned);
@@ -358,10 +358,10 @@ composite_boxes (void			*_dst,
     op = _pixman_operator (op);
     for (chunk = &boxes->chunks; chunk; chunk = chunk->next) {
 	for (i = 0; i < chunk->count; i++) {
-	    int x1 = _cairo_fixed_integer_part (chunk->base[i].p1.x);
-	    int y1 = _cairo_fixed_integer_part (chunk->base[i].p1.y);
-	    int x2 = _cairo_fixed_integer_part (chunk->base[i].p2.x);
-	    int y2 = _cairo_fixed_integer_part (chunk->base[i].p2.y);
+	    int x1 = _comac_fixed_integer_part (chunk->base[i].p1.x);
+	    int y1 = _comac_fixed_integer_part (chunk->base[i].p1.y);
+	    int x2 = _comac_fixed_integer_part (chunk->base[i].p2.x);
+	    int y2 = _comac_fixed_integer_part (chunk->base[i].p2.y);
 
 	    if (mask) {
 		pixman_image_composite32 (op,
@@ -381,22 +381,22 @@ composite_boxes (void			*_dst,
 	}
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-const cairo_compositor_t *
-_cairo_image_mask_compositor_get (void)
+const comac_compositor_t *
+_comac_image_mask_compositor_get (void)
 {
-    static cairo_atomic_once_t once = CAIRO_ATOMIC_ONCE_INIT;
-    static cairo_mask_compositor_t compositor;
+    static comac_atomic_once_t once = COMAC_ATOMIC_ONCE_INIT;
+    static comac_mask_compositor_t compositor;
 
-    if (_cairo_atomic_init_once_enter(&once)) {
-	_cairo_mask_compositor_init (&compositor,
-				     _cairo_image_traps_compositor_get ());
+    if (_comac_atomic_init_once_enter(&once)) {
+	_comac_mask_compositor_init (&compositor,
+				     _comac_image_traps_compositor_get ());
 	compositor.acquire = acquire;
 	compositor.release = release;
 	compositor.set_clip_region = set_clip_region;
-	compositor.pattern_to_surface = _cairo_pixman_source_create_for_pattern;
+	compositor.pattern_to_surface = _comac_pixman_source_create_for_pattern;
 	compositor.has_snapshot = has_snapshot;
 	compositor.draw_image = draw_image;
 	compositor.fill_rectangles = fill_rectangles;
@@ -407,7 +407,7 @@ _cairo_image_mask_compositor_get (void)
 	//compositor.check_composite_boxes = check_composite_boxes;
 	compositor.composite_boxes = composite_boxes;
 
-	_cairo_atomic_init_once_leave(&once);
+	_comac_atomic_init_once_leave(&once);
     }
 
     return &compositor.base;

@@ -32,7 +32,7 @@
 #define WIDTH 2
 #define HEIGHT 2
 
-static cairo_status_t
+static comac_status_t
 read_png_from_file (void *closure, unsigned char *data, unsigned int length)
 {
     FILE *file = closure;
@@ -40,55 +40,55 @@ read_png_from_file (void *closure, unsigned char *data, unsigned int length)
 
     bytes_read = fread (data, 1, length, file);
     if (bytes_read != length)
-	return CAIRO_STATUS_READ_ERROR;
+	return COMAC_STATUS_READ_ERROR;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
     char *filename;
     FILE *file;
-    cairo_surface_t *surface;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_status_t status;
 
     xasprintf (&filename, "%s/reference/%s", ctx->srcdir,
 	       "create-from-png-stream.ref.png");
 
     file = fopen (filename, "rb");
     if (file == NULL) {
-	cairo_test_status_t ret;
+	comac_test_status_t ret;
 
-	ret = CAIRO_TEST_FAILURE;
+	ret = COMAC_TEST_FAILURE;
 	if (errno == ENOMEM)
-	    ret = cairo_test_status_from_status (ctx, CAIRO_STATUS_NO_MEMORY);
+	    ret = comac_test_status_from_status (ctx, COMAC_STATUS_NO_MEMORY);
 
-	if (ret != CAIRO_TEST_NO_MEMORY)
-	    cairo_test_log (ctx, "Error: failed to open file: %s\n", filename);
+	if (ret != COMAC_TEST_NO_MEMORY)
+	    comac_test_log (ctx, "Error: failed to open file: %s\n", filename);
 
 	free (filename);
 	return ret;
     }
 
-    surface = cairo_image_surface_create_from_png_stream (read_png_from_file,
+    surface = comac_image_surface_create_from_png_stream (read_png_from_file,
 							  file);
 
     fclose (file);
 
-    status = cairo_surface_status (surface);
+    status = comac_surface_status (surface);
     if (status) {
-	cairo_test_status_t ret;
+	comac_test_status_t ret;
 
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
-	ret = cairo_test_status_from_status (ctx, status);
-	if (ret != CAIRO_TEST_NO_MEMORY) {
-	    cairo_test_log (ctx,
+	ret = comac_test_status_from_status (ctx, status);
+	if (ret != COMAC_TEST_NO_MEMORY) {
+	    comac_test_log (ctx,
 			    "Error: failed to create surface from PNG: %s - %s\n",
 			    filename,
-			    cairo_status_to_string (status));
+			    comac_status_to_string (status));
 	}
 
 	free (filename);
@@ -99,19 +99,19 @@ draw (cairo_t *cr, int width, int height)
     free (filename);
 
     /* Pretend we modify the surface data (which detaches the PNG mime data) */
-    cairo_surface_flush (surface);
-    cairo_surface_mark_dirty (surface);
+    comac_surface_flush (surface);
+    comac_surface_mark_dirty (surface);
 
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+    comac_paint (cr);
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (create_from_png_stream,
+COMAC_TEST (create_from_png_stream,
 	    "Tests the creation of an image surface from a PNG using a FILE *",
 	    "png", /* keywords */
 	    NULL, /* requirements */

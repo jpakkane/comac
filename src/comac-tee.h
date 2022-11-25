@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -33,34 +33,34 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_TEE_H
-#define CAIRO_TEE_H
+#ifndef COMAC_TEE_H
+#define COMAC_TEE_H
 
 #include "comac.h"
 
-#if CAIRO_HAS_TEE_SURFACE
+#if COMAC_HAS_TEE_SURFACE
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_public cairo_surface_t *
-cairo_tee_surface_create (cairo_surface_t *master);
+comac_public comac_surface_t *
+comac_tee_surface_create (comac_surface_t *master);
 
-cairo_public void
-cairo_tee_surface_add (cairo_surface_t *surface,
-		       cairo_surface_t *target);
+comac_public void
+comac_tee_surface_add (comac_surface_t *surface,
+		       comac_surface_t *target);
 
-cairo_public void
-cairo_tee_surface_remove (cairo_surface_t *surface,
-			  cairo_surface_t *target);
+comac_public void
+comac_tee_surface_remove (comac_surface_t *surface,
+			  comac_surface_t *target);
 
-cairo_public cairo_surface_t *
-cairo_tee_surface_index (cairo_surface_t *surface,
+comac_public comac_surface_t *
+comac_tee_surface_index (comac_surface_t *surface,
 			 unsigned int index);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#else  /*CAIRO_HAS_TEE_SURFACE*/
-# error Cairo was not compiled with support for the TEE backend
-#endif /*CAIRO_HAS_TEE_SURFACE*/
+#else  /*COMAC_HAS_TEE_SURFACE*/
+# error Comac was not compiled with support for the TEE backend
+#endif /*COMAC_HAS_TEE_SURFACE*/
 
-#endif /*CAIRO_TEE_H*/
+#endif /*COMAC_TEE_H*/

@@ -34,50 +34,50 @@
 static const double m_1_sqrt_3 = 0.577359269;
 
 static void
-T (cairo_t *cr, int size)
+T (comac_t *cr, int size)
 {
-    cairo_move_to (cr, 0, 0);
-    cairo_line_to (cr, size, 0);
-    cairo_line_to (cr, size/2, size*m_1_sqrt_3);
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, size, 0);
+    comac_line_to (cr, size/2, size*m_1_sqrt_3);
 
     size /= 2;
     if (size >= 4) {
 	T (cr, size);
-	cairo_save (cr); {
-	    cairo_translate (cr, size, 0);
+	comac_save (cr); {
+	    comac_translate (cr, size, 0);
 	    T (cr, size);
-	} cairo_restore (cr);
-	cairo_save (cr); {
-	    cairo_translate (cr, size/2, size*m_1_sqrt_3);
+	} comac_restore (cr);
+	comac_save (cr); {
+	    comac_translate (cr, size/2, size*m_1_sqrt_3);
 	    T (cr, size);
-	} cairo_restore (cr);
+	} comac_restore (cr);
     }
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 0, 8);
+    comac_translate (cr, 0, 8);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_set_line_width (cr, 1.);
-
-    T (cr, WIDTH);
-
-    cairo_translate (cr, 0, 2*HEIGHT-16);
-    cairo_scale (cr, 1, -1);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_line_width (cr, 1.);
 
     T (cr, WIDTH);
 
-    cairo_stroke (cr);
+    comac_translate (cr, 0, 2*HEIGHT-16);
+    comac_scale (cr, 1, -1);
 
-    return CAIRO_TEST_SUCCESS;
+    T (cr, WIDTH);
+
+    comac_stroke (cr);
+
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (shape_sierpinski,
+COMAC_TEST (shape_sierpinski,
 	    "A fractal triangle",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

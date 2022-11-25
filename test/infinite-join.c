@@ -33,38 +33,38 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* Paint white, then draw in black. */
-    cairo_set_source_rgb (cr, 1, 1, 1); /* white */
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
+    comac_set_source_rgb (cr, 1, 1, 1); /* white */
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
 
     /* scaling 2 times causes a slight rounding error in the ctm.
      * Without that, the bug doesn't happen. */
-    cairo_scale (cr, 20 / 100., 20 / 100.);
-    cairo_scale (cr, 1. / 20, 1. / 20);
+    comac_scale (cr, 20 / 100., 20 / 100.);
+    comac_scale (cr, 1. / 20, 1. / 20);
 
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-    cairo_set_line_width (cr, 20);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
+    comac_set_line_width (cr, 20);
 
-    cairo_translate (cr, -18300, -13200);
+    comac_translate (cr, -18300, -13200);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, 18928, 13843);
-    cairo_line_to (cr, 18500, 13843);
-    cairo_line_to (cr, 18500, 13400);
-    cairo_line_to (cr, 18928, 13400);
-    cairo_line_to (cr, 18928, 13843);
-    cairo_stroke (cr);
+    comac_new_path (cr);
+    comac_move_to (cr, 18928, 13843);
+    comac_line_to (cr, 18500, 13843);
+    comac_line_to (cr, 18500, 13400);
+    comac_line_to (cr, 18928, 13400);
+    comac_line_to (cr, 18928, 13843);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (infinite_join,
+COMAC_TEST (infinite_join,
 	    "Test case for infinite loop when stroking with round joins",
 	    "stroke", /* keywords */
 	    NULL,

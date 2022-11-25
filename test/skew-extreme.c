@@ -28,7 +28,7 @@
 
 /* This test case is designed to exercise the following bug:
  *
- *	Skew transforms were broken by the cairo update in December
+ *	Skew transforms were broken by the comac update in December
  *	https://bugzilla.mozilla.org/show_bug.cgi?id=373632
  *
  * What's happening is that the rectangle is being skewed into the
@@ -42,7 +42,7 @@
  *      \ \
  *      d\_\c
  *
- * and the bug is that _cairo_traps_tessellate_convex_quad is
+ * and the bug is that _comac_traps_tessellate_convex_quad is
  * comparing b.x as less then d.x and therefore determining that the bc
  * edge is left of the ad edge. The fix is simply to compare c.x to
  * d.x instead of b.x to d.x .
@@ -55,62 +55,62 @@
 #define WIDTH		(PAD + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
 #define HEIGHT		(PAD + LINE_WIDTH + (LINE_LENGTH * SKEW_FACTOR) + LINE_WIDTH + PAD)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
-    cairo_set_line_width (cr, LINE_WIDTH);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+    comac_set_line_width (cr, LINE_WIDTH);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
 
-    cairo_save (cr);
+    comac_save (cr);
     {
-	cairo_matrix_t skew_x = {
+	comac_matrix_t skew_x = {
 	    1.0, 0.0,
 	    SKEW_FACTOR, 1.0,
 	    0.0, 0.0
 	};
 
-	cairo_translate (cr, LINE_WIDTH / 2.0, 0.0);
+	comac_translate (cr, LINE_WIDTH / 2.0, 0.0);
 
-	cairo_transform (cr, &skew_x);
+	comac_transform (cr, &skew_x);
 
-	cairo_move_to (cr, 0.0, 0.0);
-	cairo_line_to (cr, 0.0, LINE_LENGTH);
-	cairo_stroke (cr);
+	comac_move_to (cr, 0.0, 0.0);
+	comac_line_to (cr, 0.0, LINE_LENGTH);
+	comac_stroke (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 0.0, LINE_WIDTH);
+    comac_translate (cr, 0.0, LINE_WIDTH);
 
-    cairo_save (cr);
+    comac_save (cr);
     {
-	cairo_matrix_t skew_y = {
+	comac_matrix_t skew_y = {
 	    1.0, SKEW_FACTOR,
 	    0.0, 1.0,
 	    0.0, 0.0
 	};
 
-	cairo_translate (cr, 0.0, LINE_WIDTH / 2.0);
+	comac_translate (cr, 0.0, LINE_WIDTH / 2.0);
 
-	cairo_transform (cr, &skew_y);
+	comac_transform (cr, &skew_y);
 
-	cairo_move_to (cr, 0.0, 0.0);
-	cairo_line_to (cr, LINE_LENGTH, 0.0);
-	cairo_stroke (cr);
+	comac_move_to (cr, 0.0, 0.0);
+	comac_line_to (cr, LINE_LENGTH, 0.0);
+	comac_stroke (cr);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (skew_extreme,
+COMAC_TEST (skew_extreme,
 	    "Test cases of extreme skew.",
 	    "transform, stroke", /* keywords */
 	    NULL, /* requirements */

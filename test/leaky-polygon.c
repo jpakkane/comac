@@ -30,8 +30,8 @@
  *   Bug reported:
  *
  *     From: Chris <fltk@functionalfuture.com>
- *     Subject: [cairo] Render to image buffer artifacts
- *     To: cairo@cairographics.org
+ *     Subject: [comac] Render to image buffer artifacts
+ *     To: comac@comacgraphics.org
  *     Date: Fri, 07 Jan 2005 02:22:28 -0500
  *
  *     I've attached the code and image that shows this off.  Scaling at
@@ -56,28 +56,28 @@
 #define WIDTH 21
 #define HEIGHT 21
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_scale (cr, 1.0/(1<<16), 1.0/(1<<16));
+    comac_scale (cr, 1.0/(1<<16), 1.0/(1<<16));
 
-    cairo_move_to (cr, 131072,39321);
-    cairo_line_to (cr, 1103072,1288088);
-    cairo_line_to (cr, 1179648,1294990);
-    cairo_close_path (cr);
+    comac_move_to (cr, 131072,39321);
+    comac_line_to (cr, 1103072,1288088);
+    comac_line_to (cr, 1179648,1294990);
+    comac_close_path (cr);
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (leaky_polygon,
+COMAC_TEST (leaky_polygon,
 	    "Exercises a corner case in the trapezoid rasterization in which pixels outside the trapezoids received a non-zero alpha",
 	    "fill, trap", /* keywords */
 	    NULL, /* requirements */

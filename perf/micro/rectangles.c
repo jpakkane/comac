@@ -25,9 +25,9 @@
 #include "comac-perf.h"
 
 #if 0
-#define MODE cairo_perf_run
+#define MODE comac_perf_run
 #else
-#define MODE cairo_perf_cover_sources_and_operators
+#define MODE comac_perf_cover_sources_and_operators
 #endif
 
 #define RECTANGLE_COUNT (1000)
@@ -39,70 +39,70 @@ static struct {
     double height;
 } rects[RECTANGLE_COUNT];
 
-static cairo_time_t
-do_rectangles (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_rectangles (comac_t *cr, int width, int height, int loops)
 {
     int i;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
-	    cairo_rectangle (cr, rects[i].x, rects[i].y,
+	    comac_rectangle (cr, rects[i].x, rects[i].y,
 			     rects[i].width, rects[i].height);
-	    cairo_fill (cr);
+	    comac_fill (cr);
 	}
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_rectangles_once (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_rectangles_once (comac_t *cr, int width, int height, int loops)
 {
     int i;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	for (i = 0; i < RECTANGLE_COUNT; i++) {
-	    cairo_rectangle (cr, rects[i].x, rects[i].y,
+	    comac_rectangle (cr, rects[i].x, rects[i].y,
 			     rects[i].width, rects[i].height);
 	}
 
-	cairo_fill (cr);
+	comac_fill (cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_rectangle (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_rectangle (comac_t *cr, int width, int height, int loops)
 {
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	cairo_rectangle (cr, 0, 0, width, height);
-	cairo_fill (cr);
+	comac_rectangle (cr, 0, 0, width, height);
+	comac_fill (cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-rectangles_enabled (cairo_perf_t *perf)
+comac_bool_t
+rectangles_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "rectangles", NULL);
+    return comac_perf_can_run (perf, "rectangles", NULL);
 }
 
 void
-rectangles (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+rectangles (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     int i;
 

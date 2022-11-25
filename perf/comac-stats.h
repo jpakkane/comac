@@ -23,30 +23,30 @@
  * Authors: Carl Worth <cworth@cworth.org>
  */
 
-#ifndef _CAIRO_STATS_H_
-#define _CAIRO_STATS_H_
+#ifndef _COMAC_STATS_H_
+#define _COMAC_STATS_H_
 
 #include "comac-perf.h"
 
 void
-_cairo_stats_compute (cairo_stats_t *stats,
-		      cairo_time_t  *values,
+_comac_stats_compute (comac_stats_t *stats,
+		      comac_time_t  *values,
 		      int	     num_values);
 
-cairo_bool_t
-_cairo_histogram_init (cairo_histogram_t *h,
+comac_bool_t
+_comac_histogram_init (comac_histogram_t *h,
 		       int width, int height);
 
-cairo_bool_t
-_cairo_histogram_compute (cairo_histogram_t *h,
-			  const cairo_time_t  *values,
+comac_bool_t
+_comac_histogram_compute (comac_histogram_t *h,
+			  const comac_time_t  *values,
 			  int num_values);
 
 void
-_cairo_histogram_printf (cairo_histogram_t *h,
+_comac_histogram_printf (comac_histogram_t *h,
 			 FILE *file);
 
 void
-_cairo_histogram_fini (cairo_histogram_t *h);
+_comac_histogram_fini (comac_histogram_t *h);
 
-#endif /* _CAIRO_STATS_H_ */
+#endif /* _COMAC_STATS_H_ */

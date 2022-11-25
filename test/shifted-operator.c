@@ -24,33 +24,33 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *recording_surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, NULL);
-    cairo_t *cr2 = cairo_create (recording_surface);
-    cairo_translate (cr2, -30, -30);
-    cairo_rectangle (cr2, 0, 0, 120, 90);
-    cairo_set_source_rgba (cr2, 0.7, 0, 0, 0.8);
-    cairo_fill (cr2);
-    cairo_set_operator (cr2, CAIRO_OPERATOR_XOR);
-    cairo_rectangle (cr2, 40, 30, 120, 90);
-    cairo_set_source_rgba (cr2, 0, 0, 0.9, 0.4);
-    cairo_fill (cr2);
-    cairo_destroy (cr2);
+    comac_surface_t *recording_surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
+    comac_t *cr2 = comac_create (recording_surface);
+    comac_translate (cr2, -30, -30);
+    comac_rectangle (cr2, 0, 0, 120, 90);
+    comac_set_source_rgba (cr2, 0.7, 0, 0, 0.8);
+    comac_fill (cr2);
+    comac_set_operator (cr2, COMAC_OPERATOR_XOR);
+    comac_rectangle (cr2, 40, 30, 120, 90);
+    comac_set_source_rgba (cr2, 0, 0, 0.9, 0.4);
+    comac_fill (cr2);
+    comac_destroy (cr2);
 
-    cairo_pattern_t *pattern = cairo_pattern_create_for_surface (recording_surface);
-    cairo_surface_destroy(recording_surface);
-    cairo_matrix_t matrix;
-    cairo_matrix_init_translate (&matrix, -30, -30);
-    cairo_pattern_set_matrix (pattern, &matrix);
-    cairo_set_source (cr, pattern);
-    cairo_paint (cr);
+    comac_pattern_t *pattern = comac_pattern_create_for_surface (recording_surface);
+    comac_surface_destroy(recording_surface);
+    comac_matrix_t matrix;
+    comac_matrix_init_translate (&matrix, -30, -30);
+    comac_pattern_set_matrix (pattern, &matrix);
+    comac_set_source (cr, pattern);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (shifted_operator,
+COMAC_TEST (shifted_operator,
 	    "Test drawing a rectangle shifted into negative coordinates with an operator",
 	    "operator, transform, record", /* keywords */
 	    NULL, /* requirements */

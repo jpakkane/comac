@@ -25,41 +25,41 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
     double dashes[] = {6, 3};
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     /* partially visible rectangle... */
-    cairo_rectangle (cr, -0.5, -0.5, 61, 61);
+    comac_rectangle (cr, -0.5, -0.5, 61, 61);
 
     /* rectangles with intersecting segments... */
-    cairo_save (cr);
-    cairo_translate (cr, 30, 30);
+    comac_save (cr);
+    comac_translate (cr, 30, 30);
     for (i = 0; i < 4; i++) {
-	cairo_rotate (cr, M_PI / 4);
-	cairo_rectangle (cr, -37, -15, 74, 30);
+	comac_rotate (cr, M_PI / 4);
+	comac_rectangle (cr, -37, -15, 74, 30);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
     /* completely invisible rectangle */
-    cairo_rectangle (cr, -5, -5, 70, 70);
+    comac_rectangle (cr, -5, -5, 70, 70);
 
-    cairo_set_dash (cr, dashes, ARRAY_LENGTH (dashes), 0.);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_stroke (cr);
+    comac_set_dash (cr, dashes, ARRAY_LENGTH (dashes), 0.);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_BEVEL);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (long_dashed_lines,
-	    "Exercises _cairo_box_intersects_line_segment()",
+COMAC_TEST (long_dashed_lines,
+	    "Exercises _comac_box_intersects_line_segment()",
 	    "dash, stroke, stress", /* keywords */
 	    NULL, /* requirements */
 	    60, 60,

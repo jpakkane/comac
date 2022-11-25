@@ -28,48 +28,48 @@
 #define WIDTH 20
 #define HEIGHT 20
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *second;
-    cairo_t *second_cr;
+    comac_surface_t *second;
+    comac_t *second_cr;
 
     /* fill with black so we don't need an rgb test case */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    cairo_scale (cr, 0.5, 0.5);
+    comac_scale (cr, 0.5, 0.5);
 
     /* draw the first rectangle */
-    cairo_set_source_rgb (cr, 0, 0, 0.4);
-    cairo_rectangle (cr, 6, 6, 10, 10);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 0, 0.4);
+    comac_rectangle (cr, 6, 6, 10, 10);
+    comac_fill (cr);
 
     /* adjust the offset so that the second rectangle will fit on the surface */
-    second = cairo_image_surface_create (CAIRO_FORMAT_A8, 10, 10);
-    cairo_surface_set_device_offset (second, -6, -6);
+    second = comac_image_surface_create (COMAC_FORMAT_A8, 10, 10);
+    comac_surface_set_device_offset (second, -6, -6);
 
     /* draw the second rectangle:
      * this rectangle should end up in the same place as the rectangle above
      * independent of the device offset of the surface it is painted on*/
-    second_cr = cairo_create (second);
-    cairo_surface_destroy (second);
-    cairo_rectangle (second_cr, 6, 6, 10, 10);
-    cairo_fill (second_cr);
+    second_cr = comac_create (second);
+    comac_surface_destroy (second);
+    comac_rectangle (second_cr, 6, 6, 10, 10);
+    comac_fill (second_cr);
 
     /* paint the second rectangle on top of the first rectangle */
-    cairo_set_source_rgb (cr, 0.5, 0.5, 0);
-    cairo_mask_surface (cr, cairo_get_target (second_cr), 0, 0);
-    cairo_destroy (second_cr);
+    comac_set_source_rgb (cr, 0.5, 0.5, 0);
+    comac_mask_surface (cr, comac_get_target (second_cr), 0, 0);
+    comac_destroy (second_cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /*
  * XFAIL: complication of pre-multiplying device_offset into the pattern_matrix
  * and then requiring further manipulation for SVG
  */
-CAIRO_TEST (device_offset_scale,
+COMAC_TEST (device_offset_scale,
 	    "Test that the device-offset transform is transformed by the ctm.",
 	    "device-offset", /* keywords */
 	    NULL, /* requirements */

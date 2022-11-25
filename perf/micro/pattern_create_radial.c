@@ -22,9 +22,9 @@
  *
  * Authors: Dan Amelang <dan@amelang.net>
  *
- * This test was originally created to test _cairo_fixed_from_double.
- * cairo_pattern_create_radial was selected as the entry point into
- * cairo as it makes several calls to _cairo_fixed_from_double and
+ * This test was originally created to test _comac_fixed_from_double.
+ * comac_pattern_create_radial was selected as the entry point into
+ * comac as it makes several calls to _comac_fixed_from_double and
  * presents a somewhat realistic use-case (although the RADIALS_COUNT
  * isn't very realistic).
  */
@@ -55,38 +55,38 @@ generate_double_in_range (double min, double max)
     return d;
 }
 
-static cairo_time_t
-do_pattern_create_radial (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_pattern_create_radial (comac_t *cr, int width, int height, int loops)
 {
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	cairo_pattern_t *pattern;
+	comac_pattern_t *pattern;
 	int i;
 
 	for (i = 0; i < RADIALS_COUNT; i++) {
 	    pattern =
-		cairo_pattern_create_radial (radials[i].cx0, radials[i].cy0,
+		comac_pattern_create_radial (radials[i].cx0, radials[i].cy0,
 					     radials[i].radius0,
 					     radials[i].cx1, radials[i].cy1,
 					     radials[i].radius1);
-	    cairo_pattern_destroy (pattern);
+	    comac_pattern_destroy (pattern);
 	}
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-pattern_create_radial_enabled (cairo_perf_t *perf)
+comac_bool_t
+pattern_create_radial_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "pattern-create-radial", NULL);
+    return comac_perf_can_run (perf, "pattern-create-radial", NULL);
 }
 
 void
-pattern_create_radial (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+pattern_create_radial (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
     int i;
 
@@ -101,6 +101,6 @@ pattern_create_radial (cairo_perf_t *perf, cairo_t *cr, int width, int height)
         radials[i].radius1 = generate_double_in_range (0.0, 1000.0);
     }
 
-    cairo_perf_run (perf, "pattern-create-radial",
+    comac_perf_run (perf, "pattern-create-radial",
                           do_pattern_create_radial, NULL);
 }

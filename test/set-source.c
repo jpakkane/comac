@@ -25,55 +25,55 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
     uint32_t color = 0x8019334c;
-    cairo_surface_t *surface;
-    cairo_pattern_t *pattern;
+    comac_surface_t *surface;
+    comac_pattern_t *pattern;
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) &color,
-						   CAIRO_FORMAT_ARGB32, 1, 1, 4);
-    pattern = cairo_pattern_create_for_surface (surface);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
+    surface = comac_image_surface_create_for_data ((unsigned char *) &color,
+						   COMAC_FORMAT_ARGB32, 1, 1, 4);
+    pattern = comac_pattern_create_for_surface (surface);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
 
     /* Several different means of making mostly the same color (though
      * we can't get anything but alpha==1.0 out of
-     * cairo_set_source_rgb. */
+     * comac_set_source_rgb. */
     for (i=0; i < width; i++) {
 	switch (i) {
 	case 0:
-	    cairo_set_source_rgb (cr, .6, .7, .8);
+	    comac_set_source_rgb (cr, .6, .7, .8);
 	    break;
 	case 1:
-	    cairo_set_source_rgba (cr, .2, .4, .6, 0.5);
+	    comac_set_source_rgba (cr, .2, .4, .6, 0.5);
 	    break;
 	case 2:
 #if WE_HAD_SUPPORT_FOR_PREMULTIPLIED
-	    cairo_set_source_rgba_premultiplied (cr, .1, .2, .3, 0.5);
+	    comac_set_source_rgba_premultiplied (cr, .1, .2, .3, 0.5);
 #else
-	    cairo_set_source_rgba (cr, .2, .4, .6, 0.5);
+	    comac_set_source_rgba (cr, .2, .4, .6, 0.5);
 #endif
 	    break;
 	case 3:
 	default:
-	    cairo_set_source (cr, pattern);
+	    comac_set_source (cr, pattern);
 	    break;
 	}
 
-	cairo_rectangle (cr, i, 0, 1, height);
-	cairo_fill (cr);
+	comac_rectangle (cr, i, 0, 1, height);
+	comac_fill (cr);
     }
 
-    cairo_pattern_destroy (pattern);
-    cairo_surface_finish (surface); /* data will go out of scope */
-    cairo_surface_destroy (surface);
+    comac_pattern_destroy (pattern);
+    comac_surface_finish (surface); /* data will go out of scope */
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (set_source,
+COMAC_TEST (set_source,
 	    "Tests calls to various set_source functions",
 	    "api", /* keywords */
 	    NULL, /* requirements */

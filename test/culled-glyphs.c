@@ -25,35 +25,35 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     const char *text =
 "This needs to be a very long string, wider than the surface, and yet wider."
 "Ideally it should overflow the stack buffers, but do you really want to read "
 "a message that long. No. So we compromise with around 300 glyphs that is "
 "long enough to trigger the conditions as stated in "
-"https://lists.cairographics.org/archives/cairo/2008-December/015976.html. "
+"https://lists.comacgraphics.org/archives/comac/2008-December/015976.html. "
 "Happy now?";
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_set_font_size (cr, 16);
-    cairo_text_extents (cr, text, &extents);
-    cairo_move_to (cr, -extents.width/2, 18);
-    cairo_show_text (cr, text);
+    comac_set_font_size (cr, 16);
+    comac_text_extents (cr, text, &extents);
+    comac_move_to (cr, -extents.width/2, 18);
+    comac_show_text (cr, text);
 
-    /* XXX we should exercise cairo_show_text_glyphs() as well,
-     * and CAIRO_TEXT_CLUSTER_BACKWARDS
+    /* XXX we should exercise comac_show_text_glyphs() as well,
+     * and COMAC_TEXT_CLUSTER_BACKWARDS
      */
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (culled_glyphs,
+COMAC_TEST (culled_glyphs,
 	    "Tests culling of glyphs and text clusters",
 	    "glyphs", /* keywords */
 	    NULL, /* requirements */

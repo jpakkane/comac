@@ -25,54 +25,54 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *mask_surface;
-    cairo_pattern_t *mask;
+    comac_surface_t *mask_surface;
+    comac_pattern_t *mask;
     uint32_t data[] = {
 	0x80000000, 0x80000000,
 	0x80000000, 0x80000000,
     };
-    cairo_matrix_t matrix;
+    comac_matrix_t matrix;
 
-    mask_surface = cairo_image_surface_create_for_data ((unsigned char *) data,
-							CAIRO_FORMAT_ARGB32, 2, 2, 8);
-    mask = cairo_pattern_create_for_surface (mask_surface);
+    mask_surface = comac_image_surface_create_for_data ((unsigned char *) data,
+							COMAC_FORMAT_ARGB32, 2, 2, 8);
+    mask = comac_pattern_create_for_surface (mask_surface);
 
-    cairo_set_source_rgb (cr, 1.0, 0, 0);
+    comac_set_source_rgb (cr, 1.0, 0, 0);
 
     /* We can translate with the CTM, with the pattern matrix, or with
      * both. */
 
     /* 1. CTM alone. */
-    cairo_save (cr);
+    comac_save (cr);
     {
-	cairo_translate (cr, 2, 2);
-	cairo_mask (cr, mask);
+	comac_translate (cr, 2, 2);
+	comac_mask (cr, mask);
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
     /* 2. Pattern matrix alone. */
-    cairo_matrix_init_translate (&matrix, -4, -4);
-    cairo_pattern_set_matrix (mask, &matrix);
+    comac_matrix_init_translate (&matrix, -4, -4);
+    comac_pattern_set_matrix (mask, &matrix);
 
-    cairo_mask (cr, mask);
+    comac_mask (cr, mask);
 
     /* 3. CTM + pattern matrix */
-    cairo_translate (cr, 2, 2);
-    cairo_mask (cr, mask);
+    comac_translate (cr, 2, 2);
+    comac_mask (cr, mask);
 
-    cairo_pattern_destroy (mask);
+    comac_pattern_destroy (mask);
 
-    cairo_surface_finish (mask_surface); /* data goes out of scope */
-    cairo_surface_destroy (mask_surface);
+    comac_surface_finish (mask_surface); /* data goes out of scope */
+    comac_surface_destroy (mask_surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (mask_ctm,
-	    "Test that cairo_mask is affected properly by the CTM",
+COMAC_TEST (mask_ctm,
+	    "Test that comac_mask is affected properly by the CTM",
 	    "mask", /* keywords */
 	    NULL, /* requirements */
 	    10, 10,

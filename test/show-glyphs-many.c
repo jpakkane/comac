@@ -48,15 +48,15 @@
  *
  *	The number 65535 comes from the original bug report.
  *
- *	I would use cairo_show_text with a long string of 'x's say,
+ *	I would use comac_show_text with a long string of 'x's say,
  *	but then the surface would need to be enormous to contain
  *	them. A smaller surface could be used, but I fear that at some
  *	point the off-surface glyph drawing would be optimized away
  *	and not exercise the bug.
  *
  *	So, to keep the surface size under control, I use
- *	cairo_show_glyphs which allows me to place the glyphs all on
- *	top of each other. But, since cairo doesn't provide any
+ *	comac_show_glyphs which allows me to place the glyphs all on
+ *	top of each other. But, since comac doesn't provide any
  *	character-to-glyphs mapping, I can't get a reliable glyph
  *	index (for character 'x' for example). So I just "guess" a
  *	glyph index and use white-on-white drawing to ignore the
@@ -79,58 +79,58 @@
 #define TEXT_SIZE 12
 #define NUM_GLYPHS 65535
 
-static cairo_test_status_t
-get_glyph (const cairo_test_context_t *ctx,
-	   cairo_scaled_font_t *scaled_font,
+static comac_test_status_t
+get_glyph (const comac_test_context_t *ctx,
+	   comac_scaled_font_t *scaled_font,
 	   const char *utf8,
-	   cairo_glyph_t *glyph)
+	   comac_glyph_t *glyph)
 {
-    cairo_glyph_t *text_to_glyphs;
-    cairo_status_t status;
+    comac_glyph_t *text_to_glyphs;
+    comac_status_t status;
     int i;
 
     text_to_glyphs = glyph;
     i = 1;
-    status = cairo_scaled_font_text_to_glyphs (scaled_font,
+    status = comac_scaled_font_text_to_glyphs (scaled_font,
 					       0, 0,
 					       utf8, -1,
 					       &text_to_glyphs, &i,
 					       NULL, NULL,
 					       0);
-    if (status != CAIRO_STATUS_SUCCESS)
-	return cairo_test_status_from_status (ctx, status);
+    if (status != COMAC_STATUS_SUCCESS)
+	return comac_test_status_from_status (ctx, status);
 
     if (text_to_glyphs != glyph) {
 	*glyph = text_to_glyphs[0];
-	cairo_glyph_free (text_to_glyphs);
+	comac_glyph_free (text_to_glyphs);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_glyph_t *glyphs = xmalloc (NUM_GLYPHS * sizeof (cairo_glyph_t));
-    cairo_scaled_font_t *scaled_font;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_glyph_t *glyphs = xmalloc (NUM_GLYPHS * sizeof (comac_glyph_t));
+    comac_scaled_font_t *scaled_font;
     const char *characters[] = { /* try to exercise different widths of index */
 	"m", /* Latin letter m, index=0x50 */
 	"μ", /* Greek letter mu, index=0x349 */
 	NULL,
     }, **utf8;
     int i, j;
-    cairo_status_t status;
+    comac_status_t status;
 
     /* Paint white background. */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
-    scaled_font = cairo_get_scaled_font (cr);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
+    scaled_font = comac_get_scaled_font (cr);
 
     for (utf8 = characters; *utf8 != NULL; utf8++) {
 	status = get_glyph (ctx, scaled_font, *utf8, &glyphs[0]);
@@ -143,7 +143,7 @@ draw (cairo_t *cr, int width, int height)
 	    for (i=1; i < NUM_GLYPHS; i++)
 		glyphs[i] = glyphs[0];
 
-	    cairo_show_glyphs (cr, glyphs, NUM_GLYPHS);
+	    comac_show_glyphs (cr, glyphs, NUM_GLYPHS);
 	}
     }
 
@@ -160,7 +160,7 @@ draw (cairo_t *cr, int width, int height)
     for (j=i+1; j < NUM_GLYPHS; j++)
 	glyphs[j] = glyphs[i];
 
-    cairo_show_glyphs (cr, glyphs, NUM_GLYPHS);
+    comac_show_glyphs (cr, glyphs, NUM_GLYPHS);
 
   BAIL:
     free(glyphs);
@@ -168,8 +168,8 @@ draw (cairo_t *cr, int width, int height)
     return status;
 }
 
-CAIRO_TEST (show_glyphs_many,
-	    "Test that cairo_show_glyphs works when handed 'many' glyphs",
+COMAC_TEST (show_glyphs_many,
+	    "Test that comac_show_glyphs works when handed 'many' glyphs",
 	    "text, stress", /* keywords */
 	    NULL, /* requirements */
 	    9, 11,

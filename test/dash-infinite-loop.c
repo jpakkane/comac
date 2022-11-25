@@ -31,8 +31,8 @@
  * test attempts to hit each of the locations in the stroker code
  * where the dash offset is advanced in a loop.
  *
- * Reported to the cairo mailing list by Hans Breuer.
- * https://lists.cairographics.org/archives/cairo/2009-June/017506.html
+ * Reported to the comac mailing list by Hans Breuer.
+ * https://lists.comacgraphics.org/archives/comac/2009-June/017506.html
  */
 
 #define EPS 1e-30
@@ -43,39 +43,39 @@
  * lengths because those trigger special processing in the stroker. */
 
 static void
-do_dash (cairo_t *cr, double dx, double dy, double offset)
+do_dash (comac_t *cr, double dx, double dy, double offset)
 {
     /* Set the dash pattern to be predominantly ON so that we can
      * create a reference image by just ignoring the dashing. */
     static double dash[] = { EPS, EPS/512 };
-    cairo_set_dash (cr, dash, 2, offset);
-    cairo_move_to (cr, 10, 10);
-    cairo_rel_line_to (cr, dx, dy);
-    cairo_stroke (cr);
-    cairo_translate (cr, dx, dy);
+    comac_set_dash (cr, dash, 2, offset);
+    comac_move_to (cr, 10, 10);
+    comac_rel_line_to (cr, dx, dy);
+    comac_stroke (cr);
+    comac_translate (cr, dx, dy);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     (void)width; (void)height;
 
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0,0,0);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0,0,0);
 
-    cairo_set_line_width (cr, 10);
+    comac_set_line_width (cr, 10);
 
     /* The following calls will wedge in various places that try
      * to advance the dashing in a loop inside the stroker. */
-    do_dash (cr, 30, 30, 0); /* _cairo_stroker_line_to_dashed */
-    do_dash (cr, 30,  0, 0); /* _cairo_rectilinear_stroker_line_to_dashed */
-    do_dash (cr, 30, 30, 1); /* _cairo_stroker_dash_start */
+    do_dash (cr, 30, 30, 0); /* _comac_stroker_line_to_dashed */
+    do_dash (cr, 30,  0, 0); /* _comac_rectilinear_stroker_line_to_dashed */
+    do_dash (cr, 30, 30, 1); /* _comac_stroker_dash_start */
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (dash_infinite_loop,
+COMAC_TEST (dash_infinite_loop,
             "Test dashing with extremely small dash lengths.",
             "dash",
             NULL,

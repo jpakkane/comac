@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2011 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation
  *
@@ -38,23 +38,23 @@
 
 #include "comac.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_surface_t *
-_cairo_test_no_fallback_compositor_surface_create (cairo_content_t	content,
+comac_surface_t *
+_comac_test_no_fallback_compositor_surface_create (comac_content_t	content,
 						   int			width,
 						   int			height);
 
-cairo_surface_t *
-_cairo_test_no_traps_compositor_surface_create (cairo_content_t	content,
+comac_surface_t *
+_comac_test_no_traps_compositor_surface_create (comac_content_t	content,
 						int		width,
 						int		height);
 
-cairo_surface_t *
-_cairo_test_no_spans_compositor_surface_create (cairo_content_t	content,
+comac_surface_t *
+_comac_test_no_spans_compositor_surface_create (comac_content_t	content,
 						int		width,
 						int		height);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
 #endif /* TEST_NULL_COMPOSITOR_SURFACE_H */

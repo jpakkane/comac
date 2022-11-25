@@ -74,8 +74,8 @@ struct mono_scan_converter {
     struct edge head, tail;
     int is_vertical;
 
-    cairo_half_open_span_t *spans;
-    cairo_half_open_span_t spans_embedded[64];
+    comac_half_open_span_t *spans;
+    comac_half_open_span_t spans_embedded[64];
     int num_spans;
 
     /* Clip box. */
@@ -83,7 +83,7 @@ struct mono_scan_converter {
     int32_t ymin, ymax;
 };
 
-#define I(x) _cairo_fixed_integer_round_down(x)
+#define I(x) _comac_fixed_integer_round_down(x)
 
 /* Compute the floored division a/b. Assumes / and % perform symmetric
  * division. */
@@ -116,23 +116,23 @@ floored_muldivrem(int x, int a, int b)
     return qr;
 }
 
-static cairo_status_t
+static comac_status_t
 polygon_init (struct polygon *polygon, int ymin, int ymax)
 {
     unsigned h = ymax - ymin + 1;
 
     polygon->y_buckets = polygon->y_buckets_embedded;
     if (h > ARRAY_LENGTH (polygon->y_buckets_embedded)) {
-	polygon->y_buckets = _cairo_malloc_ab (h, sizeof (struct edge *));
+	polygon->y_buckets = _comac_malloc_ab (h, sizeof (struct edge *));
 	if (unlikely (NULL == polygon->y_buckets))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
     memset (polygon->y_buckets, 0, h * sizeof (struct edge *));
     polygon->y_buckets[h-1] = (void *)-1;
 
     polygon->ymin = ymin;
     polygon->ymax = ymax;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
@@ -160,11 +160,11 @@ _polygon_insert_edge_into_its_y_bucket(struct polygon *polygon,
 
 inline static void
 polygon_add_edge (struct polygon *polygon,
-		  const cairo_edge_t *edge)
+		  const comac_edge_t *edge)
 {
     struct edge *e;
-    cairo_fixed_t dx;
-    cairo_fixed_t dy;
+    comac_fixed_t dx;
+    comac_fixed_t dy;
     int y, ytop, ybot;
     int ymin = polygon->ymin;
     int ymax = polygon->ymax;
@@ -194,10 +194,10 @@ polygon_add_edge (struct polygon *polygon,
 	e->dy = 0;
     } else {
 	e->vertical = FALSE;
-	e->dxdy = floored_muldivrem (dx, CAIRO_FIXED_ONE, dy);
+	e->dxdy = floored_muldivrem (dx, COMAC_FIXED_ONE, dy);
 	e->dy = dy;
 
-	e->x = floored_muldivrem (ytop * CAIRO_FIXED_ONE + CAIRO_FIXED_FRAC_MASK/2 - edge->line.p1.y,
+	e->x = floored_muldivrem (ytop * COMAC_FIXED_ONE + COMAC_FIXED_FRAC_MASK/2 - edge->line.p1.y,
 				  dx, dy);
 	e->x.quo += edge->line.p1.x;
     }
@@ -386,12 +386,12 @@ inline static void dec (struct edge *e, int h)
     }
 }
 
-static cairo_status_t
+static comac_status_t
 _mono_scan_converter_init(struct mono_scan_converter *c,
 			  int xmin, int ymin,
 			  int xmax, int ymax)
 {
-    cairo_status_t status;
+    comac_status_t status;
     int max_num_spans;
 
     status = polygon_init (c->polygon, ymin, ymax);
@@ -400,10 +400,10 @@ _mono_scan_converter_init(struct mono_scan_converter *c,
 
     max_num_spans = xmax - xmin + 1;
     if (max_num_spans > ARRAY_LENGTH(c->spans_embedded)) {
-	c->spans = _cairo_malloc_ab (max_num_spans,
-				     sizeof (cairo_half_open_span_t));
+	c->spans = _comac_malloc_ab (max_num_spans,
+				     sizeof (comac_half_open_span_t));
 	if (unlikely (c->spans == NULL)) {
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
     } else
 	c->spans = c->spans_embedded;
@@ -415,17 +415,17 @@ _mono_scan_converter_init(struct mono_scan_converter *c,
 
     c->head.vertical = 1;
     c->head.height_left = INT_MAX;
-    c->head.x.quo = _cairo_fixed_from_int (_cairo_fixed_integer_part (INT_MIN));
+    c->head.x.quo = _comac_fixed_from_int (_comac_fixed_integer_part (INT_MIN));
     c->head.prev = NULL;
     c->head.next = &c->tail;
     c->tail.prev = &c->head;
     c->tail.next = NULL;
-    c->tail.x.quo = _cairo_fixed_from_int (_cairo_fixed_integer_part (INT_MAX));
+    c->tail.x.quo = _comac_fixed_from_int (_comac_fixed_integer_part (INT_MAX));
     c->tail.height_left = INT_MAX;
     c->tail.vertical = 1;
 
     c->is_vertical = 1;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
@@ -437,7 +437,7 @@ _mono_scan_converter_fini(struct mono_scan_converter *self)
     polygon_fini(self->polygon);
 }
 
-static cairo_status_t
+static comac_status_t
 mono_scan_converter_allocate_edges(struct mono_scan_converter *c,
 				   int num_edges)
 
@@ -445,17 +445,17 @@ mono_scan_converter_allocate_edges(struct mono_scan_converter *c,
     c->polygon->num_edges = 0;
     c->polygon->edges = c->polygon->edges_embedded;
     if (num_edges > ARRAY_LENGTH (c->polygon->edges_embedded)) {
-	c->polygon->edges = _cairo_malloc_ab (num_edges, sizeof (struct edge));
+	c->polygon->edges = _comac_malloc_ab (num_edges, sizeof (struct edge));
 	if (unlikely (c->polygon->edges == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static void
 mono_scan_converter_add_edge (struct mono_scan_converter *c,
-			      const cairo_edge_t *edge)
+			      const comac_edge_t *edge)
 {
     polygon_add_edge (c->polygon, edge);
 }
@@ -474,14 +474,14 @@ step_edges (struct mono_scan_converter *c, int count)
     }
 }
 
-static cairo_status_t
+static comac_status_t
 mono_scan_converter_render(struct mono_scan_converter *c,
 			   unsigned int winding_mask,
-			   cairo_span_renderer_t *renderer)
+			   comac_span_renderer_t *renderer)
 {
     struct polygon *polygon = c->polygon;
     int i, j, h = c->ymax - c->ymin;
-    cairo_status_t status;
+    comac_status_t status;
 
     for (i = 0; i < h; i = j) {
 	j = i + 1;
@@ -520,37 +520,37 @@ mono_scan_converter_render(struct mono_scan_converter *c,
 	    c->is_vertical = 1;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-struct _cairo_mono_scan_converter {
-    cairo_scan_converter_t base;
+struct _comac_mono_scan_converter {
+    comac_scan_converter_t base;
 
     struct mono_scan_converter converter[1];
-    cairo_fill_rule_t fill_rule;
+    comac_fill_rule_t fill_rule;
 };
 
-typedef struct _cairo_mono_scan_converter cairo_mono_scan_converter_t;
+typedef struct _comac_mono_scan_converter comac_mono_scan_converter_t;
 
 static void
-_cairo_mono_scan_converter_destroy (void *converter)
+_comac_mono_scan_converter_destroy (void *converter)
 {
-    cairo_mono_scan_converter_t *self = converter;
+    comac_mono_scan_converter_t *self = converter;
     _mono_scan_converter_fini (self->converter);
     free(self);
 }
 
-cairo_status_t
-_cairo_mono_scan_converter_add_polygon (void		*converter,
-				       const cairo_polygon_t *polygon)
+comac_status_t
+_comac_mono_scan_converter_add_polygon (void		*converter,
+				       const comac_polygon_t *polygon)
 {
-    cairo_mono_scan_converter_t *self = converter;
-    cairo_status_t status;
+    comac_mono_scan_converter_t *self = converter;
+    comac_status_t status;
     int i;
 
 #if 0
     FILE *file = fopen ("polygon.txt", "w");
-    _cairo_debug_print_polygon (file, polygon);
+    _comac_debug_print_polygon (file, polygon);
     fclose (file);
 #endif
 
@@ -562,38 +562,38 @@ _cairo_mono_scan_converter_add_polygon (void		*converter,
     for (i = 0; i < polygon->num_edges; i++)
 	 mono_scan_converter_add_edge (self->converter, &polygon->edges[i]);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_mono_scan_converter_generate (void			*converter,
-				    cairo_span_renderer_t	*renderer)
+static comac_status_t
+_comac_mono_scan_converter_generate (void			*converter,
+				    comac_span_renderer_t	*renderer)
 {
-    cairo_mono_scan_converter_t *self = converter;
+    comac_mono_scan_converter_t *self = converter;
 
     return mono_scan_converter_render (self->converter,
-				       self->fill_rule == CAIRO_FILL_RULE_WINDING ? ~0 : 1,
+				       self->fill_rule == COMAC_FILL_RULE_WINDING ? ~0 : 1,
 				       renderer);
 }
 
-cairo_scan_converter_t *
-_cairo_mono_scan_converter_create (int			xmin,
+comac_scan_converter_t *
+_comac_mono_scan_converter_create (int			xmin,
 				  int			ymin,
 				  int			xmax,
 				  int			ymax,
-				  cairo_fill_rule_t	fill_rule)
+				  comac_fill_rule_t	fill_rule)
 {
-    cairo_mono_scan_converter_t *self;
-    cairo_status_t status;
+    comac_mono_scan_converter_t *self;
+    comac_status_t status;
 
-    self = _cairo_malloc (sizeof(struct _cairo_mono_scan_converter));
+    self = _comac_malloc (sizeof(struct _comac_mono_scan_converter));
     if (unlikely (self == NULL)) {
-	status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto bail_nomem;
     }
 
-    self->base.destroy = _cairo_mono_scan_converter_destroy;
-    self->base.generate = _cairo_mono_scan_converter_generate;
+    self->base.destroy = _comac_mono_scan_converter_destroy;
+    self->base.generate = _comac_mono_scan_converter_generate;
 
     status = _mono_scan_converter_init (self->converter,
 					xmin, ymin, xmax, ymax);
@@ -607,5 +607,5 @@ _cairo_mono_scan_converter_create (int			xmin,
  bail:
     self->base.destroy(&self->base);
  bail_nomem:
-    return _cairo_scan_converter_create_in_error (status);
+    return _comac_scan_converter_create_in_error (status);
 }

@@ -38,12 +38,12 @@ uniform_random (double minval, double maxval)
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
-static cairo_time_t
-do_curve_stroke (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_curve_stroke (comac_t *cr, int width, int height, int loops)
 {
     state = 0xc0ffee;
-    cairo_set_line_width (cr, 2.);
-    cairo_perf_timer_start ();
+    comac_set_line_width (cr, 2.);
+    comac_perf_timer_start ();
 
     while (loops--) {
 	double x1 = uniform_random (0, width);
@@ -52,21 +52,21 @@ do_curve_stroke (cairo_t *cr, int width, int height, int loops)
 	double y1 = uniform_random (0, height);
 	double y2 = uniform_random (0, height);
 	double y3 = uniform_random (0, height);
-	cairo_move_to (cr, uniform_random (0, width), uniform_random (0, height));
-	cairo_curve_to (cr, x1, y1, x2, y2, x3, y3);
-	cairo_stroke(cr);
+	comac_move_to (cr, uniform_random (0, width), uniform_random (0, height));
+	comac_curve_to (cr, x1, y1, x2, y2, x3, y3);
+	comac_stroke(cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_curve_fill (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_curve_fill (comac_t *cr, int width, int height, int loops)
 {
     state = 0xc0ffee;
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	double x0 = uniform_random (0, width);
@@ -82,31 +82,31 @@ do_curve_fill (cairo_t *cr, int width, int height, int loops)
 	double ym = uniform_random (0, height);
 	double yn = uniform_random (0, height);
 
-	cairo_move_to (cr, xm, ym);
-	cairo_curve_to (cr, x1, y1, x2, y2, xn, yn);
-	cairo_curve_to (cr, x3, y3, x0, y0, xm, ym);
-	cairo_close_path (cr);
+	comac_move_to (cr, xm, ym);
+	comac_curve_to (cr, x1, y1, x2, y2, xn, yn);
+	comac_curve_to (cr, x3, y3, x0, y0, xm, ym);
+	comac_close_path (cr);
 
-	cairo_fill(cr);
+	comac_fill(cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-a1_curve_enabled (cairo_perf_t *perf)
+comac_bool_t
+a1_curve_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "a1-curve", NULL);
+    return comac_perf_can_run (perf, "a1-curve", NULL);
 }
 
 void
-a1_curve (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+a1_curve (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1., 1., 1.);
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_source_rgb (cr, 1., 1., 1.);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
-    cairo_perf_run (perf, "a1-curve-stroked", do_curve_stroke, NULL);
-    cairo_perf_run (perf, "a1-curve-filled", do_curve_fill, NULL);
+    comac_perf_run (perf, "a1-curve-stroked", do_curve_stroke, NULL);
+    comac_perf_run (perf, "a1-curve-filled", do_curve_fill, NULL);
 }

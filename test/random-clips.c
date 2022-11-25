@@ -44,22 +44,22 @@ uniform_random (double minval, double maxval)
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
-static void nz_path (cairo_t *cr)
+static void nz_path (comac_t *cr)
 {
     int i;
 
     state = 0xc0ffee;
 
-    cairo_move_to (cr, 0, 0);
+    comac_move_to (cr, 0, 0);
     for (i = 0; i < NUM_SEGMENTS; i++) {
 	double x = uniform_random (0, SIZE);
 	double y = uniform_random (0, SIZE);
-	cairo_line_to (cr, x, y);
+	comac_line_to (cr, x, y);
     }
-    cairo_close_path (cr);
+    comac_close_path (cr);
 }
 
-static void region_path (cairo_t *cr)
+static void region_path (comac_t *cr)
 {
     int i;
 
@@ -70,11 +70,11 @@ static void region_path (cairo_t *cr)
 	int y = uniform_random (0, SIZE);
 	int w = uniform_random (0, 40);
 	int h = uniform_random (0, 40);
-	cairo_rectangle (cr, x, y, w, h);
+	comac_rectangle (cr, x, y, w, h);
     }
 }
 
-static void rectangle_path (cairo_t *cr)
+static void rectangle_path (comac_t *cr)
 {
     int i;
 
@@ -85,11 +85,11 @@ static void rectangle_path (cairo_t *cr)
 	double y = uniform_random (0, SIZE);
 	double w = uniform_random (0, 40);
 	double h = uniform_random (0, 40);
-	cairo_rectangle (cr, x, y, w, h);
+	comac_rectangle (cr, x, y, w, h);
     }
 }
 
-static void arc_path (cairo_t *cr)
+static void arc_path (comac_t *cr)
 {
     int i;
 
@@ -99,132 +99,132 @@ static void arc_path (cairo_t *cr)
 	double x = uniform_random (0, SIZE);
 	double y = uniform_random (0, SIZE);
 	double r = uniform_random (0, 20);
-	cairo_new_sub_path (cr);
-	cairo_arc (cr, x, y, r, 0, 2*M_PI);
+	comac_new_sub_path (cr);
+	comac_arc (cr, x, y, r, 0, 2*M_PI);
     }
 }
 
 
-static void nz_fill_stroke (cairo_t *cr)
+static void nz_fill_stroke (comac_t *cr)
 {
     nz_path (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill_preserve (cr);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_set_line_width (cr, 1.0);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill_preserve (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_set_line_width (cr, 1.0);
+    comac_stroke (cr);
 }
 
-static void clip_to_quadrant (cairo_t *cr)
+static void clip_to_quadrant (comac_t *cr)
 {
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE);
+    comac_clip (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_WINDING);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_WINDING);
 
     state = 0xc0ffee;
-    cairo_translate (cr, 1, 1);
+    comac_translate (cr, 1, 1);
 
     /* no clipping */
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
 
 	nz_fill_stroke (cr);
-    } cairo_restore (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, STEP, 0);
+    comac_translate (cr, STEP, 0);
 
     /* random clipping */
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
 
 	nz_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 
 	nz_fill_stroke (cr);
 
-	cairo_set_source_rgba (cr, 1, 1, 1, 0.5);
-	cairo_paint (cr);
-    } cairo_restore (cr);
+	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
+	comac_paint (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, STEP, 0);
+    comac_translate (cr, STEP, 0);
 
     /* regional clipping */
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
 
 	region_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 
 	nz_fill_stroke (cr);
 
-	cairo_set_source_rgba (cr, 1, 1, 1, 0.5);
-	cairo_paint (cr);
-    } cairo_restore (cr);
+	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
+	comac_paint (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, -2*STEP, STEP);
+    comac_translate (cr, -2*STEP, STEP);
 
     /* rectangular clipping */
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
 
 	rectangle_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 
 	nz_fill_stroke (cr);
 
-	cairo_set_source_rgba (cr, 1, 1, 1, 0.5);
-	cairo_paint (cr);
-    } cairo_restore (cr);
+	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
+	comac_paint (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, STEP, 0);
+    comac_translate (cr, STEP, 0);
 
     /* circular clipping */
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
 
 	arc_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 
 	nz_fill_stroke (cr);
 
-	cairo_set_source_rgba (cr, 1, 1, 1, 0.5);
-	cairo_paint (cr);
-    } cairo_restore (cr);
+	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
+	comac_paint (cr);
+    } comac_restore (cr);
 
-    cairo_translate (cr, STEP, 0);
+    comac_translate (cr, STEP, 0);
 
     /* all-of-the-above clipping */
-    cairo_save (cr); {
+    comac_save (cr); {
 	clip_to_quadrant (cr);
 
 	nz_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 	region_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 	rectangle_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 	arc_path (cr);
-	cairo_clip (cr);
+	comac_clip (cr);
 
 	nz_fill_stroke (cr);
 
-	cairo_set_source_rgba (cr, 1, 1, 1, 0.5);
-	cairo_paint (cr);
-    } cairo_restore (cr);
+	comac_set_source_rgba (cr, 1, 1, 1, 0.5);
+	comac_paint (cr);
+    } comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (random_clip,
+COMAC_TEST (random_clip,
 	    "Tests the clip generation and intersection computation",
 	    "trap, clip", /* keywords */
 	    NULL, /* requirements */

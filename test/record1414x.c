@@ -52,278 +52,278 @@ static uint32_t data[16] = {
 
 static const char *png_filename = "romedalen.png";
 
-static cairo_t *
-paint (cairo_t *cr)
+static comac_t *
+paint (comac_t *cr)
 {
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 2, 2);
-    cairo_scale (cr, 0.5, 0.5);
+    comac_translate (cr, 2, 2);
+    comac_scale (cr, 0.5, 0.5);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
     return cr;
 }
 
-static cairo_t *
-paint_alpha (cairo_t *cr)
+static comac_t *
+paint_alpha (comac_t *cr)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) data,
-						   CAIRO_FORMAT_RGB24, 4, 4, 16);
+    surface = comac_image_surface_create_for_data ((unsigned char *) data,
+						   COMAC_FORMAT_RGB24, 4, 4, 16);
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
-    cairo_scale (cr, 4, 4);
+    comac_scale (cr, 4, 4);
 
-    cairo_set_source_surface (cr, surface, 2 , 2);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_paint_with_alpha (cr, 0.5);
+    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+    comac_paint_with_alpha (cr, 0.5);
 
-    cairo_surface_finish (surface); /* data will go out of scope */
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface); /* data will go out of scope */
+    comac_surface_destroy (surface);
 
     return cr;
 }
 
-static cairo_t *
-paint_alpha_solid_clip (cairo_t *cr)
+static comac_t *
+paint_alpha_solid_clip (comac_t *cr)
 {
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
-    cairo_rectangle (cr, 2.5, 2.5, 27, 27);
-    cairo_clip (cr);
+    comac_rectangle (cr, 2.5, 2.5, 27, 27);
+    comac_clip (cr);
 
-    cairo_set_source_rgb (cr, 1., 0.,0.);
-    cairo_paint_with_alpha (cr, 0.5);
+    comac_set_source_rgb (cr, 1., 0.,0.);
+    comac_paint_with_alpha (cr, 0.5);
 
     return cr;
 }
 
-static cairo_t *
-paint_alpha_clip (cairo_t *cr)
+static comac_t *
+paint_alpha_clip (comac_t *cr)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) data,
-						   CAIRO_FORMAT_RGB24, 4, 4, 16);
+    surface = comac_image_surface_create_for_data ((unsigned char *) data,
+						   COMAC_FORMAT_RGB24, 4, 4, 16);
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
-    cairo_rectangle (cr, 10.5, 10.5, 11, 11);
-    cairo_clip (cr);
+    comac_rectangle (cr, 10.5, 10.5, 11, 11);
+    comac_clip (cr);
 
-    cairo_scale (cr, 4, 4);
+    comac_scale (cr, 4, 4);
 
-    cairo_set_source_surface (cr, surface, 2 , 2);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_paint_with_alpha (cr, 0.5);
+    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+    comac_paint_with_alpha (cr, 0.5);
 
-    cairo_surface_finish (surface); /* data will go out of scope */
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface); /* data will go out of scope */
+    comac_surface_destroy (surface);
 
     return cr;
 }
 
-static cairo_t *
-paint_alpha_clip_mask (cairo_t *cr)
+static comac_t *
+paint_alpha_clip_mask (comac_t *cr)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) data,
-						   CAIRO_FORMAT_RGB24, 4, 4, 16);
+    surface = comac_image_surface_create_for_data ((unsigned char *) data,
+						   COMAC_FORMAT_RGB24, 4, 4, 16);
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
-    cairo_move_to (cr, 16, 5);
-    cairo_line_to (cr, 5, 16);
-    cairo_line_to (cr, 16, 27);
-    cairo_line_to (cr, 27, 16);
-    cairo_clip (cr);
+    comac_move_to (cr, 16, 5);
+    comac_line_to (cr, 5, 16);
+    comac_line_to (cr, 16, 27);
+    comac_line_to (cr, 27, 16);
+    comac_clip (cr);
 
-    cairo_scale (cr, 4, 4);
+    comac_scale (cr, 4, 4);
 
-    cairo_set_source_surface (cr, surface, 2 , 2);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_paint_with_alpha (cr, 0.5);
+    comac_set_source_surface (cr, surface, 2 , 2);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+    comac_paint_with_alpha (cr, 0.5);
 
-    cairo_surface_finish (surface); /* data will go out of scope */
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface); /* data will go out of scope */
+    comac_surface_destroy (surface);
 
     return cr;
 }
 
-static cairo_t *
-select_font_face (cairo_t *cr)
+static comac_t *
+select_font_face (comac_t *cr)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
+    comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    cairo_set_font_size (cr, TEXT_SIZE);
-    cairo_move_to (cr, 0, TEXT_SIZE);
+    comac_set_font_size (cr, TEXT_SIZE);
+    comac_move_to (cr, 0, TEXT_SIZE);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Serif",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_show_text (cr, "i-am-serif");
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Serif",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_show_text (cr, "i-am-serif");
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_show_text (cr, " i-am-sans");
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_show_text (cr, " i-am-sans");
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans Mono",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_show_text (cr, " i-am-mono");
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans Mono",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_show_text (cr, " i-am-mono");
 
     return cr;
 }
 
-static cairo_t *
-fill_alpha (cairo_t *cr)
+static comac_t *
+fill_alpha (comac_t *cr)
 {
     const double alpha = 1./3;
     int n;
 
     /* flatten to white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     /* square */
-    cairo_rectangle (cr, PAD, PAD, SIZE, SIZE);
-    cairo_set_source_rgba (cr, 1, 0, 0, alpha);
-    cairo_fill (cr);
+    comac_rectangle (cr, PAD, PAD, SIZE, SIZE);
+    comac_set_source_rgba (cr, 1, 0, 0, alpha);
+    comac_fill (cr);
 
     /* circle */
-    cairo_translate (cr, SIZE + 2 * PAD, 0);
-    cairo_arc (cr, PAD + SIZE / 2., PAD + SIZE / 2., SIZE / 2., 0, 2 * M_PI);
-    cairo_set_source_rgba (cr, 0, 1, 0, alpha);
-    cairo_fill (cr);
+    comac_translate (cr, SIZE + 2 * PAD, 0);
+    comac_arc (cr, PAD + SIZE / 2., PAD + SIZE / 2., SIZE / 2., 0, 2 * M_PI);
+    comac_set_source_rgba (cr, 0, 1, 0, alpha);
+    comac_fill (cr);
 
     /* triangle */
-    cairo_translate (cr, 0, SIZE + 2 * PAD);
-    cairo_move_to (cr, PAD + SIZE / 2, PAD);
-    cairo_line_to (cr, PAD + SIZE, PAD + SIZE);
-    cairo_line_to (cr, PAD, PAD + SIZE);
-    cairo_set_source_rgba (cr, 0, 0, 1, alpha);
-    cairo_fill (cr);
+    comac_translate (cr, 0, SIZE + 2 * PAD);
+    comac_move_to (cr, PAD + SIZE / 2, PAD);
+    comac_line_to (cr, PAD + SIZE, PAD + SIZE);
+    comac_line_to (cr, PAD, PAD + SIZE);
+    comac_set_source_rgba (cr, 0, 0, 1, alpha);
+    comac_fill (cr);
 
     /* star */
-    cairo_translate (cr, -(SIZE + 2 * PAD) + SIZE/2., SIZE/2.);
+    comac_translate (cr, -(SIZE + 2 * PAD) + SIZE/2., SIZE/2.);
     for (n = 0; n < 5; n++) {
-	cairo_line_to (cr,
+	comac_line_to (cr,
 		       SIZE/2 * cos (2*n * 2*M_PI / 10),
 		       SIZE/2 * sin (2*n * 2*M_PI / 10));
 
-	cairo_line_to (cr,
+	comac_line_to (cr,
 		       SIZE/4 * cos ((2*n+1)*2*M_PI / 10),
 		       SIZE/4 * sin ((2*n+1)*2*M_PI / 10));
     }
-    cairo_set_source_rgba (cr, 0, 0, 0, alpha);
-    cairo_fill (cr);
+    comac_set_source_rgba (cr, 0, 0, 0, alpha);
+    comac_fill (cr);
 
     return cr;
 }
 
-static cairo_t *
-self_intersecting (cairo_t *cr)
+static comac_t *
+self_intersecting (comac_t *cr)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 1.0, 1.0);
+    comac_translate (cr, 1.0, 1.0);
 
-    cairo_set_source_rgb (cr, 1, 0, 0); /* red */
+    comac_set_source_rgb (cr, 1, 0, 0); /* red */
 
     /* First draw the desired shape with a fill */
-    cairo_rectangle (cr, 0.5, 0.5,  4.0, 4.0);
-    cairo_rectangle (cr, 3.5, 3.5,  4.0, 4.0);
-    cairo_rectangle (cr, 3.5, 1.5, -2.0, 2.0);
-    cairo_rectangle (cr, 6.5, 4.5, -2.0, 2.0);
+    comac_rectangle (cr, 0.5, 0.5,  4.0, 4.0);
+    comac_rectangle (cr, 3.5, 3.5,  4.0, 4.0);
+    comac_rectangle (cr, 3.5, 1.5, -2.0, 2.0);
+    comac_rectangle (cr, 6.5, 4.5, -2.0, 2.0);
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
     /* Then try the same thing with a stroke */
-    cairo_translate (cr, 0, 10);
-    cairo_move_to (cr, 1.0, 1.0);
-    cairo_rel_line_to (cr,  3.0,  0.0);
-    cairo_rel_line_to (cr,  0.0,  6.0);
-    cairo_rel_line_to (cr,  3.0,  0.0);
-    cairo_rel_line_to (cr,  0.0, -3.0);
-    cairo_rel_line_to (cr, -6.0,  0.0);
-    cairo_close_path (cr);
+    comac_translate (cr, 0, 10);
+    comac_move_to (cr, 1.0, 1.0);
+    comac_rel_line_to (cr,  3.0,  0.0);
+    comac_rel_line_to (cr,  0.0,  6.0);
+    comac_rel_line_to (cr,  3.0,  0.0);
+    comac_rel_line_to (cr,  0.0, -3.0);
+    comac_rel_line_to (cr, -6.0,  0.0);
+    comac_close_path (cr);
 
-    cairo_set_line_width (cr, 1.0);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 1.0);
+    comac_stroke (cr);
 
     return cr;
 }
 
 static void
-draw_text_transform (cairo_t *cr)
+draw_text_transform (comac_t *cr)
 {
-    cairo_matrix_t tm;
+    comac_matrix_t tm;
 
     /* skew */
-    cairo_matrix_init (&tm, 1, 0,
+    comac_matrix_init (&tm, 1, 0,
                        -0.25, 1,
                        0, 0);
-    cairo_matrix_scale (&tm, TT_FONT_SIZE, TT_FONT_SIZE);
-    cairo_set_font_matrix (cr, &tm);
+    comac_matrix_scale (&tm, TT_FONT_SIZE, TT_FONT_SIZE);
+    comac_set_font_matrix (cr, &tm);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, 50, TT_SIZE-TT_PAD);
-    cairo_show_text (cr, "A");
+    comac_new_path (cr);
+    comac_move_to (cr, 50, TT_SIZE-TT_PAD);
+    comac_show_text (cr, "A");
 
     /* rotate and scale */
-    cairo_matrix_init_rotate (&tm, M_PI / 2);
-    cairo_matrix_scale (&tm, TT_FONT_SIZE, TT_FONT_SIZE * 2.0);
-    cairo_set_font_matrix (cr, &tm);
+    comac_matrix_init_rotate (&tm, M_PI / 2);
+    comac_matrix_scale (&tm, TT_FONT_SIZE, TT_FONT_SIZE * 2.0);
+    comac_set_font_matrix (cr, &tm);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, TT_PAD, TT_PAD + 25);
-    cairo_show_text (cr, "A");
+    comac_new_path (cr);
+    comac_move_to (cr, TT_PAD, TT_PAD + 25);
+    comac_show_text (cr, "A");
 
-    cairo_matrix_init_rotate (&tm, M_PI / 2);
-    cairo_matrix_scale (&tm, TT_FONT_SIZE * 2.0, TT_FONT_SIZE);
-    cairo_set_font_matrix (cr, &tm);
+    comac_matrix_init_rotate (&tm, M_PI / 2);
+    comac_matrix_scale (&tm, TT_FONT_SIZE * 2.0, TT_FONT_SIZE);
+    comac_set_font_matrix (cr, &tm);
 
-    cairo_new_path (cr);
-    cairo_move_to (cr, TT_PAD, TT_PAD + 50);
-    cairo_show_text (cr, "A");
+    comac_new_path (cr);
+    comac_move_to (cr, TT_PAD, TT_PAD + 50);
+    comac_show_text (cr, "A");
 }
 
-static cairo_t *
-text_transform (cairo_t *cr)
+static comac_t *
+text_transform (comac_t *cr)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_pattern_t *pattern;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_pattern_t *pattern;
 
-    cairo_set_source_rgb (cr, 1., 1., 1.);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1., 1., 1.);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0., 0., 0.);
+    comac_set_source_rgb (cr, 0., 0., 0.);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
     draw_text_transform (cr);
 
-    cairo_translate (cr, TT_SIZE, TT_SIZE);
-    cairo_rotate (cr, M_PI);
+    comac_translate (cr, TT_SIZE, TT_SIZE);
+    comac_rotate (cr, M_PI);
 
-    pattern = cairo_test_create_pattern_from_png (ctx, png_filename);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
+    pattern = comac_test_create_pattern_from_png (ctx, png_filename);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
 
     draw_text_transform (cr);
 
@@ -332,165 +332,165 @@ text_transform (cairo_t *cr)
 
 /* And here begins the recording and replaying... */
 
-static cairo_t *
-record_create (cairo_t *target)
+static comac_t *
+record_create (comac_t *target)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_recording_surface_create (cairo_surface_get_content (cairo_get_target (target)), NULL);
-    cr = cairo_test_create (surface, cairo_test_get_context (target));
-    cairo_surface_destroy (surface);
+    surface = comac_recording_surface_create (comac_surface_get_content (comac_get_target (target)), NULL);
+    cr = comac_test_create (surface, comac_test_get_context (target));
+    comac_surface_destroy (surface);
 
     return cr;
 }
 
-static cairo_surface_t *
-record_get (cairo_t *target)
+static comac_surface_t *
+record_get (comac_t *target)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_surface_reference (cairo_get_target (target));
-    cairo_destroy (target);
+    surface = comac_surface_reference (comac_get_target (target));
+    comac_destroy (target);
 
     return surface;
 }
 
-static cairo_test_status_t
-record_replay (cairo_t *cr, cairo_t *(*func)(cairo_t *), int width, int height)
+static comac_test_status_t
+record_replay (comac_t *cr, comac_t *(*func)(comac_t *), int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     int x, y;
 
 #if GENERATE_REF
-    cairo_scale (cr, M_SQRT2, M_SQRT2);
+    comac_scale (cr, M_SQRT2, M_SQRT2);
     func (cr);
 #else
     surface = record_get (func (record_create (cr)));
 
-    cairo_scale (cr, M_SQRT2, M_SQRT2);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_surface_destroy (surface);
-    cairo_pattern_set_extend (cairo_get_source (cr), CAIRO_EXTEND_NONE);
+    comac_scale (cr, M_SQRT2, M_SQRT2);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_surface_destroy (surface);
+    comac_pattern_set_extend (comac_get_source (cr), COMAC_EXTEND_NONE);
 
-    cairo_identity_matrix (cr); /* make sure the clip is pixel-aligned */
+    comac_identity_matrix (cr); /* make sure the clip is pixel-aligned */
     for (y = 0; y < height; y += 2) {
 	for (x = 0; x < width; x += 2) {
-	    cairo_rectangle (cr, x, y, 2, 2);
-	    cairo_clip (cr);
-	    cairo_paint (cr);
-	    cairo_reset_clip (cr);
+	    comac_rectangle (cr, x, y, 2, 2);
+	    comac_clip (cr);
+	    comac_paint (cr);
+	    comac_reset_clip (cr);
 	}
     }
 #endif
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-record_paint (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_paint (comac_t *cr, int width, int height)
 {
     return record_replay (cr, paint, width, height);
 }
 
-static cairo_test_status_t
-record_paint_alpha (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_paint_alpha (comac_t *cr, int width, int height)
 {
     return record_replay (cr, paint_alpha, width, height);
 }
 
-static cairo_test_status_t
-record_paint_alpha_solid_clip (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_paint_alpha_solid_clip (comac_t *cr, int width, int height)
 {
     return record_replay (cr, paint_alpha_solid_clip, width, height);
 }
 
-static cairo_test_status_t
-record_paint_alpha_clip (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_paint_alpha_clip (comac_t *cr, int width, int height)
 {
     return record_replay (cr, paint_alpha_clip, width, height);
 }
 
-static cairo_test_status_t
-record_paint_alpha_clip_mask (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_paint_alpha_clip_mask (comac_t *cr, int width, int height)
 {
     return record_replay (cr, paint_alpha_clip_mask, width, height);
 }
 
-static cairo_test_status_t
-record_fill_alpha (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_fill_alpha (comac_t *cr, int width, int height)
 {
     return record_replay (cr, fill_alpha, width, height);
 }
 
-static cairo_test_status_t
-record_self_intersecting (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_self_intersecting (comac_t *cr, int width, int height)
 {
     return record_replay (cr, self_intersecting, width, height);
 }
 
-static cairo_test_status_t
-record_select_font_face (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_select_font_face (comac_t *cr, int width, int height)
 {
     return record_replay (cr, select_font_face, width, height);
 }
 
-static cairo_test_status_t
-record_text_transform (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_text_transform (comac_t *cr, int width, int height)
 {
     return record_replay (cr, text_transform, width, height);
 }
 
-CAIRO_TEST (record1414x_paint,
-	    "Test replayed calls to cairo_paint",
+COMAC_TEST (record1414x_paint,
+	    "Test replayed calls to comac_paint",
 	    "paint, record", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*8, M_SQRT2*8,
 	    NULL, record_paint)
-CAIRO_TEST (record1414x_paint_alpha,
-	    "Simple test of cairo_paint_with_alpha",
+COMAC_TEST (record1414x_paint_alpha,
+	    "Simple test of comac_paint_with_alpha",
 	    "record, paint, alpha", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*32, M_SQRT2*32,
 	    NULL, record_paint_alpha)
-CAIRO_TEST (record1414x_paint_alpha_solid_clip,
-	    "Simple test of cairo_paint_with_alpha+unaligned clip",
+COMAC_TEST (record1414x_paint_alpha_solid_clip,
+	    "Simple test of comac_paint_with_alpha+unaligned clip",
 	    "record, paint, alpha, clip", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*32, M_SQRT2*32,
 	    NULL, record_paint_alpha_solid_clip)
-CAIRO_TEST (record1414x_paint_alpha_clip,
-	    "Simple test of cairo_paint_with_alpha+unaligned clip",
+COMAC_TEST (record1414x_paint_alpha_clip,
+	    "Simple test of comac_paint_with_alpha+unaligned clip",
 	    "record, paint, alpha, clip", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*32, M_SQRT2*32,
 	    NULL, record_paint_alpha_clip)
-CAIRO_TEST (record1414x_paint_alpha_clip_mask,
-	    "Simple test of cairo_paint_with_alpha+triangular clip",
+COMAC_TEST (record1414x_paint_alpha_clip_mask,
+	    "Simple test of comac_paint_with_alpha+triangular clip",
 	    "record, paint, alpha, clip", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*32, M_SQRT2*32,
 	    NULL, record_paint_alpha_clip_mask)
-CAIRO_TEST (record1414x_fill_alpha,
+COMAC_TEST (record1414x_fill_alpha,
 	    "Tests using set_rgba();fill()",
 	    "record, fill, alpha", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*(2*SIZE + 4*PAD), M_SQRT2*(2*SIZE + 4*PAD),
 	    NULL, record_fill_alpha)
-CAIRO_TEST (record1414x_select_font_face,
-	    "Tests using cairo_select_font_face to draw text in different faces",
+COMAC_TEST (record1414x_select_font_face,
+	    "Tests using comac_select_font_face to draw text in different faces",
 	    "record, font", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*192, M_SQRT2*(TEXT_SIZE + 4),
 	    NULL, record_select_font_face)
-CAIRO_TEST (record1414x_self_intersecting,
+COMAC_TEST (record1414x_self_intersecting,
 	    "Test strokes of self-intersecting paths",
 	    "record, stroke, trap", /* keywords */
 	    NULL, /* requirements */
 	    M_SQRT2*10, M_SQRT2*20,
 	    NULL, record_self_intersecting)
-CAIRO_TEST (record1414x_text_transform,
+COMAC_TEST (record1414x_text_transform,
 	    "Test various applications of the font matrix",
 	    "record, text, transform", /* keywords */
 	    NULL, /* requirements */

@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2014 Intel Corporation
  *
@@ -26,12 +26,12 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  */
 
-#ifndef CAIRO_LINE_INLINE_H
-#define CAIRO_LINE_INLINE_H
+#ifndef COMAC_LINE_INLINE_H
+#define COMAC_LINE_INLINE_H
 
 #include "comac-types-private.h"
 #include "comac-compiler-private.h"
@@ -39,10 +39,10 @@
 #include "comac-line-private.h"
 
 static inline int
-cairo_lines_equal (const cairo_line_t *a, const cairo_line_t *b)
+comac_lines_equal (const comac_line_t *a, const comac_line_t *b)
 {
     return (a->p1.x == b->p1.x && a->p1.y == b->p1.y &&
 	    a->p2.x == b->p2.x && a->p2.y == b->p2.y);
 }
 
-#endif /* CAIRO_LINE_INLINE_H */
+#endif /* COMAC_LINE_INLINE_H */

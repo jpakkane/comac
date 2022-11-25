@@ -30,47 +30,47 @@
 #define IMAGE_WIDTH 2 * LINE_LENGTH + 6
 #define IMAGE_HEIGHT ((LINES+4)*LINES)/2 + 2
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
 
     /* We draw in black, so paint white first. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_translate (cr, 2, 2);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_translate (cr, 2, 2);
 
     for (i=0; i < LINES; i++) {
-	cairo_set_line_width (cr, i+1);
-	cairo_move_to (cr, 0, 0);
-	cairo_rel_line_to (cr, LINE_LENGTH, 0);
-	cairo_stroke (cr);
-	cairo_move_to (cr, LINE_LENGTH + 2, 0.5);
-	cairo_rel_line_to (cr, LINE_LENGTH, 0);
-	cairo_stroke (cr);
-	cairo_translate (cr, 0, i+3);
+	comac_set_line_width (cr, i+1);
+	comac_move_to (cr, 0, 0);
+	comac_rel_line_to (cr, LINE_LENGTH, 0);
+	comac_stroke (cr);
+	comac_move_to (cr, LINE_LENGTH + 2, 0.5);
+	comac_rel_line_to (cr, LINE_LENGTH, 0);
+	comac_stroke (cr);
+	comac_translate (cr, 0, i+3);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-draw_a1 (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_a1 (comac_t *cr, int width, int height)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
     return draw (cr, width, height);
 }
 
-CAIRO_TEST (line_width,
-	    "Tests cairo_set_line_width",
+COMAC_TEST (line_width,
+	    "Tests comac_set_line_width",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */
 	    IMAGE_WIDTH, IMAGE_HEIGHT,
 	    NULL, draw)
-CAIRO_TEST (a1_line_width,
-	    "Tests cairo_set_line_width",
+COMAC_TEST (a1_line_width,
+	    "Tests comac_set_line_width",
 	    "stroke", /* keywords */
 	    "target=raster", /* requirements */
 	    IMAGE_WIDTH, IMAGE_HEIGHT,

@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Carl Worth
  *
@@ -52,7 +52,7 @@ typedef struct _edge edge_t;
 struct _edge {
     edge_t *next, *prev;
     edge_t *right;
-    cairo_fixed_t x, top;
+    comac_fixed_t x, top;
     int a_or_b;
     int dir;
 };
@@ -93,12 +93,12 @@ typedef struct _sweep_line {
 
 #if DEBUG_TRAPS
 static void
-dump_traps (cairo_traps_t *traps, const char *filename)
+dump_traps (comac_traps_t *traps, const char *filename)
 {
     FILE *file;
     int n;
 
-    if (getenv ("CAIRO_DEBUG_TRAPS") == NULL)
+    if (getenv ("COMAC_DEBUG_TRAPS") == NULL)
 	return;
 
     file = fopen (filename, "a");
@@ -155,14 +155,14 @@ pqueue_fini (pqueue_t *pq)
 	free (pq->elements);
 }
 
-static cairo_bool_t
+static comac_bool_t
 pqueue_grow (pqueue_t *pq)
 {
     rectangle_t **new_elements;
     pq->max_size *= 2;
 
     if (pq->elements == pq->elements_embedded) {
-	new_elements = _cairo_malloc_ab (pq->max_size,
+	new_elements = _comac_malloc_ab (pq->max_size,
 					 sizeof (rectangle_t *));
 	if (unlikely (new_elements == NULL))
 	    return FALSE;
@@ -170,7 +170,7 @@ pqueue_grow (pqueue_t *pq)
 	memcpy (new_elements, pq->elements_embedded,
 		sizeof (pq->elements_embedded));
     } else {
-	new_elements = _cairo_realloc_ab (pq->elements,
+	new_elements = _comac_realloc_ab (pq->elements,
 					  pq->max_size,
 					  sizeof (rectangle_t *));
 	if (unlikely (new_elements == NULL))
@@ -190,7 +190,7 @@ pqueue_push (sweep_line_t *sweep, rectangle_t *rectangle)
     if (unlikely (sweep->pq.size + 1 == sweep->pq.max_size)) {
 	if (unlikely (! pqueue_grow (&sweep->pq))) {
 	    longjmp (sweep->unwind,
-		     _cairo_error (CAIRO_STATUS_NO_MEMORY));
+		     _comac_error (COMAC_STATUS_NO_MEMORY));
 	}
     }
 
@@ -251,7 +251,7 @@ rectangle_peek_stop (sweep_line_t *sweep_line)
     return sweep_line->pq.elements[PQ_FIRST_ENTRY];
 }
 
-CAIRO_COMBSORT_DECLARE (_rectangle_sort,
+COMAC_COMBSORT_DECLARE (_rectangle_sort,
 			rectangle_t *,
 			rectangle_compare_start)
 
@@ -289,18 +289,18 @@ sweep_line_fini (sweep_line_t *sweep_line)
 }
 
 static void
-end_box (sweep_line_t *sweep_line, edge_t *left, int32_t bot, cairo_boxes_t *out)
+end_box (sweep_line_t *sweep_line, edge_t *left, int32_t bot, comac_boxes_t *out)
 {
     if (likely (left->top < bot)) {
-	cairo_status_t status;
-	cairo_box_t box;
+	comac_status_t status;
+	comac_box_t box;
 
 	box.p1.x = left->x;
 	box.p1.y = left->top;
 	box.p2.x = left->right->x;
 	box.p2.y = bot;
 
-	status = _cairo_boxes_add (out, CAIRO_ANTIALIAS_DEFAULT, &box);
+	status = _comac_boxes_add (out, COMAC_ANTIALIAS_DEFAULT, &box);
 	if (unlikely (status))
 	    longjmp (sweep_line->unwind, status);
     }
@@ -318,7 +318,7 @@ start_or_continue_box (sweep_line_t *sweep_line,
 		       edge_t	*left,
 		       edge_t	*right,
 		       int		 top,
-		       cairo_boxes_t *out)
+		       comac_boxes_t *out)
 {
     if (left->right == right)
 	return;
@@ -345,7 +345,7 @@ static inline int is_zero(const int *winding)
 }
 
 static inline void
-active_edges (sweep_line_t *sweep, cairo_boxes_t *out)
+active_edges (sweep_line_t *sweep, comac_boxes_t *out)
 {
     int top = sweep->current_y;
     int winding[2] = { 0 };
@@ -400,7 +400,7 @@ out:
 }
 
 static inline void
-sweep_line_delete_edge (sweep_line_t *sweep_line, edge_t *edge, cairo_boxes_t *out)
+sweep_line_delete_edge (sweep_line_t *sweep_line, edge_t *edge, comac_boxes_t *out)
 {
     if (edge->right != NULL) {
 	edge_t *next = edge->next;
@@ -424,7 +424,7 @@ sweep_line_delete_edge (sweep_line_t *sweep_line, edge_t *edge, cairo_boxes_t *o
 static inline void
 sweep_line_delete (sweep_line_t	*sweep,
 		   rectangle_t	*rectangle,
-		   cairo_boxes_t *out)
+		   comac_boxes_t *out)
 {
     sweep_line_delete_edge (sweep, &rectangle->left, out);
     sweep_line_delete_edge (sweep, &rectangle->right, out);
@@ -481,12 +481,12 @@ sweep_line_insert (sweep_line_t	*sweep, rectangle_t	*rectangle)
     pqueue_push (sweep, rectangle);
 }
 
-static cairo_status_t
-intersect (rectangle_t **rectangles, int num_rectangles, cairo_boxes_t *out)
+static comac_status_t
+intersect (rectangle_t **rectangles, int num_rectangles, comac_boxes_t *out)
 {
     sweep_line_t sweep_line;
     rectangle_t *rectangle;
-    cairo_status_t status;
+    comac_status_t status;
 
     sweep_line_init (&sweep_line, rectangles, num_rectangles);
     if ((status = setjmp (sweep_line.unwind)))
@@ -530,21 +530,21 @@ unwind:
     return status;
 }
 
-static cairo_status_t
-_cairo_boxes_intersect_with_box (const cairo_boxes_t *boxes,
-				 const cairo_box_t *box,
-				 cairo_boxes_t *out)
+static comac_status_t
+_comac_boxes_intersect_with_box (const comac_boxes_t *boxes,
+				 const comac_box_t *box,
+				 comac_boxes_t *out)
 {
-    cairo_status_t status;
+    comac_status_t status;
     int i, j;
 
     if (out == boxes) { /* inplace update */
-	struct _cairo_boxes_chunk *chunk;
+	struct _comac_boxes_chunk *chunk;
 
 	out->num_boxes = 0;
 	for (chunk = &out->chunks; chunk != NULL; chunk = chunk->next) {
 	    for (i = j = 0; i < chunk->count; i++) {
-		cairo_box_t *b = &chunk->base[i];
+		comac_box_t *b = &chunk->base[i];
 
 		b->p1.x = MAX (b->p1.x, box->p1.x);
 		b->p1.y = MAX (b->p1.y, box->p1.y);
@@ -561,14 +561,14 @@ _cairo_boxes_intersect_with_box (const cairo_boxes_t *boxes,
 	    out->num_boxes += j;
 	}
     } else {
-	const struct _cairo_boxes_chunk *chunk;
+	const struct _comac_boxes_chunk *chunk;
 
-	_cairo_boxes_clear (out);
-	_cairo_boxes_limit (out, box, 1);
+	_comac_boxes_clear (out);
+	_comac_boxes_limit (out, box, 1);
 	for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 	    for (i = 0; i < chunk->count; i++) {
-		status = _cairo_boxes_add (out,
-					   CAIRO_ANTIALIAS_DEFAULT,
+		status = _comac_boxes_add (out,
+					   COMAC_ANTIALIAS_DEFAULT,
 					   &chunk->base[i]);
 		if (unlikely (status))
 		    return status;
@@ -576,53 +576,53 @@ _cairo_boxes_intersect_with_box (const cairo_boxes_t *boxes,
 	}
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_status_t
-_cairo_boxes_intersect (const cairo_boxes_t *a,
-			const cairo_boxes_t *b,
-			cairo_boxes_t *out)
+comac_status_t
+_comac_boxes_intersect (const comac_boxes_t *a,
+			const comac_boxes_t *b,
+			comac_boxes_t *out)
 {
-    rectangle_t stack_rectangles[CAIRO_STACK_ARRAY_LENGTH (rectangle_t)];
+    rectangle_t stack_rectangles[COMAC_STACK_ARRAY_LENGTH (rectangle_t)];
     rectangle_t *rectangles;
     rectangle_t *stack_rectangles_ptrs[ARRAY_LENGTH (stack_rectangles) + 1];
     rectangle_t **rectangles_ptrs;
-    const struct _cairo_boxes_chunk *chunk;
-    cairo_status_t status;
+    const struct _comac_boxes_chunk *chunk;
+    comac_status_t status;
     int i, j, count;
 
     if (unlikely (a->num_boxes == 0 || b->num_boxes == 0)) {
-	_cairo_boxes_clear (out);
-	return CAIRO_STATUS_SUCCESS;
+	_comac_boxes_clear (out);
+	return COMAC_STATUS_SUCCESS;
     }
 
     if (a->num_boxes == 1) {
-	cairo_box_t box = a->chunks.base[0];
-	return _cairo_boxes_intersect_with_box (b, &box, out);
+	comac_box_t box = a->chunks.base[0];
+	return _comac_boxes_intersect_with_box (b, &box, out);
     }
     if (b->num_boxes == 1) {
-	cairo_box_t box = b->chunks.base[0];
-	return _cairo_boxes_intersect_with_box (a, &box, out);
+	comac_box_t box = b->chunks.base[0];
+	return _comac_boxes_intersect_with_box (a, &box, out);
     }
 
     rectangles = stack_rectangles;
     rectangles_ptrs = stack_rectangles_ptrs;
     count = a->num_boxes + b->num_boxes;
     if (count > ARRAY_LENGTH (stack_rectangles)) {
-	rectangles = _cairo_malloc_ab_plus_c (count,
+	rectangles = _comac_malloc_ab_plus_c (count,
 					      sizeof (rectangle_t) +
 					      sizeof (rectangle_t *),
 					      sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	rectangles_ptrs = (rectangle_t **) (rectangles + count);
     }
 
     j = 0;
     for (chunk = &a->chunks; chunk != NULL; chunk = chunk->next) {
-	const cairo_box_t *box = chunk->base;
+	const comac_box_t *box = chunk->base;
 	for (i = 0; i < chunk->count; i++) {
 	    if (box[i].p1.x < box[i].p2.x) {
 		rectangles[j].left.x = box[i].p1.x;
@@ -651,7 +651,7 @@ _cairo_boxes_intersect (const cairo_boxes_t *a,
 	}
     }
     for (chunk = &b->chunks; chunk != NULL; chunk = chunk->next) {
-	const cairo_box_t *box = chunk->base;
+	const comac_box_t *box = chunk->base;
 	for (i = 0; i < chunk->count; i++) {
 	    if (box[i].p1.x < box[i].p2.x) {
 		rectangles[j].left.x = box[i].p1.x;
@@ -681,7 +681,7 @@ _cairo_boxes_intersect (const cairo_boxes_t *a,
     }
     assert (j == count);
 
-    _cairo_boxes_clear (out);
+    _comac_boxes_clear (out);
     status = intersect (rectangles_ptrs, j, out);
     if (rectangles != stack_rectangles)
 	free (rectangles);

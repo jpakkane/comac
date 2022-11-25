@@ -25,7 +25,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-/* This is the Glitter paths scan converter incorporated into cairo.
+/* This is the Glitter paths scan converter incorporated into comac.
  * The source is from commit 734c53237a867a773640bd5b64816249fa1730f8
  * of
  *
@@ -104,11 +104,11 @@
 #include <setjmp.h>
 
 /* The input coordinate scale and the rasterisation grid scales. */
-#define GLITTER_INPUT_BITS CAIRO_FIXED_FRAC_BITS
-#define GRID_X_BITS CAIRO_FIXED_FRAC_BITS
+#define GLITTER_INPUT_BITS COMAC_FIXED_FRAC_BITS
+#define GRID_X_BITS COMAC_FIXED_FRAC_BITS
 #define GRID_Y 15
 
-/* Set glitter up to use a cairo span renderer to do the coverage
+/* Set glitter up to use a comac span renderer to do the coverage
  * blitting. */
 struct pool;
 struct cell_list;
@@ -465,9 +465,9 @@ _pool_chunk_create(struct pool *pool, size_t size)
 {
     struct _pool_chunk *p;
 
-    p = _cairo_malloc (size + sizeof(struct _pool_chunk));
+    p = _comac_malloc (size + sizeof(struct _pool_chunk));
     if (unlikely (NULL == p))
-	longjmp (*pool->jmp, _cairo_error (CAIRO_STATUS_NO_MEMORY));
+	longjmp (*pool->jmp, _comac_error (COMAC_STATUS_NO_MEMORY));
 
     return _pool_chunk_init(p, pool->current, size);
 }
@@ -897,7 +897,7 @@ polygon_fini (struct polygon *polygon)
 /* Empties the polygon of all edges. The polygon is then prepared to
  * receive new edges and clip them to the vertical range
  * [ymin,ymax). */
-static cairo_status_t
+static comac_status_t
 polygon_reset (struct polygon *polygon,
 	       grid_scaled_y_t ymin,
 	       grid_scaled_y_t ymax)
@@ -916,7 +916,7 @@ polygon_reset (struct polygon *polygon,
 
     polygon->y_buckets =  polygon->y_buckets_embedded;
     if (num_buckets > ARRAY_LENGTH (polygon->y_buckets_embedded)) {
-	polygon->y_buckets = _cairo_malloc_ab (num_buckets,
+	polygon->y_buckets = _comac_malloc_ab (num_buckets,
 					       sizeof (struct edge *));
 	if (unlikely (NULL == polygon->y_buckets))
 	    goto bail_no_mem;
@@ -925,12 +925,12 @@ polygon_reset (struct polygon *polygon,
 
     polygon->ymin = ymin;
     polygon->ymax = ymax;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 
  bail_no_mem:
     polygon->ymin = 0;
     polygon->ymax = 0;
-    return CAIRO_STATUS_NO_MEMORY;
+    return COMAC_STATUS_NO_MEMORY;
 }
 
 static void
@@ -946,7 +946,7 @@ _polygon_insert_edge_into_its_y_bucket(
 
 inline static void
 polygon_add_edge (struct polygon *polygon,
-		  const cairo_edge_t *edge,
+		  const comac_edge_t *edge,
 		  int clip)
 {
     struct edge *e;
@@ -1487,11 +1487,11 @@ int_to_grid_scaled(int i, int scale)
 #define int_to_grid_scaled_x(x) int_to_grid_scaled((x), GRID_X)
 #define int_to_grid_scaled_y(x) int_to_grid_scaled((x), GRID_Y)
 
-static cairo_status_t
+static comac_status_t
 glitter_scan_converter_reset(glitter_scan_converter_t *converter,
 			     int ymin, int ymax)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     converter->ymin = 0;
     converter->ymax = 0;
@@ -1507,7 +1507,7 @@ glitter_scan_converter_reset(glitter_scan_converter_t *converter,
 
     converter->ymin = ymin;
     converter->ymax = ymax;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /* INPUT_TO_GRID_X/Y (in_coord, out_grid_scaled, grid_scale)
@@ -1537,10 +1537,10 @@ glitter_scan_converter_reset(glitter_scan_converter_t *converter,
 
 static void
 glitter_scan_converter_add_edge (glitter_scan_converter_t *converter,
-				 const cairo_edge_t *edge,
+				 const comac_edge_t *edge,
 				 int clip)
 {
-    cairo_edge_t e;
+    comac_edge_t e;
 
     INPUT_TO_GRID_Y (edge->top, e.top);
     INPUT_TO_GRID_Y (edge->bottom, e.bottom);
@@ -1561,7 +1561,7 @@ glitter_scan_converter_add_edge (glitter_scan_converter_t *converter,
     polygon_add_edge (converter->polygon, &e, clip);
 }
 
-static cairo_bool_t
+static comac_bool_t
 active_list_is_vertical (struct active_list *active)
 {
     struct edge *e;
@@ -1589,9 +1589,9 @@ step_edges (struct active_list *active, int count)
     }
 }
 
-static cairo_status_t
+static comac_status_t
 blit_coverages (struct cell_list *cells,
-		cairo_span_renderer_t *renderer,
+		comac_span_renderer_t *renderer,
 		struct pool *span_pool,
 		int y, int height)
 {
@@ -1599,7 +1599,7 @@ blit_coverages (struct cell_list *cells,
     int prev_x = -1;
     int cover = 0, last_cover = 0;
     int clip = 0;
-    cairo_half_open_span_t *spans;
+    comac_half_open_span_t *spans;
     unsigned num_spans;
 
     assert (cell != &cells->tail);
@@ -1655,7 +1655,7 @@ blit_coverages (struct cell_list *cells,
 static void
 glitter_scan_converter_render(glitter_scan_converter_t *converter,
 			      int nonzero_fill,
-			      cairo_span_renderer_t *span_renderer,
+			      comac_span_renderer_t *span_renderer,
 			      struct pool *span_pool)
 {
     int i, j;
@@ -1734,30 +1734,30 @@ glitter_scan_converter_render(glitter_scan_converter_t *converter,
     }
 }
 
-struct _cairo_clip_tor_scan_converter {
-    cairo_scan_converter_t base;
+struct _comac_clip_tor_scan_converter {
+    comac_scan_converter_t base;
 
     glitter_scan_converter_t converter[1];
-    cairo_fill_rule_t fill_rule;
-    cairo_antialias_t antialias;
+    comac_fill_rule_t fill_rule;
+    comac_antialias_t antialias;
 
-    cairo_fill_rule_t clip_fill_rule;
-    cairo_antialias_t clip_antialias;
+    comac_fill_rule_t clip_fill_rule;
+    comac_antialias_t clip_antialias;
 
     jmp_buf jmp;
 
     struct {
 	struct pool base[1];
-	cairo_half_open_span_t embedded[32];
+	comac_half_open_span_t embedded[32];
     } span_pool;
 };
 
-typedef struct _cairo_clip_tor_scan_converter cairo_clip_tor_scan_converter_t;
+typedef struct _comac_clip_tor_scan_converter comac_clip_tor_scan_converter_t;
 
 static void
-_cairo_clip_tor_scan_converter_destroy (void *converter)
+_comac_clip_tor_scan_converter_destroy (void *converter)
 {
-    cairo_clip_tor_scan_converter_t *self = converter;
+    comac_clip_tor_scan_converter_t *self = converter;
     if (self == NULL) {
 	return;
     }
@@ -1766,42 +1766,42 @@ _cairo_clip_tor_scan_converter_destroy (void *converter)
     free(self);
 }
 
-static cairo_status_t
-_cairo_clip_tor_scan_converter_generate (void			*converter,
-				    cairo_span_renderer_t	*renderer)
+static comac_status_t
+_comac_clip_tor_scan_converter_generate (void			*converter,
+				    comac_span_renderer_t	*renderer)
 {
-    cairo_clip_tor_scan_converter_t *self = converter;
-    cairo_status_t status;
+    comac_clip_tor_scan_converter_t *self = converter;
+    comac_status_t status;
 
     if ((status = setjmp (self->jmp)))
-	return _cairo_scan_converter_set_error (self, _cairo_error (status));
+	return _comac_scan_converter_set_error (self, _comac_error (status));
 
     glitter_scan_converter_render (self->converter,
-				   self->fill_rule == CAIRO_FILL_RULE_WINDING,
+				   self->fill_rule == COMAC_FILL_RULE_WINDING,
 				   renderer,
 				   self->span_pool.base);
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_scan_converter_t *
-_cairo_clip_tor_scan_converter_create (cairo_clip_t *clip,
-				       cairo_polygon_t *polygon,
-				       cairo_fill_rule_t fill_rule,
-				       cairo_antialias_t antialias)
+comac_scan_converter_t *
+_comac_clip_tor_scan_converter_create (comac_clip_t *clip,
+				       comac_polygon_t *polygon,
+				       comac_fill_rule_t fill_rule,
+				       comac_antialias_t antialias)
 {
-    cairo_clip_tor_scan_converter_t *self;
-    cairo_polygon_t clipper;
-    cairo_status_t status;
+    comac_clip_tor_scan_converter_t *self;
+    comac_polygon_t clipper;
+    comac_status_t status;
     int i;
 
-    self = calloc (1, sizeof(struct _cairo_clip_tor_scan_converter));
+    self = calloc (1, sizeof(struct _comac_clip_tor_scan_converter));
     if (unlikely (self == NULL)) {
-	status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto bail_nomem;
     }
 
-    self->base.destroy = _cairo_clip_tor_scan_converter_destroy;
-    self->base.generate = _cairo_clip_tor_scan_converter_generate;
+    self->base.destroy = _comac_clip_tor_scan_converter_destroy;
+    self->base.generate = _comac_clip_tor_scan_converter_generate;
 
     pool_init (self->span_pool.base, &self->jmp,
 	       250 * sizeof(self->span_pool.embedded[0]),
@@ -1822,7 +1822,7 @@ _cairo_clip_tor_scan_converter_create (cairo_clip_t *clip,
 					  &polygon->edges[i],
 					  FALSE);
 
-    status = _cairo_clip_get_polygon (clip,
+    status = _comac_clip_get_polygon (clip,
 				      &clipper,
 				      &self->clip_fill_rule,
 				      &self->clip_antialias);
@@ -1833,13 +1833,13 @@ _cairo_clip_tor_scan_converter_create (cairo_clip_t *clip,
 	 glitter_scan_converter_add_edge (self->converter,
 					  &clipper.edges[i],
 					  TRUE);
-    _cairo_polygon_fini (&clipper);
+    _comac_polygon_fini (&clipper);
 
     return &self->base;
 
  bail:
     self->base.destroy(&self->base);
  bail_nomem:
-    return _cairo_scan_converter_create_in_error (status);
+    return _comac_scan_converter_create_in_error (status);
 }
 

@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -33,10 +33,10 @@
  */
 
 /* This fragment implements a comb sort (specifically combsort11) */
-#ifndef _HAVE_CAIRO_COMBSORT_NEWGAP
-#define _HAVE_CAIRO_COMBSORT_NEWGAP
+#ifndef _HAVE_COMAC_COMBSORT_NEWGAP
+#define _HAVE_COMAC_COMBSORT_NEWGAP
 static inline unsigned int
-_cairo_combsort_newgap (unsigned int gap)
+_comac_combsort_newgap (unsigned int gap)
 {
   gap = 10 * gap / 13;
   if (gap == 9 || gap == 10)
@@ -47,7 +47,7 @@ _cairo_combsort_newgap (unsigned int gap)
 }
 #endif
 
-#define CAIRO_COMBSORT_DECLARE(NAME, TYPE, CMP) \
+#define COMAC_COMBSORT_DECLARE(NAME, TYPE, CMP) \
 static void \
 NAME (TYPE *base, unsigned int nmemb) \
 { \
@@ -55,7 +55,7 @@ NAME (TYPE *base, unsigned int nmemb) \
   unsigned int i, j; \
   int swapped; \
   do { \
-      gap = _cairo_combsort_newgap (gap); \
+      gap = _comac_combsort_newgap (gap); \
       swapped = gap > 1; \
       for (i = 0; i < nmemb-gap ; i++) { \
 	  j = i + gap; \
@@ -70,7 +70,7 @@ NAME (TYPE *base, unsigned int nmemb) \
   } while (swapped); \
 }
 
-#define CAIRO_COMBSORT_DECLARE_WITH_DATA(NAME, TYPE, CMP) \
+#define COMAC_COMBSORT_DECLARE_WITH_DATA(NAME, TYPE, CMP) \
 static void \
 NAME (TYPE *base, unsigned int nmemb, void *data) \
 { \
@@ -78,7 +78,7 @@ NAME (TYPE *base, unsigned int nmemb, void *data) \
   unsigned int i, j; \
   int swapped; \
   do { \
-      gap = _cairo_combsort_newgap (gap); \
+      gap = _comac_combsort_newgap (gap); \
       swapped = gap > 1; \
       for (i = 0; i < nmemb-gap ; i++) { \
 	  j = i + gap; \

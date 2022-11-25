@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -50,13 +50,13 @@ _freed_pool_get_search (freed_pool_t *pool)
     for (i = ARRAY_LENGTH (pool->pool); i--;) {
 	ptr = _atomic_fetch (&pool->pool[i]);
 	if (ptr != NULL) {
-	    _cairo_atomic_int_set_relaxed (&pool->top, i);
+	    _comac_atomic_int_set_relaxed (&pool->top, i);
 	    return ptr;
 	}
     }
 
     /* empty */
-    _cairo_atomic_int_set_relaxed (&pool->top, 0);
+    _comac_atomic_int_set_relaxed (&pool->top, 0);
     return NULL;
 }
 
@@ -67,13 +67,13 @@ _freed_pool_put_search (freed_pool_t *pool, void *ptr)
 
     for (i = 0; i < ARRAY_LENGTH (pool->pool); i++) {
 	if (_atomic_store (&pool->pool[i], ptr)) {
-	    _cairo_atomic_int_set_relaxed (&pool->top, i + 1);
+	    _comac_atomic_int_set_relaxed (&pool->top, i + 1);
 	    return;
 	}
     }
 
     /* full */
-    _cairo_atomic_int_set_relaxed (&pool->top, i);
+    _comac_atomic_int_set_relaxed (&pool->top, i);
     free (ptr);
 }
 
@@ -87,7 +87,7 @@ _freed_pool_reset (freed_pool_t *pool)
 	pool->pool[i] = NULL;
     }
 
-    _cairo_atomic_int_set_relaxed (&pool->top, 0);
+    _comac_atomic_int_set_relaxed (&pool->top, 0);
 }
 
 #endif

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -34,8 +34,8 @@
  *
  */
 
-#ifndef CAIRO_RTREE_PRIVATE_H
-#define CAIRO_RTREE_PRIVATE_H
+#ifndef COMAC_RTREE_PRIVATE_H
+#define COMAC_RTREE_PRIVATE_H
 
 #include "comac-compiler-private.h"
 #include "comac-error-private.h"
@@ -45,98 +45,98 @@
 #include "comac-list-inline.h"
 
 enum {
-    CAIRO_RTREE_NODE_AVAILABLE,
-    CAIRO_RTREE_NODE_DIVIDED,
-    CAIRO_RTREE_NODE_OCCUPIED,
+    COMAC_RTREE_NODE_AVAILABLE,
+    COMAC_RTREE_NODE_DIVIDED,
+    COMAC_RTREE_NODE_OCCUPIED,
 };
 
-typedef struct _cairo_rtree_node {
-    struct _cairo_rtree_node *children[4], *parent;
-    cairo_list_t link;
+typedef struct _comac_rtree_node {
+    struct _comac_rtree_node *children[4], *parent;
+    comac_list_t link;
     uint16_t pinned;
     uint16_t state;
     uint16_t x, y;
     uint16_t width, height;
-} cairo_rtree_node_t;
+} comac_rtree_node_t;
 
-typedef struct _cairo_rtree {
-    cairo_rtree_node_t root;
+typedef struct _comac_rtree {
+    comac_rtree_node_t root;
     int min_size;
-    cairo_list_t pinned;
-    cairo_list_t available;
-    cairo_list_t evictable;
-    void (*destroy) (cairo_rtree_node_t *);
-    cairo_freepool_t node_freepool;
-} cairo_rtree_t;
+    comac_list_t pinned;
+    comac_list_t available;
+    comac_list_t evictable;
+    void (*destroy) (comac_rtree_node_t *);
+    comac_freepool_t node_freepool;
+} comac_rtree_t;
 
-cairo_private cairo_rtree_node_t *
-_cairo_rtree_node_create (cairo_rtree_t		 *rtree,
-		          cairo_rtree_node_t	 *parent,
+comac_private comac_rtree_node_t *
+_comac_rtree_node_create (comac_rtree_t		 *rtree,
+		          comac_rtree_node_t	 *parent,
 			  int			  x,
 			  int			  y,
 			  int			  width,
 			  int			  height);
 
-cairo_private cairo_status_t
-_cairo_rtree_node_insert (cairo_rtree_t *rtree,
-	                  cairo_rtree_node_t *node,
+comac_private comac_status_t
+_comac_rtree_node_insert (comac_rtree_t *rtree,
+	                  comac_rtree_node_t *node,
 			  int width,
 			  int height,
-			  cairo_rtree_node_t **out);
+			  comac_rtree_node_t **out);
 
-cairo_private void
-_cairo_rtree_node_collapse (cairo_rtree_t *rtree, cairo_rtree_node_t *node);
+comac_private void
+_comac_rtree_node_collapse (comac_rtree_t *rtree, comac_rtree_node_t *node);
 
-cairo_private void
-_cairo_rtree_node_remove (cairo_rtree_t *rtree, cairo_rtree_node_t *node);
+comac_private void
+_comac_rtree_node_remove (comac_rtree_t *rtree, comac_rtree_node_t *node);
 
-cairo_private void
-_cairo_rtree_node_destroy (cairo_rtree_t *rtree, cairo_rtree_node_t *node);
+comac_private void
+_comac_rtree_node_destroy (comac_rtree_t *rtree, comac_rtree_node_t *node);
 
-cairo_private void
-_cairo_rtree_init (cairo_rtree_t	*rtree,
+comac_private void
+_comac_rtree_init (comac_rtree_t	*rtree,
 	           int			 width,
 		   int			 height,
 		   int			 min_size,
 		   int			 node_size,
-		   void (*destroy)(cairo_rtree_node_t *));
+		   void (*destroy)(comac_rtree_node_t *));
 
-cairo_private cairo_int_status_t
-_cairo_rtree_insert (cairo_rtree_t	     *rtree,
+comac_private comac_int_status_t
+_comac_rtree_insert (comac_rtree_t	     *rtree,
 		     int		      width,
 	             int		      height,
-	             cairo_rtree_node_t	    **out);
+	             comac_rtree_node_t	    **out);
 
-cairo_private cairo_int_status_t
-_cairo_rtree_evict_random (cairo_rtree_t	 *rtree,
+comac_private comac_int_status_t
+_comac_rtree_evict_random (comac_rtree_t	 *rtree,
 		           int			  width,
 		           int			  height,
-		           cairo_rtree_node_t	**out);
+		           comac_rtree_node_t	**out);
 
-cairo_private void
-_cairo_rtree_foreach (cairo_rtree_t *rtree,
-		      void (*func)(cairo_rtree_node_t *, void *data),
+comac_private void
+_comac_rtree_foreach (comac_rtree_t *rtree,
+		      void (*func)(comac_rtree_node_t *, void *data),
 		      void *data);
 
 static inline void *
-_cairo_rtree_pin (cairo_rtree_t *rtree, cairo_rtree_node_t *node)
+_comac_rtree_pin (comac_rtree_t *rtree, comac_rtree_node_t *node)
 {
-    assert (node->state == CAIRO_RTREE_NODE_OCCUPIED);
+    assert (node->state == COMAC_RTREE_NODE_OCCUPIED);
     if (! node->pinned) {
-	cairo_list_move (&node->link, &rtree->pinned);
+	comac_list_move (&node->link, &rtree->pinned);
 	node->pinned = 1;
     }
 
     return node;
 }
 
-cairo_private void
-_cairo_rtree_unpin (cairo_rtree_t *rtree);
+comac_private void
+_comac_rtree_unpin (comac_rtree_t *rtree);
 
-cairo_private void
-_cairo_rtree_reset (cairo_rtree_t *rtree);
+comac_private void
+_comac_rtree_reset (comac_rtree_t *rtree);
 
-cairo_private void
-_cairo_rtree_fini (cairo_rtree_t *rtree);
+comac_private void
+_comac_rtree_fini (comac_rtree_t *rtree);
 
-#endif /* CAIRO_RTREE_PRIVATE_H */
+#endif /* COMAC_RTREE_PRIVATE_H */

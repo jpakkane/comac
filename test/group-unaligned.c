@@ -27,32 +27,32 @@
 #include "comac-test.h"
 
 static void
-circle (cairo_t* cr, double xc, double yc, double radius)
+circle (comac_t* cr, double xc, double yc, double radius)
 {
-    cairo_arc (cr, xc, yc, radius, 0.0, 2*M_PI);
+    comac_arc (cr, xc, yc, radius, 0.0, 2*M_PI);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
     circle (cr, 12.5, 12.5, 10.);
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    cairo_push_group (cr);
-    cairo_set_source_rgb (cr, 0, 0, 1);
+    comac_push_group (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
     circle (cr, 12.5, 12.5, 10.);
-    cairo_fill (cr);
-    cairo_pop_group_to_source (cr);
-    cairo_paint (cr);
+    comac_fill (cr);
+    comac_pop_group_to_source (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (group_unaligned,
+COMAC_TEST (group_unaligned,
 	    "test non-integer sized sub-surface",
 	    "group", /* keywords */
 	    NULL, /* requirements */

@@ -27,32 +27,32 @@
 
 #define TEXT_SIZE 12
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
+    comac_set_source_rgb (cr, 0, 0, 0); /* black */
 
-    cairo_move_to (cr, 0, TEXT_SIZE);
-    cairo_show_text (cr, "Hello from the ");
-    cairo_show_text (cr, "show-text-current-point");
-    cairo_show_text (cr, " test.");
+    comac_move_to (cr, 0, TEXT_SIZE);
+    comac_show_text (cr, "Hello from the ");
+    comac_show_text (cr, "show-text-current-point");
+    comac_show_text (cr, " test.");
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (show_text_current_point,
-	    "Test that cairo_show_text adjusts the current point properly",
+COMAC_TEST (show_text_current_point,
+	    "Test that comac_show_text adjusts the current point properly",
 	    "text, api", /* keywords */
 	    NULL, /* requirements */
 	    263, TEXT_SIZE + 4,

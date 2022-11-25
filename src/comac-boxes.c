@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * Contributor(s):
  *	Chris Wilson <chris@chris-wilson.co.uk>
@@ -38,9 +38,9 @@
 #include "comac-error-private.h"
 
 void
-_cairo_boxes_init (cairo_boxes_t *boxes)
+_comac_boxes_init (comac_boxes_t *boxes)
 {
-    boxes->status = CAIRO_STATUS_SUCCESS;
+    boxes->status = COMAC_STATUS_SUCCESS;
     boxes->num_limits = 0;
     boxes->num_boxes = 0;
 
@@ -54,32 +54,32 @@ _cairo_boxes_init (cairo_boxes_t *boxes)
 }
 
 void
-_cairo_boxes_init_from_rectangle (cairo_boxes_t *boxes,
+_comac_boxes_init_from_rectangle (comac_boxes_t *boxes,
 				  int x, int y, int w, int h)
 {
-    _cairo_boxes_init (boxes);
+    _comac_boxes_init (boxes);
 
-    _cairo_box_from_integers (&boxes->chunks.base[0], x, y, w, h);
+    _comac_box_from_integers (&boxes->chunks.base[0], x, y, w, h);
     boxes->num_boxes = 1;
 }
 
 void
-_cairo_boxes_init_with_clip (cairo_boxes_t *boxes,
-			     cairo_clip_t *clip)
+_comac_boxes_init_with_clip (comac_boxes_t *boxes,
+			     comac_clip_t *clip)
 {
-    _cairo_boxes_init (boxes);
+    _comac_boxes_init (boxes);
     if (clip)
-	_cairo_boxes_limit (boxes, clip->boxes, clip->num_boxes);
+	_comac_boxes_limit (boxes, clip->boxes, clip->num_boxes);
 }
 
 void
-_cairo_boxes_init_for_array (cairo_boxes_t *boxes,
-			     cairo_box_t *array,
+_comac_boxes_init_for_array (comac_boxes_t *boxes,
+			     comac_box_t *array,
 			     int num_boxes)
 {
     int n;
 
-    boxes->status = CAIRO_STATUS_SUCCESS;
+    boxes->status = COMAC_STATUS_SUCCESS;
     boxes->num_limits = 0;
     boxes->num_boxes = num_boxes;
 
@@ -90,10 +90,10 @@ _cairo_boxes_init_for_array (cairo_boxes_t *boxes,
     boxes->chunks.count = num_boxes;
 
     for (n = 0; n < num_boxes; n++) {
-	if (! _cairo_fixed_is_integer (array[n].p1.x) ||
-	    ! _cairo_fixed_is_integer (array[n].p1.y) ||
-	    ! _cairo_fixed_is_integer (array[n].p2.x) ||
-	    ! _cairo_fixed_is_integer (array[n].p2.y))
+	if (! _comac_fixed_is_integer (array[n].p1.x) ||
+	    ! _comac_fixed_is_integer (array[n].p1.y) ||
+	    ! _comac_fixed_is_integer (array[n].p2.x) ||
+	    ! _comac_fixed_is_integer (array[n].p2.y))
 	{
 	    break;
 	}
@@ -102,7 +102,7 @@ _cairo_boxes_init_for_array (cairo_boxes_t *boxes,
     boxes->is_pixel_aligned = n == num_boxes;
 }
 
-/** _cairo_boxes_limit:
+/** _comac_boxes_limit:
  *
  * Computes the minimum bounding box of the given list of boxes and assign
  * it to the given boxes set. It also assigns that list as the list of
@@ -114,8 +114,8 @@ _cairo_boxes_init_for_array (cairo_boxes_t *boxes,
  * @param num_limits   length of the limits array
  */
 void
-_cairo_boxes_limit (cairo_boxes_t	*boxes,
-		    const cairo_box_t	*limits,
+_comac_boxes_limit (comac_boxes_t	*boxes,
+		    const comac_box_t	*limits,
 		    int			 num_limits)
 {
     int n;
@@ -142,10 +142,10 @@ _cairo_boxes_limit (cairo_boxes_t	*boxes,
 }
 
 static void
-_cairo_boxes_add_internal (cairo_boxes_t *boxes,
-			   const cairo_box_t *box)
+_comac_boxes_add_internal (comac_boxes_t *boxes,
+			   const comac_box_t *box)
 {
-    struct _cairo_boxes_chunk *chunk;
+    struct _comac_boxes_chunk *chunk;
 
     if (unlikely (boxes->status))
 	return;
@@ -155,12 +155,12 @@ _cairo_boxes_add_internal (cairo_boxes_t *boxes,
 	int size;
 
 	size = chunk->size * 2;
-	chunk->next = _cairo_malloc_ab_plus_c (size,
-					       sizeof (cairo_box_t),
-					       sizeof (struct _cairo_boxes_chunk));
+	chunk->next = _comac_malloc_ab_plus_c (size,
+					       sizeof (comac_box_t),
+					       sizeof (struct _comac_boxes_chunk));
 
 	if (unlikely (chunk->next == NULL)) {
-	    boxes->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    boxes->status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    return;
 	}
 
@@ -170,40 +170,40 @@ _cairo_boxes_add_internal (cairo_boxes_t *boxes,
 	chunk->next = NULL;
 	chunk->count = 0;
 	chunk->size = size;
-	chunk->base = (cairo_box_t *) (chunk + 1);
+	chunk->base = (comac_box_t *) (chunk + 1);
     }
 
     chunk->base[chunk->count++] = *box;
     boxes->num_boxes++;
 
     if (boxes->is_pixel_aligned)
-	boxes->is_pixel_aligned = _cairo_box_is_pixel_aligned (box);
+	boxes->is_pixel_aligned = _comac_box_is_pixel_aligned (box);
 }
 
-cairo_status_t
-_cairo_boxes_add (cairo_boxes_t *boxes,
-		  cairo_antialias_t antialias,
-		  const cairo_box_t *box)
+comac_status_t
+_comac_boxes_add (comac_boxes_t *boxes,
+		  comac_antialias_t antialias,
+		  const comac_box_t *box)
 {
-    cairo_box_t b;
+    comac_box_t b;
 
-    if (antialias == CAIRO_ANTIALIAS_NONE) {
-	b.p1.x = _cairo_fixed_round_down (box->p1.x);
-	b.p1.y = _cairo_fixed_round_down (box->p1.y);
-	b.p2.x = _cairo_fixed_round_down (box->p2.x);
-	b.p2.y = _cairo_fixed_round_down (box->p2.y);
+    if (antialias == COMAC_ANTIALIAS_NONE) {
+	b.p1.x = _comac_fixed_round_down (box->p1.x);
+	b.p1.y = _comac_fixed_round_down (box->p1.y);
+	b.p2.x = _comac_fixed_round_down (box->p2.x);
+	b.p2.y = _comac_fixed_round_down (box->p2.y);
 	box = &b;
     }
 
     if (box->p1.y == box->p2.y)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (box->p1.x == box->p2.x)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (boxes->num_limits) {
-	cairo_point_t p1, p2;
-	cairo_bool_t reversed = FALSE;
+	comac_point_t p1, p2;
+	comac_bool_t reversed = FALSE;
 	int n;
 
 	/* support counter-clockwise winding for rectangular tessellation */
@@ -217,7 +217,7 @@ _cairo_boxes_add (cairo_boxes_t *boxes,
 	}
 
 	if (p1.x >= boxes->limit.p2.x || p2.x <= boxes->limit.p1.x)
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 
 	if (box->p1.y < box->p2.y) {
 	    p1.y = box->p1.y;
@@ -229,12 +229,12 @@ _cairo_boxes_add (cairo_boxes_t *boxes,
 	}
 
 	if (p1.y >= boxes->limit.p2.y || p2.y <= boxes->limit.p1.y)
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 
 	for (n = 0; n < boxes->num_limits; n++) {
-	    const cairo_box_t *limits = &boxes->limits[n];
-	    cairo_box_t _box;
-	    cairo_point_t _p1, _p2;
+	    const comac_box_t *limits = &boxes->limits[n];
+	    comac_box_t _box;
+	    comac_point_t _p1, _p2;
 
 	    if (p1.x >= limits->p2.x || p2.x <= limits->p1.x)
 		continue;
@@ -267,16 +267,16 @@ _cairo_boxes_add (cairo_boxes_t *boxes,
 		_box.p2.x = _p2.x;
 	    }
 
-	    _cairo_boxes_add_internal (boxes, &_box);
+	    _comac_boxes_add_internal (boxes, &_box);
 	}
     } else {
-	_cairo_boxes_add_internal (boxes, box);
+	_comac_boxes_add_internal (boxes, box);
     }
 
     return boxes->status;
 }
 
-/** _cairo_boxes_extents:
+/** _comac_boxes_extents:
  *
  * Computes the minimum bounding box of the given box set and stores
  * it in the given box.
@@ -285,11 +285,11 @@ _cairo_boxes_add (cairo_boxes_t *boxes,
  * @param box        Return buffer for the computed result.
  */
 void
-_cairo_boxes_extents (const cairo_boxes_t *boxes,
-		      cairo_box_t *box)
+_comac_boxes_extents (const comac_boxes_t *boxes,
+		      comac_box_t *box)
 {
-    const struct _cairo_boxes_chunk *chunk;
-    cairo_box_t b;
+    const struct _comac_boxes_chunk *chunk;
+    comac_box_t b;
     int i;
 
     if (boxes->num_boxes == 0) {
@@ -317,9 +317,9 @@ _cairo_boxes_extents (const cairo_boxes_t *boxes,
 }
 
 void
-_cairo_boxes_clear (cairo_boxes_t *boxes)
+_comac_boxes_clear (comac_boxes_t *boxes)
 {
-    struct _cairo_boxes_chunk *chunk, *next;
+    struct _comac_boxes_chunk *chunk, *next;
 
     for (chunk = boxes->chunks.next; chunk != NULL; chunk = next) {
 	next = chunk->next;
@@ -336,7 +336,7 @@ _cairo_boxes_clear (cairo_boxes_t *boxes)
     boxes->is_pixel_aligned = TRUE;
 }
 
-/** _cairo_boxes_to_array:
+/** _comac_boxes_to_array:
  *
  * Linearize a box set of possibly multiple chunks into one big chunk
  * and returns an array of boxes
@@ -346,19 +346,19 @@ _cairo_boxes_clear (cairo_boxes_t *boxes)
  * @return           Pointer to the newly allocated array of boxes
  *                   (the number o elements is given in num_boxes).
  */
-cairo_box_t *
-_cairo_boxes_to_array (const cairo_boxes_t *boxes,
+comac_box_t *
+_comac_boxes_to_array (const comac_boxes_t *boxes,
 		       int *num_boxes)
 {
-    const struct _cairo_boxes_chunk *chunk;
-    cairo_box_t *box;
+    const struct _comac_boxes_chunk *chunk;
+    comac_box_t *box;
     int i, j;
 
     *num_boxes = boxes->num_boxes;
 
-    box = _cairo_malloc_ab (boxes->num_boxes, sizeof (cairo_box_t));
+    box = _comac_malloc_ab (boxes->num_boxes, sizeof (comac_box_t));
     if (box == NULL) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	return NULL;
     }
 
@@ -372,9 +372,9 @@ _cairo_boxes_to_array (const cairo_boxes_t *boxes,
 }
 
 void
-_cairo_boxes_fini (cairo_boxes_t *boxes)
+_comac_boxes_fini (comac_boxes_t *boxes)
 {
-    struct _cairo_boxes_chunk *chunk, *next;
+    struct _comac_boxes_chunk *chunk, *next;
 
     for (chunk = boxes->chunks.next; chunk != NULL; chunk = next) {
 	next = chunk->next;
@@ -382,12 +382,12 @@ _cairo_boxes_fini (cairo_boxes_t *boxes)
     }
 }
 
-cairo_bool_t
-_cairo_boxes_for_each_box (cairo_boxes_t *boxes,
-			   cairo_bool_t (*func) (cairo_box_t *box, void *data),
+comac_bool_t
+_comac_boxes_for_each_box (comac_boxes_t *boxes,
+			   comac_bool_t (*func) (comac_box_t *box, void *data),
 			   void *data)
 {
-    struct _cairo_boxes_chunk *chunk;
+    struct _comac_boxes_chunk *chunk;
     int i;
 
     for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
@@ -399,54 +399,54 @@ _cairo_boxes_for_each_box (cairo_boxes_t *boxes,
     return TRUE;
 }
 
-struct cairo_box_renderer {
-    cairo_span_renderer_t base;
-    cairo_boxes_t *boxes;
+struct comac_box_renderer {
+    comac_span_renderer_t base;
+    comac_boxes_t *boxes;
 };
 
-static cairo_status_t
+static comac_status_t
 span_to_boxes (void *abstract_renderer, int y, int h,
-	       const cairo_half_open_span_t *spans, unsigned num_spans)
+	       const comac_half_open_span_t *spans, unsigned num_spans)
 {
-    struct cairo_box_renderer *r = abstract_renderer;
-    cairo_status_t status = CAIRO_STATUS_SUCCESS;
-    cairo_box_t box;
+    struct comac_box_renderer *r = abstract_renderer;
+    comac_status_t status = COMAC_STATUS_SUCCESS;
+    comac_box_t box;
 
     if (num_spans == 0)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
-    box.p1.y = _cairo_fixed_from_int (y);
-    box.p2.y = _cairo_fixed_from_int (y + h);
+    box.p1.y = _comac_fixed_from_int (y);
+    box.p2.y = _comac_fixed_from_int (y + h);
     do {
 	if (spans[0].coverage) {
-	    box.p1.x = _cairo_fixed_from_int(spans[0].x);
-	    box.p2.x = _cairo_fixed_from_int(spans[1].x);
-	    status = _cairo_boxes_add (r->boxes, CAIRO_ANTIALIAS_DEFAULT, &box);
+	    box.p1.x = _comac_fixed_from_int(spans[0].x);
+	    box.p2.x = _comac_fixed_from_int(spans[1].x);
+	    status = _comac_boxes_add (r->boxes, COMAC_ANTIALIAS_DEFAULT, &box);
 	}
 	spans++;
-    } while (--num_spans > 1 && status == CAIRO_STATUS_SUCCESS);
+    } while (--num_spans > 1 && status == COMAC_STATUS_SUCCESS);
 
     return status;
 }
 
-cairo_status_t
-_cairo_rasterise_polygon_to_boxes (cairo_polygon_t			*polygon,
-				   cairo_fill_rule_t			 fill_rule,
-				   cairo_boxes_t *boxes)
+comac_status_t
+_comac_rasterise_polygon_to_boxes (comac_polygon_t			*polygon,
+				   comac_fill_rule_t			 fill_rule,
+				   comac_boxes_t *boxes)
 {
-    struct cairo_box_renderer renderer;
-    cairo_scan_converter_t *converter;
-    cairo_int_status_t status;
-    cairo_rectangle_int_t r;
+    struct comac_box_renderer renderer;
+    comac_scan_converter_t *converter;
+    comac_int_status_t status;
+    comac_rectangle_int_t r;
 
     TRACE ((stderr, "%s: fill_rule=%d\n", __FUNCTION__, fill_rule));
 
-    _cairo_box_round_to_rectangle (&polygon->extents, &r);
-    converter = _cairo_mono_scan_converter_create (r.x, r.y,
+    _comac_box_round_to_rectangle (&polygon->extents, &r);
+    converter = _comac_mono_scan_converter_create (r.x, r.y,
 						   r.x + r.width,
 						   r.y + r.height,
 						   fill_rule);
-    status = _cairo_mono_scan_converter_add_polygon (converter, polygon);
+    status = _comac_mono_scan_converter_add_polygon (converter, polygon);
     if (unlikely (status))
 	goto cleanup_converter;
 
@@ -460,27 +460,27 @@ cleanup_converter:
 }
 
 void
-_cairo_debug_print_boxes (FILE *stream, const cairo_boxes_t *boxes)
+_comac_debug_print_boxes (FILE *stream, const comac_boxes_t *boxes)
 {
-    const struct _cairo_boxes_chunk *chunk;
-    cairo_box_t extents;
+    const struct _comac_boxes_chunk *chunk;
+    comac_box_t extents;
     int i;
 
-    _cairo_boxes_extents (boxes, &extents);
+    _comac_boxes_extents (boxes, &extents);
     fprintf (stream, "boxes x %d: (%f, %f) x (%f, %f)\n",
 	     boxes->num_boxes,
-	     _cairo_fixed_to_double (extents.p1.x),
-	     _cairo_fixed_to_double (extents.p1.y),
-	     _cairo_fixed_to_double (extents.p2.x),
-	     _cairo_fixed_to_double (extents.p2.y));
+	     _comac_fixed_to_double (extents.p1.x),
+	     _comac_fixed_to_double (extents.p1.y),
+	     _comac_fixed_to_double (extents.p2.x),
+	     _comac_fixed_to_double (extents.p2.y));
 
     for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 	for (i = 0; i < chunk->count; i++) {
 	    fprintf (stderr, "  box[%d]: (%f, %f), (%f, %f)\n", i,
-		     _cairo_fixed_to_double (chunk->base[i].p1.x),
-		     _cairo_fixed_to_double (chunk->base[i].p1.y),
-		     _cairo_fixed_to_double (chunk->base[i].p2.x),
-		     _cairo_fixed_to_double (chunk->base[i].p2.y));
+		     _comac_fixed_to_double (chunk->base[i].p1.x),
+		     _comac_fixed_to_double (chunk->base[i].p1.y),
+		     _comac_fixed_to_double (chunk->base[i].p2.x),
+		     _comac_fixed_to_double (chunk->base[i].p2.y));
 	}
     }
 }

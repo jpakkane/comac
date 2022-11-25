@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -37,14 +37,14 @@
 #include "comac-error-private.h"
 
 void
-_cairo_stroke_style_init (cairo_stroke_style_t *style)
+_comac_stroke_style_init (comac_stroke_style_t *style)
 {
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (style, sizeof (cairo_stroke_style_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (style, sizeof (comac_stroke_style_t)));
 
-    style->line_width = CAIRO_GSTATE_LINE_WIDTH_DEFAULT;
-    style->line_cap = CAIRO_GSTATE_LINE_CAP_DEFAULT;
-    style->line_join = CAIRO_GSTATE_LINE_JOIN_DEFAULT;
-    style->miter_limit = CAIRO_GSTATE_MITER_LIMIT_DEFAULT;
+    style->line_width = COMAC_GSTATE_LINE_WIDTH_DEFAULT;
+    style->line_cap = COMAC_GSTATE_LINE_CAP_DEFAULT;
+    style->line_join = COMAC_GSTATE_LINE_JOIN_DEFAULT;
+    style->miter_limit = COMAC_GSTATE_MITER_LIMIT_DEFAULT;
 
     style->dash = NULL;
     style->num_dashes = 0;
@@ -53,14 +53,14 @@ _cairo_stroke_style_init (cairo_stroke_style_t *style)
     style->is_hairline = FALSE;
 }
 
-cairo_status_t
-_cairo_stroke_style_init_copy (cairo_stroke_style_t *style,
-			       const cairo_stroke_style_t *other)
+comac_status_t
+_comac_stroke_style_init_copy (comac_stroke_style_t *style,
+			       const comac_stroke_style_t *other)
 {
-    if (CAIRO_INJECT_FAULT ())
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    if (COMAC_INJECT_FAULT ())
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (style, sizeof (cairo_stroke_style_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (style, sizeof (comac_stroke_style_t)));
 
     style->line_width = other->line_width;
     style->line_cap = other->line_cap;
@@ -72,9 +72,9 @@ _cairo_stroke_style_init_copy (cairo_stroke_style_t *style,
     if (other->dash == NULL) {
 	style->dash = NULL;
     } else {
-	style->dash = _cairo_malloc_ab (style->num_dashes, sizeof (double));
+	style->dash = _comac_malloc_ab (style->num_dashes, sizeof (double));
 	if (unlikely (style->dash == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	memcpy (style->dash, other->dash,
 		style->num_dashes * sizeof (double));
@@ -84,18 +84,18 @@ _cairo_stroke_style_init_copy (cairo_stroke_style_t *style,
 
     style->is_hairline = other->is_hairline;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void
-_cairo_stroke_style_fini (cairo_stroke_style_t *style)
+_comac_stroke_style_fini (comac_stroke_style_t *style)
 {
     free (style->dash);
     style->dash = NULL;
 
     style->num_dashes = 0;
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (style, sizeof (cairo_stroke_style_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (style, sizeof (comac_stroke_style_t)));
 }
 
 /*
@@ -104,17 +104,17 @@ _cairo_stroke_style_fini (cairo_stroke_style_t *style)
  * of rotation in the ctm, the distance will not be exact.
  */
 void
-_cairo_stroke_style_max_distance_from_path (const cairo_stroke_style_t *style,
-					    const cairo_path_fixed_t *path,
-                                            const cairo_matrix_t *ctm,
+_comac_stroke_style_max_distance_from_path (const comac_stroke_style_t *style,
+					    const comac_path_fixed_t *path,
+                                            const comac_matrix_t *ctm,
                                             double *dx, double *dy)
 {
     double style_expansion = 0.5;
 
-    if (style->line_cap == CAIRO_LINE_CAP_SQUARE)
+    if (style->line_cap == COMAC_LINE_CAP_SQUARE)
 	style_expansion = M_SQRT1_2;
 
-    if (style->line_join == CAIRO_LINE_JOIN_MITER &&
+    if (style->line_join == COMAC_LINE_JOIN_MITER &&
 	! path->stroke_is_rectilinear &&
 	style_expansion < M_SQRT2 * style->miter_limit)
     {
@@ -123,7 +123,7 @@ _cairo_stroke_style_max_distance_from_path (const cairo_stroke_style_t *style,
 
     style_expansion *= style->line_width;
 
-    if (_cairo_matrix_has_unity_scale (ctm)) {
+    if (_comac_matrix_has_unity_scale (ctm)) {
 	*dx = *dy = style_expansion;
     } else {
 	*dx = style_expansion * hypot (ctm->xx, ctm->xy);
@@ -132,13 +132,13 @@ _cairo_stroke_style_max_distance_from_path (const cairo_stroke_style_t *style,
 }
 
 void
-_cairo_stroke_style_max_line_distance_from_path (const cairo_stroke_style_t *style,
-						 const cairo_path_fixed_t *path,
-						 const cairo_matrix_t *ctm,
+_comac_stroke_style_max_line_distance_from_path (const comac_stroke_style_t *style,
+						 const comac_path_fixed_t *path,
+						 const comac_matrix_t *ctm,
 						 double *dx, double *dy)
 {
     double style_expansion = 0.5 * style->line_width;
-    if (_cairo_matrix_has_unity_scale (ctm)) {
+    if (_comac_matrix_has_unity_scale (ctm)) {
 	*dx = *dy = style_expansion;
     } else {
 	*dx = style_expansion * hypot (ctm->xx, ctm->xy);
@@ -147,14 +147,14 @@ _cairo_stroke_style_max_line_distance_from_path (const cairo_stroke_style_t *sty
 }
 
 void
-_cairo_stroke_style_max_join_distance_from_path (const cairo_stroke_style_t *style,
-						 const cairo_path_fixed_t *path,
-						 const cairo_matrix_t *ctm,
+_comac_stroke_style_max_join_distance_from_path (const comac_stroke_style_t *style,
+						 const comac_path_fixed_t *path,
+						 const comac_matrix_t *ctm,
 						 double *dx, double *dy)
 {
     double style_expansion = 0.5;
 
-    if (style->line_join == CAIRO_LINE_JOIN_MITER &&
+    if (style->line_join == COMAC_LINE_JOIN_MITER &&
 	! path->stroke_is_rectilinear &&
 	style_expansion < M_SQRT2 * style->miter_limit)
     {
@@ -163,7 +163,7 @@ _cairo_stroke_style_max_join_distance_from_path (const cairo_stroke_style_t *sty
 
     style_expansion *= style->line_width;
 
-    if (_cairo_matrix_has_unity_scale (ctm)) {
+    if (_comac_matrix_has_unity_scale (ctm)) {
 	*dx = *dy = style_expansion;
     } else {
 	*dx = style_expansion * hypot (ctm->xx, ctm->xy);
@@ -175,7 +175,7 @@ _cairo_stroke_style_max_join_distance_from_path (const cairo_stroke_style_t *sty
  * Returns 0 for non-dashed styles.
  */
 double
-_cairo_stroke_style_dash_period (const cairo_stroke_style_t *style)
+_comac_stroke_style_dash_period (const comac_stroke_style_t *style)
 {
     double period;
     unsigned int i;
@@ -218,16 +218,16 @@ _cairo_stroke_style_dash_period (const cairo_stroke_style_t *style)
  * Returns 0 for non-dashed styles.
  */
 double
-_cairo_stroke_style_dash_stroked (const cairo_stroke_style_t *style)
+_comac_stroke_style_dash_stroked (const comac_stroke_style_t *style)
 {
     double stroked, cap_scale;
     unsigned int i;
 
     switch (style->line_cap) {
     default: ASSERT_NOT_REACHED;
-    case CAIRO_LINE_CAP_BUTT:   cap_scale = 0.0; break;
-    case CAIRO_LINE_CAP_ROUND:  cap_scale = ROUND_MINSQ_APPROXIMATION; break;
-    case CAIRO_LINE_CAP_SQUARE: cap_scale = 1.0; break;
+    case COMAC_LINE_CAP_BUTT:   cap_scale = 0.0; break;
+    case COMAC_LINE_CAP_ROUND:  cap_scale = ROUND_MINSQ_APPROXIMATION; break;
+    case COMAC_LINE_CAP_SQUARE: cap_scale = 1.0; break;
     }
 
     stroked = 0.0;
@@ -247,14 +247,14 @@ _cairo_stroke_style_dash_stroked (const cairo_stroke_style_t *style)
 }
 
 /*
- * Verifies if _cairo_stroke_style_dash_approximate should be used to generate
+ * Verifies if _comac_stroke_style_dash_approximate should be used to generate
  * an approximation of the dash pattern in the specified style, when used for
  * stroking a path with the given CTM and tolerance.
  * Always %FALSE for non-dashed styles.
  */
-cairo_bool_t
-_cairo_stroke_style_dash_can_approximate (const cairo_stroke_style_t *style,
-					  const cairo_matrix_t *ctm,
+comac_bool_t
+_comac_stroke_style_dash_can_approximate (const comac_stroke_style_t *style,
+					  const comac_matrix_t *ctm,
 					  double tolerance)
 {
     double period;
@@ -262,8 +262,8 @@ _cairo_stroke_style_dash_can_approximate (const cairo_stroke_style_t *style,
     if (! style->num_dashes)
         return FALSE;
 
-    period = _cairo_stroke_style_dash_period (style);
-    return _cairo_matrix_transformed_circle_major_axis (ctm, period) < tolerance;
+    period = _comac_stroke_style_dash_period (style);
+    return _comac_matrix_transformed_circle_major_axis (ctm, period) < tolerance;
 }
 
 /*
@@ -271,20 +271,20 @@ _cairo_stroke_style_dash_can_approximate (const cairo_stroke_style_t *style,
  * parts respect the original ratio.
  */
 void
-_cairo_stroke_style_dash_approximate (const cairo_stroke_style_t *style,
-				      const cairo_matrix_t *ctm,
+_comac_stroke_style_dash_approximate (const comac_stroke_style_t *style,
+				      const comac_matrix_t *ctm,
 				      double tolerance,
 				      double *dash_offset,
 				      double *dashes,
 				      unsigned int *num_dashes)
 {
     double coverage, scale, offset;
-    cairo_bool_t on = TRUE;
+    comac_bool_t on = TRUE;
     unsigned int i = 0;
 
-    coverage = _cairo_stroke_style_dash_stroked (style) / _cairo_stroke_style_dash_period (style);
+    coverage = _comac_stroke_style_dash_stroked (style) / _comac_stroke_style_dash_period (style);
     coverage = MIN (coverage, 1.0);
-    scale = tolerance / _cairo_matrix_transformed_circle_major_axis (ctm, 1.0);
+    scale = tolerance / _comac_matrix_transformed_circle_major_axis (ctm, 1.0);
 
     /* We stop searching for a starting point as soon as the
      * offset reaches zero.  Otherwise when an initial dash
@@ -302,7 +302,7 @@ _cairo_stroke_style_dash_approximate (const cairo_stroke_style_t *style,
     /*
      * We want to create a new dash pattern with the same relative coverage,
      * but composed of just 2 elements with total length equal to scale.
-     * Based on the formula in _cairo_stroke_style_dash_stroked:
+     * Based on the formula in _comac_stroke_style_dash_stroked:
      * scale * coverage = dashes[0] + cap_scale * MIN (dashes[1], line_width)
      *                  = MIN (dashes[0] + cap_scale * (scale - dashes[0]),
      *                         dashes[0] + cap_scale * line_width) = 
@@ -332,17 +332,17 @@ _cairo_stroke_style_dash_approximate (const cairo_stroke_style_t *style,
 	dashes[0] = 0.0;
 	break;
 
-    case CAIRO_LINE_CAP_BUTT:
+    case COMAC_LINE_CAP_BUTT:
         /* Simplified formula (substituting 0 for cap_scale): */
         dashes[0] = scale * coverage;
 	break;
 
-    case CAIRO_LINE_CAP_ROUND:
+    case COMAC_LINE_CAP_ROUND:
         dashes[0] = MAX(scale * (coverage - ROUND_MINSQ_APPROXIMATION) / (1.0 - ROUND_MINSQ_APPROXIMATION),
 			scale * coverage - ROUND_MINSQ_APPROXIMATION * style->line_width);
 	break;
 
-    case CAIRO_LINE_CAP_SQUARE:
+    case COMAC_LINE_CAP_SQUARE:
         /*
 	 * Special attention is needed to handle the case cap_scale == 1 (since the first solution
 	 * is either indeterminate or -inf in this case). Since dash lengths are always >=0, using

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2011 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation
  *
@@ -44,14 +44,14 @@
 #include "comac-surface-backend-private.h"
 
 typedef struct _test_compositor_surface {
-    cairo_image_surface_t base;
+    comac_image_surface_t base;
 } test_compositor_surface_t;
 
-static const cairo_surface_backend_t test_compositor_surface_backend;
+static const comac_surface_backend_t test_compositor_surface_backend;
 
-cairo_surface_t *
-test_compositor_surface_create (const cairo_compositor_t *compositor,
-				cairo_content_t	content,
+comac_surface_t *
+test_compositor_surface_create (const comac_compositor_t *compositor,
+				comac_content_t	content,
 				int		width,
 				int		height)
 {
@@ -60,45 +60,45 @@ test_compositor_surface_create (const cairo_compositor_t *compositor,
     pixman_format_code_t pixman_format;
 
     switch (content) {
-    case CAIRO_CONTENT_ALPHA:
+    case COMAC_CONTENT_ALPHA:
 	pixman_format = PIXMAN_a8;
 	break;
-    case CAIRO_CONTENT_COLOR:
+    case COMAC_CONTENT_COLOR:
 	pixman_format = PIXMAN_x8r8g8b8;
 	break;
-    case CAIRO_CONTENT_COLOR_ALPHA:
+    case COMAC_CONTENT_COLOR_ALPHA:
 	pixman_format = PIXMAN_a8r8g8b8;
 	break;
     default:
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_CONTENT));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_CONTENT));
     }
 
     pixman_image = pixman_image_create_bits (pixman_format, width, height,
 					     NULL, 0);
     if (unlikely (pixman_image == NULL))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
 
-    surface = _cairo_malloc (sizeof (test_compositor_surface_t));
+    surface = _comac_malloc (sizeof (test_compositor_surface_t));
     if (unlikely (surface == NULL)) {
 	pixman_image_unref (pixman_image);
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
     }
 
-    _cairo_surface_init (&surface->base.base,
+    _comac_surface_init (&surface->base.base,
 			 &test_compositor_surface_backend,
 			 NULL, /* device */
 			 content,
 			 FALSE); /* is_vector */
-    _cairo_image_surface_init (&surface->base, pixman_image, pixman_format);
+    _comac_image_surface_init (&surface->base, pixman_image, pixman_format);
 
     surface->base.compositor = compositor;
 
     return &surface->base.base;
 }
 
-static cairo_surface_t *
+static comac_surface_t *
 test_compositor_surface_create_similar (void		*abstract_surface,
-					cairo_content_t	 content,
+					comac_content_t	 content,
 					int		 width,
 					int		 height)
 {
@@ -108,108 +108,108 @@ test_compositor_surface_create_similar (void		*abstract_surface,
 					   content, width, height);
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 test_compositor_surface_paint (void			*_surface,
-			       cairo_operator_t		 op,
-			       const cairo_pattern_t	*source,
-			       const cairo_clip_t	*clip)
+			       comac_operator_t		 op,
+			       const comac_pattern_t	*source,
+			       const comac_clip_t	*clip)
 {
     test_compositor_surface_t *surface = _surface;
-    return _cairo_compositor_paint (surface->base.compositor,
+    return _comac_compositor_paint (surface->base.compositor,
 				    _surface, op, source,
 				    clip);
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 test_compositor_surface_mask (void			*_surface,
-			      cairo_operator_t		 op,
-			      const cairo_pattern_t	*source,
-			      const cairo_pattern_t	*mask,
-			      const cairo_clip_t	*clip)
+			      comac_operator_t		 op,
+			      const comac_pattern_t	*source,
+			      const comac_pattern_t	*mask,
+			      const comac_clip_t	*clip)
 {
     test_compositor_surface_t *surface = _surface;
-    return _cairo_compositor_mask (surface->base.compositor,
+    return _comac_compositor_mask (surface->base.compositor,
 				   _surface, op, source, mask,
 				    clip);
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 test_compositor_surface_stroke (void				*_surface,
-				cairo_operator_t		 op,
-				const cairo_pattern_t		*source,
-				const cairo_path_fixed_t	*path,
-				const cairo_stroke_style_t	*style,
-				const cairo_matrix_t		*ctm,
-				const cairo_matrix_t		*ctm_inverse,
+				comac_operator_t		 op,
+				const comac_pattern_t		*source,
+				const comac_path_fixed_t	*path,
+				const comac_stroke_style_t	*style,
+				const comac_matrix_t		*ctm,
+				const comac_matrix_t		*ctm_inverse,
 				double				 tolerance,
-				cairo_antialias_t		 antialias,
-				const cairo_clip_t		*clip)
+				comac_antialias_t		 antialias,
+				const comac_clip_t		*clip)
 {
     test_compositor_surface_t *surface = _surface;
-    if (antialias == CAIRO_ANTIALIAS_DEFAULT)
-	antialias = CAIRO_ANTIALIAS_BEST;
-    return _cairo_compositor_stroke (surface->base.compositor,
+    if (antialias == COMAC_ANTIALIAS_DEFAULT)
+	antialias = COMAC_ANTIALIAS_BEST;
+    return _comac_compositor_stroke (surface->base.compositor,
 				     _surface, op, source,
 				     path, style, ctm, ctm_inverse,
 				     tolerance, antialias,
 				     clip);
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 test_compositor_surface_fill (void			*_surface,
-			      cairo_operator_t		 op,
-			      const cairo_pattern_t	*source,
-			      const cairo_path_fixed_t	*path,
-			      cairo_fill_rule_t		 fill_rule,
+			      comac_operator_t		 op,
+			      const comac_pattern_t	*source,
+			      const comac_path_fixed_t	*path,
+			      comac_fill_rule_t		 fill_rule,
 			      double			 tolerance,
-			      cairo_antialias_t		 antialias,
-			      const cairo_clip_t	*clip)
+			      comac_antialias_t		 antialias,
+			      const comac_clip_t	*clip)
 {
     test_compositor_surface_t *surface = _surface;
-    if (antialias == CAIRO_ANTIALIAS_DEFAULT)
-	antialias = CAIRO_ANTIALIAS_BEST;
-    return _cairo_compositor_fill (surface->base.compositor,
+    if (antialias == COMAC_ANTIALIAS_DEFAULT)
+	antialias = COMAC_ANTIALIAS_BEST;
+    return _comac_compositor_fill (surface->base.compositor,
 				   _surface, op, source,
 				   path, fill_rule, tolerance, antialias,
 				   clip);
 }
 
-static cairo_int_status_t
+static comac_int_status_t
 test_compositor_surface_glyphs (void			*_surface,
-				cairo_operator_t	 op,
-				const cairo_pattern_t	*source,
-				cairo_glyph_t		*glyphs,
+				comac_operator_t	 op,
+				const comac_pattern_t	*source,
+				comac_glyph_t		*glyphs,
 				int			 num_glyphs,
-				cairo_scaled_font_t	*scaled_font,
-				const cairo_clip_t	*clip)
+				comac_scaled_font_t	*scaled_font,
+				const comac_clip_t	*clip)
 {
     test_compositor_surface_t *surface = _surface;
-    return _cairo_compositor_glyphs (surface->base.compositor,
+    return _comac_compositor_glyphs (surface->base.compositor,
 				     _surface, op, source,
 				     glyphs, num_glyphs, scaled_font,
 				     clip);
 }
 
-static const cairo_surface_backend_t test_compositor_surface_backend = {
-    CAIRO_SURFACE_TYPE_IMAGE,
-    _cairo_image_surface_finish,
-    _cairo_default_context_create,
+static const comac_surface_backend_t test_compositor_surface_backend = {
+    COMAC_SURFACE_TYPE_IMAGE,
+    _comac_image_surface_finish,
+    _comac_default_context_create,
 
     test_compositor_surface_create_similar,
     NULL, /* create similar image */
-    _cairo_image_surface_map_to_image,
-    _cairo_image_surface_unmap_image,
+    _comac_image_surface_map_to_image,
+    _comac_image_surface_unmap_image,
 
-    _cairo_image_surface_source,
-    _cairo_image_surface_acquire_source_image,
-    _cairo_image_surface_release_source_image,
-    _cairo_image_surface_snapshot,
+    _comac_image_surface_source,
+    _comac_image_surface_acquire_source_image,
+    _comac_image_surface_release_source_image,
+    _comac_image_surface_snapshot,
 
     NULL, /* copy_page */
     NULL, /* show_page */
 
-    _cairo_image_surface_get_extents,
-    _cairo_image_surface_get_font_options,
+    _comac_image_surface_get_extents,
+    _comac_image_surface_get_font_options,
 
     NULL, /* flush */
     NULL, /* mark_dirty_rectangle */
@@ -222,14 +222,14 @@ static const cairo_surface_backend_t test_compositor_surface_backend = {
     test_compositor_surface_glyphs,
 };
 
-static const cairo_compositor_t *
+static const comac_compositor_t *
 get_fallback_compositor (void)
 {
-    return &_cairo_fallback_compositor;
+    return &_comac_fallback_compositor;
 }
 
-cairo_surface_t *
-_cairo_test_fallback_compositor_surface_create (cairo_content_t	content,
+comac_surface_t *
+_comac_test_fallback_compositor_surface_create (comac_content_t	content,
 						int		width,
 						int		height)
 {
@@ -237,29 +237,29 @@ _cairo_test_fallback_compositor_surface_create (cairo_content_t	content,
 					   content, width, height);
 }
 
-cairo_surface_t *
-_cairo_test_mask_compositor_surface_create (cairo_content_t	content,
+comac_surface_t *
+_comac_test_mask_compositor_surface_create (comac_content_t	content,
 						int		width,
 						int		height)
 {
-    return test_compositor_surface_create (_cairo_image_mask_compositor_get(),
+    return test_compositor_surface_create (_comac_image_mask_compositor_get(),
 					   content, width, height);
 }
 
-cairo_surface_t *
-_cairo_test_traps_compositor_surface_create (cairo_content_t	content,
+comac_surface_t *
+_comac_test_traps_compositor_surface_create (comac_content_t	content,
 					     int		width,
 					     int		height)
 {
-    return test_compositor_surface_create (_cairo_image_traps_compositor_get(),
+    return test_compositor_surface_create (_comac_image_traps_compositor_get(),
 					   content, width, height);
 }
 
-cairo_surface_t *
-_cairo_test_spans_compositor_surface_create (cairo_content_t	content,
+comac_surface_t *
+_comac_test_spans_compositor_surface_create (comac_content_t	content,
 					     int		width,
 					     int		height)
 {
-    return test_compositor_surface_create (_cairo_image_spans_compositor_get(),
+    return test_compositor_surface_create (_comac_image_spans_compositor_get(),
 					   content, width, height);
 }

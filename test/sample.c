@@ -26,7 +26,7 @@
 
 #include "comac-test.h"
 
-/* Test the fidelity of the rasterisation, because Cairo is my favourite
+/* Test the fidelity of the rasterisation, because Comac is my favourite
  * driver test suite.
  */
 
@@ -36,80 +36,80 @@
 #define HEIGHT 40
 
 #include "../src/comac-fixed-type-private.h"
-#define PRECISION (1 << CAIRO_FIXED_FRAC_BITS)
+#define PRECISION (1 << COMAC_FIXED_FRAC_BITS)
 
-static cairo_test_status_t
-vertical (cairo_t *cr, int width, int height)
+static comac_test_status_t
+vertical (comac_t *cr, int width, int height)
 {
     int x;
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgba (cr, 1, 1, 1, 1);
+    comac_set_source_rgba (cr, 1, 1, 1, 1);
     for (x = -HEIGHT*PRECISION-2; x <= (WIDTH+HEIGHT)*PRECISION+2; x += 4) {
-	cairo_move_to (cr, x / (double)PRECISION - 2, -2);
-	cairo_rel_line_to (cr, 0, HEIGHT + 4);
+	comac_move_to (cr, x / (double)PRECISION - 2, -2);
+	comac_rel_line_to (cr, 0, HEIGHT + 4);
     }
-    cairo_set_line_width (cr, 2 / (double)PRECISION);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 2 / (double)PRECISION);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-horizontal (cairo_t *cr, int width, int height)
+static comac_test_status_t
+horizontal (comac_t *cr, int width, int height)
 {
     int x;
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgba (cr, 1, 1, 1, 1);
+    comac_set_source_rgba (cr, 1, 1, 1, 1);
     for (x = -HEIGHT*PRECISION-2; x <= (WIDTH+HEIGHT)*PRECISION+2; x += 4) {
-	cairo_move_to (cr, -2, x / (double)PRECISION - 2);
-	cairo_rel_line_to (cr, HEIGHT + 4, 0);
+	comac_move_to (cr, -2, x / (double)PRECISION - 2);
+	comac_rel_line_to (cr, HEIGHT + 4, 0);
     }
-    cairo_set_line_width (cr, 2 / (double)PRECISION);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 2 / (double)PRECISION);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-diagonal (cairo_t *cr, int width, int height)
+static comac_test_status_t
+diagonal (comac_t *cr, int width, int height)
 {
     int x;
 
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0);
+    comac_paint (cr);
 
-    cairo_set_source_rgba (cr, 1, 1, 1, 1);
+    comac_set_source_rgba (cr, 1, 1, 1, 1);
     for (x = -HEIGHT*PRECISION-2; x <= (WIDTH+HEIGHT)*PRECISION+2; x += 6) {
-	cairo_move_to (cr, x / (double)PRECISION - 2, -2);
-	cairo_rel_line_to (cr, HEIGHT + 4, HEIGHT + 4);
+	comac_move_to (cr, x / (double)PRECISION - 2, -2);
+	comac_rel_line_to (cr, HEIGHT + 4, HEIGHT + 4);
     }
-    cairo_set_line_width (cr, 2 / (double)PRECISION);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 2 / (double)PRECISION);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (sample_vertical,
+COMAC_TEST (sample_vertical,
 	    "Check the fidelity of the rasterisation.",
 	    NULL, /* keywords */
 	    "target=raster slow", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, vertical)
 
-CAIRO_TEST (sample_horizontal,
+COMAC_TEST (sample_horizontal,
 	    "Check the fidelity of the rasterisation.",
 	    NULL, /* keywords */
 	    "target=raster slow", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, horizontal)
 
-CAIRO_TEST (sample_diagonal,
+COMAC_TEST (sample_diagonal,
 	    "Check the fidelity of the rasterisation.",
 	    NULL, /* keywords */
 	    "target=raster slow", /* requirements */

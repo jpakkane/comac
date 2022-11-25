@@ -37,17 +37,17 @@
 #include <math.h>
 #include <assert.h>
 
-typedef struct _cairo_perf_report_options {
+typedef struct _comac_perf_report_options {
     double min_change;
     int use_utf;
     int print_change_bars;
-} cairo_perf_report_options_t;
+} comac_perf_report_options_t;
 
-typedef struct _cairo_perf_diff_files_args {
+typedef struct _comac_perf_diff_files_args {
     const char **filenames;
     int num_filenames;
-    cairo_perf_report_options_t options;
-} cairo_perf_diff_files_args_t;
+    comac_perf_report_options_t options;
+} comac_perf_diff_files_args_t;
 
 static int
 test_diff_cmp (const void *a,
@@ -116,7 +116,7 @@ print_change_bar (double change,
 static void
 test_diff_print (test_diff_t		     *diff,
 		 double 		      max_change,
-		 cairo_perf_report_options_t *options)
+		 comac_perf_report_options_t *options)
 {
     int i;
     double test_time;
@@ -150,9 +150,9 @@ test_diff_print (test_diff_t		     *diff,
 }
 
 static void
-cairo_perf_reports_compare (cairo_perf_report_t 	*reports,
+comac_perf_reports_compare (comac_perf_report_t 	*reports,
 			    int 			 num_reports,
-			    cairo_perf_report_options_t *options)
+			    comac_perf_report_options_t *options)
 {
     int i;
     test_report_t **tests, *min_test;
@@ -288,8 +288,8 @@ usage (const char *argv0)
 	     "Usage: %s [options] file [...]\n\n",
 	     basename);
     fprintf (stderr,
-	     "Computes significant performance differences for cairo performance reports.\n"
-	     "Each file should be the output of the cairo-perf program (or \"make perf\").\n"
+	     "Computes significant performance differences for comac performance reports.\n"
+	     "Each file should be the output of the comac-perf program (or \"make perf\").\n"
 	     "The following options are available:\n"
 	     "\n"
 	     "--no-utf    Use ascii stars instead of utf-8 change bars.\n"
@@ -312,7 +312,7 @@ usage (const char *argv0)
 static void
 parse_args (int 			   argc,
 	    char const			 **argv,
-	    cairo_perf_diff_files_args_t  *args)
+	    comac_perf_diff_files_args_t  *args)
 {
     int i;
 
@@ -350,7 +350,7 @@ int
 main (int	  argc,
       const char *argv[])
 {
-    cairo_perf_diff_files_args_t args = {
+    comac_perf_diff_files_args_t args = {
 	NULL,			/* filenames */
 	0,			/* num_filenames */
 	{
@@ -359,27 +359,27 @@ main (int	  argc,
 	    1,			/* display change bars? */
 	}
     };
-    cairo_perf_report_t *reports;
+    comac_perf_report_t *reports;
     test_report_t *t;
     int i;
 
     parse_args (argc, argv, &args);
 
     if (args.num_filenames) {
-	reports = xcalloc (args.num_filenames, sizeof (cairo_perf_report_t));
+	reports = xcalloc (args.num_filenames, sizeof (comac_perf_report_t));
 	for (i = 0; i < args.num_filenames; i++) {
-	    cairo_perf_report_load (&reports[i], args.filenames[i], i,
+	    comac_perf_report_load (&reports[i], args.filenames[i], i,
 				    test_report_cmp_name);
 	    printf ("loaded: %s, %d tests\n",
 		    args.filenames[i], reports[i].tests_count);
 	}
     } else {
 	args.num_filenames = 1;
-	reports = xcalloc (args.num_filenames, sizeof (cairo_perf_report_t));
-	cairo_perf_report_load (&reports[0], NULL, 0, test_report_cmp_name);
+	reports = xcalloc (args.num_filenames, sizeof (comac_perf_report_t));
+	comac_perf_report_load (&reports[0], NULL, 0, test_report_cmp_name);
     }
 
-    cairo_perf_reports_compare (reports, args.num_filenames, &args.options);
+    comac_perf_reports_compare (reports, args.num_filenames, &args.options);
 
     /* Pointless memory cleanup, (would be a great place for talloc) */
     free (args.filenames);

@@ -41,9 +41,9 @@ int main (int argc, char *argv[])
     const char *output_filename = argv[2];
     const char *page_label = argv[3];
     gchar *absolute, *uri;
-    cairo_surface_t *surface;
-    cairo_t *cr;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
+    comac_status_t status;
     GError *error = NULL;
 
     if (argc != 4)
@@ -78,26 +78,26 @@ int main (int argc, char *argv[])
 
     poppler_page_get_size (page, &width, &height);
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, width, height);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
-    cairo_push_group_with_content (cr, CAIRO_CONTENT_COLOR_ALPHA);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
+    comac_push_group_with_content (cr, COMAC_CONTENT_COLOR_ALPHA);
 
     poppler_page_render (page, cr);
     g_object_unref (page);
 
-    cairo_pop_group_to_source (cr);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_paint (cr);
 
-    status = cairo_surface_write_to_png (cairo_get_target (cr),
+    status = comac_surface_write_to_png (comac_get_target (cr),
 					 output_filename);
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
     if (status)
-	FAIL (cairo_status_to_string (status));
+	FAIL (comac_status_to_string (status));
 
     return 0;
 }

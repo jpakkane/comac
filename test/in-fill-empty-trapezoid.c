@@ -28,80 +28,80 @@
  *
  * 2006-12-05  M Joonas Pihlaja <jpihlaja@cc.helsinki.fi>
  *
- *  The cairo_in_fill () function can sometimes produce false
+ *  The comac_in_fill () function can sometimes produce false
  *  positives when the tessellator produces empty trapezoids
  *  and the query point lands exactly on a trapezoid edge.
  */
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
     int x,y;
     int width = 10;
     int height = 10;
-    cairo_surface_t *surf;
-    cairo_t *cr;
+    comac_surface_t *surf;
+    comac_t *cr;
     int false_positive_count = 0;
-    cairo_status_t status;
-    cairo_test_status_t ret;
+    comac_status_t status;
+    comac_test_status_t ret;
 
-    surf = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-    cr = cairo_create (surf);
-    cairo_surface_destroy (surf);
+    surf = comac_image_surface_create (COMAC_FORMAT_ARGB32, width, height);
+    cr = comac_create (surf);
+    comac_surface_destroy (surf);
 
     /* Empty horizontal trapezoid. */
-    cairo_move_to (cr, 0, height/3);
-    cairo_line_to (cr, width, height/3);
-    cairo_close_path (cr);
+    comac_move_to (cr, 0, height/3);
+    comac_line_to (cr, width, height/3);
+    comac_close_path (cr);
 
     /* Empty non-horizontal trapezoid #1. */
-    cairo_move_to (cr, 0, 0);
-    cairo_line_to (cr, width, height/2);
-    cairo_close_path (cr);
+    comac_move_to (cr, 0, 0);
+    comac_line_to (cr, width, height/2);
+    comac_close_path (cr);
 
     /* Empty non-horizontal trapezoid #2 intersecting #1. */
-    cairo_move_to (cr, 0, height/2);
-    cairo_line_to (cr, width, 0);
-    cairo_close_path (cr);
+    comac_move_to (cr, 0, height/2);
+    comac_line_to (cr, width, 0);
+    comac_close_path (cr);
 
-    status = cairo_status (cr);
+    status = comac_status (cr);
 
     /* Point sample the tessellated path. */
     for (y = 0; y < height; y++) {
 	for (x = 0; x < width; x++) {
-	    if (cairo_in_fill (cr, x, y)) {
+	    if (comac_in_fill (cr, x, y)) {
 		false_positive_count++;
 	    }
 	}
     }
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
     /* Check that everything went well. */
-    ret = CAIRO_TEST_SUCCESS;
-    if (CAIRO_STATUS_SUCCESS != status) {
-	cairo_test_log (ctx, "Failed to create a test surface and path: %s\n",
-			cairo_status_to_string (status));
-	ret = CAIRO_TEST_XFAILURE;
+    ret = COMAC_TEST_SUCCESS;
+    if (COMAC_STATUS_SUCCESS != status) {
+	comac_test_log (ctx, "Failed to create a test surface and path: %s\n",
+			comac_status_to_string (status));
+	ret = COMAC_TEST_XFAILURE;
     }
 
     if (0 != false_positive_count) {
-	cairo_test_log (ctx, "Point sampling found %d false positives "
-			"from cairo_in_fill()\n",
+	comac_test_log (ctx, "Point sampling found %d false positives "
+			"from comac_in_fill()\n",
 			false_positive_count);
-	ret = CAIRO_TEST_XFAILURE;
+	ret = COMAC_TEST_XFAILURE;
     }
 
     return ret;
 }
 
 /*
- * XFAIL: The cairo_in_fill () function can sometimes produce false positives
+ * XFAIL: The comac_in_fill () function can sometimes produce false positives
  * when the tessellator produces empty trapezoids and the query point lands
  * exactly on a trapezoid edge.
  */
-CAIRO_TEST (in_fill_empty_trapezoid,
+COMAC_TEST (in_fill_empty_trapezoid,
 	    "Test that the tessellator isn't producing obviously empty trapezoids",
 	    "in, trap", /* keywords */
 	    NULL, /* requirements */

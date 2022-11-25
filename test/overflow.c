@@ -38,7 +38,7 @@ struct test_data {
     uint64_t a;
     uint64_t b;
     uint64_t result;
-    cairo_bool_t overflow;
+    comac_bool_t overflow;
 };
 
 #if SIZEOF_SIZE_T == 4
@@ -95,16 +95,16 @@ static const struct test_data mul_64bit_test_data[] = {
 };
 #endif
 
-static cairo_bool_t
-check_if_result_fail (cairo_test_context_t *ctx,
+static comac_bool_t
+check_if_result_fail (comac_test_context_t *ctx,
                       size_t result,
-                      cairo_bool_t overflow,
+                      comac_bool_t overflow,
                       const struct test_data *data,
                       const char *func_name)
 {
     int hex_digits = SIZEOF_SIZE_T * 2;
     if (overflow != data->overflow || (!data->overflow && result != data->result)) {
-        cairo_test_log (ctx, "%s a = 0x%0*llx b = 0x%0*llx result = 0x%0*llx overflow = %d\n",
+        comac_test_log (ctx, "%s a = 0x%0*llx b = 0x%0*llx result = 0x%0*llx overflow = %d\n",
                         func_name,
                         hex_digits,
                         (unsigned long long)data->a,
@@ -114,9 +114,9 @@ check_if_result_fail (cairo_test_context_t *ctx,
                         (unsigned long long)result,
                         overflow);
         if (data->overflow)
-            cairo_test_log (ctx, "EXPECTED overflow = 1\n");
+            comac_test_log (ctx, "EXPECTED overflow = 1\n");
         else
-            cairo_test_log (ctx, "EXPECTED result = 0x%0*llx overflow = 0\n",
+            comac_test_log (ctx, "EXPECTED result = 0x%0*llx overflow = 0\n",
                             hex_digits,
                             (unsigned long long)data->result);
         return TRUE;
@@ -124,11 +124,11 @@ check_if_result_fail (cairo_test_context_t *ctx,
     return FALSE;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
     int i;
-    cairo_bool_t overflow;
+    comac_bool_t overflow;
     size_t result;
 
 #if SIZEOF_SIZE_T == 4
@@ -142,35 +142,35 @@ preamble (cairo_test_context_t *ctx)
     const struct test_data *mul_data = mul_64bit_test_data;
     int num_mul_tests = ARRAY_LENGTH(mul_64bit_test_data);
 #else
-    cairo_test_log (ctx, "sizeof(size_t) = %lld is not supported by this test\n",
+    comac_test_log (ctx, "sizeof(size_t) = %lld is not supported by this test\n",
                     (unsigned long long)sizeof(size_t));
-    return CAIRO_TEST_UNTESTED;
+    return COMAC_TEST_UNTESTED;
 #endif
 
     /* First check the fallback versions of the overflow functions. */
     for (i = 0; i < num_add_tests; i++) {
         const struct test_data *data = &add_data[i];
-        overflow = _cairo_fallback_add_size_t_overflow (data->a, data->b, &result);
+        overflow = _comac_fallback_add_size_t_overflow (data->a, data->b, &result);
         if (check_if_result_fail (ctx,
                                   result,
                                   overflow,
                                   data,
-                                  "_cairo_fallback_add_size_t_overflow"))
+                                  "_comac_fallback_add_size_t_overflow"))
         {
-            return CAIRO_TEST_FAILURE;
+            return COMAC_TEST_FAILURE;
         }
     }
 
     for (i = 0; i < num_mul_tests; i++) {
         const struct test_data *data = &mul_data[i];
-        overflow = _cairo_fallback_mul_size_t_overflow (data->a, data->b, &result);
+        overflow = _comac_fallback_mul_size_t_overflow (data->a, data->b, &result);
         if (check_if_result_fail (ctx,
                                   result,
                                   overflow,
                                   data,
-                                  "_cairo_fallback_mul_size_t_overflow"))
+                                  "_comac_fallback_mul_size_t_overflow"))
         {
-            return CAIRO_TEST_FAILURE;
+            return COMAC_TEST_FAILURE;
         }
     }
     /* Next check the compiler builtins (if available, otherwise the
@@ -179,35 +179,35 @@ preamble (cairo_test_context_t *ctx)
      */
     for (i = 0; i < num_add_tests; i++) {
         const struct test_data *data = &add_data[i];
-        overflow = _cairo_add_size_t_overflow (data->a, data->b, &result);
+        overflow = _comac_add_size_t_overflow (data->a, data->b, &result);
         if (check_if_result_fail (ctx,
                                   result,
                                   overflow,
                                   data,
-                                  "_cairo_add_size_t_overflow"))
+                                  "_comac_add_size_t_overflow"))
         {
-            return CAIRO_TEST_FAILURE;
+            return COMAC_TEST_FAILURE;
         }
     }
 
     for (i = 0; i < num_mul_tests; i++) {
         const struct test_data *data = &mul_data[i];
-        overflow = _cairo_mul_size_t_overflow (data->a, data->b, &result);
+        overflow = _comac_mul_size_t_overflow (data->a, data->b, &result);
         if (check_if_result_fail (ctx,
                                   result,
                                   overflow,
                                   data,
-                                  "_cairo_mul_size_t_overflow"))
+                                  "_comac_mul_size_t_overflow"))
         {
-            return CAIRO_TEST_FAILURE;
+            return COMAC_TEST_FAILURE;
         }
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (overflow,
-	    "Test the _cairo_*_size_t_overflow functions.",
+COMAC_TEST (overflow,
+	    "Test the _comac_*_size_t_overflow functions.",
 	    "memory", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

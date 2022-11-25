@@ -38,149 +38,149 @@ uniform_random (double minval, double maxval)
     return minval + state * (maxval - minval) / 4294967296.0;
 }
 
-static cairo_time_t
-do_many_strokes_ha (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_many_strokes_ha (comac_t *cr, int width, int height, int loops)
 {
     int count;
 
     state = 0xc0ffee;
     for (count = 0; count < 1000; count++) {
 	double h = floor (uniform_random (0, height)) + .5;
-	cairo_move_to (cr, floor (uniform_random (0, width)), h);
-	cairo_line_to (cr, ceil (uniform_random (0, width)), h);
+	comac_move_to (cr, floor (uniform_random (0, width)), h);
+	comac_line_to (cr, ceil (uniform_random (0, width)), h);
     }
 
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_many_strokes_h (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_many_strokes_h (comac_t *cr, int width, int height, int loops)
 {
     int count;
 
     state = 0xc0ffee;
     for (count = 0; count < 1000; count++) {
 	double h = uniform_random (0, height);
-	cairo_move_to (cr, uniform_random (0, width), h);
-	cairo_line_to (cr, uniform_random (0, width), h);
+	comac_move_to (cr, uniform_random (0, width), h);
+	comac_line_to (cr, uniform_random (0, width), h);
     }
 
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_many_strokes_va (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_many_strokes_va (comac_t *cr, int width, int height, int loops)
 {
     int count;
 
     state = 0xc0ffee;
     for (count = 0; count < 1000; count++) {
 	double v = floor (uniform_random (0, width)) + .5;
-	cairo_move_to (cr, v, floor (uniform_random (0, height)));
-	cairo_line_to (cr, v, ceil (uniform_random (0, height)));
+	comac_move_to (cr, v, floor (uniform_random (0, height)));
+	comac_line_to (cr, v, ceil (uniform_random (0, height)));
     }
 
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_many_strokes_v (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_many_strokes_v (comac_t *cr, int width, int height, int loops)
 {
     int count;
 
     state = 0xc0ffee;
     for (count = 0; count < 1000; count++) {
 	double v = uniform_random (0, width);
-	cairo_move_to (cr, v, uniform_random (0, height));
-	cairo_line_to (cr, v, uniform_random (0, height));
+	comac_move_to (cr, v, uniform_random (0, height));
+	comac_line_to (cr, v, uniform_random (0, height));
     }
 
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_many_strokes (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_many_strokes (comac_t *cr, int width, int height, int loops)
 {
     int count;
 
     /* lots and lots of overlapping strokes */
     state = 0xc0ffee;
     for (count = 0; count < 1000; count++) {
-	cairo_line_to (cr,
+	comac_line_to (cr,
 		       uniform_random (0, width),
 		       uniform_random (0, height));
     }
 
-    cairo_set_line_width (cr, 1.);
+    comac_set_line_width (cr, 1.);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_stroke_preserve (cr);
+	comac_stroke_preserve (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_new_path (cr);
+    comac_new_path (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-cairo_bool_t
-many_strokes_enabled (cairo_perf_t *perf)
+comac_bool_t
+many_strokes_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "many-strokes", NULL);
+    return comac_perf_can_run (perf, "many-strokes", NULL);
 }
 
 void
-many_strokes (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+many_strokes (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "many-strokes-halign", do_many_strokes_ha, NULL);
-    cairo_perf_run (perf, "many-strokes-valign", do_many_strokes_va, NULL);
-    cairo_perf_run (perf, "many-strokes-horizontal", do_many_strokes_h, NULL);
-    cairo_perf_run (perf, "many-strokes-vertical", do_many_strokes_v, NULL);
-    cairo_perf_run (perf, "many-strokes-random", do_many_strokes, NULL);
+    comac_perf_run (perf, "many-strokes-halign", do_many_strokes_ha, NULL);
+    comac_perf_run (perf, "many-strokes-valign", do_many_strokes_va, NULL);
+    comac_perf_run (perf, "many-strokes-horizontal", do_many_strokes_h, NULL);
+    comac_perf_run (perf, "many-strokes-vertical", do_many_strokes_v, NULL);
+    comac_perf_run (perf, "many-strokes-random", do_many_strokes, NULL);
 }

@@ -26,33 +26,33 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    pattern = cairo_pattern_create_linear (width/2, 0, width/2, 0);
-    cairo_pattern_add_color_stop_rgb (pattern, 0, 1, 0, 0);
-    cairo_pattern_add_color_stop_rgb (pattern, 1, 0, 0, 1);
-    cairo_set_source (cr, pattern);
+    pattern = comac_pattern_create_linear (width/2, 0, width/2, 0);
+    comac_pattern_add_color_stop_rgb (pattern, 0, 1, 0, 0);
+    comac_pattern_add_color_stop_rgb (pattern, 1, 0, 0, 1);
+    comac_set_source (cr, pattern);
 
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_NONE); /* nothing */
-    cairo_rectangle (cr, 0, 0, width, height/2);
-    cairo_fill (cr);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_NONE); /* nothing */
+    comac_rectangle (cr, 0, 0, width, height/2);
+    comac_fill (cr);
 
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD); /* step */
-    cairo_rectangle (cr, 0, height/2, width, height/2);
-    cairo_fill (cr);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_PAD); /* step */
+    comac_rectangle (cr, 0, height/2, width, height/2);
+    comac_fill (cr);
 
-    cairo_pattern_destroy (pattern);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (linear_step_function,
+COMAC_TEST (linear_step_function,
 	    "Tests creating a step function using a linear gradient",
 	    "gradient, linear", /* keywords */
 	    NULL, /* requirements */

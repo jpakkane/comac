@@ -25,23 +25,23 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, 2, 2);
-    cairo_scale (cr, 0.5, 0.5);
+    comac_translate (cr, 2, 2);
+    comac_scale (cr, 0.5, 0.5);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (paint,
-	    "Test calls to cairo_paint",
+COMAC_TEST (paint,
+	    "Test calls to comac_paint",
 	    "paint", /* keywords */
 	    NULL, /* requirements */
 	    8, 8,

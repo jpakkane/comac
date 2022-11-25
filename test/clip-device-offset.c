@@ -28,50 +28,50 @@
 #define WIDTH 50
 #define HEIGHT 50
 
-static cairo_pattern_t *
+static comac_pattern_t *
 create_green_source (void)
 {
-  cairo_surface_t *image;
-  cairo_pattern_t *pattern;
-  cairo_t *cr;
+  comac_surface_t *image;
+  comac_pattern_t *pattern;
+  comac_t *cr;
 
-  image = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, WIDTH, HEIGHT);
-  cr = cairo_create (image);
-  cairo_surface_destroy (image);
+  image = comac_image_surface_create (COMAC_FORMAT_ARGB32, WIDTH, HEIGHT);
+  cr = comac_create (image);
+  comac_surface_destroy (image);
 
-  cairo_set_source_rgb (cr, 0, 1, 0);
-  cairo_paint (cr);
+  comac_set_source_rgb (cr, 0, 1, 0);
+  comac_paint (cr);
 
-  pattern = cairo_pattern_create_for_surface (cairo_get_target (cr));
-  cairo_destroy (cr);
+  pattern = comac_pattern_create_for_surface (comac_get_target (cr));
+  comac_destroy (cr);
 
   return pattern;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-  cairo_pattern_t *source;
+  comac_pattern_t *source;
   double old_x, old_y;
 
-  cairo_surface_get_device_offset (cairo_get_group_target (cr), &old_x, &old_y);
-  cairo_surface_set_device_offset (cairo_get_group_target (cr), old_x+5, old_y+5);
+  comac_surface_get_device_offset (comac_get_group_target (cr), &old_x, &old_y);
+  comac_surface_set_device_offset (comac_get_group_target (cr), old_x+5, old_y+5);
 
   source = create_green_source ();
-  cairo_set_source (cr, source);
-  cairo_pattern_destroy (source);
+  comac_set_source (cr, source);
+  comac_pattern_destroy (source);
 
-  cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-  cairo_rectangle (cr, 0, 0, WIDTH, HEIGHT);
-  cairo_clip (cr);
-  cairo_paint (cr);
+  comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+  comac_rectangle (cr, 0, 0, WIDTH, HEIGHT);
+  comac_clip (cr);
+  comac_paint (cr);
 
-  cairo_surface_set_device_offset (cairo_get_group_target (cr), old_x, old_y);
+  comac_surface_set_device_offset (comac_get_group_target (cr), old_x, old_y);
 
-  return CAIRO_TEST_SUCCESS;
+  return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_device_offset,
+COMAC_TEST (clip_device_offset,
 	    "Test clipping on surfaces with device offsets",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

@@ -35,18 +35,18 @@
 #include <math.h>
 #include <assert.h>
 
-typedef struct _cairo_perf_report_options {
+typedef struct _comac_perf_report_options {
     double min_change;
     int use_utf;
     int print_change_bars;
     int use_ticks;
-} cairo_perf_report_options_t;
+} comac_perf_report_options_t;
 
-typedef struct _cairo_perf_diff_files_args {
+typedef struct _comac_perf_diff_files_args {
     const char **filenames;
     int num_filenames;
-    cairo_perf_report_options_t options;
-} cairo_perf_diff_files_args_t;
+    comac_perf_report_options_t options;
+} comac_perf_diff_files_args_t;
 
 static int
 test_diff_cmp_speedup_before_slowdown (const void *a,
@@ -152,7 +152,7 @@ print_change_bar (double change,
 static void
 test_diff_print_binary (test_diff_t		    *diff,
 			double			     max_change,
-			cairo_perf_report_options_t *options)
+			comac_perf_report_options_t *options)
 {
     if (diff->tests[0]->size)
 	printf ("%5s-%-4s %26s-%-3d",
@@ -183,7 +183,7 @@ test_diff_print_binary (test_diff_t		    *diff,
 static void
 test_diff_print_multi (test_diff_t		   *diff,
 		       double			    max_change,
-		       cairo_perf_report_options_t *options)
+		       comac_perf_report_options_t *options)
 {
     int i;
     double test_time;
@@ -221,9 +221,9 @@ test_diff_print_multi (test_diff_t		   *diff,
 }
 
 static void
-cairo_perf_reports_compare (cairo_perf_report_t 	*reports,
+comac_perf_reports_compare (comac_perf_report_t 	*reports,
 			    int 			 num_reports,
-			    cairo_perf_report_options_t *options)
+			    comac_perf_report_options_t *options)
 {
     int i;
     test_report_t **tests, *min_test;
@@ -232,8 +232,8 @@ cairo_perf_reports_compare (cairo_perf_report_t 	*reports,
     double max_change;
     double test_time;
     int seen_non_null;
-    cairo_bool_t printed_speedup = FALSE;
-    cairo_bool_t printed_slowdown = FALSE;
+    comac_bool_t printed_speedup = FALSE;
+    comac_bool_t printed_slowdown = FALSE;
 
     assert (num_reports >= 2);
 
@@ -393,8 +393,8 @@ usage (const char *argv0)
 	     "Usage: %s [options] file1 file2 [...]\n\n",
 	     basename);
     fprintf (stderr,
-	     "Computes significant performance differences for cairo performance reports.\n"
-	     "Each file should be the output of the cairo-perf program (or \"make perf\").\n"
+	     "Computes significant performance differences for comac performance reports.\n"
+	     "Each file should be the output of the comac-perf program (or \"make perf\").\n"
 	     "The following options are available:\n"
 	     "\n"
 	     "--no-utf    Use ascii stars instead of utf-8 change bars.\n"
@@ -417,7 +417,7 @@ usage (const char *argv0)
 static void
 parse_args (int 			   argc,
 	    char const			 **argv,
-	    cairo_perf_diff_files_args_t  *args)
+	    comac_perf_diff_files_args_t  *args)
 {
     int i;
 
@@ -461,7 +461,7 @@ int
 main (int	  argc,
       const char *argv[])
 {
-    cairo_perf_diff_files_args_t args = {
+    comac_perf_diff_files_args_t args = {
 	NULL,			/* filenames */
 	0,			/* num_filenames */
 	{
@@ -470,7 +470,7 @@ main (int	  argc,
 	    1,			/* display change bars? */
 	}
     };
-    cairo_perf_report_t *reports;
+    comac_perf_report_t *reports;
     test_report_t *t;
     int i;
 
@@ -479,15 +479,15 @@ main (int	  argc,
     if (args.num_filenames < 2)
 	usage (argv[0]);
 
-    reports = xmalloc (args.num_filenames * sizeof (cairo_perf_report_t));
+    reports = xmalloc (args.num_filenames * sizeof (comac_perf_report_t));
 
     for (i = 0; i < args.num_filenames; i++ ) {
-	cairo_perf_report_load (&reports[i], args.filenames[i], i, NULL);
+	comac_perf_report_load (&reports[i], args.filenames[i], i, NULL);
 	printf ("[%d] %s\n", i, args.filenames[i]);
     }
     printf ("\n");
 
-    cairo_perf_reports_compare (reports, args.num_filenames, &args.options);
+    comac_perf_reports_compare (reports, args.num_filenames, &args.options);
 
     /* Pointless memory cleanup, (would be a great place for talloc) */
     free (args.filenames);

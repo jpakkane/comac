@@ -41,7 +41,7 @@
  #define HEIGHT WIDTH
 #endif
 
-#define TEXT1   "cairo user-font."
+#define TEXT1   "comac user-font."
 #define TEXT2   " zg."
 
 #define END_GLYPH 0
@@ -63,44 +63,44 @@ typedef struct {
     char data[16];
 } test_scaled_font_glyph_t;
 
-static cairo_user_data_key_t test_font_face_glyphs_key;
+static comac_user_data_key_t test_font_face_glyphs_key;
 
-static cairo_status_t
-test_scaled_font_init (cairo_scaled_font_t  *scaled_font,
-		       cairo_t              *cr,
-		       cairo_font_extents_t *metrics)
+static comac_status_t
+test_scaled_font_init (comac_scaled_font_t  *scaled_font,
+		       comac_t              *cr,
+		       comac_font_extents_t *metrics)
 {
   metrics->ascent  = .75;
   metrics->descent = .25;
-  return CAIRO_STATUS_SUCCESS;
+  return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-test_scaled_font_unicode_to_glyph (cairo_scaled_font_t *scaled_font,
+static comac_status_t
+test_scaled_font_unicode_to_glyph (comac_scaled_font_t *scaled_font,
 				   unsigned long        unicode,
 				   unsigned long       *glyph)
 {
-    test_scaled_font_glyph_t *glyphs = cairo_font_face_get_user_data (cairo_scaled_font_get_font_face (scaled_font),
+    test_scaled_font_glyph_t *glyphs = comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
 								      &test_font_face_glyphs_key);
     int i;
 
     for (i = 0; glyphs[i].ucs4 != (unsigned long) -1; i++)
 	if (glyphs[i].ucs4 == unicode) {
 	    *glyph = i;
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 	}
 
     /* Not found.  Default to glyph 0 */
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-test_scaled_font_render_glyph (cairo_scaled_font_t  *scaled_font,
+static comac_status_t
+test_scaled_font_render_glyph (comac_scaled_font_t  *scaled_font,
 			       unsigned long         glyph,
-			       cairo_t              *cr,
-			       cairo_text_extents_t *metrics)
+			       comac_t              *cr,
+			       comac_text_extents_t *metrics)
 {
-    test_scaled_font_glyph_t *glyphs = cairo_font_face_get_user_data (cairo_scaled_font_get_font_face (scaled_font),
+    test_scaled_font_glyph_t *glyphs = comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
 								      &test_font_face_glyphs_key);
     int i;
     const char *data;
@@ -111,41 +111,41 @@ test_scaled_font_render_glyph (cairo_scaled_font_t  *scaled_font,
 
     metrics->x_advance = glyphs[glyph].width / 4.0;
 
-    cairo_set_line_width (cr, 0.1);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
+    comac_set_line_width (cr, 0.1);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
 
     data = glyphs[glyph].data;
     for (i = 0; data[i] != END_GLYPH; i++) {
 	switch (data[i]) {
 	case STROKE:
-	    cairo_new_sub_path (cr);
+	    comac_new_sub_path (cr);
 	    break;
 
 	case CLOSE:
-	    cairo_close_path (cr);
+	    comac_close_path (cr);
 	    break;
 
 	default:
 	    d = div (data[i] - 1, 3);
 	    x = d.rem / 4.0 + 0.125;
 	    y = d.quot / 5.0 + 0.4 - 1.0;
-	    cairo_line_to (cr, x, y);
+	    comac_line_to (cr, x, y);
 	}
     }
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 
 /* If color_render is TRUE, use the render_color_glyph callback
  * instead of the render_glyph callbac. The output should be identical
- * in this test since the render function does not alter the cairo_t
+ * in this test since the render function does not alter the comac_t
  * source.
  */
-static cairo_status_t
-_user_font_face_create (cairo_font_face_t **out, cairo_bool_t color_render)
+static comac_status_t
+_user_font_face_create (comac_font_face_t **out, comac_bool_t color_render)
 {
     /* Simple glyph definition: 1 - 15 means lineto (or moveto for first
      * point) for one of the points on this grid:
@@ -178,135 +178,135 @@ _user_font_face_create (cairo_font_face_t **out, cairo_bool_t color_render)
 	{  -1,  0, { END_GLYPH } },
     };
 
-    cairo_font_face_t *user_font_face;
-    cairo_status_t status;
+    comac_font_face_t *user_font_face;
+    comac_status_t status;
 
-    user_font_face = cairo_user_font_face_create ();
-    cairo_user_font_face_set_init_func (user_font_face, test_scaled_font_init);
+    user_font_face = comac_user_font_face_create ();
+    comac_user_font_face_set_init_func (user_font_face, test_scaled_font_init);
     if (color_render)
-        cairo_user_font_face_set_render_color_glyph_func (user_font_face, test_scaled_font_render_glyph);
+        comac_user_font_face_set_render_color_glyph_func (user_font_face, test_scaled_font_render_glyph);
     else
-        cairo_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
+        comac_user_font_face_set_render_glyph_func (user_font_face, test_scaled_font_render_glyph);
 
-    cairo_user_font_face_set_unicode_to_glyph_func (user_font_face, test_scaled_font_unicode_to_glyph);
+    comac_user_font_face_set_unicode_to_glyph_func (user_font_face, test_scaled_font_unicode_to_glyph);
 
-    status = cairo_font_face_set_user_data (user_font_face,
+    status = comac_font_face_set_user_data (user_font_face,
 					    &test_font_face_glyphs_key,
 					    (void*) glyphs, NULL);
     if (status) {
-	cairo_font_face_destroy (user_font_face);
+	comac_font_face_destroy (user_font_face);
 	return status;
     }
 
     *out = user_font_face;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_font_face_t *font_face;
+    comac_font_face_t *font_face;
     char full_text[100];
-    cairo_font_extents_t font_extents;
-    cairo_text_extents_t extents;
-    cairo_status_t status;
+    comac_font_extents_t font_extents;
+    comac_text_extents_t extents;
+    comac_status_t status;
 
     strcpy(full_text, TEXT1);
     strcat(full_text, TEXT2);
     strcat(full_text, TEXT2);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
 #ifdef ROTATED
-    cairo_translate (cr, TEXT_SIZE, 0);
-    cairo_rotate (cr, .6);
+    comac_translate (cr, TEXT_SIZE, 0);
+    comac_rotate (cr, .6);
 #endif
 
     status = _user_font_face_create (&font_face, FALSE);
     if (status) {
-	return cairo_test_status_from_status (cairo_test_get_context (cr),
+	return comac_test_status_from_status (comac_test_get_context (cr),
 					      status);
     }
 
-    cairo_set_font_face (cr, font_face);
-    cairo_font_face_destroy (font_face);
+    comac_set_font_face (cr, font_face);
+    comac_font_face_destroy (font_face);
 
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    cairo_font_extents (cr, &font_extents);
-    cairo_text_extents (cr, full_text, &extents);
+    comac_font_extents (cr, &font_extents);
+    comac_text_extents (cr, full_text, &extents);
 
     /* logical boundaries in red */
-    cairo_move_to (cr, 0, BORDER);
-    cairo_rel_line_to (cr, WIDTH, 0);
-    cairo_move_to (cr, 0, BORDER + font_extents.ascent);
-    cairo_rel_line_to (cr, WIDTH, 0);
-    cairo_move_to (cr, 0, BORDER + font_extents.ascent + font_extents.descent);
-    cairo_rel_line_to (cr, WIDTH, 0);
-    cairo_move_to (cr, BORDER, 0);
-    cairo_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
-    cairo_move_to (cr, BORDER + extents.x_advance, 0);
-    cairo_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_set_line_width (cr, 2);
-    cairo_stroke (cr);
+    comac_move_to (cr, 0, BORDER);
+    comac_rel_line_to (cr, WIDTH, 0);
+    comac_move_to (cr, 0, BORDER + font_extents.ascent);
+    comac_rel_line_to (cr, WIDTH, 0);
+    comac_move_to (cr, 0, BORDER + font_extents.ascent + font_extents.descent);
+    comac_rel_line_to (cr, WIDTH, 0);
+    comac_move_to (cr, BORDER, 0);
+    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_move_to (cr, BORDER + extents.x_advance, 0);
+    comac_rel_line_to (cr, 0, 2*BORDER + TEXT_SIZE);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_set_line_width (cr, 2);
+    comac_stroke (cr);
 
     /* ink boundaries in green */
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
 		     BORDER + extents.x_bearing, BORDER + font_extents.ascent + extents.y_bearing,
 		     extents.width, extents.height);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_set_line_width (cr, 2);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_set_line_width (cr, 2);
+    comac_stroke (cr);
 
     /* First line. Text in black, except first "zg." in green */
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_move_to (cr, BORDER, BORDER + font_extents.ascent);
-    cairo_show_text (cr, TEXT1);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_show_text (cr, TEXT2);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_show_text (cr, TEXT2);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_move_to (cr, BORDER, BORDER + font_extents.ascent);
+    comac_show_text (cr, TEXT1);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_show_text (cr, TEXT2);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_show_text (cr, TEXT2);
 
     /* Now draw the second line using the render_color_glyph callback. The
      * output should be the same because same render function is used
      * and the render function does not set a color. This exercises
      * the paint color glyph with foreground color code path and
-     * ensures cairo updates the glyph image when the foreground color
+     * ensures comac updates the glyph image when the foreground color
      * changes.
      */
     status = _user_font_face_create (&font_face, TRUE);
     if (status) {
-	return cairo_test_status_from_status (cairo_test_get_context (cr),
+	return comac_test_status_from_status (comac_test_get_context (cr),
 					      status);
     }
 
-    cairo_set_font_face (cr, font_face);
-    cairo_font_face_destroy (font_face);
+    comac_set_font_face (cr, font_face);
+    comac_font_face_destroy (font_face);
 
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_set_font_size (cr, TEXT_SIZE);
 
     /* text in black, except first "zg." in green */
-    cairo_move_to (cr, BORDER, BORDER + font_extents.height + 2*BORDER + font_extents.ascent);
-    cairo_show_text (cr, TEXT1);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_show_text (cr, TEXT2);
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_show_text (cr, TEXT2);
+    comac_move_to (cr, BORDER, BORDER + font_extents.height + 2*BORDER + font_extents.ascent);
+    comac_show_text (cr, TEXT1);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_show_text (cr, TEXT2);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_show_text (cr, TEXT2);
 
     /* Third line. Filled version of text in blue */
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_move_to (cr, BORDER, BORDER + font_extents.height + 4*BORDER + 2*font_extents.ascent);
-    cairo_text_path (cr, full_text);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_move_to (cr, BORDER, BORDER + font_extents.height + 4*BORDER + 2*font_extents.ascent);
+    comac_text_path (cr, full_text);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (user_font,
+COMAC_TEST (user_font,
 	    "Tests user font feature",
 	    "font, user-font", /* keywords */
-	    "cairo >= 1.7.4", /* requirements */
+	    "comac >= 1.7.4", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw)

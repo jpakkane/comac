@@ -35,46 +35,46 @@
 /* This test is designed to paint a mesh pattern which folds along
  * both parameters. */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    cairo_test_paint_checkered (cr);
+    comac_test_paint_checkered (cr);
 
-    pattern = cairo_pattern_create_mesh ();
+    pattern = comac_pattern_create_mesh ();
 
-    cairo_mesh_pattern_begin_patch (pattern);
+    comac_mesh_pattern_begin_patch (pattern);
 
-    cairo_mesh_pattern_move_to (pattern, 1, 1);
+    comac_mesh_pattern_move_to (pattern, 1, 1);
 
-    cairo_mesh_pattern_curve_to (pattern, 6, 0, -1, 0, 4, 1);
-    cairo_mesh_pattern_curve_to (pattern, 5, 6, 5, -1, 4, 4);
-    cairo_mesh_pattern_curve_to (pattern, -1, 3, 6, 3, 1, 4);
-    cairo_mesh_pattern_curve_to (pattern, 2, -1, 2, 6, 1, 1);
+    comac_mesh_pattern_curve_to (pattern, 6, 0, -1, 0, 4, 1);
+    comac_mesh_pattern_curve_to (pattern, 5, 6, 5, -1, 4, 4);
+    comac_mesh_pattern_curve_to (pattern, -1, 3, 6, 3, 1, 4);
+    comac_mesh_pattern_curve_to (pattern, 2, -1, 2, 6, 1, 1);
 
-    cairo_mesh_pattern_set_control_point (pattern, 0, 2, 3);
-    cairo_mesh_pattern_set_control_point (pattern, 1, 3, 3);
-    cairo_mesh_pattern_set_control_point (pattern, 2, 3, 2);
-    cairo_mesh_pattern_set_control_point (pattern, 3, 2, 2);
+    comac_mesh_pattern_set_control_point (pattern, 0, 2, 3);
+    comac_mesh_pattern_set_control_point (pattern, 1, 3, 3);
+    comac_mesh_pattern_set_control_point (pattern, 2, 3, 2);
+    comac_mesh_pattern_set_control_point (pattern, 3, 2, 2);
 
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 0, 1);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 0);
-    cairo_mesh_pattern_set_corner_color_rgb (pattern, 3, 0, 1, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 0, 1, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 1, 0, 0, 1);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 2, 0, 0, 0);
+    comac_mesh_pattern_set_corner_color_rgb (pattern, 3, 0, 1, 0);
 
-    cairo_mesh_pattern_end_patch (pattern);
+    comac_mesh_pattern_end_patch (pattern);
 
-    cairo_scale (cr, SIZE, SIZE);
+    comac_scale (cr, SIZE, SIZE);
 
-    cairo_set_source (cr, pattern);
-    cairo_paint (cr);
-    cairo_pattern_destroy (pattern);
+    comac_set_source (cr, pattern);
+    comac_paint (cr);
+    comac_pattern_destroy (pattern);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (mesh_pattern_fold,
+COMAC_TEST (mesh_pattern_fold,
 	    "Paint a mesh pattern with complex folds",
 	    "mesh, pattern", /* keywords */
 	    NULL, /* requirements */

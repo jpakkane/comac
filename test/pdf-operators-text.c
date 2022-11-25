@@ -43,114 +43,114 @@
 
 #define BORDER 10
 
-static cairo_user_data_key_t font_face_key;
+static comac_user_data_key_t font_face_key;
 
-static cairo_status_t
-user_font_init (cairo_scaled_font_t  *scaled_font,
-                cairo_t              *cr,
-                cairo_font_extents_t *metrics)
+static comac_status_t
+user_font_init (comac_scaled_font_t  *scaled_font,
+                comac_t              *cr,
+                comac_font_extents_t *metrics)
 {
-    cairo_font_face_t *font_face = cairo_font_face_get_user_data (cairo_scaled_font_get_font_face (scaled_font),
+    comac_font_face_t *font_face = comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
                                                                   &font_face_key);
-    cairo_set_font_face (cr, font_face);
-    cairo_font_extents (cr, metrics);
+    comac_set_font_face (cr, font_face);
+    comac_font_extents (cr, metrics);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-user_font_render_glyph (cairo_scaled_font_t  *scaled_font,
+static comac_status_t
+user_font_render_glyph (comac_scaled_font_t  *scaled_font,
                         unsigned long         index,
-                        cairo_t              *cr,
-                        cairo_text_extents_t *metrics)
+                        comac_t              *cr,
+                        comac_text_extents_t *metrics)
 {
     char text[2];
-    cairo_font_face_t *font_face = cairo_font_face_get_user_data (cairo_scaled_font_get_font_face (scaled_font),
+    comac_font_face_t *font_face = comac_font_face_get_user_data (comac_scaled_font_get_font_face (scaled_font),
                                                                   &font_face_key);
 
     text[0] = index; /* Only using ASCII for this test */
     text[1] = 0;
-    cairo_set_font_face (cr, font_face);
-    cairo_text_extents (cr, text, metrics);
-    cairo_text_path (cr, text);
-    cairo_fill (cr);
-    return CAIRO_STATUS_SUCCESS;
+    comac_set_font_face (cr, font_face);
+    comac_text_extents (cr, text, metrics);
+    comac_text_path (cr, text);
+    comac_fill (cr);
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_font_face_t *
-create_user_font_face (cairo_font_face_t *orig_font)
+static comac_font_face_t *
+create_user_font_face (comac_font_face_t *orig_font)
 {
-    cairo_font_face_t *user_font_face;
+    comac_font_face_t *user_font_face;
 
-    user_font_face = cairo_user_font_face_create ();
-    cairo_user_font_face_set_init_func (user_font_face, user_font_init);
-    cairo_user_font_face_set_render_glyph_func (user_font_face, user_font_render_glyph);
-    cairo_font_face_set_user_data (user_font_face, &font_face_key, (void*) orig_font, NULL);
+    user_font_face = comac_user_font_face_create ();
+    comac_user_font_face_set_init_func (user_font_face, user_font_init);
+    comac_user_font_face_set_render_glyph_func (user_font_face, user_font_render_glyph);
+    comac_font_face_set_user_data (user_font_face, &font_face_key, (void*) orig_font, NULL);
     return user_font_face;
 }
 
 static void
-draw_text (cairo_t *cr, const char *text)
+draw_text (comac_t *cr, const char *text)
 {
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
-    cairo_move_to (cr, BORDER, BORDER);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_move_to (cr, BORDER, BORDER);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_show_text (cr, text);
-    cairo_text_extents (cr, text,&extents);
+    comac_show_text (cr, text);
+    comac_text_extents (cr, text,&extents);
 
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
                      BORDER + extents.x_bearing,
                      BORDER + extents.y_bearing,
                      extents.width,
                      extents.height);
-    cairo_set_line_width (cr, 1);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, 1);
+    comac_stroke (cr);
 }
 
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i;
     char *text;
-    cairo_font_face_t *font_face;
+    comac_font_face_t *font_face;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, "Dejavu Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr, "Dejavu Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
-    cairo_set_font_size (cr, FONT_SIZE);
+    comac_set_font_size (cr, FONT_SIZE);
 
     text = malloc (strlen(WORD) * NUM_WORDS + 1);
     text[0] = '\0';
     for (i = 0; i < NUM_WORDS; i++)
 	strcat (text, WORD);
 
-    cairo_save (cr);
-    cairo_translate (cr, BORDER, BORDER);
+    comac_save (cr);
+    comac_translate (cr, BORDER, BORDER);
     draw_text (cr, text);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    font_face = create_user_font_face (cairo_get_font_face (cr));
-    cairo_set_font_face (cr, font_face);
-    cairo_font_face_destroy (font_face);
-    cairo_set_font_size (cr, FONT_SIZE);
+    font_face = create_user_font_face (comac_get_font_face (cr));
+    comac_set_font_face (cr, font_face);
+    comac_font_face_destroy (font_face);
+    comac_set_font_size (cr, FONT_SIZE);
 
-    cairo_save (cr);
-    cairo_translate (cr, BORDER, BORDER*3);
+    comac_save (cr);
+    comac_translate (cr, BORDER, BORDER*3);
     draw_text (cr, text);
-    cairo_restore (cr);
+    comac_restore (cr);
 
     free (text);
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (pdf_operators_text,
+COMAC_TEST (pdf_operators_text,
 	    "Test pdf-operators.c glyph positioning",
 	    "pdf", /* keywords */
 	    NULL, /* requirements */

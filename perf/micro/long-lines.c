@@ -42,25 +42,25 @@ typedef enum {
 #define NUM_LINES    20
 #define LONG_FACTOR  50.0
 
-static cairo_time_t
-do_long_lines (cairo_t *cr, int width, int height, int loops, long_lines_crop_t crop)
+static comac_time_t
+do_long_lines (comac_t *cr, int width, int height, int loops, long_lines_crop_t crop)
 {
     int i;
     double x, y, dx, dy, min_x, min_y, max_x, max_y;
     double outer_width, outer_height;
 
-    cairo_save (cr);
+    comac_save (cr);
 
-    cairo_translate (cr, width / 2, height / 2);
+    comac_translate (cr, width / 2, height / 2);
 
     if (crop & LONG_LINES_CROPPED) {
 	outer_width = width;
 	outer_height = height;
-	cairo_set_source_rgb (cr, 0.0, 1.0, 0.0); /* green */
+	comac_set_source_rgb (cr, 0.0, 1.0, 0.0); /* green */
     } else {
 	outer_width = LONG_FACTOR * width;
 	outer_height = LONG_FACTOR * height;
-	cairo_set_source_rgb (cr, 1.0, 0.0, 0.0); /* red */
+	comac_set_source_rgb (cr, 1.0, 0.0, 0.0); /* red */
     }
 
     min_x = x = - outer_width / 2.0;
@@ -70,79 +70,79 @@ do_long_lines (cairo_t *cr, int width, int height, int loops, long_lines_crop_t 
     dx = outer_width / NUM_LINES;
     dy = outer_height / NUM_LINES;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
 	for (i = 0; i <= NUM_LINES; i++) {
-	    cairo_move_to (cr, 0, 0);
-	    cairo_line_to (cr, x, min_y);
+	    comac_move_to (cr, 0, 0);
+	    comac_line_to (cr, x, min_y);
 	    if ((crop & LONG_LINES_ONCE) == 0)
-		cairo_stroke (cr);
+		comac_stroke (cr);
 
-	    cairo_move_to (cr, 0, 0);
-	    cairo_line_to (cr, x, max_y);
+	    comac_move_to (cr, 0, 0);
+	    comac_line_to (cr, x, max_y);
 	    if ((crop & LONG_LINES_ONCE) == 0)
-		cairo_stroke (cr);
+		comac_stroke (cr);
 
-	    cairo_move_to (cr, 0, 0);
-	    cairo_line_to (cr, min_x, y);
+	    comac_move_to (cr, 0, 0);
+	    comac_line_to (cr, min_x, y);
 	    if ((crop & LONG_LINES_ONCE) == 0)
-		cairo_stroke (cr);
+		comac_stroke (cr);
 
-	    cairo_move_to (cr, 0, 0);
-	    cairo_line_to (cr, max_x, y);
+	    comac_move_to (cr, 0, 0);
+	    comac_line_to (cr, max_x, y);
 	    if ((crop & LONG_LINES_ONCE) == 0)
-		cairo_stroke (cr);
+		comac_stroke (cr);
 
 	    x += dx;
 	    y += dy;
 	}
 	if (crop & LONG_LINES_ONCE)
-	    cairo_stroke (cr);
+	    comac_stroke (cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-long_lines_uncropped (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+long_lines_uncropped (comac_t *cr, int width, int height, int loops)
 {
     return do_long_lines (cr, width, height, loops, 0);
 }
 
-static cairo_time_t
-long_lines_uncropped_once (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+long_lines_uncropped_once (comac_t *cr, int width, int height, int loops)
 {
     return do_long_lines (cr, width, height, loops, LONG_LINES_ONCE);
 }
 
-static cairo_time_t
-long_lines_cropped (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+long_lines_cropped (comac_t *cr, int width, int height, int loops)
 {
     return do_long_lines (cr, width, height, loops, LONG_LINES_CROPPED);
 }
 
-static cairo_time_t
-long_lines_cropped_once (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+long_lines_cropped_once (comac_t *cr, int width, int height, int loops)
 {
     return do_long_lines (cr, width, height, loops, LONG_LINES_CROPPED | LONG_LINES_ONCE);
 }
 
-cairo_bool_t
-long_lines_enabled (cairo_perf_t *perf)
+comac_bool_t
+long_lines_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "long-lines", NULL);
+    return comac_perf_can_run (perf, "long-lines", NULL);
 }
 
 void
-long_lines (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+long_lines (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "long-lines-uncropped", long_lines_uncropped, NULL);
-    cairo_perf_run (perf, "long-lines-uncropped-once", long_lines_uncropped_once, NULL);
-    cairo_perf_run (perf, "long-lines-cropped", long_lines_cropped, NULL);
-    cairo_perf_run (perf, "long-lines-cropped-once", long_lines_cropped_once, NULL);
+    comac_perf_run (perf, "long-lines-uncropped", long_lines_uncropped, NULL);
+    comac_perf_run (perf, "long-lines-uncropped-once", long_lines_uncropped_once, NULL);
+    comac_perf_run (perf, "long-lines-cropped", long_lines_cropped, NULL);
+    comac_perf_run (perf, "long-lines-cropped-once", long_lines_cropped_once, NULL);
 }

@@ -26,38 +26,38 @@
 
 #include "comac-test.h"
 
-/* Test the handling of cairo_push_group() with everything clipped. */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+/* Test the handling of comac_push_group() with everything clipped. */
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_paint (cr); /* opaque background */
+    comac_paint (cr); /* opaque background */
 
-    cairo_rectangle (cr,  20, 20, 0, 0);
-    cairo_clip (cr);
+    comac_rectangle (cr,  20, 20, 0, 0);
+    comac_clip (cr);
 
-    cairo_push_group (cr); /* => 0x0 group */
-    cairo_reset_clip (cr);
+    comac_push_group (cr); /* => 0x0 group */
+    comac_reset_clip (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    cairo_rectangle (cr, 0, 0, width, height);
-    cairo_set_source_rgba (cr, 0, 1, 0, .5);
-    cairo_fill (cr);
+    comac_rectangle (cr, 0, 0, width, height);
+    comac_set_source_rgba (cr, 0, 1, 0, .5);
+    comac_fill (cr);
 
-    cairo_move_to (cr, 0, 20);
-    cairo_line_to (cr, width, 20);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_stroke (cr);
+    comac_move_to (cr, 0, 20);
+    comac_line_to (cr, width, 20);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_stroke (cr);
 
-    cairo_pop_group_to_source (cr);
-    cairo_reset_clip (cr);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_reset_clip (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_empty_group,
+COMAC_TEST (clip_empty_group,
 	    "Test handling of groups with everything clipped",
 	    "clip, group", /* keywords */
 	    NULL, /* requirements */

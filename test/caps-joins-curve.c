@@ -30,78 +30,78 @@
 #define PAD		(3 * LINE_WIDTH)
 
 static void
-make_path (cairo_t *cr)
+make_path (comac_t *cr)
 {
-    cairo_move_to (cr, 0, 0);
-    cairo_rel_curve_to (cr,
+    comac_move_to (cr, 0, 0);
+    comac_rel_curve_to (cr,
 			-SIZE/4, SIZE/3,
 			-SIZE/4, SIZE/3,
 			0, SIZE);
-    cairo_rel_curve_to (cr,
+    comac_rel_curve_to (cr,
 			SIZE/3, -SIZE/4,
 			SIZE/3, -SIZE/4,
 			SIZE, 0);
-    cairo_close_path (cr);
+    comac_close_path (cr);
 
-    cairo_move_to (cr, 5 * LINE_WIDTH, 3 * LINE_WIDTH);
-    cairo_rel_curve_to (cr,
+    comac_move_to (cr, 5 * LINE_WIDTH, 3 * LINE_WIDTH);
+    comac_rel_curve_to (cr,
 			0, -3 * LINE_WIDTH,
 			0, -3 * LINE_WIDTH,
 			-3 * LINE_WIDTH, -3 * LINE_WIDTH);
 }
 
 static void
-draw_caps_joins (cairo_t *cr)
+draw_caps_joins (comac_t *cr)
 {
-    cairo_save (cr);
+    comac_save (cr);
 
-    cairo_translate (cr, PAD, PAD);
-
-    make_path (cr);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_BEVEL);
-    cairo_stroke (cr);
-
-    cairo_translate (cr, SIZE + PAD, 0.);
+    comac_translate (cr, PAD, PAD);
 
     make_path (cr);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
-    cairo_stroke (cr);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_BEVEL);
+    comac_stroke (cr);
 
-    cairo_translate (cr, SIZE + PAD, 0.);
+    comac_translate (cr, SIZE + PAD, 0.);
 
     make_path (cr);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_SQUARE);
-    cairo_set_line_join (cr, CAIRO_LINE_JOIN_MITER);
-    cairo_stroke (cr);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_ROUND);
+    comac_stroke (cr);
 
-    cairo_restore (cr);
+    comac_translate (cr, SIZE + PAD, 0.);
+
+    make_path (cr);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_SQUARE);
+    comac_set_line_join (cr, COMAC_LINE_JOIN_MITER);
+    comac_stroke (cr);
+
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_set_line_width (cr, LINE_WIDTH);
+    comac_set_line_width (cr, LINE_WIDTH);
 
     draw_caps_joins (cr);
 
     /* and reflect to generate the opposite vertex ordering */
-    cairo_translate (cr, 0, height);
-    cairo_scale (cr, 1, -1);
+    comac_translate (cr, 0, height);
+    comac_scale (cr, 1, -1);
 
     draw_caps_joins (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (caps_joins_curve,
+COMAC_TEST (caps_joins_curve,
 	    "Test caps and joins on curves",
 	    "stroke, cap, join", /* keywords */
 	    NULL, /* requirements */

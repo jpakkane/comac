@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2007 Mathias Hasselmann
  *
@@ -25,52 +25,52 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * Contributor(s):
  *	Mathias Hasselmann <mathias.hasselmann@gmx.de>
  */
 
-#ifndef CAIRO_FEATURES_H
+#ifndef COMAC_FEATURES_H
 /* This block is to just make this header file standalone */
-#define CAIRO_MUTEX_DECLARE(mutex)
+#define COMAC_MUTEX_DECLARE(mutex)
 #endif
 
-CAIRO_MUTEX_DECLARE (_cairo_pattern_solid_surface_cache_lock)
+COMAC_MUTEX_DECLARE (_comac_pattern_solid_surface_cache_lock)
 
-CAIRO_MUTEX_DECLARE (_cairo_image_solid_cache_mutex)
+COMAC_MUTEX_DECLARE (_comac_image_solid_cache_mutex)
 
-CAIRO_MUTEX_DECLARE (_cairo_toy_font_face_mutex)
-CAIRO_MUTEX_DECLARE (_cairo_intern_string_mutex)
-CAIRO_MUTEX_DECLARE (_cairo_scaled_font_map_mutex)
-CAIRO_MUTEX_DECLARE (_cairo_scaled_glyph_page_cache_mutex)
-CAIRO_MUTEX_DECLARE (_cairo_scaled_font_error_mutex)
-CAIRO_MUTEX_DECLARE (_cairo_glyph_cache_mutex)
+COMAC_MUTEX_DECLARE (_comac_toy_font_face_mutex)
+COMAC_MUTEX_DECLARE (_comac_intern_string_mutex)
+COMAC_MUTEX_DECLARE (_comac_scaled_font_map_mutex)
+COMAC_MUTEX_DECLARE (_comac_scaled_glyph_page_cache_mutex)
+COMAC_MUTEX_DECLARE (_comac_scaled_font_error_mutex)
+COMAC_MUTEX_DECLARE (_comac_glyph_cache_mutex)
 
-#if CAIRO_HAS_FT_FONT
-CAIRO_MUTEX_DECLARE (_cairo_ft_unscaled_font_map_mutex)
+#if COMAC_HAS_FT_FONT
+COMAC_MUTEX_DECLARE (_comac_ft_unscaled_font_map_mutex)
 #endif
 
-#if CAIRO_HAS_WIN32_FONT
-CAIRO_MUTEX_DECLARE (_cairo_win32_font_face_mutex)
-CAIRO_MUTEX_DECLARE (_cairo_win32_font_dc_mutex)
+#if COMAC_HAS_WIN32_FONT
+COMAC_MUTEX_DECLARE (_comac_win32_font_face_mutex)
+COMAC_MUTEX_DECLARE (_comac_win32_font_dc_mutex)
 #endif
 
-#if CAIRO_HAS_XLIB_SURFACE
-CAIRO_MUTEX_DECLARE (_cairo_xlib_display_mutex)
+#if COMAC_HAS_XLIB_SURFACE
+COMAC_MUTEX_DECLARE (_comac_xlib_display_mutex)
 #endif
 
-#if CAIRO_HAS_XCB_SURFACE
-CAIRO_MUTEX_DECLARE (_cairo_xcb_connections_mutex)
+#if COMAC_HAS_XCB_SURFACE
+COMAC_MUTEX_DECLARE (_comac_xcb_connections_mutex)
 #endif
 
-#if CAIRO_HAS_GL_SURFACE
-CAIRO_MUTEX_DECLARE (_cairo_gl_context_mutex)
+#if COMAC_HAS_GL_SURFACE
+COMAC_MUTEX_DECLARE (_comac_gl_context_mutex)
 #endif
 
 #if !defined (HAS_ATOMIC_OPS) || defined (ATOMIC_OP_NEEDS_MEMORY_BARRIER)
-CAIRO_MUTEX_DECLARE (_cairo_atomic_mutex)
+COMAC_MUTEX_DECLARE (_comac_atomic_mutex)
 #endif
 
 /* Undefine, to err on unintended inclusion */
-#undef   CAIRO_MUTEX_DECLARE
+#undef   COMAC_MUTEX_DECLARE

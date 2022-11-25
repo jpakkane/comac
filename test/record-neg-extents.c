@@ -49,7 +49,7 @@
 
 
 static void
-transform_extents(cairo_rectangle_t *extents, cairo_matrix_t *mat)
+transform_extents(comac_rectangle_t *extents, comac_matrix_t *mat)
 {
     double x1, y1, x2, y2, x, y;
 
@@ -61,23 +61,23 @@ transform_extents(cairo_rectangle_t *extents, cairo_matrix_t *mat)
 
     x = extents->x;
     y = extents->y;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     x1 = x2 = x;
     y1 = y2 = y;
 
     x = extents->x + extents->width;
     y = extents->y;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     UPDATE_BBOX;
 
     x = extents->x;
     y = extents->y + extents->height;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     UPDATE_BBOX;
 
     x = extents->x + extents->width;
     y = extents->y + extents->height;
-    cairo_matrix_transform_point (mat, &x, &y);
+    comac_matrix_transform_point (mat, &x, &y);
     UPDATE_BBOX;
 
     extents->x = x1;
@@ -88,128 +88,128 @@ transform_extents(cairo_rectangle_t *extents, cairo_matrix_t *mat)
 #undef UPDATE_BBOX
 }
 
-static cairo_pattern_t *
-create_pattern (cairo_matrix_t *mat, cairo_bool_t bounded)
+static comac_pattern_t *
+create_pattern (comac_matrix_t *mat, comac_bool_t bounded)
 {
-    cairo_surface_t *surf;
-    cairo_pattern_t *pat;
-    cairo_t *cr;
+    comac_surface_t *surf;
+    comac_pattern_t *pat;
+    comac_t *cr;
     int border;
     int square;
 
     if (bounded) {
-	cairo_rectangle_t extents = { 0, 0, PAT_SIZE, PAT_SIZE };
+	comac_rectangle_t extents = { 0, 0, PAT_SIZE, PAT_SIZE };
 	transform_extents (&extents, mat);
-	surf = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &extents);
+	surf = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &extents);
     } else {
-	surf = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, NULL);
+	surf = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, NULL);
     }
 
-    cr = cairo_create (surf);
-    cairo_transform (cr, mat);
+    cr = comac_create (surf);
+    comac_transform (cr, mat);
 
     border  = PAT_SIZE/8;
     square = (PAT_SIZE - 2*border)/2;
 
-    cairo_rectangle (cr, 0, 0, PAT_SIZE, PAT_SIZE);
-    cairo_clip (cr);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_rectangle (cr, 0, 0, PAT_SIZE, PAT_SIZE);
+    comac_clip (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
-    cairo_translate (cr, border, border);
-    cairo_rectangle (cr, 0, 0, square, square);
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_fill (cr);
+    comac_translate (cr, border, border);
+    comac_rectangle (cr, 0, 0, square, square);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_fill (cr);
 
-    cairo_translate (cr, square, 0);
-    cairo_rectangle (cr, 0, 0, square, square);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_fill (cr);
+    comac_translate (cr, square, 0);
+    comac_rectangle (cr, 0, 0, square, square);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_fill (cr);
 
-    cairo_translate (cr, 0, square);
-    cairo_rectangle (cr, 0, 0, square, square);
-    cairo_set_source_rgb (cr, 0, 1, 1);
-    cairo_fill (cr);
+    comac_translate (cr, 0, square);
+    comac_rectangle (cr, 0, 0, square, square);
+    comac_set_source_rgb (cr, 0, 1, 1);
+    comac_fill (cr);
 
-    cairo_translate (cr, -square, 0);
-    cairo_rectangle (cr, 0, 0, square, square);
-    cairo_set_source_rgb (cr, 1, 1, 0);
-    cairo_fill (cr);
+    comac_translate (cr, -square, 0);
+    comac_rectangle (cr, 0, 0, square, square);
+    comac_set_source_rgb (cr, 1, 1, 0);
+    comac_fill (cr);
 
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
-    pat = cairo_pattern_create_for_surface (surf);
-    cairo_surface_destroy (surf);
-    cairo_pattern_set_matrix (pat, mat);
+    pat = comac_pattern_create_for_surface (surf);
+    comac_surface_destroy (surf);
+    comac_pattern_set_matrix (pat, mat);
 
     return pat;
 }
 
-static cairo_test_status_t
-record_extents (cairo_t *cr, int width, int height, cairo_bool_t bounded)
+static comac_test_status_t
+record_extents (comac_t *cr, int width, int height, comac_bool_t bounded)
 {
-    cairo_pattern_t *pat;
-    cairo_matrix_t mat;
+    comac_pattern_t *pat;
+    comac_matrix_t mat;
 
     /* record surface extents (-PAT_SIZE/2, -PAT_SIZE/2) to (PAT_SIZE/2, PAT_SIZE/2) */
-    cairo_translate (cr, PAD, PAD);
-    cairo_matrix_init_translate (&mat, -PAT_SIZE/2, -PAT_SIZE/2);
+    comac_translate (cr, PAD, PAD);
+    comac_matrix_init_translate (&mat, -PAT_SIZE/2, -PAT_SIZE/2);
     pat = create_pattern (&mat, bounded);
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_paint (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_paint (cr);
 
     /* record surface extents (-10*PAT_SIZE/2, -10*PAT_SIZE/2) to (10*PAT_SIZE/2, 10*PAT_SIZE/2) */
-    cairo_translate (cr, PAT_SIZE + PAD, 0);
-    cairo_matrix_init_translate (&mat, -10.0*PAT_SIZE/2, -10.0*PAT_SIZE/2);
-    cairo_matrix_scale (&mat, 10, 10);
+    comac_translate (cr, PAT_SIZE + PAD, 0);
+    comac_matrix_init_translate (&mat, -10.0*PAT_SIZE/2, -10.0*PAT_SIZE/2);
+    comac_matrix_scale (&mat, 10, 10);
     pat = create_pattern (&mat, bounded);
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_paint (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_paint (cr);
 
     /* record surface extents (-0.1*PAT_SIZE/2, -0.1*PAT_SIZE/2) to (0.1*PAT_SIZE/2, 0.1*PAT_SIZE/2) */
-    cairo_translate (cr, PAT_SIZE + PAD, 0);
-    cairo_matrix_init_translate (&mat, -0.1*PAT_SIZE/2, -0.1*PAT_SIZE/2);
-    cairo_matrix_scale (&mat, 0.1, 0.1);
+    comac_translate (cr, PAT_SIZE + PAD, 0);
+    comac_matrix_init_translate (&mat, -0.1*PAT_SIZE/2, -0.1*PAT_SIZE/2);
+    comac_matrix_scale (&mat, 0.1, 0.1);
     pat = create_pattern (&mat, bounded);
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_paint (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_paint (cr);
 
     /* record surface centered on (0,0) and rotated 45 deg */
-    cairo_translate (cr, PAT_SIZE + PAD, 0);
-    cairo_matrix_init_translate (&mat, -PAT_SIZE/sqrt(2), -PAT_SIZE/sqrt(2));
-    cairo_matrix_rotate (&mat, M_PI/4.0);
-    cairo_matrix_translate (&mat, PAT_SIZE/2, -PAT_SIZE/2);
+    comac_translate (cr, PAT_SIZE + PAD, 0);
+    comac_matrix_init_translate (&mat, -PAT_SIZE/sqrt(2), -PAT_SIZE/sqrt(2));
+    comac_matrix_rotate (&mat, M_PI/4.0);
+    comac_matrix_translate (&mat, PAT_SIZE/2, -PAT_SIZE/2);
     pat = create_pattern (&mat, bounded);
-    cairo_set_source (cr, pat);
-    cairo_pattern_destroy (pat);
-    cairo_paint (cr);
+    comac_set_source (cr, pat);
+    comac_pattern_destroy (pat);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-record_neg_extents_bounded (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_neg_extents_bounded (comac_t *cr, int width, int height)
 {
     return record_extents(cr, width, height, TRUE);
 }
 
-static cairo_test_status_t
-record_neg_extents_unbounded (cairo_t *cr, int width, int height)
+static comac_test_status_t
+record_neg_extents_unbounded (comac_t *cr, int width, int height)
 {
     return record_extents(cr, width, height, FALSE);
 }
 
 
-CAIRO_TEST (record_neg_extents_unbounded,
+COMAC_TEST (record_neg_extents_unbounded,
 	    "Paint unbounded recording pattern with untransformed extents outside of target extents",
 	    "record,transform,pattern", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, record_neg_extents_unbounded)
-CAIRO_TEST (record_neg_extents_bounded,
+COMAC_TEST (record_neg_extents_bounded,
 	    "Paint bounded recording pattern with untransformed extents outside of target extents",
 	    "record,transform,pattern", /* keywords */
 	    NULL, /* requirements */

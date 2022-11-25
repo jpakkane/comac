@@ -28,10 +28,10 @@
 /* This test was originally written to exercise a bug in pixman in
  * which it would scribble all over memory when given a particular
  * (and bogus) trapezoid. However, a recent change to
- * _cairo_fixed_from_double changed the details of the bogus trapezoid
+ * _comac_fixed_from_double changed the details of the bogus trapezoid
  * (it overflows in a different way now), so the bug is being masked.
  *
- * According to Vladimir, (https://lists.freedesktop.org/archives/cairo/2006-November/008482.html):
+ * According to Vladimir, (https://lists.freedesktop.org/archives/comac/2006-November/008482.html):
  *
  *	Before the change, the two trapezoids that were generated were:
  *
@@ -54,36 +54,36 @@
  *
  * I think the fix we want here is to rewrite this test to call
  * directly into pixman with the trapezoid of interest, (which will
- * require adding a new way to configure cairo for "testing" which
+ * require adding a new way to configure comac for "testing" which
  * will prevent the hiding of internal library symbols.
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0,0,0);
+    comac_set_source_rgb (cr, 0,0,0);
 
     /* Note that without the clip, this doesn't crash... */
-    cairo_new_path (cr);
-    cairo_rectangle (cr, 0, 0, width, height);
-    cairo_clip (cr);
+    comac_new_path (cr);
+    comac_rectangle (cr, 0, 0, width, height);
+    comac_clip (cr);
 
-    cairo_new_path (cr);
-    cairo_line_to (cr, 8.0, 8.0);
-    cairo_line_to (cr, 312.0, 8.0);
-    cairo_line_to (cr, 310.0, 31378756.2666666666);
-    cairo_line_to (cr, 10.0, 31378756.2666666666);
-    cairo_line_to (cr, 8.0, 8.0);
-    cairo_fill (cr);
+    comac_new_path (cr);
+    comac_line_to (cr, 8.0, 8.0);
+    comac_line_to (cr, 312.0, 8.0);
+    comac_line_to (cr, 310.0, 31378756.2666666666);
+    comac_line_to (cr, 10.0, 31378756.2666666666);
+    comac_line_to (cr, 8.0, 8.0);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /* XFAIL: range overflow of fixed-point */
-CAIRO_TEST (big_trap,
+COMAC_TEST (big_trap,
 	    "Test oversize trapezoid with a clip region"
 	    "\nTest needs to be adjusted to trigger the original bug",
 	    "trap", /* keywords */

@@ -29,67 +29,67 @@
 
 #define CHECK_STATUS(status)						\
     do {								\
-	if (cairo_status (cr) != (status)) {				\
-	    cairo_test_log (ctx, "Expected status: %s\n",		\
-			    cairo_status_to_string (status));		\
-	    cairo_test_log (ctx, "Actual status: %s\n",			\
-			    cairo_status_to_string (cairo_status (cr))); \
-	    result = CAIRO_TEST_FAILURE;				\
+	if (comac_status (cr) != (status)) {				\
+	    comac_test_log (ctx, "Expected status: %s\n",		\
+			    comac_status_to_string (status));		\
+	    comac_test_log (ctx, "Actual status: %s\n",			\
+			    comac_status_to_string (comac_status (cr))); \
+	    result = COMAC_TEST_FAILURE;				\
 	}								\
     } while (0)
 
 static void
-reinit_cairo (cairo_t **cr)
+reinit_comac (comac_t **cr)
 {
     if (*cr)
-	cairo_destroy (*cr);
+	comac_destroy (*cr);
 
-    *cr = cairo_create (cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 1, 1));
-    cairo_surface_destroy (cairo_get_target (*cr));
+    *cr = comac_create (comac_image_surface_create (COMAC_FORMAT_ARGB32, 1, 1));
+    comac_surface_destroy (comac_get_target (*cr));
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_t *cr;
-    cairo_test_status_t result = CAIRO_TEST_SUCCESS;
+    comac_t *cr;
+    comac_test_status_t result = COMAC_TEST_SUCCESS;
 
     cr = NULL;
 
-    reinit_cairo (&cr);
+    reinit_comac (&cr);
 
-    /* cairo_restore() must fail with CAIRO_STATUS_INVALID_RESTORE if
-     * no matching cairo_save() call has been performed. */
-    cairo_test_log (ctx, "Checking save(); push(); restore();\n");
-    cairo_save (cr);
-    CHECK_STATUS (CAIRO_STATUS_SUCCESS);
-    cairo_push_group (cr);
-    CHECK_STATUS (CAIRO_STATUS_SUCCESS);
-    cairo_restore (cr);
-    CHECK_STATUS (CAIRO_STATUS_INVALID_RESTORE);
-
-
-    reinit_cairo (&cr);
-
-    /* cairo_restore() must fail with CAIRO_STATUS_INVALID_RESTORE if
-     * no matching cairo_save() call has been performed. */
-    cairo_test_log (ctx, "Checking push(); save(); pop();\n");
-    cairo_push_group (cr);
-    CHECK_STATUS (CAIRO_STATUS_SUCCESS);
-    cairo_save (cr);
-    CHECK_STATUS (CAIRO_STATUS_SUCCESS);
-    cairo_pop_group_to_source (cr);
-    CHECK_STATUS (CAIRO_STATUS_INVALID_POP_GROUP);
+    /* comac_restore() must fail with COMAC_STATUS_INVALID_RESTORE if
+     * no matching comac_save() call has been performed. */
+    comac_test_log (ctx, "Checking save(); push(); restore();\n");
+    comac_save (cr);
+    CHECK_STATUS (COMAC_STATUS_SUCCESS);
+    comac_push_group (cr);
+    CHECK_STATUS (COMAC_STATUS_SUCCESS);
+    comac_restore (cr);
+    CHECK_STATUS (COMAC_STATUS_INVALID_RESTORE);
 
 
-    cairo_destroy (cr);
+    reinit_comac (&cr);
+
+    /* comac_restore() must fail with COMAC_STATUS_INVALID_RESTORE if
+     * no matching comac_save() call has been performed. */
+    comac_test_log (ctx, "Checking push(); save(); pop();\n");
+    comac_push_group (cr);
+    CHECK_STATUS (COMAC_STATUS_SUCCESS);
+    comac_save (cr);
+    CHECK_STATUS (COMAC_STATUS_SUCCESS);
+    comac_pop_group_to_source (cr);
+    CHECK_STATUS (COMAC_STATUS_INVALID_POP_GROUP);
+
+
+    comac_destroy (cr);
 
     return result;
 }
 
-CAIRO_TEST (group_state,
-	    "Tests the interaction between state (cairo_save, cairo_restore) "
-	    "and group (cairo_push_group/cairo_pop_group) API",
+COMAC_TEST (group_state,
+	    "Tests the interaction between state (comac_save, comac_restore) "
+	    "and group (comac_push_group/comac_pop_group) API",
 	    "api", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

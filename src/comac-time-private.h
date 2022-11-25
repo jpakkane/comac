@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright (C) 2011 Andrea Canciani
  *
@@ -27,65 +27,65 @@
  *
  */
 
-#ifndef CAIRO_TIME_PRIVATE_H
-#define CAIRO_TIME_PRIVATE_H
+#ifndef COMAC_TIME_PRIVATE_H
+#define COMAC_TIME_PRIVATE_H
 
 #include "comac-compiler-private.h"
 #include "comac-wideint-private.h"
 
 /* Make the base type signed for easier arithmetic */
-typedef cairo_int64_t cairo_time_t;
+typedef comac_int64_t comac_time_t;
 
-#define _cairo_time_add _cairo_int64_add
-#define _cairo_time_sub _cairo_int64_sub
-#define _cairo_time_gt  _cairo_int64_gt
-#define _cairo_time_lt  _cairo_int64_lt
+#define _comac_time_add _comac_int64_add
+#define _comac_time_sub _comac_int64_sub
+#define _comac_time_gt  _comac_int64_gt
+#define _comac_time_lt  _comac_int64_lt
 
-#define _cairo_time_to_double   _cairo_int64_to_double
-#define _cairo_time_from_double _cairo_double_to_int64
+#define _comac_time_to_double   _comac_int64_to_double
+#define _comac_time_from_double _comac_double_to_int64
 
-cairo_private int
-_cairo_time_cmp (const void *a,
+comac_private int
+_comac_time_cmp (const void *a,
 		 const void *b);
 
-cairo_private double
-_cairo_time_to_s (cairo_time_t t);
+comac_private double
+_comac_time_to_s (comac_time_t t);
 
-cairo_private cairo_time_t
-_cairo_time_from_s (double t);
+comac_private comac_time_t
+_comac_time_from_s (double t);
 
-cairo_private cairo_time_t
-_cairo_time_get (void);
+comac_private comac_time_t
+_comac_time_get (void);
 
-static cairo_always_inline cairo_time_t
-_cairo_time_get_delta (cairo_time_t t)
+static comac_always_inline comac_time_t
+_comac_time_get_delta (comac_time_t t)
 {
-    cairo_time_t now;
+    comac_time_t now;
 
-    now = _cairo_time_get ();
+    now = _comac_time_get ();
 
-    return _cairo_time_sub (now, t);
+    return _comac_time_sub (now, t);
 }
 
-static cairo_always_inline double
-_cairo_time_to_ns (cairo_time_t t)
+static comac_always_inline double
+_comac_time_to_ns (comac_time_t t)
 {
-    return 1.e9 * _cairo_time_to_s (t);
+    return 1.e9 * _comac_time_to_s (t);
 }
 
-static cairo_always_inline cairo_time_t
-_cairo_time_max (cairo_time_t a, cairo_time_t b)
+static comac_always_inline comac_time_t
+_comac_time_max (comac_time_t a, comac_time_t b)
 {
-    if (_cairo_int64_gt (a, b))
+    if (_comac_int64_gt (a, b))
 	return a;
     else
 	return b;
 }
 
-static cairo_always_inline cairo_time_t
-_cairo_time_min (cairo_time_t a, cairo_time_t b)
+static comac_always_inline comac_time_t
+_comac_time_min (comac_time_t a, comac_time_t b)
 {
-    if (_cairo_int64_lt (a, b))
+    if (_comac_int64_lt (a, b))
 	return a;
     else
 	return b;

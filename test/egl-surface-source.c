@@ -51,7 +51,7 @@ cleanup (void *data)
     free (arg);
 }
 
-static cairo_surface_t *
+static comac_surface_t *
 create_source_surface (int size)
 {
     EGLint config_attribs[] = {
@@ -60,23 +60,23 @@ create_source_surface (int size)
 	EGL_BLUE_SIZE, 8,
 	EGL_ALPHA_SIZE, 8,
 	EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-#if CAIRO_HAS_GL_SURFACE
+#if COMAC_HAS_GL_SURFACE
 	EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-#elif CAIRO_HAS_GLESV2_SURFACE
+#elif COMAC_HAS_GLESV2_SURFACE
 	EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
 #endif
 	EGL_NONE
     };
     const EGLint ctx_attribs[] = {
-#if CAIRO_HAS_GLESV2_SURFACE
+#if COMAC_HAS_GLESV2_SURFACE
 	EGL_CONTEXT_CLIENT_VERSION, 2,
 #endif
 	EGL_NONE
     };
 
     struct closure *arg;
-    cairo_device_t *device;
-    cairo_surface_t *surface;
+    comac_device_t *device;
+    comac_surface_t *surface;
     EGLConfig config;
     EGLint numConfigs;
     EGLDisplay dpy;
@@ -93,9 +93,9 @@ create_source_surface (int size)
 	return NULL;
     }
 
-#if CAIRO_HAS_GL_SURFACE
+#if COMAC_HAS_GL_SURFACE
     eglBindAPI (EGL_OPENGL_API);
-#elif CAIRO_HAS_GLESV2_SURFACE
+#elif COMAC_HAS_GLESV2_SURFACE
     eglBindAPI (EGL_OPENGL_ES_API);
 #endif
 
@@ -109,9 +109,9 @@ create_source_surface (int size)
     arg = xmalloc (sizeof (struct closure));
     arg->dpy = dpy;
     arg->ctx = ctx;
-    device = cairo_egl_device_create (dpy, ctx);
-    if (cairo_device_set_user_data (device,
-				    (cairo_user_data_key_t *) cleanup,
+    device = comac_egl_device_create (dpy, ctx);
+    if (comac_device_set_user_data (device,
+				    (comac_user_data_key_t *) cleanup,
 				    arg,
 				    cleanup))
     {
@@ -119,15 +119,15 @@ create_source_surface (int size)
 	return NULL;
     }
 
-    surface = cairo_gl_surface_create (device,
-				       CAIRO_CONTENT_COLOR_ALPHA,
+    surface = comac_gl_surface_create (device,
+				       COMAC_CONTENT_COLOR_ALPHA,
 				       size, size);
-    cairo_device_destroy (device);
+    comac_device_destroy (device);
 
     return surface;
 }
 
-CAIRO_TEST (egl_surface_source,
+COMAC_TEST (egl_surface_source,
 	    "Test using a EGL surface as the source",
 	    "source", /* keywords */
 	    NULL, /* requirements */

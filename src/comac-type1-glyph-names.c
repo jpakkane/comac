@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006 Red Hat, Inc
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -35,7 +35,7 @@
 
 #include "comacint.h"
 
-#if CAIRO_HAS_FONT_SUBSET
+#if COMAC_HAS_FONT_SUBSET
 
 #include "comac-type1-private.h"
 #include "comac-scaled-font-subsets-private.h"
@@ -390,7 +390,7 @@ static const int16_t winansi_encoding_offset[256] = {
 };
 
 const char *
-_cairo_ps_standard_encoding_to_glyphname (int glyph)
+_comac_ps_standard_encoding_to_glyphname (int glyph)
 {
     if (ps_standard_encoding_offset[glyph])
 	return glyph_name_symbol + ps_standard_encoding_offset[glyph];
@@ -399,7 +399,7 @@ _cairo_ps_standard_encoding_to_glyphname (int glyph)
 }
 
 const char *
-_cairo_winansi_to_glyphname (int glyph)
+_comac_winansi_to_glyphname (int glyph)
 {
     if (winansi_encoding_offset[glyph])
 	return glyph_name_symbol + winansi_encoding_offset[glyph];
@@ -407,4 +407,4 @@ _cairo_winansi_to_glyphname (int glyph)
 	return NULL;
 }
 
-#endif /* CAIRO_HAS_FONT_SUBSET */
+#endif /* COMAC_HAS_FONT_SUBSET */

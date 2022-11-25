@@ -28,32 +28,32 @@
 #define SIZE 8
 #define PAD 2
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *group;
+    comac_surface_t *group;
     double x, y;
 
     /* First paint background in blue. */
-    cairo_set_source_rgb (cr, 0.0, 0.0, 1.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 1.0);
+    comac_paint (cr);
 
     /* Then clip so that the group surface ends up smaller than the
      * original surface. */
-    cairo_rectangle (cr, PAD, PAD, width - 2 * PAD, height - 2 * PAD);
-    cairo_clip (cr);
+    comac_rectangle (cr, PAD, PAD, width - 2 * PAD, height - 2 * PAD);
+    comac_clip (cr);
 
     /* Paint the clipped region in red (which should all be overwritten later). */
-    cairo_set_source_rgb (cr, 1.0, 0.0, 0.0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 0.0, 0.0);
+    comac_paint (cr);
 
     /* Redirect to a new group and get that surface. */
-    cairo_push_group (cr);
-    group = cairo_get_group_target (cr);
+    comac_push_group (cr);
+    group = comac_get_group_target (cr);
 
     /* Then paint in green what we query the group surface size to be. */
-    cairo_set_source_rgb (cr, 0.0, 1.0, 0.0);
-    cairo_surface_get_device_offset (group, &x, &y);
+    comac_set_source_rgb (cr, 0.0, 1.0, 0.0);
+    comac_surface_get_device_offset (group, &x, &y);
     /* Or rather, we calculate the group surface size based on the
      * only thing we can query which is the device offset. Ideally,
      * the size would always be the minimal (width - 2 * PAD, height -
@@ -64,21 +64,21 @@ draw (cairo_t *cr, int width, int height)
      * The calculation below might also be less confusing if the sign
      * convention on the device offset were reversed, but it is what
      * it is. Oh well. */
-    cairo_rectangle (cr,
+    comac_rectangle (cr,
 		     -x, -y,
 		     width + 2 * x,
 		     height + 2 * y);
-    cairo_fill (cr);
+    comac_fill (cr);
 
     /* Finish up the group painting. */
-    cairo_pop_group_to_source (cr);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (get_group_target,
-	    "Test of both cairo_get_group_target and cairo_surface_get_device_offset",
+COMAC_TEST (get_group_target,
+	    "Test of both comac_get_group_target and comac_surface_get_device_offset",
 	    "api", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,

@@ -26,45 +26,45 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *radial;
+    comac_pattern_t *radial;
     double angle;
     int i, j;
 
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
     angle = 0.0;
 
     for (i = 0; i < 4; i++) {
 	for (j = 0; j < 4; j++) {
-	    cairo_save (cr);
-	    cairo_rectangle (cr, 100*i, 100*j, 100, 100);
-	    cairo_clip (cr);
+	    comac_save (cr);
+	    comac_rectangle (cr, 100*i, 100*j, 100, 100);
+	    comac_clip (cr);
 
-	    radial = cairo_pattern_create_radial (cos (angle), sin (angle), 0,
+	    radial = comac_pattern_create_radial (cos (angle), sin (angle), 0,
 						  0, 0, 1);
-	    cairo_pattern_add_color_stop_rgb (radial, 0.0, 1, 0, 0);
-	    cairo_pattern_add_color_stop_rgb (radial, 1.0, 0, 1, 0);
+	    comac_pattern_add_color_stop_rgb (radial, 0.0, 1, 0, 0);
+	    comac_pattern_add_color_stop_rgb (radial, 1.0, 0, 1, 0);
 
-	    cairo_translate (cr, 100*i+50, 100*j+50);
-	    cairo_scale (cr, 50, -50);
-	    cairo_set_source (cr, radial);
-	    cairo_pattern_destroy (radial);
+	    comac_translate (cr, 100*i+50, 100*j+50);
+	    comac_scale (cr, 50, -50);
+	    comac_set_source (cr, radial);
+	    comac_pattern_destroy (radial);
 
-	    cairo_paint(cr);
-	    cairo_restore (cr);
+	    comac_paint(cr);
+	    comac_restore (cr);
 
 	    angle += M_PI/17;
 	}
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (radial_outer_focus,
+COMAC_TEST (radial_outer_focus,
 	    "Exercises the condition of rendering a radial gradial on its outer focus",
 	    "radial", /* keywords */
 	    NULL, /* requirements */

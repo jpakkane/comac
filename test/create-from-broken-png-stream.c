@@ -35,51 +35,51 @@ static const unsigned char broken_png_data[] = {
 static const size_t broken_png_data_length
     = sizeof(broken_png_data) / sizeof(broken_png_data[0]);
 
-static cairo_status_t
+static comac_status_t
 read_png_from_data (void *closure, unsigned char *data, unsigned int length)
 {
     size_t *offset = closure;
     size_t remaining = broken_png_data_length - *offset;
 
     if (remaining < length)
-	return CAIRO_STATUS_READ_ERROR;
+	return COMAC_STATUS_READ_ERROR;
 
     memcpy (data, &broken_png_data[*offset], length);
     *offset += length;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_surface_t *surface;
-    cairo_status_t status;
-    cairo_status_t expected;
+    comac_surface_t *surface;
+    comac_status_t status;
+    comac_status_t expected;
     size_t offset = 0;
 
-    surface = cairo_image_surface_create_from_png_stream (read_png_from_data,
+    surface = comac_image_surface_create_from_png_stream (read_png_from_data,
 							  &offset);
 
-    /* XXX: The actual error is CAIRO_STATUS_PNG_ERROR, but
-     * _cairo_surface_create_in_error() does not support that.
+    /* XXX: The actual error is COMAC_STATUS_PNG_ERROR, but
+     * _comac_surface_create_in_error() does not support that.
      */
-    expected = CAIRO_STATUS_NO_MEMORY;
-    status = cairo_surface_status (surface);
-    cairo_surface_destroy (surface);
-    if (status != CAIRO_STATUS_NO_MEMORY) {
-	cairo_test_log (ctx,
+    expected = COMAC_STATUS_NO_MEMORY;
+    status = comac_surface_status (surface);
+    comac_surface_destroy (surface);
+    if (status != COMAC_STATUS_NO_MEMORY) {
+	comac_test_log (ctx,
 			"Error: expected error %s, but got %s\n",
-			cairo_status_to_string (expected),
-			cairo_status_to_string (status));
+			comac_status_to_string (expected),
+			comac_status_to_string (status));
 
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (create_from_broken_png_stream,
+COMAC_TEST (create_from_broken_png_stream,
 	    "Tests the creation of a PNG from malformed data",
 	    "png", /* keywords */
 	    NULL, /* requirements */

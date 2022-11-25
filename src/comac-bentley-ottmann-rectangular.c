@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Carl Worth
  *
@@ -52,7 +52,7 @@ typedef struct _edge edge_t;
 struct _edge {
     edge_t *next, *prev;
     edge_t *right;
-    cairo_fixed_t x, top;
+    comac_fixed_t x, top;
     int dir;
 };
 
@@ -79,9 +79,9 @@ typedef struct _sweep_line {
     int stop_size;
 
     int32_t insert_x;
-    cairo_fill_rule_t fill_rule;
+    comac_fill_rule_t fill_rule;
 
-    cairo_bool_t do_traps;
+    comac_bool_t do_traps;
     void *container;
 
     jmp_buf unwind;
@@ -91,12 +91,12 @@ typedef struct _sweep_line {
 
 #if DEBUG_TRAPS
 static void
-dump_traps (cairo_traps_t *traps, const char *filename)
+dump_traps (comac_traps_t *traps, const char *filename)
 {
     FILE *file;
     int n;
 
-    if (getenv ("CAIRO_DEBUG_TRAPS") == NULL)
+    if (getenv ("COMAC_DEBUG_TRAPS") == NULL)
 	return;
 
     file = fopen (filename, "a");
@@ -199,7 +199,7 @@ rectangle_peek_stop (sweep_line_t *sweep_line)
     return sweep_line->stop[PQ_FIRST_ENTRY];
 }
 
-CAIRO_COMBSORT_DECLARE (_rectangle_sort,
+COMAC_COMBSORT_DECLARE (_rectangle_sort,
 			rectangle_t *,
 			rectangle_compare_start)
 
@@ -207,8 +207,8 @@ static void
 sweep_line_init (sweep_line_t	 *sweep_line,
 		 rectangle_t	**rectangles,
 		 int		  num_rectangles,
-		 cairo_fill_rule_t fill_rule,
-		 cairo_bool_t	 do_traps,
+		 comac_fill_rule_t fill_rule,
+		 comac_bool_t	 do_traps,
 		 void		*container)
 {
     rectangles[-2] = NULL;
@@ -244,30 +244,30 @@ sweep_line_init (sweep_line_t	 *sweep_line,
 static void
 edge_end_box (sweep_line_t *sweep_line, edge_t *left, int32_t bot)
 {
-    cairo_status_t status = CAIRO_STATUS_SUCCESS;
+    comac_status_t status = COMAC_STATUS_SUCCESS;
 
     /* Only emit (trivial) non-degenerate trapezoids with positive height. */
     if (likely (left->top < bot)) {
 	if (sweep_line->do_traps) {
-	    cairo_line_t _left = {
+	    comac_line_t _left = {
 		{ left->x, left->top },
 		{ left->x, bot },
 	    }, _right = {
 		{ left->right->x, left->top },
 		{ left->right->x, bot },
 	    };
-	    _cairo_traps_add_trap (sweep_line->container, left->top, bot, &_left, &_right);
-	    status = _cairo_traps_status ((cairo_traps_t *) sweep_line->container);
+	    _comac_traps_add_trap (sweep_line->container, left->top, bot, &_left, &_right);
+	    status = _comac_traps_status ((comac_traps_t *) sweep_line->container);
 	} else {
-	    cairo_box_t box;
+	    comac_box_t box;
 
 	    box.p1.x = left->x;
 	    box.p1.y = left->top;
 	    box.p2.x = left->right->x;
 	    box.p2.y = bot;
 
-	    status = _cairo_boxes_add (sweep_line->container,
-				       CAIRO_ANTIALIAS_DEFAULT,
+	    status = _comac_boxes_add (sweep_line->container,
+				       COMAC_ANTIALIAS_DEFAULT,
 				       &box);
 	}
     }
@@ -463,7 +463,7 @@ active_edges_to_traps (sweep_line_t *sweep)
     if (pos == &sweep->tail)
 	return;
 
-    if (sweep->fill_rule == CAIRO_FILL_RULE_WINDING) {
+    if (sweep->fill_rule == COMAC_FILL_RULE_WINDING) {
 	do {
 	    edge_t *left, *right;
 	    int winding;
@@ -558,13 +558,13 @@ sweep_line_delete_edge (sweep_line_t *sweep, edge_t *edge)
     edge->next->prev = edge->prev;
 }
 
-static inline cairo_bool_t
+static inline comac_bool_t
 sweep_line_delete (sweep_line_t	*sweep, rectangle_t *rectangle)
 {
-    cairo_bool_t update;
+    comac_bool_t update;
 
     update = TRUE;
-    if (sweep->fill_rule == CAIRO_FILL_RULE_WINDING &&
+    if (sweep->fill_rule == COMAC_FILL_RULE_WINDING &&
 	rectangle->left.prev->dir == rectangle->left.dir)
     {
 	update = rectangle->left.next != &rectangle->right;
@@ -593,17 +593,17 @@ sweep_line_insert (sweep_line_t	*sweep, rectangle_t *rectangle)
     pqueue_push (sweep, rectangle);
 }
 
-static cairo_status_t
-_cairo_bentley_ottmann_tessellate_rectangular (rectangle_t	**rectangles,
+static comac_status_t
+_comac_bentley_ottmann_tessellate_rectangular (rectangle_t	**rectangles,
 					       int			  num_rectangles,
-					       cairo_fill_rule_t	  fill_rule,
-					       cairo_bool_t		 do_traps,
+					       comac_fill_rule_t	  fill_rule,
+					       comac_bool_t		 do_traps,
 					       void			*container)
 {
     sweep_line_t sweep_line;
     rectangle_t *rectangle;
-    cairo_status_t status;
-    cairo_bool_t update;
+    comac_status_t status;
+    comac_bool_t update;
 
     sweep_line_init (&sweep_line,
 		     rectangles, num_rectangles,
@@ -661,31 +661,31 @@ _cairo_bentley_ottmann_tessellate_rectangular (rectangle_t	**rectangles,
 	update |= sweep_line_delete (&sweep_line, rectangle);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-cairo_status_t
-_cairo_bentley_ottmann_tessellate_rectangular_traps (cairo_traps_t *traps,
-						     cairo_fill_rule_t fill_rule)
+comac_status_t
+_comac_bentley_ottmann_tessellate_rectangular_traps (comac_traps_t *traps,
+						     comac_fill_rule_t fill_rule)
 {
-    rectangle_t stack_rectangles[CAIRO_STACK_ARRAY_LENGTH (rectangle_t)];
+    rectangle_t stack_rectangles[COMAC_STACK_ARRAY_LENGTH (rectangle_t)];
     rectangle_t *stack_rectangles_ptrs[ARRAY_LENGTH (stack_rectangles) + 3];
     rectangle_t *rectangles, **rectangles_ptrs;
-    cairo_status_t status;
+    comac_status_t status;
     int i;
 
    assert (traps->is_rectangular);
 
     if (unlikely (traps->num_traps <= 1)) {
         if (traps->num_traps == 1) {
-            cairo_trapezoid_t *trap = traps->traps;
+            comac_trapezoid_t *trap = traps->traps;
             if (trap->left.p1.x > trap->right.p1.x) {
-                cairo_line_t tmp = trap->left;
+                comac_line_t tmp = trap->left;
                 trap->left = trap->right;
                 trap->right = tmp;
             }
         }
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     dump_traps (traps, "bo-rects-traps-in.txt");
@@ -693,12 +693,12 @@ _cairo_bentley_ottmann_tessellate_rectangular_traps (cairo_traps_t *traps,
     rectangles = stack_rectangles;
     rectangles_ptrs = stack_rectangles_ptrs;
     if (traps->num_traps > ARRAY_LENGTH (stack_rectangles)) {
-	rectangles = _cairo_malloc_ab_plus_c (traps->num_traps,
+	rectangles = _comac_malloc_ab_plus_c (traps->num_traps,
 					      sizeof (rectangle_t) +
 					      sizeof (rectangle_t *),
 					      3*sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL))
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 
 	rectangles_ptrs = (rectangle_t **) (rectangles + traps->num_traps);
     }
@@ -729,8 +729,8 @@ _cairo_bentley_ottmann_tessellate_rectangular_traps (cairo_traps_t *traps,
     /* XXX incremental sort */
     _rectangle_sort (rectangles_ptrs+2, i);
 
-    _cairo_traps_clear (traps);
-    status = _cairo_bentley_ottmann_tessellate_rectangular (rectangles_ptrs+2, i,
+    _comac_traps_clear (traps);
+    status = _comac_bentley_ottmann_tessellate_rectangular (rectangles_ptrs+2, i,
 							    fill_rule,
 							    TRUE, traps);
     traps->is_rectilinear = TRUE;
@@ -744,53 +744,53 @@ _cairo_bentley_ottmann_tessellate_rectangular_traps (cairo_traps_t *traps,
     return status;
 }
 
-cairo_status_t
-_cairo_bentley_ottmann_tessellate_boxes (const cairo_boxes_t *in,
-					 cairo_fill_rule_t fill_rule,
-					 cairo_boxes_t *out)
+comac_status_t
+_comac_bentley_ottmann_tessellate_boxes (const comac_boxes_t *in,
+					 comac_fill_rule_t fill_rule,
+					 comac_boxes_t *out)
 {
-    rectangle_t stack_rectangles[CAIRO_STACK_ARRAY_LENGTH (rectangle_t)];
+    rectangle_t stack_rectangles[COMAC_STACK_ARRAY_LENGTH (rectangle_t)];
     rectangle_t *stack_rectangles_ptrs[ARRAY_LENGTH (stack_rectangles) + 3];
     rectangle_t *rectangles, **rectangles_ptrs;
-    rectangle_t *stack_rectangles_chain[CAIRO_STACK_ARRAY_LENGTH (rectangle_t *) ];
+    rectangle_t *stack_rectangles_chain[COMAC_STACK_ARRAY_LENGTH (rectangle_t *) ];
     rectangle_t **rectangles_chain = NULL;
-    const struct _cairo_boxes_chunk *chunk;
-    cairo_status_t status;
+    const struct _comac_boxes_chunk *chunk;
+    comac_status_t status;
     int i, j, y_min, y_max;
 
     if (unlikely (in->num_boxes == 0)) {
-	_cairo_boxes_clear (out);
-	return CAIRO_STATUS_SUCCESS;
+	_comac_boxes_clear (out);
+	return COMAC_STATUS_SUCCESS;
     }
 
     if (in->num_boxes == 1) {
 	if (in == out) {
-	    cairo_box_t *box = &in->chunks.base[0];
+	    comac_box_t *box = &in->chunks.base[0];
 
 	    if (box->p1.x > box->p2.x) {
-		cairo_fixed_t tmp = box->p1.x;
+		comac_fixed_t tmp = box->p1.x;
 		box->p1.x = box->p2.x;
 		box->p2.x = tmp;
 	    }
 	} else {
-	    cairo_box_t box = in->chunks.base[0];
+	    comac_box_t box = in->chunks.base[0];
 
 	    if (box.p1.x > box.p2.x) {
-		cairo_fixed_t tmp = box.p1.x;
+		comac_fixed_t tmp = box.p1.x;
 		box.p1.x = box.p2.x;
 		box.p2.x = tmp;
 	    }
 
-	    _cairo_boxes_clear (out);
-	    status = _cairo_boxes_add (out, CAIRO_ANTIALIAS_DEFAULT, &box);
-	    assert (status == CAIRO_STATUS_SUCCESS);
+	    _comac_boxes_clear (out);
+	    status = _comac_boxes_add (out, COMAC_ANTIALIAS_DEFAULT, &box);
+	    assert (status == COMAC_STATUS_SUCCESS);
 	}
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     y_min = INT_MAX; y_max = INT_MIN;
     for (chunk = &in->chunks; chunk != NULL; chunk = chunk->next) {
-	const cairo_box_t *box = chunk->base;
+	const comac_box_t *box = chunk->base;
 	for (i = 0; i < chunk->count; i++) {
 	    if (box[i].p1.y < y_min)
 		y_min = box[i].p1.y;
@@ -798,16 +798,16 @@ _cairo_bentley_ottmann_tessellate_boxes (const cairo_boxes_t *in,
 		y_max = box[i].p1.y;
 	}
     }
-    y_min = _cairo_fixed_integer_floor (y_min);
-    y_max = _cairo_fixed_integer_floor (y_max) + 1;
+    y_min = _comac_fixed_integer_floor (y_min);
+    y_max = _comac_fixed_integer_floor (y_max) + 1;
     y_max -= y_min;
 
     if (y_max < in->num_boxes) {
 	rectangles_chain = stack_rectangles_chain;
 	if (y_max > ARRAY_LENGTH (stack_rectangles_chain)) {
-	    rectangles_chain = _cairo_malloc_ab (y_max, sizeof (rectangle_t *));
+	    rectangles_chain = _comac_malloc_ab (y_max, sizeof (rectangle_t *));
 	    if (unlikely (rectangles_chain == NULL))
-		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+		return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
 	memset (rectangles_chain, 0, y_max * sizeof (rectangle_t*));
     }
@@ -815,14 +815,14 @@ _cairo_bentley_ottmann_tessellate_boxes (const cairo_boxes_t *in,
     rectangles = stack_rectangles;
     rectangles_ptrs = stack_rectangles_ptrs;
     if (in->num_boxes > ARRAY_LENGTH (stack_rectangles)) {
-	rectangles = _cairo_malloc_ab_plus_c (in->num_boxes,
+	rectangles = _comac_malloc_ab_plus_c (in->num_boxes,
 					      sizeof (rectangle_t) +
 					      sizeof (rectangle_t *),
 					      3*sizeof (rectangle_t *));
 	if (unlikely (rectangles == NULL)) {
 	    if (rectangles_chain != stack_rectangles_chain)
 		free (rectangles_chain);
-	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return _comac_error (COMAC_STATUS_NO_MEMORY);
 	}
 
 	rectangles_ptrs = (rectangle_t **) (rectangles + in->num_boxes);
@@ -830,7 +830,7 @@ _cairo_bentley_ottmann_tessellate_boxes (const cairo_boxes_t *in,
 
     j = 0;
     for (chunk = &in->chunks; chunk != NULL; chunk = chunk->next) {
-	const cairo_box_t *box = chunk->base;
+	const comac_box_t *box = chunk->base;
 	for (i = 0; i < chunk->count; i++) {
 	    int h;
 
@@ -855,7 +855,7 @@ _cairo_bentley_ottmann_tessellate_boxes (const cairo_boxes_t *in,
 	    rectangles[j].bottom = box[i].p2.y;
 
 	    if (rectangles_chain) {
-		h = _cairo_fixed_integer_floor (box[i].p1.y) - y_min;
+		h = _comac_fixed_integer_floor (box[i].p1.y) - y_min;
 		rectangles[j].left.next = (edge_t *)rectangles_chain[h];
 		rectangles_chain[h] = &rectangles[j];
 	    } else {
@@ -884,8 +884,8 @@ _cairo_bentley_ottmann_tessellate_boxes (const cairo_boxes_t *in,
 	_rectangle_sort (rectangles_ptrs + 2, j);
     }
 
-    _cairo_boxes_clear (out);
-    status = _cairo_bentley_ottmann_tessellate_rectangular (rectangles_ptrs+2, j,
+    _comac_boxes_clear (out);
+    status = _comac_bentley_ottmann_tessellate_rectangular (rectangles_ptrs+2, j,
 							    fill_rule,
 							    FALSE, out);
     if (rectangles != stack_rectangles)

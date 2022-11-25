@@ -28,30 +28,30 @@
 #define PAD 2
 #define SIZE 10
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_rectangle (cr, PAD, PAD, SIZE, SIZE);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_fill_preserve (cr);
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_stroke (cr);
+    comac_rectangle (cr, PAD, PAD, SIZE, SIZE);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_fill_preserve (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_stroke (cr);
 
-    cairo_translate (cr, SIZE + 2 * PAD, 0);
+    comac_translate (cr, SIZE + 2 * PAD, 0);
 
-    cairo_arc (cr,
+    comac_arc (cr,
 	       PAD + SIZE / 2, PAD + SIZE / 2,
 	       SIZE / 2,
 	       0, 2 * M_PI);
-    cairo_fill_preserve (cr);
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_stroke (cr);
+    comac_fill_preserve (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_and_stroke,
-	    "Tests using cairo_fill_preserve/cairo_stroke to fill/stroke the same path",
+COMAC_TEST (fill_and_stroke,
+	    "Tests using comac_fill_preserve/comac_stroke to fill/stroke the same path",
 	    "fill-and-stroke, fill, stroke", /* keywords */
 	    NULL, /* requirements */
 	    2 * SIZE + 4 * PAD, SIZE + 2 * PAD,

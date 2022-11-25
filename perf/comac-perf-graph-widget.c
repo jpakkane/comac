@@ -34,7 +34,7 @@ struct _GraphView {
     GtkWidget widget;
 
     test_case_t *cases;
-    cairo_perf_report_t *reports;
+    comac_perf_report_t *reports;
     int num_reports;
     double ymin, ymax;
 
@@ -58,10 +58,10 @@ G_DEFINE_TYPE (GraphView, graph_view, GTK_TYPE_WIDGET)
 
 static void
 draw_baseline_performance (test_case_t		*cases,
-			   cairo_perf_report_t	*reports,
+			   comac_perf_report_t	*reports,
 			   int			 num_reports,
-			   cairo_t		*cr,
-			   const cairo_matrix_t *m)
+			   comac_t		*cr,
+			   const comac_matrix_t *m)
 {
     test_report_t **tests;
     double dots[2] = { 0, 1.};
@@ -92,9 +92,9 @@ draw_baseline_performance (test_case_t		*cases,
 	}
 
 	/* first the stroke */
-	cairo_save (cr);
-	cairo_set_line_width (cr, 2.);
-	gdk_cairo_set_source_color (cr, &cases->color);
+	comac_save (cr);
+	comac_set_line_width (cr, 2.);
+	gdk_comac_set_source_color (cr, &cases->color);
 	for (i = 0; i < num_reports; i++) {
 	    if (tests[i]->name &&
 		test_report_cmp_backend_then_name (tests[i], min_test) == 0)
@@ -102,10 +102,10 @@ draw_baseline_performance (test_case_t		*cases,
 		baseline = tests[i]->stats.min_ticks;
 
 		x = i; y = 0;
-		cairo_matrix_transform_point (m, &x, &y);
+		comac_matrix_transform_point (m, &x, &y);
 		x = floor (x);
 		y = floor (y);
-		cairo_move_to (cr, x, y);
+		comac_move_to (cr, x, y);
 		last_y = y;
 		break;
 	    }
@@ -122,23 +122,23 @@ draw_baseline_performance (test_case_t		*cases,
 		else
 		    y -= 1;
 
-		cairo_matrix_transform_point (m, &x, &y);
+		comac_matrix_transform_point (m, &x, &y);
 		x = floor (x);
 		y = floor (y);
-		cairo_line_to (cr, x, last_y);
-		cairo_line_to (cr, x, y);
+		comac_line_to (cr, x, last_y);
+		comac_line_to (cr, x, y);
 		last_y = y;
 	    }
 	}
 	{
 	    x = num_reports, y = 0;
-	    cairo_matrix_transform_point (m, &x, &y);
+	    comac_matrix_transform_point (m, &x, &y);
 	    x = floor (x);
-	    cairo_line_to (cr, x, last_y);
+	    comac_line_to (cr, x, last_y);
 	}
 
-	cairo_set_line_width (cr, 1.);
-	cairo_stroke (cr);
+	comac_set_line_width (cr, 1.);
+	comac_stroke (cr);
 
 	/* then draw the points */
 	for (i = 0; i < num_reports; i++) {
@@ -148,11 +148,11 @@ draw_baseline_performance (test_case_t		*cases,
 		baseline = tests[i]->stats.min_ticks;
 
 		x = i; y = 0;
-		cairo_matrix_transform_point (m, &x, &y);
+		comac_matrix_transform_point (m, &x, &y);
 		x = floor (x);
 		y = floor (y);
-		cairo_move_to (cr, x, y);
-		cairo_close_path (cr);
+		comac_move_to (cr, x, y);
+		comac_close_path (cr);
 		last_y = y;
 
 		tests[i]++;
@@ -171,13 +171,13 @@ draw_baseline_performance (test_case_t		*cases,
 		else
 		    y -= 1;
 
-		cairo_matrix_transform_point (m, &x, &y);
+		comac_matrix_transform_point (m, &x, &y);
 		x = floor (x);
 		y = floor (y);
-		cairo_move_to (cr, x, last_y);
-		cairo_close_path (cr);
-		cairo_move_to (cr, x, y);
-		cairo_close_path (cr);
+		comac_move_to (cr, x, last_y);
+		comac_close_path (cr);
+		comac_move_to (cr, x, y);
+		comac_close_path (cr);
 		last_y = y;
 
 		tests[i]++;
@@ -185,17 +185,17 @@ draw_baseline_performance (test_case_t		*cases,
 	}
 	{
 	    x = num_reports, y = 0;
-	    cairo_matrix_transform_point (m, &x, &y);
+	    comac_matrix_transform_point (m, &x, &y);
 	    x = floor (x);
-	    cairo_move_to (cr, x, last_y);
-	    cairo_close_path (cr);
+	    comac_move_to (cr, x, last_y);
+	    comac_close_path (cr);
 	}
-	cairo_set_source_rgba (cr, 0, 0, 0, .5);
-	cairo_set_dash (cr, dots, 2, 0.);
-	cairo_set_line_width (cr, 3.);
-	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
-	cairo_stroke (cr);
-	cairo_restore (cr);
+	comac_set_source_rgba (cr, 0, 0, 0, .5);
+	comac_set_dash (cr, dots, 2, 0.);
+	comac_set_line_width (cr, 3.);
+	comac_set_line_cap (cr, COMAC_LINE_CAP_ROUND);
+	comac_stroke (cr);
+	comac_restore (cr);
 
 	cases++;
     }
@@ -203,8 +203,8 @@ draw_baseline_performance (test_case_t		*cases,
 }
 
 static void
-draw_hline (cairo_t		 *cr,
-	    const cairo_matrix_t *m,
+draw_hline (comac_t		 *cr,
+	    const comac_matrix_t *m,
 	    double		  y0,
 	    double		  xmin,
 	    double		  xmax)
@@ -212,128 +212,128 @@ draw_hline (cairo_t		 *cr,
     double x, y;
     double py_offset;
 
-    py_offset = fmod (cairo_get_line_width (cr) / 2., 1.);
+    py_offset = fmod (comac_get_line_width (cr) / 2., 1.);
 
     x = xmin; y = y0;
-    cairo_matrix_transform_point (m, &x, &y);
-    cairo_move_to (cr, floor (x), floor (y) + py_offset);
+    comac_matrix_transform_point (m, &x, &y);
+    comac_move_to (cr, floor (x), floor (y) + py_offset);
 
     x = xmax; y = y0;
-    cairo_matrix_transform_point (m, &x, &y);
-    cairo_line_to (cr, ceil (x), floor (y) + py_offset);
+    comac_matrix_transform_point (m, &x, &y);
+    comac_line_to (cr, ceil (x), floor (y) + py_offset);
 
-    cairo_stroke (cr);
+    comac_stroke (cr);
 }
 
 static void
-draw_label (cairo_t		 *cr,
-	    const cairo_matrix_t *m,
+draw_label (comac_t		 *cr,
+	    const comac_matrix_t *m,
 	    double		  y0,
 	    double		  xmin,
 	    double		  xmax)
 {
     double x, y;
     char buf[80];
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
     snprintf (buf, sizeof (buf), "%.0fx", fabs (y0));
-    cairo_text_extents (cr, buf, &extents);
+    comac_text_extents (cr, buf, &extents);
 
     x = xmin; y = y0;
-    cairo_matrix_transform_point (m, &x, &y);
-    cairo_move_to (cr,
+    comac_matrix_transform_point (m, &x, &y);
+    comac_move_to (cr,
 		   x - extents.width - 4,
 		   y - (extents.height/2. + extents.y_bearing));
-    cairo_show_text (cr, buf);
+    comac_show_text (cr, buf);
 
 
     snprintf (buf, sizeof (buf), "%.0fx", fabs (y0));
-    cairo_text_extents (cr, buf, &extents);
+    comac_text_extents (cr, buf, &extents);
 
     x = xmax; y = y0;
-    cairo_matrix_transform_point (m, &x, &y);
-    cairo_move_to (cr,
+    comac_matrix_transform_point (m, &x, &y);
+    comac_move_to (cr,
 		   x + 4,
 		   y - (extents.height/2. + extents.y_bearing));
-    cairo_show_text (cr, buf);
+    comac_show_text (cr, buf);
 }
 
 #define ALIGN_X(v) ((v)<<0)
 #define ALIGN_Y(v) ((v)<<2)
 static void
-draw_rotated_label (cairo_t    *cr,
+draw_rotated_label (comac_t    *cr,
 		    const char *text,
 		    double	x,
 		    double	y,
 		    double	angle,
 		    int 	align)
 {
-    cairo_text_extents_t extents;
+    comac_text_extents_t extents;
 
-    cairo_text_extents (cr, text, &extents);
+    comac_text_extents (cr, text, &extents);
 
-    cairo_save (cr); {
-	cairo_translate (cr, x, y);
-	cairo_rotate (cr, angle);
+    comac_save (cr); {
+	comac_translate (cr, x, y);
+	comac_rotate (cr, angle);
 	switch (align) {
 	case ALIGN_X(0) | ALIGN_Y(0):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   -extents.x_bearing,
 			   -extents.y_bearing);
 	    break;
 	case ALIGN_X(0) | ALIGN_Y(1):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   -extents.x_bearing,
 			   - (extents.height/2. + extents.y_bearing));
 	    break;
 	case ALIGN_X(0) | ALIGN_Y(2):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   -extents.x_bearing,
 			   - (extents.height + extents.y_bearing));
 	    break;
 
 	case ALIGN_X(1) | ALIGN_Y(0):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   - (extents.width/2. + extents.x_bearing),
 			   -extents.y_bearing);
 	    break;
 	case ALIGN_X(1) | ALIGN_Y(1):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   - (extents.width/2. + extents.x_bearing),
 			   - (extents.height/2. + extents.y_bearing));
 	    break;
 	case ALIGN_X(1) | ALIGN_Y(2):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   - (extents.width/2. + extents.x_bearing),
 			   - (extents.height + extents.y_bearing));
 	    break;
 
 	case ALIGN_X(2) | ALIGN_Y(0):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   - (extents.width + extents.x_bearing),
 			   -extents.y_bearing);
 	    break;
 	case ALIGN_X(2) | ALIGN_Y(1):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   - (extents.width + extents.x_bearing),
 			   - (extents.height/2. + extents.y_bearing));
 	    break;
 	case ALIGN_X(2) | ALIGN_Y(2):
-	    cairo_move_to (cr,
+	    comac_move_to (cr,
 			   - (extents.width + extents.x_bearing),
 			   - (extents.height + extents.y_bearing));
 	    break;
 	}
-	cairo_show_text (cr, text);
-    } cairo_restore (cr);
+	comac_show_text (cr, text);
+    } comac_restore (cr);
 }
 
 #define PAD 36
 static void
 graph_view_draw (GraphView *self,
-		 cairo_t   *cr)
+		 comac_t   *cr)
 {
-    cairo_matrix_t m;
+    comac_matrix_t m;
     const double dash[2] = {4, 4};
     double range;
     int i;
@@ -345,55 +345,55 @@ graph_view_draw (GraphView *self,
 
     range = floor (self->ymax+1) - ceil (self->ymin-1);
 
-    cairo_matrix_init_translate (&m, PAD, self->widget.allocation.height - PAD);
-    cairo_matrix_scale (&m,
+    comac_matrix_init_translate (&m, PAD, self->widget.allocation.height - PAD);
+    comac_matrix_scale (&m,
 			(self->widget.allocation.width-2*PAD)/(self->num_reports),
 			-(self->widget.allocation.height-2*PAD)/range);
-    cairo_matrix_translate (&m, 0,   floor (self->ymax+1));
+    comac_matrix_translate (&m, 0,   floor (self->ymax+1));
 
     if (self->selected_report != -1) {
-	cairo_save (cr); {
+	comac_save (cr); {
 	    double x0, x1, y;
 	    x0 = self->selected_report; y = 0;
-	    cairo_matrix_transform_point (&m, &x0, &y);
+	    comac_matrix_transform_point (&m, &x0, &y);
 	    x0 = floor (x0);
 	    x1 = self->selected_report + 1; y = 0;
-	    cairo_matrix_transform_point (&m, &x1, &y);
+	    comac_matrix_transform_point (&m, &x1, &y);
 	    x1 = ceil (x1);
 	    y = (x1 - x0) / 8;
 	    y = MIN (y, PAD / 2);
 	    x0 -= y;
 	    x1 += y;
-	    cairo_rectangle (cr, x0, PAD/2, x1-x0, self->widget.allocation.height-2*PAD + PAD);
-	    gdk_cairo_set_source_color (cr, &self->widget.style->base[GTK_STATE_SELECTED]);
-	    cairo_fill (cr);
-	} cairo_restore (cr);
+	    comac_rectangle (cr, x0, PAD/2, x1-x0, self->widget.allocation.height-2*PAD + PAD);
+	    gdk_comac_set_source_color (cr, &self->widget.style->base[GTK_STATE_SELECTED]);
+	    comac_fill (cr);
+	} comac_restore (cr);
     }
 
-    cairo_save (cr); {
-	cairo_pattern_t *linear;
+    comac_save (cr); {
+	comac_pattern_t *linear;
 	double x, y;
 
-	gdk_cairo_set_source_color (cr,
+	gdk_comac_set_source_color (cr,
 				    &self->widget.style->fg[GTK_WIDGET_STATE (self)]);
-	cairo_set_line_width (cr, 2.);
+	comac_set_line_width (cr, 2.);
 	draw_hline (cr, &m, 0, 0, self->num_reports);
 
-	cairo_set_line_width (cr, 1.);
-	cairo_set_dash (cr, NULL, 0, 0);
+	comac_set_line_width (cr, 1.);
+	comac_set_dash (cr, NULL, 0, 0);
 
 	for (i = ceil (self->ymin-1); i <= floor (self->ymax+1); i++) {
 	    if (i != 0)
 		draw_hline (cr, &m, i, 0, self->num_reports);
 	}
 
-	cairo_set_font_size (cr, 11);
+	comac_set_font_size (cr, 11);
 
-	linear = cairo_pattern_create_linear (0, PAD, 0, self->widget.allocation.height-2*PAD);
-	cairo_pattern_add_color_stop_rgb (linear, 0, 0, 1, 0);
-	cairo_pattern_add_color_stop_rgb (linear, 1, 1, 0, 0);
-	cairo_set_source (cr, linear);
-	cairo_pattern_destroy (linear);
+	linear = comac_pattern_create_linear (0, PAD, 0, self->widget.allocation.height-2*PAD);
+	comac_pattern_add_color_stop_rgb (linear, 0, 0, 1, 0);
+	comac_pattern_add_color_stop_rgb (linear, 1, 1, 0, 0);
+	comac_set_source (cr, linear);
+	comac_pattern_destroy (linear);
 
 	for (i = ceil (self->ymin-1); i <= floor (self->ymax+1); i++) {
 	    if (i != 0)
@@ -401,38 +401,38 @@ graph_view_draw (GraphView *self,
 	}
 
 	x = 0, y = floor (self->ymax+1);
-	cairo_matrix_transform_point (&m, &x, &y);
+	comac_matrix_transform_point (&m, &x, &y);
 	draw_rotated_label (cr, "Faster", x - 7, y + 14,
 			    270./360 * 2 * G_PI,
 			    ALIGN_X(2) | ALIGN_Y(1));
 	x = self->num_reports, y = floor (self->ymax+1);
-	cairo_matrix_transform_point (&m, &x, &y);
+	comac_matrix_transform_point (&m, &x, &y);
 	draw_rotated_label (cr, "Faster", x + 11, y + 14,
 			    270./360 * 2 * G_PI,
 			    ALIGN_X(2) | ALIGN_Y(1));
 
 	x = 0, y = ceil (self->ymin-1);
-	cairo_matrix_transform_point (&m, &x, &y);
+	comac_matrix_transform_point (&m, &x, &y);
 	draw_rotated_label (cr, "Slower", x - 7, y - 14,
 			    90./360 * 2 * G_PI,
 			    ALIGN_X(2) | ALIGN_Y(1));
 	x = self->num_reports, y = ceil (self->ymin-1);
-	cairo_matrix_transform_point (&m, &x, &y);
+	comac_matrix_transform_point (&m, &x, &y);
 	draw_rotated_label (cr, "Slower", x + 11, y - 14,
 			    90./360 * 2 * G_PI,
 			    ALIGN_X(2) | ALIGN_Y(1));
-    } cairo_restore (cr);
+    } comac_restore (cr);
 
     draw_baseline_performance (self->cases,
 			       self->reports, self->num_reports,
 			       cr, &m);
 
-    cairo_save (cr); {
-	cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
-	cairo_set_line_width (cr, 1.);
-	cairo_set_dash (cr, dash, 2, 0);
+    comac_save (cr); {
+	comac_set_source_rgb (cr, 0.7, 0.7, 0.7);
+	comac_set_line_width (cr, 1.);
+	comac_set_dash (cr, dash, 2, 0);
 	draw_hline (cr, &m, 0, 0, self->num_reports);
-    } cairo_restore (cr);
+    } comac_restore (cr);
 }
 
 static gboolean
@@ -440,15 +440,15 @@ graph_view_expose (GtkWidget	  *w,
 		   GdkEventExpose *ev)
 {
     GraphView *self = (GraphView *) w;
-    cairo_t *cr;
+    comac_t *cr;
 
-    cr = gdk_cairo_create (w->window);
-    gdk_cairo_set_source_color (cr, &w->style->base[GTK_WIDGET_STATE (w)]);
-    cairo_paint (cr);
+    cr = gdk_comac_create (w->window);
+    gdk_comac_set_source_color (cr, &w->style->base[GTK_WIDGET_STATE (w)]);
+    comac_paint (cr);
 
     graph_view_draw (self, cr);
 
-    cairo_destroy (cr);
+    comac_destroy (cr);
 
     return FALSE;
 }
@@ -458,18 +458,18 @@ graph_view_button_press (GtkWidget	*w,
 			 GdkEventButton *ev)
 {
     GraphView *self = (GraphView *) w;
-    cairo_matrix_t m;
+    comac_matrix_t m;
     double x,y;
     int i;
 
-    cairo_matrix_init_translate (&m, PAD, self->widget.allocation.height-PAD);
-    cairo_matrix_scale (&m, (self->widget.allocation.width-2*PAD)/self->num_reports, -(self->widget.allocation.height-2*PAD)/(self->ymax - self->ymin));
-    cairo_matrix_translate (&m, 0, -self->ymin);
-    cairo_matrix_invert (&m);
+    comac_matrix_init_translate (&m, PAD, self->widget.allocation.height-PAD);
+    comac_matrix_scale (&m, (self->widget.allocation.width-2*PAD)/self->num_reports, -(self->widget.allocation.height-2*PAD)/(self->ymax - self->ymin));
+    comac_matrix_translate (&m, 0, -self->ymin);
+    comac_matrix_invert (&m);
 
     x = ev->x;
     y = ev->y;
-    cairo_matrix_transform_point (&m, &x, &y);
+    comac_matrix_transform_point (&m, &x, &y);
 
     i = floor (x);
     if (i < 0 || i >= self->num_reports)
@@ -590,7 +590,7 @@ graph_view_update_visible (GraphView *gv)
 void
 graph_view_set_reports (GraphView	    *gv,
 			test_case_t	    *cases,
-			cairo_perf_report_t *reports,
+			comac_perf_report_t *reports,
 			int		     num_reports)
 {
     /* XXX ownership? */

@@ -26,64 +26,64 @@
 
 /* An error in xlib pattern transformation discovered by Albertas Vyšniauskas */
 
-static cairo_pattern_t *
+static comac_pattern_t *
 source(void)
 {
-    cairo_surface_t *surface;
-    cairo_pattern_t *pattern;
-    cairo_matrix_t matrix;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_pattern_t *pattern;
+    comac_matrix_t matrix;
+    comac_t *cr;
     int i;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 32, 32);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, 32, 32);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, .5, .5, .5);
-    cairo_set_line_width (cr, 2);
+    comac_set_source_rgb (cr, .5, .5, .5);
+    comac_set_line_width (cr, 2);
 
     for (i = -1; i <= 8; i++) {
-	cairo_move_to (cr, -34 + 8*i, 34);
-	cairo_rel_line_to (cr, 36, -36);
-	cairo_stroke (cr);
+	comac_move_to (cr, -34 + 8*i, 34);
+	comac_rel_line_to (cr, 36, -36);
+	comac_stroke (cr);
     }
 
-    pattern = cairo_pattern_create_for_surface (cairo_get_target (cr));
-    cairo_destroy (cr);
+    pattern = comac_pattern_create_for_surface (comac_get_target (cr));
+    comac_destroy (cr);
 
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
 
-    cairo_matrix_init_translate(&matrix, 14.1, 0);
-    cairo_pattern_set_matrix(pattern, &matrix);
+    comac_matrix_init_translate(&matrix, 14.1, 0);
+    comac_pattern_set_matrix(pattern, &matrix);
 
     return pattern;
 }
 
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
     int i;
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
     pattern = source ();
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
 
     for (i = 0; i < 8; i++) {
-	cairo_rectangle (cr, 3.5*i, 32*i, 256, 32);
-	cairo_fill (cr);
+	comac_rectangle (cr, 3.5*i, 32*i, 256, 32);
+	comac_fill (cr);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_51910,
+COMAC_TEST (bug_51910,
 	    "A bug in the xlib pattern transformation",
 	    " paint", /* keywords */
 	    NULL, /* requirements */

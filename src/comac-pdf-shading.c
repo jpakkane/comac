@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Adrian Johnson
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Adrian Johnson.
  *
@@ -36,7 +36,7 @@
 
 #include "comacint.h"
 
-#if CAIRO_HAS_PDF_OPERATORS
+#if COMAC_HAS_PDF_OPERATORS
 
 #include "comac-pdf-shading-private.h"
 
@@ -59,7 +59,7 @@ encode_coordinate (unsigned char *p, double c)
 }
 
 static unsigned char *
-encode_point (unsigned char *p, const cairo_point_double_t *point)
+encode_point (unsigned char *p, const comac_point_double_t *point)
 {
     p = encode_coordinate (p, point->x);
     p = encode_coordinate (p, point->y);
@@ -72,7 +72,7 @@ encode_color_component (unsigned char *p, double color)
 {
     uint16_t c;
 
-    c = _cairo_color_double_to_short (color);
+    c = _comac_color_double_to_short (color);
     *p++ = c >> 8;
     *p++ = c & 0xff;
 
@@ -80,7 +80,7 @@ encode_color_component (unsigned char *p, double color)
 }
 
 static unsigned char *
-encode_color (unsigned char *p, const cairo_color_t *color)
+encode_color (unsigned char *p, const comac_color_t *color)
 {
     p = encode_color_component (p, color->red);
     p = encode_color_component (p, color->green);
@@ -90,20 +90,20 @@ encode_color (unsigned char *p, const cairo_color_t *color)
 }
 
 static unsigned char *
-encode_alpha (unsigned char *p, const cairo_color_t *color)
+encode_alpha (unsigned char *p, const comac_color_t *color)
 {
     p = encode_color_component (p, color->alpha);
 
     return p;
 }
 
-static cairo_status_t
-_cairo_pdf_shading_generate_decode_array (cairo_pdf_shading_t        *shading,
-					  const cairo_mesh_pattern_t *mesh,
-					  cairo_bool_t                is_alpha)
+static comac_status_t
+_comac_pdf_shading_generate_decode_array (comac_pdf_shading_t        *shading,
+					  const comac_mesh_pattern_t *mesh,
+					  comac_bool_t                is_alpha)
 {
     unsigned int num_color_components, i;
-    cairo_bool_t is_valid;
+    comac_bool_t is_valid;
 
     if (is_alpha)
 	num_color_components = 1;
@@ -111,12 +111,12 @@ _cairo_pdf_shading_generate_decode_array (cairo_pdf_shading_t        *shading,
 	num_color_components = 3;
 
     shading->decode_array_length = 4 + num_color_components * 2;
-    shading->decode_array = _cairo_malloc_ab (shading->decode_array_length,
+    shading->decode_array = _comac_malloc_ab (shading->decode_array_length,
 					      sizeof (double));
     if (unlikely (shading->decode_array == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
-    is_valid = _cairo_mesh_pattern_coord_box (mesh,
+    is_valid = _comac_mesh_pattern_coord_box (mesh,
 					      &shading->decode_array[0],
 					      &shading->decode_array[2],
 					      &shading->decode_array[1],
@@ -131,7 +131,7 @@ _cairo_pdf_shading_generate_decode_array (cairo_pdf_shading_t        *shading,
 	shading->decode_array[5 + 2*i] = 1;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /* The ISO32000 specification mandates this order for the points which
@@ -141,12 +141,12 @@ static const int pdf_points_order_i[16] = {
 static const int pdf_points_order_j[16] = {
     0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0, 1, 2, 2, 1 };
 
-static cairo_status_t
-_cairo_pdf_shading_generate_data (cairo_pdf_shading_t        *shading,
-				  const cairo_mesh_pattern_t *mesh,
-				  cairo_bool_t                is_alpha)
+static comac_status_t
+_comac_pdf_shading_generate_data (comac_pdf_shading_t        *shading,
+				  const comac_mesh_pattern_t *mesh,
+				  comac_bool_t                is_alpha)
 {
-    const cairo_mesh_patch_t *patch;
+    const comac_mesh_patch_t *patch;
     double x_off, y_off, x_scale, y_scale;
     unsigned int num_patches;
     unsigned int num_color_components;
@@ -158,8 +158,8 @@ _cairo_pdf_shading_generate_data (cairo_pdf_shading_t        *shading,
     else
 	num_color_components = 3;
 
-    num_patches = _cairo_array_num_elements (&mesh->patches);
-    patch = _cairo_array_index_const (&mesh->patches, 0);
+    num_patches = _comac_array_num_elements (&mesh->patches);
+    patch = _comac_array_index_const (&mesh->patches, 0);
 
     /* Each patch requires:
      *
@@ -170,9 +170,9 @@ _cairo_pdf_shading_generate_data (cairo_pdf_shading_t        *shading,
      * 4 colors. Each color is stored in 2 bytes * num_color_components.
      */
     shading->data_length = num_patches * (1 + 16 * 2 * 4 + 4 * 2 * num_color_components);
-    shading->data = _cairo_malloc (shading->data_length);
+    shading->data = _comac_malloc (shading->data_length);
     if (unlikely (shading->data == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     x_off = shading->decode_array[0];
     y_off = shading->decode_array[2];
@@ -186,7 +186,7 @@ _cairo_pdf_shading_generate_data (cairo_pdf_shading_t        *shading,
 
 	/* 16 points */
 	for (j = 0; j < 16; j++) {
-	    cairo_point_double_t point;
+	    comac_point_double_t point;
 	    int pi, pj;
 
 	    pi = pdf_points_order_i[j];
@@ -201,8 +201,8 @@ _cairo_pdf_shading_generate_data (cairo_pdf_shading_t        *shading,
 
 	    /* Make sure that rounding errors don't cause
 	     * wraparounds */
-	    point.x = _cairo_restrict_value (point.x, 0, UINT32_MAX);
-	    point.y = _cairo_restrict_value (point.y, 0, UINT32_MAX);
+	    point.x = _comac_restrict_value (point.x, 0, UINT32_MAX);
+	    point.y = _comac_restrict_value (point.y, 0, UINT32_MAX);
 
 	    p = encode_point (p, &point);
 	}
@@ -218,17 +218,17 @@ _cairo_pdf_shading_generate_data (cairo_pdf_shading_t        *shading,
 
     assert (p == shading->data + shading->data_length);
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_cairo_pdf_shading_init (cairo_pdf_shading_t        *shading,
-			 const cairo_mesh_pattern_t *mesh,
-			 cairo_bool_t                is_alpha)
+static comac_status_t
+_comac_pdf_shading_init (comac_pdf_shading_t        *shading,
+			 const comac_mesh_pattern_t *mesh,
+			 comac_bool_t                is_alpha)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    assert (mesh->base.status == CAIRO_STATUS_SUCCESS);
+    assert (mesh->base.status == COMAC_STATUS_SUCCESS);
     assert (mesh->current_patch == NULL);
 
     shading->shading_type = 7;
@@ -239,7 +239,7 @@ _cairo_pdf_shading_init (cairo_pdf_shading_t        *shading,
      * uint32_t values.
      *
      * Color components are represented as uint16_t (in a 0.16 fixed
-     * point format, as in the rest of cairo).
+     * point format, as in the rest of comac).
      */
     shading->bits_per_coordinate = 32;
     shading->bits_per_component = 16;
@@ -248,32 +248,32 @@ _cairo_pdf_shading_init (cairo_pdf_shading_t        *shading,
     shading->decode_array = NULL;
     shading->data = NULL;
 
-    status = _cairo_pdf_shading_generate_decode_array (shading, mesh, is_alpha);
+    status = _comac_pdf_shading_generate_decode_array (shading, mesh, is_alpha);
     if (unlikely (status))
 	return status;
 
-    return _cairo_pdf_shading_generate_data (shading, mesh, is_alpha);
+    return _comac_pdf_shading_generate_data (shading, mesh, is_alpha);
 }
 
-cairo_status_t
-_cairo_pdf_shading_init_color (cairo_pdf_shading_t        *shading,
-			       const cairo_mesh_pattern_t *pattern)
+comac_status_t
+_comac_pdf_shading_init_color (comac_pdf_shading_t        *shading,
+			       const comac_mesh_pattern_t *pattern)
 {
-    return _cairo_pdf_shading_init (shading, pattern, FALSE);
+    return _comac_pdf_shading_init (shading, pattern, FALSE);
 }
 
-cairo_status_t
-_cairo_pdf_shading_init_alpha (cairo_pdf_shading_t        *shading,
-			       const cairo_mesh_pattern_t *pattern)
+comac_status_t
+_comac_pdf_shading_init_alpha (comac_pdf_shading_t        *shading,
+			       const comac_mesh_pattern_t *pattern)
 {
-    return _cairo_pdf_shading_init (shading, pattern, TRUE);
+    return _comac_pdf_shading_init (shading, pattern, TRUE);
 }
 
 void
-_cairo_pdf_shading_fini (cairo_pdf_shading_t *shading)
+_comac_pdf_shading_fini (comac_pdf_shading_t *shading)
 {
     free (shading->data);
     free (shading->decode_array);
 }
 
-#endif /* CAIRO_HAS_PDF_OPERATORS */
+#endif /* COMAC_HAS_PDF_OPERATORS */

@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson
  *
@@ -33,35 +33,35 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_XML_H
-#define CAIRO_XML_H
+#ifndef COMAC_XML_H
+#define COMAC_XML_H
 
 #include "comac.h"
 
-#if CAIRO_HAS_XML_SURFACE
+#if COMAC_HAS_XML_SURFACE
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_public cairo_device_t *
-cairo_xml_create (const char *filename);
+comac_public comac_device_t *
+comac_xml_create (const char *filename);
 
-cairo_public cairo_device_t *
-cairo_xml_create_for_stream (cairo_write_func_t	 write_func,
+comac_public comac_device_t *
+comac_xml_create_for_stream (comac_write_func_t	 write_func,
 			     void		*closure);
 
-cairo_public cairo_surface_t *
-cairo_xml_surface_create (cairo_device_t *xml,
-			  cairo_content_t content,
+comac_public comac_surface_t *
+comac_xml_surface_create (comac_device_t *xml,
+			  comac_content_t content,
 			  double width, double height);
 
-cairo_public cairo_status_t
-cairo_xml_for_recording_surface (cairo_device_t *xml,
-				 cairo_surface_t *surface);
+comac_public comac_status_t
+comac_xml_for_recording_surface (comac_device_t *xml,
+				 comac_surface_t *surface);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#else  /*CAIRO_HAS_XML_SURFACE*/
-# error Cairo was not compiled with support for the XML backend
-#endif /*CAIRO_HAS_XML_SURFACE*/
+#else  /*COMAC_HAS_XML_SURFACE*/
+# error Comac was not compiled with support for the XML backend
+#endif /*COMAC_HAS_XML_SURFACE*/
 
-#endif /*CAIRO_XML_H*/
+#endif /*COMAC_XML_H*/

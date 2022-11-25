@@ -34,66 +34,66 @@
  *	https://bugs.freedesktop.org/show_bug.cgi?id=2729
  */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double dashes[] = { 1 };
 
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_set_line_width (cr, 2);
+    comac_set_line_width (cr, 2);
 
     /* Basic 1-1 dash pattern */
-    cairo_set_dash (cr, dashes, 1, 0.);
+    comac_set_dash (cr, dashes, 1, 0.);
 
-    cairo_move_to (cr,  1, 2);
-    cairo_line_to (cr, 18, 2);
-    cairo_stroke (cr);
+    comac_move_to (cr,  1, 2);
+    comac_line_to (cr, 18, 2);
+    comac_stroke (cr);
 
     /* Adjust path by 0.5. Ideally this would give a constant 50%
      * gray, (but does not due to the location of the regular sample
      * grid points. */
-    cairo_move_to (cr, 1.5, 5);
-    cairo_line_to (cr, 18., 5);
-    cairo_stroke (cr);
+    comac_move_to (cr, 1.5, 5);
+    comac_line_to (cr, 18., 5);
+    comac_stroke (cr);
 
     /* Offset dash by 0.5, rather than the path */
-    cairo_set_dash (cr, dashes, 1, 0.5);
+    comac_set_dash (cr, dashes, 1, 0.5);
 
-    cairo_move_to (cr,  1, 8);
-    cairo_line_to (cr, 18, 8);
-    cairo_stroke (cr);
+    comac_move_to (cr,  1, 8);
+    comac_line_to (cr, 18, 8);
+    comac_stroke (cr);
 
     /* Now, similar tests with negative dash offsets. */
 
     /* Basic 1-1 dash pattern dashing */
-    cairo_set_dash (cr, dashes, 1, -4);
+    comac_set_dash (cr, dashes, 1, -4);
 
-    cairo_move_to (cr,  1, 11);
-    cairo_line_to (cr, 18, 11);
-    cairo_stroke (cr);
+    comac_move_to (cr,  1, 11);
+    comac_line_to (cr, 18, 11);
+    comac_stroke (cr);
 
     /* Adjust path by 0.5 */
-    cairo_move_to (cr, 1.5, 14);
-    cairo_line_to (cr, 18., 14);
-    cairo_stroke (cr);
+    comac_move_to (cr, 1.5, 14);
+    comac_line_to (cr, 18., 14);
+    comac_stroke (cr);
 
     /* Offset dash by 0.5 */
-    cairo_set_dash (cr, dashes, 1, -3.5);
+    comac_set_dash (cr, dashes, 1, -3.5);
 
-    cairo_move_to (cr,  1, 17);
-    cairo_line_to (cr, 18, 17);
-    cairo_stroke (cr);
+    comac_move_to (cr,  1, 17);
+    comac_line_to (cr, 18, 17);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (dash_offset_negative,
-	    "Tests cairo_set_dash with a negative offset",
+COMAC_TEST (dash_offset_negative,
+	    "Tests comac_set_dash with a negative offset",
 	    "dash, stroke", /* keywords */
 	    NULL, /* requirements */
 	    IMAGE_WIDTH, IMAGE_HEIGHT,

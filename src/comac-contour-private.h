@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2011 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation
  *
@@ -33,8 +33,8 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_CONTOUR_PRIVATE_H
-#define CAIRO_CONTOUR_PRIVATE_H
+#ifndef COMAC_CONTOUR_PRIVATE_H
+#define COMAC_CONTOUR_PRIVATE_H
 
 #include "comac-types-private.h"
 #include "comac-compiler-private.h"
@@ -43,82 +43,82 @@
 
 #include <stdio.h>
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 /* A contour is simply a closed chain of points that divide the infinite plane
  * into inside and outside. Each contour is a simple polygon, that is it
  * contains no holes or self-intersections, but maybe either concave or convex.
  */
 
-struct _cairo_contour_chain {
-    cairo_point_t *points;
+struct _comac_contour_chain {
+    comac_point_t *points;
     int num_points, size_points;
-    struct _cairo_contour_chain *next;
+    struct _comac_contour_chain *next;
 };
 
-struct _cairo_contour_iter {
-    cairo_point_t *point;
-    cairo_contour_chain_t *chain;
+struct _comac_contour_iter {
+    comac_point_t *point;
+    comac_contour_chain_t *chain;
 };
 
-struct _cairo_contour {
-    cairo_list_t next;
+struct _comac_contour {
+    comac_list_t next;
     int direction;
-    cairo_contour_chain_t chain, *tail;
+    comac_contour_chain_t chain, *tail;
 
-    cairo_point_t embedded_points[64];
+    comac_point_t embedded_points[64];
 };
 
 /* Initial definition of a shape is a set of contours (some representing holes) */
-struct _cairo_shape {
-    cairo_list_t contours;
+struct _comac_shape {
+    comac_list_t contours;
 };
 
-typedef struct _cairo_shape cairo_shape_t;
+typedef struct _comac_shape comac_shape_t;
 
 #if 0
-cairo_private cairo_status_t
-_cairo_shape_init_from_polygon (cairo_shape_t *shape,
-				const cairo_polygon_t *polygon);
+comac_private comac_status_t
+_comac_shape_init_from_polygon (comac_shape_t *shape,
+				const comac_polygon_t *polygon);
 
-cairo_private cairo_status_t
-_cairo_shape_reduce (cairo_shape_t *shape, double tolerance);
+comac_private comac_status_t
+_comac_shape_reduce (comac_shape_t *shape, double tolerance);
 #endif
 
-cairo_private void
-_cairo_contour_init (cairo_contour_t *contour,
+comac_private void
+_comac_contour_init (comac_contour_t *contour,
 		     int direction);
 
-cairo_private cairo_int_status_t
-__cairo_contour_add_point (cairo_contour_t *contour,
-			   const cairo_point_t *point);
+comac_private comac_int_status_t
+__comac_contour_add_point (comac_contour_t *contour,
+			   const comac_point_t *point);
 
-cairo_private void
-_cairo_contour_simplify (cairo_contour_t *contour, double tolerance);
+comac_private void
+_comac_contour_simplify (comac_contour_t *contour, double tolerance);
 
-cairo_private void
-_cairo_contour_reverse (cairo_contour_t *contour);
+comac_private void
+_comac_contour_reverse (comac_contour_t *contour);
 
-cairo_private cairo_int_status_t
-_cairo_contour_add (cairo_contour_t *dst,
-		    const cairo_contour_t *src);
+comac_private comac_int_status_t
+_comac_contour_add (comac_contour_t *dst,
+		    const comac_contour_t *src);
 
-cairo_private cairo_int_status_t
-_cairo_contour_add_reversed (cairo_contour_t *dst,
-			     const cairo_contour_t *src);
+comac_private comac_int_status_t
+_comac_contour_add_reversed (comac_contour_t *dst,
+			     const comac_contour_t *src);
 
-cairo_private void
-__cairo_contour_remove_last_chain (cairo_contour_t *contour);
+comac_private void
+__comac_contour_remove_last_chain (comac_contour_t *contour);
 
-cairo_private void
-_cairo_contour_reset (cairo_contour_t *contour);
+comac_private void
+_comac_contour_reset (comac_contour_t *contour);
 
-cairo_private void
-_cairo_contour_fini (cairo_contour_t *contour);
+comac_private void
+_comac_contour_fini (comac_contour_t *contour);
 
-cairo_private void
-_cairo_debug_print_contour (FILE *file, cairo_contour_t *contour);
+comac_private void
+_comac_debug_print_contour (FILE *file, comac_contour_t *contour);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_CONTOUR_PRIVATE_H */
+#endif /* COMAC_CONTOUR_PRIVATE_H */

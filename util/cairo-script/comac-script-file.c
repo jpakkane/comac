@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -58,7 +58,7 @@ csi_file_new (csi_t *ctx,
 
     file = _csi_slab_alloc (ctx, sizeof (csi_file_t));
     if (file == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     file->base.type = CSI_OBJECT_TYPE_FILE;
     file->base.ref = 1;
@@ -69,20 +69,20 @@ csi_file_new (csi_t *ctx,
     file->src = fopen (path, mode);
     if (file->src == NULL) {
 	_csi_slab_free (ctx, file, sizeof (csi_file_t));
-	return _csi_error (CAIRO_STATUS_FILE_NOT_FOUND);
+	return _csi_error (COMAC_STATUS_FILE_NOT_FOUND);
     }
 
     file->data = _csi_alloc (ctx, CHUNK_SIZE);
     if (file->data == NULL) {
 	_csi_slab_free (ctx, file, sizeof (csi_file_t));
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
     }
     file->bp = file->data;
     file->rem = 0;
 
     obj->type = CSI_OBJECT_TYPE_FILE;
     obj->datum.file = file;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 csi_status_t
@@ -94,7 +94,7 @@ csi_file_new_for_stream (csi_t *ctx,
 
     file = _csi_slab_alloc (ctx, sizeof (csi_file_t));
     if (file == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     file->base.type = CSI_OBJECT_TYPE_FILE;
     file->base.ref = 1;
@@ -105,20 +105,20 @@ csi_file_new_for_stream (csi_t *ctx,
     file->src = stream;
     if (file->src == NULL) {
 	_csi_slab_free (ctx, file, sizeof (csi_file_t));
-	return _csi_error (CAIRO_STATUS_FILE_NOT_FOUND);
+	return _csi_error (COMAC_STATUS_FILE_NOT_FOUND);
     }
 
     file->data = _csi_alloc (ctx, CHUNK_SIZE);
     if (file->data == NULL) {
 	_csi_slab_free (ctx, file, sizeof (csi_file_t));
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
     }
     file->bp = file->data;
     file->rem = 0;
 
     obj->type = CSI_OBJECT_TYPE_FILE;
     obj->datum.file = file;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 csi_status_t
@@ -131,7 +131,7 @@ csi_file_new_for_bytes (csi_t *ctx,
 
     file = _csi_slab_alloc (ctx, sizeof (csi_file_t));
     if (file == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     file->base.type = CSI_OBJECT_TYPE_FILE;
     file->base.ref = 1;
@@ -144,7 +144,7 @@ csi_file_new_for_bytes (csi_t *ctx,
 
     obj->type = CSI_OBJECT_TYPE_FILE;
     obj->datum.file = file;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 csi_status_t
@@ -156,7 +156,7 @@ csi_file_new_from_string (csi_t *ctx,
 
     file = _csi_slab_alloc (ctx, sizeof (csi_file_t));
     if (_csi_unlikely (file == NULL))
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     file->base.type = CSI_OBJECT_TYPE_FILE;
     file->base.ref = 1;
@@ -175,7 +175,7 @@ csi_file_new_from_string (csi_t *ctx,
 	switch (src->method) {
 	case NONE:
 	default:
-	    status = _csi_error (CAIRO_STATUS_NO_MEMORY);
+	    status = _csi_error (COMAC_STATUS_NO_MEMORY);
 	    break;
 
 	case ZLIB:
@@ -183,7 +183,7 @@ csi_file_new_from_string (csi_t *ctx,
 	    if (uncompress ((Bytef *) tmp_str->string, &len,
 			    (Bytef *) src->string, src->len) != Z_OK)
 #endif
-		status = _csi_error (CAIRO_STATUS_NO_MEMORY);
+		status = _csi_error (COMAC_STATUS_NO_MEMORY);
 	    break;
 	case LZO:
 #if HAVE_LZO
@@ -191,7 +191,7 @@ csi_file_new_from_string (csi_t *ctx,
 				  (lzo_bytep) tmp_str->string, &len,
 				  NULL))
 #endif
-		status = _csi_error (CAIRO_STATUS_NO_MEMORY);
+		status = _csi_error (COMAC_STATUS_NO_MEMORY);
 	    break;
 	}
 	if (_csi_unlikely (status)) {
@@ -213,7 +213,7 @@ csi_file_new_from_string (csi_t *ctx,
 
     obj->type = CSI_OBJECT_TYPE_FILE;
     obj->datum.file = file;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static csi_status_t
@@ -229,7 +229,7 @@ _csi_file_new_filter (csi_t *ctx,
 
     file = _csi_slab_alloc (ctx, sizeof (csi_file_t));
     if (file == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     obj->type = CSI_OBJECT_TYPE_FILE;
     obj->datum.file = file;
@@ -247,7 +247,7 @@ _csi_file_new_filter (csi_t *ctx,
     }
     file->src = src_file.datum.file;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 
@@ -261,20 +261,20 @@ csi_file_new_from_stream (csi_t *ctx,
 
     obj = (csi_file_t *) _csi_object_new (ctx, CSI_OBJECT_TYPE_FILE);
     if (obj == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     obj->type = STDIO;
     obj->src = file;
     obj->data = _csi_alloc (ctx, CHUNK_SIZE);
     if (obj->data == NULL) {
 	csi_object_free (&obj->base);
-	return _csi_error (CAIRO_STATUS_UNDEFINED_FILENAME_ERROR);
+	return _csi_error (COMAC_STATUS_UNDEFINED_FILENAME_ERROR);
     }
     obj->bp = obj->data;
     obj->rem = 0;
 
     *out = &obj->base;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 static csi_object_t *
@@ -455,7 +455,7 @@ csi_file_new_ascii85_decode (csi_t *ctx,
 
     data = _csi_alloc0 (ctx, sizeof (_ascii85_decode_data_t));
     if (data == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     return _csi_file_new_filter (ctx, obj, src, &funcs, data);
 }
@@ -576,7 +576,7 @@ csi_file_new_deflate_decode (csi_t *ctx,
 
     data = _csi_alloc (ctx, sizeof (_deflate_decode_data_t));
     if (data == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     data->zlib_stream.zalloc = Z_NULL;
     data->zlib_stream.zfree = Z_NULL;
@@ -589,7 +589,7 @@ csi_file_new_deflate_decode (csi_t *ctx,
 
     if (inflateInit (&data->zlib_stream) != Z_OK) {
 	_csi_free (ctx, data);
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
     }
 
     return _csi_file_new_filter (ctx, obj, src, &funcs, data);
@@ -1069,7 +1069,7 @@ _csi_file_as_string (csi_t *ctx,
     allocated = 16384;
     bytes = _csi_alloc (ctx, allocated);
     if (bytes == NULL)
-	return _csi_error (CAIRO_STATUS_NO_MEMORY);
+	return _csi_error (COMAC_STATUS_NO_MEMORY);
 
     len = 0;
     do {
@@ -1085,13 +1085,13 @@ _csi_file_as_string (csi_t *ctx,
 	    int newlen;
 
 	    if (_csi_unlikely (allocated > INT_MAX / 2))
-		return _csi_error (CAIRO_STATUS_NO_MEMORY);
+		return _csi_error (COMAC_STATUS_NO_MEMORY);
 
 	    newlen = allocated * 2;
 	    newbytes = _csi_realloc (ctx, bytes, newlen);
 	    if (_csi_unlikely (newbytes == NULL)) {
 		_csi_free (ctx, bytes);
-		return _csi_error (CAIRO_STATUS_NO_MEMORY);
+		return _csi_error (COMAC_STATUS_NO_MEMORY);
 	    }
 	    bytes = newbytes;
 	    allocated = newlen;
@@ -1105,6 +1105,6 @@ _csi_file_as_string (csi_t *ctx,
 	return status;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 

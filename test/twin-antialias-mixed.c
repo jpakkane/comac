@@ -25,71 +25,71 @@
 
 #include "comac-test.h"
 
-static cairo_scaled_font_t *
-create_twin (cairo_t *cr, cairo_antialias_t antialias)
+static comac_scaled_font_t *
+create_twin (comac_t *cr, comac_antialias_t antialias)
 {
-    cairo_font_options_t *options;
+    comac_font_options_t *options;
 
-    cairo_select_font_face (cr,
-			    "@cairo:",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
+    comac_select_font_face (cr,
+			    "@comac:",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
 
-    options = cairo_font_options_create ();
-    cairo_font_options_set_antialias (options, antialias);
-    cairo_set_font_options (cr, options);
-    cairo_font_options_destroy (options);
+    options = comac_font_options_create ();
+    comac_font_options_set_antialias (options, antialias);
+    comac_set_font_options (cr, options);
+    comac_font_options_destroy (options);
 
-    return cairo_scaled_font_reference (cairo_get_scaled_font (cr));
+    return comac_scaled_font_reference (comac_get_scaled_font (cr));
 }
 
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_scaled_font_t *subpixel, *gray, *none;
+    comac_scaled_font_t *subpixel, *gray, *none;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_set_font_size (cr, 16);
-    subpixel = create_twin (cr, CAIRO_ANTIALIAS_SUBPIXEL);
-    gray = create_twin (cr, CAIRO_ANTIALIAS_GRAY);
-    none = create_twin (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_font_size (cr, 16);
+    subpixel = create_twin (cr, COMAC_ANTIALIAS_SUBPIXEL);
+    gray = create_twin (cr, COMAC_ANTIALIAS_GRAY);
+    none = create_twin (cr, COMAC_ANTIALIAS_NONE);
 
-    cairo_move_to (cr, 4, 14);
-    cairo_set_scaled_font (cr, subpixel);
-    cairo_show_text (cr, "Is cairo's");
-    cairo_set_scaled_font (cr, gray);
-    cairo_show_text (cr, " twin");
-    cairo_set_scaled_font (cr, none);
-    cairo_show_text (cr, " giza?");
+    comac_move_to (cr, 4, 14);
+    comac_set_scaled_font (cr, subpixel);
+    comac_show_text (cr, "Is comac's");
+    comac_set_scaled_font (cr, gray);
+    comac_show_text (cr, " twin");
+    comac_set_scaled_font (cr, none);
+    comac_show_text (cr, " giza?");
 
-    cairo_move_to (cr, 4, 34);
-    cairo_set_scaled_font (cr, gray);
-    cairo_show_text (cr, "Is cairo's");
-    cairo_set_scaled_font (cr, none);
-    cairo_show_text (cr, " twin");
-    cairo_set_scaled_font (cr, subpixel);
-    cairo_show_text (cr, " giza?");
+    comac_move_to (cr, 4, 34);
+    comac_set_scaled_font (cr, gray);
+    comac_show_text (cr, "Is comac's");
+    comac_set_scaled_font (cr, none);
+    comac_show_text (cr, " twin");
+    comac_set_scaled_font (cr, subpixel);
+    comac_show_text (cr, " giza?");
 
-    cairo_move_to (cr, 4, 54);
-    cairo_set_scaled_font (cr, none);
-    cairo_show_text (cr, "Is cairo's");
-    cairo_set_scaled_font (cr, gray);
-    cairo_show_text (cr, " twin");
-    cairo_set_scaled_font (cr, subpixel);
-    cairo_show_text (cr, " giza?");
+    comac_move_to (cr, 4, 54);
+    comac_set_scaled_font (cr, none);
+    comac_show_text (cr, "Is comac's");
+    comac_set_scaled_font (cr, gray);
+    comac_show_text (cr, " twin");
+    comac_set_scaled_font (cr, subpixel);
+    comac_show_text (cr, " giza?");
 
-    cairo_scaled_font_destroy (none);
-    cairo_scaled_font_destroy (gray);
-    cairo_scaled_font_destroy (subpixel);
+    comac_scaled_font_destroy (none);
+    comac_scaled_font_destroy (gray);
+    comac_scaled_font_destroy (subpixel);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (twin_antialias_mixed,
+COMAC_TEST (twin_antialias_mixed,
 	    "Tests the internal font (with intermixed antialiasing)",
 	    "twin, font", /* keywords */
 	    "target=raster", /* requirements */

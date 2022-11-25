@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -34,14 +34,14 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_TEE_SURFACE_PRIVATE_H
-#define CAIRO_TEE_SURFACE_PRIVATE_H
+#ifndef COMAC_TEE_SURFACE_PRIVATE_H
+#define COMAC_TEE_SURFACE_PRIVATE_H
 
 #include "comacint.h"
 
-cairo_private cairo_surface_t *
-_cairo_tee_surface_find_match (void *abstract_surface,
-			       const cairo_surface_backend_t *backend,
-			       cairo_content_t content);
+comac_private comac_surface_t *
+_comac_tee_surface_find_match (void *abstract_surface,
+			       const comac_surface_backend_t *backend,
+			       comac_content_t content);
 
-#endif /* CAIRO_TEE_SURFACE_PRIVATE_H */
+#endif /* COMAC_TEE_SURFACE_PRIVATE_H */

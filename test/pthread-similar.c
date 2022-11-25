@@ -35,45 +35,45 @@
 static void *
 draw_thread (void *arg)
 {
-    cairo_surface_t *surface = arg;
-    cairo_t *cr;
+    comac_surface_t *surface = arg;
+    comac_t *cr;
     int x, y;
 
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
     for (y = 0; y < HEIGHT; y++) {
         for (x = 0; x < WIDTH; x++) {
-            cairo_rectangle (cr, x, y, 1, 1);
-            cairo_set_source_rgba (cr, 0, 0.75, 0.75, (double) x / WIDTH);
-            cairo_fill (cr);
+            comac_rectangle (cr, x, y, 1, 1);
+            comac_set_source_rgba (cr, 0, 0.75, 0.75, (double) x / WIDTH);
+            comac_fill (cr);
         }
     }
 
-    surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return surface;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     pthread_t threads[N_THREADS];
-    cairo_test_status_t test_status = CAIRO_TEST_SUCCESS;
+    comac_test_status_t test_status = COMAC_TEST_SUCCESS;
     int i;
 
     for (i = 0; i < N_THREADS; i++) {
-	cairo_surface_t *surface;
+	comac_surface_t *surface;
 
-        surface = cairo_surface_create_similar (cairo_get_target (cr),
-						CAIRO_CONTENT_COLOR,
+        surface = comac_surface_create_similar (comac_get_target (cr),
+						COMAC_CONTENT_COLOR,
 						WIDTH, HEIGHT);
         if (pthread_create (&threads[i], NULL, draw_thread, surface) != 0) {
 	    threads[i] = pthread_self ();
-            test_status = cairo_test_status_from_status (cairo_test_get_context (cr),
-							 cairo_surface_status (surface));
-            cairo_surface_destroy (surface);
+            test_status = comac_test_status_from_status (comac_test_get_context (cr),
+							 comac_surface_status (surface));
+            comac_surface_destroy (surface);
 	    break;
         }
     }
@@ -85,20 +85,20 @@ draw (cairo_t *cr, int width, int height)
             break;
 
         if (pthread_join (threads[i], &surface) == 0) {
-	    cairo_set_source_surface (cr, surface, 0, 0);
-	    cairo_surface_destroy (surface);
-	    cairo_paint (cr);
+	    comac_set_source_surface (cr, surface, 0, 0);
+	    comac_surface_destroy (surface);
+	    comac_paint (cr);
 
-	    cairo_translate (cr, 0, HEIGHT);
+	    comac_translate (cr, 0, HEIGHT);
 	} else {
-            test_status = CAIRO_TEST_FAILURE;
+            test_status = COMAC_TEST_FAILURE;
 	}
     }
 
     return test_status;
 }
 
-CAIRO_TEST (pthread_similar,
+COMAC_TEST (pthread_similar,
 	    "Draw lots of 1x1 rectangles on similar surfaces in lots of threads",
 	    "threads", /* keywords */
 	    NULL, /* requirements */

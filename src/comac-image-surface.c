@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2003 University of Southern California
  * Copyright © 2009,2010,2011 Intel Corporation
@@ -27,7 +27,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -62,53 +62,53 @@
 #define MAX_IMAGE_SIZE 32767
 
 /**
- * SECTION:cairo-image
+ * SECTION:comac-image
  * @Title: Image Surfaces
  * @Short_Description: Rendering to memory buffers
- * @See_Also: #cairo_surface_t
+ * @See_Also: #comac_surface_t
  *
  * Image surfaces provide the ability to render to memory buffers
- * either allocated by cairo or by the calling code.  The supported
- * image formats are those defined in #cairo_format_t.
+ * either allocated by comac or by the calling code.  The supported
+ * image formats are those defined in #comac_format_t.
  **/
 
 /**
- * CAIRO_HAS_IMAGE_SURFACE:
+ * COMAC_HAS_IMAGE_SURFACE:
  *
  * Defined if the image surface backend is available.
  * The image surface backend is always built in.
- * This macro was added for completeness in cairo 1.8.
+ * This macro was added for completeness in comac 1.8.
  *
  * Since: 1.8
  **/
 
-static cairo_bool_t
-_cairo_image_surface_is_size_valid (int width, int height)
+static comac_bool_t
+_comac_image_surface_is_size_valid (int width, int height)
 {
     return 0 <= width  &&  width <= MAX_IMAGE_SIZE &&
 	   0 <= height && height <= MAX_IMAGE_SIZE;
 }
 
-cairo_format_t
-_cairo_format_from_pixman_format (pixman_format_code_t pixman_format)
+comac_format_t
+_comac_format_from_pixman_format (pixman_format_code_t pixman_format)
 {
     switch (pixman_format) {
     case PIXMAN_rgba_float:
-	return CAIRO_FORMAT_RGBA128F;
+	return COMAC_FORMAT_RGBA128F;
     case PIXMAN_rgb_float:
-	return CAIRO_FORMAT_RGB96F;
+	return COMAC_FORMAT_RGB96F;
     case PIXMAN_a8r8g8b8:
-	return CAIRO_FORMAT_ARGB32;
+	return COMAC_FORMAT_ARGB32;
     case PIXMAN_x2r10g10b10:
-	return CAIRO_FORMAT_RGB30;
+	return COMAC_FORMAT_RGB30;
     case PIXMAN_x8r8g8b8:
-	return CAIRO_FORMAT_RGB24;
+	return COMAC_FORMAT_RGB24;
     case PIXMAN_a8:
-	return CAIRO_FORMAT_A8;
+	return COMAC_FORMAT_A8;
     case PIXMAN_a1:
-	return CAIRO_FORMAT_A1;
+	return COMAC_FORMAT_A1;
     case PIXMAN_r5g6b5:
-	return CAIRO_FORMAT_RGB16_565;
+	return COMAC_FORMAT_RGB16_565;
 #if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,22,0)
     case PIXMAN_r8g8b8a8: case PIXMAN_r8g8b8x8:
 #endif
@@ -135,28 +135,28 @@ _cairo_format_from_pixman_format (pixman_format_code_t pixman_format)
     case PIXMAN_x14r6g6b6:
 #endif
     default:
-	return CAIRO_FORMAT_INVALID;
+	return COMAC_FORMAT_INVALID;
     }
 
-    return CAIRO_FORMAT_INVALID;
+    return COMAC_FORMAT_INVALID;
 }
 
-cairo_content_t
-_cairo_content_from_pixman_format (pixman_format_code_t pixman_format)
+comac_content_t
+_comac_content_from_pixman_format (pixman_format_code_t pixman_format)
 {
-    cairo_content_t content;
+    comac_content_t content;
 
     content = 0;
     if (PIXMAN_FORMAT_RGB (pixman_format))
-	content |= CAIRO_CONTENT_COLOR;
+	content |= COMAC_CONTENT_COLOR;
     if (PIXMAN_FORMAT_A (pixman_format))
-	content |= CAIRO_CONTENT_ALPHA;
+	content |= COMAC_CONTENT_ALPHA;
 
     return content;
 }
 
 void
-_cairo_image_surface_init (cairo_image_surface_t *surface,
+_comac_image_surface_init (comac_image_surface_t *surface,
 			   pixman_image_t	*pixman_image,
 			   pixman_format_code_t	 pixman_format)
 {
@@ -164,11 +164,11 @@ _cairo_image_surface_init (cairo_image_surface_t *surface,
     surface->pixman_image = pixman_image;
 
     surface->pixman_format = pixman_format;
-    surface->format = _cairo_format_from_pixman_format (pixman_format);
+    surface->format = _comac_format_from_pixman_format (pixman_format);
     surface->data = (uint8_t *) pixman_image_get_data (pixman_image);
     surface->owns_data = FALSE;
-    surface->transparency = CAIRO_IMAGE_UNKNOWN;
-    surface->color = CAIRO_IMAGE_UNKNOWN_COLOR;
+    surface->transparency = COMAC_IMAGE_UNKNOWN;
+    surface->color = COMAC_IMAGE_UNKNOWN_COLOR;
 
     surface->width = pixman_image_get_width (pixman_image);
     surface->height = pixman_image_get_height (pixman_image);
@@ -177,43 +177,43 @@ _cairo_image_surface_init (cairo_image_surface_t *surface,
 
     surface->base.is_clear = surface->width == 0 || surface->height == 0;
 
-    surface->compositor = _cairo_image_spans_compositor_get ();
+    surface->compositor = _comac_image_spans_compositor_get ();
 }
 
-cairo_surface_t *
-_cairo_image_surface_create_for_pixman_image (pixman_image_t		*pixman_image,
+comac_surface_t *
+_comac_image_surface_create_for_pixman_image (pixman_image_t		*pixman_image,
 					      pixman_format_code_t	 pixman_format)
 {
-    cairo_image_surface_t *surface;
+    comac_image_surface_t *surface;
 
-    surface = _cairo_malloc (sizeof (cairo_image_surface_t));
+    surface = _comac_malloc (sizeof (comac_image_surface_t));
     if (unlikely (surface == NULL))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
 
-    _cairo_surface_init (&surface->base,
-			 &_cairo_image_surface_backend,
+    _comac_surface_init (&surface->base,
+			 &_comac_image_surface_backend,
 			 NULL, /* device */
-			 _cairo_content_from_pixman_format (pixman_format),
+			 _comac_content_from_pixman_format (pixman_format),
 			 FALSE); /* is_vector */
 
-    _cairo_image_surface_init (surface, pixman_image, pixman_format);
+    _comac_image_surface_init (surface, pixman_image, pixman_format);
 
     return &surface->base;
 }
 
-cairo_bool_t
-_pixman_format_from_masks (cairo_format_masks_t *masks,
+comac_bool_t
+_pixman_format_from_masks (comac_format_masks_t *masks,
 			   pixman_format_code_t *format_ret)
 {
     pixman_format_code_t format;
     int format_type;
     int a, r, g, b;
-    cairo_format_masks_t format_masks;
+    comac_format_masks_t format_masks;
 
-    a = _cairo_popcount (masks->alpha_mask);
-    r = _cairo_popcount (masks->red_mask);
-    g = _cairo_popcount (masks->green_mask);
-    b = _cairo_popcount (masks->blue_mask);
+    a = _comac_popcount (masks->alpha_mask);
+    r = _comac_popcount (masks->red_mask);
+    g = _comac_popcount (masks->green_mask);
+    b = _comac_popcount (masks->blue_mask);
 
     if (masks->red_mask) {
 	if (masks->red_mask > masks->blue_mask)
@@ -251,9 +251,9 @@ _pixman_format_from_masks (cairo_format_masks_t *masks,
 /* A mask consisting of N bits set to 1. */
 #define MASK(N) ((1UL << (N))-1)
 
-cairo_bool_t
+comac_bool_t
 _pixman_format_to_masks (pixman_format_code_t	 format,
-			 cairo_format_masks_t	*masks)
+			 comac_format_masks_t	*masks)
 {
     int a, r, g, b;
 
@@ -307,33 +307,33 @@ _pixman_format_to_masks (pixman_format_code_t	 format,
 }
 
 pixman_format_code_t
-_cairo_format_to_pixman_format_code (cairo_format_t format)
+_comac_format_to_pixman_format_code (comac_format_t format)
 {
     pixman_format_code_t ret;
     switch (format) {
-    case CAIRO_FORMAT_A1:
+    case COMAC_FORMAT_A1:
 	ret = PIXMAN_a1;
 	break;
-    case CAIRO_FORMAT_A8:
+    case COMAC_FORMAT_A8:
 	ret = PIXMAN_a8;
 	break;
-    case CAIRO_FORMAT_RGB24:
+    case COMAC_FORMAT_RGB24:
 	ret = PIXMAN_x8r8g8b8;
 	break;
-    case CAIRO_FORMAT_RGB30:
+    case COMAC_FORMAT_RGB30:
 	ret = PIXMAN_x2r10g10b10;
 	break;
-    case CAIRO_FORMAT_RGB16_565:
+    case COMAC_FORMAT_RGB16_565:
 	ret = PIXMAN_r5g6b5;
 	break;
-    case CAIRO_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGB96F:
 	ret = PIXMAN_rgb_float;
 	break;
-    case CAIRO_FORMAT_RGBA128F:
+    case COMAC_FORMAT_RGBA128F:
 	ret = PIXMAN_rgba_float;
 	break;
-    case CAIRO_FORMAT_ARGB32:
-    case CAIRO_FORMAT_INVALID:
+    case COMAC_FORMAT_ARGB32:
+    case COMAC_FORMAT_INVALID:
     default:
 	ret = PIXMAN_a8r8g8b8;
 	break;
@@ -341,28 +341,28 @@ _cairo_format_to_pixman_format_code (cairo_format_t format)
     return ret;
 }
 
-cairo_surface_t *
-_cairo_image_surface_create_with_pixman_format (unsigned char		*data,
+comac_surface_t *
+_comac_image_surface_create_with_pixman_format (unsigned char		*data,
 						pixman_format_code_t	 pixman_format,
 						int			 width,
 						int			 height,
 						int			 stride)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     pixman_image_t *pixman_image;
 
-    if (! _cairo_image_surface_is_size_valid (width, height))
+    if (! _comac_image_surface_is_size_valid (width, height))
     {
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_SIZE));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_SIZE));
     }
 
     pixman_image = pixman_image_create_bits (pixman_format, width, height,
 					     (uint32_t *) data, stride);
 
     if (unlikely (pixman_image == NULL))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_NO_MEMORY));
 
-    surface = _cairo_image_surface_create_for_pixman_image (pixman_image,
+    surface = _comac_image_surface_create_for_pixman_image (pixman_image,
 							    pixman_format);
     if (unlikely (surface->status)) {
 	pixman_image_unref (pixman_image);
@@ -375,7 +375,7 @@ _cairo_image_surface_create_with_pixman_format (unsigned char		*data,
 }
 
 /**
- * cairo_image_surface_create:
+ * comac_image_surface_create:
  * @format: format of pixels in the surface to create
  * @width: width of the surface, in pixels
  * @height: height of the surface, in pixels
@@ -387,57 +387,57 @@ _cairo_image_surface_create_with_pixman_format (unsigned char		*data,
  * but not belonging to the given format are undefined).
  *
  * Return value: a pointer to the newly created surface. The caller
- * owns the surface and should call cairo_surface_destroy() when done
+ * owns the surface and should call comac_surface_destroy() when done
  * with it.
  *
  * This function always returns a valid pointer, but it will return a
  * pointer to a "nil" surface if an error such as out of memory
- * occurs. You can use cairo_surface_status() to check for this.
+ * occurs. You can use comac_surface_status() to check for this.
  *
  * Since: 1.0
  **/
-cairo_surface_t *
-cairo_image_surface_create (cairo_format_t	format,
+comac_surface_t *
+comac_image_surface_create (comac_format_t	format,
 			    int			width,
 			    int			height)
 {
     pixman_format_code_t pixman_format;
 
-    if (! CAIRO_FORMAT_VALID (format))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
+    if (! COMAC_FORMAT_VALID (format))
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_FORMAT));
 
-    pixman_format = _cairo_format_to_pixman_format_code (format);
+    pixman_format = _comac_format_to_pixman_format_code (format);
 
-    return _cairo_image_surface_create_with_pixman_format (NULL, pixman_format,
+    return _comac_image_surface_create_with_pixman_format (NULL, pixman_format,
 							   width, height, -1);
 }
 
-    cairo_surface_t *
-_cairo_image_surface_create_with_content (cairo_content_t	content,
+    comac_surface_t *
+_comac_image_surface_create_with_content (comac_content_t	content,
 					  int			width,
 					  int			height)
 {
-    return cairo_image_surface_create (_cairo_format_from_content (content),
+    return comac_image_surface_create (_comac_format_from_content (content),
 				       width, height);
 }
 
 /**
- * cairo_format_stride_for_width:
- * @format: A #cairo_format_t value
+ * comac_format_stride_for_width:
+ * @format: A #comac_format_t value
  * @width: The desired width of an image surface to be created.
  *
  * This function provides a stride value that will respect all
  * alignment requirements of the accelerated image-rendering code
- * within cairo. Typical usage will be of the form:
+ * within comac. Typical usage will be of the form:
  *
  * <informalexample><programlisting>
  * int stride;
  * unsigned char *data;
- * cairo_surface_t *surface;
+ * comac_surface_t *surface;
  *
- * stride = cairo_format_stride_for_width (format, width);
+ * stride = comac_format_stride_for_width (format, width);
  * data = malloc (stride * height);
- * surface = cairo_image_surface_create_for_data (data, format,
+ * surface = comac_image_surface_create_for_data (data, format,
  *						  width, height,
  *						  stride);
  * </programlisting></informalexample>
@@ -449,25 +449,25 @@ _cairo_image_surface_create_with_content (cairo_content_t	content,
  * Since: 1.6
  **/
     int
-cairo_format_stride_for_width (cairo_format_t	format,
+comac_format_stride_for_width (comac_format_t	format,
 			       int		width)
 {
     int bpp;
 
-    if (! CAIRO_FORMAT_VALID (format)) {
-	_cairo_error_throw (CAIRO_STATUS_INVALID_FORMAT);
+    if (! COMAC_FORMAT_VALID (format)) {
+	_comac_error_throw (COMAC_STATUS_INVALID_FORMAT);
 	return -1;
     }
 
-    bpp = _cairo_format_bits_per_pixel (format);
+    bpp = _comac_format_bits_per_pixel (format);
     if ((unsigned) (width) >= (INT32_MAX - 7) / (unsigned) (bpp))
 	return -1;
 
-    return CAIRO_STRIDE_FOR_WIDTH_BPP (width, bpp);
+    return COMAC_STRIDE_FOR_WIDTH_BPP (width, bpp);
 }
 
 /**
- * cairo_image_surface_create_for_data:
+ * comac_image_surface_create_for_data:
  * @data: a pointer to a buffer supplied by the application in which
  *     to write contents. This pointer must be suitably aligned for any
  *     kind of variable, (for example, a pointer returned by malloc).
@@ -476,44 +476,44 @@ cairo_format_stride_for_width (cairo_format_t	format,
  * @height: the height of the image to be stored in the buffer
  * @stride: the number of bytes between the start of rows in the
  *     buffer as allocated. This value should always be computed by
- *     cairo_format_stride_for_width() before allocating the data
+ *     comac_format_stride_for_width() before allocating the data
  *     buffer.
  *
  * Creates an image surface for the provided pixel data. The output
- * buffer must be kept around until the #cairo_surface_t is destroyed
- * or cairo_surface_finish() is called on the surface.  The initial
+ * buffer must be kept around until the #comac_surface_t is destroyed
+ * or comac_surface_finish() is called on the surface.  The initial
  * contents of @data will be used as the initial image contents; you
  * must explicitly clear the buffer, using, for example,
- * cairo_rectangle() and cairo_fill() if you want it cleared.
+ * comac_rectangle() and comac_fill() if you want it cleared.
  *
  * Note that the stride may be larger than
  * width*bytes_per_pixel to provide proper alignment for each pixel
  * and row. This alignment is required to allow high-performance rendering
- * within cairo. The correct way to obtain a legal stride value is to
- * call cairo_format_stride_for_width() with the desired format and
+ * within comac. The correct way to obtain a legal stride value is to
+ * call comac_format_stride_for_width() with the desired format and
  * maximum image width value, and then use the resulting stride value
  * to allocate the data and to create the image surface. See
- * cairo_format_stride_for_width() for example code.
+ * comac_format_stride_for_width() for example code.
  *
  * Return value: a pointer to the newly created surface. The caller
- * owns the surface and should call cairo_surface_destroy() when done
+ * owns the surface and should call comac_surface_destroy() when done
  * with it.
  *
  * This function always returns a valid pointer, but it will return a
  * pointer to a "nil" surface in the case of an error such as out of
  * memory or an invalid stride value. In case of invalid stride value
  * the error status of the returned surface will be
- * %CAIRO_STATUS_INVALID_STRIDE.  You can use
- * cairo_surface_status() to check for this.
+ * %COMAC_STATUS_INVALID_STRIDE.  You can use
+ * comac_surface_status() to check for this.
  *
- * See cairo_surface_set_user_data() for a means of attaching a
+ * See comac_surface_set_user_data() for a means of attaching a
  * destroy-notification fallback to the surface if necessary.
  *
  * Since: 1.0
  **/
-    cairo_surface_t *
-cairo_image_surface_create_for_data (unsigned char     *data,
-				     cairo_format_t	format,
+    comac_surface_t *
+comac_image_surface_create_for_data (unsigned char     *data,
+				     comac_format_t	format,
 				     int		width,
 				     int		height,
 				     int		stride)
@@ -521,58 +521,58 @@ cairo_image_surface_create_for_data (unsigned char     *data,
     pixman_format_code_t pixman_format;
     int minstride;
 
-    if (! CAIRO_FORMAT_VALID (format))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_FORMAT));
+    if (! COMAC_FORMAT_VALID (format))
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_FORMAT));
 
-    if ((stride & (CAIRO_STRIDE_ALIGNMENT-1)) != 0)
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_STRIDE));
+    if ((stride & (COMAC_STRIDE_ALIGNMENT-1)) != 0)
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_STRIDE));
 
-    if (! _cairo_image_surface_is_size_valid (width, height))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_SIZE));
+    if (! _comac_image_surface_is_size_valid (width, height))
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_SIZE));
 
-    minstride = cairo_format_stride_for_width (format, width);
+    minstride = comac_format_stride_for_width (format, width);
     if (stride < 0) {
 	if (stride > -minstride) {
-	    return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_STRIDE));
+	    return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_STRIDE));
 	}
     } else {
 	if (stride < minstride) {
-	    return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_STRIDE));
+	    return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_STRIDE));
 	}
     }
 
-    pixman_format = _cairo_format_to_pixman_format_code (format);
-    return _cairo_image_surface_create_with_pixman_format (data,
+    pixman_format = _comac_format_to_pixman_format_code (format);
+    return _comac_image_surface_create_with_pixman_format (data,
 							   pixman_format,
 							   width, height,
 							   stride);
 }
 
 /**
- * cairo_image_surface_get_data:
- * @surface: a #cairo_image_surface_t
+ * comac_image_surface_get_data:
+ * @surface: a #comac_image_surface_t
  *
  * Get a pointer to the data of the image surface, for direct
  * inspection or modification.
  *
- * A call to cairo_surface_flush() is required before accessing the
+ * A call to comac_surface_flush() is required before accessing the
  * pixel data to ensure that all pending drawing operations are
- * finished. A call to cairo_surface_mark_dirty() is required after
+ * finished. A call to comac_surface_mark_dirty() is required after
  * the data is modified.
  *
  * Return value: a pointer to the image data of this surface or %NULL
- * if @surface is not an image surface, or if cairo_surface_finish()
+ * if @surface is not an image surface, or if comac_surface_finish()
  * has been called.
  *
  * Since: 1.2
  **/
 unsigned char *
-cairo_image_surface_get_data (cairo_surface_t *surface)
+comac_image_surface_get_data (comac_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    comac_image_surface_t *image_surface = (comac_image_surface_t *) surface;
 
-    if (! _cairo_surface_is_image (surface)) {
-	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_image (surface)) {
+	_comac_error_throw (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 	return NULL;
     }
 
@@ -580,8 +580,8 @@ cairo_image_surface_get_data (cairo_surface_t *surface)
 }
 
 /**
- * cairo_image_surface_get_format:
- * @surface: a #cairo_image_surface_t
+ * comac_image_surface_get_format:
+ * @surface: a #comac_image_surface_t
  *
  * Get the format of the surface.
  *
@@ -589,22 +589,22 @@ cairo_image_surface_get_data (cairo_surface_t *surface)
  *
  * Since: 1.2
  **/
-cairo_format_t
-cairo_image_surface_get_format (cairo_surface_t *surface)
+comac_format_t
+comac_image_surface_get_format (comac_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    comac_image_surface_t *image_surface = (comac_image_surface_t *) surface;
 
-    if (! _cairo_surface_is_image (surface)) {
-	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
-	return CAIRO_FORMAT_INVALID;
+    if (! _comac_surface_is_image (surface)) {
+	_comac_error_throw (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
+	return COMAC_FORMAT_INVALID;
     }
 
     return image_surface->format;
 }
 
 /**
- * cairo_image_surface_get_width:
- * @surface: a #cairo_image_surface_t
+ * comac_image_surface_get_width:
+ * @surface: a #comac_image_surface_t
  *
  * Get the width of the image surface in pixels.
  *
@@ -613,12 +613,12 @@ cairo_image_surface_get_format (cairo_surface_t *surface)
  * Since: 1.0
  **/
 int
-cairo_image_surface_get_width (cairo_surface_t *surface)
+comac_image_surface_get_width (comac_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    comac_image_surface_t *image_surface = (comac_image_surface_t *) surface;
 
-    if (! _cairo_surface_is_image (surface)) {
-	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_image (surface)) {
+	_comac_error_throw (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 	return 0;
     }
 
@@ -626,8 +626,8 @@ cairo_image_surface_get_width (cairo_surface_t *surface)
 }
 
 /**
- * cairo_image_surface_get_height:
- * @surface: a #cairo_image_surface_t
+ * comac_image_surface_get_height:
+ * @surface: a #comac_image_surface_t
  *
  * Get the height of the image surface in pixels.
  *
@@ -636,12 +636,12 @@ cairo_image_surface_get_width (cairo_surface_t *surface)
  * Since: 1.0
  **/
 int
-cairo_image_surface_get_height (cairo_surface_t *surface)
+comac_image_surface_get_height (comac_surface_t *surface)
 {
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    comac_image_surface_t *image_surface = (comac_image_surface_t *) surface;
 
-    if (! _cairo_surface_is_image (surface)) {
-	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_image (surface)) {
+	_comac_error_throw (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 	return 0;
     }
 
@@ -649,8 +649,8 @@ cairo_image_surface_get_height (cairo_surface_t *surface)
 }
 
 /**
- * cairo_image_surface_get_stride:
- * @surface: a #cairo_image_surface_t
+ * comac_image_surface_get_stride:
+ * @surface: a #comac_image_surface_t
  *
  * Get the stride of the image surface in bytes
  *
@@ -662,119 +662,119 @@ cairo_image_surface_get_height (cairo_surface_t *surface)
  * Since: 1.2
  **/
 int
-cairo_image_surface_get_stride (cairo_surface_t *surface)
+comac_image_surface_get_stride (comac_surface_t *surface)
 {
 
-    cairo_image_surface_t *image_surface = (cairo_image_surface_t *) surface;
+    comac_image_surface_t *image_surface = (comac_image_surface_t *) surface;
 
-    if (! _cairo_surface_is_image (surface)) {
-	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+    if (! _comac_surface_is_image (surface)) {
+	_comac_error_throw (COMAC_STATUS_SURFACE_TYPE_MISMATCH);
 	return 0;
     }
 
     return image_surface->stride;
 }
 
-    cairo_format_t
-_cairo_format_from_content (cairo_content_t content)
+    comac_format_t
+_comac_format_from_content (comac_content_t content)
 {
     switch (content) {
-    case CAIRO_CONTENT_COLOR:
-	return CAIRO_FORMAT_RGB24;
-    case CAIRO_CONTENT_ALPHA:
-	return CAIRO_FORMAT_A8;
-    case CAIRO_CONTENT_COLOR_ALPHA:
-	return CAIRO_FORMAT_ARGB32;
+    case COMAC_CONTENT_COLOR:
+	return COMAC_FORMAT_RGB24;
+    case COMAC_CONTENT_ALPHA:
+	return COMAC_FORMAT_A8;
+    case COMAC_CONTENT_COLOR_ALPHA:
+	return COMAC_FORMAT_ARGB32;
     }
 
     ASSERT_NOT_REACHED;
-    return CAIRO_FORMAT_INVALID;
+    return COMAC_FORMAT_INVALID;
 }
 
-    cairo_content_t
-_cairo_content_from_format (cairo_format_t format)
+    comac_content_t
+_comac_content_from_format (comac_format_t format)
 {
     switch (format) {
-    case CAIRO_FORMAT_RGBA128F:
-    case CAIRO_FORMAT_ARGB32:
-	return CAIRO_CONTENT_COLOR_ALPHA;
-    case CAIRO_FORMAT_RGB96F:
-    case CAIRO_FORMAT_RGB30:
-	return CAIRO_CONTENT_COLOR;
-    case CAIRO_FORMAT_RGB24:
-	return CAIRO_CONTENT_COLOR;
-    case CAIRO_FORMAT_RGB16_565:
-	return CAIRO_CONTENT_COLOR;
-    case CAIRO_FORMAT_A8:
-    case CAIRO_FORMAT_A1:
-	return CAIRO_CONTENT_ALPHA;
-    case CAIRO_FORMAT_INVALID:
+    case COMAC_FORMAT_RGBA128F:
+    case COMAC_FORMAT_ARGB32:
+	return COMAC_CONTENT_COLOR_ALPHA;
+    case COMAC_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGB30:
+	return COMAC_CONTENT_COLOR;
+    case COMAC_FORMAT_RGB24:
+	return COMAC_CONTENT_COLOR;
+    case COMAC_FORMAT_RGB16_565:
+	return COMAC_CONTENT_COLOR;
+    case COMAC_FORMAT_A8:
+    case COMAC_FORMAT_A1:
+	return COMAC_CONTENT_ALPHA;
+    case COMAC_FORMAT_INVALID:
 	break;
     }
 
     ASSERT_NOT_REACHED;
-    return CAIRO_CONTENT_COLOR_ALPHA;
+    return COMAC_CONTENT_COLOR_ALPHA;
 }
 
     int
-_cairo_format_bits_per_pixel (cairo_format_t format)
+_comac_format_bits_per_pixel (comac_format_t format)
 {
     switch (format) {
-    case CAIRO_FORMAT_RGBA128F:
+    case COMAC_FORMAT_RGBA128F:
 	return 128;
-    case CAIRO_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGB96F:
 	return 96;
-    case CAIRO_FORMAT_ARGB32:
-    case CAIRO_FORMAT_RGB30:
-    case CAIRO_FORMAT_RGB24:
+    case COMAC_FORMAT_ARGB32:
+    case COMAC_FORMAT_RGB30:
+    case COMAC_FORMAT_RGB24:
 	return 32;
-    case CAIRO_FORMAT_RGB16_565:
+    case COMAC_FORMAT_RGB16_565:
 	return 16;
-    case CAIRO_FORMAT_A8:
+    case COMAC_FORMAT_A8:
 	return 8;
-    case CAIRO_FORMAT_A1:
+    case COMAC_FORMAT_A1:
 	return 1;
-    case CAIRO_FORMAT_INVALID:
+    case COMAC_FORMAT_INVALID:
     default:
 	ASSERT_NOT_REACHED;
 	return 0;
     }
 }
 
-cairo_surface_t *
-_cairo_image_surface_create_similar (void	       *abstract_other,
-				     cairo_content_t	content,
+comac_surface_t *
+_comac_image_surface_create_similar (void	       *abstract_other,
+				     comac_content_t	content,
 				     int		width,
 				     int		height)
 {
-    cairo_image_surface_t *other = abstract_other;
+    comac_image_surface_t *other = abstract_other;
 
     TRACE ((stderr, "%s (other=%u)\n", __FUNCTION__, other->base.unique_id));
 
-    if (! _cairo_image_surface_is_size_valid (width, height))
-	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_SIZE));
+    if (! _comac_image_surface_is_size_valid (width, height))
+	return _comac_surface_create_in_error (_comac_error (COMAC_STATUS_INVALID_SIZE));
 
     if (content == other->base.content) {
-	return _cairo_image_surface_create_with_pixman_format (NULL,
+	return _comac_image_surface_create_with_pixman_format (NULL,
 							       other->pixman_format,
 							       width, height,
 							       0);
     }
 
-    return _cairo_image_surface_create_with_content (content,
+    return _comac_image_surface_create_with_content (content,
 						     width, height);
 }
 
-cairo_surface_t *
-_cairo_image_surface_snapshot (void *abstract_surface)
+comac_surface_t *
+_comac_image_surface_snapshot (void *abstract_surface)
 {
-    cairo_image_surface_t *image = abstract_surface;
-    cairo_image_surface_t *clone;
+    comac_image_surface_t *image = abstract_surface;
+    comac_image_surface_t *clone;
 
     /* If we own the image, we can simply steal the memory for the snapshot */
     if (image->owns_data && image->base._finishing) {
-	clone = (cairo_image_surface_t *)
-	    _cairo_image_surface_create_for_pixman_image (image->pixman_image,
+	clone = (comac_image_surface_t *)
+	    _comac_image_surface_create_for_pixman_image (image->pixman_image,
 							  image->pixman_format);
 	if (unlikely (clone->base.status))
 	    return &clone->base;
@@ -789,8 +789,8 @@ _cairo_image_surface_snapshot (void *abstract_surface)
 	return &clone->base;
     }
 
-    clone = (cairo_image_surface_t *)
-	_cairo_image_surface_create_with_pixman_format (NULL,
+    clone = (comac_image_surface_t *)
+	_comac_image_surface_create_with_pixman_format (NULL,
 							image->pixman_format,
 							image->width,
 							image->height,
@@ -812,12 +812,12 @@ _cairo_image_surface_snapshot (void *abstract_surface)
     return &clone->base;
 }
 
-cairo_image_surface_t *
-_cairo_image_surface_map_to_image (void *abstract_other,
-				   const cairo_rectangle_int_t *extents)
+comac_image_surface_t *
+_comac_image_surface_map_to_image (void *abstract_other,
+				   const comac_rectangle_int_t *extents)
 {
-    cairo_image_surface_t *other = abstract_other;
-    cairo_surface_t *surface;
+    comac_image_surface_t *other = abstract_other;
+    comac_surface_t *surface;
     uint8_t *data;
 
     data = other->data;
@@ -825,30 +825,30 @@ _cairo_image_surface_map_to_image (void *abstract_other,
     data += extents->x * PIXMAN_FORMAT_BPP (other->pixman_format)/ 8;
 
     surface =
-	_cairo_image_surface_create_with_pixman_format (data,
+	_comac_image_surface_create_with_pixman_format (data,
 							other->pixman_format,
 							extents->width,
 							extents->height,
 							other->stride);
 
-    cairo_surface_set_device_offset (surface, -extents->x, -extents->y);
-    return (cairo_image_surface_t *) surface;
+    comac_surface_set_device_offset (surface, -extents->x, -extents->y);
+    return (comac_image_surface_t *) surface;
 }
 
-cairo_int_status_t
-_cairo_image_surface_unmap_image (void *abstract_surface,
-				  cairo_image_surface_t *image)
+comac_int_status_t
+_comac_image_surface_unmap_image (void *abstract_surface,
+				  comac_image_surface_t *image)
 {
-    cairo_surface_finish (&image->base);
-    cairo_surface_destroy (&image->base);
+    comac_surface_finish (&image->base);
+    comac_surface_destroy (&image->base);
 
-    return CAIRO_INT_STATUS_SUCCESS;
+    return COMAC_INT_STATUS_SUCCESS;
 }
 
-cairo_status_t
-_cairo_image_surface_finish (void *abstract_surface)
+comac_status_t
+_comac_image_surface_finish (void *abstract_surface)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     if (surface->pixman_image) {
 	pixman_image_unref (surface->pixman_image);
@@ -861,25 +861,25 @@ _cairo_image_surface_finish (void *abstract_surface)
     }
 
     if (surface->parent) {
-	cairo_surface_t *parent = surface->parent;
+	comac_surface_t *parent = surface->parent;
 	surface->parent = NULL;
-	cairo_surface_destroy (parent);
+	comac_surface_destroy (parent);
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void
-_cairo_image_surface_assume_ownership_of_data (cairo_image_surface_t *surface)
+_comac_image_surface_assume_ownership_of_data (comac_image_surface_t *surface)
 {
     surface->owns_data = TRUE;
 }
 
-cairo_surface_t *
-_cairo_image_surface_source (void			*abstract_surface,
-			     cairo_rectangle_int_t	*extents)
+comac_surface_t *
+_comac_image_surface_source (void			*abstract_surface,
+			     comac_rectangle_int_t	*extents)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     if (extents) {
 	extents->x = extents->y = 0;
@@ -890,30 +890,30 @@ _cairo_image_surface_source (void			*abstract_surface,
     return &surface->base;
 }
 
-cairo_status_t
-_cairo_image_surface_acquire_source_image (void                    *abstract_surface,
-					   cairo_image_surface_t  **image_out,
+comac_status_t
+_comac_image_surface_acquire_source_image (void                    *abstract_surface,
+					   comac_image_surface_t  **image_out,
 					   void                   **image_extra)
 {
     *image_out = abstract_surface;
     *image_extra = NULL;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 void
-_cairo_image_surface_release_source_image (void                   *abstract_surface,
-					   cairo_image_surface_t  *image,
+_comac_image_surface_release_source_image (void                   *abstract_surface,
+					   comac_image_surface_t  *image,
 					   void                   *image_extra)
 {
 }
 
 /* high level image interface */
-cairo_bool_t
-_cairo_image_surface_get_extents (void			  *abstract_surface,
-				  cairo_rectangle_int_t   *rectangle)
+comac_bool_t
+_comac_image_surface_get_extents (void			  *abstract_surface,
+				  comac_rectangle_int_t   *rectangle)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     rectangle->x = 0;
     rectangle->y = 0;
@@ -923,171 +923,171 @@ _cairo_image_surface_get_extents (void			  *abstract_surface,
     return TRUE;
 }
 
-cairo_int_status_t
-_cairo_image_surface_paint (void			*abstract_surface,
-			    cairo_operator_t		 op,
-			    const cairo_pattern_t	*source,
-			    const cairo_clip_t		*clip)
+comac_int_status_t
+_comac_image_surface_paint (void			*abstract_surface,
+			    comac_operator_t		 op,
+			    const comac_pattern_t	*source,
+			    const comac_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
 
-    return _cairo_compositor_paint (surface->compositor,
+    return _comac_compositor_paint (surface->compositor,
 				    &surface->base, op, source, clip);
 }
 
-cairo_int_status_t
-_cairo_image_surface_mask (void				*abstract_surface,
-			   cairo_operator_t		 op,
-			   const cairo_pattern_t	*source,
-			   const cairo_pattern_t	*mask,
-			   const cairo_clip_t		*clip)
+comac_int_status_t
+_comac_image_surface_mask (void				*abstract_surface,
+			   comac_operator_t		 op,
+			   const comac_pattern_t	*source,
+			   const comac_pattern_t	*mask,
+			   const comac_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
 
-    return _cairo_compositor_mask (surface->compositor,
+    return _comac_compositor_mask (surface->compositor,
 				   &surface->base, op, source, mask, clip);
 }
 
-cairo_int_status_t
-_cairo_image_surface_stroke (void			*abstract_surface,
-			     cairo_operator_t		 op,
-			     const cairo_pattern_t	*source,
-			     const cairo_path_fixed_t	*path,
-			     const cairo_stroke_style_t	*style,
-			     const cairo_matrix_t	*ctm,
-			     const cairo_matrix_t	*ctm_inverse,
+comac_int_status_t
+_comac_image_surface_stroke (void			*abstract_surface,
+			     comac_operator_t		 op,
+			     const comac_pattern_t	*source,
+			     const comac_path_fixed_t	*path,
+			     const comac_stroke_style_t	*style,
+			     const comac_matrix_t	*ctm,
+			     const comac_matrix_t	*ctm_inverse,
 			     double			 tolerance,
-			     cairo_antialias_t		 antialias,
-			     const cairo_clip_t		*clip)
+			     comac_antialias_t		 antialias,
+			     const comac_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
 
-    return _cairo_compositor_stroke (surface->compositor, &surface->base,
+    return _comac_compositor_stroke (surface->compositor, &surface->base,
 				     op, source, path,
 				     style, ctm, ctm_inverse,
 				     tolerance, antialias, clip);
 }
 
-cairo_int_status_t
-_cairo_image_surface_fill (void				*abstract_surface,
-			   cairo_operator_t		 op,
-			   const cairo_pattern_t	*source,
-			   const cairo_path_fixed_t	*path,
-			   cairo_fill_rule_t		 fill_rule,
+comac_int_status_t
+_comac_image_surface_fill (void				*abstract_surface,
+			   comac_operator_t		 op,
+			   const comac_pattern_t	*source,
+			   const comac_path_fixed_t	*path,
+			   comac_fill_rule_t		 fill_rule,
 			   double			 tolerance,
-			   cairo_antialias_t		 antialias,
-			   const cairo_clip_t		*clip)
+			   comac_antialias_t		 antialias,
+			   const comac_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
 
-    return _cairo_compositor_fill (surface->compositor, &surface->base,
+    return _comac_compositor_fill (surface->compositor, &surface->base,
 				   op, source, path,
 				   fill_rule, tolerance, antialias,
 				   clip);
 }
 
-cairo_int_status_t
-_cairo_image_surface_glyphs (void			*abstract_surface,
-			     cairo_operator_t		 op,
-			     const cairo_pattern_t	*source,
-			     cairo_glyph_t		*glyphs,
+comac_int_status_t
+_comac_image_surface_glyphs (void			*abstract_surface,
+			     comac_operator_t		 op,
+			     const comac_pattern_t	*source,
+			     comac_glyph_t		*glyphs,
 			     int			 num_glyphs,
-			     cairo_scaled_font_t	*scaled_font,
-			     const cairo_clip_t		*clip)
+			     comac_scaled_font_t	*scaled_font,
+			     const comac_clip_t		*clip)
 {
-    cairo_image_surface_t *surface = abstract_surface;
+    comac_image_surface_t *surface = abstract_surface;
 
     TRACE ((stderr, "%s (surface=%d)\n",
 	    __FUNCTION__, surface->base.unique_id));
 
-    return _cairo_compositor_glyphs (surface->compositor, &surface->base,
+    return _comac_compositor_glyphs (surface->compositor, &surface->base,
 				     op, source,
 				     glyphs, num_glyphs, scaled_font,
 				     clip);
 }
 
 void
-_cairo_image_surface_get_font_options (void                  *abstract_surface,
-				       cairo_font_options_t  *options)
+_comac_image_surface_get_font_options (void                  *abstract_surface,
+				       comac_font_options_t  *options)
 {
-    _cairo_font_options_init_default (options);
+    _comac_font_options_init_default (options);
 
-    cairo_font_options_set_hint_metrics (options, CAIRO_HINT_METRICS_ON);
-    _cairo_font_options_set_round_glyph_positions (options, CAIRO_ROUND_GLYPH_POS_ON);
+    comac_font_options_set_hint_metrics (options, COMAC_HINT_METRICS_ON);
+    _comac_font_options_set_round_glyph_positions (options, COMAC_ROUND_GLYPH_POS_ON);
 }
 
-const cairo_surface_backend_t _cairo_image_surface_backend = {
-    CAIRO_SURFACE_TYPE_IMAGE,
-    _cairo_image_surface_finish,
+const comac_surface_backend_t _comac_image_surface_backend = {
+    COMAC_SURFACE_TYPE_IMAGE,
+    _comac_image_surface_finish,
 
-    _cairo_default_context_create,
+    _comac_default_context_create,
 
-    _cairo_image_surface_create_similar,
+    _comac_image_surface_create_similar,
     NULL, /* create similar image */
-    _cairo_image_surface_map_to_image,
-    _cairo_image_surface_unmap_image,
+    _comac_image_surface_map_to_image,
+    _comac_image_surface_unmap_image,
 
-    _cairo_image_surface_source,
-    _cairo_image_surface_acquire_source_image,
-    _cairo_image_surface_release_source_image,
-    _cairo_image_surface_snapshot,
+    _comac_image_surface_source,
+    _comac_image_surface_acquire_source_image,
+    _comac_image_surface_release_source_image,
+    _comac_image_surface_snapshot,
 
     NULL, /* copy_page */
     NULL, /* show_page */
 
-    _cairo_image_surface_get_extents,
-    _cairo_image_surface_get_font_options,
+    _comac_image_surface_get_extents,
+    _comac_image_surface_get_font_options,
 
     NULL, /* flush */
     NULL,
 
-    _cairo_image_surface_paint,
-    _cairo_image_surface_mask,
-    _cairo_image_surface_stroke,
-    _cairo_image_surface_fill,
+    _comac_image_surface_paint,
+    _comac_image_surface_mask,
+    _comac_image_surface_stroke,
+    _comac_image_surface_fill,
     NULL, /* fill-stroke */
-    _cairo_image_surface_glyphs,
+    _comac_image_surface_glyphs,
 };
 
 /* A convenience function for when one needs to coerce an image
  * surface to an alternate format. */
-cairo_image_surface_t *
-_cairo_image_surface_coerce (cairo_image_surface_t *surface)
+comac_image_surface_t *
+_comac_image_surface_coerce (comac_image_surface_t *surface)
 {
-    return _cairo_image_surface_coerce_to_format (surface,
-		                                  _cairo_format_from_content (surface->base.content));
+    return _comac_image_surface_coerce_to_format (surface,
+		                                  _comac_format_from_content (surface->base.content));
 }
 
 /* A convenience function for when one needs to coerce an image
  * surface to an alternate format. */
-cairo_image_surface_t *
-_cairo_image_surface_coerce_to_format (cairo_image_surface_t *surface,
-			               cairo_format_t	      format)
+comac_image_surface_t *
+_comac_image_surface_coerce_to_format (comac_image_surface_t *surface,
+			               comac_format_t	      format)
 {
-    cairo_image_surface_t *clone;
-    cairo_status_t status;
+    comac_image_surface_t *clone;
+    comac_status_t status;
 
     status = surface->base.status;
     if (unlikely (status))
-	return (cairo_image_surface_t *)_cairo_surface_create_in_error (status);
+	return (comac_image_surface_t *)_comac_surface_create_in_error (status);
 
     if (surface->format == format)
-	return (cairo_image_surface_t *)cairo_surface_reference(&surface->base);
+	return (comac_image_surface_t *)comac_surface_reference(&surface->base);
 
-    clone = (cairo_image_surface_t *)
-	cairo_image_surface_create (format, surface->width, surface->height);
+    clone = (comac_image_surface_t *)
+	comac_image_surface_create (format, surface->width, surface->height);
     if (unlikely (clone->base.status))
 	return clone;
 
@@ -1107,14 +1107,14 @@ _cairo_image_surface_coerce_to_format (cairo_image_surface_t *surface,
     return clone;
 }
 
-cairo_image_surface_t *
-_cairo_image_surface_create_from_image (cairo_image_surface_t *other,
+comac_image_surface_t *
+_comac_image_surface_create_from_image (comac_image_surface_t *other,
 					pixman_format_code_t format,
 					int x, int y,
 					int width, int height, int stride)
 {
-    cairo_image_surface_t *surface;
-    cairo_status_t status;
+    comac_image_surface_t *surface;
+    comac_status_t status;
     pixman_image_t *image;
     void *mem = NULL;
 
@@ -1123,21 +1123,21 @@ _cairo_image_surface_create_from_image (cairo_image_surface_t *other,
 	goto cleanup;
 
     if (stride) {
-	mem = _cairo_malloc_ab (height, stride);
+	mem = _comac_malloc_ab (height, stride);
 	if (unlikely (mem == NULL)) {
-	    status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	    goto cleanup;
 	}
     }
 
     image = pixman_image_create_bits (format, width, height, mem, stride);
     if (unlikely (image == NULL)) {
-	status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	goto cleanup_mem;
     }
 
-    surface = (cairo_image_surface_t *)
-	_cairo_image_surface_create_for_pixman_image (image, format);
+    surface = (comac_image_surface_t *)
+	_comac_image_surface_create_for_pixman_image (image, format);
     if (unlikely (surface->base.status)) {
 	status = surface->base.status;
 	goto cleanup_image;
@@ -1159,56 +1159,56 @@ cleanup_image:
 cleanup_mem:
     free (mem);
 cleanup:
-    return (cairo_image_surface_t *) _cairo_surface_create_in_error (status);
+    return (comac_image_surface_t *) _comac_surface_create_in_error (status);
 }
 
-static cairo_image_transparency_t
-_cairo_image_compute_transparency (cairo_image_surface_t *image)
+static comac_image_transparency_t
+_comac_image_compute_transparency (comac_image_surface_t *image)
 {
     int x, y;
-    cairo_image_transparency_t transparency;
+    comac_image_transparency_t transparency;
 
-    if ((image->base.content & CAIRO_CONTENT_ALPHA) == 0)
-	return CAIRO_IMAGE_IS_OPAQUE;
+    if ((image->base.content & COMAC_CONTENT_ALPHA) == 0)
+	return COMAC_IMAGE_IS_OPAQUE;
 
     if (image->base.is_clear)
-	return CAIRO_IMAGE_HAS_BILEVEL_ALPHA;
+	return COMAC_IMAGE_HAS_BILEVEL_ALPHA;
 
-    if ((image->base.content & CAIRO_CONTENT_COLOR) == 0) {
-	if (image->format == CAIRO_FORMAT_A1) {
-	    return CAIRO_IMAGE_HAS_BILEVEL_ALPHA;
-	} else if (image->format == CAIRO_FORMAT_A8) {
+    if ((image->base.content & COMAC_CONTENT_COLOR) == 0) {
+	if (image->format == COMAC_FORMAT_A1) {
+	    return COMAC_IMAGE_HAS_BILEVEL_ALPHA;
+	} else if (image->format == COMAC_FORMAT_A8) {
 	    for (y = 0; y < image->height; y++) {
 		uint8_t *alpha = (uint8_t *) (image->data + y * image->stride);
 
 		for (x = 0; x < image->width; x++, alpha++) {
 		    if (*alpha > 0 && *alpha < 255)
-			return CAIRO_IMAGE_HAS_ALPHA;
+			return COMAC_IMAGE_HAS_ALPHA;
 		}
 	    }
-	    return CAIRO_IMAGE_HAS_BILEVEL_ALPHA;
+	    return COMAC_IMAGE_HAS_BILEVEL_ALPHA;
 	} else {
-	    return CAIRO_IMAGE_HAS_ALPHA;
+	    return COMAC_IMAGE_HAS_ALPHA;
 	}
     }
 
-    if (image->format == CAIRO_FORMAT_RGB16_565) {
-	return CAIRO_IMAGE_IS_OPAQUE;
+    if (image->format == COMAC_FORMAT_RGB16_565) {
+	return COMAC_IMAGE_IS_OPAQUE;
     }
 
-    if (image->format != CAIRO_FORMAT_ARGB32)
-	return CAIRO_IMAGE_HAS_ALPHA;
+    if (image->format != COMAC_FORMAT_ARGB32)
+	return COMAC_IMAGE_HAS_ALPHA;
 
-    transparency = CAIRO_IMAGE_IS_OPAQUE;
+    transparency = COMAC_IMAGE_IS_OPAQUE;
     for (y = 0; y < image->height; y++) {
 	uint32_t *pixel = (uint32_t *) (image->data + y * image->stride);
 
 	for (x = 0; x < image->width; x++, pixel++) {
 	    int a = (*pixel & 0xff000000) >> 24;
 	    if (a > 0 && a < 255) {
-		return CAIRO_IMAGE_HAS_ALPHA;
+		return COMAC_IMAGE_HAS_ALPHA;
 	    } else if (a == 0) {
-		transparency = CAIRO_IMAGE_HAS_BILEVEL_ALPHA;
+		transparency = COMAC_IMAGE_HAS_BILEVEL_ALPHA;
 	    }
 	}
     }
@@ -1216,36 +1216,36 @@ _cairo_image_compute_transparency (cairo_image_surface_t *image)
     return transparency;
 }
 
-cairo_image_transparency_t
-_cairo_image_analyze_transparency (cairo_image_surface_t *image)
+comac_image_transparency_t
+_comac_image_analyze_transparency (comac_image_surface_t *image)
 {
-    if (_cairo_surface_is_snapshot (&image->base)) {
-	if (image->transparency == CAIRO_IMAGE_UNKNOWN)
-	    image->transparency = _cairo_image_compute_transparency (image);
+    if (_comac_surface_is_snapshot (&image->base)) {
+	if (image->transparency == COMAC_IMAGE_UNKNOWN)
+	    image->transparency = _comac_image_compute_transparency (image);
 
 	return image->transparency;
     }
 
-    return _cairo_image_compute_transparency (image);
+    return _comac_image_compute_transparency (image);
 }
 
-static cairo_image_color_t
-_cairo_image_compute_color (cairo_image_surface_t      *image)
+static comac_image_color_t
+_comac_image_compute_color (comac_image_surface_t      *image)
 {
     int x, y;
-    cairo_image_color_t color;
+    comac_image_color_t color;
 
     if (image->width == 0 || image->height == 0)
-	return CAIRO_IMAGE_IS_MONOCHROME;
+	return COMAC_IMAGE_IS_MONOCHROME;
 
-    if (image->format == CAIRO_FORMAT_A1)
-	return CAIRO_IMAGE_IS_MONOCHROME;
+    if (image->format == COMAC_FORMAT_A1)
+	return COMAC_IMAGE_IS_MONOCHROME;
 
-    if (image->format == CAIRO_FORMAT_A8)
-	return CAIRO_IMAGE_IS_GRAYSCALE;
+    if (image->format == COMAC_FORMAT_A8)
+	return COMAC_IMAGE_IS_GRAYSCALE;
 
-    if (image->format == CAIRO_FORMAT_ARGB32) {
-	color = CAIRO_IMAGE_IS_MONOCHROME;
+    if (image->format == COMAC_FORMAT_ARGB32) {
+	color = COMAC_IMAGE_IS_MONOCHROME;
 	for (y = 0; y < image->height; y++) {
 	    uint32_t *pixel = (uint32_t *) (image->data + y * image->stride);
 
@@ -1262,16 +1262,16 @@ _cairo_image_compute_color (cairo_image_surface_t      *image)
 		    b = (b * 255 + a / 2) / a;
 		}
 		if (!(r == g && g == b))
-		    return CAIRO_IMAGE_IS_COLOR;
+		    return COMAC_IMAGE_IS_COLOR;
 		else if (r > 0 && r < 255)
-		    color = CAIRO_IMAGE_IS_GRAYSCALE;
+		    color = COMAC_IMAGE_IS_GRAYSCALE;
 	    }
 	}
 	return color;
     }
 
-    if (image->format == CAIRO_FORMAT_RGB24) {
-	color = CAIRO_IMAGE_IS_MONOCHROME;
+    if (image->format == COMAC_FORMAT_RGB24) {
+	color = COMAC_IMAGE_IS_MONOCHROME;
 	for (y = 0; y < image->height; y++) {
 	    uint32_t *pixel = (uint32_t *) (image->data + y * image->stride);
 
@@ -1280,40 +1280,40 @@ _cairo_image_compute_color (cairo_image_surface_t      *image)
 		int g = (*pixel & 0x0000ff00) >>  8;
 		int b = (*pixel & 0x000000ff);
 		if (!(r == g && g == b))
-		    return CAIRO_IMAGE_IS_COLOR;
+		    return COMAC_IMAGE_IS_COLOR;
 		else if (r > 0 && r < 255)
-		    color = CAIRO_IMAGE_IS_GRAYSCALE;
+		    color = COMAC_IMAGE_IS_GRAYSCALE;
 	    }
 	}
 	return color;
     }
 
-    return CAIRO_IMAGE_IS_COLOR;
+    return COMAC_IMAGE_IS_COLOR;
 }
 
-cairo_image_color_t
-_cairo_image_analyze_color (cairo_image_surface_t      *image)
+comac_image_color_t
+_comac_image_analyze_color (comac_image_surface_t      *image)
 {
-    if (_cairo_surface_is_snapshot (&image->base)) {
-	if (image->color == CAIRO_IMAGE_UNKNOWN_COLOR)
-	    image->color = _cairo_image_compute_color (image);
+    if (_comac_surface_is_snapshot (&image->base)) {
+	if (image->color == COMAC_IMAGE_UNKNOWN_COLOR)
+	    image->color = _comac_image_compute_color (image);
 
 	return image->color;
     }
 
-    return _cairo_image_compute_color (image);
+    return _comac_image_compute_color (image);
 }
 
-cairo_image_surface_t *
-_cairo_image_surface_clone_subimage (cairo_surface_t             *surface,
-				     const cairo_rectangle_int_t *extents)
+comac_image_surface_t *
+_comac_image_surface_clone_subimage (comac_surface_t             *surface,
+				     const comac_rectangle_int_t *extents)
 {
-    cairo_surface_t *image;
-    cairo_surface_pattern_t pattern;
-    cairo_status_t status;
+    comac_surface_t *image;
+    comac_surface_pattern_t pattern;
+    comac_status_t status;
 
-    image = cairo_surface_create_similar_image (surface,
-						_cairo_format_from_content (surface->content),
+    image = comac_surface_create_similar_image (surface,
+						_comac_format_from_content (surface->content),
 						extents->width,
 						extents->height);
     if (image->status)
@@ -1321,19 +1321,19 @@ _cairo_image_surface_clone_subimage (cairo_surface_t             *surface,
 
     /* TODO: check me with non-identity device_transform. Should we
      * clone the scaling, too? */
-    cairo_surface_set_device_offset (image,
+    comac_surface_set_device_offset (image,
 				     -extents->x,
 				     -extents->y);
 
-    _cairo_pattern_init_for_surface (&pattern, surface);
-    pattern.base.filter = CAIRO_FILTER_NEAREST;
+    _comac_pattern_init_for_surface (&pattern, surface);
+    pattern.base.filter = COMAC_FILTER_NEAREST;
 
-    status = _cairo_surface_paint (image,
-				   CAIRO_OPERATOR_SOURCE,
+    status = _comac_surface_paint (image,
+				   COMAC_OPERATOR_SOURCE,
 				   &pattern.base,
 				   NULL);
 
-    _cairo_pattern_fini (&pattern.base);
+    _comac_pattern_fini (&pattern.base);
 
     if (unlikely (status))
 	goto error;
@@ -1344,12 +1344,12 @@ _cairo_image_surface_clone_subimage (cairo_surface_t             *surface,
      * we need to make sure the parent surface obeys the reference counting
      * semantics and is consistent for all callers.
      */
-    _cairo_image_surface_set_parent (to_image_surface (image),
-				     cairo_surface_reference (surface));
+    _comac_image_surface_set_parent (to_image_surface (image),
+				     comac_surface_reference (surface));
 
     return to_image_surface (image);
 
 error:
-    cairo_surface_destroy (image);
-    return to_image_surface (_cairo_surface_create_in_error (status));
+    comac_surface_destroy (image);
+    return to_image_surface (_comac_surface_create_in_error (status));
 }

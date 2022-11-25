@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -34,137 +34,137 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_PDF_H
-#define CAIRO_PDF_H
+#ifndef COMAC_PDF_H
+#define COMAC_PDF_H
 
 #include "comac.h"
 
-#if CAIRO_HAS_PDF_SURFACE
+#if COMAC_HAS_PDF_SURFACE
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
 /**
- * cairo_pdf_version_t:
- * @CAIRO_PDF_VERSION_1_4: The version 1.4 of the PDF specification. (Since 1.10)
- * @CAIRO_PDF_VERSION_1_5: The version 1.5 of the PDF specification. (Since 1.10)
- * @CAIRO_PDF_VERSION_1_6: The version 1.6 of the PDF specification. (Since 1.18)
- * @CAIRO_PDF_VERSION_1_7: The version 1.7 of the PDF specification. (Since 1.18)
+ * comac_pdf_version_t:
+ * @COMAC_PDF_VERSION_1_4: The version 1.4 of the PDF specification. (Since 1.10)
+ * @COMAC_PDF_VERSION_1_5: The version 1.5 of the PDF specification. (Since 1.10)
+ * @COMAC_PDF_VERSION_1_6: The version 1.6 of the PDF specification. (Since 1.18)
+ * @COMAC_PDF_VERSION_1_7: The version 1.7 of the PDF specification. (Since 1.18)
  *
- * #cairo_pdf_version_t is used to describe the version number of the PDF
+ * #comac_pdf_version_t is used to describe the version number of the PDF
  * specification that a generated PDF file will conform to.
  *
  * Since: 1.10
  **/
-typedef enum _cairo_pdf_version {
-    CAIRO_PDF_VERSION_1_4,
-    CAIRO_PDF_VERSION_1_5,
-    CAIRO_PDF_VERSION_1_6,
-    CAIRO_PDF_VERSION_1_7
-} cairo_pdf_version_t;
+typedef enum _comac_pdf_version {
+    COMAC_PDF_VERSION_1_4,
+    COMAC_PDF_VERSION_1_5,
+    COMAC_PDF_VERSION_1_6,
+    COMAC_PDF_VERSION_1_7
+} comac_pdf_version_t;
 
-cairo_public cairo_surface_t *
-cairo_pdf_surface_create (const char		*filename,
+comac_public comac_surface_t *
+comac_pdf_surface_create (const char		*filename,
 			  double		 width_in_points,
 			  double		 height_in_points);
 
-cairo_public cairo_surface_t *
-cairo_pdf_surface_create_for_stream (cairo_write_func_t	write_func,
+comac_public comac_surface_t *
+comac_pdf_surface_create_for_stream (comac_write_func_t	write_func,
 				     void	       *closure,
 				     double		width_in_points,
 				     double		height_in_points);
 
-cairo_public void
-cairo_pdf_surface_restrict_to_version (cairo_surface_t 		*surface,
-				       cairo_pdf_version_t  	 version);
+comac_public void
+comac_pdf_surface_restrict_to_version (comac_surface_t 		*surface,
+				       comac_pdf_version_t  	 version);
 
-cairo_public void
-cairo_pdf_get_versions (cairo_pdf_version_t const	**versions,
+comac_public void
+comac_pdf_get_versions (comac_pdf_version_t const	**versions,
                         int                      	 *num_versions);
 
-cairo_public const char *
-cairo_pdf_version_to_string (cairo_pdf_version_t version);
+comac_public const char *
+comac_pdf_version_to_string (comac_pdf_version_t version);
 
-cairo_public void
-cairo_pdf_surface_set_size (cairo_surface_t	*surface,
+comac_public void
+comac_pdf_surface_set_size (comac_surface_t	*surface,
 			    double		 width_in_points,
 			    double		 height_in_points);
 
 /**
- * cairo_pdf_outline_flags_t:
- * @CAIRO_PDF_OUTLINE_FLAG_OPEN: The outline item defaults to open in the PDF viewer (Since 1.16)
- * @CAIRO_PDF_OUTLINE_FLAG_BOLD: The outline item is displayed by the viewer in bold text (Since 1.16)
- * @CAIRO_PDF_OUTLINE_FLAG_ITALIC: The outline item is displayed by the viewer in italic text (Since 1.16)
+ * comac_pdf_outline_flags_t:
+ * @COMAC_PDF_OUTLINE_FLAG_OPEN: The outline item defaults to open in the PDF viewer (Since 1.16)
+ * @COMAC_PDF_OUTLINE_FLAG_BOLD: The outline item is displayed by the viewer in bold text (Since 1.16)
+ * @COMAC_PDF_OUTLINE_FLAG_ITALIC: The outline item is displayed by the viewer in italic text (Since 1.16)
  *
- * #cairo_pdf_outline_flags_t is used by the
- * cairo_pdf_surface_add_outline() function specify the attributes of
+ * #comac_pdf_outline_flags_t is used by the
+ * comac_pdf_surface_add_outline() function specify the attributes of
  * an outline item. These flags may be bitwise-or'd to produce any
  * combination of flags.
  *
  * Since: 1.16
  **/
-typedef enum _cairo_pdf_outline_flags {
-    CAIRO_PDF_OUTLINE_FLAG_OPEN   = 0x1,
-    CAIRO_PDF_OUTLINE_FLAG_BOLD   = 0x2,
-    CAIRO_PDF_OUTLINE_FLAG_ITALIC = 0x4,
-} cairo_pdf_outline_flags_t;
+typedef enum _comac_pdf_outline_flags {
+    COMAC_PDF_OUTLINE_FLAG_OPEN   = 0x1,
+    COMAC_PDF_OUTLINE_FLAG_BOLD   = 0x2,
+    COMAC_PDF_OUTLINE_FLAG_ITALIC = 0x4,
+} comac_pdf_outline_flags_t;
 
-#define CAIRO_PDF_OUTLINE_ROOT 0
+#define COMAC_PDF_OUTLINE_ROOT 0
 
-cairo_public int
-cairo_pdf_surface_add_outline (cairo_surface_t	          *surface,
+comac_public int
+comac_pdf_surface_add_outline (comac_surface_t	          *surface,
 			       int                         parent_id,
 			       const char                 *utf8,
 			       const char                 *link_attribs,
-			       cairo_pdf_outline_flags_t  flags);
+			       comac_pdf_outline_flags_t  flags);
 
 /**
- * cairo_pdf_metadata_t:
- * @CAIRO_PDF_METADATA_TITLE: The document title (Since 1.16)
- * @CAIRO_PDF_METADATA_AUTHOR: The document author (Since 1.16)
- * @CAIRO_PDF_METADATA_SUBJECT: The document subject (Since 1.16)
- * @CAIRO_PDF_METADATA_KEYWORDS: The document keywords (Since 1.16)
- * @CAIRO_PDF_METADATA_CREATOR: The document creator (Since 1.16)
- * @CAIRO_PDF_METADATA_CREATE_DATE: The document creation date (Since 1.16)
- * @CAIRO_PDF_METADATA_MOD_DATE: The document modification date (Since 1.16)
+ * comac_pdf_metadata_t:
+ * @COMAC_PDF_METADATA_TITLE: The document title (Since 1.16)
+ * @COMAC_PDF_METADATA_AUTHOR: The document author (Since 1.16)
+ * @COMAC_PDF_METADATA_SUBJECT: The document subject (Since 1.16)
+ * @COMAC_PDF_METADATA_KEYWORDS: The document keywords (Since 1.16)
+ * @COMAC_PDF_METADATA_CREATOR: The document creator (Since 1.16)
+ * @COMAC_PDF_METADATA_CREATE_DATE: The document creation date (Since 1.16)
+ * @COMAC_PDF_METADATA_MOD_DATE: The document modification date (Since 1.16)
  *
- * #cairo_pdf_metadata_t is used by the
- * cairo_pdf_surface_set_metadata() function specify the metadata to set.
+ * #comac_pdf_metadata_t is used by the
+ * comac_pdf_surface_set_metadata() function specify the metadata to set.
  *
  * Since: 1.16
  **/
-typedef enum _cairo_pdf_metadata {
-    CAIRO_PDF_METADATA_TITLE,
-    CAIRO_PDF_METADATA_AUTHOR,
-    CAIRO_PDF_METADATA_SUBJECT,
-    CAIRO_PDF_METADATA_KEYWORDS,
-    CAIRO_PDF_METADATA_CREATOR,
-    CAIRO_PDF_METADATA_CREATE_DATE,
-    CAIRO_PDF_METADATA_MOD_DATE,
-} cairo_pdf_metadata_t;
+typedef enum _comac_pdf_metadata {
+    COMAC_PDF_METADATA_TITLE,
+    COMAC_PDF_METADATA_AUTHOR,
+    COMAC_PDF_METADATA_SUBJECT,
+    COMAC_PDF_METADATA_KEYWORDS,
+    COMAC_PDF_METADATA_CREATOR,
+    COMAC_PDF_METADATA_CREATE_DATE,
+    COMAC_PDF_METADATA_MOD_DATE,
+} comac_pdf_metadata_t;
 
-cairo_public void
-cairo_pdf_surface_set_metadata (cairo_surface_t	     *surface,
-				cairo_pdf_metadata_t  metadata,
+comac_public void
+comac_pdf_surface_set_metadata (comac_surface_t	     *surface,
+				comac_pdf_metadata_t  metadata,
                                 const char           *utf8);
 
-cairo_public void
-cairo_pdf_surface_set_custom_metadata (cairo_surface_t	    *surface,
+comac_public void
+comac_pdf_surface_set_custom_metadata (comac_surface_t	    *surface,
                                        const char           *name,
                                        const char           *value);
 
-cairo_public void
-cairo_pdf_surface_set_page_label (cairo_surface_t *surface,
+comac_public void
+comac_pdf_surface_set_page_label (comac_surface_t *surface,
                                   const char      *utf8);
 
-cairo_public void
-cairo_pdf_surface_set_thumbnail_size (cairo_surface_t *surface,
+comac_public void
+comac_pdf_surface_set_thumbnail_size (comac_surface_t *surface,
 				      int              width,
 				      int              height);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#else  /* CAIRO_HAS_PDF_SURFACE */
-# error Cairo was not compiled with support for the pdf backend
-#endif /* CAIRO_HAS_PDF_SURFACE */
+#else  /* COMAC_HAS_PDF_SURFACE */
+# error Comac was not compiled with support for the pdf backend
+#endif /* COMAC_HAS_PDF_SURFACE */
 
-#endif /* CAIRO_PDF_H */
+#endif /* COMAC_PDF_H */

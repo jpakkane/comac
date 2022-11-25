@@ -32,45 +32,45 @@
 #define WIDTH 50
 #define HEIGHT 50
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* Neutral gray background */
-    cairo_set_source_rgb (cr, 0.51613, 0.55555, 0.51613);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0.51613, 0.55555, 0.51613);
+    comac_paint (cr);
 
-    /* the rest uses CAIRO_OPERATOR_SOURCE so we see better when something goes wrong */
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    /* the rest uses COMAC_OPERATOR_SOURCE so we see better when something goes wrong */
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
 
     /* add a rectangle */
-    cairo_rectangle (cr, CLIP_OFFSET, CLIP_OFFSET, CLIP_SIZE, CLIP_SIZE);
+    comac_rectangle (cr, CLIP_OFFSET, CLIP_OFFSET, CLIP_SIZE, CLIP_SIZE);
 
     /* clip to the rectangle */
-    cairo_clip_preserve (cr);
+    comac_clip_preserve (cr);
 
     /* push a group. We now have a device offset. */
-    cairo_push_group (cr);
+    comac_push_group (cr);
 
     /* push a group again. This is where the bug used to happen. */
-    cairo_push_group (cr);
+    comac_push_group (cr);
 
     /* draw something */
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_fill_preserve (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_fill_preserve (cr);
 
     /* make sure the stuff we drew ends up on the output */
-    cairo_pop_group_to_source (cr);
-    cairo_fill_preserve (cr);
+    comac_pop_group_to_source (cr);
+    comac_fill_preserve (cr);
 
-    cairo_pop_group_to_source (cr);
-    cairo_fill_preserve (cr);
+    comac_pop_group_to_source (cr);
+    comac_fill_preserve (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (push_group_path_offset,
-	    "Exercises a bug in Cairo 1.9 where existing paths applied the target's"
-            " device offset twice when cairo_push_group() was called.",
+COMAC_TEST (push_group_path_offset,
+	    "Exercises a bug in Comac 1.9 where existing paths applied the target's"
+            " device offset twice when comac_push_group() was called.",
 	    "group, path", /* keywords */
 	    NULL, /* requirements */
 	    WIDTH, HEIGHT,

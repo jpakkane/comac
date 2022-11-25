@@ -25,7 +25,7 @@
  */
 
 /* Test case for bug reported by Franz Schmid <Franz.Schmid@altmuehlnet.de>
- * https://lists.cairographics.org/archives/cairo/2008-April/013912.html
+ * https://lists.comacgraphics.org/archives/comac/2008-April/013912.html
  *
  * See also: https://bugs.freedesktop.org/show_bug.cgi?id=17177
  */
@@ -35,50 +35,50 @@
 #define WIDTH 60
 #define HEIGHT 60
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     const double dash[2] = {4, 2};
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0., 0., 0);
+    comac_set_source_rgb (cr, 0., 0., 0);
 
-    cairo_translate (cr, 0.5, .5);
-    cairo_set_line_width (cr, 1); /* This is vital to reproduce the bug. */
+    comac_translate (cr, 0.5, .5);
+    comac_set_line_width (cr, 1); /* This is vital to reproduce the bug. */
 
     /* First check simple rectangles */
-    cairo_set_source_rgb (cr, 0., 0., 0);
-    cairo_rectangle (cr, -WIDTH/4, -HEIGHT/4, WIDTH, HEIGHT);
-    cairo_stroke (cr);
-    cairo_rectangle (cr, WIDTH+WIDTH/4, -HEIGHT/4, -WIDTH, HEIGHT);
-    cairo_stroke (cr);
-    cairo_rectangle (cr, -WIDTH/4, HEIGHT+HEIGHT/4, WIDTH, -HEIGHT);
-    cairo_stroke (cr);
-    cairo_rectangle (cr, WIDTH+WIDTH/4, HEIGHT+HEIGHT/4, -WIDTH, -HEIGHT);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 0., 0., 0);
+    comac_rectangle (cr, -WIDTH/4, -HEIGHT/4, WIDTH, HEIGHT);
+    comac_stroke (cr);
+    comac_rectangle (cr, WIDTH+WIDTH/4, -HEIGHT/4, -WIDTH, HEIGHT);
+    comac_stroke (cr);
+    comac_rectangle (cr, -WIDTH/4, HEIGHT+HEIGHT/4, WIDTH, -HEIGHT);
+    comac_stroke (cr);
+    comac_rectangle (cr, WIDTH+WIDTH/4, HEIGHT+HEIGHT/4, -WIDTH, -HEIGHT);
+    comac_stroke (cr);
 
-    cairo_set_dash (cr, dash, 2, 0);
+    comac_set_dash (cr, dash, 2, 0);
 
     /* And now dashed. */
-    cairo_set_source_rgb (cr, 1., 0., 0);
-    cairo_rectangle (cr, -WIDTH/4, -HEIGHT/4, WIDTH, HEIGHT);
-    cairo_stroke (cr);
-    cairo_set_source_rgb (cr, 0., 1., 0);
-    cairo_rectangle (cr, WIDTH+WIDTH/4, -HEIGHT/4, -WIDTH, HEIGHT);
-    cairo_stroke (cr);
-    cairo_set_source_rgb (cr, 0., 0., 1);
-    cairo_rectangle (cr, -WIDTH/4, HEIGHT+HEIGHT/4, WIDTH, -HEIGHT);
-    cairo_stroke (cr);
-    cairo_set_source_rgb (cr, 1., 1., 0);
-    cairo_rectangle (cr, WIDTH+WIDTH/4, HEIGHT+HEIGHT/4, -WIDTH, -HEIGHT);
-    cairo_stroke (cr);
+    comac_set_source_rgb (cr, 1., 0., 0);
+    comac_rectangle (cr, -WIDTH/4, -HEIGHT/4, WIDTH, HEIGHT);
+    comac_stroke (cr);
+    comac_set_source_rgb (cr, 0., 1., 0);
+    comac_rectangle (cr, WIDTH+WIDTH/4, -HEIGHT/4, -WIDTH, HEIGHT);
+    comac_stroke (cr);
+    comac_set_source_rgb (cr, 0., 0., 1);
+    comac_rectangle (cr, -WIDTH/4, HEIGHT+HEIGHT/4, WIDTH, -HEIGHT);
+    comac_stroke (cr);
+    comac_set_source_rgb (cr, 1., 1., 0);
+    comac_rectangle (cr, WIDTH+WIDTH/4, HEIGHT+HEIGHT/4, -WIDTH, -HEIGHT);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (leaky_dashed_rectangle,
+COMAC_TEST (leaky_dashed_rectangle,
 	    "Exercises bug in which a dashed stroke leaks in from outside the surface",
 	    "dash, stroke", /* keywords */
 	    NULL, /* requirements */

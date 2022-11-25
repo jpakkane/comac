@@ -30,9 +30,9 @@
  *   Reported bug on mailing list:
  *
  *	From: Steve Chaplin <stevech1097@yahoo.com.au>
- *	To: cairo@cairographics.org
+ *	To: comac@comacgraphics.org
  *	Date: Thu, 04 Nov 2004 00:00:17 +0800
- *	Subject: [cairo] Rotated text bug on drawable target
+ *	Subject: [comac] Rotated text bug on drawable target
  *
  * 	The attached file draws text rotated 90 degrees first to a PNG file and
  *	then to a drawable. The PNG file looks fine, the text on the drawable is
@@ -54,7 +54,7 @@
  *   And I'm still not sure about what to do for test cases with
  *   text--a new version of freetype will change everything. We may
  *   need to add a simple backend for stroked fonts and add a simple
- *   builtin font to cairo for pixel-perfect tests with text.
+ *   builtin font to comac for pixel-perfect tests with text.
  *
  * 2005-08-23
  *
@@ -71,7 +71,7 @@
  *   There are still some subtle positioning problems which I'm
  *   assuming are due to the lack of finer-than-whole-pixel glyph
  *   positioning. I'm generating a reference image now by replacing
- *   cairo_show_text with cairo_text_path; cairo_fill. This will let
+ *   comac_show_text with comac_text_path; comac_fill. This will let
  *   us look more closely at the remaining positioning problems. (In
  *   particular, I want to make sure we're rounding as well as
  *   possible).
@@ -90,71 +90,71 @@
 #define NUM_TEXT 20
 #define TEXT_SIZE 12
 
-/* Draw the word cairo at NUM_TEXT different angles.
+/* Draw the word comac at NUM_TEXT different angles.
  * We separate the circle into quadrants to reduce
  * numerical errors i.e. so each quarter is pixel-aligned.
  */
 static void
-draw_quadrant (cairo_t *cr,
+draw_quadrant (comac_t *cr,
 	       const char *text,
-	       const cairo_text_extents_t *extents,
-	       const cairo_matrix_t *transform,
+	       const comac_text_extents_t *extents,
+	       const comac_matrix_t *transform,
 	       int x_off, int y_off)
 {
     int i;
 
     for (i = 0; i < NUM_TEXT/4; i++) {
-	cairo_save (cr);
-	cairo_rotate (cr, 2*M_PI*i/NUM_TEXT);
-	cairo_transform (cr, transform);
-	cairo_set_line_width (cr, 1.0);
-	cairo_rectangle (cr, x_off - 0.5, y_off - 0.5, extents->width + 1, extents->height + 1);
-	cairo_set_source_rgb (cr, 1, 0, 0);
-	cairo_stroke (cr);
-	cairo_move_to (cr, x_off - extents->x_bearing, y_off - extents->y_bearing);
-	cairo_set_source_rgb (cr, 0, 0, 0);
-#if CAIRO_TEST_GENERATE_REFERENCE_IMAGE
-	cairo_text_path (cr, text);
-	cairo_fill (cr);
+	comac_save (cr);
+	comac_rotate (cr, 2*M_PI*i/NUM_TEXT);
+	comac_transform (cr, transform);
+	comac_set_line_width (cr, 1.0);
+	comac_rectangle (cr, x_off - 0.5, y_off - 0.5, extents->width + 1, extents->height + 1);
+	comac_set_source_rgb (cr, 1, 0, 0);
+	comac_stroke (cr);
+	comac_move_to (cr, x_off - extents->x_bearing, y_off - extents->y_bearing);
+	comac_set_source_rgb (cr, 0, 0, 0);
+#if COMAC_TEST_GENERATE_REFERENCE_IMAGE
+	comac_text_path (cr, text);
+	comac_fill (cr);
 #else
-	cairo_show_text (cr, text);
+	comac_show_text (cr, text);
 #endif
-	cairo_restore (cr);
+	comac_restore (cr);
     }
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_text_extents_t extents;
-    cairo_font_options_t *font_options;
-    const char text[] = "cairo";
+    comac_text_extents_t extents;
+    comac_font_options_t *font_options;
+    const char text[] = "comac";
     int x_off, y_off;
-    cairo_matrix_t m;
+    comac_matrix_t m;
 
     /* paint white so we don't need separate ref images for
      * RGB24 and ARGB32 */
-    cairo_set_source_rgb (cr, 1., 1., 1.);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1., 1., 1.);
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    font_options = cairo_font_options_create ();
+    font_options = comac_font_options_create ();
 
-    cairo_get_font_options (cr, font_options);
-    cairo_font_options_set_hint_metrics (font_options, CAIRO_HINT_METRICS_OFF);
+    comac_get_font_options (cr, font_options);
+    comac_font_options_set_hint_metrics (font_options, COMAC_HINT_METRICS_OFF);
 
-    cairo_set_font_options (cr, font_options);
-    cairo_font_options_destroy (font_options);
+    comac_set_font_options (cr, font_options);
+    comac_font_options_destroy (font_options);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_translate (cr, WIDTH/2.0, HEIGHT/2.0);
+    comac_translate (cr, WIDTH/2.0, HEIGHT/2.0);
 
-    cairo_text_extents (cr, text, &extents);
+    comac_text_extents (cr, text, &extents);
 
     if (NUM_TEXT == 1) {
 	x_off = y_off = 0;
@@ -163,25 +163,25 @@ draw (cairo_t *cr, int width, int height)
 	x_off = floor (0.5 + (extents.height+1) / (2 * tan (M_PI/NUM_TEXT)));
     }
 
-    cairo_save (cr);
-    cairo_matrix_init_identity (&m);
+    comac_save (cr);
+    comac_matrix_init_identity (&m);
     draw_quadrant (cr, text, &extents, &m, x_off, y_off);
-    cairo_matrix_init (&m, 0, 1, -1, 0, 0, 0);
+    comac_matrix_init (&m, 0, 1, -1, 0, 0, 0);
     draw_quadrant (cr, text, &extents, &m, x_off, y_off);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    cairo_save (cr);
-    cairo_scale (cr, -1, -1);
-    cairo_matrix_init_identity (&m);
+    comac_save (cr);
+    comac_scale (cr, -1, -1);
+    comac_matrix_init_identity (&m);
     draw_quadrant (cr, text, &extents, &m, x_off, y_off);
-    cairo_matrix_init (&m, 0, 1, -1, 0, 0, 0);
+    comac_matrix_init (&m, 0, 1, -1, 0, 0, 0);
     draw_quadrant (cr, text, &extents, &m, x_off, y_off);
-    cairo_restore (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (text_rotate,
+COMAC_TEST (text_rotate,
 	    "Tests show_text under various rotations",
 	    "text, transform", /* keywords */
 	    NULL, /* requirements */

@@ -29,65 +29,65 @@
 static void
 mime_data_destroy_func (void *data)
 {
-    cairo_bool_t *called = data;
+    comac_bool_t *called = data;
     *called = TRUE;
 }
 
-static cairo_test_status_t
-check_mime_data (cairo_test_context_t *ctx, cairo_surface_t *surface,
+static comac_test_status_t
+check_mime_data (comac_test_context_t *ctx, comac_surface_t *surface,
 		 const char *mimetype, const unsigned char *data,
 		 unsigned long length)
 {
     const unsigned char *data_ret;
     unsigned long length_ret;
 
-    cairo_surface_get_mime_data (surface, mimetype, &data_ret, &length_ret);
+    comac_surface_get_mime_data (surface, mimetype, &data_ret, &length_ret);
     if (data_ret != data || length_ret != length) {
-	cairo_test_log (ctx,
+	comac_test_log (ctx,
 			"Surface has mime data %p with length %lu, "
 			"but expected %p with length %lu\n",
 			data_ret, length_ret, data, length);
-       return CAIRO_TEST_ERROR;
+       return COMAC_TEST_ERROR;
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-set_and_check_mime_data (cairo_test_context_t *ctx, cairo_surface_t *surface,
+static comac_test_status_t
+set_and_check_mime_data (comac_test_context_t *ctx, comac_surface_t *surface,
 			 const char *mimetype, const unsigned char *data,
-			 unsigned long length, cairo_bool_t *destroy_called)
+			 unsigned long length, comac_bool_t *destroy_called)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
-    status = cairo_surface_set_mime_data (surface, mimetype,
+    status = comac_surface_set_mime_data (surface, mimetype,
 					  data, length,
 					  mime_data_destroy_func,
 					  destroy_called);
     if (status) {
-	cairo_test_log (ctx, "Could not set mime data to %s: %s\n",
-			data, cairo_status_to_string(status));
-	return CAIRO_TEST_ERROR;
+	comac_test_log (ctx, "Could not set mime data to %s: %s\n",
+			data, comac_status_to_string(status));
+	return COMAC_TEST_ERROR;
     }
 
     return check_mime_data (ctx, surface, mimetype, data, length);
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
     const char *mimetype = "text/x-uri";
-    const char *data1 = "https://www.cairographics.org";
-    const char *data2 = "https://cairographics.org/examples/";
-    cairo_bool_t destroy1_called = FALSE;
-    cairo_bool_t destroy2_called = FALSE;
-    cairo_surface_t *surface;
-    cairo_test_status_t test_status = CAIRO_TEST_SUCCESS;
+    const char *data1 = "https://www.comacgraphics.org";
+    const char *data2 = "https://comacgraphics.org/examples/";
+    comac_bool_t destroy1_called = FALSE;
+    comac_bool_t destroy2_called = FALSE;
+    comac_surface_t *surface;
+    comac_test_status_t test_status = COMAC_TEST_SUCCESS;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 0, 0);
-    if (cairo_surface_status (surface)) {
-	cairo_test_log (ctx, "Could not create image surface\n");
-	test_status = CAIRO_TEST_ERROR;
+    surface = comac_image_surface_create (COMAC_FORMAT_ARGB32, 0, 0);
+    if (comac_surface_status (surface)) {
+	comac_test_log (ctx, "Could not create image surface\n");
+	test_status = COMAC_TEST_ERROR;
 	goto out;
     }
 
@@ -103,8 +103,8 @@ preamble (cairo_test_context_t *ctx)
 	goto out;
 
     if (destroy1_called) {
-	cairo_test_log (ctx, "MIME data 1 destroyed too early\n");
-	test_status = CAIRO_TEST_ERROR;
+	comac_test_log (ctx, "MIME data 1 destroyed too early\n");
+	test_status = COMAC_TEST_ERROR;
 	goto out;
     }
 
@@ -116,13 +116,13 @@ preamble (cairo_test_context_t *ctx)
 	goto out;
 
     if (!destroy1_called) {
-	cairo_test_log (ctx, "MIME data 1 destroy callback not called\n");
-	test_status = CAIRO_TEST_ERROR;
+	comac_test_log (ctx, "MIME data 1 destroy callback not called\n");
+	test_status = COMAC_TEST_ERROR;
 	goto out;
     }
     if (destroy2_called) {
-	cairo_test_log (ctx, "MIME data 2 destroyed too early\n");
-	test_status = CAIRO_TEST_ERROR;
+	comac_test_log (ctx, "MIME data 2 destroyed too early\n");
+	test_status = COMAC_TEST_ERROR;
 	goto out;
     }
 
@@ -132,18 +132,18 @@ preamble (cairo_test_context_t *ctx)
 	goto out;
 
     if (!destroy2_called) {
-	cairo_test_log (ctx, "MIME data destroy callback not called\n");
-	test_status = CAIRO_TEST_ERROR;
+	comac_test_log (ctx, "MIME data destroy callback not called\n");
+	test_status = COMAC_TEST_ERROR;
 	goto out;
     }
 
 out:
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     return test_status;
 }
 
-CAIRO_TEST (mime_surface_api,
+COMAC_TEST (mime_surface_api,
 	    "Check the mime data API",
 	    "api", /* keywords */
 	    NULL, /* requirements */

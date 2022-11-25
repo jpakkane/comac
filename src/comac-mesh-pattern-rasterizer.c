@@ -1,5 +1,5 @@
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright 2009 Andrea Canciani
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Andrea Canciani.
  *
@@ -158,9 +158,9 @@
 
 /* Utils */
 static inline double
-sqlen (cairo_point_double_t p0, cairo_point_double_t p1)
+sqlen (comac_point_double_t p0, comac_point_double_t p1)
 {
-    cairo_point_double_t delta;
+    comac_point_double_t delta;
 
     delta.x = p0.x - p1.x;
     delta.y = p0.y - p1.y;
@@ -284,10 +284,10 @@ fd_fwd (double f[4])
 static inline void
 fd_fixed (double d[4], int32_t i[4])
 {
-    i[0] = _cairo_fixed_16_16_from_double (256 *  2 * d[0]);
-    i[1] = _cairo_fixed_16_16_from_double (256 * 16 * d[1]);
-    i[2] = _cairo_fixed_16_16_from_double (256 * 16 * d[2]);
-    i[3] = _cairo_fixed_16_16_from_double (256 * 16 * d[3]);
+    i[0] = _comac_fixed_16_16_from_double (256 *  2 * d[0]);
+    i[1] = _comac_fixed_16_16_from_double (256 * 16 * d[1]);
+    i[2] = _comac_fixed_16_16_from_double (256 * 16 * d[2]);
+    i[3] = _comac_fixed_16_16_from_double (256 * 16 * d[3]);
 }
 
 /*
@@ -338,7 +338,7 @@ fd_fixed_fwd (int32_t f[4])
  *   3 max (|p1-p0|, |p2-p0|/2, |p3-p1|/2, |p3-p2|) sqrt(2) steps
  */
 static inline double
-bezier_steps_sq (cairo_point_double_t p[4])
+bezier_steps_sq (comac_point_double_t p[4])
 {
     double tmp = sqlen (p[0], p[1]);
     tmp = MAX (tmp, sqlen (p[2], p[3]));
@@ -389,9 +389,9 @@ split_bezier_1D (double  x,  double  y,  double  z,  double  w,
  * nodes.
  */
 static void
-split_bezier (cairo_point_double_t p[4],
-	      cairo_point_double_t fst_half[4],
-	      cairo_point_double_t snd_half[4])
+split_bezier (comac_point_double_t p[4],
+	      comac_point_double_t fst_half[4],
+	      comac_point_double_t snd_half[4])
 {
     split_bezier_1D (p[0].x, p[1].x, p[2].x, p[3].x,
 		     &fst_half[0].x, &fst_half[1].x, &fst_half[2].x, &fst_half[3].x,
@@ -447,7 +447,7 @@ intersect_interval (double a, double b, double c, double d)
  * Output: the (x,y) pixel in data has the (r,g,b,a) color
  *
  * The input color components are not premultiplied, but the data
- * stored in the image is assumed to be in CAIRO_FORMAT_ARGB32 (8 bpc,
+ * stored in the image is assumed to be in COMAC_FORMAT_ARGB32 (8 bpc,
  * premultiplied).
  *
  * If the pixel to be set is outside the image, this function does
@@ -490,7 +490,7 @@ draw_pixel (unsigned char *data, int width, int height, int stride,
  *         the specified colors
  *
  * The input color components are not premultiplied, but the data
- * stored in the image is assumed to be in CAIRO_FORMAT_ARGB32 (8 bpc,
+ * stored in the image is assumed to be in COMAC_FORMAT_ARGB32 (8 bpc,
  * premultiplied).
  *
  * The function draws n+1 pixels, that is from the point at step 0 to
@@ -520,10 +520,10 @@ rasterize_bezier_curve (unsigned char *data, int width, int height, int stride,
      * Use (dxu[0],dyu[0]) as origin for the forward differences.
      *
      * This makes it possible to handle much larger coordinates (the
-     * ones that can be represented as cairo_fixed_t)
+     * ones that can be represented as comac_fixed_t)
      */
-    x0 = _cairo_fixed_from_double (dxu[0]);
-    y0 = _cairo_fixed_from_double (dyu[0]);
+    x0 = _comac_fixed_from_double (dxu[0]);
+    y0 = _comac_fixed_from_double (dyu[0]);
     xu[0] = 0;
     yu[0] = 0;
 
@@ -534,8 +534,8 @@ rasterize_bezier_curve (unsigned char *data, int width, int height, int stride,
 	 * top-left coordinates (floor(x), floor(y))
 	 */
 
-	int x = _cairo_fixed_integer_floor (x0 + (xu[0] >> 15) + ((xu[0] >> 14) & 1));
-	int y = _cairo_fixed_integer_floor (y0 + (yu[0] >> 15) + ((yu[0] >> 14) & 1));
+	int x = _comac_fixed_integer_floor (x0 + (xu[0] >> 15) + ((xu[0] >> 14) & 1));
+	int y = _comac_fixed_integer_floor (y0 + (yu[0] >> 15) + ((yu[0] >> 14) & 1));
 
 	draw_pixel (data, width, height, stride, x, y, r, g, b, a);
 
@@ -562,7 +562,7 @@ rasterize_bezier_curve (unsigned char *data, int width, int height, int stride,
  *         the specified colors
  *
  * The input color components are not premultiplied, but the data
- * stored in the image is assumed to be in CAIRO_FORMAT_ARGB32 (8 bpc,
+ * stored in the image is assumed to be in COMAC_FORMAT_ARGB32 (8 bpc,
  * premultiplied).
  *
  * The color components are red, green, blue and alpha, in this order.
@@ -574,7 +574,7 @@ rasterize_bezier_curve (unsigned char *data, int width, int height, int stride,
  */
 static void
 draw_bezier_curve (unsigned char *data, int width, int height, int stride,
-		   cairo_point_double_t p[4], double c0[4], double c3[4])
+		   comac_point_double_t p[4], double c0[4], double c3[4])
 {
     double top, bottom, left, right, steps_sq;
     int i, v;
@@ -608,7 +608,7 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
 	 * directly rasterized it or that we can probably save some
 	 * time by splitting the curve and clipping part of it
 	 */
-	cairo_point_double_t first[4], second[4];
+	comac_point_double_t first[4], second[4];
 	double midc[4];
 	split_bezier (p, first, second);
 	midc[0] = (c0[0] + c3[0]) * 0.5;
@@ -631,24 +631,24 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
 
 	rasterize_bezier_curve (data, width, height, stride, ushift,
 				xu, yu,
-				_cairo_color_double_to_short (c0[0]),
-				_cairo_color_double_to_short (c0[1]),
-				_cairo_color_double_to_short (c0[2]),
-				_cairo_color_double_to_short (c0[3]),
-				_cairo_color_double_to_short (c3[0]),
-				_cairo_color_double_to_short (c3[1]),
-				_cairo_color_double_to_short (c3[2]),
-				_cairo_color_double_to_short (c3[3]));
+				_comac_color_double_to_short (c0[0]),
+				_comac_color_double_to_short (c0[1]),
+				_comac_color_double_to_short (c0[2]),
+				_comac_color_double_to_short (c0[3]),
+				_comac_color_double_to_short (c3[0]),
+				_comac_color_double_to_short (c3[1]),
+				_comac_color_double_to_short (c3[2]),
+				_comac_color_double_to_short (c3[3]));
 
 	/* Draw the end point, to make sure that we didn't leave it
 	 * out because of rounding */
 	draw_pixel (data, width, height, stride,
-		    _cairo_fixed_integer_floor (_cairo_fixed_from_double (p[3].x)),
-		    _cairo_fixed_integer_floor (_cairo_fixed_from_double (p[3].y)),
-		    _cairo_color_double_to_short (c3[0]),
-		    _cairo_color_double_to_short (c3[1]),
-		    _cairo_color_double_to_short (c3[2]),
-		    _cairo_color_double_to_short (c3[3]));
+		    _comac_fixed_integer_floor (_comac_fixed_from_double (p[3].x)),
+		    _comac_fixed_integer_floor (_comac_fixed_from_double (p[3].y)),
+		    _comac_color_double_to_short (c3[0]),
+		    _comac_color_double_to_short (c3[1]),
+		    _comac_color_double_to_short (c3[2]),
+		    _comac_color_double_to_short (c3[3]));
     }
 }
 
@@ -680,7 +680,7 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
  * c[0..3] are the colors in p00, p30, p03, p33 respectively
  *
  * The input color components are not premultiplied, but the data
- * stored in the image is assumed to be in CAIRO_FORMAT_ARGB32 (8 bpc,
+ * stored in the image is assumed to be in COMAC_FORMAT_ARGB32 (8 bpc,
  * premultiplied).
  *
  * If the patch folds over itself, the part with the highest v
@@ -694,7 +694,7 @@ draw_bezier_curve (unsigned char *data, int width, int height, int stride,
  */
 static inline void
 rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, int vshift,
-			cairo_point_double_t p[4][4], double col[4][4])
+			comac_point_double_t p[4][4], double col[4][4])
 {
     double pv[4][2][4], cstart[4], cend[4], dcstart[4], dcend[4];
     int v, i, k;
@@ -730,7 +730,7 @@ rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, 
 
     v++;
     while (v--) {
-	cairo_point_double_t nodes[4];
+	comac_point_double_t nodes[4];
 	for (i = 0; i < 4; ++i) {
 	    nodes[i].x = pv[i][0][0];
 	    nodes[i].y = pv[i][1][0];
@@ -774,7 +774,7 @@ rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, 
  * c[0..3] are the colors in p00, p30, p03, p33 respectively
  *
  * The input color components are not premultiplied, but the data
- * stored in the image is assumed to be in CAIRO_FORMAT_ARGB32 (8 bpc,
+ * stored in the image is assumed to be in COMAC_FORMAT_ARGB32 (8 bpc,
  * premultiplied).
  *
  * If the patch folds over itself, the part with the highest v
@@ -790,7 +790,7 @@ rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, 
  */
 static void
 draw_bezier_patch (unsigned char *data, int width, int height, int stride,
-		     cairo_point_double_t p[4][4], double c[4][4])
+		     comac_point_double_t p[4][4], double c[4][4])
 {
     double top, bottom, left, right, steps_sq;
     int i, j, v;
@@ -832,7 +832,7 @@ draw_bezier_patch (unsigned char *data, int width, int height, int stride,
 	 * rasterizing each part will overwrite parts with low v with
 	 * overlapping parts with higher v. */
 
-	cairo_point_double_t first[4][4], second[4][4];
+	comac_point_double_t first[4][4], second[4][4];
 	double subc[4][4];
 
 	for (i = 0; i < 4; ++i)
@@ -870,13 +870,13 @@ draw_bezier_patch (unsigned char *data, int width, int height, int stride,
  * Output: data will be changed to have the pattern drawn on it
  *
  * data is assumed to be clear and its content is assumed to be in
- * CAIRO_FORMAT_ARGB32 (8 bpc, premultiplied).
+ * COMAC_FORMAT_ARGB32 (8 bpc, premultiplied).
  *
  * This function can be used to rasterize a PDF type 7 shading (see
  * http://www.adobe.com/devnet/pdf/pdf_reference.html).
  */
 void
-_cairo_mesh_pattern_rasterize (const cairo_mesh_pattern_t *mesh,
+_comac_mesh_pattern_rasterize (const comac_mesh_pattern_t *mesh,
 			       void                       *data,
 			       int                         width,
 			       int                         height,
@@ -884,28 +884,28 @@ _cairo_mesh_pattern_rasterize (const cairo_mesh_pattern_t *mesh,
 			       double                      x_offset,
 			       double                      y_offset)
 {
-    cairo_point_double_t nodes[4][4];
+    comac_point_double_t nodes[4][4];
     double colors[4][4];
-    cairo_matrix_t p2u;
+    comac_matrix_t p2u;
     unsigned int i, j, k, n;
-    cairo_status_t status;
-    const cairo_mesh_patch_t *patch;
-    const cairo_color_t *c;
+    comac_status_t status;
+    const comac_mesh_patch_t *patch;
+    const comac_color_t *c;
 
-    assert (mesh->base.status == CAIRO_STATUS_SUCCESS);
+    assert (mesh->base.status == COMAC_STATUS_SUCCESS);
     assert (mesh->current_patch == NULL);
 
     p2u = mesh->base.matrix;
-    status = cairo_matrix_invert (&p2u);
-    assert (status == CAIRO_STATUS_SUCCESS);
+    status = comac_matrix_invert (&p2u);
+    assert (status == COMAC_STATUS_SUCCESS);
 
-    n = _cairo_array_num_elements (&mesh->patches);
-    patch = _cairo_array_index_const (&mesh->patches, 0);
+    n = _comac_array_num_elements (&mesh->patches);
+    patch = _comac_array_index_const (&mesh->patches, 0);
     for (i = 0; i < n; i++) {
 	for (j = 0; j < 4; j++) {
 	    for (k = 0; k < 4; k++) {
 		nodes[j][k] = patch->points[j][k];
-		cairo_matrix_transform_point (&p2u, &nodes[j][k].x, &nodes[j][k].y);
+		comac_matrix_transform_point (&p2u, &nodes[j][k].x, &nodes[j][k].y);
 		nodes[j][k].x += x_offset;
 		nodes[j][k].y += y_offset;
 	    }

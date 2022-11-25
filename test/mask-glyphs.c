@@ -32,23 +32,23 @@ static const char *png_filename = "romedalen.png";
 #define WIDTH 800
 #define HEIGHT 600
 
-static cairo_status_t
-_image_to_glyphs (cairo_surface_t *image,
+static comac_status_t
+_image_to_glyphs (comac_surface_t *image,
 		  int channel,
 		  int level,
-		  cairo_scaled_font_t *scaled_font,
+		  comac_scaled_font_t *scaled_font,
 		  double tx, double ty,
-		  cairo_glyph_t *glyphs,
+		  comac_glyph_t *glyphs,
 		  int *num_glyphs)
 {
     int width, height, stride;
     const unsigned char *data;
     int x, y, z, n;
 
-    width = cairo_image_surface_get_width (image);
-    height = cairo_image_surface_get_height (image);
-    stride = cairo_image_surface_get_stride (image);
-    data = cairo_image_surface_get_data (image);
+    width = comac_image_surface_get_width (image);
+    height = comac_image_surface_get_height (image);
+    stride = comac_image_surface_get_stride (image);
+    data = comac_image_surface_get_data (image);
 
     n = 0;
     for (y = 0; y < height; y++) {
@@ -60,8 +60,8 @@ _image_to_glyphs (cairo_surface_t *image,
 		double xx, yy, zz;
 		char c = n % 26 + 'a';
 		int count = 1;
-		cairo_glyph_t *glyphs_p = &glyphs[n];
-		cairo_status_t status;
+		comac_glyph_t *glyphs_p = &glyphs[n];
+		comac_status_t status;
 
 		xx = 4 * (x - width/2.) + width/2.;
 		yy = 4 * (y - height/2.) + height/2.;
@@ -70,13 +70,13 @@ _image_to_glyphs (cairo_surface_t *image,
 		xx = xx + zz*(width/2. - xx);
 		yy = yy + zz*(height/2. - yy);
 
-		cairo_scaled_font_text_to_glyphs (scaled_font,
+		comac_scaled_font_text_to_glyphs (scaled_font,
 						  tx + xx, ty + yy,
 						  &c, 1,
 						  &glyphs_p, &count,
 						  NULL, NULL,
 						  NULL);
-		status = cairo_scaled_font_status (scaled_font);
+		status = comac_scaled_font_status (scaled_font);
 		if (status)
 		    return status;
 
@@ -88,18 +88,18 @@ _image_to_glyphs (cairo_surface_t *image,
     }
 
     *num_glyphs = n;
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-_render_image (cairo_t *cr,
+static comac_status_t
+_render_image (comac_t *cr,
 	       int width, int height,
-	       cairo_surface_t *image)
+	       comac_surface_t *image)
 {
     int ww, hh;
-    cairo_glyph_t *glyphs;
-    cairo_pattern_t *mask;
-    cairo_scaled_font_t *scaled_font;
+    comac_glyph_t *glyphs;
+    comac_pattern_t *mask;
+    comac_scaled_font_t *scaled_font;
     double tx, ty;
     const struct {
 	int shift;
@@ -113,73 +113,73 @@ _render_image (cairo_t *cr,
     };
     unsigned int n, i;
 
-    ww = cairo_image_surface_get_width (image);
-    hh = cairo_image_surface_get_height (image);
+    ww = comac_image_surface_get_width (image);
+    hh = comac_image_surface_get_height (image);
 
-    glyphs = cairo_glyph_allocate (ww * hh);
+    glyphs = comac_glyph_allocate (ww * hh);
     if (glyphs == NULL)
-	return CAIRO_STATUS_NO_MEMORY;
+	return COMAC_STATUS_NO_MEMORY;
 
     tx = (width - ww) / 2.;
     ty = (height - hh) / 2.;
 
-    cairo_set_font_size (cr, 5);
-    scaled_font = cairo_get_scaled_font (cr);
+    comac_set_font_size (cr, 5);
+    scaled_font = comac_get_scaled_font (cr);
 
     for (i = 0; i < ARRAY_LENGTH (channel); i++) {
-	cairo_push_group_with_content (cr, CAIRO_CONTENT_ALPHA);
+	comac_push_group_with_content (cr, COMAC_CONTENT_ALPHA);
 	for (n = 0; n < 256; n++) {
-	    cairo_status_t status;
+	    comac_status_t status;
 	    int num_glyphs;
 
 	    status = _image_to_glyphs (image, channel[i].shift, n,
 				       scaled_font,
 				       tx, ty, glyphs, &num_glyphs);
 	    if (status) {
-		cairo_glyph_free (glyphs);
+		comac_glyph_free (glyphs);
 		return status;
 	    }
 
-	    cairo_set_source_rgba (cr,
+	    comac_set_source_rgba (cr,
 				   0, 0, 0,
 				   .15 + .85 * n / 255.);
-	    cairo_show_glyphs (cr, glyphs, num_glyphs);
+	    comac_show_glyphs (cr, glyphs, num_glyphs);
 	}
-	mask = cairo_pop_group (cr);
-	cairo_set_source_rgb (cr,
+	mask = comac_pop_group (cr);
+	comac_set_source_rgb (cr,
 			      channel[i].red,
 			      channel[i].green,
 			      channel[i].blue);
-	cairo_mask (cr, mask);
-	cairo_pattern_destroy (mask);
+	comac_mask (cr, mask);
+	comac_pattern_destroy (mask);
     }
 
-    cairo_glyph_free (glyphs);
-    return CAIRO_STATUS_SUCCESS;
+    comac_glyph_free (glyphs);
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
-    cairo_surface_t *image;
-    cairo_status_t status;
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
+    comac_surface_t *image;
+    comac_status_t status;
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    image = cairo_test_create_surface_from_png (ctx, png_filename);
-    status = cairo_surface_status (image);
+    image = comac_test_create_surface_from_png (ctx, png_filename);
+    status = comac_surface_status (image);
     if (status)
-	return cairo_test_status_from_status (ctx, status);
+	return comac_test_status_from_status (ctx, status);
 
     status = _render_image (cr, width, height, image);
-    cairo_surface_destroy (image);
+    comac_surface_destroy (image);
 
-    return cairo_test_status_from_status (ctx, status);
+    return comac_test_status_from_status (ctx, status);
 }
 
-CAIRO_TEST (mask_glyphs,
+COMAC_TEST (mask_glyphs,
 	    "Creates a mask using a distorted array of overlapping glyphs",
 	    "mask, glyphs", /* keywords */
 	    "slow", /* requirements */

@@ -53,20 +53,20 @@ enum {
     FILL = 2,
 };
 
-static cairo_time_t
-do_world_map (cairo_t *cr, int width, int height, int loops, int mode)
+static comac_time_t
+do_world_map (comac_t *cr, int width, int height, int loops, int mode)
 {
     const wm_element_t *e;
     double cx, cy;
 
-    cairo_set_line_width (cr, 0.2);
+    comac_set_line_width (cr, 0.2);
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	cairo_set_source_rgb (cr, .68, .85, .90); /* lightblue */
-	cairo_rectangle (cr, 0, 0, 800, 400);
-	cairo_fill (cr);
+	comac_set_source_rgb (cr, .68, .85, .90); /* lightblue */
+	comac_rectangle (cr, 0, 0, 800, 400);
+	comac_fill (cr);
 
 	e = &countries[0];
 	while (1) {
@@ -74,33 +74,33 @@ do_world_map (cairo_t *cr, int width, int height, int loops, int mode)
 	    case WM_NEW_PATH:
 	    case WM_END:
 		if (mode & FILL) {
-		    cairo_set_source_rgb (cr, .75, .75, .75); /* silver */
-		    cairo_fill_preserve (cr);
+		    comac_set_source_rgb (cr, .75, .75, .75); /* silver */
+		    comac_fill_preserve (cr);
 		}
 		if (mode & STROKE) {
-		    cairo_set_source_rgb (cr, .50, .50, .50); /* gray */
-		    cairo_stroke (cr);
+		    comac_set_source_rgb (cr, .50, .50, .50); /* gray */
+		    comac_stroke (cr);
 		}
-		cairo_new_path (cr);
-		cairo_move_to (cr, e->x, e->y);
+		comac_new_path (cr);
+		comac_move_to (cr, e->x, e->y);
 		break;
 	    case WM_MOVE_TO:
-		cairo_close_path (cr);
-		cairo_move_to (cr, e->x, e->y);
+		comac_close_path (cr);
+		comac_move_to (cr, e->x, e->y);
 		break;
 	    case WM_LINE_TO:
-		cairo_line_to (cr, e->x, e->y);
+		comac_line_to (cr, e->x, e->y);
 		break;
 	    case WM_HLINE_TO:
-		cairo_get_current_point (cr, &cx, &cy);
-		cairo_line_to (cr, e->x, cy);
+		comac_get_current_point (cr, &cx, &cy);
+		comac_line_to (cr, e->x, cy);
 		break;
 	    case WM_VLINE_TO:
-		cairo_get_current_point (cr, &cx, &cy);
-		cairo_line_to (cr, cx, e->y);
+		comac_get_current_point (cr, &cx, &cy);
+		comac_line_to (cr, cx, e->y);
 		break;
 	    case WM_REL_LINE_TO:
-		cairo_rel_line_to (cr, e->x, e->y);
+		comac_rel_line_to (cr, e->x, e->y);
 		break;
 	    }
 	    if (e->type == WM_END)
@@ -108,42 +108,42 @@ do_world_map (cairo_t *cr, int width, int height, int loops, int mode)
 	    e++;
 	}
 
-	cairo_new_path (cr);
+	comac_new_path (cr);
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_world_map_stroke (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_world_map_stroke (comac_t *cr, int width, int height, int loops)
 {
     return do_world_map (cr, width, height, loops, STROKE);
 }
 
-static cairo_time_t
-do_world_map_fill (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_world_map_fill (comac_t *cr, int width, int height, int loops)
 {
     return do_world_map (cr, width, height, loops, FILL);
 }
 
-static cairo_time_t
-do_world_map_both (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_world_map_both (comac_t *cr, int width, int height, int loops)
 {
     return do_world_map (cr, width, height, loops, FILL | STROKE);
 }
 
-cairo_bool_t
-world_map_enabled (cairo_perf_t *perf)
+comac_bool_t
+world_map_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "world-map", NULL);
+    return comac_perf_can_run (perf, "world-map", NULL);
 }
 
 void
-world_map (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+world_map (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "world-map-stroke", do_world_map_stroke, NULL);
-    cairo_perf_run (perf, "world-map-fill", do_world_map_fill, NULL);
-    cairo_perf_run (perf, "world-map", do_world_map_both, NULL);
+    comac_perf_run (perf, "world-map-stroke", do_world_map_stroke, NULL);
+    comac_perf_run (perf, "world-map-fill", do_world_map_fill, NULL);
+    comac_perf_run (perf, "world-map", do_world_map_both, NULL);
 }

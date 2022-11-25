@@ -26,22 +26,22 @@
 #include "comac-test.h"
 #include <math.h>
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_rectangle (cr, 5, 5, 20, 20);
-    cairo_rotate (cr, M_PI/4);
-    cairo_stroke (cr);
+    comac_rectangle (cr, 5, 5, 20, 20);
+    comac_rotate (cr, M_PI/4);
+    comac_stroke (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (rotate_stroke_box,
+COMAC_TEST (rotate_stroke_box,
 	    "Ensure rectangle path optimization works when the stroking transform is non rectilinear",
 	    "path", /* keywords */
 	    NULL, /* requirements */

@@ -26,52 +26,52 @@
 #include "comac-test.h"
 #include <stdlib.h>
 
-static cairo_test_draw_function_t draw;
+static comac_test_draw_function_t draw;
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_path_t *path;
+    comac_path_t *path;
 
     /* We draw in the default black, so paint white first. */
-    cairo_save (cr);
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_restore (cr);
 
     /* This curious approach for drawing a circle (starting with a
      * closed arc) exercises a bug in which the "last move point" was
      * not being set so the close_path closes to (0,0). */
-    cairo_arc (cr, 8, 8, 4, 0, M_PI);
-    cairo_close_path (cr);
-    cairo_arc (cr, 8, 8, 4, M_PI, 2 * M_PI);
+    comac_arc (cr, 8, 8, 4, 0, M_PI);
+    comac_close_path (cr);
+    comac_arc (cr, 8, 8, 4, M_PI, 2 * M_PI);
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    cairo_translate (cr, 16, 0);
+    comac_translate (cr, 16, 0);
 
     /* Here a curve immediately after a close_to will begin from (0,0)
-     * when the path is obtained with cairo_copy_path_flat. */
-    cairo_move_to (cr, 8, 4);
-    cairo_arc_negative (cr, 8, 8, 4, 3 * M_PI / 2.0, M_PI / 2.0);
-    cairo_close_path (cr);
-    cairo_curve_to (cr,
+     * when the path is obtained with comac_copy_path_flat. */
+    comac_move_to (cr, 8, 4);
+    comac_arc_negative (cr, 8, 8, 4, 3 * M_PI / 2.0, M_PI / 2.0);
+    comac_close_path (cr);
+    comac_curve_to (cr,
 		    12, 4,
 		    12, 12,
 		    8, 12);
 
-    path = cairo_copy_path_flat (cr);
-    cairo_new_path (cr);
-    cairo_append_path (cr, path);
-    cairo_path_destroy (path);
+    path = comac_copy_path_flat (cr);
+    comac_new_path (cr);
+    comac_append_path (cr, path);
+    comac_path_destroy (path);
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (close_path,
-	    "Test some corner cases related to cairo_close_path",
+COMAC_TEST (close_path,
+	    "Test some corner cases related to comac_close_path",
 	    "path", /* keywords */
 	    NULL, /* requirements */
 	    32, 16,

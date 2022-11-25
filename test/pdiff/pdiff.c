@@ -172,16 +172,16 @@ XYZToLAB (float x, float y, float z, float *L, float *A, float *B)
 }
 
 static uint32_t
-_get_pixel (const uint32_t *data, int i, cairo_format_t format)
+_get_pixel (const uint32_t *data, int i, comac_format_t format)
 {
-    if (format == CAIRO_FORMAT_ARGB32)
+    if (format == COMAC_FORMAT_ARGB32)
 	return data[i];
     else
 	return data[i] | 0xff000000;
 }
 
 static unsigned char
-_get_red (const uint32_t *data, int i, cairo_format_t format)
+_get_red (const uint32_t *data, int i, comac_format_t format)
 {
     uint32_t pixel;
     uint8_t alpha;
@@ -195,7 +195,7 @@ _get_red (const uint32_t *data, int i, cairo_format_t format)
 }
 
 static unsigned char
-_get_green (const uint32_t *data, int i, cairo_format_t format)
+_get_green (const uint32_t *data, int i, comac_format_t format)
 {
     uint32_t pixel;
     uint8_t alpha;
@@ -209,7 +209,7 @@ _get_green (const uint32_t *data, int i, cairo_format_t format)
 }
 
 static unsigned char
-_get_blue (const uint32_t *data, int i, cairo_format_t format)
+_get_blue (const uint32_t *data, int i, comac_format_t format)
 {
     uint32_t pixel;
     uint8_t alpha;
@@ -237,14 +237,14 @@ xmalloc (size_t size)
 }
 
 int
-pdiff_compare (cairo_surface_t *surface_a,
-	       cairo_surface_t *surface_b,
+pdiff_compare (comac_surface_t *surface_a,
+	       comac_surface_t *surface_b,
 	       double gamma,
 	       double luminance,
 	       double field_of_view)
 {
-    unsigned int dim = (cairo_image_surface_get_width (surface_a)
-			* cairo_image_surface_get_height (surface_a));
+    unsigned int dim = (comac_image_surface_get_width (surface_a)
+			* comac_image_surface_get_height (surface_a));
     unsigned int i;
 
     /* assuming colorspaces are in Adobe RGB (1998) convert to XYZ */
@@ -273,19 +273,19 @@ pdiff_compare (cairo_surface_t *surface_a,
     float F_freq[MAX_PYR_LEVELS - 2];
     float csf_max;
     const uint32_t *data_a, *data_b;
-    cairo_format_t format_a, format_b;
+    comac_format_t format_a, format_b;
 
     unsigned int pixels_failed;
 
-    w = cairo_image_surface_get_width (surface_a);
-    h = cairo_image_surface_get_height (surface_a);
+    w = comac_image_surface_get_width (surface_a);
+    h = comac_image_surface_get_height (surface_a);
     if (w < 3 || h < 3) /* too small for the Laplacian convolution */
 	return -1;
 
-    format_a = cairo_image_surface_get_format (surface_a);
-    format_b = cairo_image_surface_get_format (surface_b);
-    assert (format_a == CAIRO_FORMAT_RGB24 || format_a == CAIRO_FORMAT_ARGB32);
-    assert (format_b == CAIRO_FORMAT_RGB24 || format_b == CAIRO_FORMAT_ARGB32);
+    format_a = comac_image_surface_get_format (surface_a);
+    format_b = comac_image_surface_get_format (surface_b);
+    assert (format_a == COMAC_FORMAT_RGB24 || format_a == COMAC_FORMAT_ARGB32);
+    assert (format_b == COMAC_FORMAT_RGB24 || format_b == COMAC_FORMAT_ARGB32);
 
     aX = xmalloc (dim * sizeof (float));
     aY = xmalloc (dim * sizeof (float));
@@ -301,8 +301,8 @@ pdiff_compare (cairo_surface_t *surface_a,
     aB = xmalloc (dim * sizeof (float));
     bB = xmalloc (dim * sizeof (float));
 
-    data_a = (uint32_t *) cairo_image_surface_get_data (surface_a);
-    data_b = (uint32_t *) cairo_image_surface_get_data (surface_b);
+    data_a = (uint32_t *) comac_image_surface_get_data (surface_a);
+    data_b = (uint32_t *) comac_image_surface_get_data (surface_b);
     for (y = 0; y < h; y++) {
 	for (x = 0; x < w; x++) {
 	    float r, g, b, l;

@@ -26,9 +26,9 @@
  *	Uli Schlachter
  */
 
-// Test case for https://gitlab.freedesktop.org/cairo/cairo/-/merge_requests/118
+// Test case for https://gitlab.freedesktop.org/comac/comac/-/merge_requests/118
 // A recording surface with a non-zero origin gets cut off when passed to
-// cairo_surface_write_to_png().
+// comac_surface_write_to_png().
 
 #include "comac-test.h"
 
@@ -39,30 +39,30 @@ struct buffer {
     size_t length;
 };
 
-static cairo_surface_t *
+static comac_surface_t *
 prepare_recording (void)
 {
-    cairo_surface_t *surface;
-    cairo_rectangle_t rect;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_rectangle_t rect;
+    comac_t *cr;
 
     rect.x = -1;
     rect.y = -2;
     rect.width = 3;
     rect.height = 4;
-    surface = cairo_recording_surface_create (CAIRO_CONTENT_COLOR_ALPHA, &rect);
+    surface = comac_recording_surface_create (COMAC_CONTENT_COLOR_ALPHA, &rect);
 
-    cr = cairo_create (surface);
-    cairo_set_line_width (cr, 1);
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_rectangle (cr, 0.5, -0.5, 1., 1.);
-    cairo_stroke (cr);
-    cairo_destroy (cr);
+    cr = comac_create (surface);
+    comac_set_line_width (cr, 1);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_rectangle (cr, 0.5, -0.5, 1., 1.);
+    comac_stroke (cr);
+    comac_destroy (cr);
 
     return surface;
 }
 
-static cairo_status_t
+static comac_status_t
 write_callback (void *closure, const unsigned char *data, unsigned int length)
 {
     struct buffer *buffer = closure;
@@ -71,10 +71,10 @@ write_callback (void *closure, const unsigned char *data, unsigned int length)
     memcpy (&buffer->data[buffer->length], data, length);
     buffer->length += length;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
+static comac_status_t
 read_callback (void *closure, unsigned char *data, unsigned int length)
 {
     struct buffer *buffer = closure;
@@ -84,51 +84,51 @@ read_callback (void *closure, unsigned char *data, unsigned int length)
     buffer->data += length;
     buffer->length -= length;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_surface_t *
-png_round_trip (cairo_surface_t *input_surface)
+static comac_surface_t *
+png_round_trip (comac_surface_t *input_surface)
 {
-    cairo_surface_t *output_surface;
+    comac_surface_t *output_surface;
     struct buffer buffer;
     void *to_free;
 
     // Turn the surface into a PNG
     buffer.data = NULL;
     buffer.length = 0;
-    cairo_surface_write_to_png_stream (input_surface, write_callback, &buffer);
+    comac_surface_write_to_png_stream (input_surface, write_callback, &buffer);
     to_free = buffer.data;
 
     // Load the PNG again
-    output_surface = cairo_image_surface_create_from_png_stream (read_callback, &buffer);
+    output_surface = comac_image_surface_create_from_png_stream (read_callback, &buffer);
 
     free (to_free);
     return output_surface;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *recording, *surface;
+    comac_surface_t *recording, *surface;
 
     // Draw a black background so that the output does not vary with alpha
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
     recording = prepare_recording ();
     surface = png_round_trip (recording);
 
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_paint (cr);
 
-    cairo_surface_destroy (recording);
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (recording);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (record_write_png,
+COMAC_TEST (record_write_png,
 	    "Test writing to png with non-zero origin",
 	    "record, transform", /* keywords */
 	    NULL, /* requirements */

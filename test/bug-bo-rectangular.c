@@ -26,40 +26,40 @@
 #include "comac-test.h"
 
 static void
-rect (cairo_t *cr, int x1, int y1, int x2, int y2)
+rect (comac_t *cr, int x1, int y1, int x2, int y2)
 {
-    cairo_rectangle (cr, x1, y1, x2 - x1, y2 - y1);
+    comac_rectangle (cr, x1, y1, x2 - x1, y2 - y1);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
-    cairo_scale (cr, 1./256, 1./256);
+    comac_scale (cr, 1./256, 1./256);
 
     rect (cr, 0, 0, 29696, 7680);
     rect (cr, 0, 0, -15360, 15360);
-    cairo_clip (cr);
+    comac_clip (cr);
 
-    cairo_set_source_rgb (cr, 1, 0.5, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0.5, 0);
+    comac_paint (cr);
 
     rect (cr, 9984, 0, 2969, 3840);
     rect (cr, 0, 3840, 9472, 7680);
-    cairo_clip (cr);
+    comac_clip (cr);
 
     rect (cr, 0, 3840, 3584, 7680);
-    cairo_set_source_rgb (cr, 1, 0, 0.5);
-    cairo_fill (cr);
+    comac_set_source_rgb (cr, 1, 0, 0.5);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_bo_rectangular,
+COMAC_TEST (bug_bo_rectangular,
 	    "Tests a bug found by Benjamin Otte in the rectangular tessellator",
 	    "tessellator", /* keywords */
 	    NULL, /* requirements */

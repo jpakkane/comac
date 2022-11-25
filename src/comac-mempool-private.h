@@ -1,4 +1,4 @@
-/* Cairo - a vector graphics library with display and print output
+/* Comac - a vector graphics library with display and print output
  *
  * Copyright © 2007 Chris Wilson
  * Copyright © 2009 Intel Corporation
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,25 +34,25 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_MEMPOOL_PRIVATE_H
-#define CAIRO_MEMPOOL_PRIVATE_H
+#ifndef COMAC_MEMPOOL_PRIVATE_H
+#define COMAC_MEMPOOL_PRIVATE_H
 
 #include "comac-compiler-private.h"
 #include "comac-error-private.h"
 
 #include <stddef.h> /* for size_t */
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-typedef struct _cairo_mempool cairo_mempool_t;
+typedef struct _comac_mempool comac_mempool_t;
 
-struct _cairo_mempool {
+struct _comac_mempool {
     char *base;
-    struct _cairo_memblock {
+    struct _comac_memblock {
 	int bits;
-	cairo_list_t link;
+	comac_list_t link;
     } *blocks;
-    cairo_list_t free[32];
+    comac_list_t free[32];
     unsigned char *map;
 
     unsigned int num_blocks;
@@ -64,22 +64,22 @@ struct _cairo_mempool {
     size_t max_bytes;
 };
 
-cairo_private cairo_status_t
-_cairo_mempool_init (cairo_mempool_t *pool,
+comac_private comac_status_t
+_comac_mempool_init (comac_mempool_t *pool,
 		     void *base,
 		     size_t bytes,
 		     int min_bits,
 		     int num_sizes);
 
-cairo_private void *
-_cairo_mempool_alloc (cairo_mempool_t *pi, size_t bytes);
+comac_private void *
+_comac_mempool_alloc (comac_mempool_t *pi, size_t bytes);
 
-cairo_private void
-_cairo_mempool_free (cairo_mempool_t *pi, void *storage);
+comac_private void
+_comac_mempool_free (comac_mempool_t *pi, void *storage);
 
-cairo_private void
-_cairo_mempool_fini (cairo_mempool_t *pool);
+comac_private void
+_comac_mempool_fini (comac_mempool_t *pool);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_MEMPOOL_PRIVATE_H */
+#endif /* COMAC_MEMPOOL_PRIVATE_H */

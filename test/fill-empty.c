@@ -27,33 +27,33 @@
 
 #define SIZE 10
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0, 0, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
     /* first drawn an ordinary empty path */
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, 0, SIZE, SIZE/2);
-    cairo_clip (cr);
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_rectangle (cr, 0, 0, SIZE, SIZE/2);
+    comac_clip (cr);
+    comac_fill (cr);
+    comac_restore (cr);
 
     /* and then an unbounded empty path */
-    cairo_save (cr);
-    cairo_rectangle (cr, 0, SIZE/2, SIZE, SIZE/2);
-    cairo_clip (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_DEST_IN);
-    cairo_fill (cr);
-    cairo_restore (cr);
+    comac_save (cr);
+    comac_rectangle (cr, 0, SIZE/2, SIZE, SIZE/2);
+    comac_clip (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_DEST_IN);
+    comac_fill (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_empty,
+COMAC_TEST (fill_empty,
 	    "Test filling with an empty path",
 	    "fill", /* keywords */
 	    NULL, /* requirements */

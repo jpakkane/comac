@@ -25,30 +25,30 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_pattern_t *gradient;
+    comac_pattern_t *gradient;
 
-    gradient = cairo_pattern_create_linear (0, -height,
+    gradient = comac_pattern_create_linear (0, -height,
 					    0, height);
-    cairo_pattern_add_color_stop_rgba (gradient, 0.0,
+    comac_pattern_add_color_stop_rgba (gradient, 0.0,
 				       1.0, 0.0, 0.0,
 				       1.0);
-    cairo_pattern_add_color_stop_rgba (gradient, 1.0,
+    comac_pattern_add_color_stop_rgba (gradient, 1.0,
 				       0.0, 0.0, 1.0,
 				       0.5);
 
-    cairo_set_source (cr, gradient);
+    comac_set_source (cr, gradient);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    cairo_pattern_destroy (gradient);
+    comac_pattern_destroy (gradient);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (gradient_alpha,
+COMAC_TEST (gradient_alpha,
 	    "Tests drawing of a gradient with various alpha values in the color stops",
 	    "gradient, alpha", /* keywords */
 	    NULL, /* requirements */

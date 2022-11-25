@@ -32,7 +32,7 @@
 #include FT_FREETYPE_H
 #include FT_MULTIPLE_MASTERS_H
 
-#if CAIRO_HAS_FC_FONT
+#if COMAC_HAS_FC_FONT
 #include <fontconfig/fontconfig.h>
 #endif
 
@@ -40,18 +40,18 @@
 
 #define FloatToFixed(f) ((FT_Fixed)((f)*65536))
 
-static cairo_test_status_t
-test_variation (cairo_test_context_t *ctx,
+static comac_test_status_t
+test_variation (comac_test_context_t *ctx,
                 const char           *input,
                 const char           *tag,
                 int                   def,
                 float                 expected_value)
 {
-    cairo_font_face_t *font_face;
-    cairo_scaled_font_t *scaled_font;
-    cairo_matrix_t matrix;
-    cairo_font_options_t *options;
-    cairo_status_t status;
+    comac_font_face_t *font_face;
+    comac_scaled_font_t *scaled_font;
+    comac_matrix_t matrix;
+    comac_font_options_t *options;
+    comac_status_t status;
 
     FT_Face ft_face;
     FT_MM_Var *ft_mm_var;
@@ -59,93 +59,93 @@ test_variation (cairo_test_context_t *ctx,
     FT_Fixed coords[20];
     unsigned int i;
 
-#if CAIRO_HAS_FC_FONT
+#if COMAC_HAS_FC_FONT
     FcPattern *pattern;
 
     /* we need a font that has variations */
     pattern = FcPatternBuild (NULL,
                               FC_FAMILY, FcTypeString, (FcChar8*)"Adobe Variable Font Prototype",
                               NULL);
-    font_face = cairo_ft_font_face_create_for_pattern (pattern);
-    status = cairo_font_face_status (font_face);
+    font_face = comac_ft_font_face_create_for_pattern (pattern);
+    status = comac_font_face_status (font_face);
     FcPatternDestroy (pattern);
 
-    if (status != CAIRO_STATUS_SUCCESS) {
-        cairo_test_log (ctx, "Failed to create font face");
-        return CAIRO_TEST_FAILURE;
+    if (status != COMAC_STATUS_SUCCESS) {
+        comac_test_log (ctx, "Failed to create font face");
+        return COMAC_TEST_FAILURE;
     }
 
-    cairo_matrix_init_identity (&matrix);
-    options = cairo_font_options_create ();
-    if (cairo_font_options_status (options) != CAIRO_STATUS_SUCCESS) {
-        cairo_test_log (ctx, "Failed to create font options");
-        return CAIRO_TEST_FAILURE;
+    comac_matrix_init_identity (&matrix);
+    options = comac_font_options_create ();
+    if (comac_font_options_status (options) != COMAC_STATUS_SUCCESS) {
+        comac_test_log (ctx, "Failed to create font options");
+        return COMAC_TEST_FAILURE;
     }
 
-    cairo_font_options_set_variations (options, input);
-    if (cairo_font_options_status (options) != CAIRO_STATUS_SUCCESS) {
-        cairo_test_log (ctx, "Failed to set variations");
-        return CAIRO_TEST_FAILURE;
+    comac_font_options_set_variations (options, input);
+    if (comac_font_options_status (options) != COMAC_STATUS_SUCCESS) {
+        comac_test_log (ctx, "Failed to set variations");
+        return COMAC_TEST_FAILURE;
     }
 
-    if (strcmp (cairo_font_options_get_variations (options), input) != 0) {
-        cairo_test_log (ctx, "Failed to verify variations");
-        return CAIRO_TEST_FAILURE;
+    if (strcmp (comac_font_options_get_variations (options), input) != 0) {
+        comac_test_log (ctx, "Failed to verify variations");
+        return COMAC_TEST_FAILURE;
     }
 
-    scaled_font = cairo_scaled_font_create (font_face, &matrix, &matrix, options);
-    status = cairo_scaled_font_status (scaled_font);
+    scaled_font = comac_scaled_font_create (font_face, &matrix, &matrix, options);
+    status = comac_scaled_font_status (scaled_font);
 
-    if (status != CAIRO_STATUS_SUCCESS) {
-        cairo_test_log (ctx, "Failed to create scaled font");
-        return CAIRO_TEST_FAILURE;
+    if (status != COMAC_STATUS_SUCCESS) {
+        comac_test_log (ctx, "Failed to create scaled font");
+        return COMAC_TEST_FAILURE;
     }
 
-    ft_face = cairo_ft_scaled_font_lock_face (scaled_font);
-    if (cairo_scaled_font_status (scaled_font) != CAIRO_STATUS_SUCCESS) {
-        cairo_test_log (ctx, "Failed to get FT_Face");
-        return CAIRO_TEST_FAILURE;
+    ft_face = comac_ft_scaled_font_lock_face (scaled_font);
+    if (comac_scaled_font_status (scaled_font) != COMAC_STATUS_SUCCESS) {
+        comac_test_log (ctx, "Failed to get FT_Face");
+        return COMAC_TEST_FAILURE;
     }
     if (strcmp (ft_face->family_name, "Adobe Variable Font Prototype") != 0) {
-        cairo_test_log (ctx, "This test requires the font \"Adobe Variable Font Prototype\" (https://github.com/adobe-fonts/adobe-variable-font-prototype/releases)");
-        return CAIRO_TEST_UNTESTED;
+        comac_test_log (ctx, "This test requires the font \"Adobe Variable Font Prototype\" (https://github.com/adobe-fonts/adobe-variable-font-prototype/releases)");
+        return COMAC_TEST_UNTESTED;
     }
 
     ret = FT_Get_MM_Var (ft_face, &ft_mm_var);
     if (ret != 0) {
-        cairo_test_log (ctx, "Failed to get MM");
-        return CAIRO_TEST_FAILURE;
+        comac_test_log (ctx, "Failed to get MM");
+        return COMAC_TEST_FAILURE;
     }
 
 #ifdef HAVE_FT_GET_VAR_DESIGN_COORDINATES
     ret = FT_Get_Var_Design_Coordinates (ft_face, 20, coords);
     if (ret != 0) {
-        cairo_test_log (ctx, "Failed to get coords");
-        return CAIRO_TEST_FAILURE;
+        comac_test_log (ctx, "Failed to get coords");
+        return COMAC_TEST_FAILURE;
     }
 #else
-    return CAIRO_TEST_UNTESTED;
+    return COMAC_TEST_UNTESTED;
 #endif
 
     for (i = 0; i < ft_mm_var->num_axis; i++) {
         FT_Var_Axis *axis = &ft_mm_var->axis[i];
-        cairo_test_log (ctx, "axis %s, value %g\n", axis->name, coords[i] / 65536.);
+        comac_test_log (ctx, "axis %s, value %g\n", axis->name, coords[i] / 65536.);
     }
     for (i = 0; i < ft_mm_var->num_axis; i++) {
         FT_Var_Axis *axis = &ft_mm_var->axis[i];
         if (axis->tag == FT_MAKE_TAG(tag[0], tag[1], tag[2], tag[3])) {
             if (def) {
                 if (coords[i] != axis->def) {
-                    cairo_test_log (ctx, "Axis %s: not default value (%g != %g)",
+                    comac_test_log (ctx, "Axis %s: not default value (%g != %g)",
                                     axis->name, coords[i] / 65536., axis->def / 65536.);
-                    return CAIRO_TEST_FAILURE;
+                    return COMAC_TEST_FAILURE;
                 }
             }
             else {
                 if (coords[i] != FloatToFixed(expected_value)) {
-                    cairo_test_log (ctx, "Axis %s: not expected value (%g != %g)",
+                    comac_test_log (ctx, "Axis %s: not expected value (%g != %g)",
                                     axis->name, coords[i] / 65536., expected_value);
-                    return CAIRO_TEST_FAILURE;
+                    return COMAC_TEST_FAILURE;
                 }
             }
         }
@@ -153,22 +153,22 @@ test_variation (cairo_test_context_t *ctx,
         }
     }
 
-    cairo_ft_scaled_font_unlock_face (scaled_font);
+    comac_ft_scaled_font_unlock_face (scaled_font);
 
-    cairo_scaled_font_destroy (scaled_font);
-    cairo_font_options_destroy (options);
-    cairo_font_face_destroy (font_face);
+    comac_scaled_font_destroy (scaled_font);
+    comac_font_options_destroy (options);
+    comac_font_face_destroy (font_face);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 #else
-    return CAIRO_TEST_UNTESTED;
+    return COMAC_TEST_UNTESTED;
 #endif
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_test_status_t status = CAIRO_TEST_SUCCESS;
+    comac_test_status_t status = COMAC_TEST_SUCCESS;
     struct { const char *input;
              const char *tag;
              int expected_default;
@@ -190,14 +190,14 @@ preamble (cairo_test_context_t *ctx)
                                 tests[i].tag,
                                 tests[i].expected_default,
                                 tests[i].expected_value);
-       if (status != CAIRO_TEST_SUCCESS)
+       if (status != COMAC_TEST_SUCCESS)
            return status;
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (font_variations,
+COMAC_TEST (font_variations,
 	    "Test font variations",
 	    "fonts", /* keywords */
 	    NULL, /* requirements */

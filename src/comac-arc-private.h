@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -33,29 +33,29 @@
  *	Carl D. Worth <cworth@redhat.com>
  */
 
-#ifndef CAIRO_ARC_PRIVATE_H
-#define CAIRO_ARC_PRIVATE_H
+#ifndef COMAC_ARC_PRIVATE_H
+#define COMAC_ARC_PRIVATE_H
 
 #include "comacint.h"
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-cairo_private void
-_cairo_arc_path (cairo_t *cr,
+comac_private void
+_comac_arc_path (comac_t *cr,
 		 double	  xc,
 		 double	  yc,
 		 double	  radius,
 		 double	  angle1,
 		 double	  angle2);
 
-cairo_private void
-_cairo_arc_path_negative (cairo_t *cr,
+comac_private void
+_comac_arc_path_negative (comac_t *cr,
 			  double   xc,
 			  double   yc,
 			  double   radius,
 			  double   angle1,
 			  double   angle2);
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* CAIRO_ARC_PRIVATE_H */
+#endif /* COMAC_ARC_PRIVATE_H */

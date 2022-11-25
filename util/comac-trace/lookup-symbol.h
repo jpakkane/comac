@@ -1,4 +1,4 @@
-/* cairo-trace - a utility to record and replay calls to the Cairo library.
+/* comac-trace - a utility to record and replay calls to the Comac library.
  *
  * Copyright © 2008 Chris Wilson
  *

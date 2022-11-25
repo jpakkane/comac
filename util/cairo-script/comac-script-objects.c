@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -183,7 +183,7 @@ csi_array_free (csi_t *ctx, csi_array_t *array)
 #endif
 }
 
-static cairo_bool_t
+static comac_bool_t
 _dictionary_name_equal (const void *_a, const void *_b)
 {
     return TRUE;
@@ -353,7 +353,7 @@ csi_matrix_new (csi_t *ctx,
 
     matrix->base.type = CSI_OBJECT_TYPE_MATRIX;
     matrix->base.ref = 1;
-    cairo_matrix_init_identity (&matrix->matrix);
+    comac_matrix_init_identity (&matrix->matrix);
 
     obj->type = CSI_OBJECT_TYPE_MATRIX;
     obj->datum.matrix = matrix;
@@ -377,7 +377,7 @@ csi_matrix_new_from_array (csi_t *ctx,
 
     matrix->base.type = CSI_OBJECT_TYPE_MATRIX;
     matrix->base.ref = 1;
-    cairo_matrix_init (&matrix->matrix,
+    comac_matrix_init (&matrix->matrix,
 		       csi_number_get_value (&array->stack.objects[0]),
 		       csi_number_get_value (&array->stack.objects[1]),
 		       csi_number_get_value (&array->stack.objects[2]),
@@ -394,7 +394,7 @@ csi_matrix_new_from_array (csi_t *ctx,
 csi_status_t
 csi_matrix_new_from_matrix (csi_t *ctx,
 			    csi_object_t *obj,
-			    const cairo_matrix_t *m)
+			    const comac_matrix_t *m)
 {
     csi_matrix_t *matrix;
 
@@ -425,7 +425,7 @@ csi_matrix_new_from_values (csi_t *ctx,
 
     matrix->base.type = CSI_OBJECT_TYPE_MATRIX;
     matrix->base.ref = 1;
-    cairo_matrix_init (&matrix->matrix, v[0], v[1], v[2], v[3], v[4], v[5]);
+    comac_matrix_init (&matrix->matrix, v[0], v[1], v[2], v[3], v[4], v[5]);
 
     obj->type = CSI_OBJECT_TYPE_MATRIX;
     obj->datum.matrix = matrix;
@@ -647,22 +647,22 @@ csi_object_execute (csi_t *ctx, csi_object_t *obj)
 csi_object_t *
 csi_object_reference (csi_object_t *obj)
 {
-    if (CSI_OBJECT_IS_CAIRO (obj)) {
+    if (CSI_OBJECT_IS_COMAC (obj)) {
 	switch (obj->type & CSI_OBJECT_TYPE_MASK) {
 	case CSI_OBJECT_TYPE_CONTEXT:
-	    cairo_reference (obj->datum.cr);
+	    comac_reference (obj->datum.cr);
 	    break;
 	case CSI_OBJECT_TYPE_FONT:
-	    cairo_font_face_reference (obj->datum.font_face);
+	    comac_font_face_reference (obj->datum.font_face);
 	    break;
 	case CSI_OBJECT_TYPE_PATTERN:
-	    cairo_pattern_reference (obj->datum.pattern);
+	    comac_pattern_reference (obj->datum.pattern);
 	    break;
 	case CSI_OBJECT_TYPE_SCALED_FONT:
-	    cairo_scaled_font_reference (obj->datum.scaled_font);
+	    comac_scaled_font_reference (obj->datum.scaled_font);
 	    break;
 	case CSI_OBJECT_TYPE_SURFACE:
-	    cairo_surface_reference (obj->datum.surface);
+	    comac_surface_reference (obj->datum.surface);
 	    break;
 	}
     } else if (CSI_OBJECT_IS_COMPOUND (obj)) {
@@ -676,22 +676,22 @@ void
 csi_object_free (csi_t *ctx,
 		 csi_object_t *obj)
 {
-    if (CSI_OBJECT_IS_CAIRO (obj)) {
+    if (CSI_OBJECT_IS_COMAC (obj)) {
 	switch (obj->type & CSI_OBJECT_TYPE_MASK) {
 	case CSI_OBJECT_TYPE_CONTEXT:
-	    cairo_destroy (obj->datum.cr);
+	    comac_destroy (obj->datum.cr);
 	    break;
 	case CSI_OBJECT_TYPE_FONT:
-	    cairo_font_face_destroy (obj->datum.font_face);
+	    comac_font_face_destroy (obj->datum.font_face);
 	    break;
 	case CSI_OBJECT_TYPE_PATTERN:
-	    cairo_pattern_destroy (obj->datum.pattern);
+	    comac_pattern_destroy (obj->datum.pattern);
 	    break;
 	case CSI_OBJECT_TYPE_SCALED_FONT:
-	    cairo_scaled_font_destroy (obj->datum.scaled_font);
+	    comac_scaled_font_destroy (obj->datum.scaled_font);
 	    break;
 	case CSI_OBJECT_TYPE_SURFACE:
-	    cairo_surface_destroy (obj->datum.surface);
+	    comac_surface_destroy (obj->datum.surface);
 	    break;
 	}
     } else if (CSI_OBJECT_IS_COMPOUND (obj)) {

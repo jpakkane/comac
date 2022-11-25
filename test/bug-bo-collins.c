@@ -26,49 +26,49 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
-    cairo_translate (cr, 0, 0);
-    cairo_save (cr);
-    cairo_rectangle (cr, 10, 10, 20, 20);
-    cairo_rectangle (cr, 20, 10, -10, 10);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_translate (cr, 0, 0);
+    comac_save (cr);
+    comac_rectangle (cr, 10, 10, 20, 20);
+    comac_rectangle (cr, 20, 10, -10, 10);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 40, 0);
-    cairo_save (cr);
-    cairo_rectangle (cr, 10, 10, 20, 20);
-    cairo_rectangle (cr, 30, 10, -10, 10);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_translate (cr, 40, 0);
+    comac_save (cr);
+    comac_rectangle (cr, 10, 10, 20, 20);
+    comac_rectangle (cr, 30, 10, -10, 10);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, 0, 40);
-    cairo_save (cr);
-    cairo_rectangle (cr, 10, 10, 20, 20);
-    cairo_rectangle (cr, 30, 20, -10, 10);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_translate (cr, 0, 40);
+    comac_save (cr);
+    comac_rectangle (cr, 10, 10, 20, 20);
+    comac_rectangle (cr, 30, 20, -10, 10);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    cairo_translate (cr, -40, 0);
-    cairo_save (cr);
-    cairo_rectangle (cr, 10, 10, 20, 20);
-    cairo_rectangle (cr, 20, 20, -10, 10);
-    cairo_clip (cr);
-    cairo_paint (cr);
-    cairo_restore (cr);
+    comac_translate (cr, -40, 0);
+    comac_save (cr);
+    comac_rectangle (cr, 10, 10, 20, 20);
+    comac_rectangle (cr, 20, 20, -10, 10);
+    comac_clip (cr);
+    comac_paint (cr);
+    comac_restore (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_bo_collins,
+COMAC_TEST (bug_bo_collins,
 	    "Exercises a bug discovered by S. Christian Collins",
 	    "clip, rectangular", /* keywords */
 	    NULL, /* requirements */

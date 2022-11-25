@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2007 Mathias Hasselmann
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * Contributor(s):
  *	Mathias Hasselmann <mathias.hasselmann@gmx.de>
@@ -35,48 +35,48 @@
 
 #include "comac-mutex-private.h"
 
-#define CAIRO_MUTEX_DECLARE(mutex) cairo_mutex_t mutex = CAIRO_MUTEX_NIL_INITIALIZER;
+#define COMAC_MUTEX_DECLARE(mutex) comac_mutex_t mutex = COMAC_MUTEX_NIL_INITIALIZER;
 #include "comac-mutex-list-private.h"
-#undef   CAIRO_MUTEX_DECLARE
+#undef   COMAC_MUTEX_DECLARE
 
-#if _CAIRO_MUTEX_IMPL_USE_STATIC_INITIALIZER || _CAIRO_MUTEX_IMPL_USE_STATIC_FINALIZER
+#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER || _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
 
-# if _CAIRO_MUTEX_IMPL_USE_STATIC_INITIALIZER
-#  define _CAIRO_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE FALSE
+# if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER
+#  define _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE FALSE
 # else
-#  define _CAIRO_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE TRUE
+#  define _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE TRUE
 # endif
 
-cairo_bool_t _cairo_mutex_initialized = _CAIRO_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE;
+comac_bool_t _comac_mutex_initialized = _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE;
 
-# undef _CAIRO_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE
+# undef _COMAC_MUTEX_IMPL_INITIALIZED_DEFAULT_VALUE
 
 #endif
 
-#if _CAIRO_MUTEX_IMPL_USE_STATIC_INITIALIZER
-void _cairo_mutex_initialize (void)
+#if _COMAC_MUTEX_IMPL_USE_STATIC_INITIALIZER
+void _comac_mutex_initialize (void)
 {
-    if (_cairo_mutex_initialized)
+    if (_comac_mutex_initialized)
         return;
 
-    _cairo_mutex_initialized = TRUE;
+    _comac_mutex_initialized = TRUE;
 
-#define  CAIRO_MUTEX_DECLARE(mutex) CAIRO_MUTEX_INIT (mutex);
+#define  COMAC_MUTEX_DECLARE(mutex) COMAC_MUTEX_INIT (mutex);
 #include "comac-mutex-list-private.h"
-#undef   CAIRO_MUTEX_DECLARE
+#undef   COMAC_MUTEX_DECLARE
 }
 #endif
 
-#if _CAIRO_MUTEX_IMPL_USE_STATIC_FINALIZER
-void _cairo_mutex_finalize (void)
+#if _COMAC_MUTEX_IMPL_USE_STATIC_FINALIZER
+void _comac_mutex_finalize (void)
 {
-    if (!_cairo_mutex_initialized)
+    if (!_comac_mutex_initialized)
         return;
 
-    _cairo_mutex_initialized = FALSE;
+    _comac_mutex_initialized = FALSE;
 
-#define  CAIRO_MUTEX_DECLARE(mutex) CAIRO_MUTEX_FINI (mutex);
+#define  COMAC_MUTEX_DECLARE(mutex) COMAC_MUTEX_FINI (mutex);
 #include "comac-mutex-list-private.h"
-#undef   CAIRO_MUTEX_DECLARE
+#undef   COMAC_MUTEX_DECLARE
 }
 #endif

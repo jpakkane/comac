@@ -27,8 +27,8 @@
 
 #define RGBx 0xffff0000, 0xff00ff00, 0xff0000ff, 0x00000000
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     uint32_t data[] = {
 	RGBx, RGBx, RGBx,
@@ -36,26 +36,26 @@ draw (cairo_t *cr, int width, int height)
 	RGBx, RGBx, RGBx,
 	RGBx, RGBx, RGBx,
     };
-    cairo_surface_t *mask;
+    comac_surface_t *mask;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    mask = cairo_image_surface_create_for_data ((unsigned char *) data,
-						CAIRO_FORMAT_ARGB32, 12, 4, 48);
+    mask = comac_image_surface_create_for_data ((unsigned char *) data,
+						COMAC_FORMAT_ARGB32, 12, 4, 48);
 
-    cairo_set_source_surface (cr, mask, 0, 0);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
+    comac_set_source_surface (cr, mask, 0, 0);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    cairo_surface_finish (mask); /* data goes out of scope */
-    cairo_surface_destroy (mask);
+    comac_surface_finish (mask); /* data goes out of scope */
+    comac_surface_destroy (mask);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bilevel_image,
+COMAC_TEST (bilevel_image,
 	    "Test that PS can embed an RGB image with a bilevel alpha channel.",
 	    "alpha, ps", /* keywords */
 	    NULL, /* requirements */

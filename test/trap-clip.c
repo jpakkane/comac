@@ -32,135 +32,135 @@
 #define PAD 2
 
 static const char *png_filename = "romedalen.png";
-static cairo_surface_t *image;
+static comac_surface_t *image;
 
 static void
-set_solid_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
+set_solid_pattern (const comac_test_context_t *ctx, comac_t *cr, int x, int y)
 {
-    cairo_set_source_rgb (cr, 0, 0, 0.6);
+    comac_set_source_rgb (cr, 0, 0, 0.6);
 }
 
 static void
-set_translucent_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
+set_translucent_pattern (const comac_test_context_t *ctx, comac_t *cr, int x, int y)
 {
-    cairo_set_source_rgba (cr, 0, 0, 0.6, 0.5);
+    comac_set_source_rgba (cr, 0, 0, 0.6, 0.5);
 }
 
 static void
-set_gradient_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
+set_gradient_pattern (const comac_test_context_t *ctx, comac_t *cr, int x, int y)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
     pattern =
-	cairo_pattern_create_linear (x, y, x + WIDTH, y + HEIGHT);
-    cairo_pattern_add_color_stop_rgba (pattern, 0, 1, 1, 1, 1);
-    cairo_pattern_add_color_stop_rgba (pattern, 1, 0, 0, 0.4, 1);
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
+	comac_pattern_create_linear (x, y, x + WIDTH, y + HEIGHT);
+    comac_pattern_add_color_stop_rgba (pattern, 0, 1, 1, 1, 1);
+    comac_pattern_add_color_stop_rgba (pattern, 1, 0, 0, 0.4, 1);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
 }
 
 static void
-set_image_pattern (const cairo_test_context_t *ctx, cairo_t *cr, int x, int y)
+set_image_pattern (const comac_test_context_t *ctx, comac_t *cr, int x, int y)
 {
-    cairo_pattern_t *pattern;
+    comac_pattern_t *pattern;
 
-    if (image == NULL || cairo_surface_status (image)) {
-	cairo_surface_destroy (image);
-	image = cairo_test_create_surface_from_png (ctx, png_filename);
+    if (image == NULL || comac_surface_status (image)) {
+	comac_surface_destroy (image);
+	image = comac_test_create_surface_from_png (ctx, png_filename);
     }
 
-    pattern = cairo_pattern_create_for_surface (image);
-    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
-    cairo_set_source (cr, pattern);
-    cairo_pattern_destroy (pattern);
+    pattern = comac_pattern_create_for_surface (image);
+    comac_pattern_set_extend (pattern, COMAC_EXTEND_REPEAT);
+    comac_set_source (cr, pattern);
+    comac_pattern_destroy (pattern);
 }
 
 static void
-draw_rect (cairo_t *cr, int x, int y)
+draw_rect (comac_t *cr, int x, int y)
 {
-    cairo_new_path (cr);
-    cairo_rectangle (cr, x, y, WIDTH, HEIGHT);
-    cairo_fill (cr);
+    comac_new_path (cr);
+    comac_rectangle (cr, x, y, WIDTH, HEIGHT);
+    comac_fill (cr);
 }
 
 static void
-draw_rects (cairo_t *cr, int x, int y)
+draw_rects (comac_t *cr, int x, int y)
 {
     int width = WIDTH / 3;
     int height = HEIGHT / 2;
 
-    cairo_new_path (cr);
-    cairo_rectangle (cr, x, y, width, height);
-    cairo_rectangle (cr, x + width, y + height, width, height);
-    cairo_rectangle (cr, x + 2 * width, y, width, height);
-    cairo_fill (cr);
+    comac_new_path (cr);
+    comac_rectangle (cr, x, y, width, height);
+    comac_rectangle (cr, x + width, y + height, width, height);
+    comac_rectangle (cr, x + 2 * width, y, width, height);
+    comac_fill (cr);
 }
 
 static void
-draw_polygon (cairo_t *cr, int x, int y)
+draw_polygon (comac_t *cr, int x, int y)
 {
-    cairo_new_path (cr);
-    cairo_move_to (cr, x, y);
-    cairo_line_to (cr, x, y + HEIGHT);
-    cairo_line_to (cr, x + WIDTH / 2, y + 3 * HEIGHT / 4);
-    cairo_line_to (cr, x + WIDTH, y + HEIGHT);
-    cairo_line_to (cr, x + WIDTH, y);
-    cairo_line_to (cr, x + WIDTH / 2, y + HEIGHT / 4);
-    cairo_close_path (cr);
-    cairo_fill (cr);
+    comac_new_path (cr);
+    comac_move_to (cr, x, y);
+    comac_line_to (cr, x, y + HEIGHT);
+    comac_line_to (cr, x + WIDTH / 2, y + 3 * HEIGHT / 4);
+    comac_line_to (cr, x + WIDTH, y + HEIGHT);
+    comac_line_to (cr, x + WIDTH, y);
+    comac_line_to (cr, x + WIDTH / 2, y + HEIGHT / 4);
+    comac_close_path (cr);
+    comac_fill (cr);
 }
 
 static void
-clip_none (cairo_t *cr, int x, int y)
+clip_none (comac_t *cr, int x, int y)
 {
 }
 
 static void
-clip_rect (cairo_t *cr, int x, int y)
+clip_rect (comac_t *cr, int x, int y)
 {
-    cairo_new_path (cr);
-    cairo_rectangle (cr, x + (int)WIDTH / 6, y + (int)HEIGHT / 6,
+    comac_new_path (cr);
+    comac_rectangle (cr, x + (int)WIDTH / 6, y + (int)HEIGHT / 6,
 		     4 * ((int)WIDTH  / 6), 4 * ((int)WIDTH / 6));
-    cairo_clip (cr);
-    cairo_new_path (cr);
+    comac_clip (cr);
+    comac_new_path (cr);
 }
 
 static void
-clip_rects (cairo_t *cr, int x, int y)
+clip_rects (comac_t *cr, int x, int y)
 {
     int height = HEIGHT / 3;
 
-    cairo_new_path (cr);
-    cairo_rectangle (cr, x, y, WIDTH, height);
-    cairo_rectangle (cr, x, y + 2 * height, WIDTH, height);
-    cairo_clip (cr);
-    cairo_new_path (cr);
+    comac_new_path (cr);
+    comac_rectangle (cr, x, y, WIDTH, height);
+    comac_rectangle (cr, x, y + 2 * height, WIDTH, height);
+    comac_clip (cr);
+    comac_new_path (cr);
 }
 
 static void
-clip_circle (cairo_t *cr, int x, int y)
+clip_circle (comac_t *cr, int x, int y)
 {
-    cairo_new_path (cr);
-    cairo_arc (cr, x + WIDTH / 2, y + HEIGHT / 2,
+    comac_new_path (cr);
+    comac_arc (cr, x + WIDTH / 2, y + HEIGHT / 2,
 	       WIDTH / 3, 0, 2 * M_PI);
-    cairo_clip (cr);
-    cairo_new_path (cr);
+    comac_clip (cr);
+    comac_new_path (cr);
 }
 
-static void (* const pattern_funcs[])(const cairo_test_context_t *ctx, cairo_t *cr, int x, int y) = {
+static void (* const pattern_funcs[])(const comac_test_context_t *ctx, comac_t *cr, int x, int y) = {
     set_solid_pattern,
     set_translucent_pattern,
     set_gradient_pattern,
     set_image_pattern,
 };
 
-static void (* const draw_funcs[])(cairo_t *cr, int x, int y) = {
+static void (* const draw_funcs[])(comac_t *cr, int x, int y) = {
     draw_rect,
     draw_rects,
     draw_polygon,
 };
 
-static void (* const clip_funcs[])(cairo_t *cr, int x, int y) = {
+static void (* const clip_funcs[])(comac_t *cr, int x, int y) = {
     clip_none,
     clip_rect,
     clip_rects,
@@ -170,10 +170,10 @@ static void (* const clip_funcs[])(cairo_t *cr, int x, int y) = {
 #define IMAGE_WIDTH (ARRAY_LENGTH (pattern_funcs) * (WIDTH + PAD) + PAD)
 #define IMAGE_HEIGHT (ARRAY_LENGTH (draw_funcs) * ARRAY_LENGTH (clip_funcs) * (HEIGHT + PAD) + PAD)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    const cairo_test_context_t *ctx = cairo_test_get_context (cr);
+    const comac_test_context_t *ctx = comac_test_get_context (cr);
     size_t i, j, k, x, y;
 
     for (k = 0; k < ARRAY_LENGTH (clip_funcs); k++) {
@@ -182,30 +182,30 @@ draw (cairo_t *cr, int width, int height)
 		x = i * (WIDTH + PAD) + PAD;
 		y = (ARRAY_LENGTH (draw_funcs) * k + j) * (HEIGHT + PAD) + PAD;
 
-		cairo_save (cr);
+		comac_save (cr);
 
-		cairo_move_to (cr, x, y);
+		comac_move_to (cr, x, y);
 		clip_funcs[k] (cr, x, y);
 		pattern_funcs[i] (ctx, cr, x, y);
 		draw_funcs[j] (cr, x, y);
-		if (cairo_status (cr))
-		    cairo_test_log (ctx, "%d %d HERE!\n", (int)i, (int)j);
+		if (comac_status (cr))
+		    comac_test_log (ctx, "%d %d HERE!\n", (int)i, (int)j);
 
-		cairo_restore (cr);
+		comac_restore (cr);
 	    }
 	}
     }
 
-    if (cairo_status (cr) != CAIRO_STATUS_SUCCESS)
-	cairo_test_log (ctx, "%d %d .HERE!\n", (int)i, (int)j);
+    if (comac_status (cr) != COMAC_STATUS_SUCCESS)
+	comac_test_log (ctx, "%d %d .HERE!\n", (int)i, (int)j);
 
-    cairo_surface_destroy (image);
+    comac_surface_destroy (image);
     image = NULL;
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (trap_clip,
+COMAC_TEST (trap_clip,
 	    "Trapezoid clipping",
 	    "clip, trap", /* keywords */
 	    NULL, /* requirements */

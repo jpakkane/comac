@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -34,8 +34,8 @@
  *	Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_CLIP_PRIVATE_H
-#define CAIRO_CLIP_PRIVATE_H
+#ifndef COMAC_CLIP_PRIVATE_H
+#define COMAC_CLIP_PRIVATE_H
 
 #include "comac-types-private.h"
 
@@ -46,153 +46,153 @@
 #include "comac-path-fixed-private.h"
 #include "comac-reference-count-private.h"
 
-extern const cairo_private cairo_rectangle_list_t _cairo_rectangles_nil;
+extern const comac_private comac_rectangle_list_t _comac_rectangles_nil;
 
-struct _cairo_clip_path {
-    cairo_reference_count_t	 ref_count;
-    cairo_path_fixed_t		 path;
-    cairo_fill_rule_t		 fill_rule;
+struct _comac_clip_path {
+    comac_reference_count_t	 ref_count;
+    comac_path_fixed_t		 path;
+    comac_fill_rule_t		 fill_rule;
     double			 tolerance;
-    cairo_antialias_t		 antialias;
-    cairo_clip_path_t		*prev;
+    comac_antialias_t		 antialias;
+    comac_clip_path_t		*prev;
 };
 
-struct _cairo_clip {
-    cairo_rectangle_int_t extents;
-    cairo_clip_path_t *path;
+struct _comac_clip {
+    comac_rectangle_int_t extents;
+    comac_clip_path_t *path;
 
-    cairo_box_t *boxes;
+    comac_box_t *boxes;
     int num_boxes;
 
-    cairo_region_t *region;
-    cairo_bool_t is_region;
+    comac_region_t *region;
+    comac_bool_t is_region;
 
-    cairo_box_t embedded_box;
+    comac_box_t embedded_box;
 };
 
-cairo_private cairo_clip_t *
-_cairo_clip_create (void);
+comac_private comac_clip_t *
+_comac_clip_create (void);
 
-cairo_private cairo_clip_path_t *
-_cairo_clip_path_reference (cairo_clip_path_t *clip_path);
+comac_private comac_clip_path_t *
+_comac_clip_path_reference (comac_clip_path_t *clip_path);
 
-cairo_private void
-_cairo_clip_path_destroy (cairo_clip_path_t *clip_path);
+comac_private void
+_comac_clip_path_destroy (comac_clip_path_t *clip_path);
 
-cairo_private void
-_cairo_clip_destroy (cairo_clip_t *clip);
+comac_private void
+_comac_clip_destroy (comac_clip_t *clip);
 
-cairo_private extern const cairo_clip_t __cairo_clip_all;
+comac_private extern const comac_clip_t __comac_clip_all;
 
-cairo_private cairo_clip_t *
-_cairo_clip_copy (const cairo_clip_t *clip);
+comac_private comac_clip_t *
+_comac_clip_copy (const comac_clip_t *clip);
 
-cairo_private cairo_clip_t *
-_cairo_clip_copy_region (const cairo_clip_t *clip);
+comac_private comac_clip_t *
+_comac_clip_copy_region (const comac_clip_t *clip);
 
-cairo_private cairo_clip_t *
-_cairo_clip_copy_path (const cairo_clip_t *clip);
+comac_private comac_clip_t *
+_comac_clip_copy_path (const comac_clip_t *clip);
 
-cairo_private cairo_clip_t *
-_cairo_clip_translate (cairo_clip_t *clip, int tx, int ty);
+comac_private comac_clip_t *
+_comac_clip_translate (comac_clip_t *clip, int tx, int ty);
 
-cairo_private cairo_clip_t *
-_cairo_clip_transform (cairo_clip_t *clip, const cairo_matrix_t *m);
+comac_private comac_clip_t *
+_comac_clip_transform (comac_clip_t *clip, const comac_matrix_t *m);
 
-cairo_private cairo_clip_t *
-_cairo_clip_copy_with_translation (const cairo_clip_t *clip, int tx, int ty);
+comac_private comac_clip_t *
+_comac_clip_copy_with_translation (const comac_clip_t *clip, int tx, int ty);
 
-cairo_private cairo_bool_t
-_cairo_clip_equal (const cairo_clip_t *clip_a,
-		   const cairo_clip_t *clip_b);
+comac_private comac_bool_t
+_comac_clip_equal (const comac_clip_t *clip_a,
+		   const comac_clip_t *clip_b);
 
-cairo_private cairo_clip_t *
-_cairo_clip_intersect_rectangle (cairo_clip_t       *clip,
-				 const cairo_rectangle_int_t *rectangle);
+comac_private comac_clip_t *
+_comac_clip_intersect_rectangle (comac_clip_t       *clip,
+				 const comac_rectangle_int_t *rectangle);
 
-cairo_private cairo_clip_t *
-_cairo_clip_intersect_clip (cairo_clip_t *clip,
-			    const cairo_clip_t *other);
+comac_private comac_clip_t *
+_comac_clip_intersect_clip (comac_clip_t *clip,
+			    const comac_clip_t *other);
 
-cairo_private cairo_clip_t *
-_cairo_clip_intersect_box (cairo_clip_t       *clip,
-			   const cairo_box_t *box);
+comac_private comac_clip_t *
+_comac_clip_intersect_box (comac_clip_t       *clip,
+			   const comac_box_t *box);
 
-cairo_private cairo_clip_t *
-_cairo_clip_intersect_boxes (cairo_clip_t *clip,
-			     const cairo_boxes_t *boxes);
+comac_private comac_clip_t *
+_comac_clip_intersect_boxes (comac_clip_t *clip,
+			     const comac_boxes_t *boxes);
 
-cairo_private cairo_clip_t *
-_cairo_clip_intersect_rectilinear_path (cairo_clip_t       *clip,
-					const cairo_path_fixed_t *path,
-					cairo_fill_rule_t   fill_rule,
-					cairo_antialias_t   antialias);
+comac_private comac_clip_t *
+_comac_clip_intersect_rectilinear_path (comac_clip_t       *clip,
+					const comac_path_fixed_t *path,
+					comac_fill_rule_t   fill_rule,
+					comac_antialias_t   antialias);
 
-cairo_private cairo_clip_t *
-_cairo_clip_intersect_path (cairo_clip_t       *clip,
-			    const cairo_path_fixed_t *path,
-			    cairo_fill_rule_t   fill_rule,
+comac_private comac_clip_t *
+_comac_clip_intersect_path (comac_clip_t       *clip,
+			    const comac_path_fixed_t *path,
+			    comac_fill_rule_t   fill_rule,
 			    double              tolerance,
-			    cairo_antialias_t   antialias);
+			    comac_antialias_t   antialias);
 
-cairo_private const cairo_rectangle_int_t *
-_cairo_clip_get_extents (const cairo_clip_t *clip);
+comac_private const comac_rectangle_int_t *
+_comac_clip_get_extents (const comac_clip_t *clip);
 
-cairo_private cairo_surface_t *
-_cairo_clip_get_surface (const cairo_clip_t *clip, cairo_surface_t *dst, int *tx, int *ty);
+comac_private comac_surface_t *
+_comac_clip_get_surface (const comac_clip_t *clip, comac_surface_t *dst, int *tx, int *ty);
 
-cairo_private cairo_surface_t *
-_cairo_clip_get_image (const cairo_clip_t *clip,
-		       cairo_surface_t *target,
-		       const cairo_rectangle_int_t *extents);
+comac_private comac_surface_t *
+_comac_clip_get_image (const comac_clip_t *clip,
+		       comac_surface_t *target,
+		       const comac_rectangle_int_t *extents);
 
-cairo_private cairo_status_t
-_cairo_clip_combine_with_surface (const cairo_clip_t *clip,
-				  cairo_surface_t *dst,
+comac_private comac_status_t
+_comac_clip_combine_with_surface (const comac_clip_t *clip,
+				  comac_surface_t *dst,
 				  int dst_x, int dst_y);
 
-cairo_private cairo_clip_t *
-_cairo_clip_from_boxes (const cairo_boxes_t *boxes);
+comac_private comac_clip_t *
+_comac_clip_from_boxes (const comac_boxes_t *boxes);
 
-cairo_private cairo_region_t *
-_cairo_clip_get_region (const cairo_clip_t *clip);
+comac_private comac_region_t *
+_comac_clip_get_region (const comac_clip_t *clip);
 
-cairo_private cairo_bool_t
-_cairo_clip_is_region (const cairo_clip_t *clip);
+comac_private comac_bool_t
+_comac_clip_is_region (const comac_clip_t *clip);
 
-cairo_private cairo_clip_t *
-_cairo_clip_reduce_to_rectangle (const cairo_clip_t *clip,
-				 const cairo_rectangle_int_t *r);
+comac_private comac_clip_t *
+_comac_clip_reduce_to_rectangle (const comac_clip_t *clip,
+				 const comac_rectangle_int_t *r);
 
-cairo_private cairo_clip_t *
-_cairo_clip_reduce_for_composite (const cairo_clip_t *clip,
-				  cairo_composite_rectangles_t *extents);
+comac_private comac_clip_t *
+_comac_clip_reduce_for_composite (const comac_clip_t *clip,
+				  comac_composite_rectangles_t *extents);
 
-cairo_private cairo_bool_t
-_cairo_clip_contains_rectangle (const cairo_clip_t *clip,
-				const cairo_rectangle_int_t *rect);
+comac_private comac_bool_t
+_comac_clip_contains_rectangle (const comac_clip_t *clip,
+				const comac_rectangle_int_t *rect);
 
-cairo_private cairo_bool_t
-_cairo_clip_contains_box (const cairo_clip_t *clip,
-			  const cairo_box_t *box);
+comac_private comac_bool_t
+_comac_clip_contains_box (const comac_clip_t *clip,
+			  const comac_box_t *box);
 
-cairo_private cairo_bool_t
-_cairo_clip_contains_extents (const cairo_clip_t *clip,
-			      const cairo_composite_rectangles_t *extents);
+comac_private comac_bool_t
+_comac_clip_contains_extents (const comac_clip_t *clip,
+			      const comac_composite_rectangles_t *extents);
 
-cairo_private cairo_rectangle_list_t*
-_cairo_clip_copy_rectangle_list (cairo_clip_t *clip, cairo_gstate_t *gstate);
+comac_private comac_rectangle_list_t*
+_comac_clip_copy_rectangle_list (comac_clip_t *clip, comac_gstate_t *gstate);
 
-cairo_private cairo_rectangle_list_t *
-_cairo_rectangle_list_create_in_error (cairo_status_t status);
+comac_private comac_rectangle_list_t *
+_comac_rectangle_list_create_in_error (comac_status_t status);
 
-cairo_private cairo_bool_t
-_cairo_clip_is_polygon (const cairo_clip_t *clip);
+comac_private comac_bool_t
+_comac_clip_is_polygon (const comac_clip_t *clip);
 
-cairo_private cairo_int_status_t
-_cairo_clip_get_polygon (const cairo_clip_t *clip,
-			 cairo_polygon_t *polygon,
-			 cairo_fill_rule_t *fill_rule,
-			 cairo_antialias_t *antialias);
+comac_private comac_int_status_t
+_comac_clip_get_polygon (const comac_clip_t *clip,
+			 comac_polygon_t *polygon,
+			 comac_fill_rule_t *fill_rule,
+			 comac_antialias_t *antialias);
 
-#endif /* CAIRO_CLIP_PRIVATE_H */
+#endif /* COMAC_CLIP_PRIVATE_H */

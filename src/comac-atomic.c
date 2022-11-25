@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2007 Chris Wilson
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * Contributor(s):
  *	Chris Wilson <chris@chris-wilson.co.uk>
@@ -42,78 +42,78 @@ COMPILE_TIME_ASSERT(sizeof(void*) == sizeof(int) ||
 		    sizeof(void*) == sizeof(long long));
 #else
 void
-_cairo_atomic_int_inc (cairo_atomic_intptr_t *x)
+_comac_atomic_int_inc (comac_atomic_intptr_t *x)
 {
-    CAIRO_MUTEX_LOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_LOCK (_comac_atomic_mutex);
     *x += 1;
-    CAIRO_MUTEX_UNLOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_atomic_mutex);
 }
 
-cairo_bool_t
-_cairo_atomic_int_dec_and_test (cairo_atomic_intptr_t *x)
+comac_bool_t
+_comac_atomic_int_dec_and_test (comac_atomic_intptr_t *x)
 {
-    cairo_bool_t ret;
+    comac_bool_t ret;
 
-    CAIRO_MUTEX_LOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_LOCK (_comac_atomic_mutex);
     ret = --*x == 0;
-    CAIRO_MUTEX_UNLOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_atomic_mutex);
 
     return ret;
 }
 
-cairo_atomic_intptr_t
-_cairo_atomic_int_cmpxchg_return_old_impl (cairo_atomic_intptr_t *x, cairo_atomic_intptr_t oldv, cairo_atomic_intptr_t newv)
+comac_atomic_intptr_t
+_comac_atomic_int_cmpxchg_return_old_impl (comac_atomic_intptr_t *x, comac_atomic_intptr_t oldv, comac_atomic_intptr_t newv)
 {
-    cairo_atomic_intptr_t ret;
+    comac_atomic_intptr_t ret;
 
-    CAIRO_MUTEX_LOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_LOCK (_comac_atomic_mutex);
     ret = *x;
     if (ret == oldv)
 	*x = newv;
-    CAIRO_MUTEX_UNLOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_atomic_mutex);
 
     return ret;
 }
 
 void *
-_cairo_atomic_ptr_cmpxchg_return_old_impl (void **x, void *oldv, void *newv)
+_comac_atomic_ptr_cmpxchg_return_old_impl (void **x, void *oldv, void *newv)
 {
     void *ret;
 
-    CAIRO_MUTEX_LOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_LOCK (_comac_atomic_mutex);
     ret = *x;
     if (ret == oldv)
 	*x = newv;
-    CAIRO_MUTEX_UNLOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_atomic_mutex);
 
     return ret;
 }
 
 #ifdef ATOMIC_OP_NEEDS_MEMORY_BARRIER
-cairo_atomic_intptr_t
-_cairo_atomic_int_get (cairo_atomic_intptr_t *x)
+comac_atomic_intptr_t
+_comac_atomic_int_get (comac_atomic_intptr_t *x)
 {
-    cairo_atomic_intptr_t ret;
+    comac_atomic_intptr_t ret;
 
-    CAIRO_MUTEX_LOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_LOCK (_comac_atomic_mutex);
     ret = *x;
-    CAIRO_MUTEX_UNLOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_atomic_mutex);
 
     return ret;
 }
 
-cairo_atomic_intptr_t
-_cairo_atomic_int_get_relaxed (cairo_atomic_intptr_t *x)
+comac_atomic_intptr_t
+_comac_atomic_int_get_relaxed (comac_atomic_intptr_t *x)
 {
-    return _cairo_atomic_int_get (x);
+    return _comac_atomic_int_get (x);
 }
 
 void
-_cairo_atomic_int_set_relaxed (cairo_atomic_intptr_t *x, cairo_atomic_intptr_t val)
+_comac_atomic_int_set_relaxed (comac_atomic_intptr_t *x, comac_atomic_intptr_t val)
 {
-    CAIRO_MUTEX_LOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_LOCK (_comac_atomic_mutex);
     *x = val;
-    CAIRO_MUTEX_UNLOCK (_cairo_atomic_mutex);
+    COMAC_MUTEX_UNLOCK (_comac_atomic_mutex);
 }
 #endif
 

@@ -26,32 +26,32 @@
 
 #include "comac-test.h"
 
-#define WIDTH	(256) //CAIRO_FIXED_ONE
+#define WIDTH	(256) //COMAC_FIXED_ONE
 #define HEIGHT	(WIDTH)
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i, j;
 
     /* Fill background white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
     /* Only the single rectangle that covers the centre pixel should be filled*/
     for (i = 0; i < 256; i++)
 	for (j = 0; j < 256; j++) {
-	    cairo_rectangle (cr, i + i/256., j + j/256., 1/256., 1/256.);
-	    cairo_fill (cr);
+	    comac_rectangle (cr, i + i/256., j + j/256., 1/256., 1/256.);
+	    comac_fill (cr);
 	}
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a1_sample,
+COMAC_TEST (a1_sample,
 	    "Tests unantialiased rendering of a quantum box",
 	    " alpha", /* keywords */
 	    "target=raster", /* requirements */

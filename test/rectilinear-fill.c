@@ -29,54 +29,54 @@
 #define SIZE 24
 
 static void
-draw_rectangles (cairo_t *cr)
+draw_rectangles (comac_t *cr)
 {
-    cairo_save (cr);
+    comac_save (cr);
 
     /* test constructing single rectangles */
-    cairo_rectangle (cr, 0, 0, SIZE/2, 2);
-    cairo_fill (cr);
+    comac_rectangle (cr, 0, 0, SIZE/2, 2);
+    comac_fill (cr);
 
-    cairo_rectangle (cr, 0, 5, SIZE/2, -2);
-    cairo_fill (cr);
+    comac_rectangle (cr, 0, 5, SIZE/2, -2);
+    comac_fill (cr);
 
-    cairo_rectangle (cr, SIZE/2, 6, -SIZE/2, 2);
-    cairo_fill (cr);
+    comac_rectangle (cr, SIZE/2, 6, -SIZE/2, 2);
+    comac_fill (cr);
 
-    cairo_rectangle (cr, SIZE/2, 11, -SIZE/2, -2);
-    cairo_fill (cr);
+    comac_rectangle (cr, SIZE/2, 11, -SIZE/2, -2);
+    comac_fill (cr);
 
     /* test constructing multiple rectangles */
-    cairo_translate (cr, 0, 12);
-    cairo_rectangle (cr, 0, 0, SIZE/2, 2);
-    cairo_rectangle (cr, 0, 5, SIZE/2, -2);
-    cairo_rectangle (cr, SIZE/2, 6, -SIZE/2, 2);
-    cairo_rectangle (cr, SIZE/2, 11, -SIZE/2, -2);
-    cairo_fill (cr);
+    comac_translate (cr, 0, 12);
+    comac_rectangle (cr, 0, 0, SIZE/2, 2);
+    comac_rectangle (cr, 0, 5, SIZE/2, -2);
+    comac_rectangle (cr, SIZE/2, 6, -SIZE/2, 2);
+    comac_rectangle (cr, SIZE/2, 11, -SIZE/2, -2);
+    comac_fill (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* Paint background white, then draw in black. */
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
-    cairo_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
+    comac_set_source_rgb (cr, 0.0, 0.0, 0.0); /* black */
 
     draw_rectangles (cr);
 
     /* and check using cw winding */
-    cairo_translate (cr, SIZE, SIZE);
-    cairo_scale (cr, -1, 1);
+    comac_translate (cr, SIZE, SIZE);
+    comac_scale (cr, -1, 1);
 
     draw_rectangles (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (rectilinear_fill,
+COMAC_TEST (rectilinear_fill,
 	    "Test rectilinear fill operations (covering only whole pixels)",
 	    "fill, rectilinear", /* keywords */
 	    NULL, /* requirements */

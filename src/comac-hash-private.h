@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2004 Red Hat, Inc.
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -36,52 +36,52 @@
  *	Carl Worth <cworth@cworth.org>
  */
 
-#ifndef CAIRO_HASH_PRIVATE_H
-#define CAIRO_HASH_PRIVATE_H
+#ifndef COMAC_HASH_PRIVATE_H
+#define COMAC_HASH_PRIVATE_H
 
 #include "comac-compiler-private.h"
 #include "comac-types-private.h"
 
 /* XXX: I'd like this file to be self-contained in terms of
  * includeability, but that's not really possible with the current
- * monolithic cairoint.h. So, for now, just include cairoint.h instead
+ * monolithic comacint.h. So, for now, just include comacint.h instead
  * if you want to include this file. */
 
-typedef cairo_bool_t
-(*cairo_hash_keys_equal_func_t) (const void *key_a, const void *key_b);
+typedef comac_bool_t
+(*comac_hash_keys_equal_func_t) (const void *key_a, const void *key_b);
 
-typedef cairo_bool_t
-(*cairo_hash_predicate_func_t) (const void *entry);
+typedef comac_bool_t
+(*comac_hash_predicate_func_t) (const void *entry);
 
 typedef void
-(*cairo_hash_callback_func_t) (void *entry,
+(*comac_hash_callback_func_t) (void *entry,
 			       void *closure);
 
-cairo_private cairo_hash_table_t *
-_cairo_hash_table_create (cairo_hash_keys_equal_func_t keys_equal);
+comac_private comac_hash_table_t *
+_comac_hash_table_create (comac_hash_keys_equal_func_t keys_equal);
 
-cairo_private void
-_cairo_hash_table_destroy (cairo_hash_table_t *hash_table);
+comac_private void
+_comac_hash_table_destroy (comac_hash_table_t *hash_table);
 
-cairo_private void *
-_cairo_hash_table_lookup (cairo_hash_table_t  *hash_table,
-			  cairo_hash_entry_t  *key);
+comac_private void *
+_comac_hash_table_lookup (comac_hash_table_t  *hash_table,
+			  comac_hash_entry_t  *key);
 
-cairo_private void *
-_cairo_hash_table_random_entry (cairo_hash_table_t	   *hash_table,
-				cairo_hash_predicate_func_t predicate);
+comac_private void *
+_comac_hash_table_random_entry (comac_hash_table_t	   *hash_table,
+				comac_hash_predicate_func_t predicate);
 
-cairo_private cairo_status_t
-_cairo_hash_table_insert (cairo_hash_table_t *hash_table,
-			  cairo_hash_entry_t *entry);
+comac_private comac_status_t
+_comac_hash_table_insert (comac_hash_table_t *hash_table,
+			  comac_hash_entry_t *entry);
 
-cairo_private void
-_cairo_hash_table_remove (cairo_hash_table_t *hash_table,
-			  cairo_hash_entry_t *key);
+comac_private void
+_comac_hash_table_remove (comac_hash_table_t *hash_table,
+			  comac_hash_entry_t *key);
 
-cairo_private void
-_cairo_hash_table_foreach (cairo_hash_table_t	      *hash_table,
-			   cairo_hash_callback_func_t  hash_callback,
+comac_private void
+_comac_hash_table_foreach (comac_hash_table_t	      *hash_table,
+			   comac_hash_callback_func_t  hash_callback,
 			   void			      *closure);
 
 #endif

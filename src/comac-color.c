@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -37,43 +37,43 @@
 
 #include "comacint.h"
 
-static cairo_color_t const cairo_color_white = {
+static comac_color_t const comac_color_white = {
     1.0,    1.0,    1.0,    1.0,
     0xffff, 0xffff, 0xffff, 0xffff
 };
 
-static cairo_color_t const cairo_color_black = {
+static comac_color_t const comac_color_black = {
     0.0, 0.0, 0.0, 1.0,
     0x0, 0x0, 0x0, 0xffff
 };
 
-static cairo_color_t const cairo_color_transparent = {
+static comac_color_t const comac_color_transparent = {
     0.0, 0.0, 0.0, 0.0,
     0x0, 0x0, 0x0, 0x0
 };
 
-static cairo_color_t const cairo_color_magenta = {
+static comac_color_t const comac_color_magenta = {
     1.0,    0.0, 1.0,    1.0,
     0xffff, 0x0, 0xffff, 0xffff
 };
 
-const cairo_color_t *
-_cairo_stock_color (cairo_stock_t stock)
+const comac_color_t *
+_comac_stock_color (comac_stock_t stock)
 {
     switch (stock) {
-    case CAIRO_STOCK_WHITE:
-	return &cairo_color_white;
-    case CAIRO_STOCK_BLACK:
-	return &cairo_color_black;
-    case CAIRO_STOCK_TRANSPARENT:
-	return &cairo_color_transparent;
+    case COMAC_STOCK_WHITE:
+	return &comac_color_white;
+    case COMAC_STOCK_BLACK:
+	return &comac_color_black;
+    case COMAC_STOCK_TRANSPARENT:
+	return &comac_color_transparent;
 
-    case CAIRO_STOCK_NUM_COLORS:
+    case COMAC_STOCK_NUM_COLORS:
     default:
 	ASSERT_NOT_REACHED;
 	/* If the user can get here somehow, give a color that indicates a
 	 * problem. */
-	return &cairo_color_magenta;
+	return &comac_color_magenta;
     }
 }
 
@@ -82,22 +82,22 @@ _cairo_stock_color (cairo_stock_t stock)
  * i / 65535.0 is as close as possible to the input value.
  */
 uint16_t
-_cairo_color_double_to_short (double d)
+_comac_color_double_to_short (double d)
 {
     return d * 65535.0 + 0.5;
 }
 
 static void
-_cairo_color_compute_shorts (cairo_color_t *color)
+_comac_color_compute_shorts (comac_color_t *color)
 {
-    color->red_short   = _cairo_color_double_to_short (color->red   * color->alpha);
-    color->green_short = _cairo_color_double_to_short (color->green * color->alpha);
-    color->blue_short  = _cairo_color_double_to_short (color->blue  * color->alpha);
-    color->alpha_short = _cairo_color_double_to_short (color->alpha);
+    color->red_short   = _comac_color_double_to_short (color->red   * color->alpha);
+    color->green_short = _comac_color_double_to_short (color->green * color->alpha);
+    color->blue_short  = _comac_color_double_to_short (color->blue  * color->alpha);
+    color->alpha_short = _comac_color_double_to_short (color->alpha);
 }
 
 void
-_cairo_color_init_rgba (cairo_color_t *color,
+_comac_color_init_rgba (comac_color_t *color,
 			double red, double green, double blue,
 			double alpha)
 {
@@ -106,20 +106,20 @@ _cairo_color_init_rgba (cairo_color_t *color,
     color->blue  = blue;
     color->alpha = alpha;
 
-    _cairo_color_compute_shorts (color);
+    _comac_color_compute_shorts (color);
 }
 
 void
-_cairo_color_multiply_alpha (cairo_color_t *color,
+_comac_color_multiply_alpha (comac_color_t *color,
 			     double	    alpha)
 {
     color->alpha *= alpha;
 
-    _cairo_color_compute_shorts (color);
+    _comac_color_compute_shorts (color);
 }
 
 void
-_cairo_color_get_rgba (cairo_color_t *color,
+_comac_color_get_rgba (comac_color_t *color,
 		       double	     *red,
 		       double	     *green,
 		       double	     *blue,
@@ -132,7 +132,7 @@ _cairo_color_get_rgba (cairo_color_t *color,
 }
 
 void
-_cairo_color_get_rgba_premultiplied (cairo_color_t *color,
+_comac_color_get_rgba_premultiplied (comac_color_t *color,
 				     double	   *red,
 				     double	   *green,
 				     double	   *blue,
@@ -145,9 +145,9 @@ _cairo_color_get_rgba_premultiplied (cairo_color_t *color,
 }
 
 /* NB: This function works both for unmultiplied and premultiplied colors */
-cairo_bool_t
-_cairo_color_equal (const cairo_color_t *color_a,
-	            const cairo_color_t *color_b)
+comac_bool_t
+_comac_color_equal (const comac_color_t *color_a,
+	            const comac_color_t *color_b)
 {
     if (color_a == color_b)
 	return TRUE;
@@ -163,9 +163,9 @@ _cairo_color_equal (const cairo_color_t *color_a,
            color_a->blue_short  == color_b->blue_short;
 }
 
-cairo_bool_t
-_cairo_color_stop_equal (const cairo_color_stop_t *color_a,
-			 const cairo_color_stop_t *color_b)
+comac_bool_t
+_comac_color_stop_equal (const comac_color_stop_t *color_a,
+			 const comac_color_stop_t *color_b)
 {
     if (color_a == color_b)
 	return TRUE;
@@ -176,18 +176,18 @@ _cairo_color_stop_equal (const cairo_color_stop_t *color_a,
            color_a->blue_short  == color_b->blue_short;
 }
 
-cairo_content_t
-_cairo_color_get_content (const cairo_color_t *color)
+comac_content_t
+_comac_color_get_content (const comac_color_t *color)
 {
-    if (CAIRO_COLOR_IS_OPAQUE (color))
-        return CAIRO_CONTENT_COLOR;
+    if (COMAC_COLOR_IS_OPAQUE (color))
+        return COMAC_CONTENT_COLOR;
 
     if (color->red_short == 0 &&
 	color->green_short == 0 &&
 	color->blue_short == 0)
     {
-        return CAIRO_CONTENT_ALPHA;
+        return COMAC_CONTENT_ALPHA;
     }
 
-    return CAIRO_CONTENT_COLOR_ALPHA;
+    return COMAC_CONTENT_COLOR_ALPHA;
 }

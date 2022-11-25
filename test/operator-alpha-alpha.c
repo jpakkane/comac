@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright 2002 University of Southern California
  * Copyright 2005 Red Hat, Inc.
@@ -30,7 +30,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -46,8 +46,8 @@
 #include "comac-test.h"
 
 #define STEPS 16
-#define START_OPERATOR	CAIRO_OPERATOR_CLEAR
-#define STOP_OPERATOR	CAIRO_OPERATOR_HSL_LUMINOSITY
+#define START_OPERATOR	COMAC_OPERATOR_CLEAR
+#define STOP_OPERATOR	COMAC_OPERATOR_HSL_LUMINOSITY
 
 #define SIZE 3
 #define COUNT 6
@@ -55,109 +55,109 @@
 #define FULL_HEIGHT ((COUNT + STOP_OPERATOR - START_OPERATOR) / COUNT) * (STEPS + 1)
 
 static void
-create_patterns (cairo_t *bg, cairo_t *fg)
+create_patterns (comac_t *bg, comac_t *fg)
 {
     int x;
 
     for (x = 0; x < STEPS; x++) {
 	double i = (double) x / (STEPS - 1);
-	cairo_set_source_rgba (bg, 0, 0, 0, i);
-	cairo_rectangle (bg, x, 0, 1, STEPS);
-	cairo_fill (bg);
+	comac_set_source_rgba (bg, 0, 0, 0, i);
+	comac_rectangle (bg, x, 0, 1, STEPS);
+	comac_fill (bg);
 
-	cairo_set_source_rgba (fg, 0, 0, 0, i);
-	cairo_rectangle (fg, 0, x, STEPS, 1);
-	cairo_fill (fg);
+	comac_set_source_rgba (fg, 0, 0, 0, i);
+	comac_rectangle (fg, 0, x, STEPS, 1);
+	comac_fill (fg);
     }
 }
 
 /* expects a STEP*STEP pixel rectangle */
 static void
-do_composite (cairo_t *cr, cairo_operator_t op, cairo_surface_t *bg, cairo_surface_t *fg)
+do_composite (comac_t *cr, comac_operator_t op, comac_surface_t *bg, comac_surface_t *fg)
 {
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_surface (cr, bg, 0, 0);
-    cairo_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_surface (cr, bg, 0, 0);
+    comac_paint (cr);
 
-    cairo_set_operator (cr, op);
-    cairo_set_source_surface (cr, fg, 0, 0);
-    cairo_paint (cr);
+    comac_set_operator (cr, op);
+    comac_set_source_surface (cr, fg, 0, 0);
+    comac_paint (cr);
 }
 
 static void
-subdraw (cairo_t *cr, int width, int height)
+subdraw (comac_t *cr, int width, int height)
 {
     size_t i = 0;
-    cairo_operator_t op;
-    cairo_t *bgcr, *fgcr;
-    cairo_surface_t *bg, *fg;
+    comac_operator_t op;
+    comac_t *bgcr, *fgcr;
+    comac_surface_t *bg, *fg;
 
-    bg = cairo_surface_create_similar (cairo_get_target (cr),
-	    CAIRO_CONTENT_ALPHA, SIZE * STEPS, SIZE * STEPS);
-    fg = cairo_surface_create_similar (cairo_get_target (cr),
-	    CAIRO_CONTENT_ALPHA, SIZE * STEPS, SIZE * STEPS);
-    bgcr = cairo_create (bg);
-    fgcr = cairo_create (fg);
-    cairo_scale (bgcr, SIZE, SIZE);
-    cairo_scale (fgcr, SIZE, SIZE);
+    bg = comac_surface_create_similar (comac_get_target (cr),
+	    COMAC_CONTENT_ALPHA, SIZE * STEPS, SIZE * STEPS);
+    fg = comac_surface_create_similar (comac_get_target (cr),
+	    COMAC_CONTENT_ALPHA, SIZE * STEPS, SIZE * STEPS);
+    bgcr = comac_create (bg);
+    fgcr = comac_create (fg);
+    comac_scale (bgcr, SIZE, SIZE);
+    comac_scale (fgcr, SIZE, SIZE);
     create_patterns (bgcr, fgcr);
-    cairo_destroy (bgcr);
-    cairo_destroy (fgcr);
+    comac_destroy (bgcr);
+    comac_destroy (fgcr);
 
     for (op = START_OPERATOR; op <= STOP_OPERATOR; op++, i++) {
-	cairo_save (cr);
-	cairo_translate (cr,
+	comac_save (cr);
+	comac_translate (cr,
 		SIZE * (STEPS + 1) * (i % COUNT),
 		SIZE * (STEPS + 1) * (i / COUNT));
-	cairo_rectangle (cr, 0, 0, SIZE * (STEPS + 1), SIZE * (STEPS+1));
-	cairo_clip (cr);
+	comac_rectangle (cr, 0, 0, SIZE * (STEPS + 1), SIZE * (STEPS+1));
+	comac_clip (cr);
 	do_composite (cr, op, bg, fg);
-	cairo_restore (cr);
+	comac_restore (cr);
     }
 
-    cairo_surface_destroy (fg);
-    cairo_surface_destroy (bg);
+    comac_surface_destroy (fg);
+    comac_surface_destroy (bg);
 }
 
 
-static cairo_surface_t *
-create_source (cairo_surface_t *target, int width, int height)
+static comac_surface_t *
+create_source (comac_surface_t *target, int width, int height)
 {
-    cairo_surface_t *similar;
-    cairo_t *cr;
+    comac_surface_t *similar;
+    comac_t *cr;
 
-    similar = cairo_surface_create_similar (target,
-					    CAIRO_CONTENT_ALPHA,
+    similar = comac_surface_create_similar (target,
+					    COMAC_CONTENT_ALPHA,
 					    width, height);
-    cr = cairo_create (similar);
-    cairo_surface_destroy (similar);
+    cr = comac_create (similar);
+    comac_surface_destroy (similar);
 
     subdraw (cr, width, height);
 
-    similar = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    similar = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return similar;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *source;
+    comac_surface_t *source;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    source = create_source (cairo_get_target (cr), width, height);
-    cairo_set_source_surface (cr, source, 0, 0);
-    cairo_surface_destroy (source);
+    source = create_source (comac_get_target (cr), width, height);
+    comac_set_source_surface (cr, source, 0, 0);
+    comac_surface_destroy (source);
 
-    cairo_paint (cr);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (operator_alpha_alpha,
+COMAC_TEST (operator_alpha_alpha,
 	    "Tests result of compositing pure-alpha surfaces"
 	    "\nCompositing of pure-alpha sources is inconsistent across backends.",
 	    "alpha, similar, operator", /* keywords */

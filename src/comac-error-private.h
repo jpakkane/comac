@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -35,8 +35,8 @@
  *	Carl D. Worth <cworth@cworth.org>
  */
 
-#ifndef _CAIRO_ERROR_PRIVATE_H_
-#define _CAIRO_ERROR_PRIVATE_H_
+#ifndef _COMAC_ERROR_PRIVATE_H_
+#define _COMAC_ERROR_PRIVATE_H_
 
 #include "comac.h"
 #include "comac-compiler-private.h"
@@ -44,89 +44,89 @@
 
 #include <assert.h>
 
-CAIRO_BEGIN_DECLS
+COMAC_BEGIN_DECLS
 
-/* _cairo_int_status: internal status
+/* _comac_int_status: internal status
  *
  * Sure wish C had a real enum type so that this would be distinct
- * from #cairo_status_t. Oh well, without that, I'll use this bogus 100
+ * from #comac_status_t. Oh well, without that, I'll use this bogus 100
  * offset.  We want to keep it fit in int8_t as the compiler may choose
- * that for #cairo_status_t
+ * that for #comac_status_t
  */
-enum _cairo_int_status {
-    CAIRO_INT_STATUS_SUCCESS = 0,
+enum _comac_int_status {
+    COMAC_INT_STATUS_SUCCESS = 0,
 
-    CAIRO_INT_STATUS_NO_MEMORY,
-    CAIRO_INT_STATUS_INVALID_RESTORE,
-    CAIRO_INT_STATUS_INVALID_POP_GROUP,
-    CAIRO_INT_STATUS_NO_CURRENT_POINT,
-    CAIRO_INT_STATUS_INVALID_MATRIX,
-    CAIRO_INT_STATUS_INVALID_STATUS,
-    CAIRO_INT_STATUS_NULL_POINTER,
-    CAIRO_INT_STATUS_INVALID_STRING,
-    CAIRO_INT_STATUS_INVALID_PATH_DATA,
-    CAIRO_INT_STATUS_READ_ERROR,
-    CAIRO_INT_STATUS_WRITE_ERROR,
-    CAIRO_INT_STATUS_SURFACE_FINISHED,
-    CAIRO_INT_STATUS_SURFACE_TYPE_MISMATCH,
-    CAIRO_INT_STATUS_PATTERN_TYPE_MISMATCH,
-    CAIRO_INT_STATUS_INVALID_CONTENT,
-    CAIRO_INT_STATUS_INVALID_FORMAT,
-    CAIRO_INT_STATUS_INVALID_VISUAL,
-    CAIRO_INT_STATUS_FILE_NOT_FOUND,
-    CAIRO_INT_STATUS_INVALID_DASH,
-    CAIRO_INT_STATUS_INVALID_DSC_COMMENT,
-    CAIRO_INT_STATUS_INVALID_INDEX,
-    CAIRO_INT_STATUS_CLIP_NOT_REPRESENTABLE,
-    CAIRO_INT_STATUS_TEMP_FILE_ERROR,
-    CAIRO_INT_STATUS_INVALID_STRIDE,
-    CAIRO_INT_STATUS_FONT_TYPE_MISMATCH,
-    CAIRO_INT_STATUS_USER_FONT_IMMUTABLE,
-    CAIRO_INT_STATUS_USER_FONT_ERROR,
-    CAIRO_INT_STATUS_NEGATIVE_COUNT,
-    CAIRO_INT_STATUS_INVALID_CLUSTERS,
-    CAIRO_INT_STATUS_INVALID_SLANT,
-    CAIRO_INT_STATUS_INVALID_WEIGHT,
-    CAIRO_INT_STATUS_INVALID_SIZE,
-    CAIRO_INT_STATUS_USER_FONT_NOT_IMPLEMENTED,
-    CAIRO_INT_STATUS_DEVICE_TYPE_MISMATCH,
-    CAIRO_INT_STATUS_DEVICE_ERROR,
-    CAIRO_INT_STATUS_INVALID_MESH_CONSTRUCTION,
-    CAIRO_INT_STATUS_DEVICE_FINISHED,
-    CAIRO_INT_STATUS_JBIG2_GLOBAL_MISSING,
-    CAIRO_INT_STATUS_PNG_ERROR,
-    CAIRO_INT_STATUS_FREETYPE_ERROR,
-    CAIRO_INT_STATUS_WIN32_GDI_ERROR,
-    CAIRO_INT_STATUS_TAG_ERROR,
-    CAIRO_INT_STATUS_DWRITE_ERROR,
+    COMAC_INT_STATUS_NO_MEMORY,
+    COMAC_INT_STATUS_INVALID_RESTORE,
+    COMAC_INT_STATUS_INVALID_POP_GROUP,
+    COMAC_INT_STATUS_NO_CURRENT_POINT,
+    COMAC_INT_STATUS_INVALID_MATRIX,
+    COMAC_INT_STATUS_INVALID_STATUS,
+    COMAC_INT_STATUS_NULL_POINTER,
+    COMAC_INT_STATUS_INVALID_STRING,
+    COMAC_INT_STATUS_INVALID_PATH_DATA,
+    COMAC_INT_STATUS_READ_ERROR,
+    COMAC_INT_STATUS_WRITE_ERROR,
+    COMAC_INT_STATUS_SURFACE_FINISHED,
+    COMAC_INT_STATUS_SURFACE_TYPE_MISMATCH,
+    COMAC_INT_STATUS_PATTERN_TYPE_MISMATCH,
+    COMAC_INT_STATUS_INVALID_CONTENT,
+    COMAC_INT_STATUS_INVALID_FORMAT,
+    COMAC_INT_STATUS_INVALID_VISUAL,
+    COMAC_INT_STATUS_FILE_NOT_FOUND,
+    COMAC_INT_STATUS_INVALID_DASH,
+    COMAC_INT_STATUS_INVALID_DSC_COMMENT,
+    COMAC_INT_STATUS_INVALID_INDEX,
+    COMAC_INT_STATUS_CLIP_NOT_REPRESENTABLE,
+    COMAC_INT_STATUS_TEMP_FILE_ERROR,
+    COMAC_INT_STATUS_INVALID_STRIDE,
+    COMAC_INT_STATUS_FONT_TYPE_MISMATCH,
+    COMAC_INT_STATUS_USER_FONT_IMMUTABLE,
+    COMAC_INT_STATUS_USER_FONT_ERROR,
+    COMAC_INT_STATUS_NEGATIVE_COUNT,
+    COMAC_INT_STATUS_INVALID_CLUSTERS,
+    COMAC_INT_STATUS_INVALID_SLANT,
+    COMAC_INT_STATUS_INVALID_WEIGHT,
+    COMAC_INT_STATUS_INVALID_SIZE,
+    COMAC_INT_STATUS_USER_FONT_NOT_IMPLEMENTED,
+    COMAC_INT_STATUS_DEVICE_TYPE_MISMATCH,
+    COMAC_INT_STATUS_DEVICE_ERROR,
+    COMAC_INT_STATUS_INVALID_MESH_CONSTRUCTION,
+    COMAC_INT_STATUS_DEVICE_FINISHED,
+    COMAC_INT_STATUS_JBIG2_GLOBAL_MISSING,
+    COMAC_INT_STATUS_PNG_ERROR,
+    COMAC_INT_STATUS_FREETYPE_ERROR,
+    COMAC_INT_STATUS_WIN32_GDI_ERROR,
+    COMAC_INT_STATUS_TAG_ERROR,
+    COMAC_INT_STATUS_DWRITE_ERROR,
 
-    CAIRO_INT_STATUS_LAST_STATUS,
+    COMAC_INT_STATUS_LAST_STATUS,
 
-    CAIRO_INT_STATUS_UNSUPPORTED = 100,
-    CAIRO_INT_STATUS_DEGENERATE,
-    CAIRO_INT_STATUS_NOTHING_TO_DO,
-    CAIRO_INT_STATUS_FLATTEN_TRANSPARENCY,
-    CAIRO_INT_STATUS_IMAGE_FALLBACK,
-    CAIRO_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN,
+    COMAC_INT_STATUS_UNSUPPORTED = 100,
+    COMAC_INT_STATUS_DEGENERATE,
+    COMAC_INT_STATUS_NOTHING_TO_DO,
+    COMAC_INT_STATUS_FLATTEN_TRANSPARENCY,
+    COMAC_INT_STATUS_IMAGE_FALLBACK,
+    COMAC_INT_STATUS_ANALYZE_RECORDING_SURFACE_PATTERN,
 };
 
-typedef enum _cairo_int_status cairo_int_status_t;
+typedef enum _comac_int_status comac_int_status_t;
 
-#define _cairo_status_is_error(status) \
-    ((status) != CAIRO_STATUS_SUCCESS && (status) < CAIRO_STATUS_LAST_STATUS)
+#define _comac_status_is_error(status) \
+    ((status) != COMAC_STATUS_SUCCESS && (status) < COMAC_STATUS_LAST_STATUS)
 
-#define _cairo_int_status_is_error(status) \
-    ((status) != CAIRO_INT_STATUS_SUCCESS && (status) < CAIRO_INT_STATUS_LAST_STATUS)
+#define _comac_int_status_is_error(status) \
+    ((status) != COMAC_INT_STATUS_SUCCESS && (status) < COMAC_INT_STATUS_LAST_STATUS)
 
-cairo_private cairo_status_t
-_cairo_error (cairo_status_t status);
+comac_private comac_status_t
+_comac_error (comac_status_t status);
 
 /* hide compiler warnings when discarding the return value */
-#define _cairo_error_throw(status) do { \
-    cairo_status_t status__ = _cairo_error (status); \
+#define _comac_error_throw(status) do { \
+    comac_status_t status__ = _comac_error (status); \
     (void) status__; \
 } while (0)
 
-CAIRO_END_DECLS
+COMAC_END_DECLS
 
-#endif /* _CAIRO_ERROR_PRIVATE_H_ */
+#endif /* _COMAC_ERROR_PRIVATE_H_ */

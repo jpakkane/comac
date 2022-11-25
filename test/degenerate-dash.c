@@ -29,60 +29,60 @@
 
 #define PAD 5
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     const double dashes[] = { 25, 25 };
-    cairo_line_join_t joins[] = {
-	CAIRO_LINE_JOIN_ROUND,
-	CAIRO_LINE_JOIN_MITER,
-	CAIRO_LINE_JOIN_BEVEL
+    comac_line_join_t joins[] = {
+	COMAC_LINE_JOIN_ROUND,
+	COMAC_LINE_JOIN_MITER,
+	COMAC_LINE_JOIN_BEVEL
     };
-    cairo_line_cap_t caps[] = {
-	CAIRO_LINE_CAP_ROUND,
-	CAIRO_LINE_CAP_SQUARE,
-	CAIRO_LINE_CAP_BUTT,
+    comac_line_cap_t caps[] = {
+	COMAC_LINE_CAP_ROUND,
+	COMAC_LINE_CAP_SQUARE,
+	COMAC_LINE_CAP_BUTT,
     };
     int i, j;
 
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_set_dash (cr, dashes, 2, 0.);
-    cairo_set_line_width (cr, 10);
+    comac_set_dash (cr, dashes, 2, 0.);
+    comac_set_line_width (cr, 10);
 
-    cairo_translate (cr, 5 + PAD, 5 + PAD);
+    comac_translate (cr, 5 + PAD, 5 + PAD);
 
     for (i = 0; i < ARRAY_LENGTH (joins); i++) {
-	cairo_set_line_join (cr, joins[i]);
-	cairo_save (cr);
+	comac_set_line_join (cr, joins[i]);
+	comac_save (cr);
 
 	for (j = 0; j < ARRAY_LENGTH (caps); j++) {
-	    cairo_set_line_cap (cr, caps[j]);
+	    comac_set_line_cap (cr, caps[j]);
 
-	    cairo_move_to (cr,  0, 0);
-	    cairo_line_to (cr, 50, 0);
-	    cairo_line_to (cr, 50,50);
-	    cairo_stroke (cr);
+	    comac_move_to (cr,  0, 0);
+	    comac_line_to (cr, 50, 0);
+	    comac_line_to (cr, 50,50);
+	    comac_stroke (cr);
 
-	    cairo_translate (cr, 75, 0);
+	    comac_translate (cr, 75, 0);
 	}
-	cairo_restore (cr);
+	comac_restore (cr);
 
-	cairo_translate (cr, 0, 75);
+	comac_translate (cr, 0, 75);
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 /*
  * XFAIL: needs path editing in PS to convert degenerate
- * end-caps into the shapes as expected by cairo (Or maybe PS is the correct
+ * end-caps into the shapes as expected by comac (Or maybe PS is the correct
  * behaviour?)
  */
-CAIRO_TEST (degenerate_dash,
+COMAC_TEST (degenerate_dash,
 	    "Tests the behaviour of dashed segments that end on a off-on transition",
 	    "dash, degenerate", /* keywords */
 	    NULL, /* requirements */

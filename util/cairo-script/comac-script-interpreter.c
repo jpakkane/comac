@@ -24,7 +24,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Chris Wilson.
  *
@@ -366,7 +366,7 @@ _init_dictionaries (csi_t *ctx)
 
 /* intern string */
 
-typedef struct _cairo_intern_string {
+typedef struct _comac_intern_string {
     csi_hash_entry_t hash_entry;
     int len;
     char *string;
@@ -387,7 +387,7 @@ _intern_string_hash (const char *str, int len)
     return 0;
 }
 
-static cairo_bool_t
+static comac_bool_t
 _intern_string_equal (const void *_a, const void *_b)
 {
     const csi_intern_string_t *a = _a;
@@ -532,7 +532,7 @@ _csi_intern_string (csi_t *ctx, const char **str_inout, int len)
 static csi_t _csi_nil = { -1, CSI_STATUS_NO_MEMORY };
 
 csi_t *
-cairo_script_interpreter_create (void)
+comac_script_interpreter_create (void)
 {
     csi_t *ctx;
 
@@ -546,7 +546,7 @@ cairo_script_interpreter_create (void)
 }
 
 void
-cairo_script_interpreter_install_hooks (csi_t *ctx,
+comac_script_interpreter_install_hooks (csi_t *ctx,
 					const csi_hooks_t *hooks)
 {
     if (ctx->status)
@@ -555,8 +555,8 @@ cairo_script_interpreter_install_hooks (csi_t *ctx,
     ctx->hooks = *hooks;
 }
 
-cairo_status_t
-cairo_script_interpreter_run (csi_t *ctx, const char *filename)
+comac_status_t
+comac_script_interpreter_run (csi_t *ctx, const char *filename)
 {
     csi_object_t file;
 
@@ -577,8 +577,8 @@ cairo_script_interpreter_run (csi_t *ctx, const char *filename)
     return ctx->status;
 }
 
-cairo_status_t
-cairo_script_interpreter_feed_stream (csi_t *ctx, FILE *stream)
+comac_status_t
+comac_script_interpreter_feed_stream (csi_t *ctx, FILE *stream)
 {
     csi_object_t file;
 
@@ -599,8 +599,8 @@ cairo_script_interpreter_feed_stream (csi_t *ctx, FILE *stream)
     return ctx->status;
 }
 
-cairo_status_t
-cairo_script_interpreter_feed_string (csi_t *ctx, const char *line, int len)
+comac_status_t
+comac_script_interpreter_feed_string (csi_t *ctx, const char *line, int len)
 {
     csi_object_t file;
 
@@ -624,20 +624,20 @@ cairo_script_interpreter_feed_string (csi_t *ctx, const char *line, int len)
 }
 
 unsigned int
-cairo_script_interpreter_get_line_number (csi_t *ctx)
+comac_script_interpreter_get_line_number (csi_t *ctx)
 {
     return ctx->scanner.line_number + 1; /* 1 index based */
 }
 
 csi_t *
-cairo_script_interpreter_reference (csi_t *ctx)
+comac_script_interpreter_reference (csi_t *ctx)
 {
     ctx->ref_count++;
     return ctx;
 }
 
-cairo_status_t
-cairo_script_interpreter_finish (csi_t *ctx)
+comac_status_t
+comac_script_interpreter_finish (csi_t *ctx)
 {
     csi_status_t status;
 
@@ -669,8 +669,8 @@ _csi_fini (csi_t *ctx)
     _csi_perm_fini (ctx);
 }
 
-cairo_status_t
-cairo_script_interpreter_destroy (csi_t *ctx)
+comac_status_t
+comac_script_interpreter_destroy (csi_t *ctx)
 {
     csi_status_t status;
 
@@ -684,9 +684,9 @@ cairo_script_interpreter_destroy (csi_t *ctx)
     return status;
 }
 
-cairo_status_t
-cairo_script_interpreter_translate_stream (FILE *stream,
-	                                   cairo_write_func_t write_func,
+comac_status_t
+comac_script_interpreter_translate_stream (FILE *stream,
+	                                   comac_write_func_t write_func,
 					   void *closure)
 {
     csi_t ctx;

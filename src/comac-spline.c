@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -39,27 +39,27 @@
 #include "comac-box-inline.h"
 #include "comac-slope-private.h"
 
-cairo_bool_t
-_cairo_spline_intersects (const cairo_point_t *a,
-			  const cairo_point_t *b,
-			  const cairo_point_t *c,
-			  const cairo_point_t *d,
-			  const cairo_box_t *box)
+comac_bool_t
+_comac_spline_intersects (const comac_point_t *a,
+			  const comac_point_t *b,
+			  const comac_point_t *c,
+			  const comac_point_t *d,
+			  const comac_box_t *box)
 {
-    cairo_box_t bounds;
+    comac_box_t bounds;
 
-    if (_cairo_box_contains_point (box, a) ||
-	_cairo_box_contains_point (box, b) ||
-	_cairo_box_contains_point (box, c) ||
-	_cairo_box_contains_point (box, d))
+    if (_comac_box_contains_point (box, a) ||
+	_comac_box_contains_point (box, b) ||
+	_comac_box_contains_point (box, c) ||
+	_comac_box_contains_point (box, d))
     {
 	return TRUE;
     }
 
     bounds.p2 = bounds.p1 = *a;
-    _cairo_box_add_point (&bounds, b);
-    _cairo_box_add_point (&bounds, c);
-    _cairo_box_add_point (&bounds, d);
+    _comac_box_add_point (&bounds, b);
+    _comac_box_add_point (&bounds, c);
+    _comac_box_add_point (&bounds, d);
 
     if (bounds.p2.x <= box->p1.x || bounds.p1.x >= box->p2.x ||
 	bounds.p2.y <= box->p1.y || bounds.p1.y >= box->p2.y)
@@ -69,7 +69,7 @@ _cairo_spline_intersects (const cairo_point_t *a,
 
 #if 0 /* worth refining? */
     bounds.p2 = bounds.p1 = *a;
-    _cairo_box_add_curve_to (&bounds, b, c, d);
+    _comac_box_add_curve_to (&bounds, b, c, d);
     if (bounds.p2.x <= box->p1.x || bounds.p1.x >= box->p2.x ||
 	bounds.p2.y <= box->p1.y || bounds.p1.y >= box->p2.y)
     {
@@ -80,12 +80,12 @@ _cairo_spline_intersects (const cairo_point_t *a,
     return TRUE;
 }
 
-cairo_bool_t
-_cairo_spline_init (cairo_spline_t *spline,
-		    cairo_spline_add_point_func_t add_point_func,
+comac_bool_t
+_comac_spline_init (comac_spline_t *spline,
+		    comac_spline_add_point_func_t add_point_func,
 		    void *closure,
-		    const cairo_point_t *a, const cairo_point_t *b,
-		    const cairo_point_t *c, const cairo_point_t *d)
+		    const comac_point_t *a, const comac_point_t *b,
+		    const comac_point_t *c, const comac_point_t *d)
 {
     /* If both tangents are zero, this is just a straight line */
     if (a->x == b->x && a->y == b->y && c->x == d->x && c->y == d->y)
@@ -100,18 +100,18 @@ _cairo_spline_init (cairo_spline_t *spline,
     spline->knots.d = *d;
 
     if (a->x != b->x || a->y != b->y)
-	_cairo_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.b);
+	_comac_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.b);
     else if (a->x != c->x || a->y != c->y)
-	_cairo_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.c);
+	_comac_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.c);
     else if (a->x != d->x || a->y != d->y)
-	_cairo_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.d);
+	_comac_slope_init (&spline->initial_slope, &spline->knots.a, &spline->knots.d);
     else
 	return FALSE;
 
     if (c->x != d->x || c->y != d->y)
-	_cairo_slope_init (&spline->final_slope, &spline->knots.c, &spline->knots.d);
+	_comac_slope_init (&spline->final_slope, &spline->knots.c, &spline->knots.d);
     else if (b->x != d->x || b->y != d->y)
-	_cairo_slope_init (&spline->final_slope, &spline->knots.b, &spline->knots.d);
+	_comac_slope_init (&spline->final_slope, &spline->knots.b, &spline->knots.d);
     else
 	return FALSE; /* just treat this as a straight-line from a -> d */
 
@@ -120,37 +120,37 @@ _cairo_spline_init (cairo_spline_t *spline,
     return TRUE;
 }
 
-static cairo_status_t
-_cairo_spline_add_point (cairo_spline_t *spline,
-			 const cairo_point_t *point,
-			 const cairo_point_t *knot)
+static comac_status_t
+_comac_spline_add_point (comac_spline_t *spline,
+			 const comac_point_t *point,
+			 const comac_point_t *knot)
 {
-    cairo_point_t *prev;
-    cairo_slope_t slope;
+    comac_point_t *prev;
+    comac_slope_t slope;
 
     prev = &spline->last_point;
     if (prev->x == point->x && prev->y == point->y)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
-    _cairo_slope_init (&slope, point, knot);
+    _comac_slope_init (&slope, point, knot);
 
     spline->last_point = *point;
     return spline->add_point_func (spline->closure, point, &slope);
 }
 
 static void
-_lerp_half (const cairo_point_t *a, const cairo_point_t *b, cairo_point_t *result)
+_lerp_half (const comac_point_t *a, const comac_point_t *b, comac_point_t *result)
 {
     result->x = a->x + ((b->x - a->x) >> 1);
     result->y = a->y + ((b->y - a->y) >> 1);
 }
 
 static void
-_de_casteljau (cairo_spline_knots_t *s1, cairo_spline_knots_t *s2)
+_de_casteljau (comac_spline_knots_t *s1, comac_spline_knots_t *s2)
 {
-    cairo_point_t ab, bc, cd;
-    cairo_point_t abbc, bccd;
-    cairo_point_t final;
+    comac_point_t ab, bc, cd;
+    comac_point_t abbc, bccd;
+    comac_point_t final;
 
     _lerp_half (&s1->a, &s1->b, &ab);
     _lerp_half (&s1->b, &s1->c, &bc);
@@ -172,7 +172,7 @@ _de_casteljau (cairo_spline_knots_t *s1, cairo_spline_knots_t *s2)
 /* Return an upper bound on the error (squared) that could result from
  * approximating a spline as a line segment connecting the two endpoints. */
 static double
-_cairo_spline_error_squared (const cairo_spline_knots_t *knots)
+_comac_spline_error_squared (const comac_spline_knots_t *knots)
 {
     double bdx, bdy, berr;
     double cdx, cdy, cerr;
@@ -181,11 +181,11 @@ _cairo_spline_error_squared (const cairo_spline_knots_t *knots)
      * and c control points and the segment a-b. The maximum of these two
      * distances will be our approximation error. */
 
-    bdx = _cairo_fixed_to_double (knots->b.x - knots->a.x);
-    bdy = _cairo_fixed_to_double (knots->b.y - knots->a.y);
+    bdx = _comac_fixed_to_double (knots->b.x - knots->a.x);
+    bdy = _comac_fixed_to_double (knots->b.y - knots->a.y);
 
-    cdx = _cairo_fixed_to_double (knots->c.x - knots->a.x);
-    cdy = _cairo_fixed_to_double (knots->c.y - knots->a.y);
+    cdx = _comac_fixed_to_double (knots->c.x - knots->a.x);
+    cdy = _comac_fixed_to_double (knots->c.y - knots->a.y);
 
     if (knots->a.x != knots->d.x || knots->a.y != knots->d.y) {
 	/* Intersection point (px):
@@ -197,8 +197,8 @@ _cairo_spline_error_squared (const cairo_spline_knots_t *knots)
 
 	double dx, dy, u, v;
 
-	dx = _cairo_fixed_to_double (knots->d.x - knots->a.x);
-	dy = _cairo_fixed_to_double (knots->d.y - knots->a.y);
+	dx = _comac_fixed_to_double (knots->d.x - knots->a.x);
+	dy = _comac_fixed_to_double (knots->d.y - knots->a.y);
 	 v = dx * dx + dy * dy;
 
 	u = bdx * dx + bdy * dy;
@@ -236,35 +236,35 @@ _cairo_spline_error_squared (const cairo_spline_knots_t *knots)
 	return cerr;
 }
 
-static cairo_status_t
-_cairo_spline_decompose_into (cairo_spline_knots_t *s1,
+static comac_status_t
+_comac_spline_decompose_into (comac_spline_knots_t *s1,
 			      double tolerance_squared,
-			      cairo_spline_t *result)
+			      comac_spline_t *result)
 {
-    cairo_spline_knots_t s2;
-    cairo_status_t status;
+    comac_spline_knots_t s2;
+    comac_status_t status;
 
-    if (_cairo_spline_error_squared (s1) < tolerance_squared)
-	return _cairo_spline_add_point (result, &s1->a, &s1->b);
+    if (_comac_spline_error_squared (s1) < tolerance_squared)
+	return _comac_spline_add_point (result, &s1->a, &s1->b);
 
     _de_casteljau (s1, &s2);
 
-    status = _cairo_spline_decompose_into (s1, tolerance_squared, result);
+    status = _comac_spline_decompose_into (s1, tolerance_squared, result);
     if (unlikely (status))
 	return status;
 
-    return _cairo_spline_decompose_into (&s2, tolerance_squared, result);
+    return _comac_spline_decompose_into (&s2, tolerance_squared, result);
 }
 
-cairo_status_t
-_cairo_spline_decompose (cairo_spline_t *spline, double tolerance)
+comac_status_t
+_comac_spline_decompose (comac_spline_t *spline, double tolerance)
 {
-    cairo_spline_knots_t s1;
-    cairo_status_t status;
+    comac_spline_knots_t s1;
+    comac_status_t status;
 
     s1 = spline->knots;
     spline->last_point = s1.a;
-    status = _cairo_spline_decompose_into (&s1, tolerance * tolerance, spline);
+    status = _comac_spline_decompose_into (&s1, tolerance * tolerance, spline);
     if (unlikely (status))
 	return status;
 
@@ -273,27 +273,27 @@ _cairo_spline_decompose (cairo_spline_t *spline, double tolerance)
 }
 
 /* Note: this function is only good for computing bounds in device space. */
-cairo_status_t
-_cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
+comac_status_t
+_comac_spline_bound (comac_spline_add_point_func_t add_point_func,
 		     void *closure,
-		     const cairo_point_t *p0, const cairo_point_t *p1,
-		     const cairo_point_t *p2, const cairo_point_t *p3)
+		     const comac_point_t *p0, const comac_point_t *p1,
+		     const comac_point_t *p2, const comac_point_t *p3)
 {
     double x0, x1, x2, x3;
     double y0, y1, y2, y3;
     double a, b, c;
     double t[4];
     int t_num = 0, i;
-    cairo_status_t status;
+    comac_status_t status;
 
-    x0 = _cairo_fixed_to_double (p0->x);
-    y0 = _cairo_fixed_to_double (p0->y);
-    x1 = _cairo_fixed_to_double (p1->x);
-    y1 = _cairo_fixed_to_double (p1->y);
-    x2 = _cairo_fixed_to_double (p2->x);
-    y2 = _cairo_fixed_to_double (p2->y);
-    x3 = _cairo_fixed_to_double (p3->x);
-    y3 = _cairo_fixed_to_double (p3->y);
+    x0 = _comac_fixed_to_double (p0->x);
+    y0 = _comac_fixed_to_double (p0->y);
+    x1 = _comac_fixed_to_double (p1->x);
+    y1 = _comac_fixed_to_double (p1->y);
+    x2 = _comac_fixed_to_double (p2->x);
+    y2 = _comac_fixed_to_double (p2->y);
+    x3 = _comac_fixed_to_double (p3->x);
+    y3 = _comac_fixed_to_double (p3->y);
 
     /* The spline can be written as a polynomial of the four points:
      *
@@ -343,7 +343,7 @@ _cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
 	    double b2 = b * b; \
 	    double delta = b2 - a * c; \
 	    if (delta > 0) { \
-		cairo_bool_t feasible; \
+		comac_bool_t feasible; \
 		double _2ab = 2 * a * b; \
 		/* We are only interested in solutions t that satisfy 0<t<1 \
 		 * here.  We do some checks to avoid sqrt if the solutions \
@@ -386,7 +386,7 @@ _cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
 	return status;
 
     for (i = 0; i < t_num; i++) {
-	cairo_point_t p;
+	comac_point_t p;
 	double x, y;
         double t_1_0, t_0_1;
         double t_2_0, t_0_2;
@@ -413,8 +413,8 @@ _cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
           + y2 * t_2_1_3
           + y3 * t_3_0;
 
-	p.x = _cairo_fixed_from_double (x);
-	p.y = _cairo_fixed_from_double (y);
+	p.x = _comac_fixed_from_double (x);
+	p.y = _comac_fixed_from_double (y);
 	status = add_point_func (closure, &p, NULL);
 	if (unlikely (status))
 	    return status;

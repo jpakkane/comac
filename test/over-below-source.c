@@ -37,34 +37,34 @@
  * surface, it's the reverse where OVER is native while SOURCE is a
  * fallback. */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     /* A green circle with OVER */
-    cairo_arc (cr, SIZE / 2, SIZE / 2, SIZE / 4, 0., 2. * M_PI);
+    comac_arc (cr, SIZE / 2, SIZE / 2, SIZE / 4, 0., 2. * M_PI);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-    cairo_set_source_rgba (cr, 0., 1., 0., 0.5); /* 50% green */
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
+    comac_set_source_rgba (cr, 0., 1., 0., 0.5); /* 50% green */
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
     /* A red triangle with SOURCE */
-    cairo_move_to (cr, SIZE / 2, SIZE / 2);
-    cairo_line_to (cr, SIZE,     SIZE / 2);
-    cairo_line_to (cr, SIZE / 2, SIZE);
-    cairo_close_path (cr);
+    comac_move_to (cr, SIZE / 2, SIZE / 2);
+    comac_line_to (cr, SIZE,     SIZE / 2);
+    comac_line_to (cr, SIZE / 2, SIZE);
+    comac_close_path (cr);
 
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgba (cr, 1., 0., 0., 0.5); /* 50% red */
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_rgba (cr, 1., 0., 0., 0.5); /* 50% red */
 
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (over_below_source,
+COMAC_TEST (over_below_source,
 	    "A simple test drawing a circle with OVER before a triangle drawn with SOURCE",
 	    "operator", /* keywords */
 	    NULL, /* requirements */

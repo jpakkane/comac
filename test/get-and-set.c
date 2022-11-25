@@ -27,14 +27,14 @@
 #include "comac-test.h"
 
 typedef struct {
-    cairo_operator_t op;
+    comac_operator_t op;
     double tolerance;
-    cairo_fill_rule_t fill_rule;
+    comac_fill_rule_t fill_rule;
     double line_width;
-    cairo_line_cap_t line_cap;
-    cairo_line_join_t line_join;
+    comac_line_cap_t line_cap;
+    comac_line_join_t line_join;
     double miter_limit;
-    cairo_matrix_t matrix;
+    comac_matrix_t matrix;
     double dash[5];
     double dash_offset;
 } settings_t;
@@ -42,24 +42,24 @@ typedef struct {
 /* Two sets of settings, no defaults */
 static const settings_t settings[] = {
     {
-	CAIRO_OPERATOR_IN,
+	COMAC_OPERATOR_IN,
 	2.0,
-	CAIRO_FILL_RULE_EVEN_ODD,
+	COMAC_FILL_RULE_EVEN_ODD,
 	7.7,
-	CAIRO_LINE_CAP_SQUARE,
-	CAIRO_LINE_JOIN_ROUND,
+	COMAC_LINE_CAP_SQUARE,
+	COMAC_LINE_JOIN_ROUND,
 	3.14,
 	{2.0, 0.0, 0.0, 2.0, 5.0, 5.0},
 	{0.1, 0.2, 0.3, 0.4, 0.5},
 	2.0
     },
     {
-	CAIRO_OPERATOR_ATOP,
+	COMAC_OPERATOR_ATOP,
 	5.25,
-	CAIRO_FILL_RULE_WINDING,
+	COMAC_FILL_RULE_WINDING,
 	2.17,
-	CAIRO_LINE_CAP_ROUND,
-	CAIRO_LINE_JOIN_BEVEL,
+	COMAC_LINE_CAP_ROUND,
+	COMAC_LINE_JOIN_BEVEL,
 	1000.0,
 	{-3.0, 1.0, 1.0, -3.0, -4, -4},
 	{1.0, 2.0, 3.0, 4.0, 5.0},
@@ -68,38 +68,38 @@ static const settings_t settings[] = {
 };
 
 static void
-settings_set (cairo_t *cr, const settings_t *settings)
+settings_set (comac_t *cr, const settings_t *settings)
 {
-    cairo_set_operator (cr, settings->op);
-    cairo_set_tolerance (cr, settings->tolerance);
-    cairo_set_fill_rule (cr, settings->fill_rule);
-    cairo_set_line_width (cr, settings->line_width);
-    cairo_set_line_cap (cr, settings->line_cap);
-    cairo_set_line_join (cr, settings->line_join);
-    cairo_set_miter_limit (cr, settings->miter_limit);
-    cairo_set_matrix (cr, &settings->matrix);
-    cairo_set_dash (cr, settings->dash, 5, settings->dash_offset);
+    comac_set_operator (cr, settings->op);
+    comac_set_tolerance (cr, settings->tolerance);
+    comac_set_fill_rule (cr, settings->fill_rule);
+    comac_set_line_width (cr, settings->line_width);
+    comac_set_line_cap (cr, settings->line_cap);
+    comac_set_line_join (cr, settings->line_join);
+    comac_set_miter_limit (cr, settings->miter_limit);
+    comac_set_matrix (cr, &settings->matrix);
+    comac_set_dash (cr, settings->dash, 5, settings->dash_offset);
 }
 
 static int
-settings_get (cairo_t *cr, settings_t *settings)
+settings_get (comac_t *cr, settings_t *settings)
 {
     int count;
 
-    settings->op = cairo_get_operator (cr);
-    settings->tolerance = cairo_get_tolerance (cr);
-    settings->fill_rule = cairo_get_fill_rule (cr);
-    settings->line_width = cairo_get_line_width (cr);
-    settings->line_cap = cairo_get_line_cap (cr);
-    settings->line_join = cairo_get_line_join (cr);
-    settings->miter_limit = cairo_get_miter_limit (cr);
-    cairo_get_matrix (cr, &settings->matrix);
+    settings->op = comac_get_operator (cr);
+    settings->tolerance = comac_get_tolerance (cr);
+    settings->fill_rule = comac_get_fill_rule (cr);
+    settings->line_width = comac_get_line_width (cr);
+    settings->line_cap = comac_get_line_cap (cr);
+    settings->line_join = comac_get_line_join (cr);
+    settings->miter_limit = comac_get_miter_limit (cr);
+    comac_get_matrix (cr, &settings->matrix);
 
-    count = cairo_get_dash_count (cr);
+    count = comac_get_dash_count (cr);
     if (count != 5)
 	return -1;
 
-    cairo_get_dash (cr, settings->dash, &settings->dash_offset);
+    comac_get_dash (cr, settings->dash, &settings->dash_offset);
 
     return 0;
 }
@@ -124,35 +124,35 @@ settings_equal (const settings_t *a, const settings_t *b)
 	    a->dash_offset == b->dash_offset);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     settings_t check;
 
     settings_set (cr, &settings[0]);
 
-    cairo_save (cr);
+    comac_save (cr);
     {
 	settings_set (cr, &settings[1]);
 	if (settings_get (cr, &check))
-	    return CAIRO_TEST_FAILURE;
+	    return COMAC_TEST_FAILURE;
 
 	if (!settings_equal (&settings[1], &check))
-	    return CAIRO_TEST_FAILURE;
+	    return COMAC_TEST_FAILURE;
     }
-    cairo_restore (cr);
+    comac_restore (cr);
 
     if (settings_get (cr, &check))
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
 
     if (!settings_equal (&settings[0], &check))
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (get_and_set,
-	    "Tests calls to the most trivial cairo_get and cairo_set functions",
+COMAC_TEST (get_and_set,
+	    "Tests calls to the most trivial comac_get and comac_set functions",
 	    "api", /* keywords */
 	    NULL, /* requirements */
 	    0, 0,

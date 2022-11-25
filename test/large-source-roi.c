@@ -25,34 +25,34 @@
 /* This test attempts to trigger failures in those clone_similar
  * backend methods that have size restrictions. */
 
-static cairo_surface_t *
+static comac_surface_t *
 create_large_source (int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
+    comac_surface_t *surface;
+    comac_t *cr;
 
-    surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
-    cr = cairo_create (surface);
-    cairo_surface_destroy (surface);
+    surface = comac_image_surface_create (COMAC_FORMAT_RGB24, width, height);
+    cr = comac_create (surface);
+    comac_surface_destroy (surface);
 
-    cairo_set_source_rgb (cr, 1,0,0); /* red */
-    cairo_paint (cr);
-    surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    comac_set_source_rgb (cr, 1,0,0); /* red */
+    comac_paint (cr);
+    surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 
     return surface;
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *source;
+    comac_surface_t *source;
     /* Since 1cc750ed92a936d84b47cac696aaffd226e1c02e pixman will not
      * paint on the source surface if source_width > 30582. */
     double source_width = 30000.0;
 
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
 
     /* Create an excessively wide source image, all red. */
     source = create_large_source (source_width, height);
@@ -60,17 +60,17 @@ draw (cairo_t *cr, int width, int height)
     /* Set a transform so that the source is scaled down to fit in the
      * destination horizontally and then paint the entire source to
      * the context. */
-    cairo_scale (cr, width/source_width, 1.0);
-    cairo_set_source_surface (cr, source, 0, 0);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_paint (cr);
+    comac_scale (cr, width/source_width, 1.0);
+    comac_set_source_surface (cr, source, 0, 0);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_paint (cr);
 
-    cairo_surface_destroy (source);
+    comac_surface_destroy (source);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (large_source_roi,
+COMAC_TEST (large_source_roi,
 	    "Uses a all of a large source image.",
 	    "stress, source", /* keywords */
 	    NULL, /* requirements */

@@ -35,37 +35,37 @@
 /* A single, black pixel */
 static const uint32_t black_pixel = 0xff000000;
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     int i, j;
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) &black_pixel,
-						   CAIRO_FORMAT_ARGB32,
+    surface = comac_image_surface_create_for_data ((unsigned char *) &black_pixel,
+						   COMAC_FORMAT_ARGB32,
 						   1, 1, 4);
 
     /* Fill background white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_translate (cr, PAD, PAD);
+    comac_translate (cr, PAD, PAD);
 
     for (i = 0; i < POINTS; i++)
 	for (j = 0; j < POINTS; j++) {
-	    cairo_set_source_surface (cr, surface,
+	    comac_set_source_surface (cr, surface,
 				      2 * i + i * STEP, 2 * j + j * STEP);
-	    cairo_pattern_set_filter (cairo_get_source (cr),
-				      CAIRO_FILTER_NEAREST);
-	    cairo_paint (cr);
+	    comac_pattern_set_filter (comac_get_source (cr),
+				      COMAC_FILTER_NEAREST);
+	    comac_paint (cr);
 	}
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (a1_image_sample,
+COMAC_TEST (a1_image_sample,
 	    "Test sample position when drawing images with FILTER_NEAREST",
 	    "image, alpha", /* keywords */
 	    "target=raster", /* requirements */

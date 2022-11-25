@@ -47,35 +47,35 @@ static const double int_offset[] = { -2, -1, 0, 1, 2 };
 #define IMAGE_HEIGHT (PAD + PAD * ARRAY_LENGTH (int_offset) + PAD * ARRAY_LENGTH (frac_offset) * ARRAY_LENGTH (int_offset))
 
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double total;
     size_t i, j, k;
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_set_line_width (cr, 2);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_set_line_width (cr, 2);
 
     total = 0.0;
     for (k = 0; k < ARRAY_LENGTH (dashes); ++k) {
 	total += dashes[k];
 	for (i = 0; i < ARRAY_LENGTH (frac_offset); ++i) {
 	    for (j = 0; j < ARRAY_LENGTH (int_offset); ++j) {
-		cairo_set_dash (cr, dashes, k + 1, frac_offset[i] + total * int_offset[j]);
-		cairo_move_to (cr, (STROKE_LENGTH + PAD) * k + PAD, PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
-		cairo_line_to (cr, (STROKE_LENGTH + PAD) * (k + 1), PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
-		cairo_stroke (cr);
+		comac_set_dash (cr, dashes, k + 1, frac_offset[i] + total * int_offset[j]);
+		comac_move_to (cr, (STROKE_LENGTH + PAD) * k + PAD, PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
+		comac_line_to (cr, (STROKE_LENGTH + PAD) * (k + 1), PAD * (i + j + ARRAY_LENGTH (frac_offset) * j + 1));
+		comac_stroke (cr);
 	    }
 	}
     }
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (dash_offset,
+COMAC_TEST (dash_offset,
 	    "Tests dashes of different length with various offsets",
 	    "stroke, dash", /* keywords */
 	    NULL, /* requirements */

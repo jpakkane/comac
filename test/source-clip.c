@@ -29,47 +29,47 @@
 
 #define SIZE 12
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *source;
-    cairo_t *cr2;
+    comac_surface_t *source;
+    comac_t *cr2;
 
-    source = cairo_surface_create_similar (cairo_get_group_target (cr),
-					   CAIRO_CONTENT_COLOR_ALPHA,
+    source = comac_surface_create_similar (comac_get_group_target (cr),
+					   COMAC_CONTENT_COLOR_ALPHA,
 					   SIZE, SIZE);
 
-    cr2 = cairo_create (source);
-    cairo_surface_destroy (source);
+    cr2 = comac_create (source);
+    comac_surface_destroy (source);
 
     /* Fill the source surface with green */
-    cairo_set_source_rgb (cr2, 0, 1, 0);
-    cairo_paint (cr2);
+    comac_set_source_rgb (cr2, 0, 1, 0);
+    comac_paint (cr2);
 
     /* Draw a blue square in the middle of the source with clipping,
      * and leave the clip there. */
-    cairo_rectangle (cr2,
+    comac_rectangle (cr2,
 		     SIZE / 4, SIZE / 4,
 		     SIZE / 2, SIZE / 2);
-    cairo_clip (cr2);
-    cairo_set_source_rgb (cr2, 0, 0, 1);
-    cairo_paint (cr2);
+    comac_clip (cr2);
+    comac_set_source_rgb (cr2, 0, 0, 1);
+    comac_paint (cr2);
 
     /* Fill the destination surface with solid red (should not appear
      * in final result) */
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_paint (cr);
 
     /* Now draw the source surface onto the destination surface */
-    cairo_set_source_surface (cr, cairo_get_target (cr2), 0, 0);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, comac_get_target (cr2), 0, 0);
+    comac_paint (cr);
 
-    cairo_destroy (cr2);
+    comac_destroy (cr2);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (source_clip,
+COMAC_TEST (source_clip,
 	    "Test that a source surface is not affected by a clip",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

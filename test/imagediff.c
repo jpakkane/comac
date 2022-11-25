@@ -45,14 +45,14 @@ _xunlink (const char *pathname)
 }
 
 void
-cairo_test_logv (const cairo_test_context_t *ctx,
+comac_test_logv (const comac_test_context_t *ctx,
 		 const char *fmt, va_list va)
 {
     vfprintf (stderr, fmt, va);
 }
 
 void
-cairo_test_log (const cairo_test_context_t *ctx, const char *fmt, ...)
+comac_test_log (const comac_test_context_t *ctx, const char *fmt, ...)
 {
     va_list va;
 
@@ -72,28 +72,28 @@ cairo_test_log (const cairo_test_context_t *ctx, const char *fmt, ...)
  * extending from (x,y) to (width,height).
  */
 static void
-flatten_surface (cairo_surface_t **surface, int x, int y)
+flatten_surface (comac_surface_t **surface, int x, int y)
 {
-    cairo_surface_t *flat;
-    cairo_t *cr;
+    comac_surface_t *flat;
+    comac_t *cr;
 
-    flat = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-				       cairo_image_surface_get_width (*surface) - x,
-				       cairo_image_surface_get_height (*surface) - y);
-    cairo_surface_set_device_offset (flat, -x, -y);
+    flat = comac_image_surface_create (COMAC_FORMAT_ARGB32,
+				       comac_image_surface_get_width (*surface) - x,
+				       comac_image_surface_get_height (*surface) - y);
+    comac_surface_set_device_offset (flat, -x, -y);
 
-    cr = cairo_create (flat);
-    cairo_surface_destroy (flat);
+    cr = comac_create (flat);
+    comac_surface_destroy (flat);
 
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    cairo_set_source_surface (cr, *surface, 0, 0);
-    cairo_surface_destroy (*surface);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, *surface, 0, 0);
+    comac_surface_destroy (*surface);
+    comac_paint (cr);
 
-    *surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    *surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 }
 
 /* Given an image surface, create a new surface that has the same
@@ -102,47 +102,47 @@ flatten_surface (cairo_surface_t **surface, int x, int y)
  * The original surface will be destroyed.
  */
 static void
-extract_sub_surface (cairo_surface_t **surface, int x, int y)
+extract_sub_surface (comac_surface_t **surface, int x, int y)
 {
-    cairo_surface_t *sub;
-    cairo_t *cr;
+    comac_surface_t *sub;
+    comac_t *cr;
 
-    sub = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-				      cairo_image_surface_get_width (*surface) - x,
-				      cairo_image_surface_get_height (*surface) - y);
+    sub = comac_image_surface_create (COMAC_FORMAT_ARGB32,
+				      comac_image_surface_get_width (*surface) - x,
+				      comac_image_surface_get_height (*surface) - y);
 
     /* We don't use a device offset like flatten_surface. That's not
      * for any important reason, (the results should be
      * identical). This style just seemed more natural to me this
      * time, so I'm leaving both here so I can look at both to see
      * which I like better. */
-    cr = cairo_create (sub);
-    cairo_surface_destroy (sub);
+    cr = comac_create (sub);
+    comac_surface_destroy (sub);
 
-    cairo_set_source_surface (cr, *surface, -x, -y);
-    cairo_surface_destroy (*surface);
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, *surface, -x, -y);
+    comac_surface_destroy (*surface);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_paint (cr);
 
-    *surface = cairo_surface_reference (cairo_get_target (cr));
-    cairo_destroy (cr);
+    *surface = comac_surface_reference (comac_get_target (cr));
+    comac_destroy (cr);
 }
 
-static cairo_status_t
+static comac_status_t
 stdio_write_func (void *closure, const unsigned char *data, unsigned int length)
 {
     FILE *file = closure;
 
     if (fwrite (data, 1, length, file) != length)
-	return CAIRO_STATUS_WRITE_ERROR;
+	return COMAC_STATUS_WRITE_ERROR;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_status_t
-write_png (cairo_surface_t *surface, const char *filename)
+static comac_status_t
+write_png (comac_surface_t *surface, const char *filename)
 {
-    cairo_status_t status;
+    comac_status_t status;
     FILE *png_file;
 
     if (filename != NULL) {
@@ -150,15 +150,15 @@ write_png (cairo_surface_t *surface, const char *filename)
 	if (png_file == NULL) {
 	    switch (errno) {
 	    case ENOMEM:
-		return CAIRO_STATUS_NO_MEMORY;
+		return COMAC_STATUS_NO_MEMORY;
 	    default:
-		return CAIRO_STATUS_WRITE_ERROR;
+		return COMAC_STATUS_WRITE_ERROR;
 	    }
 	}
     } else
 	png_file = stdout;
 
-    status = cairo_surface_write_to_png_stream (surface,
+    status = comac_surface_write_to_png_stream (surface,
 						stdio_write_func,
 						png_file);
 
@@ -168,7 +168,7 @@ write_png (cairo_surface_t *surface, const char *filename)
     return status;
 }
 
-static cairo_status_t
+static comac_status_t
 png_diff (const char *filename_a,
 	  const char *filename_b,
 	  const char *filename_diff,
@@ -178,25 +178,25 @@ png_diff (const char *filename_a,
 	  int		by,
 	  buffer_diff_result_t *result)
 {
-    cairo_surface_t *surface_a;
-    cairo_surface_t *surface_b;
-    cairo_surface_t *surface_diff;
-    cairo_status_t status;
+    comac_surface_t *surface_a;
+    comac_surface_t *surface_b;
+    comac_surface_t *surface_diff;
+    comac_status_t status;
 
-    surface_a = cairo_image_surface_create_from_png (filename_a);
-    status = cairo_surface_status (surface_a);
+    surface_a = comac_image_surface_create_from_png (filename_a);
+    status = comac_surface_status (surface_a);
     if (status) {
 	fprintf (stderr, "Error: Failed to create surface from %s: %s\n",
-		 filename_a, cairo_status_to_string (status));
+		 filename_a, comac_status_to_string (status));
 	return status;
     }
 
-    surface_b = cairo_image_surface_create_from_png (filename_b);
-    status = cairo_surface_status (surface_b);
+    surface_b = comac_image_surface_create_from_png (filename_b);
+    status = comac_surface_status (surface_b);
     if (status) {
 	fprintf (stderr, "Error: Failed to create surface from %s: %s\n",
-		 filename_b, cairo_status_to_string (status));
-	cairo_surface_destroy (surface_a);
+		 filename_b, comac_status_to_string (status));
+	comac_surface_destroy (surface_a);
 	return status;
     }
 
@@ -210,33 +210,33 @@ png_diff (const char *filename_a,
 	bx = by = 0;
     }
 
-    status = cairo_surface_status (surface_a);
+    status = comac_surface_status (surface_a);
     if (status) {
 	fprintf (stderr, "Error: Failed to extract surface from %s: %s\n",
-		 filename_a, cairo_status_to_string (status));
-	cairo_surface_destroy (surface_a);
-	cairo_surface_destroy (surface_b);
+		 filename_a, comac_status_to_string (status));
+	comac_surface_destroy (surface_a);
+	comac_surface_destroy (surface_b);
 	return status;
     }
-    status = cairo_surface_status (surface_b);
+    status = comac_surface_status (surface_b);
     if (status) {
 	fprintf (stderr, "Error: Failed to extract surface from %s: %s\n",
-		 filename_b, cairo_status_to_string (status));
-	cairo_surface_destroy (surface_a);
-	cairo_surface_destroy (surface_b);
+		 filename_b, comac_status_to_string (status));
+	comac_surface_destroy (surface_a);
+	comac_surface_destroy (surface_b);
 	return status;
     }
 
-    surface_diff = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-					       cairo_image_surface_get_width (surface_a),
-					       cairo_image_surface_get_height (surface_a));
-    status = cairo_surface_status (surface_diff);
+    surface_diff = comac_image_surface_create (COMAC_FORMAT_ARGB32,
+					       comac_image_surface_get_width (surface_a),
+					       comac_image_surface_get_height (surface_a));
+    status = comac_surface_status (surface_diff);
     if (status) {
 	fprintf (stderr,
 		 "Error: Failed to allocate surface to hold differences\n");
-	cairo_surface_destroy (surface_a);
-	cairo_surface_destroy (surface_b);
-	return CAIRO_STATUS_NO_MEMORY;
+	comac_surface_destroy (surface_a);
+	comac_surface_destroy (surface_b);
+	return COMAC_STATUS_NO_MEMORY;
     }
 
     status = image_diff (NULL,
@@ -246,15 +246,15 @@ png_diff (const char *filename_a,
     if (filename_diff)
 	_xunlink (filename_diff);
 
-    if (status == CAIRO_STATUS_SUCCESS &&
+    if (status == COMAC_STATUS_SUCCESS &&
 	result->pixels_changed)
     {
 	status = write_png (surface_diff, filename_diff);
     }
 
-    cairo_surface_destroy (surface_a);
-    cairo_surface_destroy (surface_b);
-    cairo_surface_destroy (surface_diff);
+    comac_surface_destroy (surface_a);
+    comac_surface_destroy (surface_b);
+    comac_surface_destroy (surface_diff);
 
     return status;
 }
@@ -263,7 +263,7 @@ int
 main (int argc, char *argv[])
 {
     buffer_diff_result_t result;
-    cairo_status_t status;
+    comac_status_t status;
 
     unsigned int ax, ay, bx, by;
 
@@ -288,7 +288,7 @@ main (int argc, char *argv[])
 
     if (status) {
 	fprintf (stderr, "Error comparing images: %s\n",
-		 cairo_status_to_string (status));
+		 comac_status_to_string (status));
 	return 1;
     }
 

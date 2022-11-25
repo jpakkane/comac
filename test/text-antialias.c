@@ -29,76 +29,76 @@
 #define HEIGHT 22
 #define TEXT_SIZE 12
 
-static cairo_test_status_t
-draw (cairo_t *cr, cairo_antialias_t antialias)
+static comac_test_status_t
+draw (comac_t *cr, comac_antialias_t antialias)
 {
-    cairo_text_extents_t extents;
-    cairo_font_options_t *font_options;
+    comac_text_extents_t extents;
+    comac_font_options_t *font_options;
     const char black[] = "black", blue[] = "blue";
 
-    cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1.0, 1.0, 1.0); /* white */
+    comac_paint (cr);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
-    font_options = cairo_font_options_create ();
-    cairo_get_font_options (cr, font_options);
-    cairo_font_options_set_antialias (font_options, antialias);
-    cairo_font_options_set_subpixel_order (font_options, CAIRO_SUBPIXEL_ORDER_RGB);
-    cairo_set_font_options (cr, font_options);
+    font_options = comac_font_options_create ();
+    comac_get_font_options (cr, font_options);
+    comac_font_options_set_antialias (font_options, antialias);
+    comac_font_options_set_subpixel_order (font_options, COMAC_SUBPIXEL_ORDER_RGB);
+    comac_set_font_options (cr, font_options);
 
-    cairo_font_options_destroy (font_options);
+    comac_font_options_destroy (font_options);
 
-    cairo_set_source_rgb (cr, 0, 0, 0); /* black */
-    cairo_text_extents (cr, black, &extents);
-    cairo_move_to (cr, -extents.x_bearing, -extents.y_bearing);
-    cairo_show_text (cr, black);
-    cairo_translate (cr, 0, -extents.y_bearing + 1);
+    comac_set_source_rgb (cr, 0, 0, 0); /* black */
+    comac_text_extents (cr, black, &extents);
+    comac_move_to (cr, -extents.x_bearing, -extents.y_bearing);
+    comac_show_text (cr, black);
+    comac_translate (cr, 0, -extents.y_bearing + 1);
 
-    cairo_set_source_rgb (cr, 0, 0, 1); /* blue */
-    cairo_text_extents (cr, blue, &extents);
-    cairo_move_to (cr, -extents.x_bearing, -extents.y_bearing);
-    cairo_show_text (cr, blue);
+    comac_set_source_rgb (cr, 0, 0, 1); /* blue */
+    comac_text_extents (cr, blue, &extents);
+    comac_move_to (cr, -extents.x_bearing, -extents.y_bearing);
+    comac_show_text (cr, blue);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-draw_gray (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_gray (comac_t *cr, int width, int height)
 {
-    return draw (cr, CAIRO_ANTIALIAS_GRAY);
+    return draw (cr, COMAC_ANTIALIAS_GRAY);
 }
 
-static cairo_test_status_t
-draw_none (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_none (comac_t *cr, int width, int height)
 {
-    return draw (cr, CAIRO_ANTIALIAS_NONE);
+    return draw (cr, COMAC_ANTIALIAS_NONE);
 }
 
-static cairo_test_status_t
-draw_subpixel (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw_subpixel (comac_t *cr, int width, int height)
 {
-    return draw (cr, CAIRO_ANTIALIAS_SUBPIXEL);
+    return draw (cr, COMAC_ANTIALIAS_SUBPIXEL);
 }
 
-CAIRO_TEST (text_antialias_gray,
+COMAC_TEST (text_antialias_gray,
 	    "Tests text rendering with grayscale antialiasing",
 	    "text", /* keywords */
 	    "target=raster", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw_gray)
 
-CAIRO_TEST (text_antialias_none,
+COMAC_TEST (text_antialias_none,
 	    "Tests text rendering with no antialiasing",
 	    "text", /* keywords */
 	    "target=raster", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, draw_none)
 
-CAIRO_TEST (text_antialias_subpixel,
+COMAC_TEST (text_antialias_subpixel,
 	    "Tests text rendering with subpixel antialiasing",
 	    "text", /* keywords */
 	    "target=raster", /* requirements */

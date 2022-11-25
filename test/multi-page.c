@@ -29,11 +29,11 @@
 
 #include <comac.h>
 
-#if CAIRO_HAS_PS_SURFACE
+#if COMAC_HAS_PS_SURFACE
 #include <comac-ps.h>
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
+#if COMAC_HAS_PDF_SURFACE
 #include <comac-pdf.h>
 #endif
 
@@ -54,7 +54,7 @@
 #define BASENAME         "multi-page.out"
 
 static void
-draw_smiley (cairo_t *cr, double width, double height, double smile_ratio)
+draw_smiley (comac_t *cr, double width, double height, double smile_ratio)
 {
 #define STROKE_WIDTH .04
     double size;
@@ -63,53 +63,53 @@ draw_smiley (cairo_t *cr, double width, double height, double smile_ratio)
     double dx = sqrt (0.005) * cos (theta);
     double dy = sqrt (0.005) * sin (theta);
 
-    cairo_save (cr);
+    comac_save (cr);
 
     if (width > height)
 	size = height;
     else
 	size = width;
 
-    cairo_translate (cr, (width - size) / 2.0, (height - size) / 2.0);
-    cairo_scale (cr, size, size);
+    comac_translate (cr, (width - size) / 2.0, (height - size) / 2.0);
+    comac_scale (cr, size, size);
 
     /* Fill face */
-    cairo_arc (cr, 0.5, 0.5, 0.5 - STROKE_WIDTH, 0, 2 * M_PI);
-    cairo_set_source_rgb (cr, 1, 1, 0);
-    cairo_fill_preserve (cr);
+    comac_arc (cr, 0.5, 0.5, 0.5 - STROKE_WIDTH, 0, 2 * M_PI);
+    comac_set_source_rgb (cr, 1, 1, 0);
+    comac_fill_preserve (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
+    comac_set_source_rgb (cr, 0, 0, 0);
 
     /* Stroke face */
-    cairo_set_line_width (cr, STROKE_WIDTH / 2.0);
-    cairo_stroke (cr);
+    comac_set_line_width (cr, STROKE_WIDTH / 2.0);
+    comac_stroke (cr);
 
     /* Eyes */
-    cairo_set_line_width (cr, STROKE_WIDTH);
-    cairo_arc (cr, 0.3, 0.4, STROKE_WIDTH, 0, 2 * M_PI);
-    cairo_fill (cr);
-    cairo_arc (cr, 0.7, 0.4, STROKE_WIDTH, 0, 2 * M_PI);
-    cairo_fill (cr);
+    comac_set_line_width (cr, STROKE_WIDTH);
+    comac_arc (cr, 0.3, 0.4, STROKE_WIDTH, 0, 2 * M_PI);
+    comac_fill (cr);
+    comac_arc (cr, 0.7, 0.4, STROKE_WIDTH, 0, 2 * M_PI);
+    comac_fill (cr);
 
     /* Mouth */
-    cairo_move_to (cr,
+    comac_move_to (cr,
 		   0.35 - dx, 0.75 - dy);
-    cairo_curve_to (cr,
+    comac_curve_to (cr,
 		    0.35 + dx, 0.75 + dy,
 		    0.65 - dx, 0.75 + dy,
 		    0.65 + dx, 0.75 - dy);
-    cairo_stroke (cr);
+    comac_stroke (cr);
 
-    cairo_restore (cr);
+    comac_restore (cr);
 }
 
 static void
-draw_some_pages (cairo_surface_t *surface)
+draw_some_pages (comac_surface_t *surface)
 {
-    cairo_t *cr;
+    comac_t *cr;
     int i;
 
-    cr = cairo_create (surface);
+    cr = comac_create (surface);
 
 #define NUM_FRAMES 5
     for (i=0; i < NUM_FRAMES; i++) {
@@ -117,70 +117,70 @@ draw_some_pages (cairo_surface_t *surface)
 	             (double) i / (NUM_FRAMES - 1));
 
 	/* Duplicate the last frame onto another page. (This is just a
-	 * way to sneak cairo_copy_page into the test).
+	 * way to sneak comac_copy_page into the test).
 	 */
 	if (i == (NUM_FRAMES - 1))
-	    cairo_copy_page (cr);
+	    comac_copy_page (cr);
 
-	cairo_show_page (cr);
+	comac_show_page (cr);
     }
 
-    cairo_destroy (cr);
+    comac_destroy (cr);
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_surface_t *surface;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_status_t status;
     char *filename;
-    cairo_test_status_t result = CAIRO_TEST_UNTESTED;
-    const char *path = cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
+    comac_test_status_t result = COMAC_TEST_UNTESTED;
+    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
-#if CAIRO_HAS_PS_SURFACE
-    if (cairo_test_is_target_enabled (ctx, "ps2") ||
-        cairo_test_is_target_enabled (ctx, "ps3"))
+#if COMAC_HAS_PS_SURFACE
+    if (comac_test_is_target_enabled (ctx, "ps2") ||
+        comac_test_is_target_enabled (ctx, "ps3"))
     {
-	if (result == CAIRO_TEST_UNTESTED)
-	    result = CAIRO_TEST_SUCCESS;
+	if (result == COMAC_TEST_UNTESTED)
+	    result = COMAC_TEST_SUCCESS;
 
 	xasprintf (&filename, "%s/%s", path, BASENAME ".ps");
-	surface = cairo_ps_surface_create (filename,
+	surface = comac_ps_surface_create (filename,
 					   WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
-	status = cairo_surface_status (surface);
+	status = comac_surface_status (surface);
 	if (status) {
-	    cairo_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
-			    filename, cairo_status_to_string (status));
-	    result = CAIRO_TEST_FAILURE;
+	    comac_test_log (ctx, "Failed to create ps surface for file %s: %s\n",
+			    filename, comac_status_to_string (status));
+	    result = COMAC_TEST_FAILURE;
 	}
 
 	draw_some_pages (surface);
 
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
 	printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
 	free (filename);
     }
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
-    if (cairo_test_is_target_enabled (ctx, "pdf")) {
-	if (result == CAIRO_TEST_UNTESTED)
-	    result = CAIRO_TEST_SUCCESS;
+#if COMAC_HAS_PDF_SURFACE
+    if (comac_test_is_target_enabled (ctx, "pdf")) {
+	if (result == COMAC_TEST_UNTESTED)
+	    result = COMAC_TEST_SUCCESS;
 
 	xasprintf (&filename, "%s/%s", path, BASENAME ".pdf");
-	surface = cairo_pdf_surface_create (filename,
+	surface = comac_pdf_surface_create (filename,
 					    WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
-	status = cairo_surface_status (surface);
+	status = comac_surface_status (surface);
 	if (status) {
-	    cairo_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
-			    filename, cairo_status_to_string (status));
-	    result = CAIRO_TEST_FAILURE;
+	    comac_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
+			    filename, comac_status_to_string (status));
+	    result = COMAC_TEST_FAILURE;
 	}
 
 	draw_some_pages (surface);
 
-	cairo_surface_destroy (surface);
+	comac_surface_destroy (surface);
 
 	printf ("multi-page: Please check %s to ensure it looks happy.\n", filename);
 	free (filename);
@@ -190,7 +190,7 @@ preamble (cairo_test_context_t *ctx)
     return result;
 }
 
-CAIRO_TEST (multi_page,
+COMAC_TEST (multi_page,
 	    "Check the paginated surfaces handle multiple pages.",
 	    "paginated", /* keywords */
 	    "target=vector", /* requirements */

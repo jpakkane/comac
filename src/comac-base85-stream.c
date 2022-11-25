@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2005 Red Hat, Inc
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -38,17 +38,17 @@
 #include "comac-error-private.h"
 #include "comac-output-stream-private.h"
 
-typedef struct _cairo_base85_stream {
-    cairo_output_stream_t base;
-    cairo_output_stream_t *output;
+typedef struct _comac_base85_stream {
+    comac_output_stream_t base;
+    comac_output_stream_t *output;
     unsigned char four_tuple[4];
     int pending;
-} cairo_base85_stream_t;
+} comac_base85_stream_t;
 
 static void
 _expand_four_tuple_to_five (unsigned char four_tuple[4],
 			    unsigned char five_tuple[5],
-			    cairo_bool_t *all_zero)
+			    comac_bool_t *all_zero)
 {
     uint32_t value;
     int digit, i;
@@ -65,15 +65,15 @@ _expand_four_tuple_to_five (unsigned char four_tuple[4],
     }
 }
 
-static cairo_status_t
-_cairo_base85_stream_write (cairo_output_stream_t *base,
+static comac_status_t
+_comac_base85_stream_write (comac_output_stream_t *base,
 			    const unsigned char	  *data,
 			    unsigned int	   length)
 {
-    cairo_base85_stream_t *stream = (cairo_base85_stream_t *) base;
+    comac_base85_stream_t *stream = (comac_base85_stream_t *) base;
     const unsigned char *ptr = data;
     unsigned char five_tuple[5];
-    cairo_bool_t is_zero;
+    comac_bool_t is_zero;
 
     while (length) {
 	stream->four_tuple[stream->pending++] = *ptr++;
@@ -81,49 +81,49 @@ _cairo_base85_stream_write (cairo_output_stream_t *base,
 	if (stream->pending == 4) {
 	    _expand_four_tuple_to_five (stream->four_tuple, five_tuple, &is_zero);
 	    if (is_zero)
-		_cairo_output_stream_write (stream->output, "z", 1);
+		_comac_output_stream_write (stream->output, "z", 1);
 	    else
-		_cairo_output_stream_write (stream->output, five_tuple, 5);
+		_comac_output_stream_write (stream->output, five_tuple, 5);
 	    stream->pending = 0;
 	}
     }
 
-    return _cairo_output_stream_get_status (stream->output);
+    return _comac_output_stream_get_status (stream->output);
 }
 
-static cairo_status_t
-_cairo_base85_stream_close (cairo_output_stream_t *base)
+static comac_status_t
+_comac_base85_stream_close (comac_output_stream_t *base)
 {
-    cairo_base85_stream_t *stream = (cairo_base85_stream_t *) base;
+    comac_base85_stream_t *stream = (comac_base85_stream_t *) base;
     unsigned char five_tuple[5];
 
     if (stream->pending) {
 	memset (stream->four_tuple + stream->pending, 0, 4 - stream->pending);
 	_expand_four_tuple_to_five (stream->four_tuple, five_tuple, NULL);
-	_cairo_output_stream_write (stream->output, five_tuple, stream->pending + 1);
+	_comac_output_stream_write (stream->output, five_tuple, stream->pending + 1);
     }
 
-    return _cairo_output_stream_get_status (stream->output);
+    return _comac_output_stream_get_status (stream->output);
 }
 
-cairo_output_stream_t *
-_cairo_base85_stream_create (cairo_output_stream_t *output)
+comac_output_stream_t *
+_comac_base85_stream_create (comac_output_stream_t *output)
 {
-    cairo_base85_stream_t *stream;
+    comac_base85_stream_t *stream;
 
     if (output->status)
-	return _cairo_output_stream_create_in_error (output->status);
+	return _comac_output_stream_create_in_error (output->status);
 
-    stream = _cairo_malloc (sizeof (cairo_base85_stream_t));
+    stream = _comac_malloc (sizeof (comac_base85_stream_t));
     if (unlikely (stream == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
-	return (cairo_output_stream_t *) &_cairo_output_stream_nil;
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
+	return (comac_output_stream_t *) &_comac_output_stream_nil;
     }
 
-    _cairo_output_stream_init (&stream->base,
-			       _cairo_base85_stream_write,
+    _comac_output_stream_init (&stream->base,
+			       _comac_base85_stream_write,
 			       NULL,
-			       _cairo_base85_stream_close);
+			       _comac_base85_stream_close);
     stream->output = output;
     stream->pending = 0;
 

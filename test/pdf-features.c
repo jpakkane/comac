@@ -29,11 +29,11 @@
 #include <comac.h>
 #include <comac-pdf.h>
 
-/* This test exists to test the various features of cairo-pdf.h.
+/* This test exists to test the various features of comac-pdf.h.
  *
  * Currently, this test exercises the following function calls:
  *
- *	cairo_pdf_surface_set_size
+ *	comac_pdf_surface_set_size
  */
 
 #define INCHES_TO_POINTS(in) ((in) * 72.0)
@@ -82,18 +82,18 @@ static struct {
      MM_TO_POINTS(37), MM_TO_POINTS(26)}
 };
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_surface_t *surface;
-    cairo_t *cr;
-    cairo_status_t status;
+    comac_surface_t *surface;
+    comac_t *cr;
+    comac_status_t status;
     size_t i;
     char *filename;
-    const char *path = cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
+    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
-    if (! cairo_test_is_target_enabled (ctx, "pdf"))
-	return CAIRO_TEST_UNTESTED;
+    if (! comac_test_is_target_enabled (ctx, "pdf"))
+	return COMAC_TEST_UNTESTED;
 
     xasprintf (&filename, "%s/%s.pdf", path, BASENAME);
 
@@ -101,47 +101,47 @@ preamble (cairo_test_context_t *ctx)
      * inheritable by each page. That is, any page for which this
      * initial size applies will not have its own /MediaBox entry in
      * its dictionary. */
-    surface = cairo_pdf_surface_create (filename,
+    surface = comac_pdf_surface_create (filename,
 					INCHES_TO_POINTS(8.5),
 					INCHES_TO_POINTS(11));
 
-    cr = cairo_create (surface);
+    cr = comac_create (surface);
 
-    cairo_select_font_face (cr, CAIRO_TEST_FONT_FAMILY " Sans",
-			    CAIRO_FONT_SLANT_NORMAL,
-			    CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size (cr, TEXT_SIZE);
+    comac_select_font_face (cr, COMAC_TEST_FONT_FAMILY " Sans",
+			    COMAC_FONT_SLANT_NORMAL,
+			    COMAC_FONT_WEIGHT_NORMAL);
+    comac_set_font_size (cr, TEXT_SIZE);
 
     for (i = 0; i < ARRAY_LENGTH (pages); i++) {
-	cairo_pdf_surface_set_size (surface,
+	comac_pdf_surface_set_size (surface,
 				   pages[i].width_in_points,
 				   pages[i].height_in_points);
 
-	cairo_move_to (cr, TEXT_SIZE, TEXT_SIZE);
-	cairo_show_text (cr, pages[i].page_size);
-	cairo_show_text (cr, " - ");
-	cairo_show_text (cr, pages[i].orientation);
-	cairo_show_page (cr);
+	comac_move_to (cr, TEXT_SIZE, TEXT_SIZE);
+	comac_show_text (cr, pages[i].page_size);
+	comac_show_text (cr, " - ");
+	comac_show_text (cr, pages[i].orientation);
+	comac_show_page (cr);
     }
 
-    status = cairo_status (cr);
+    status = comac_status (cr);
 
-    cairo_destroy (cr);
-    cairo_surface_destroy (surface);
+    comac_destroy (cr);
+    comac_surface_destroy (surface);
 
     if (status) {
-	cairo_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
-			filename, cairo_status_to_string (status));
+	comac_test_log (ctx, "Failed to create pdf surface for file %s: %s\n",
+			filename, comac_status_to_string (status));
 	free (filename);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     printf ("pdf-features: Please check %s to ensure it looks/prints correctly.\n", filename);
     free (filename);
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (pdf_features,
+COMAC_TEST (pdf_features,
 	    "Check PDF specific API",
 	    "pdf", /* keywords */
 	    NULL, /* requirements */

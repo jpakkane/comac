@@ -33,124 +33,124 @@
 static const uint32_t black_pixel_argb = 0xff000000;
 static const uint32_t black_pixel      = 0x00000000;
 
-static cairo_bool_t
+static comac_bool_t
 set_pixel_black(uint8_t *data, int stride,
-	  cairo_format_t format, int x, int y)
+	  comac_format_t format, int x, int y)
 {
     switch (format) {
-    case CAIRO_FORMAT_ARGB32:
-    case CAIRO_FORMAT_RGB24:
+    case COMAC_FORMAT_ARGB32:
+    case COMAC_FORMAT_RGB24:
 	*(uint32_t *)(data + y * stride + 4*x) = black_pixel_argb;
 	break;
-    case CAIRO_FORMAT_RGB16_565:
+    case COMAC_FORMAT_RGB16_565:
 	*(uint16_t *)(data + y * stride + 2*x) = black_pixel;
 	break;
-    case CAIRO_FORMAT_RGBA128F:
-    case CAIRO_FORMAT_RGB96F:
-    case CAIRO_FORMAT_RGB30:
-    case CAIRO_FORMAT_A8:
-    case CAIRO_FORMAT_A1:
-    case CAIRO_FORMAT_INVALID:
+    case COMAC_FORMAT_RGBA128F:
+    case COMAC_FORMAT_RGB96F:
+    case COMAC_FORMAT_RGB30:
+    case COMAC_FORMAT_A8:
+    case COMAC_FORMAT_A1:
+    case COMAC_FORMAT_INVALID:
     default:
 	return FALSE;
     }
     return TRUE;
 }
 
-static cairo_test_status_t
-all (cairo_t *cr, int width, int height)
+static comac_test_status_t
+all (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     uint8_t *data;
     int stride;
-    cairo_format_t format;
+    comac_format_t format;
     int i, j;
 
     /* Fill background white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    surface = cairo_surface_map_to_image (cairo_get_target (cr), NULL);
-    cairo_surface_flush (surface);
-    format = cairo_image_surface_get_format (surface);
-    stride = cairo_image_surface_get_stride (surface);
-    data = cairo_image_surface_get_data (surface);
+    surface = comac_surface_map_to_image (comac_get_target (cr), NULL);
+    comac_surface_flush (surface);
+    format = comac_image_surface_get_format (surface);
+    stride = comac_image_surface_get_stride (surface);
+    data = comac_image_surface_get_data (surface);
     if (data) {
 	for (j = 0; j < HEIGHT; j++)
 	    for (i = 0; i < WIDTH; i++)
 		if (! set_pixel_black (data, stride, format, i, j))
-		    return CAIRO_TEST_FAILURE;
+		    return COMAC_TEST_FAILURE;
     }
-    cairo_surface_mark_dirty (surface);
-    cairo_surface_unmap_image (cairo_get_target (cr), surface);
+    comac_surface_mark_dirty (surface);
+    comac_surface_unmap_image (comac_get_target (cr), surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-bit (cairo_t *cr, int width, int height)
+static comac_test_status_t
+bit (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_rectangle_int_t extents;
-    cairo_format_t format;
+    comac_surface_t *surface;
+    comac_rectangle_int_t extents;
+    comac_format_t format;
     uint8_t *data;
 
     extents.x = extents.y = extents.width = extents.height = 1;
 
     /* Fill background white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    surface = cairo_surface_map_to_image (cairo_get_target (cr), &extents);
-    cairo_surface_flush (surface);
-    data = cairo_image_surface_get_data (surface);
-    format = cairo_image_surface_get_format (surface);
+    surface = comac_surface_map_to_image (comac_get_target (cr), &extents);
+    comac_surface_flush (surface);
+    data = comac_image_surface_get_data (surface);
+    format = comac_image_surface_get_format (surface);
     if (data) {
 	if (! set_pixel_black (data, 0, format, 0, 0))
-	    return CAIRO_TEST_FAILURE;
+	    return COMAC_TEST_FAILURE;
     }
-    cairo_surface_mark_dirty (surface);
-    cairo_surface_unmap_image (cairo_get_target (cr), surface);
+    comac_surface_mark_dirty (surface);
+    comac_surface_unmap_image (comac_get_target (cr), surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-fill (cairo_t *cr, int width, int height)
+static comac_test_status_t
+fill (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
-    cairo_rectangle_int_t extents;
-    cairo_t *cr2;
+    comac_surface_t *surface;
+    comac_rectangle_int_t extents;
+    comac_t *cr2;
 
     extents.x = extents.y = extents.width = extents.height = 1;
 
     /* Fill background white */
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
-    surface = cairo_surface_map_to_image (cairo_get_target (cr), &extents);
-    cr2 = cairo_create (surface);
-    cairo_set_source_rgb (cr2, 1, 0, 0);
-    cairo_paint (cr2);
-    cairo_destroy (cr2);
-    cairo_surface_unmap_image (cairo_get_target (cr), surface);
+    surface = comac_surface_map_to_image (comac_get_target (cr), &extents);
+    cr2 = comac_create (surface);
+    comac_set_source_rgb (cr2, 1, 0, 0);
+    comac_paint (cr2);
+    comac_destroy (cr2);
+    comac_surface_unmap_image (comac_get_target (cr), surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (map_all_to_image,
+COMAC_TEST (map_all_to_image,
 	    "Test mapping a surface to an image and modifying it externally",
 	    "image", /* keywords */
 	    "target=raster", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, all)
-CAIRO_TEST (map_bit_to_image,
+COMAC_TEST (map_bit_to_image,
 	    "Test mapping a surface to an image and modifying it externally",
 	    "image", /* keywords */
 	    "target=raster", /* requirements */
 	    WIDTH, HEIGHT,
 	    NULL, bit)
-CAIRO_TEST (map_to_image_fill,
+COMAC_TEST (map_to_image_fill,
 	    "Test mapping a surface to an image and modifying it externally",
 	    "image", /* keywords */
 	    "target=raster", /* requirements */

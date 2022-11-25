@@ -29,31 +29,31 @@
 #define WIDTH	800
 #define HEIGHT	800
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     double lw = 800;
     int n = 0;
 
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
 
-    cairo_set_source_rgba (cr, 0, 0, 0, .4);
-    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
+    comac_set_source_rgba (cr, 0, 0, 0, .4);
+    comac_set_line_cap (cr, COMAC_LINE_CAP_BUTT);
     do {
-	cairo_set_line_width(cr, lw);
-	cairo_arc(cr, WIDTH/2, HEIGHT/2, lw/2,
+	comac_set_line_width(cr, lw);
+	comac_arc(cr, WIDTH/2, HEIGHT/2, lw/2,
 		  2*M_PI*(13*n + 1) / 130, 2*M_PI*(13*n + 12) / 130);
-	cairo_stroke(cr);
+	comac_stroke(cr);
 
 	n++;
 	lw /= 1.1;
     } while (lw > 0.5);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_84115,
+COMAC_TEST (bug_84115,
 	    "Exercises a bug found in stroke generation using trapezoids",
 	    "stroke", /* keywords */
 	    NULL, /* requirements */

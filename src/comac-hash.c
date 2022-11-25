@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2004 Red Hat, Inc.
  * Copyright © 2005 Red Hat, Inc.
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Red Hat, Inc.
  *
@@ -53,7 +53,7 @@
  *       Appears in the table as any non-%NULL, non-DEAD_ENTRY pointer.
  */
 
-#define DEAD_ENTRY ((cairo_hash_entry_t *) 0x1)
+#define DEAD_ENTRY ((comac_hash_entry_t *) 0x1)
 
 #define ENTRY_IS_FREE(entry) ((entry) == NULL)
 #define ENTRY_IS_DEAD(entry) ((entry) == DEAD_ENTRY)
@@ -108,13 +108,13 @@ static const unsigned long hash_table_sizes[] = {
     590559793
 };
 
-struct _cairo_hash_table {
-    cairo_hash_keys_equal_func_t keys_equal;
+struct _comac_hash_table {
+    comac_hash_keys_equal_func_t keys_equal;
 
-    cairo_hash_entry_t *cache[32];
+    comac_hash_entry_t *cache[32];
 
     const unsigned long *table_size;
-    cairo_hash_entry_t **entries;
+    comac_hash_entry_t **entries;
 
     unsigned long live_entries;
     unsigned long free_entries;
@@ -122,11 +122,11 @@ struct _cairo_hash_table {
 };
 
 /**
- * _cairo_hash_table_uid_keys_equal:
+ * _comac_hash_table_uid_keys_equal:
  * @key_a: the first key to be compared
  * @key_b: the second key to be compared
  *
- * Provides a #cairo_hash_keys_equal_func_t which always returns
+ * Provides a #comac_hash_keys_equal_func_t which always returns
  * %TRUE. This is useful to create hash tables using keys whose hash
  * completely describes the key, because in this special case
  * comparing the hashes is sufficient to guarantee that the keys are
@@ -134,44 +134,44 @@ struct _cairo_hash_table {
  *
  * Return value: %TRUE.
  **/
-static cairo_bool_t
-_cairo_hash_table_uid_keys_equal (const void *key_a, const void *key_b)
+static comac_bool_t
+_comac_hash_table_uid_keys_equal (const void *key_a, const void *key_b)
 {
     return TRUE;
 }
 
 /**
- * _cairo_hash_table_create:
+ * _comac_hash_table_create:
  * @keys_equal: a function to return %TRUE if two keys are equal
  *
  * Creates a new hash table which will use the keys_equal() function
  * to compare hash keys. Data is provided to the hash table in the
- * form of user-derived versions of #cairo_hash_entry_t. A hash entry
+ * form of user-derived versions of #comac_hash_entry_t. A hash entry
  * must be able to hold both a key (including a hash code) and a
  * value. Sometimes only the key will be necessary, (as in
- * _cairo_hash_table_remove), and other times both a key and a value
- * will be necessary, (as in _cairo_hash_table_insert).
+ * _comac_hash_table_remove), and other times both a key and a value
+ * will be necessary, (as in _comac_hash_table_insert).
  *
  * If @keys_equal is %NULL, two keys will be considered equal if and
  * only if their hashes are equal.
  *
- * See #cairo_hash_entry_t for more details.
+ * See #comac_hash_entry_t for more details.
  *
  * Return value: the new hash table or %NULL if out of memory.
  **/
-cairo_hash_table_t *
-_cairo_hash_table_create (cairo_hash_keys_equal_func_t keys_equal)
+comac_hash_table_t *
+_comac_hash_table_create (comac_hash_keys_equal_func_t keys_equal)
 {
-    cairo_hash_table_t *hash_table;
+    comac_hash_table_t *hash_table;
 
-    hash_table = _cairo_malloc (sizeof (cairo_hash_table_t));
+    hash_table = _comac_malloc (sizeof (comac_hash_table_t));
     if (unlikely (hash_table == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	return NULL;
     }
 
     if (keys_equal == NULL)
-	hash_table->keys_equal = _cairo_hash_table_uid_keys_equal;
+	hash_table->keys_equal = _comac_hash_table_uid_keys_equal;
     else
 	hash_table->keys_equal = keys_equal;
 
@@ -179,9 +179,9 @@ _cairo_hash_table_create (cairo_hash_keys_equal_func_t keys_equal)
     hash_table->table_size = &hash_table_sizes[0];
 
     hash_table->entries = calloc (*hash_table->table_size,
-				  sizeof (cairo_hash_entry_t *));
+				  sizeof (comac_hash_entry_t *));
     if (unlikely (hash_table->entries == NULL)) {
-	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
+	_comac_error_throw (COMAC_STATUS_NO_MEMORY);
 	free (hash_table);
 	return NULL;
     }
@@ -194,24 +194,24 @@ _cairo_hash_table_create (cairo_hash_keys_equal_func_t keys_equal)
 }
 
 /**
- * _cairo_hash_table_destroy:
+ * _comac_hash_table_destroy:
  * @hash_table: an empty hash table to destroy
  *
  * Immediately destroys the given hash table, freeing all resources
  * associated with it.
  *
  * WARNING: The hash_table must have no live entries in it before
- * _cairo_hash_table_destroy is called. It is a fatal error otherwise,
+ * _comac_hash_table_destroy is called. It is a fatal error otherwise,
  * and this function will halt. The rationale for this behavior is to
  * avoid memory leaks and to avoid needless complication of the API
  * with destroy notify callbacks.
  *
  * WARNING: The hash_table must have no running iterators in it when
- * _cairo_hash_table_destroy is called. It is a fatal error otherwise,
+ * _comac_hash_table_destroy is called. It is a fatal error otherwise,
  * and this function will halt.
  **/
 void
-_cairo_hash_table_destroy (cairo_hash_table_t *hash_table)
+_comac_hash_table_destroy (comac_hash_table_t *hash_table)
 {
     /* The hash table must be empty. Otherwise, halt. */
     assert (hash_table->live_entries == 0);
@@ -222,12 +222,12 @@ _cairo_hash_table_destroy (cairo_hash_table_t *hash_table)
     free (hash_table);
 }
 
-static cairo_hash_entry_t **
-_cairo_hash_table_lookup_unique_key (cairo_hash_table_t *hash_table,
-				     cairo_hash_entry_t *key)
+static comac_hash_entry_t **
+_comac_hash_table_lookup_unique_key (comac_hash_table_t *hash_table,
+				     comac_hash_entry_t *key)
 {
     unsigned long table_size, i, idx, step;
-    cairo_hash_entry_t **entry;
+    comac_hash_entry_t **entry;
 
     table_size = *hash_table->table_size;
     idx = key->hash % table_size;
@@ -253,7 +253,7 @@ _cairo_hash_table_lookup_unique_key (cairo_hash_table_t *hash_table,
 }
 
 /**
- * _cairo_hash_table_manage:
+ * _comac_hash_table_manage:
  * @hash_table: a hash table
  *
  * Resize the hash table if the number of entries has gotten much
@@ -261,13 +261,13 @@ _cairo_hash_table_lookup_unique_key (cairo_hash_table_t *hash_table,
  * size and guarantee some free entries to be used as lookup
  * termination points.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if successful or
- * %CAIRO_STATUS_NO_MEMORY if out of memory.
+ * Return value: %COMAC_STATUS_SUCCESS if successful or
+ * %COMAC_STATUS_NO_MEMORY if out of memory.
  **/
-static cairo_status_t
-_cairo_hash_table_manage (cairo_hash_table_t *hash_table)
+static comac_status_t
+_comac_hash_table_manage (comac_hash_table_t *hash_table)
 {
-    cairo_hash_table_t tmp;
+    comac_hash_table_t tmp;
     unsigned long new_size, i;
 
     /* Keep between 12.5% and 50% entries in the hash table alive and
@@ -300,17 +300,17 @@ _cairo_hash_table_manage (cairo_hash_table_t *hash_table)
 	/* The number of live entries is within the desired bounds
 	 * (we're not going to resize the table) and we have enough
 	 * free entries. Do nothing. */
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
     }
 
     new_size = *tmp.table_size;
-    tmp.entries = calloc (new_size, sizeof (cairo_hash_entry_t*));
+    tmp.entries = calloc (new_size, sizeof (comac_hash_entry_t*));
     if (unlikely (tmp.entries == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	return _comac_error (COMAC_STATUS_NO_MEMORY);
 
     for (i = 0; i < *hash_table->table_size; ++i) {
 	if (ENTRY_IS_LIVE (hash_table->entries[i])) {
-	    *_cairo_hash_table_lookup_unique_key (&tmp, hash_table->entries[i])
+	    *_comac_hash_table_lookup_unique_key (&tmp, hash_table->entries[i])
 		= hash_table->entries[i];
 	}
     }
@@ -320,25 +320,25 @@ _cairo_hash_table_manage (cairo_hash_table_t *hash_table)
     hash_table->table_size = tmp.table_size;
     hash_table->free_entries = new_size - hash_table->live_entries;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /**
- * _cairo_hash_table_lookup:
+ * _comac_hash_table_lookup:
  * @hash_table: a hash table
  * @key: the key of interest
  *
  * Performs a lookup in @hash_table looking for an entry which has a
  * key that matches @key, (as determined by the keys_equal() function
- * passed to _cairo_hash_table_create).
+ * passed to _comac_hash_table_create).
  *
  * Return value: the matching entry, of %NULL if no match was found.
  **/
 void *
-_cairo_hash_table_lookup (cairo_hash_table_t *hash_table,
-			  cairo_hash_entry_t *key)
+_comac_hash_table_lookup (comac_hash_table_t *hash_table,
+			  comac_hash_entry_t *key)
 {
-    cairo_hash_entry_t *entry;
+    comac_hash_entry_t *entry;
     unsigned long table_size, i, idx, step;
     uintptr_t hash = key->hash;
 
@@ -380,7 +380,7 @@ insert_cache:
 }
 
 /**
- * _cairo_hash_table_random_entry:
+ * _comac_hash_table_random_entry:
  * @hash_table: a hash table
  * @predicate: a predicate function.
  *
@@ -399,10 +399,10 @@ insert_cache:
  * %NULL, a %NULL return value indicates that the table is empty.
  **/
 void *
-_cairo_hash_table_random_entry (cairo_hash_table_t	   *hash_table,
-				cairo_hash_predicate_func_t predicate)
+_comac_hash_table_random_entry (comac_hash_table_t	   *hash_table,
+				comac_hash_predicate_func_t predicate)
 {
-    cairo_hash_entry_t *entry;
+    comac_hash_entry_t *entry;
     unsigned long hash;
     unsigned long table_size, i, idx, step;
 
@@ -432,7 +432,7 @@ _cairo_hash_table_random_entry (cairo_hash_table_t	   *hash_table,
 }
 
 /**
- * _cairo_hash_table_insert:
+ * _comac_hash_table_insert:
  * @hash_table: a hash table
  * @key_and_value: an entry to be inserted
  *
@@ -445,27 +445,27 @@ _cairo_hash_table_random_entry (cairo_hash_table_t	   *hash_table,
  * an iterator is running
  *
  * Instead of using insert to replace an entry, consider just editing
- * the entry obtained with _cairo_hash_table_lookup. Or if absolutely
- * necessary, use _cairo_hash_table_remove first.
+ * the entry obtained with _comac_hash_table_lookup. Or if absolutely
+ * necessary, use _comac_hash_table_remove first.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if successful or
- * %CAIRO_STATUS_NO_MEMORY if insufficient memory is available.
+ * Return value: %COMAC_STATUS_SUCCESS if successful or
+ * %COMAC_STATUS_NO_MEMORY if insufficient memory is available.
  **/
-cairo_status_t
-_cairo_hash_table_insert (cairo_hash_table_t *hash_table,
-			  cairo_hash_entry_t *key_and_value)
+comac_status_t
+_comac_hash_table_insert (comac_hash_table_t *hash_table,
+			  comac_hash_entry_t *key_and_value)
 {
-    cairo_hash_entry_t **entry;
-    cairo_status_t status;
+    comac_hash_entry_t **entry;
+    comac_status_t status;
 
     /* Insert is illegal while an iterator is running. */
     assert (hash_table->iterating == 0);
 
-    status = _cairo_hash_table_manage (hash_table);
+    status = _comac_hash_table_manage (hash_table);
     if (unlikely (status))
 	return status;
 
-    entry = _cairo_hash_table_lookup_unique_key (hash_table, key_and_value);
+    entry = _comac_hash_table_lookup_unique_key (hash_table, key_and_value);
 
     if (ENTRY_IS_FREE (*entry))
 	hash_table->free_entries--;
@@ -474,15 +474,15 @@ _cairo_hash_table_insert (cairo_hash_table_t *hash_table,
     hash_table->cache[key_and_value->hash & 31] = key_and_value;
     hash_table->live_entries++;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
-static cairo_hash_entry_t **
-_cairo_hash_table_lookup_exact_key (cairo_hash_table_t *hash_table,
-				    cairo_hash_entry_t *key)
+static comac_hash_entry_t **
+_comac_hash_table_lookup_exact_key (comac_hash_table_t *hash_table,
+				    comac_hash_entry_t *key)
 {
     unsigned long table_size, i, idx, step;
-    cairo_hash_entry_t **entry;
+    comac_hash_entry_t **entry;
 
     table_size = *hash_table->table_size;
     idx = key->hash % table_size;
@@ -507,20 +507,20 @@ _cairo_hash_table_lookup_exact_key (cairo_hash_table_t *hash_table,
     return NULL;
 }
 /**
- * _cairo_hash_table_remove:
+ * _comac_hash_table_remove:
  * @hash_table: a hash table
  * @key: key of entry to be removed
  *
  * Remove an entry from the hash table which points to @key.
  *
- * Return value: %CAIRO_STATUS_SUCCESS if successful or
- * %CAIRO_STATUS_NO_MEMORY if out of memory.
+ * Return value: %COMAC_STATUS_SUCCESS if successful or
+ * %COMAC_STATUS_NO_MEMORY if out of memory.
  **/
 void
-_cairo_hash_table_remove (cairo_hash_table_t *hash_table,
-			  cairo_hash_entry_t *key)
+_comac_hash_table_remove (comac_hash_table_t *hash_table,
+			  comac_hash_entry_t *key)
 {
-    *_cairo_hash_table_lookup_exact_key (hash_table, key) = DEAD_ENTRY;
+    *_comac_hash_table_lookup_exact_key (hash_table, key) = DEAD_ENTRY;
     hash_table->live_entries--;
     hash_table->cache[key->hash & 31] = NULL;
 
@@ -532,12 +532,12 @@ _cairo_hash_table_remove (cairo_hash_table_t *hash_table,
 	 * memory to shrink the hash table. It does leave the table in a
 	 * consistent state, and we've already succeeded in removing the
 	 * entry, so we don't examine the failure status of this call. */
-	_cairo_hash_table_manage (hash_table);
+	_comac_hash_table_manage (hash_table);
     }
 }
 
 /**
- * _cairo_hash_table_foreach:
+ * _comac_hash_table_foreach:
  * @hash_table: a hash table
  * @hash_callback: function to be called for each live entry
  * @closure: additional argument to be passed to @hash_callback
@@ -552,12 +552,12 @@ _cairo_hash_table_remove (cairo_hash_table_t *hash_table,
  * functions will halt in these cases.
  **/
 void
-_cairo_hash_table_foreach (cairo_hash_table_t	      *hash_table,
-			   cairo_hash_callback_func_t  hash_callback,
+_comac_hash_table_foreach (comac_hash_table_t	      *hash_table,
+			   comac_hash_callback_func_t  hash_callback,
 			   void			      *closure)
 {
     unsigned long i;
-    cairo_hash_entry_t *entry;
+    comac_hash_entry_t *entry;
 
     /* Mark the table for iteration */
     ++hash_table->iterating;
@@ -573,6 +573,6 @@ _cairo_hash_table_foreach (cairo_hash_table_t	      *hash_table,
     if (--hash_table->iterating == 0) {
 	/* Should we fail to shrink the hash table, it is left unaltered,
 	 * and we don't need to propagate the error status. */
-	_cairo_hash_table_manage (hash_table);
+	_comac_hash_table_manage (hash_table);
     }
 }

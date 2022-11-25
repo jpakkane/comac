@@ -27,42 +27,42 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *mask;
-    cairo_t *cr2;
+    comac_surface_t *mask;
+    comac_t *cr2;
 
-    cairo_set_source_rgb (cr, 0, 1, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 1, 0);
+    comac_paint (cr);
 
     /* clip twice, note that the intersection is smaller then the extents */
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_rectangle (cr, 10, 10, 80, 80);
-    cairo_rectangle (cr, 20, 20, 60, 60);
-    cairo_clip (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_rectangle (cr, 10, 10, 80, 80);
+    comac_rectangle (cr, 20, 20, 60, 60);
+    comac_clip (cr);
 
-    cairo_rectangle (cr, 0, 40, 40, 30);
-    cairo_clip (cr);
+    comac_rectangle (cr, 0, 40, 40, 30);
+    comac_clip (cr);
 
     /* and exercise the bug found by Jeff Muizelaar */
-    mask = cairo_surface_create_similar (cairo_get_target (cr),
-					 CAIRO_CONTENT_ALPHA,
+    mask = comac_surface_create_similar (comac_get_target (cr),
+					 COMAC_CONTENT_ALPHA,
 					 width-20, height-20);
-    cr2 = cairo_create (mask);
-    cairo_surface_destroy (mask);
+    cr2 = comac_create (mask);
+    comac_surface_destroy (mask);
 
-    cairo_set_source_rgba (cr2, 1, 1, 1, 1);
-    cairo_paint (cr2);
+    comac_set_source_rgba (cr2, 1, 1, 1, 1);
+    comac_paint (cr2);
 
-    cairo_set_source_rgb (cr, 1, 0, 0);
-    cairo_mask_surface (cr, cairo_get_target (cr2), 0, 0);
-    cairo_destroy (cr2);
+    comac_set_source_rgb (cr, 1, 0, 0);
+    comac_mask_surface (cr, comac_get_target (cr2), 0, 0);
+    comac_destroy (cr2);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_twice_rectangle,
+COMAC_TEST (clip_twice_rectangle,
 	    "Tests clipping twice using rectangles",
 	    "clip", /* keywords */
 	    NULL, /* requirements */

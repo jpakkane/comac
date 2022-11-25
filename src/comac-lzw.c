@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2006 Red Hat, Inc.
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -38,7 +38,7 @@
 #include "comac-error-private.h"
 
 typedef struct _lzw_buf {
-    cairo_status_t status;
+    comac_status_t status;
 
     unsigned char *data;
     int data_size;
@@ -59,7 +59,7 @@ typedef struct _lzw_buf {
  * Instead of returning failure from any functions, lzw_buf_t provides
  * a status value that the caller can query, (and should query at
  * least once when done with the object). The status value will be
- * either %CAIRO_STATUS_SUCCESS or %CAIRO_STATUS_NO_MEMORY;
+ * either %COMAC_STATUS_SUCCESS or %COMAC_STATUS_NO_MEMORY;
  */
 static void
 _lzw_buf_init (lzw_buf_t *buf, int size)
@@ -67,25 +67,25 @@ _lzw_buf_init (lzw_buf_t *buf, int size)
     if (size == 0)
 	size = 16;
 
-    buf->status = CAIRO_STATUS_SUCCESS;
+    buf->status = COMAC_STATUS_SUCCESS;
     buf->data_size = size;
     buf->num_data = 0;
     buf->pending = 0;
     buf->pending_bits = 0;
 
-    buf->data = _cairo_malloc (size);
+    buf->data = _comac_malloc (size);
     if (unlikely (buf->data == NULL)) {
 	buf->data_size = 0;
-	buf->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	buf->status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	return;
     }
 }
 
 /* Increase the buffer size by doubling.
  *
- * Returns %CAIRO_STATUS_SUCCESS or %CAIRO_STATUS_NO_MEMORY
+ * Returns %COMAC_STATUS_SUCCESS or %COMAC_STATUS_NO_MEMORY
  */
-static cairo_status_t
+static comac_status_t
 _lzw_buf_grow (lzw_buf_t *buf)
 {
     int new_size = buf->data_size * 2;
@@ -102,14 +102,14 @@ _lzw_buf_grow (lzw_buf_t *buf)
     if (unlikely (new_data == NULL)) {
 	free (buf->data);
 	buf->data_size = 0;
-	buf->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	buf->status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	return buf->status;
     }
 
     buf->data = new_data;
     buf->data_size = new_size;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 /* Store the lowest num_bits bits of values into buf.
@@ -120,12 +120,12 @@ _lzw_buf_grow (lzw_buf_t *buf)
  * See also _lzw_buf_store_pending which must be called after the last
  * call to _lzw_buf_store_bits.
  *
- * Sets buf->status to either %CAIRO_STATUS_SUCCESS or %CAIRO_STATUS_NO_MEMORY.
+ * Sets buf->status to either %COMAC_STATUS_SUCCESS or %COMAC_STATUS_NO_MEMORY.
  */
 static void
 _lzw_buf_store_bits (lzw_buf_t *buf, uint16_t value, int num_bits)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     assert (value <= (1 << num_bits) - 1);
 
@@ -151,12 +151,12 @@ _lzw_buf_store_bits (lzw_buf_t *buf, uint16_t value, int num_bits)
  * Note: This function must be called after the last call to
  * _lzw_buf_store_bits.
  *
- * Sets buf->status to either %CAIRO_STATUS_SUCCESS or %CAIRO_STATUS_NO_MEMORY.
+ * Sets buf->status to either %COMAC_STATUS_SUCCESS or %COMAC_STATUS_NO_MEMORY.
  */
 static void
 _lzw_buf_store_pending  (lzw_buf_t *buf)
 {
-    cairo_status_t status;
+    comac_status_t status;
 
     if (buf->status)
 	return;
@@ -243,12 +243,12 @@ _lzw_symbol_table_init (lzw_symbol_table_t *table)
  * will be pointing at the location in the table to which a new CODE
  * value should be stored along with PREV and NEXT.
  */
-static cairo_bool_t
+static comac_bool_t
 _lzw_symbol_table_lookup (lzw_symbol_table_t	 *table,
 			  lzw_symbol_t		  symbol,
 			  lzw_symbol_t		**slot_ret)
 {
-    /* The algorithm here is identical to that in cairo-hash.c. We
+    /* The algorithm here is identical to that in comac-hash.c. We
      * copy it here to allow for a rather more efficient
      * implementation due to several circumstances that do not apply
      * to the more general case:
@@ -317,13 +317,13 @@ _lzw_symbol_table_lookup (lzw_symbol_table_t	 *table,
  * occurs.
  *
  * Notice that any one of the _lzw_buf functions called here could
- * trigger an out-of-memory condition. But lzw_buf_t uses cairo's
+ * trigger an out-of-memory condition. But lzw_buf_t uses comac's
  * shutdown-on-error idiom, so it's safe to continue to call into
  * lzw_buf without having to check for errors, (until a final check at
  * the end).
  */
 unsigned char *
-_cairo_lzw_compress (unsigned char *data, unsigned long *size_in_out)
+_comac_lzw_compress (unsigned char *data, unsigned long *size_in_out)
 {
     int bytes_remaining = *size_in_out;
     lzw_buf_t buf;
@@ -392,12 +392,12 @@ _cairo_lzw_compress (unsigned char *data, unsigned long *size_in_out)
     _lzw_buf_store_pending (&buf);
 
     /* See if we ever ran out of memory while writing to buf. */
-    if (buf.status == CAIRO_STATUS_NO_MEMORY) {
+    if (buf.status == COMAC_STATUS_NO_MEMORY) {
 	*size_in_out = 0;
 	return NULL;
     }
 
-    assert (buf.status == CAIRO_STATUS_SUCCESS);
+    assert (buf.status == COMAC_STATUS_SUCCESS);
 
     *size_in_out = buf.num_data;
     return buf.data;

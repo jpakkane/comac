@@ -1,5 +1,5 @@
 /* -*- Mode: c; c-basic-offset: 4; indent-tabs-mode: t; tab-width: 8; -*- */
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  *
@@ -26,7 +26,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is University of Southern
  * California.
@@ -45,11 +45,11 @@
 
 #if DEBUG_POLYGON && !NDEBUG
 static void
-assert_last_edge_is_valid(cairo_polygon_t *polygon,
-			  const cairo_box_t *limit)
+assert_last_edge_is_valid(comac_polygon_t *polygon,
+			  const comac_box_t *limit)
 {
-    cairo_edge_t *edge;
-    cairo_fixed_t x;
+    comac_edge_t *edge;
+    comac_fixed_t x;
 
     edge = &polygon->edges[polygon->num_edges-1];
 
@@ -57,13 +57,13 @@ assert_last_edge_is_valid(cairo_polygon_t *polygon,
     assert (edge->top >= limit->p1.y);
     assert (edge->bottom <= limit->p2.y);
 
-    x = _cairo_edge_compute_intersection_x_for_y (&edge->line.p1,
+    x = _comac_edge_compute_intersection_x_for_y (&edge->line.p1,
 						  &edge->line.p2,
 						  edge->top);
     assert (x >= limit->p1.x);
     assert (x <= limit->p2.x);
 
-    x = _cairo_edge_compute_intersection_x_for_y (&edge->line.p1,
+    x = _comac_edge_compute_intersection_x_for_y (&edge->line.p1,
 						  &edge->line.p2,
 						  edge->bottom);
     assert (x >= limit->p1.x);
@@ -74,14 +74,14 @@ assert_last_edge_is_valid(cairo_polygon_t *polygon,
 #endif
 
 static void
-_cairo_polygon_add_edge (cairo_polygon_t *polygon,
-			 const cairo_point_t *p1,
-			 const cairo_point_t *p2,
+_comac_polygon_add_edge (comac_polygon_t *polygon,
+			 const comac_point_t *p1,
+			 const comac_point_t *p2,
 			 int dir);
 
 void
-_cairo_polygon_limit (cairo_polygon_t *polygon,
-		     const cairo_box_t *limits,
+_comac_polygon_limit (comac_polygon_t *polygon,
+		     const comac_box_t *limits,
 		     int num_limits)
 {
     int n;
@@ -108,23 +108,23 @@ _cairo_polygon_limit (cairo_polygon_t *polygon,
 }
 
 void
-_cairo_polygon_limit_to_clip (cairo_polygon_t *polygon,
-			      const cairo_clip_t *clip)
+_comac_polygon_limit_to_clip (comac_polygon_t *polygon,
+			      const comac_clip_t *clip)
 {
     if (clip)
-	_cairo_polygon_limit (polygon, clip->boxes, clip->num_boxes);
+	_comac_polygon_limit (polygon, clip->boxes, clip->num_boxes);
     else
-	_cairo_polygon_limit (polygon, 0, 0);
+	_comac_polygon_limit (polygon, 0, 0);
 }
 
 void
-_cairo_polygon_init (cairo_polygon_t *polygon,
-		     const cairo_box_t *limits,
+_comac_polygon_init (comac_polygon_t *polygon,
+		     const comac_box_t *limits,
 		     int num_limits)
 {
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (cairo_polygon_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (comac_polygon_t)));
 
-    polygon->status = CAIRO_STATUS_SUCCESS;
+    polygon->status = COMAC_STATUS_SUCCESS;
 
     polygon->num_edges = 0;
 
@@ -134,29 +134,29 @@ _cairo_polygon_init (cairo_polygon_t *polygon,
     polygon->extents.p1.x = polygon->extents.p1.y = INT32_MAX;
     polygon->extents.p2.x = polygon->extents.p2.y = INT32_MIN;
 
-    _cairo_polygon_limit (polygon, limits, num_limits);
+    _comac_polygon_limit (polygon, limits, num_limits);
 }
 
 void
-_cairo_polygon_init_with_clip (cairo_polygon_t *polygon,
-			       const cairo_clip_t *clip)
+_comac_polygon_init_with_clip (comac_polygon_t *polygon,
+			       const comac_clip_t *clip)
 {
     if (clip)
-	_cairo_polygon_init (polygon, clip->boxes, clip->num_boxes);
+	_comac_polygon_init (polygon, clip->boxes, clip->num_boxes);
     else
-	_cairo_polygon_init (polygon, 0, 0);
+	_comac_polygon_init (polygon, 0, 0);
 }
 
-cairo_status_t
-_cairo_polygon_init_boxes (cairo_polygon_t *polygon,
-			   const cairo_boxes_t *boxes)
+comac_status_t
+_comac_polygon_init_boxes (comac_polygon_t *polygon,
+			   const comac_boxes_t *boxes)
 {
-    const struct _cairo_boxes_chunk *chunk;
+    const struct _comac_boxes_chunk *chunk;
     int i;
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (cairo_polygon_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (comac_polygon_t)));
 
-    polygon->status = CAIRO_STATUS_SUCCESS;
+    polygon->status = COMAC_STATUS_SUCCESS;
 
     polygon->num_edges = 0;
 
@@ -164,10 +164,10 @@ _cairo_polygon_init_boxes (cairo_polygon_t *polygon,
     polygon->edges_size = ARRAY_LENGTH (polygon->edges_embedded);
     if (boxes->num_boxes > ARRAY_LENGTH (polygon->edges_embedded)/2) {
 	polygon->edges_size = 2 * boxes->num_boxes;
-	polygon->edges = _cairo_malloc_ab (polygon->edges_size,
-					   2*sizeof(cairo_edge_t));
+	polygon->edges = _comac_malloc_ab (polygon->edges_size,
+					   2*sizeof(comac_edge_t));
 	if (unlikely (polygon->edges == NULL))
-	    return polygon->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return polygon->status = _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
     polygon->extents.p1.x = polygon->extents.p1.y = INT32_MAX;
@@ -178,33 +178,33 @@ _cairo_polygon_init_boxes (cairo_polygon_t *polygon,
 
     for (chunk = &boxes->chunks; chunk != NULL; chunk = chunk->next) {
 	for (i = 0; i < chunk->count; i++) {
-	    cairo_point_t p1, p2;
+	    comac_point_t p1, p2;
 
 	    p1 = chunk->base[i].p1;
 	    p2.x = p1.x;
 	    p2.y = chunk->base[i].p2.y;
-	    _cairo_polygon_add_edge (polygon, &p1, &p2, 1);
+	    _comac_polygon_add_edge (polygon, &p1, &p2, 1);
 
 	    p1 = chunk->base[i].p2;
 	    p2.x = p1.x;
 	    p2.y = chunk->base[i].p1.y;
-	    _cairo_polygon_add_edge (polygon, &p1, &p2, 1);
+	    _comac_polygon_add_edge (polygon, &p1, &p2, 1);
 	}
     }
 
     return polygon->status;
 }
 
-cairo_status_t
-_cairo_polygon_init_box_array (cairo_polygon_t *polygon,
-			       cairo_box_t *boxes,
+comac_status_t
+_comac_polygon_init_box_array (comac_polygon_t *polygon,
+			       comac_box_t *boxes,
 			       int num_boxes)
 {
     int i;
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (cairo_polygon_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (comac_polygon_t)));
 
-    polygon->status = CAIRO_STATUS_SUCCESS;
+    polygon->status = COMAC_STATUS_SUCCESS;
 
     polygon->num_edges = 0;
 
@@ -212,10 +212,10 @@ _cairo_polygon_init_box_array (cairo_polygon_t *polygon,
     polygon->edges_size = ARRAY_LENGTH (polygon->edges_embedded);
     if (num_boxes > ARRAY_LENGTH (polygon->edges_embedded)/2) {
 	polygon->edges_size = 2 * num_boxes;
-	polygon->edges = _cairo_malloc_ab (polygon->edges_size,
-					   2*sizeof(cairo_edge_t));
+	polygon->edges = _comac_malloc_ab (polygon->edges_size,
+					   2*sizeof(comac_edge_t));
 	if (unlikely (polygon->edges == NULL))
-	    return polygon->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	    return polygon->status = _comac_error (COMAC_STATUS_NO_MEMORY);
     }
 
     polygon->extents.p1.x = polygon->extents.p1.y = INT32_MAX;
@@ -225,17 +225,17 @@ _cairo_polygon_init_box_array (cairo_polygon_t *polygon,
     polygon->num_limits = 0;
 
     for (i = 0; i < num_boxes; i++) {
-	cairo_point_t p1, p2;
+	comac_point_t p1, p2;
 
 	p1 = boxes[i].p1;
 	p2.x = p1.x;
 	p2.y = boxes[i].p2.y;
-	_cairo_polygon_add_edge (polygon, &p1, &p2, 1);
+	_comac_polygon_add_edge (polygon, &p1, &p2, 1);
 
 	p1 = boxes[i].p2;
 	p2.x = p1.x;
 	p2.y = boxes[i].p1.y;
-	_cairo_polygon_add_edge (polygon, &p1, &p2, 1);
+	_comac_polygon_add_edge (polygon, &p1, &p2, 1);
     }
 
     return polygon->status;
@@ -243,38 +243,38 @@ _cairo_polygon_init_box_array (cairo_polygon_t *polygon,
 
 
 void
-_cairo_polygon_fini (cairo_polygon_t *polygon)
+_comac_polygon_fini (comac_polygon_t *polygon)
 {
     if (polygon->edges != polygon->edges_embedded)
 	free (polygon->edges);
 
-    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (cairo_polygon_t)));
+    VG (VALGRIND_MAKE_MEM_UNDEFINED (polygon, sizeof (comac_polygon_t)));
 }
 
 /* make room for at least one more edge */
-static cairo_bool_t
-_cairo_polygon_grow (cairo_polygon_t *polygon)
+static comac_bool_t
+_comac_polygon_grow (comac_polygon_t *polygon)
 {
-    cairo_edge_t *new_edges;
+    comac_edge_t *new_edges;
     int old_size = polygon->edges_size;
     int new_size = 4 * old_size;
 
-    if (CAIRO_INJECT_FAULT ()) {
-	polygon->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+    if (COMAC_INJECT_FAULT ()) {
+	polygon->status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	return FALSE;
     }
 
     if (polygon->edges == polygon->edges_embedded) {
-	new_edges = _cairo_malloc_ab (new_size, sizeof (cairo_edge_t));
+	new_edges = _comac_malloc_ab (new_size, sizeof (comac_edge_t));
 	if (new_edges != NULL)
-	    memcpy (new_edges, polygon->edges, old_size * sizeof (cairo_edge_t));
+	    memcpy (new_edges, polygon->edges, old_size * sizeof (comac_edge_t));
     } else {
-	new_edges = _cairo_realloc_ab (polygon->edges,
-		                       new_size, sizeof (cairo_edge_t));
+	new_edges = _comac_realloc_ab (polygon->edges,
+		                       new_size, sizeof (comac_edge_t));
     }
 
     if (unlikely (new_edges == NULL)) {
-	polygon->status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	polygon->status = _comac_error (COMAC_STATUS_NO_MEMORY);
 	return FALSE;
     }
 
@@ -285,18 +285,18 @@ _cairo_polygon_grow (cairo_polygon_t *polygon)
 }
 
 static void
-_add_edge (cairo_polygon_t *polygon,
-	   const cairo_point_t *p1,
-	   const cairo_point_t *p2,
+_add_edge (comac_polygon_t *polygon,
+	   const comac_point_t *p1,
+	   const comac_point_t *p2,
 	   int top, int bottom,
 	   int dir)
 {
-    cairo_edge_t *edge;
+    comac_edge_t *edge;
 
     assert (top < bottom);
 
     if (unlikely (polygon->num_edges == polygon->edges_size)) {
-	if (! _cairo_polygon_grow (polygon))
+	if (! _comac_polygon_grow (polygon))
 	    return;
     }
 
@@ -313,9 +313,9 @@ _add_edge (cairo_polygon_t *polygon,
 	polygon->extents.p2.y = bottom;
 
     if (p1->x < polygon->extents.p1.x || p1->x > polygon->extents.p2.x) {
-	cairo_fixed_t x = p1->x;
+	comac_fixed_t x = p1->x;
 	if (top != p1->y)
-	    x = _cairo_edge_compute_intersection_x_for_y (p1, p2, top);
+	    x = _comac_edge_compute_intersection_x_for_y (p1, p2, top);
 	if (x < polygon->extents.p1.x)
 	    polygon->extents.p1.x = x;
 	if (x > polygon->extents.p2.x)
@@ -323,9 +323,9 @@ _add_edge (cairo_polygon_t *polygon,
     }
 
     if (p2->x < polygon->extents.p1.x || p2->x > polygon->extents.p2.x) {
-	cairo_fixed_t x = p2->x;
+	comac_fixed_t x = p2->x;
 	if (bottom != p2->y)
-	    x = _cairo_edge_compute_intersection_x_for_y (p1, p2, bottom);
+	    x = _comac_edge_compute_intersection_x_for_y (p1, p2, bottom);
 	if (x < polygon->extents.p1.x)
 	    polygon->extents.p1.x = x;
 	if (x > polygon->extents.p2.x)
@@ -334,19 +334,19 @@ _add_edge (cairo_polygon_t *polygon,
 }
 
 static void
-_add_clipped_edge (cairo_polygon_t *polygon,
-		   const cairo_point_t *p1,
-		   const cairo_point_t *p2,
+_add_clipped_edge (comac_polygon_t *polygon,
+		   const comac_point_t *p1,
+		   const comac_point_t *p2,
 		   const int top, const int bottom,
 		   const int dir)
 {
-    cairo_point_t bot_left, top_right;
-    cairo_fixed_t top_y, bot_y;
+    comac_point_t bot_left, top_right;
+    comac_fixed_t top_y, bot_y;
     int n;
 
     for (n = 0; n < polygon->num_limits; n++) {
-	const cairo_box_t *limits = &polygon->limits[n];
-	cairo_fixed_t pleft, pright;
+	const comac_box_t *limits = &polygon->limits[n];
+	comac_fixed_t pleft, pright;
 
 	if (top >= limits->p2.y)
 	    continue;
@@ -387,8 +387,8 @@ _add_clipped_edge (cairo_polygon_t *polygon,
 	    assert_last_edge_is_valid (polygon, limits);
 	} else {
 	    /* The edge and the box intersect in a generic way */
-	    cairo_fixed_t left_y, right_y;
-	    cairo_bool_t top_left_to_bottom_right;
+	    comac_fixed_t left_y, right_y;
+	    comac_bool_t top_left_to_bottom_right;
 
 	    /*
 	     * The edge intersects the lines corresponding to the left
@@ -420,9 +420,9 @@ _add_clipped_edge (cairo_polygon_t *polygon,
 		if (pleft >= limits->p1.x) {
 		    left_y = top_y;
 		} else {
-		    left_y = _cairo_edge_compute_intersection_y_for_x (p1, p2,
+		    left_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
 								       limits->p1.x);
-		    if (_cairo_edge_compute_intersection_x_for_y (p1, p2, left_y) < limits->p1.x)
+		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, left_y) < limits->p1.x)
 			left_y++;
 		}
 
@@ -437,9 +437,9 @@ _add_clipped_edge (cairo_polygon_t *polygon,
 		if (pright <= limits->p2.x) {
 		    right_y = bot_y;
 		} else {
-		    right_y = _cairo_edge_compute_intersection_y_for_x (p1, p2,
+		    right_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
 									limits->p2.x);
-		    if (_cairo_edge_compute_intersection_x_for_y (p1, p2, right_y) > limits->p2.x)
+		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, right_y) > limits->p2.x)
 			right_y--;
 		}
 
@@ -454,9 +454,9 @@ _add_clipped_edge (cairo_polygon_t *polygon,
 		if (pright <= limits->p2.x) {
 		    right_y = top_y;
 		} else {
-		    right_y = _cairo_edge_compute_intersection_y_for_x (p1, p2,
+		    right_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
 									limits->p2.x);
-		    if (_cairo_edge_compute_intersection_x_for_y (p1, p2, right_y) > limits->p2.x)
+		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, right_y) > limits->p2.x)
 			right_y++;
 		}
 
@@ -471,9 +471,9 @@ _add_clipped_edge (cairo_polygon_t *polygon,
 		if (pleft >= limits->p1.x) {
 		    left_y = bot_y;
 		} else {
-		    left_y = _cairo_edge_compute_intersection_y_for_x (p1, p2,
+		    left_y = _comac_edge_compute_intersection_y_for_x (p1, p2,
 								       limits->p1.x);
-		    if (_cairo_edge_compute_intersection_x_for_y (p1, p2, left_y) < limits->p1.x)
+		    if (_comac_edge_compute_intersection_x_for_y (p1, p2, left_y) < limits->p1.x)
 			left_y--;
 		}
 
@@ -495,9 +495,9 @@ _add_clipped_edge (cairo_polygon_t *polygon,
 }
 
 static void
-_cairo_polygon_add_edge (cairo_polygon_t *polygon,
-			 const cairo_point_t *p1,
-			 const cairo_point_t *p2,
+_comac_polygon_add_edge (comac_polygon_t *polygon,
+			 const comac_point_t *p1,
+			 const comac_point_t *p2,
 			 int dir)
 {
     /* drop horizontal edges */
@@ -505,7 +505,7 @@ _cairo_polygon_add_edge (cairo_polygon_t *polygon,
 	return;
 
     if (p1->y > p2->y) {
-	const cairo_point_t *t;
+	const comac_point_t *t;
 	t = p1, p1 = p2, p2 = t;
 	dir = -dir;
     }
@@ -522,34 +522,34 @@ _cairo_polygon_add_edge (cairo_polygon_t *polygon,
 	_add_edge (polygon, p1, p2, p1->y, p2->y, dir);
 }
 
-cairo_status_t
-_cairo_polygon_add_external_edge (void *polygon,
-				  const cairo_point_t *p1,
-				  const cairo_point_t *p2)
+comac_status_t
+_comac_polygon_add_external_edge (void *polygon,
+				  const comac_point_t *p1,
+				  const comac_point_t *p2)
 {
-    _cairo_polygon_add_edge (polygon, p1, p2, 1);
-    return _cairo_polygon_status (polygon);
+    _comac_polygon_add_edge (polygon, p1, p2, 1);
+    return _comac_polygon_status (polygon);
 }
 
-cairo_status_t
-_cairo_polygon_add_line (cairo_polygon_t *polygon,
-			 const cairo_line_t *line,
+comac_status_t
+_comac_polygon_add_line (comac_polygon_t *polygon,
+			 const comac_line_t *line,
 			 int top, int bottom,
 			 int dir)
 {
     /* drop horizontal edges */
     if (line->p1.y == line->p2.y)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (bottom <= top)
-	return CAIRO_STATUS_SUCCESS;
+	return COMAC_STATUS_SUCCESS;
 
     if (polygon->num_limits) {
 	if (line->p2.y <= polygon->limit.p1.y)
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 
 	if (line->p1.y >= polygon->limit.p2.y)
-	    return CAIRO_STATUS_SUCCESS;
+	    return COMAC_STATUS_SUCCESS;
 
 	_add_clipped_edge (polygon, &line->p1, &line->p2, top, bottom, dir);
     } else
@@ -558,21 +558,21 @@ _cairo_polygon_add_line (cairo_polygon_t *polygon,
     return polygon->status;
 }
 
-cairo_status_t
-_cairo_polygon_add_contour (cairo_polygon_t *polygon,
-			    const cairo_contour_t *contour)
+comac_status_t
+_comac_polygon_add_contour (comac_polygon_t *polygon,
+			    const comac_contour_t *contour)
 {
-    const struct _cairo_contour_chain *chain;
-    const cairo_point_t *prev = NULL;
+    const struct _comac_contour_chain *chain;
+    const comac_point_t *prev = NULL;
     int i;
 
     if (contour->chain.num_points <= 1)
-	return CAIRO_INT_STATUS_SUCCESS;
+	return COMAC_INT_STATUS_SUCCESS;
 
     prev = &contour->chain.points[0];
     for (chain = &contour->chain; chain; chain = chain->next) {
 	for (i = 0; i < chain->num_points; i++) {
-	    _cairo_polygon_add_edge (polygon, prev, &chain->points[i],
+	    _comac_polygon_add_edge (polygon, prev, &chain->points[i],
 				     contour->direction);
 	    prev = &chain->points[i];
 	}
@@ -582,12 +582,12 @@ _cairo_polygon_add_contour (cairo_polygon_t *polygon,
 }
 
 void
-_cairo_polygon_translate (cairo_polygon_t *polygon, int dx, int dy)
+_comac_polygon_translate (comac_polygon_t *polygon, int dx, int dy)
 {
     int n;
 
-    dx = _cairo_fixed_from_int (dx);
-    dy = _cairo_fixed_from_int (dy);
+    dx = _comac_fixed_from_int (dx);
+    dy = _comac_fixed_from_int (dy);
 
     polygon->extents.p1.x += dx;
     polygon->extents.p2.x += dx;
@@ -595,7 +595,7 @@ _cairo_polygon_translate (cairo_polygon_t *polygon, int dx, int dy)
     polygon->extents.p2.y += dy;
 
     for (n = 0; n < polygon->num_edges; n++) {
-	cairo_edge_t *e = &polygon->edges[n];
+	comac_edge_t *e = &polygon->edges[n];
 
 	e->top += dy;
 	e->bottom += dy;

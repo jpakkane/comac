@@ -25,33 +25,33 @@
 
 #include "comac-perf.h"
 
-static cairo_time_t
-do_paint (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_paint (comac_t *cr, int width, int height, int loops)
 {
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--)
-	cairo_paint (cr);
+	comac_paint (cr);
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
 static double
-count_paint (cairo_t *cr, int width, int height)
+count_paint (comac_t *cr, int width, int height)
 {
     return width * height / 1e6; /* Mpix/s */
 }
 
-cairo_bool_t
-paint_enabled (cairo_perf_t *perf)
+comac_bool_t
+paint_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "paint", NULL);
+    return comac_perf_can_run (perf, "paint", NULL);
 }
 
 void
-paint (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+paint (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_cover_sources_and_operators (perf, "paint", do_paint, count_paint);
+    comac_perf_cover_sources_and_operators (perf, "paint", do_paint, count_paint);
 }

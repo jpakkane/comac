@@ -36,7 +36,7 @@
  * The cause of the seam is that there are slight differences in the
  * output of the analytical coverage rasterization and the
  * supersampling rasterization methods, both employed by
- * cairo-tor-scan-converter.  When drawn individually, the scan
+ * comac-tor-scan-converter.  When drawn individually, the scan
  * converter gets a partial view of the geometry at a time, so it ends
  * up making different decisions about which scanlines it rasterizes
  * with which method, compared to when the geometry is draw all at
@@ -48,55 +48,55 @@
 #include "comac-test.h"
 
 static void
-draw_quad (cairo_t *cr,
+draw_quad (comac_t *cr,
 	   double x1, double y1, double x2, double y2,
 	   double x3, double y3, double x4, double y4)
 {
-    cairo_move_to (cr, x1, y1);
-    cairo_line_to (cr, x2, y2);
-    cairo_line_to (cr, x3, y3);
-    cairo_line_to (cr, x4, y4);
-    cairo_close_path (cr);
+    comac_move_to (cr, x1, y1);
+    comac_line_to (cr, x2, y2);
+    comac_line_to (cr, x3, y3);
+    comac_line_to (cr, x4, y4);
+    comac_close_path (cr);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    cairo_scale (cr, 20, 20);
-    cairo_translate (cr, 5, 1);
+    comac_scale (cr, 20, 20);
+    comac_translate (cr, 5, 1);
 
     /* On the left side, we have two quads drawn one at a time and
      * combined with OPERATOR_ADD.  This should be seamless, but
      * isn't. */
-    cairo_push_group (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_ADD);
+    comac_push_group (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_ADD);
 
-    cairo_set_source_rgb (cr, 0, 0.6, 0);
+    comac_set_source_rgb (cr, 0, 0.6, 0);
     draw_quad (cr,
 	       1.50, 1.50,
 	       2.64, 1.63,
 	       1.75, 2.75,
 	       0.55, 2.63);
-    cairo_fill (cr);
+    comac_fill (cr);
     draw_quad (cr,
 	       0.55, 2.63,
 	       1.75, 2.75,
 	       0.98, 4.11,
 	       -0.35, 4.05);
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    cairo_pop_group_to_source (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-    cairo_paint (cr);
+    comac_pop_group_to_source (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
+    comac_paint (cr);
 
     /* On the right side, we have the same two quads drawn both at the
      * same time.  This is seamless. */
-    cairo_translate (cr, 10, 0);
+    comac_translate (cr, 10, 0);
 
-    cairo_set_source_rgb (cr, 0, 0.6, 0);
+    comac_set_source_rgb (cr, 0, 0.6, 0);
     draw_quad (cr,
 	       1.50, 1.50,
 	       2.64, 1.63,
@@ -107,12 +107,12 @@ draw (cairo_t *cr, int width, int height)
 	       1.75, 2.75,
 	       0.98, 4.11,
 	       -0.35, 4.05);
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (bug_seams,
+COMAC_TEST (bug_seams,
 	    "Check the fidelity of the rasterisation.",
 	    "raster", /* keywords */
 	    "target=raster", /* requirements */

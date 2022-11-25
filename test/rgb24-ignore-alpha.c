@@ -29,10 +29,10 @@
 #define WIDTH  2
 #define HEIGHT 2
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     /* Four green pixels with different "alpha" values, (but which
      * should be entirely ignored). */
     uint32_t colors[4] = {
@@ -40,19 +40,19 @@ draw (cairo_t *cr, int width, int height)
 	0x4400ff00, 0x0000ff00
     };
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) colors,
-						   CAIRO_FORMAT_RGB24, 2, 2, 8);
+    surface = comac_image_surface_create_for_data ((unsigned char *) colors,
+						   COMAC_FORMAT_RGB24, 2, 2, 8);
 
-    cairo_set_source_surface (cr, surface, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, surface, 0, 0);
+    comac_paint (cr);
 
-    cairo_surface_finish (surface); /* colors will go out of scope */
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface); /* colors will go out of scope */
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (rgb24_ignore_alpha,
+COMAC_TEST (rgb24_ignore_alpha,
 	    "Test that when using an RGB24 image as a source, there is no alpha channel",
 	    "image, alpha", /* keywords */
 	    NULL, /* requirements */

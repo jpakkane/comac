@@ -32,84 +32,84 @@
 
 #include "../../test/tiger.inc"
 
-static cairo_time_t
-do_tiger (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_tiger (comac_t *cr, int width, int height, int loops)
 {
     unsigned int i;
 
-    cairo_perf_timer_start ();
+    comac_perf_timer_start ();
 
     while (loops--) {
-	cairo_identity_matrix (cr);
+	comac_identity_matrix (cr);
 
-	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-	cairo_set_source_rgba (cr, 0.1, 0.2, 0.3, 1.0);
-	cairo_paint (cr);
-	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+	comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+	comac_set_source_rgba (cr, 0.1, 0.2, 0.3, 1.0);
+	comac_paint (cr);
+	comac_set_operator (cr, COMAC_OPERATOR_OVER);
 
-	cairo_translate (cr, width/2, height/2);
-	cairo_scale (cr, .85 * width/500, .85 * height/500);
+	comac_translate (cr, width/2, height/2);
+	comac_scale (cr, .85 * width/500, .85 * height/500);
 
 	for (i = 0; i < sizeof (tiger_commands)/sizeof(tiger_commands[0]);i++) {
 	    const struct command *cmd = &tiger_commands[i];
 	    switch (cmd->type) {
 	    case 'm':
-		cairo_move_to (cr, cmd->x0, cmd->y0);
+		comac_move_to (cr, cmd->x0, cmd->y0);
 		break;
 	    case 'l':
-		cairo_line_to (cr, cmd->x0, cmd->y0);
+		comac_line_to (cr, cmd->x0, cmd->y0);
 		break;
 	    case 'c':
-		cairo_curve_to (cr,
+		comac_curve_to (cr,
 				cmd->x0, cmd->y0,
 				cmd->x1, cmd->y1,
 				cmd->x2, cmd->y2);
 		break;
 	    case 'f':
-		cairo_set_source_rgba (cr,
+		comac_set_source_rgba (cr,
 				       cmd->x0, cmd->y0, cmd->x1, cmd->y1);
-		cairo_fill (cr);
+		comac_fill (cr);
 		break;
 	    }
 	}
     }
 
-    cairo_perf_timer_stop ();
+    comac_perf_timer_stop ();
 
-    return cairo_perf_timer_elapsed ();
+    return comac_perf_timer_elapsed ();
 }
 
-static cairo_time_t
-do_mono_tiger (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_mono_tiger (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
     return do_tiger (cr, width, height, loops);
 }
 
-static cairo_time_t
-do_fast_tiger (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_fast_tiger (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_FAST);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_FAST);
     return do_tiger (cr, width, height, loops);
 }
 
-static cairo_time_t
-do_best_tiger (cairo_t *cr, int width, int height, int loops)
+static comac_time_t
+do_best_tiger (comac_t *cr, int width, int height, int loops)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_BEST);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_BEST);
     return do_tiger (cr, width, height, loops);
 }
 
-cairo_bool_t
-tiger_enabled (cairo_perf_t *perf)
+comac_bool_t
+tiger_enabled (comac_perf_t *perf)
 {
-    return cairo_perf_can_run (perf, "tiger", NULL);
+    return comac_perf_can_run (perf, "tiger", NULL);
 }
 
 void
-tiger (cairo_perf_t *perf, cairo_t *cr, int width, int height)
+tiger (comac_perf_t *perf, comac_t *cr, int width, int height)
 {
-    cairo_perf_run (perf, "tiger-mono", do_mono_tiger, NULL);
-    cairo_perf_run (perf, "tiger-fast", do_fast_tiger, NULL);
-    cairo_perf_run (perf, "tiger-best", do_best_tiger, NULL);
+    comac_perf_run (perf, "tiger-mono", do_mono_tiger, NULL);
+    comac_perf_run (perf, "tiger-fast", do_fast_tiger, NULL);
+    comac_perf_run (perf, "tiger-best", do_best_tiger, NULL);
 }

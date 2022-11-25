@@ -32,7 +32,7 @@
  *
  *   It looks like right now we can get this test to pass by doing:
  *
- *       cvs update -r 1.16 src/cairo_traps.c
+ *       cvs update -r 1.16 src/comac_traps.c
  *
  *   But we don't want to revert that change permanently since it
  *   really does correct some bugs. It must be that the old version of
@@ -47,9 +47,9 @@
  *   Keith committed some fixes that fix the original size-20
  *   star_path:
  *
- * 	* src/cairo_wideint.c: (_cairo_int32x32_64_mul),
- *	(_cairo_int64x64_128_mul):
- *	* src/cairo_wideint.h:
+ * 	* src/comac_wideint.c: (_comac_int32x32_64_mul),
+ *	(_comac_int64x64_128_mul):
+ *	* src/comac_wideint.h:
  *	int32x32_64_mul and int64x64_128_mul are different from their
  *	unsigned compatriots
  *
@@ -68,59 +68,59 @@
 
 /* The SVG start trimmed down, but still showing the bug (originally) */
 static void
-little_star_path (cairo_t *cr)
+little_star_path (comac_t *cr)
 {
-    cairo_move_to (cr, 10, 0);
-    cairo_rel_line_to (cr, 6, 20);
-    cairo_rel_line_to (cr, -16, -12);
-    cairo_rel_line_to (cr, 20, 0);
-    cairo_rel_line_to (cr, -16, 12);
+    comac_move_to (cr, 10, 0);
+    comac_rel_line_to (cr, 6, 20);
+    comac_rel_line_to (cr, -16, -12);
+    comac_rel_line_to (cr, 20, 0);
+    comac_rel_line_to (cr, -16, 12);
 }
 
 /* The star shape from the SVG test suite. This was is still buggy even after
    we got little_star_path working. */
 static void
-big_star_path (cairo_t *cr)
+big_star_path (comac_t *cr)
 {
-    cairo_move_to (cr, 40, 0);
-    cairo_rel_line_to (cr, 25, 80);
-    cairo_rel_line_to (cr, -65, -50);
-    cairo_rel_line_to (cr, 80, 0);
-    cairo_rel_line_to (cr, -65, 50);
-    cairo_close_path (cr);
+    comac_move_to (cr, 40, 0);
+    comac_rel_line_to (cr, 25, 80);
+    comac_rel_line_to (cr, -65, -50);
+    comac_rel_line_to (cr, 80, 0);
+    comac_rel_line_to (cr, -65, 50);
+    comac_close_path (cr);
 }
 
 /* Fill the same path twice, once with each fill rule */
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 0, 0);
+    comac_set_source_rgb (cr, 1, 0, 0);
 
-    cairo_translate (cr, 1, 1);
+    comac_translate (cr, 1, 1);
     little_star_path (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_WINDING);
-    cairo_fill (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_WINDING);
+    comac_fill (cr);
 
-    cairo_translate (cr, LITTLE_STAR_SIZE + 1, 0);
+    comac_translate (cr, LITTLE_STAR_SIZE + 1, 0);
     little_star_path (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_fill (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_fill (cr);
 
-    cairo_translate (cr, -(LITTLE_STAR_SIZE + 1), LITTLE_STAR_SIZE + 1);
+    comac_translate (cr, -(LITTLE_STAR_SIZE + 1), LITTLE_STAR_SIZE + 1);
     big_star_path (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_WINDING);
-    cairo_fill (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_WINDING);
+    comac_fill (cr);
 
-    cairo_translate (cr, BIG_STAR_SIZE + 1, 0);
+    comac_translate (cr, BIG_STAR_SIZE + 1, 0);
     big_star_path (cr);
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
-    cairo_fill (cr);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
+    comac_fill (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (fill_rule,
-	    "Tests cairo_set_fill_rule with some star shapes",
+COMAC_TEST (fill_rule,
+	    "Tests comac_set_fill_rule with some star shapes",
 	    "fill, path", /* keywords */
 	    NULL, /* requirements */
 	    BIG_STAR_SIZE * 2 + 3, BIG_STAR_SIZE + LITTLE_STAR_SIZE + 3,

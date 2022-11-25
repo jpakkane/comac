@@ -25,10 +25,10 @@
 
 #include "comac-test.h"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     uint32_t data[16] = {
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
 	0xffffffff, 0xffffffff,		0xffff0000, 0xffff0000,
@@ -37,22 +37,22 @@ draw (cairo_t *cr, int width, int height)
 	0xff00ff00, 0xff00ff00,		0xff0000ff, 0xff0000ff
     };
 
-    surface = cairo_image_surface_create_for_data ((unsigned char *) data,
-						   CAIRO_FORMAT_RGB24, 4, 4, 16);
+    surface = comac_image_surface_create_for_data ((unsigned char *) data,
+						   COMAC_FORMAT_RGB24, 4, 4, 16);
 
-    cairo_set_source_surface (cr, surface, 2, 2);
-    cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_NEAREST);
-    cairo_scale (cr, 2, 2);
-    cairo_paint (cr);
+    comac_set_source_surface (cr, surface, 2, 2);
+    comac_pattern_set_filter (comac_get_source (cr), COMAC_FILTER_NEAREST);
+    comac_scale (cr, 2, 2);
+    comac_paint (cr);
 
-    cairo_surface_finish (surface); /* data will go out of scope */
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface); /* data will go out of scope */
+    comac_surface_destroy (surface);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (source_surface_scale_paint,
-	    "Test call sequence: cairo_set_source_surface; cairo_scale; cairo_paint",
+COMAC_TEST (source_surface_scale_paint,
+	    "Test call sequence: comac_set_source_surface; comac_scale; comac_paint",
 	    "transform, paint", /* keywords */
 	    NULL, /* requirements */
 	    8, 8,

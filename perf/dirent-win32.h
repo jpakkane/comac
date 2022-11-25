@@ -40,7 +40,7 @@ struct dirent {
 
 typedef struct _DIR {
     HANDLE handle;
-    cairo_bool_t has_next;
+    comac_bool_t has_next;
     WIN32_FIND_DATA data;
     struct dirent de;
 } DIR;

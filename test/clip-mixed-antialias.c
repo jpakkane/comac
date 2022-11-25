@@ -47,65 +47,65 @@ n 960 0 m 52.5 0 l 52.5 907.5 l 960 1815 l h
 clip+
 */
 
-static void background (cairo_t *cr)
+static void background (comac_t *cr)
 {
-    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
-    cairo_set_source_rgb (cr, 1,1,1);
-    cairo_paint (cr);
-    cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+    comac_set_operator (cr, COMAC_OPERATOR_SOURCE);
+    comac_set_source_rgb (cr, 1,1,1);
+    comac_paint (cr);
+    comac_set_operator (cr, COMAC_OPERATOR_OVER);
 }
 
-static void clip_0 (cairo_t *cr)
+static void clip_0 (comac_t *cr)
 {
-    cairo_rectangle (cr, 5, 5, 190, 190);
-    cairo_clip (cr);
+    comac_rectangle (cr, 5, 5, 190, 190);
+    comac_clip (cr);
 }
 
-static void clip_1 (cairo_t *cr)
+static void clip_1 (comac_t *cr)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
-    cairo_arc (cr, 100, 100, 125, 0, 2*M_PI);
-    cairo_clip (cr);
+    comac_arc (cr, 100, 100, 125, 0, 2*M_PI);
+    comac_clip (cr);
 
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_DEFAULT);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_DEFAULT);
 }
 
 static void
-rounded_rectangle (cairo_t *cr, int x, int y, int w, int h, int r)
+rounded_rectangle (comac_t *cr, int x, int y, int w, int h, int r)
 {
-    cairo_new_sub_path (cr);
-    cairo_arc (cr, x + r, y + r, r, M_PI, 3 * M_PI / 2);
-    cairo_arc (cr, x + w - r, y + r, r, 3 *M_PI / 2, 2 * M_PI);
-    cairo_arc (cr, x + w - r, y + h - r, r, 0, M_PI / 2);
-    cairo_arc (cr, x + r, y + h - r, r, M_PI / 2, M_PI);
-    cairo_close_path (cr);
+    comac_new_sub_path (cr);
+    comac_arc (cr, x + r, y + r, r, M_PI, 3 * M_PI / 2);
+    comac_arc (cr, x + w - r, y + r, r, 3 *M_PI / 2, 2 * M_PI);
+    comac_arc (cr, x + w - r, y + h - r, r, 0, M_PI / 2);
+    comac_arc (cr, x + r, y + h - r, r, M_PI / 2, M_PI);
+    comac_close_path (cr);
 }
 
-static void clip_2 (cairo_t *cr)
+static void clip_2 (comac_t *cr)
 {
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_EVEN_ODD);
 
     rounded_rectangle (cr, 50, 50, 100, 100, 15);
     rounded_rectangle (cr, 60, 60, 80, 80, 5);
-    cairo_clip (cr);
+    comac_clip (cr);
 
-    cairo_set_fill_rule (cr, CAIRO_FILL_RULE_WINDING);
+    comac_set_fill_rule (cr, COMAC_FILL_RULE_WINDING);
 }
 
-static void clip_3 (cairo_t *cr)
+static void clip_3 (comac_t *cr)
 {
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_NONE);
 
-    cairo_rectangle (cr, 40.25, 60.25, 120, 80);
-    cairo_rectangle (cr, 60.25, 40.25, 80, 120);
-    cairo_clip (cr);
+    comac_rectangle (cr, 40.25, 60.25, 120, 80);
+    comac_rectangle (cr, 60.25, 40.25, 80, 120);
+    comac_clip (cr);
 
-    cairo_set_antialias (cr, CAIRO_ANTIALIAS_DEFAULT);
+    comac_set_antialias (cr, COMAC_ANTIALIAS_DEFAULT);
 }
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     background (cr);
 
@@ -114,13 +114,13 @@ draw (cairo_t *cr, int width, int height)
     clip_2 (cr);
     clip_3 (cr);
 
-    cairo_set_source_rgb (cr, 0, 0, 0);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 0, 0, 0);
+    comac_paint (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (clip_mixed_antialias,
+COMAC_TEST (clip_mixed_antialias,
 	    "Test drawing through through an mixture of clips",
 	    "clip", /* keywords */
 	    "target=raster", /* requirements */

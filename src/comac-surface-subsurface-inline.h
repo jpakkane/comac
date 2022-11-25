@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+/* comac - a vector graphics library with display and print output
  *
  * Copyright © 2009 Intel Corporation
  *
@@ -25,7 +25,7 @@
  * OF ANY KIND, either express or implied. See the LGPL or the MPL for
  * the specific language governing rights and limitations.
  *
- * The Original Code is the cairo graphics library.
+ * The Original Code is the comac graphics library.
  *
  * The Initial Developer of the Original Code is Intel Corporation.
  *
@@ -33,40 +33,40 @@
  *      Chris Wilson <chris@chris-wilson.co.uk>
  */
 
-#ifndef CAIRO_SURFACE_SUBSURFACE_INLINE_H
-#define CAIRO_SURFACE_SUBSURFACE_INLINE_H
+#ifndef COMAC_SURFACE_SUBSURFACE_INLINE_H
+#define COMAC_SURFACE_SUBSURFACE_INLINE_H
 
 #include "comac-surface-subsurface-private.h"
 
-static inline cairo_surface_t *
-_cairo_surface_subsurface_get_target (cairo_surface_t *surface)
+static inline comac_surface_t *
+_comac_surface_subsurface_get_target (comac_surface_t *surface)
 {
-    return ((cairo_surface_subsurface_t *) surface)->target;
+    return ((comac_surface_subsurface_t *) surface)->target;
 }
 
 static inline void
-_cairo_surface_subsurface_offset (cairo_surface_t *surface,
+_comac_surface_subsurface_offset (comac_surface_t *surface,
 				  int *x, int *y)
 {
-    cairo_surface_subsurface_t *ss = (cairo_surface_subsurface_t *) surface;
+    comac_surface_subsurface_t *ss = (comac_surface_subsurface_t *) surface;
     *x += ss->extents.x;
     *y += ss->extents.y;
 }
 
-static inline cairo_surface_t *
-_cairo_surface_subsurface_get_target_with_offset (cairo_surface_t *surface,
+static inline comac_surface_t *
+_comac_surface_subsurface_get_target_with_offset (comac_surface_t *surface,
 						  int *x, int *y)
 {
-    cairo_surface_subsurface_t *ss = (cairo_surface_subsurface_t *) surface;
+    comac_surface_subsurface_t *ss = (comac_surface_subsurface_t *) surface;
     *x += ss->extents.x;
     *y += ss->extents.y;
     return ss->target;
 }
 
-static inline cairo_bool_t
-_cairo_surface_is_subsurface (cairo_surface_t *surface)
+static inline comac_bool_t
+_comac_surface_is_subsurface (comac_surface_t *surface)
 {
-    return surface->backend->type == CAIRO_SURFACE_TYPE_SUBSURFACE;
+    return surface->backend->type == COMAC_SURFACE_TYPE_SUBSURFACE;
 }
 
-#endif /* CAIRO_SURFACE_SUBSURFACE_INLINE_H */
+#endif /* COMAC_SURFACE_SUBSURFACE_INLINE_H */

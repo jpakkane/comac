@@ -31,30 +31,30 @@
 #define SIZE 8
 
 /*
-  cairo_arc can hang in an infinite loop if given huge (so big that
+  comac_arc can hang in an infinite loop if given huge (so big that
   adding/subtracting 4*M_PI to them doesn't change the value because
   of floating point rounding).
 
-  The purpose of this test is to check that cairo doesn't hang or crash.
+  The purpose of this test is to check that comac doesn't hang or crash.
 */
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
-    cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_paint (cr);
+    comac_set_source_rgb (cr, 1, 1, 1);
+    comac_paint (cr);
 
     /* Check if the code that guarantees start <= end hangs */
-    cairo_arc (cr, 0, 0, 1, 1024 / DBL_EPSILON * M_PI, 0);
+    comac_arc (cr, 0, 0, 1, 1024 / DBL_EPSILON * M_PI, 0);
 
     /* Check if the code that handles huge angles hangs */
-    cairo_arc (cr, 0, 0, 1, 0, 1024 / DBL_EPSILON * M_PI);
+    comac_arc (cr, 0, 0, 1, 0, 1024 / DBL_EPSILON * M_PI);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-CAIRO_TEST (arc_infinite_loop,
-	    "Test cairo_arc with huge angles",
+COMAC_TEST (arc_infinite_loop,
+	    "Test comac_arc with huge angles",
 	    "arc", /* keywords */
 	    NULL, /* requirements */
 	    SIZE, SIZE,

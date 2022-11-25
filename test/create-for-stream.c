@@ -33,15 +33,15 @@
 #include <unistd.h>
 #endif
 
-#if CAIRO_HAS_PS_SURFACE
+#if COMAC_HAS_PS_SURFACE
 #include <comac-ps.h>
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
+#if COMAC_HAS_PDF_SURFACE
 #include <comac-pdf.h>
 #endif
 
-#if CAIRO_HAS_SVG_SURFACE
+#if COMAC_HAS_SVG_SURFACE
 #include <comac-svg.h>
 #endif
 
@@ -63,49 +63,49 @@
 
 #define BASENAME "create-for-stream.out"
 
-static cairo_test_status_t
-draw (cairo_t *cr, int width, int height)
+static comac_test_status_t
+draw (comac_t *cr, int width, int height)
 {
     /* Just draw a rectangle. */
 
-    cairo_rectangle (cr, width / 10., height /10.,
+    comac_rectangle (cr, width / 10., height /10.,
 		     width - 2 * width / 10.,
 		     height - 2 * height /10.);
-    cairo_fill (cr);
+    comac_fill (cr);
 
-    cairo_show_page (cr);
+    comac_show_page (cr);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
 static void
-draw_to (cairo_surface_t *surface)
+draw_to (comac_surface_t *surface)
 {
-    cairo_t *cr;
+    comac_t *cr;
 
-    cr = cairo_create (surface);
+    cr = comac_create (surface);
 
     draw (cr, WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
 
-    cairo_destroy (cr);
+    comac_destroy (cr);
 }
 
 typedef struct _write_closure {
-    const cairo_test_context_t *ctx;
+    const comac_test_context_t *ctx;
     char buffer[MAX_OUTPUT_SIZE];
     size_t index;
-    cairo_test_status_t status;
+    comac_test_status_t status;
 } write_closure_t;
 
-static cairo_status_t
+static comac_status_t
 bad_write (void		*closure,
 	   const unsigned char	*data,
 	   unsigned int	 length)
 {
-    return CAIRO_STATUS_WRITE_ERROR;
+    return COMAC_STATUS_WRITE_ERROR;
 }
 
-static cairo_status_t
+static comac_status_t
 test_write (void		*closure,
 	    const unsigned char	*data,
 	    unsigned int	 length)
@@ -113,107 +113,107 @@ test_write (void		*closure,
     write_closure_t *wc = closure;
 
     if (wc->index + length >= sizeof wc->buffer) {
-	cairo_test_log (wc->ctx, "Error: out of bounds in write callback\n");
-	wc->status = CAIRO_TEST_FAILURE;
-	return CAIRO_STATUS_SUCCESS;
+	comac_test_log (wc->ctx, "Error: out of bounds in write callback\n");
+	wc->status = COMAC_TEST_FAILURE;
+	return COMAC_STATUS_SUCCESS;
     }
 
     memcpy (&wc->buffer[wc->index], data, length);
     wc->index += length;
 
-    return CAIRO_STATUS_SUCCESS;
+    return COMAC_STATUS_SUCCESS;
 }
 
 
-typedef cairo_surface_t *
+typedef comac_surface_t *
 (*file_constructor_t) (const char	       *filename,
 		       double			width_in_points,
 		       double			height_in_points);
 
-typedef cairo_surface_t *
-(*stream_constructor_t) (cairo_write_func_t	write_func,
+typedef comac_surface_t *
+(*stream_constructor_t) (comac_write_func_t	write_func,
 			 void		       *closure,
 			 double			width_in_points,
 			 double			height_in_points);
 
-static cairo_test_status_t
-test_surface (const cairo_test_context_t *ctx,
+static comac_test_status_t
+test_surface (const comac_test_context_t *ctx,
 	      const char                 *backend,
 	      const char		 *filename,
 	      file_constructor_t	 file_constructor,
 	      stream_constructor_t	 stream_constructor)
 {
-    cairo_surface_t *surface;
+    comac_surface_t *surface;
     write_closure_t wc;
     char file_contents[MAX_OUTPUT_SIZE];
-    cairo_status_t status;
+    comac_status_t status;
     FILE *fp;
 
     /* test propagation of user errors */
     surface = stream_constructor (bad_write, &wc,
 				  WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
 
-    status = cairo_surface_status (surface);
+    status = comac_surface_status (surface);
     if (status) {
-	cairo_test_log (ctx,
+	comac_test_log (ctx,
 			"%s: Failed to create surface for stream.\n",
 			backend);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     draw_to (surface);
 
-    cairo_surface_finish (surface);
-    status = cairo_surface_status (surface);
-    cairo_surface_destroy (surface);
+    comac_surface_finish (surface);
+    status = comac_surface_status (surface);
+    comac_surface_destroy (surface);
 
-    if (status != CAIRO_STATUS_WRITE_ERROR) {
-	cairo_test_log (ctx,
+    if (status != COMAC_STATUS_WRITE_ERROR) {
+	comac_test_log (ctx,
 			"%s: Error: expected \"write error\" from bad_write(), but received \"%s\".\n",
-			backend, cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+			backend, comac_status_to_string (status));
+	return COMAC_TEST_FAILURE;
     }
 
     /* test propagation of file errors - for now this is unix-only */
 #ifndef _WIN32
     if (access("/dev/full", W_OK) == 0) {
 	surface = file_constructor ("/dev/full", WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
-	cairo_surface_finish (surface);
-	status = cairo_surface_status (surface);
-	cairo_surface_destroy (surface);
+	comac_surface_finish (surface);
+	status = comac_surface_status (surface);
+	comac_surface_destroy (surface);
 
-	if (status != CAIRO_STATUS_WRITE_ERROR) {
-	    cairo_test_log (ctx,
+	if (status != COMAC_STATUS_WRITE_ERROR) {
+	    comac_test_log (ctx,
 			    "%s: Error: expected \"write error\" from /dev/full, but received \"%s\".\n",
-			    backend, cairo_status_to_string (status));
-	    return CAIRO_TEST_FAILURE;
+			    backend, comac_status_to_string (status));
+	    return COMAC_TEST_FAILURE;
 	}
     } else {
-	cairo_test_log (ctx,
+	comac_test_log (ctx,
 			"/dev/full does not exist; skipping write test.\n");
     }
 #endif
 
     /* construct the real surface */
     wc.ctx = ctx;
-    wc.status = CAIRO_TEST_SUCCESS;
+    wc.status = COMAC_TEST_SUCCESS;
     wc.index = 0;
 
     surface = stream_constructor (test_write, &wc,
 				  WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
 
-    status = cairo_surface_status (surface);
+    status = comac_surface_status (surface);
     if (status) {
-	cairo_test_log (ctx,
+	comac_test_log (ctx,
 			"%s: Failed to create surface for stream.\n", backend);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     draw_to (surface);
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
-    if (wc.status != CAIRO_TEST_SUCCESS) {
+    if (wc.status != COMAC_TEST_SUCCESS) {
 	/* Error already reported. */
 	return wc.status;
     }
@@ -221,104 +221,104 @@ test_surface (const cairo_test_context_t *ctx,
     surface = file_constructor (filename,
 				WIDTH_IN_POINTS, HEIGHT_IN_POINTS);
 
-    status = cairo_surface_status (surface);
+    status = comac_surface_status (surface);
     if (status) {
-	cairo_test_log (ctx, "%s: Failed to create surface for file %s: %s.\n",
-			backend, filename, cairo_status_to_string (status));
-	return CAIRO_TEST_FAILURE;
+	comac_test_log (ctx, "%s: Failed to create surface for file %s: %s.\n",
+			backend, filename, comac_status_to_string (status));
+	return COMAC_TEST_FAILURE;
     }
 
     draw_to (surface);
 
-    cairo_surface_destroy (surface);
+    comac_surface_destroy (surface);
 
     fp = fopen (filename, "r");
     if (fp == NULL) {
-	cairo_test_log (ctx, "%s: Failed to open %s for reading: %s.\n",
+	comac_test_log (ctx, "%s: Failed to open %s for reading: %s.\n",
 			backend, filename, strerror (errno));
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     if (fread (file_contents, 1, wc.index, fp) != wc.index) {
-	cairo_test_log (ctx, "%s: Failed to read %s: %s.\n",
+	comac_test_log (ctx, "%s: Failed to read %s: %s.\n",
 			backend, filename, strerror (errno));
 	fclose (fp);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     if (memcmp (file_contents, wc.buffer, wc.index) != 0) {
-	cairo_test_log (ctx, "%s: Stream based output differ from file output for %s.\n",
+	comac_test_log (ctx, "%s: Stream based output differ from file output for %s.\n",
 			backend, filename);
 	fclose (fp);
-	return CAIRO_TEST_FAILURE;
+	return COMAC_TEST_FAILURE;
     }
 
     fclose (fp);
 
-    return CAIRO_TEST_SUCCESS;
+    return COMAC_TEST_SUCCESS;
 }
 
-static cairo_test_status_t
-preamble (cairo_test_context_t *ctx)
+static comac_test_status_t
+preamble (comac_test_context_t *ctx)
 {
-    cairo_test_status_t status = CAIRO_TEST_UNTESTED;
-    cairo_test_status_t test_status;
+    comac_test_status_t status = COMAC_TEST_UNTESTED;
+    comac_test_status_t test_status;
     char *filename;
-    const char *path = cairo_test_mkdir (CAIRO_TEST_OUTPUT_DIR) ? CAIRO_TEST_OUTPUT_DIR : ".";
+    const char *path = comac_test_mkdir (COMAC_TEST_OUTPUT_DIR) ? COMAC_TEST_OUTPUT_DIR : ".";
 
-#if CAIRO_HAS_PS_SURFACE
-    if (cairo_test_is_target_enabled (ctx, "ps2") ||
-	cairo_test_is_target_enabled (ctx, "ps3"))
+#if COMAC_HAS_PS_SURFACE
+    if (comac_test_is_target_enabled (ctx, "ps2") ||
+	comac_test_is_target_enabled (ctx, "ps3"))
     {
-	if (status == CAIRO_TEST_UNTESTED)
-	    status = CAIRO_TEST_SUCCESS;
+	if (status == COMAC_TEST_UNTESTED)
+	    status = COMAC_TEST_SUCCESS;
 
 	xasprintf (&filename, "%s/%s", path, BASENAME ".ps");
 	test_status = test_surface (ctx, "ps", filename,
-				    cairo_ps_surface_create,
-				    cairo_ps_surface_create_for_stream);
-	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+				    comac_ps_surface_create,
+				    comac_ps_surface_create_for_stream);
+	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name, "ps",
 			test_status ? "FAIL" : "PASS");
-	if (status == CAIRO_TEST_SUCCESS)
+	if (status == COMAC_TEST_SUCCESS)
 	    status = test_status;
 	free (filename);
     }
 #endif
 
-#if CAIRO_HAS_PDF_SURFACE
-    if (cairo_test_is_target_enabled (ctx, "pdf")) {
-	if (status == CAIRO_TEST_UNTESTED)
-	    status = CAIRO_TEST_SUCCESS;
+#if COMAC_HAS_PDF_SURFACE
+    if (comac_test_is_target_enabled (ctx, "pdf")) {
+	if (status == COMAC_TEST_UNTESTED)
+	    status = COMAC_TEST_SUCCESS;
 
 	xasprintf (&filename, "%s/%s", path, BASENAME ".pdf");
 	test_status = test_surface (ctx, "pdf", filename,
-				    cairo_pdf_surface_create,
-				    cairo_pdf_surface_create_for_stream);
-	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+				    comac_pdf_surface_create,
+				    comac_pdf_surface_create_for_stream);
+	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name, "pdf",
 			test_status ? "FAIL" : "PASS");
-	if (status == CAIRO_TEST_SUCCESS)
+	if (status == COMAC_TEST_SUCCESS)
 	    status = test_status;
 	free (filename);
     }
 #endif
 
-#if CAIRO_HAS_SVG_SURFACE
-    if (cairo_test_is_target_enabled (ctx, "svg11") ||
-	cairo_test_is_target_enabled (ctx, "svg12"))
+#if COMAC_HAS_SVG_SURFACE
+    if (comac_test_is_target_enabled (ctx, "svg11") ||
+	comac_test_is_target_enabled (ctx, "svg12"))
     {
-	if (status == CAIRO_TEST_UNTESTED)
-	    status = CAIRO_TEST_SUCCESS;
+	if (status == COMAC_TEST_UNTESTED)
+	    status = COMAC_TEST_SUCCESS;
 
 	xasprintf (&filename, "%s/%s", path, BASENAME ".svg");
 	test_status = test_surface (ctx, "svg", filename,
-				    cairo_svg_surface_create,
-				    cairo_svg_surface_create_for_stream);
-	cairo_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
+				    comac_svg_surface_create,
+				    comac_svg_surface_create_for_stream);
+	comac_test_log (ctx, "TEST: %s TARGET: %s RESULT: %s\n",
 			ctx->test->name, "svg",
 			test_status ? "FAIL" : "PASS");
-	if (status == CAIRO_TEST_SUCCESS)
+	if (status == COMAC_TEST_SUCCESS)
 	    status = test_status;
 	free (filename);
     }
@@ -327,7 +327,7 @@ preamble (cairo_test_context_t *ctx)
     return status;
 }
 
-CAIRO_TEST (create_for_stream,
+COMAC_TEST (create_for_stream,
 	    "Checks creating vector surfaces with user defined I/O\n",
 	    "stream", /* keywords */
 	    "target=vector", /* requirements */
