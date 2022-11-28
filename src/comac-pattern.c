@@ -3486,9 +3486,9 @@ _comac_pattern_is_clear (const comac_pattern_t *abstract_pattern)
 	return FALSE;
 
     pattern = (comac_pattern_union_t *) abstract_pattern;
-    assert (pattern->solid.color.colorspace == COMAC_COLORSPACE_RGB);
     switch (abstract_pattern->type) {
     case COMAC_PATTERN_TYPE_SOLID:
+	assert (pattern->solid.color.colorspace == COMAC_COLORSPACE_RGB);
 	return COMAC_COLOR_IS_CLEAR (&pattern->solid.color.c.rgb);
     case COMAC_PATTERN_TYPE_SURFACE:
 	return _surface_is_clear (&pattern->surface);

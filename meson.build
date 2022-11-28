@@ -539,6 +539,10 @@ endforeach
 executable('pdftest', 'pdftest.c',
   dependencies: libcomac_dep)
 
+
+executable('imagepdf', 'imagepdf.c',
+  dependencies: libcomac_dep)
+
 # summary
 summary({
         'Image': true,
