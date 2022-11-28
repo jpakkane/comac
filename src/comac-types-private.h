@@ -227,15 +227,24 @@ struct _comac_rgb_color {
     unsigned short alpha_short;
 };
 
-struct _comac_fake_color {
-    int do_not_use;
+struct _comac_gray_color {
+    double value;
+    double alpha;
+};
+
+struct _comac_cmyk_color {
+    double c;
+    double m;
+    double y;
+    double alpha;
 };
 
 struct _comac_color {
     comac_colorspace_t colorspace;
     union {
 	struct _comac_rgb_color rgb;
-	struct _comac_fake_color do_not_use;
+	struct _comac_gray_color gray;
+	struct _comac_cmyk_color cmyk;
     } c;
 };
 

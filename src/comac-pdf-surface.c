@@ -231,35 +231,6 @@ typedef struct {
     double k;
 } CMYKColor;
 
-static double
-rgb2gray (double r, double g, double b)
-{
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-static double
-color2gray (const comac_color_t *c)
-{
-    assert (c->colorspace == COMAC_COLORSPACE_RGB);
-    return rgb2gray (c->c.rgb.red, c->c.rgb.green, c->c.rgb.blue);
-}
-
-static CMYKColor
-color2cmyk (const comac_color_t *c)
-{
-    CMYKColor result;
-    assert (c->colorspace == COMAC_COLORSPACE_RGB);
-    result.k = 1.0 - MAX (c->c.rgb.red, MAX (c->c.rgb.green, c->c.rgb.blue));
-    if (result.k > 0.99) {
-	result.m = result.y = result.c = 0.0;
-    } else {
-	result.c = (1.0 - c->c.rgb.red - result.k) / (1.0 - result.k);
-	result.m = (1.0 - c->c.rgb.green - result.k) / (1.0 - result.k);
-	result.y = (1.0 - c->c.rgb.blue - result.k) / (1.0 - result.k);
-    }
-    return result;
-}
-
 static const char *_comac_pdf_supported_mime_types[] = {
     COMAC_MIME_TYPE_JPEG,
     COMAC_MIME_TYPE_JP2,
@@ -5620,17 +5591,30 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 					     solid_color->c.rgb.green,
 					     solid_color->c.rgb.blue);
 	    } else if (surface->base.colorspace == COMAC_COLORSPACE_GRAY) {
-		_comac_output_stream_printf (surface->output,
-					     "%f ",
-					     color2gray (solid_color));
+		double gray[2];
+		comac_default_color_convert_func (
+		    COMAC_COLORSPACE_RGB,
+		    (double *) &solid_color->c.rgb,
+		    COMAC_COLORSPACE_GRAY,
+		    gray,
+		    COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+		    NULL);
+		_comac_output_stream_printf (surface->output, "%f ", gray[0]);
 	    } else if (surface->base.colorspace == COMAC_COLORSPACE_CMYK) {
-		CMYKColor cc = color2cmyk (solid_color);
+		double cmyk[5];
+		comac_default_color_convert_func (
+		    COMAC_COLORSPACE_RGB,
+		    (double *) &solid_color->c.rgb,
+		    COMAC_COLORSPACE_CMYK,
+		    cmyk,
+		    COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+		    NULL);
 		_comac_output_stream_printf (surface->output,
 					     "%f %f %f %f ",
-					     cc.c,
-					     cc.m,
-					     cc.y,
-					     cc.k);
+					     cmyk[0],
+					     cmyk[1],
+					     cmyk[2],
+					     cmyk[3]);
 	    } else {
 		printf ("Unreachable!\n");
 		abort ();

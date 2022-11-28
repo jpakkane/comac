@@ -34,8 +34,110 @@
 
 #include "comacint.h"
 
-int
-placeholder_function ()
+static void
+rgb2cmyk (const double *rgb, double *cmyk)
 {
-    return 5;
+    const int red = 0;
+    const int green = 1;
+    const int blue = 2;
+    const int c = 0;
+    const int m = 1;
+    const int y = 2;
+    const int k = 3;
+    cmyk[k] = 1.0 - MAX (rgb[red], MAX (rgb[green], rgb[blue]));
+    if (cmyk[k] > 0.99) {
+	cmyk[m] = cmyk[y] = cmyk[c] = 0.0;
+    } else {
+	cmyk[c] = (1.0 - rgb[red] - cmyk[k]) / (1.0 - cmyk[k]);
+	cmyk[m] = (1.0 - rgb[green] - cmyk[k]) / (1.0 - cmyk[k]);
+	cmyk[y] = (1.0 - rgb[blue] - cmyk[k]) / (1.0 - cmyk[k]);
+    }
+    cmyk[4] = rgb[3];
+}
+
+static void
+cmyk2rbg (const double *cmyk, double *rgb)
+{
+    const int red = 0;
+    const int green = 1;
+    const int blue = 2;
+    const int c = 0;
+    const int m = 1;
+    const int y = 2;
+    const int k = 3;
+    rgb[red] = (1.0 - cmyk[c]) * (1.0 - cmyk[k]);
+    rgb[green] = (1.0 - cmyk[m]) * (1.0 - cmyk[k]);
+    rgb[blue] = (1.0 - cmyk[y]) * (1.0 - cmyk[k]);
+    rgb[3] = cmyk[4];
+}
+
+void
+comac_default_color_convert_func (comac_colorspace_t from_colorspace,
+				  const double *from_data,
+				  comac_colorspace_t to_colorspace,
+				  double *to_data,
+				  rendering_intent_t intent,
+				  void *ctx)
+{
+    (void) intent;
+    (void) ctx;
+
+    switch (to_colorspace) {
+    case COMAC_COLORSPACE_RGB:
+	switch (from_colorspace) {
+	case COMAC_COLORSPACE_RGB:
+	    memcpy (to_data, from_data, 4 * sizeof (double));
+	    break;
+	case COMAC_COLORSPACE_GRAY:
+	    to_data[0] = to_data[1] = to_data[2] = from_data[0];
+	    to_data[3] = from_data[1];
+	    break;
+	case COMAC_COLORSPACE_CMYK:
+	    cmyk2rbg (from_data, to_data);
+	    break;
+	case COMAC_COLORSPACE_NUM_COLORSPACES:
+	    abort ();
+	}
+	break;
+
+    case COMAC_COLORSPACE_GRAY:
+	switch (from_colorspace) {
+	case COMAC_COLORSPACE_RGB:
+	    to_data[0] = 0.2126 * from_data[0] + 0.7152 * from_data[1] +
+			 0.0722 * from_data[2];
+	    to_data[1] = from_data[3];
+	    break;
+	case COMAC_COLORSPACE_GRAY:
+	    memcpy (to_data, from_data, 2 * sizeof (double));
+	    break;
+	case COMAC_COLORSPACE_CMYK:
+	    to_data[0] = from_data[3];
+	    to_data[1] = from_data[4];
+	    break;
+	case COMAC_COLORSPACE_NUM_COLORSPACES:
+	    abort ();
+	}
+	break;
+
+    case COMAC_COLORSPACE_CMYK:
+	switch (from_colorspace) {
+	case COMAC_COLORSPACE_RGB:
+	    rgb2cmyk (from_data, to_data);
+	    break;
+	case COMAC_COLORSPACE_GRAY:
+	    to_data[0] = to_data[1] = to_data[2] = 0;
+	    to_data[3] = from_data[0];
+	    to_data[4] = from_data[1];
+	    break;
+	case COMAC_COLORSPACE_CMYK:
+	    memcpy (to_data, from_data, 5 * sizeof (double));
+	    break;
+	case COMAC_COLORSPACE_NUM_COLORSPACES:
+	    abort ();
+	}
+	break;
+
+    case COMAC_COLORSPACE_NUM_COLORSPACES:
+	abort ();
+    }
 }

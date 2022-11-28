@@ -44,7 +44,41 @@ typedef enum {
     COMAC_COLORSPACE_NUM_COLORSPACES,
 } comac_colorspace_t;
 
-int
-placeholder_function ();
+typedef enum {
+    COMAC_RENDERING_INTENT_ABSOLUTE_COLORIMETRIC,
+    COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+    COMAC_RENDERING_INTENT_SATURATION,
+    COMAC_RENDERING_INTENT_PERCEPTUAL,
+} rendering_intent_t;
+
+/*
+ * FIXME, add typedefs for this function, like:
+ *
+ * typedef struct {
+ *   double r;
+ *   double g;
+ *   double b;
+ *   double a;
+ * } callback_rgb;
+ *
+ * So that end users can do
+ *
+ * const callback_rgb *d = (const callbac_rgb) in_data;
+ */
+
+typedef void (*color_convert_cb) (comac_colorspace_t,
+				  const double *,
+				  comac_colorspace_t,
+				  double *,
+				  rendering_intent_t,
+				  void *);
+
+void
+comac_default_color_convert_func (comac_colorspace_t from_colorspace,
+				  const double *from_data,
+				  comac_colorspace_t to_colorspace,
+				  double *to_data,
+				  rendering_intent_t intent,
+				  void *ctx);
 
 #endif // COMAC_COLORMANAGEMENT_H
