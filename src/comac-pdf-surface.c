@@ -240,20 +240,22 @@ rgb2gray (double r, double g, double b)
 static double
 color2gray (const comac_color_t *c)
 {
-    return rgb2gray (c->red, c->green, c->blue);
+    assert (c->colorspace == COMAC_COLORSPACE_RGB);
+    return rgb2gray (c->c.rgb.red, c->c.rgb.green, c->c.rgb.blue);
 }
 
 static CMYKColor
 color2cmyk (const comac_color_t *c)
 {
     CMYKColor result;
-    result.k = 1.0 - MAX (c->red, MAX (c->green, c->blue));
+    assert (c->colorspace == COMAC_COLORSPACE_RGB);
+    result.k = 1.0 - MAX (c->c.rgb.red, MAX (c->c.rgb.green, c->c.rgb.blue));
     if (result.k > 0.99) {
 	result.m = result.y = result.c = 0.0;
     } else {
-	result.c = (1.0 - c->red - result.k) / (1.0 - result.k);
-	result.m = (1.0 - c->green - result.k) / (1.0 - result.k);
-	result.y = (1.0 - c->blue - result.k) / (1.0 - result.k);
+	result.c = (1.0 - c->c.rgb.red - result.k) / (1.0 - result.k);
+	result.m = (1.0 - c->c.rgb.green - result.k) / (1.0 - result.k);
+	result.y = (1.0 - c->c.rgb.blue - result.k) / (1.0 - result.k);
     }
     return result;
 }
@@ -5599,11 +5601,13 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 	solid_color = &solid->color;
     }
 
+    // HACK, update do handle non-rgb colors.
+    assert (solid_color->colorspace == COMAC_COLORSPACE_RGB);
     if (solid_color != NULL) {
 	if (surface->current_pattern_is_solid_color == FALSE ||
-	    surface->current_color_red != solid_color->red ||
-	    surface->current_color_green != solid_color->green ||
-	    surface->current_color_blue != solid_color->blue ||
+	    surface->current_color_red != solid_color->c.rgb.red ||
+	    surface->current_color_green != solid_color->c.rgb.green ||
+	    surface->current_color_blue != solid_color->c.rgb.blue ||
 	    surface->current_color_is_stroke != is_stroke) {
 	    status = _comac_pdf_operators_flush (&surface->pdf_operators);
 	    if (unlikely (status))
@@ -5612,9 +5616,9 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 	    if (surface->base.colorspace == COMAC_COLORSPACE_RGB) {
 		_comac_output_stream_printf (surface->output,
 					     "%f %f %f ",
-					     solid_color->red,
-					     solid_color->green,
-					     solid_color->blue);
+					     solid_color->c.rgb.red,
+					     solid_color->c.rgb.green,
+					     solid_color->c.rgb.blue);
 	    } else if (surface->base.colorspace == COMAC_COLORSPACE_GRAY) {
 		_comac_output_stream_printf (surface->output,
 					     "%f ",
@@ -5643,16 +5647,16 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 		    "%s ",
 		    _comac_pdf_set_nonstroke_color[surface->base.colorspace]);
 
-	    surface->current_color_red = solid_color->red;
-	    surface->current_color_green = solid_color->green;
-	    surface->current_color_blue = solid_color->blue;
+	    surface->current_color_red = solid_color->c.rgb.red;
+	    surface->current_color_green = solid_color->c.rgb.green;
+	    surface->current_color_blue = solid_color->c.rgb.blue;
 	    surface->current_color_is_stroke = is_stroke;
 	}
 
 	if (surface->current_pattern_is_solid_color == FALSE ||
-	    surface->current_color_alpha != solid_color->alpha) {
+	    surface->current_color_alpha != solid_color->c.rgb.alpha) {
 	    status = _comac_pdf_surface_add_alpha (surface,
-						   solid_color->alpha,
+						   solid_color->c.rgb.alpha,
 						   &alpha);
 	    if (unlikely (status))
 		return status;
@@ -5662,7 +5666,7 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 		return status;
 
 	    _comac_output_stream_printf (surface->output, "/a%d gs\n", alpha);
-	    surface->current_color_alpha = solid_color->alpha;
+	    surface->current_color_alpha = solid_color->c.rgb.alpha;
 	}
 
 	surface->current_pattern_is_solid_color = TRUE;

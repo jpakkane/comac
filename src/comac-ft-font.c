@@ -2560,10 +2560,11 @@ _comac_ft_scaled_glyph_init_surface (comac_ft_scaled_font_t *scaled_font,
 	}
 
 	if (uses_foreground_color) {
-	    color.red = (FT_Byte) (foreground_color->red * 0xFF);
-	    color.green = (FT_Byte) (foreground_color->green * 0xFF);
-	    color.blue = (FT_Byte) (foreground_color->blue * 0xFF);
-	    color.alpha = (FT_Byte) (foreground_color->alpha * 0xFF);
+	    assert (foreground_color->colorspace == COMAC_COLORSPACE_RGB);
+	    color.red = (FT_Byte) (foreground_color->c.rgb.red * 0xFF);
+	    color.green = (FT_Byte) (foreground_color->c.rgb.green * 0xFF);
+	    color.blue = (FT_Byte) (foreground_color->c.rgb.blue * 0xFF);
+	    color.alpha = (FT_Byte) (foreground_color->c.rgb.alpha * 0xFF);
 	    FT_Palette_Set_Foreground_Color (face, color);
 	}
 

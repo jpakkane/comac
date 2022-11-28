@@ -89,27 +89,29 @@ static const comac_solid_pattern_t _comac_pattern_nil = {{
     1.0 /* opacity */
 }};
 
-static const comac_solid_pattern_t _comac_pattern_nil_null_pointer = {{
-    COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
-    COMAC_STATUS_NULL_POINTER,	   /* status */
-    {0, 0, 0, NULL},		   /* user_data */
-    {NULL, NULL},		   /* observers */
-
-    COMAC_PATTERN_TYPE_SOLID,	   /* type */
-    COMAC_FILTER_DEFAULT,	   /* filter */
-    COMAC_EXTEND_GRADIENT_DEFAULT, /* extend */
-    FALSE,			   /* has component alpha */
-    FALSE,			   /* is_userfont_foreground */
+static const comac_solid_pattern_t _comac_pattern_nil_null_pointer = {
     {
-	1.,
-	0.,
-	0.,
-	1.,
-	0.,
-	0.,
-    },	/* matrix */
-    1.0 /* opacity */
-}};
+	COMAC_REFERENCE_COUNT_INVALID, /* ref_count */
+	COMAC_STATUS_NULL_POINTER,     /* status */
+	{0, 0, 0, NULL},	       /* user_data */
+	{NULL, NULL},		       /* observers */
+
+	COMAC_PATTERN_TYPE_SOLID,      /* type */
+	COMAC_FILTER_DEFAULT,	       /* filter */
+	COMAC_EXTEND_GRADIENT_DEFAULT, /* extend */
+	FALSE,			       /* has component alpha */
+	FALSE,			       /* is_userfont_foreground */
+	{
+	    1.,
+	    0.,
+	    0.,
+	    1.,
+	    0.,
+	    0.,
+	},  /* matrix */
+	1.0 /* opacity */
+    },
+    {COMAC_COLORSPACE_RGB, {{}}}};
 
 const comac_solid_pattern_t _comac_pattern_black = {
     {
@@ -133,7 +135,8 @@ const comac_solid_pattern_t _comac_pattern_black = {
 	},  /* matrix */
 	1.0 /* opacity */
     },
-    {0., 0., 0., 1., 0, 0, 0, 0xffff}, /* color (double rgba, short rgba) */
+    {COMAC_COLORSPACE_RGB,
+     {{0., 0., 0., 1., 0, 0, 0, 0xffff}}}, /* color (double rgba, short rgba) */
 };
 
 const comac_solid_pattern_t _comac_pattern_clear = {
@@ -158,7 +161,8 @@ const comac_solid_pattern_t _comac_pattern_clear = {
 	},  /* matrix */
 	1.0 /* opacity */
     },
-    {0., 0., 0., 0., 0, 0, 0, 0}, /* color (double rgba, short rgba) */
+    {COMAC_COLORSPACE_RGB,
+     {{0., 0., 0., 0., 0, 0, 0, 0}}}, /* color (double rgba, short rgba) */
 };
 
 const comac_solid_pattern_t _comac_pattern_white = {
@@ -183,14 +187,15 @@ const comac_solid_pattern_t _comac_pattern_white = {
 	},  /* matrix */
 	1.0 /* opacity */
     },
-    {1.,
-     1.,
-     1.,
-     1.,
-     0xffff,
-     0xffff,
-     0xffff,
-     0xffff}, /* color (double rgba, short rgba) */
+    {COMAC_COLORSPACE_RGB,
+     {{1.,
+       1.,
+       1.,
+       1.,
+       0xffff,
+       0xffff,
+       0xffff,
+       0xffff}}}, /* color (double rgba, short rgba) */
 };
 
 static void
@@ -1770,15 +1775,16 @@ _comac_mesh_pattern_set_corner_color (comac_mesh_pattern_t *mesh,
     assert (corner_num <= 3);
 
     color = &mesh->current_patch->colors[corner_num];
-    color->red = red;
-    color->green = green;
-    color->blue = blue;
-    color->alpha = alpha;
+    color->colorspace = COMAC_COLORSPACE_RGB;
+    color->c.rgb.red = red;
+    color->c.rgb.green = green;
+    color->c.rgb.blue = blue;
+    color->c.rgb.alpha = alpha;
 
-    color->red_short = _comac_color_double_to_short (red);
-    color->green_short = _comac_color_double_to_short (green);
-    color->blue_short = _comac_color_double_to_short (blue);
-    color->alpha_short = _comac_color_double_to_short (alpha);
+    color->c.rgb.red_short = _comac_color_double_to_short (red);
+    color->c.rgb.green_short = _comac_color_double_to_short (green);
+    color->c.rgb.blue_short = _comac_color_double_to_short (blue);
+    color->c.rgb.alpha_short = _comac_color_double_to_short (alpha);
 
     mesh->has_color[corner_num] = TRUE;
 }
@@ -3042,7 +3048,8 @@ _comac_pattern_alpha_range (const comac_pattern_t *pattern,
     switch (pattern->type) {
     case COMAC_PATTERN_TYPE_SOLID: {
 	const comac_solid_pattern_t *solid = (comac_solid_pattern_t *) pattern;
-	alpha_min = alpha_max = solid->color.alpha;
+	assert (solid->color.colorspace == COMAC_COLORSPACE_RGB);
+	alpha_min = alpha_max = solid->color.c.rgb.alpha;
 	break;
     }
 
@@ -3074,13 +3081,15 @@ _comac_pattern_alpha_range (const comac_pattern_t *pattern,
 
 	assert (n >= 1);
 
-	alpha_min = alpha_max = patch[0].colors[0].alpha;
+	assert (patch[0].colors[0].colorspace == COMAC_COLORSPACE_RGB);
+	alpha_min = alpha_max = patch[0].colors[0].c.rgb.alpha;
 	for (i = 0; i < n; i++) {
 	    for (j = 0; j < 4; j++) {
-		if (patch[i].colors[j].alpha < alpha_min)
-		    alpha_min = patch[i].colors[j].alpha;
-		else if (patch[i].colors[j].alpha > alpha_max)
-		    alpha_max = patch[i].colors[j].alpha;
+		assert (patch[0].colors[j].colorspace == COMAC_COLORSPACE_RGB);
+		if (patch[i].colors[j].c.rgb.alpha < alpha_min)
+		    alpha_min = patch[i].colors[j].c.rgb.alpha;
+		else if (patch[i].colors[j].c.rgb.alpha > alpha_max)
+		    alpha_max = patch[i].colors[j].c.rgb.alpha;
 	    }
 	}
 
@@ -3259,7 +3268,8 @@ _comac_pattern_is_constant_alpha (const comac_pattern_t *abstract_pattern,
     pattern = (comac_pattern_union_t *) abstract_pattern;
     switch (pattern->base.type) {
     case COMAC_PATTERN_TYPE_SOLID:
-	*alpha = pattern->solid.color.alpha;
+	assert (pattern->solid.color.colorspace == COMAC_COLORSPACE_RGB);
+	*alpha = pattern->solid.color.c.rgb.alpha;
 	return TRUE;
 
     case COMAC_PATTERN_TYPE_LINEAR:
@@ -3267,7 +3277,8 @@ _comac_pattern_is_constant_alpha (const comac_pattern_t *abstract_pattern,
 	if (_comac_gradient_pattern_is_solid (&pattern->gradient.base,
 					      extents,
 					      &color)) {
-	    *alpha = color.alpha;
+	    assert (color.colorspace == COMAC_COLORSPACE_RGB);
+	    *alpha = color.c.rgb.alpha;
 	    return TRUE;
 	} else {
 	    return FALSE;
@@ -3321,7 +3332,8 @@ _comac_pattern_is_opaque_solid (const comac_pattern_t *pattern)
 
     solid = (comac_solid_pattern_t *) pattern;
 
-    return COMAC_COLOR_IS_OPAQUE (&solid->color);
+    assert (solid->color.colorspace == COMAC_COLORSPACE_RGB);
+    return COMAC_COLOR_IS_OPAQUE (&solid->color.c.rgb);
 }
 
 static comac_bool_t
@@ -3474,9 +3486,10 @@ _comac_pattern_is_clear (const comac_pattern_t *abstract_pattern)
 	return FALSE;
 
     pattern = (comac_pattern_union_t *) abstract_pattern;
+    assert (pattern->solid.color.colorspace == COMAC_COLORSPACE_RGB);
     switch (abstract_pattern->type) {
     case COMAC_PATTERN_TYPE_SOLID:
-	return COMAC_COLOR_IS_CLEAR (&pattern->solid.color);
+	return COMAC_COLOR_IS_CLEAR (&pattern->solid.color.c.rgb);
     case COMAC_PATTERN_TYPE_SURFACE:
 	return _surface_is_clear (&pattern->surface);
     case COMAC_PATTERN_TYPE_RASTER_SOURCE:
@@ -4722,14 +4735,15 @@ comac_mesh_pattern_get_corner_color_rgba (comac_pattern_t *pattern,
 
     patch = _comac_array_index_const (&mesh->patches, patch_num);
 
+    assert (patch->colors[corner_num].colorspace == COMAC_COLORSPACE_RGB);
     if (red)
-	*red = patch->colors[corner_num].red;
+	*red = patch->colors[corner_num].c.rgb.red;
     if (green)
-	*green = patch->colors[corner_num].green;
+	*green = patch->colors[corner_num].c.rgb.green;
     if (blue)
-	*blue = patch->colors[corner_num].blue;
+	*blue = patch->colors[corner_num].c.rgb.blue;
     if (alpha)
-	*alpha = patch->colors[corner_num].alpha;
+	*alpha = patch->colors[corner_num].c.rgb.alpha;
 
     return COMAC_STATUS_SUCCESS;
 }

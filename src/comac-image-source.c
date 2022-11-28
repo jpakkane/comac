@@ -233,10 +233,11 @@ _pixman_image_for_color (const comac_color_t *comac_color)
     }
 #endif
 
-    color.red = comac_color->red_short;
-    color.green = comac_color->green_short;
-    color.blue = comac_color->blue_short;
-    color.alpha = comac_color->alpha_short;
+    assert (comac_color->colorspace == COMAC_COLORSPACE_RGB);
+    color.red = comac_color->c.rgb.red_short;
+    color.green = comac_color->c.rgb.green_short;
+    color.blue = comac_color->c.rgb.blue_short;
+    color.alpha = comac_color->c.rgb.alpha_short;
 
     image = pixman_image_create_solid_fill (&color);
 #if PIXMAN_HAS_ATOMIC_OPS

@@ -82,9 +82,10 @@ encode_color_component (unsigned char *p, double color)
 static unsigned char *
 encode_color (unsigned char *p, const comac_color_t *color)
 {
-    p = encode_color_component (p, color->red);
-    p = encode_color_component (p, color->green);
-    p = encode_color_component (p, color->blue);
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    p = encode_color_component (p, color->c.rgb.red);
+    p = encode_color_component (p, color->c.rgb.green);
+    p = encode_color_component (p, color->c.rgb.blue);
 
     return p;
 }
@@ -92,7 +93,8 @@ encode_color (unsigned char *p, const comac_color_t *color)
 static unsigned char *
 encode_alpha (unsigned char *p, const comac_color_t *color)
 {
-    p = encode_color_component (p, color->alpha);
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    p = encode_color_component (p, color->c.rgb.alpha);
 
     return p;
 }

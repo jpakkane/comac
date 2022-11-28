@@ -910,35 +910,38 @@ _emit_solid_pattern (comac_script_surface_t *surface,
     comac_solid_pattern_t *solid = (comac_solid_pattern_t *) pattern;
     comac_script_context_t *ctx = to_context (surface);
 
-    if (! COMAC_COLOR_IS_OPAQUE (&solid->color)) {
+    assert (solid->color.colorspace == COMAC_COLORSPACE_RGB);
+    if (! COMAC_COLOR_IS_OPAQUE (&solid->color.c.rgb)) {
 	if (! (surface->base.content & COMAC_CONTENT_COLOR) ||
-	    ((solid->color.red_short == 0 ||
-	      solid->color.red_short == 0xffff) &&
-	     (solid->color.green_short == 0 ||
-	      solid->color.green_short == 0xffff) &&
-	     (solid->color.blue_short == 0 ||
-	      solid->color.blue_short == 0xffff))) {
+	    ((solid->color.c.rgb.red_short == 0 ||
+	      solid->color.c.rgb.red_short == 0xffff) &&
+	     (solid->color.c.rgb.green_short == 0 ||
+	      solid->color.c.rgb.green_short == 0xffff) &&
+	     (solid->color.c.rgb.blue_short == 0 ||
+	      solid->color.c.rgb.blue_short == 0xffff))) {
 	    _comac_output_stream_printf (ctx->stream,
 					 "%f a",
-					 solid->color.alpha);
+					 solid->color.c.rgb.alpha);
 	} else {
 	    _comac_output_stream_printf (ctx->stream,
 					 "%f %f %f %f rgba",
-					 solid->color.red,
-					 solid->color.green,
-					 solid->color.blue,
-					 solid->color.alpha);
+					 solid->color.c.rgb.red,
+					 solid->color.c.rgb.green,
+					 solid->color.c.rgb.blue,
+					 solid->color.c.rgb.alpha);
 	}
     } else {
-	if (solid->color.red_short == solid->color.green_short &&
-	    solid->color.red_short == solid->color.blue_short) {
-	    _comac_output_stream_printf (ctx->stream, "%f g", solid->color.red);
+	if (solid->color.c.rgb.red_short == solid->color.c.rgb.green_short &&
+	    solid->color.c.rgb.red_short == solid->color.c.rgb.blue_short) {
+	    _comac_output_stream_printf (ctx->stream,
+					 "%f g",
+					 solid->color.c.rgb.red);
 	} else {
 	    _comac_output_stream_printf (ctx->stream,
 					 "%f %f %f rgb",
-					 solid->color.red,
-					 solid->color.green,
-					 solid->color.blue);
+					 solid->color.c.rgb.red,
+					 solid->color.c.rgb.green,
+					 solid->color.c.rgb.blue);
 	}
     }
 

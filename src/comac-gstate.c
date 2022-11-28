@@ -1064,11 +1064,12 @@ _reduce_op (comac_gstate_t *gstate)
     pattern = gstate->source;
     if (pattern->type == COMAC_PATTERN_TYPE_SOLID) {
 	const comac_solid_pattern_t *solid = (comac_solid_pattern_t *) pattern;
-	if (solid->color.alpha_short <= 0x00ff) {
+	assert (solid->color.colorspace == COMAC_COLORSPACE_RGB);
+	if (solid->color.c.rgb.alpha_short <= 0x00ff) {
 	    op = COMAC_OPERATOR_CLEAR;
 	} else if ((gstate->target->content & COMAC_CONTENT_ALPHA) == 0) {
-	    if ((solid->color.red_short | solid->color.green_short |
-		 solid->color.blue_short) <= 0x00ff) {
+	    if ((solid->color.c.rgb.red_short | solid->color.c.rgb.green_short |
+		 solid->color.c.rgb.blue_short) <= 0x00ff) {
 		op = COMAC_OPERATOR_CLEAR;
 	    }
 	}
@@ -1180,15 +1181,21 @@ _comac_gstate_mask (comac_gstate_t *gstate, comac_pattern_t *mask)
 
 	if (mask_pattern.base.has_component_alpha) {
 #define M(R, A, B, c) R.c = A.c * B.c
-	    M (combined, solid->color, mask_pattern.solid.color, red);
-	    M (combined, solid->color, mask_pattern.solid.color, green);
-	    M (combined, solid->color, mask_pattern.solid.color, blue);
-	    M (combined, solid->color, mask_pattern.solid.color, alpha);
+	    assert (solid->color.colorspace == COMAC_COLORSPACE_RGB);
+	    assert (mask_pattern.solid.color.colorspace ==
+		    COMAC_COLORSPACE_RGB);
+	    combined.colorspace = COMAC_COLORSPACE_RGB;
+	    // clang-format off
+            M (combined.c.rgb, solid->color.c.rgb, mask_pattern.solid.color.c.rgb, red);
+            M (combined.c.rgb, solid->color.c.rgb, mask_pattern.solid.color.c.rgb, green);
+            M (combined.c.rgb, solid->color.c.rgb, mask_pattern.solid.color.c.rgb, blue);
+            M (combined.c.rgb, solid->color.c.rgb, mask_pattern.solid.color.c.rgb, alpha);
+	    // clang-format on
 #undef M
 	} else {
 	    combined = solid->color;
 	    _comac_color_multiply_alpha (&combined,
-					 mask_pattern.solid.color.alpha);
+					 mask_pattern.solid.color.c.rgb.alpha);
 	}
 
 	_comac_pattern_init_solid (&source_pattern.solid, &combined);

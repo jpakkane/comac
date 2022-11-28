@@ -38,16 +38,17 @@
 #include "comacint.h"
 
 static comac_color_t const comac_color_white = {
-    1.0, 1.0, 1.0, 1.0, 0xffff, 0xffff, 0xffff, 0xffff};
+    COMAC_COLORSPACE_RGB,
+    {{1.0, 1.0, 1.0, 1.0, 0xffff, 0xffff, 0xffff, 0xffff}}};
 
 static comac_color_t const comac_color_black = {
-    0.0, 0.0, 0.0, 1.0, 0x0, 0x0, 0x0, 0xffff};
+    COMAC_COLORSPACE_RGB, {{0.0, 0.0, 0.0, 1.0, 0x0, 0x0, 0x0, 0xffff}}};
 
 static comac_color_t const comac_color_transparent = {
-    0.0, 0.0, 0.0, 0.0, 0x0, 0x0, 0x0, 0x0};
+    COMAC_COLORSPACE_RGB, {{0.0, 0.0, 0.0, 0.0, 0x0, 0x0, 0x0, 0x0}}};
 
 static comac_color_t const comac_color_magenta = {
-    1.0, 0.0, 1.0, 1.0, 0xffff, 0x0, 0xffff, 0xffff};
+    COMAC_COLORSPACE_RGB, {{1.0, 0.0, 1.0, 1.0, 0xffff, 0x0, 0xffff, 0xffff}}};
 
 const comac_color_t *
 _comac_stock_color (comac_stock_t stock)
@@ -82,22 +83,26 @@ _comac_color_double_to_short (double d)
 static void
 _comac_color_compute_shorts (comac_color_t *color)
 {
-    color->red_short = _comac_color_double_to_short (color->red * color->alpha);
-    color->green_short =
-	_comac_color_double_to_short (color->green * color->alpha);
-    color->blue_short =
-	_comac_color_double_to_short (color->blue * color->alpha);
-    color->alpha_short = _comac_color_double_to_short (color->alpha);
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    color->c.rgb.red_short =
+	_comac_color_double_to_short (color->c.rgb.red * color->c.rgb.alpha);
+    color->c.rgb.green_short =
+	_comac_color_double_to_short (color->c.rgb.green * color->c.rgb.alpha);
+    color->c.rgb.blue_short =
+	_comac_color_double_to_short (color->c.rgb.blue * color->c.rgb.alpha);
+    color->c.rgb.alpha_short =
+	_comac_color_double_to_short (color->c.rgb.alpha);
 }
 
 void
 _comac_color_init_rgba (
     comac_color_t *color, double red, double green, double blue, double alpha)
 {
-    color->red = red;
-    color->green = green;
-    color->blue = blue;
-    color->alpha = alpha;
+    color->colorspace = COMAC_COLORSPACE_RGB;
+    color->c.rgb.red = red;
+    color->c.rgb.green = green;
+    color->c.rgb.blue = blue;
+    color->c.rgb.alpha = alpha;
 
     _comac_color_compute_shorts (color);
 }
@@ -105,7 +110,8 @@ _comac_color_init_rgba (
 void
 _comac_color_multiply_alpha (comac_color_t *color, double alpha)
 {
-    color->alpha *= alpha;
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    color->c.rgb.alpha *= alpha;
 
     _comac_color_compute_shorts (color);
 }
@@ -117,10 +123,11 @@ _comac_color_get_rgba (comac_color_t *color,
 		       double *blue,
 		       double *alpha)
 {
-    *red = color->red;
-    *green = color->green;
-    *blue = color->blue;
-    *alpha = color->alpha;
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    *red = color->c.rgb.red;
+    *green = color->c.rgb.green;
+    *blue = color->c.rgb.blue;
+    *alpha = color->c.rgb.alpha;
 }
 
 void
@@ -130,28 +137,31 @@ _comac_color_get_rgba_premultiplied (comac_color_t *color,
 				     double *blue,
 				     double *alpha)
 {
-    *red = color->red * color->alpha;
-    *green = color->green * color->alpha;
-    *blue = color->blue * color->alpha;
-    *alpha = color->alpha;
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    *red = color->c.rgb.red * color->c.rgb.alpha;
+    *green = color->c.rgb.green * color->c.rgb.alpha;
+    *blue = color->c.rgb.blue * color->c.rgb.alpha;
+    *alpha = color->c.rgb.alpha;
 }
 
 /* NB: This function works both for unmultiplied and premultiplied colors */
 comac_bool_t
 _comac_color_equal (const comac_color_t *color_a, const comac_color_t *color_b)
 {
+    assert (color_a->colorspace == COMAC_COLORSPACE_RGB);
+    assert (color_b->colorspace == COMAC_COLORSPACE_RGB);
     if (color_a == color_b)
 	return TRUE;
 
-    if (color_a->alpha_short != color_b->alpha_short)
+    if (color_a->c.rgb.alpha_short != color_b->c.rgb.alpha_short)
 	return FALSE;
 
-    if (color_a->alpha_short == 0)
+    if (color_a->c.rgb.alpha_short == 0)
 	return TRUE;
 
-    return color_a->red_short == color_b->red_short &&
-	   color_a->green_short == color_b->green_short &&
-	   color_a->blue_short == color_b->blue_short;
+    return color_a->c.rgb.red_short == color_b->c.rgb.red_short &&
+	   color_a->c.rgb.green_short == color_b->c.rgb.green_short &&
+	   color_a->c.rgb.blue_short == color_b->c.rgb.blue_short;
 }
 
 comac_bool_t
@@ -170,11 +180,12 @@ _comac_color_stop_equal (const comac_color_stop_t *color_a,
 comac_content_t
 _comac_color_get_content (const comac_color_t *color)
 {
-    if (COMAC_COLOR_IS_OPAQUE (color))
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    if (COMAC_COLOR_IS_OPAQUE (&(color->c.rgb)))
 	return COMAC_CONTENT_COLOR;
 
-    if (color->red_short == 0 && color->green_short == 0 &&
-	color->blue_short == 0) {
+    if (color->c.rgb.red_short == 0 && color->c.rgb.green_short == 0 &&
+	color->c.rgb.blue_short == 0) {
 	return COMAC_CONTENT_ALPHA;
     }
 

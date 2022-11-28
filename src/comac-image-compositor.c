@@ -138,9 +138,10 @@ draw_image_boxes (void *_dst,
 static inline uint32_t
 color_to_uint32 (const comac_color_t *color)
 {
-    return ((uint32_t) color->alpha_short >> 8 << 24) |
-	   (color->red_short >> 8 << 16) | (color->green_short & 0xff00) |
-	   (color->blue_short >> 8);
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
+    return ((uint32_t) color->c.rgb.alpha_short >> 8 << 24) |
+	   (color->c.rgb.red_short >> 8 << 16) |
+	   (color->c.rgb.green_short & 0xff00) | (color->c.rgb.blue_short >> 8);
 }
 
 static inline comac_bool_t
@@ -259,9 +260,10 @@ __fill_reduces_to_source (comac_operator_t op,
 			  const comac_color_t *color,
 			  const comac_image_surface_t *dst)
 {
+    assert (color->colorspace == COMAC_COLORSPACE_RGB);
     if (op == COMAC_OPERATOR_SOURCE || op == COMAC_OPERATOR_CLEAR)
 	return TRUE;
-    if (op == COMAC_OPERATOR_OVER && COMAC_COLOR_IS_OPAQUE (color))
+    if (op == COMAC_OPERATOR_OVER && COMAC_COLOR_IS_OPAQUE (&(color->c.rgb)))
 	return TRUE;
     if (dst->base.is_clear)
 	return op == COMAC_OPERATOR_OVER || op == COMAC_OPERATOR_ADD;
@@ -3305,7 +3307,9 @@ inplace_renderer_init (comac_image_span_renderer_t *r,
 	return COMAC_INT_STATUS_UNSUPPORTED;
 
     r->base.render_rows = NULL;
-    r->bpp = composite->mask_pattern.solid.color.alpha_short >> 8;
+    assert (composite->mask_pattern.solid.color.colorspace ==
+	    COMAC_COLORSPACE_RGB);
+    r->bpp = composite->mask_pattern.solid.color.c.rgb.alpha_short >> 8;
 
     if (composite->source_pattern.base.type == COMAC_PATTERN_TYPE_SOLID) {
 	const comac_color_t *color;
@@ -3542,7 +3546,9 @@ span_renderer_init (comac_abstract_span_renderer_t *_r,
 
     r->opacity = 1.0;
     if (composite->mask_pattern.base.type == COMAC_PATTERN_TYPE_SOLID) {
-	r->opacity = composite->mask_pattern.solid.color.alpha;
+	assert (composite->mask_pattern.solid.color.colorspace ==
+		COMAC_COLORSPACE_RGB);
+	r->opacity = composite->mask_pattern.solid.color.c.rgb.alpha;
     } else {
 	pixman_image_t *mask;
 	int mask_x, mask_y;

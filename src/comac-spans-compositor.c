@@ -605,8 +605,10 @@ composite_aligned_boxes (const comac_spans_compositor_t *compositor,
 	return COMAC_INT_STATUS_UNSUPPORTED;
     }
 
+    assert (extents->mask_pattern.solid.color.colorspace ==
+	    COMAC_COLORSPACE_RGB);
     no_mask = extents->mask_pattern.base.type == COMAC_PATTERN_TYPE_SOLID &&
-	      COMAC_COLOR_IS_OPAQUE (&extents->mask_pattern.solid.color);
+	      COMAC_COLOR_IS_OPAQUE (&extents->mask_pattern.solid.color.c.rgb);
     op_is_source = op_reduces_to_source (extents, no_mask);
     inplace = ! need_clip_mask && op_is_source && no_mask;
 

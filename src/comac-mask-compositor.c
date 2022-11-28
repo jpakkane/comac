@@ -1308,7 +1308,8 @@ composite_opacity_boxes (const comac_mask_compositor_t *compositor,
     } else
 	info.src = NULL;
 
-    info.opacity = mask_pattern->color.alpha / (double) 0xffff;
+    assert (mask_pattern->color.colorspace == COMAC_COLORSPACE_RGB);
+    info.opacity = mask_pattern->color.c.rgb.alpha / (double) 0xffff;
 
     /* XXX for lots of boxes create a clip region for the fully opaque areas */
     for (i = 0; i < clip->num_boxes; i++)

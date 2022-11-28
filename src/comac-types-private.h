@@ -215,7 +215,7 @@ struct _comac_glyph_text_info {
    madness). I'm still working on a cleaner API, but in the meantime,
    at least this does prevent precision loss in color when changing
    alpha. */
-struct _comac_color {
+struct _comac_rgb_color {
     double red;
     double green;
     double blue;
@@ -225,6 +225,18 @@ struct _comac_color {
     unsigned short green_short;
     unsigned short blue_short;
     unsigned short alpha_short;
+};
+
+struct _comac_fake_color {
+    int do_not_use;
+};
+
+struct _comac_color {
+    comac_colorspace_t colorspace;
+    union {
+	struct _comac_rgb_color rgb;
+	struct _comac_fake_color do_not_use;
+    } c;
 };
 
 struct _comac_color_stop {

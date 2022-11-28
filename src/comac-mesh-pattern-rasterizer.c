@@ -995,28 +995,32 @@ _comac_mesh_pattern_rasterize (const comac_mesh_pattern_t *mesh,
 	}
 
 	c = &patch->colors[0];
-	colors[0][0] = c->red;
-	colors[0][1] = c->green;
-	colors[0][2] = c->blue;
-	colors[0][3] = c->alpha;
+	assert (c->colorspace == COMAC_COLORSPACE_RGB);
+	colors[0][0] = c->c.rgb.red;
+	colors[0][1] = c->c.rgb.green;
+	colors[0][2] = c->c.rgb.blue;
+	colors[0][3] = c->c.rgb.alpha;
 
 	c = &patch->colors[3];
-	colors[1][0] = c->red;
-	colors[1][1] = c->green;
-	colors[1][2] = c->blue;
-	colors[1][3] = c->alpha;
+	assert (c->colorspace == COMAC_COLORSPACE_RGB);
+	colors[1][0] = c->c.rgb.red;
+	colors[1][1] = c->c.rgb.green;
+	colors[1][2] = c->c.rgb.blue;
+	colors[1][3] = c->c.rgb.alpha;
 
 	c = &patch->colors[1];
-	colors[2][0] = c->red;
-	colors[2][1] = c->green;
-	colors[2][2] = c->blue;
-	colors[2][3] = c->alpha;
+	assert (c->colorspace == COMAC_COLORSPACE_RGB);
+	colors[2][0] = c->c.rgb.red;
+	colors[2][1] = c->c.rgb.green;
+	colors[2][2] = c->c.rgb.blue;
+	colors[2][3] = c->c.rgb.alpha;
 
 	c = &patch->colors[2];
-	colors[3][0] = c->red;
-	colors[3][1] = c->green;
-	colors[3][2] = c->blue;
-	colors[3][3] = c->alpha;
+	assert (c->colorspace == COMAC_COLORSPACE_RGB);
+	colors[3][0] = c->c.rgb.red;
+	colors[3][1] = c->c.rgb.green;
+	colors[3][2] = c->c.rgb.blue;
+	colors[3][3] = c->c.rgb.alpha;
 
 	draw_bezier_patch (data, width, height, stride, nodes, colors);
 	patch++;

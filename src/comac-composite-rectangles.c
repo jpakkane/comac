@@ -113,8 +113,10 @@ _comac_composite_rectangles_init (comac_composite_rectangles_t *extents,
 
     extents->original_mask_pattern = NULL;
     extents->mask_pattern.base.type = COMAC_PATTERN_TYPE_SOLID;
-    extents->mask_pattern.solid.color.alpha = 1.; /* XXX full initialisation? */
-    extents->mask_pattern.solid.color.alpha_short = 0xffff;
+    extents->mask_pattern.solid.color.colorspace = COMAC_COLORSPACE_RGB;
+    extents->mask_pattern.solid.color.c.rgb.alpha =
+	1.; /* XXX full initialisation? */
+    extents->mask_pattern.solid.color.c.rgb.alpha_short = 0xffff;
 
     return TRUE;
 }
