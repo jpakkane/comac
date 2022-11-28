@@ -35,7 +35,7 @@
  * regardless of the scale parameters
  * @correct_scale: Tests if the hairlines render correctly regardless of 
  * whether or not the scale is set "correctly", as per
- * https://comacgraphics.org/cookbook/ellipses/ 
+ * https://cairographics.org/cookbook/ellipses/ 
  */
 static comac_test_status_t
 draw (comac_t *cr,

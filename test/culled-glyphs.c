@@ -35,7 +35,7 @@ draw (comac_t *cr, int width, int height)
 		       "a message that long. No. So we compromise with around "
 		       "300 glyphs that is "
 		       "long enough to trigger the conditions as stated in "
-		       "https://lists.comacgraphics.org/archives/comac/"
+		       "https://lists.cairographics.org/archives/comac/"
 		       "2008-December/015976.html. "
 		       "Happy now?";
     comac_text_extents_t extents;

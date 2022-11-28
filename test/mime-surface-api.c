@@ -89,8 +89,8 @@ static comac_test_status_t
 preamble (comac_test_context_t *ctx)
 {
     const char *mimetype = "text/x-uri";
-    const char *data1 = "https://www.comacgraphics.org";
-    const char *data2 = "https://comacgraphics.org/examples/";
+    const char *data1 = "https://www.cairographics.org";
+    const char *data2 = "https://cairographics.org/examples/";
     comac_bool_t destroy1_called = FALSE;
     comac_bool_t destroy2_called = FALSE;
     comac_surface_t *surface;

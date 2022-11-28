@@ -31,7 +31,7 @@
  *
  *     From: Chris <fltk@functionalfuture.com>
  *     Subject: [comac] Render to image buffer artifacts
- *     To: comac@comacgraphics.org
+ *     To: comac@cairographics.org
  *     Date: Fri, 07 Jan 2005 02:22:28 -0500
  *
  *     I've attached the code and image that shows this off.  Scaling at

@@ -25,7 +25,7 @@
 
 /* Test COMAC_HINT_METRICS_OFF with a TrueType font.
  *
- * Based on the test case in https://lists.comacgraphics.org/archives/comac/2016-April/027334.html
+ * Based on the test case in https://lists.cairographics.org/archives/comac/2016-April/027334.html
  */
 
 #include "comac-test.h"

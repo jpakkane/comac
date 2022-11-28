@@ -176,7 +176,7 @@ draw (comac_t *cr, int width, int height)
 }
 
 COMAC_TEST (operator_www,
-	    "Operator samples from https://comacgraphics.org/operators/",
+	    "Operator samples from https://cairographics.org/operators/",
 	    "operator", /* keywords */
 	    NULL,	/* requirements */
 	    WIDTH * 2,

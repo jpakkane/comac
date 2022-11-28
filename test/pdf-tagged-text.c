@@ -326,7 +326,7 @@ draw_cover (comac_surface_t *surface, comac_t *cr)
     comac_text_extents_t text_extents;
     char buf[200];
     comac_rectangle_t url_box;
-    const char *comac_url = "https://www.comacgraphics.org/";
+    const char *comac_url = "https://www.cairographics.org/";
     const double url_box_margin = 20.0;
 
     comac_tag_begin (cr, COMAC_TAG_DEST, "name='cover'  internal");

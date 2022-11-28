@@ -609,7 +609,7 @@ comac_pop_group_to_source (comac_t *cr);
  * translucent layers too.
  * For a more detailed explanation of the effects of each operator, including
  * the mathematical definitions, see
- * <ulink url="https://comacgraphics.org/operators/">https://comacgraphics.org/operators/</ulink>.
+ * <ulink url="https://cairographics.org/operators/">https://cairographics.org/operators/</ulink>.
  *
  * Since: 1.0
  **/

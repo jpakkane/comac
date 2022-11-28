@@ -29,7 +29,7 @@
  * pattern.  Reported by Franz Schmid to the comac mailing list as a
  * regression in 1.9.6:
  *
- * https://lists.comacgraphics.org/archives/comac/2010-February/019492.html
+ * https://lists.cairographics.org/archives/comac/2010-February/019492.html
  */
 
 static comac_test_status_t

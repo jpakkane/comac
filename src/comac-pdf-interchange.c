@@ -1363,7 +1363,7 @@ comac_pdf_interchange_write_docinfo (comac_pdf_surface_t *surface)
 
     _comac_output_stream_printf (
 	surface->object_stream.stream,
-	"<< /Producer (comac %s (https://comacgraphics.org))\n",
+	"<< /Producer (comac %s (https://github.com/jpakkane/comac/))\n",
 	comac_version_string ());
 
     if (ic->docinfo.title)

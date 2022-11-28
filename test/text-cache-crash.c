@@ -30,7 +30,7 @@
  *   Reported bug on mailing list:
  *
  *	From: Ned Konz <ned@squeakland.org>
- *	To: comac@comacgraphics.org
+ *	To: comac@cairographics.org
  *	Date: Thu, 4 Nov 2004 09:49:38 -0800
  *	Subject: [comac] getting assertions [comac_cache.c:143: _entry_destroy:
  *	        Assertion `cache->used_memory > entry->memory' failed]

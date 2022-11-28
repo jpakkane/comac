@@ -32,7 +32,7 @@
  * where the dash offset is advanced in a loop.
  *
  * Reported to the comac mailing list by Hans Breuer.
- * https://lists.comacgraphics.org/archives/comac/2009-June/017506.html
+ * https://lists.cairographics.org/archives/comac/2009-June/017506.html
  */
 
 #define EPS 1e-30

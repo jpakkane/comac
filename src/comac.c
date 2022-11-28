@@ -124,7 +124,7 @@
  *
  * For example:
  * <informalexample><programlisting>
- * comac_tag_begin (cr, COMAC_TAG_LINK, "uri='https://comacgraphics.org'");
+ * comac_tag_begin (cr, COMAC_TAG_LINK, "uri='https://cairographics.org'");
  * comac_move_to (cr, 50, 50);
  * comac_show_text (cr, "This is a link to the comac website.");
  * comac_tag_end (cr, COMAC_TAG_LINK);
@@ -157,7 +157,7 @@
  * comac_text_extents (cr, text1.s, &text1_extents);
  * comac_text_extents (cr, text2.s, &text2_extents);
  * sprintf (attribs,
- *          "rect=[%f %f %f %f %f %f %f %f] uri='https://comacgraphics.org'",
+ *          "rect=[%f %f %f %f %f %f %f %f] uri='https://cairographics.org'",
  *          text1_extents.x_bearing + text1.x,
  *          text1_extents.y_bearing + text1.y,
  *          text1_extents.width,
@@ -208,7 +208,7 @@
  *
  * An example of the link attributes to the comac website:
  * <programlisting>
- * "uri='https://comacgraphics.org'"
+ * "uri='https://cairographics.org'"
  * </programlisting>
  *
  * ## File Links ## {#file-link}
@@ -1198,7 +1198,7 @@ comac_set_line_width (comac_t *cr, double width)
  * renderers match Comac's output, but some very popular implementations
  * (Acrobat, Chrome, rsvg) will scale the hairline unevenly.
  * As such, best practice is to reset any anisotropic scaling before calling
- * comac_stroke(). See https://comacgraphics.org/cookbook/ellipses/
+ * comac_stroke(). See https://cairographics.org/cookbook/ellipses/
  * for an example.
  *
  * Since: 1.18

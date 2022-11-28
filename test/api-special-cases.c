@@ -1100,7 +1100,7 @@ static comac_test_status_t
 test_comac_surface_set_mime_data (comac_surface_t *surface)
 {
     const char *mimetype = "text/x-uri";
-    const char *data = "https://www.comacgraphics.org";
+    const char *data = "https://www.cairographics.org";
     comac_status_t status;
 
     status = comac_surface_set_mime_data (surface,

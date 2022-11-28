@@ -30,7 +30,7 @@
  *   Reported bug on mailing list:
  *
  *	From: Steve Chaplin <stevech1097@yahoo.com.au>
- *	To: comac@comacgraphics.org
+ *	To: comac@cairographics.org
  *	Date: Thu, 04 Nov 2004 00:00:17 +0800
  *	Subject: [comac] Rotated text bug on drawable target
  *

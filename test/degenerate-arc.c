@@ -25,7 +25,7 @@
 
 /* This test case exercises a "Potential division by zero in comac_arc"
  * reported by Luiz Americo Pereira Camara <luizmed@oi.com.br>,
- * https://lists.comacgraphics.org/archives/comac/2008-May/014054.html.
+ * https://lists.cairographics.org/archives/comac/2008-May/014054.html.
  */
 
 #include "comac-test.h"

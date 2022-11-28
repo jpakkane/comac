@@ -426,7 +426,7 @@ draw (comac_t *cr, int width, int height)
     comac_set_line_width (cr2, 2.0);
     /* XXX: We'd like to be able to use EQUALS here, but currently
      * when hinting is enabled freetype returns integer extents. See
-     * https://comacgraphics.org/todo */
+     * https://cairographics.org/todo */
     errors += ! check_extents (ctx,
 			       phase,
 			       cr2,

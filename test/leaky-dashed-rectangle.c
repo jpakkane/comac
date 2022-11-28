@@ -25,7 +25,7 @@
  */
 
 /* Test case for bug reported by Franz Schmid <Franz.Schmid@altmuehlnet.de>
- * https://lists.comacgraphics.org/archives/comac/2008-April/013912.html
+ * https://lists.cairographics.org/archives/comac/2008-April/013912.html
  *
  * See also: https://bugs.freedesktop.org/show_bug.cgi?id=17177
  */
