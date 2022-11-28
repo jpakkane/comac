@@ -105,6 +105,9 @@ struct _comac_surface {
      */
     comac_font_options_t font_options;
     comac_colorspace_t colorspace;
+    comac_rendering_intent_t intent;
+    comac_color_convert_cb color_convert;
+    void *color_convert_ctx;
 };
 
 comac_private comac_surface_t *

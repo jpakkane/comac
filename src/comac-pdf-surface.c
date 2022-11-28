@@ -438,10 +438,14 @@ _comac_pdf_surface_clipper_intersect_clip_path (
 }
 
 static comac_surface_t *
-_comac_pdf_surface_create_for_stream_internal (comac_output_stream_t *output,
-					       comac_colorspace_t colorspace,
-					       double width,
-					       double height)
+_comac_pdf_surface_create_for_stream_internal (
+    comac_output_stream_t *output,
+    comac_colorspace_t colorspace,
+    comac_rendering_intent_t intent,
+    comac_color_convert_cb color_convert,
+    void *color_convert_ctx,
+    double width,
+    double height)
 {
     comac_pdf_surface_t *surface;
     comac_status_t status, status_ignored;
@@ -458,8 +462,11 @@ _comac_pdf_surface_create_for_stream_internal (comac_output_stream_t *output,
 			 &comac_pdf_surface_backend,
 			 NULL, /* device */
 			 COMAC_CONTENT_COLOR_ALPHA,
-			 TRUE,
-			 colorspace); /* is_vector */
+			 TRUE, /* is_vector */
+			 colorspace,
+			 intent,
+			 color_convert,
+			 color_convert_ctx);
 
     surface->output = output;
     surface->width = width;
@@ -628,17 +635,24 @@ comac_pdf_surface_create_for_stream (comac_write_func_t write_func,
 				     double width_in_points,
 				     double height_in_points)
 {
-    return comac_pdf_surface_create_for_stream2 (write_func,
-						 closure,
-						 COMAC_COLORSPACE_RGB,
-						 width_in_points,
-						 height_in_points);
+    return comac_pdf_surface_create_for_stream2 (
+	write_func,
+	closure,
+	COMAC_COLORSPACE_RGB,
+	COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+	comac_default_color_convert_func,
+	NULL,
+	width_in_points,
+	height_in_points);
 }
 
 comac_surface_t *
 comac_pdf_surface_create_for_stream2 (comac_write_func_t write_func,
 				      void *closure,
 				      comac_colorspace_t colorspace,
+				      comac_rendering_intent_t intent,
+				      comac_color_convert_cb color_convert,
+				      void *color_convert_ctx,
 				      double width_in_points,
 				      double height_in_points)
 {
@@ -651,6 +665,9 @@ comac_pdf_surface_create_for_stream2 (comac_write_func_t write_func,
 
     return _comac_pdf_surface_create_for_stream_internal (output,
 							  colorspace,
+							  intent,
+							  color_convert,
+							  color_convert_ctx,
 							  width_in_points,
 							  height_in_points);
 }
@@ -682,15 +699,22 @@ comac_pdf_surface_create (const char *filename,
 			  double width_in_points,
 			  double height_in_points)
 {
-    return comac_pdf_surface_create2 (filename,
-				      COMAC_COLORSPACE_RGB,
-				      width_in_points,
-				      height_in_points);
+    return comac_pdf_surface_create2 (
+	filename,
+	COMAC_COLORSPACE_RGB,
+	COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+	comac_default_color_convert_func,
+	NULL,
+	width_in_points,
+	height_in_points);
 }
 
 comac_surface_t *
 comac_pdf_surface_create2 (const char *filename,
 			   comac_colorspace_t colorspace,
+			   comac_rendering_intent_t intent,
+			   comac_color_convert_cb color_convert,
+			   void *color_convert_ctx,
 			   double width_in_points,
 			   double height_in_points)
 {
@@ -703,6 +727,9 @@ comac_pdf_surface_create2 (const char *filename,
 
     return _comac_pdf_surface_create_for_stream_internal (output,
 							  colorspace,
+							  intent,
+							  color_convert,
+							  color_convert_ctx,
 							  width_in_points,
 							  height_in_points);
 }
@@ -5592,23 +5619,23 @@ _comac_pdf_surface_select_pattern (comac_pdf_surface_t *surface,
 					     solid_color->c.rgb.blue);
 	    } else if (surface->base.colorspace == COMAC_COLORSPACE_GRAY) {
 		double gray[2];
-		comac_default_color_convert_func (
+		surface->base.color_convert (
 		    COMAC_COLORSPACE_RGB,
 		    (double *) &solid_color->c.rgb,
 		    COMAC_COLORSPACE_GRAY,
 		    gray,
 		    COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
-		    NULL);
+		    surface->base.color_convert_ctx);
 		_comac_output_stream_printf (surface->output, "%f ", gray[0]);
 	    } else if (surface->base.colorspace == COMAC_COLORSPACE_CMYK) {
 		double cmyk[5];
-		comac_default_color_convert_func (
+		surface->base.color_convert (
 		    COMAC_COLORSPACE_RGB,
 		    (double *) &solid_color->c.rgb,
 		    COMAC_COLORSPACE_CMYK,
 		    cmyk,
 		    COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
-		    NULL);
+		    surface->base.color_convert_ctx);
 		_comac_output_stream_printf (surface->output,
 					     "%f %f %f %f ",
 					     cmyk[0],

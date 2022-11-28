@@ -278,7 +278,10 @@ _comac_surface_snapshot (comac_surface_t *surface)
 			 NULL, /* device */
 			 surface->content,
 			 surface->is_vector,
-			 surface->colorspace);
+			 surface->colorspace,
+			 surface->intent,
+			 surface->color_convert,
+			 surface->color_convert_ctx);
     snapshot->base.type = surface->type;
 
     COMAC_MUTEX_INIT (snapshot->mutex);

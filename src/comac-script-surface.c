@@ -1147,7 +1147,10 @@ attach_snapshot (comac_script_context_t *ctx, comac_surface_t *source)
 			 &ctx->base,
 			 source->content,
 			 source->is_vector,
-			 source->colorspace);
+			 source->colorspace,
+			 source->intent,
+			 source->color_convert,
+			 source->color_convert_ctx);
 
     _comac_output_stream_printf (ctx->stream,
 				 "dup /s%d exch def ",
@@ -3752,7 +3755,10 @@ _comac_script_surface_create_internal (comac_script_context_t *ctx,
 			 &ctx->base,
 			 content,
 			 TRUE, /* is_vector */
-			 COMAC_COLORSPACE_RGB);
+			 COMAC_COLORSPACE_RGB,
+			 COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+			 comac_default_color_convert_func,
+			 NULL);
 
     _comac_surface_wrapper_init (&surface->wrapper, passthrough);
 

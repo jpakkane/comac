@@ -216,7 +216,10 @@ _comac_image_surface_create_for_pixman_image (
 			 NULL, /* device */
 			 _comac_content_from_pixman_format (pixman_format),
 			 FALSE,
-			 COMAC_COLORSPACE_RGB); /* is_vector */
+			 COMAC_COLORSPACE_RGB,
+			 COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+			 comac_default_color_convert_func,
+			 NULL); /* is_vector */
 
     _comac_image_surface_init (surface, pixman_image, pixman_format);
 

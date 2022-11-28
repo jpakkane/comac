@@ -2437,6 +2437,11 @@ comac_surface_get_colorspace (comac_surface_t *surface);
 comac_public void
 comac_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs);
 
+comac_public void
+comac_surface_set_color_conversion_callback (comac_surface_t *surface,
+					     comac_color_convert_cb callback,
+					     void *ctx);
+
 /**
  * comac_surface_type_t:
  * @COMAC_SURFACE_TYPE_IMAGE: The surface is of type image, since 1.2

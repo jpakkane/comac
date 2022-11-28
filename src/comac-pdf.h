@@ -70,6 +70,9 @@ comac_pdf_surface_create (const char *filename,
 comac_public comac_surface_t *
 comac_pdf_surface_create2 (const char *filename,
 			   comac_colorspace_t colorspace,
+			   comac_rendering_intent_t intent,
+			   comac_color_convert_cb color_convert,
+			   void *color_convert_ctx,
 			   double width_in_points,
 			   double height_in_points);
 
@@ -83,6 +86,9 @@ comac_public comac_surface_t *
 comac_pdf_surface_create_for_stream2 (comac_write_func_t write_func,
 				      void *closure,
 				      comac_colorspace_t colorspace,
+				      comac_rendering_intent_t intent,
+				      comac_color_convert_cb color_convert,
+				      void *color_convert_ctx,
 				      double width_in_points,
 				      double height_in_points);
 

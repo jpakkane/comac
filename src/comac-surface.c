@@ -147,6 +147,9 @@
 	    COMAC_ROUND_GLYPH_POS_DEFAULT /* round_glyph_positions */          \
 	},				  /* font_options */                   \
 	COMAC_COLORSPACE_RGB,                                                  \
+	COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,                          \
+	comac_default_color_convert_func,                                      \
+	NULL,                                                                  \
     }
 
 /* XXX error object! */
@@ -324,6 +327,15 @@ comac_surface_set_colorspace (comac_surface_t *surface, comac_colorspace_t cs)
     surface->colorspace = cs;
 }
 
+comac_public void
+comac_surface_set_color_conversion_callback (comac_surface_t *surface,
+					     comac_color_convert_cb callback,
+					     void *ctx)
+{
+    surface->color_convert = callback;
+    surface->color_convert_ctx = ctx;
+}
+
 /**
  * comac_surface_get_device:
  * @surface: a #comac_surface_t
@@ -447,7 +459,10 @@ _comac_surface_init (comac_surface_t *surface,
 		     comac_device_t *device,
 		     comac_content_t content,
 		     comac_bool_t is_vector,
-		     comac_colorspace_t colorspace)
+		     comac_colorspace_t colorspace,
+		     comac_rendering_intent_t intent,
+		     comac_color_convert_cb color_convert,
+		     void *color_convert_ctx)
 {
     COMAC_MUTEX_INITIALIZE ();
 
@@ -457,6 +472,11 @@ _comac_surface_init (comac_surface_t *surface,
     surface->type = backend->type;
     surface->is_vector = is_vector;
     surface->colorspace = colorspace;
+    surface->color_convert = NULL;
+    surface->color_convert_ctx = NULL;
+    surface->intent = intent;
+    surface->color_convert = color_convert;
+    surface->color_convert_ctx = color_convert_ctx;
 
     COMAC_REFERENCE_COUNT_INIT (&surface->ref_count, 1);
     surface->status = COMAC_STATUS_SUCCESS;

@@ -1130,7 +1130,10 @@ attach_proxy (comac_surface_t *source, comac_surface_t *image)
 			 NULL,
 			 image->content,
 			 FALSE,
-			 source->colorspace);
+			 source->colorspace,
+			 source->intent,
+			 source->color_convert,
+			 source->color_convert_ctx);
 
     proxy->image = image;
     _comac_surface_attach_snapshot (source, &proxy->base, NULL);
@@ -1700,7 +1703,10 @@ _comac_image_source_create_for_pattern (comac_surface_t *dst,
 			 NULL, /* device */
 			 COMAC_CONTENT_COLOR_ALPHA,
 			 FALSE, /* is_vector */
-			 COMAC_COLORSPACE_RGB);
+			 COMAC_COLORSPACE_RGB,
+			 COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+			 comac_default_color_convert_func,
+			 NULL);
 
     source->is_opaque_solid =
 	pattern == NULL || _comac_pattern_is_opaque_solid (pattern);

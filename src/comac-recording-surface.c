@@ -412,7 +412,10 @@ comac_recording_surface_create (comac_content_t content,
 			 NULL, /* device */
 			 content,
 			 TRUE, /* is_vector */
-			 COMAC_COLORSPACE_RGB);
+			 COMAC_COLORSPACE_RGB,
+			 COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+			 comac_default_color_convert_func,
+			 NULL);
 
     surface->unbounded = TRUE;
 
@@ -588,7 +591,10 @@ attach_proxy (comac_surface_t *source, comac_surface_t *image)
 			 NULL,
 			 image->content,
 			 FALSE,
-			 source->colorspace);
+			 source->colorspace,
+			 source->intent,
+			 source->color_convert,
+			 source->color_convert_ctx);
 
     proxy->image = image;
     _comac_surface_attach_snapshot (source, &proxy->base, NULL);
@@ -1589,7 +1595,10 @@ _comac_recording_surface_snapshot (void *abstract_other)
 			 NULL, /* device */
 			 other->base.content,
 			 other->base.is_vector,
-			 other->base.colorspace);
+			 other->base.colorspace,
+			 other->base.intent,
+			 other->base.color_convert,
+			 other->base.color_convert_ctx);
 
     surface->extents_pixels = other->extents_pixels;
     surface->extents = other->extents;

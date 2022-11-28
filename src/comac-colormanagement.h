@@ -45,11 +45,11 @@ typedef enum {
 } comac_colorspace_t;
 
 typedef enum {
-    COMAC_RENDERING_INTENT_ABSOLUTE_COLORIMETRIC,
     COMAC_RENDERING_INTENT_RELATIVE_COLORIMETRIC,
+    COMAC_RENDERING_INTENT_ABSOLUTE_COLORIMETRIC,
     COMAC_RENDERING_INTENT_SATURATION,
     COMAC_RENDERING_INTENT_PERCEPTUAL,
-} rendering_intent_t;
+} comac_rendering_intent_t;
 
 /*
  * FIXME, add typedefs for this function, like:
@@ -63,22 +63,25 @@ typedef enum {
  *
  * So that end users can do
  *
- * const callback_rgb *d = (const callbac_rgb) in_data;
+ * const callback_rgb *d = (const callback_rgb) in_data;
  */
 
-typedef void (*color_convert_cb) (comac_colorspace_t,
-				  const double *,
-				  comac_colorspace_t,
-				  double *,
-				  rendering_intent_t,
-				  void *);
+// FIXME, maybe this should take arrays instead of individual values
+// for more efficient batch processing?
+
+typedef void (*comac_color_convert_cb) (comac_colorspace_t,
+					const double *,
+					comac_colorspace_t,
+					double *,
+					comac_rendering_intent_t,
+					void *);
 
 void
 comac_default_color_convert_func (comac_colorspace_t from_colorspace,
 				  const double *from_data,
 				  comac_colorspace_t to_colorspace,
 				  double *to_data,
-				  rendering_intent_t intent,
+				  comac_rendering_intent_t intent,
 				  void *ctx);
 
 #endif // COMAC_COLORMANAGEMENT_H

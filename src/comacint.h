@@ -1396,7 +1396,10 @@ _comac_surface_init (comac_surface_t *surface,
 		     comac_device_t *device,
 		     comac_content_t content,
 		     comac_bool_t is_vector,
-		     comac_colorspace_t colorspace);
+		     comac_colorspace_t colorspace,
+		     comac_rendering_intent_t intent,
+		     comac_color_convert_cb color_cb,
+		     void *color_callback_context);
 
 comac_private void
 _comac_surface_set_font_options (comac_surface_t *surface,

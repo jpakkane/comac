@@ -76,7 +76,7 @@ comac_default_color_convert_func (comac_colorspace_t from_colorspace,
 				  const double *from_data,
 				  comac_colorspace_t to_colorspace,
 				  double *to_data,
-				  rendering_intent_t intent,
+				  comac_rendering_intent_t intent,
 				  void *ctx)
 {
     (void) intent;

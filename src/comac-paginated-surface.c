@@ -110,7 +110,10 @@ _comac_paginated_surface_create (
 			 NULL, /* device */
 			 content,
 			 target->is_vector,
-			 target->colorspace);
+			 target->colorspace,
+			 target->intent,
+			 target->color_convert,
+			 target->color_convert_ctx);
 
     /* Override surface->base.type with target's type so we don't leak
      * evidence of the paginated wrapper out to the user. */
